@@ -2,154 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D72C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E396DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbiHORqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S229940AbiHORt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHORqX (ORCPT
+        with ESMTP id S229446AbiHORt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:46:23 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD35627FF1;
-        Mon, 15 Aug 2022 10:46:22 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 91FF25C0138;
-        Mon, 15 Aug 2022 13:46:19 -0400 (EDT)
+        Mon, 15 Aug 2022 13:49:57 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A14286DA
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:49:56 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 0BEAE3200988;
+        Mon, 15 Aug 2022 13:49:53 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 15 Aug 2022 13:46:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660585579; x=1660671979; bh=8OMR3TElBe
-        6FtukCUYXb52i6A/aUd+KCr1sfP2Mcrq4=; b=WWh1N78Lr62Hl69WT1r86CNWh+
-        roxkNiICEOZ7YJGTtdJZ49uTb0HJG+JMAdmUbCy8eWMufL0xmC7HkDRtwZLXNKPz
-        gzSrEDzp63kP/pleU6F076KJt2zCcamtdnuytaIKqPaTo/6+n0rd6mVBYRagD+vB
-        etZs+OsABrz5kX+2kzllpigxikUAKxEo68L3HqIEw2DR9P8hH6DuBE7JYqltbhXS
-        Lwbvc9EQiPa1jEEUHwStQswg38TH1WaKdEnoO5GGkCPn4bk/NFw95wwCaolItbfs
-        BtyCYp4Rl027xTBsqjUExhbcQRYmYGc1eygzn2x8Q5xWgtOyql9mYbWe2GaQ==
+  by compute2.internal (MEProxy); Mon, 15 Aug 2022 13:49:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660585792; x=1660672192; bh=QE
+        4xvdOORCkc8PPrFCkYq5enDGn2qK9OQMp2lhKzGVQ=; b=mya5ACVAN5qT1X/W2Y
+        jCCqH/1im6kdrTA0XtFs7BsDwRSJZVnqwqgmI5qVlHIA8UtkjKabCOCa5lhPJYVp
+        cQzDGJXPGQSPV7oYBGxN1C2RP4idlT5u/OpFNSQz+HdRp4jD4T9gGbp/Vl1/ikaM
+        fgUGY5dfVMLcvEQiDk/2rctR603ExhV/rf5GVmOF5Z/602Ce6w/OhtJt/qcUitt7
+        dnp16m2xbjDTMk+joZW1qjvP+IHc06WeHPhmwZeWx5jSqclX+n7Vkmuu/eeJIQXZ
+        09CI+ejm7AZ9ZtzBRcbTkpT3S3YRp9rW7T2wOfljv+llG/P4MPtFlhGOtdVrDm52
+        lSlQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
         :feedback-id:from:from:in-reply-to:in-reply-to:message-id
         :mime-version:references:reply-to:sender:subject:subject:to:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660585579; x=1660671979; bh=8OMR3TElBe6FtukCUYXb52i6A/aU
-        d+KCr1sfP2Mcrq4=; b=tEMDvu+R2Aspw36NwuK6kFqZRns/mDPUG4fIwlwUQ/ID
-        wCquAEfl8s9ofbcABUZAS88RihgDaBKF+aIiqXSMkXtEdaDfu42fTV2/97XquZ3b
-        65Fgk7idAukoCMbQxZkN7SDn+1FdBerVJVOT/SCIgCuENHDpV+aDoiE+d9ex7zAX
-        vfcs79dq2yNOBIkfSksvTzrnTuA138zyh66Rd8HmSL+/YWJSvmPMQPG1PQ2WCo+c
-        DFPUMQQ9alpFTkT1DvLXQBFeRVcIhFNbFnz4MYn95zSrfwpidNRE5UZUsz9I4mN5
-        rcOxRTb3FCsbdJDgafCSUanZSa+nr3K2vqkSeTu4Kg==
-X-ME-Sender: <xms:aob6YpskErKBujTdU7Vc4c52RPVJf-cGl8cJZJn9kuID1oJ9SPr49w>
-    <xme:aob6Yif0do-Se1xnCVnIIaSvxSacIY-waWnv6SA4iIGu3km_kNfPN-t43GfAUB0GV
-    M10u8gWOYTpFLEORQ>
-X-ME-Received: <xmr:aob6YsxWVdKGF816krV-BQcBHo34Mr4pIH1QtbygoH7bRbZowpMet14COJ7jN-KOnRtzoeZ8xjEXypZdOu-exrL-ei9OCW855XJVm9MeUYII6e0lQrzYdSSGIKOl>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddguddujecutefuodetggdotefrod
+        fm1; t=1660585792; x=1660672192; bh=QE4xvdOORCkc8PPrFCkYq5enDGn2
+        qK9OQMp2lhKzGVQ=; b=wsZILPh2C+viSRkVWCNxJy+im1EuErXftj+inD9bovx/
+        F0fZ4Xz3VM/dUQEfx2xmepB0E+6sSd4JVPjcFUyWSlk0AP+zFxH8mU5ZHZF59wBP
+        G0nRLpSk3GtiBg4nl17FyhgMNnJtUgN9VIfUDXAltHQzwJU1zggczvaiwwcawgcd
+        XGQIVWKxMX0Qhmk7GgrewCSKrPHaiHytBHSuVRSrrPc5R1ZTFx3ENP1UK4S/JJrf
+        MzCRxfL7qBkujlA1WT639L9F6uePB/2gvO7ximLVQeUO9ok8Wa+RKT73VuPxQsW6
+        JsQ76sGfZ/NLsmFFMQ0rJwOXJbE/yOd6BOGHGWpAFg==
+X-ME-Sender: <xms:P4f6YhEJ7P8AitfA7coWFoB_ToJ1z9V4KpHTbp_6pD426DKSVZtKxA>
+    <xme:P4f6YmU-R2l0iatdwmzp9AV2hVzNB21DsknO2Ci7urhfIE1W7Foqd9DUkzG23dPN2
+    _v4Hz-zEvc73WNvyNM>
+X-ME-Received: <xmr:P4f6YjKn4Oec_UK0Iz11iyFV6acI33rlZTukGNNvqP-DPu-HyMp71LhVlfZ_SRxeNJ-5sQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddguddulecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:aob6YgOpRGuCxc1zyn0zJCY9VT87O6ZLHZij6K0tXCXuzSGzP5pNHA>
-    <xmx:aob6Yp9sHAGQCb3cobWp_X3g3w75bAFpOrpKZuTEN1VH1jeTpRlzsw>
-    <xmx:aob6YgW2K4jSFqDTSemEWEDsZRT8j6LTsNwfDyf0lh-AFC05Dte6cg>
-    <xmx:a4b6YodjWSEiH8FOhOICfT5pTGNvV6Wgc7S2VQao-RTHOqsF84jGSg>
-Feedback-ID: id4a34324:Fastmail
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttddttddttddvnecuhfhrohhmpedfmfhi
+    rhhilhhlucetrdcuufhhuhhtvghmohhvfdcuoehkihhrihhllhesshhhuhhtvghmohhvrd
+    hnrghmvgeqnecuggftrfgrthhtvghrnhephfeigefhtdefhedtfedthefghedutddvueeh
+    tedttdehjeeukeejgeeuiedvkedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgv
+X-ME-Proxy: <xmx:P4f6YnGI2VNT7GjiOHS_Gyspw4YQcARcxED7cVg5Sj9RwhGTJO5Y3w>
+    <xmx:P4f6YnVipCb3skWE5POsaO3AgWPFIrs8_IlECy1RiSBLAMg-mvqeKg>
+    <xmx:P4f6YiOmNd93rKv7a0FXPLd6qEgC8NK9Nte8UtGgClMsJMZ-wzwJ7w>
+    <xmx:QIf6Yov8b9bvLS4MPFolQw0pxzbZDH1p68097R0hPgAnohb-x4RFIQ>
+Feedback-ID: ie3994620:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 13:46:18 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 10:46:17 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
-References: <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
- <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
- <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
- <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
+ 15 Aug 2022 13:49:51 -0400 (EDT)
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id D69D6104A4B; Mon, 15 Aug 2022 20:52:54 +0300 (+03)
+Date:   Mon, 15 Aug 2022 20:52:54 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv6 06/11] x86/mm: Provide arch_prctl() interface for LAM
+Message-ID: <20220815175254.jwogd3civiny6kas@box.shutemov.name>
+References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+ <20220815041803.17954-7-kirill.shutemov@linux.intel.com>
+ <YvpMDOeVVKIzJhKV@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815124748-mutt-send-email-mst@kernel.org>
+In-Reply-To: <YvpMDOeVVKIzJhKV@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 2022-08-15 12:50:52 -0400, Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 09:45:03AM -0700, Andres Freund wrote:
-> > Hi,
-> > 
-> > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
-> > > OK so this gives us a quick revert as a solution for now.
-> > > Next, I would appreciate it if you just try this simple hack.
-> > > If it crashes we either have a long standing problem in virtio
-> > > code or more likely a gcp bug where it can't handle smaller
-> > > rings than what device requestes.
-> > > Thanks!
-> > 
-> > I applied the below and the problem persists.
-> > 
-> > [...]
->
-> Okay!
-
-Just checking - I applied and tested this atop 6.0-rc1, correct? Or did you
-want me to test it with the 762faee5a267 reverted? I guess what you're trying
-to test if a smaller queue than what's requested you'd want to do so without
-the problematic patch applied...
-
-
-> And just to be 100% sure, can you try the following on top of 5.19:
-
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index 623906b4996c..6f4e54a618bc 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -208,6 +208,9 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
->  		return ERR_PTR(-EINVAL);
->  	}
->  
-> +	if (num > 1024)
-> +		num = 1024;
-> +
->  	info->msix_vector = msix_vec;
->  
->  	/* create the vring */
+On Mon, Aug 15, 2022 at 03:37:16PM +0200, Peter Zijlstra wrote:
+> On Mon, Aug 15, 2022 at 07:17:58AM +0300, Kirill A. Shutemov wrote:
 > 
-> -- 
+> > +static void enable_lam_func(void *mm)
+> > +{
+> > +	struct mm_struct *loaded_mm = this_cpu_read(cpu_tlbstate.loaded_mm);
+> > +	unsigned long lam_mask;
+> > +	unsigned long cr3;
+> > +
+> > +	if (loaded_mm != mm)
+> > +		return;
+> > +
+> > +	lam_mask = READ_ONCE(loaded_mm->context.lam_cr3_mask);
+> > +
+> > +	/* Update CR3 to get LAM active on the CPU */
+> > +	cr3 = __read_cr3();
+> > +	cr3 &= ~(X86_CR3_LAM_U48 | X86_CR3_LAM_U57);
+> > +	cr3 |= lam_mask;
+> > +	write_cr3(cr3);
+> > +	set_tlbstate_cr3_lam_mask(lam_mask);
+> > +}
+> > +
+> > +static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned long nr_bits)
+> > +{
+> > +	int ret = 0;
+> > +
+> > +	if (!cpu_feature_enabled(X86_FEATURE_LAM))
+> > +		return -ENODEV;
+> > +
+> > +	mutex_lock(&mm->context.lock);
+> > +
+> > +	/* Already enabled? */
+> > +	if (mm->context.lam_cr3_mask) {
+> > +		ret = -EBUSY;
+> > +		goto out;
+> > +	}
+> > +
+> > +	if (!nr_bits) {
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	} else if (nr_bits <= 6) {
+> > +		mm->context.lam_cr3_mask = X86_CR3_LAM_U57;
+> > +		mm->context.untag_mask =  ~GENMASK(62, 57);
+> > +	} else {
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	}
+> > +
+> > +	/* Make lam_cr3_mask and untag_mask visible on other CPUs */
+> > +	smp_mb();
+> 
+> smp_mb() doesn't make visible -- it is about ordering, what does it
+> order against that the below on_each_cpu_mask() doesn't already take
+> care of?
 
-Either way, I did this, and there are no issues that I could observe. No
-oopses, no broken networking. But:
+You are right it is redundant. I will drop it.
 
-To make sure it does something I added a debugging printk - which doesn't show
-up. I assume this is at a point at least earlyprintk should work (which I see
-getting enabled via serial)?
-
-Greetings,
-
-Andres Freund
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
