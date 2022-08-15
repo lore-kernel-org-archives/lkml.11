@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28890C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F5CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244105AbiHOSwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        id S244154AbiHOSws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbiHOSrC (ORCPT
+        with ESMTP id S243811AbiHOSrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AAF41D2C;
-        Mon, 15 Aug 2022 11:28:27 -0700 (PDT)
+        Mon, 15 Aug 2022 14:47:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF02C422D1;
+        Mon, 15 Aug 2022 11:28:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF84A61032;
-        Mon, 15 Aug 2022 18:28:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1660C433C1;
-        Mon, 15 Aug 2022 18:28:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC336B81062;
+        Mon, 15 Aug 2022 18:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2836BC43140;
+        Mon, 15 Aug 2022 18:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588105;
-        bh=FtRX3OJhVJqVloDCno8Lu3KgaykPiRF3SJcKLdU3mqc=;
+        s=korg; t=1660588108;
+        bh=a31WYOj3u0YxhhWWPGE8uaQmFHl6yu7OQLekdTH58ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e5iOl9tNHk7rzMOE25GTnJGk5K/QpfVZH5eVsSa5sh9rhovgtCAw9h91onw3E2jUr
-         xDs60VaMfeQbC4kP51yOTeO+BeUbc/hgXXO9Q6qP8egvCDiIyqIgE0w7JrlXdogcBM
-         Ku9YMfn65IKaj3MaKND+nWHkj+A+3sGtzVKoPE5o=
+        b=u+hawDHH3ocb5xzJ8ko/OWiNMzq6J4vgIVrEA2PBzm2sN0ok4HtbSE/HJJhkMBsX8
+         nGOUZAYot1FUGJwoUJ1VNn//7z3IdnIxEeIwthgmL9x1ITJfrpme/YQ4eGP9faxfFa
+         UYxlhqvhiphYZ+ruG1S9JVjZuTJcM94Wj50qE1UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 255/779] drm/shmem-helper: Export dedicated wrappers for GEM object functions
-Date:   Mon, 15 Aug 2022 19:58:19 +0200
-Message-Id: <20220815180348.237248530@linuxfoundation.org>
+Subject: [PATCH 5.15 290/779] media: hdpvr: fix error value returns in hdpvr_read
+Date:   Mon, 15 Aug 2022 19:58:54 +0200
+Message-Id: <20220815180349.674403989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,370 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit c7fbcb7149ff9321bbbcc93c9920de534ea8102c ]
+[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
 
-Wrap GEM SHMEM functions for struct drm_gem_object_funcs and update
-all callers. This will allow for an update of the public interfaces
-of the GEM SHMEM helper library.
+Error return values are supposed to be negative in hdpvr_read. Most
+error returns are currently handled via an unsigned integer "ret". When
+setting a negative error value to "ret", the value actually becomes a
+large positive value, because "ret" is unsigned. Later on, the "ret"
+value is returned. But as ssize_t is a 64-bit signed number, the error
+return value stays a large positive integer instead of a negative
+integer. This can cause an error value to be interpreted as the read
+size, which can cause a buffer overread for applications relying on the
+returned size.
 
-v2:
-	* fix docs for drm_gem_shmem_object_print_info()
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211108093149.7226-3-tzimmermann@suse.de
+Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_gem_shmem_helper.c  |  45 ++++-----
- drivers/gpu/drm/lima/lima_gem.c         |   8 +-
- drivers/gpu/drm/panfrost/panfrost_gem.c |  12 +--
- drivers/gpu/drm/v3d/v3d_bo.c            |  14 +--
- drivers/gpu/drm/virtio/virtgpu_object.c |  15 ++-
- include/drm/drm_gem_shmem_helper.h      | 120 ++++++++++++++++++++++++
- 6 files changed, 161 insertions(+), 53 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 15e53674ed54..05a924e29133 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -25,14 +25,14 @@
-  */
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 60e57e0f1927..fd7d2a9d0449 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -409,7 +409,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
+ 	struct hdpvr_device *dev = video_drvdata(file);
+ 	struct hdpvr_buffer *buf = NULL;
+ 	struct urb *urb;
+-	unsigned int ret = 0;
++	int ret = 0;
+ 	int rem, cnt;
  
- static const struct drm_gem_object_funcs drm_gem_shmem_funcs = {
--	.free = drm_gem_shmem_free_object,
--	.print_info = drm_gem_shmem_print_info,
--	.pin = drm_gem_shmem_pin,
--	.unpin = drm_gem_shmem_unpin,
--	.get_sg_table = drm_gem_shmem_get_sg_table,
--	.vmap = drm_gem_shmem_vmap,
--	.vunmap = drm_gem_shmem_vunmap,
--	.mmap = drm_gem_shmem_mmap,
-+	.free = drm_gem_shmem_object_free,
-+	.print_info = drm_gem_shmem_object_print_info,
-+	.pin = drm_gem_shmem_object_pin,
-+	.unpin = drm_gem_shmem_object_unpin,
-+	.get_sg_table = drm_gem_shmem_object_get_sg_table,
-+	.vmap = drm_gem_shmem_object_vmap,
-+	.vunmap = drm_gem_shmem_object_vunmap,
-+	.mmap = drm_gem_shmem_object_mmap,
- };
- 
- static struct drm_gem_shmem_object *
-@@ -116,8 +116,7 @@ EXPORT_SYMBOL_GPL(drm_gem_shmem_create);
-  * @obj: GEM object to free
-  *
-  * This function cleans up the GEM object state and frees the memory used to
-- * store the object itself. It should be used to implement
-- * &drm_gem_object_funcs.free.
-+ * store the object itself.
-  */
- void drm_gem_shmem_free_object(struct drm_gem_object *obj)
- {
-@@ -228,8 +227,7 @@ EXPORT_SYMBOL(drm_gem_shmem_put_pages);
-  * @obj: GEM object
-  *
-  * This function makes sure the backing pages are pinned in memory while the
-- * buffer is exported. It should only be used to implement
-- * &drm_gem_object_funcs.pin.
-+ * buffer is exported.
-  *
-  * Returns:
-  * 0 on success or a negative error code on failure.
-@@ -249,7 +247,7 @@ EXPORT_SYMBOL(drm_gem_shmem_pin);
-  * @obj: GEM object
-  *
-  * This function removes the requirement that the backing pages are pinned in
-- * memory. It should only be used to implement &drm_gem_object_funcs.unpin.
-+ * memory.
-  */
- void drm_gem_shmem_unpin(struct drm_gem_object *obj)
- {
-@@ -321,11 +319,8 @@ static int drm_gem_shmem_vmap_locked(struct drm_gem_shmem_object *shmem, struct
-  *       store.
-  *
-  * This function makes sure that a contiguous kernel virtual address mapping
-- * exists for the buffer backing the shmem GEM object.
-- *
-- * This function can be used to implement &drm_gem_object_funcs.vmap. But it can
-- * also be called by drivers directly, in which case it will hide the
-- * differences between dma-buf imported and natively allocated objects.
-+ * exists for the buffer backing the shmem GEM object. It hides the differences
-+ * between dma-buf imported and natively allocated objects.
-  *
-  * Acquired mappings should be cleaned up by calling drm_gem_shmem_vunmap().
-  *
-@@ -377,9 +372,8 @@ static void drm_gem_shmem_vunmap_locked(struct drm_gem_shmem_object *shmem,
-  * drm_gem_shmem_vmap(). The mapping is only removed when the use count drops to
-  * zero.
-  *
-- * This function can be used to implement &drm_gem_object_funcs.vmap. But it can
-- * also be called by drivers directly, in which case it will hide the
-- * differences between dma-buf imported and natively allocated objects.
-+ * This function hides the differences between dma-buf imported and natively
-+ * allocated objects.
-  */
- void drm_gem_shmem_vunmap(struct drm_gem_object *obj, struct dma_buf_map *map)
- {
-@@ -585,8 +579,7 @@ static const struct vm_operations_struct drm_gem_shmem_vm_ops = {
-  * @vma: VMA for the area to be mapped
-  *
-  * This function implements an augmented version of the GEM DRM file mmap
-- * operation for shmem objects. Drivers which employ the shmem helpers should
-- * use this function as their &drm_gem_object_funcs.mmap handler.
-+ * operation for shmem objects.
-  *
-  * Returns:
-  * 0 on success or a negative error code on failure.
-@@ -627,8 +620,6 @@ EXPORT_SYMBOL_GPL(drm_gem_shmem_mmap);
-  * @p: DRM printer
-  * @indent: Tab indentation level
-  * @obj: GEM object
-- *
-- * This implements the &drm_gem_object_funcs.info callback.
-  */
- void drm_gem_shmem_print_info(struct drm_printer *p, unsigned int indent,
- 			      const struct drm_gem_object *obj)
-@@ -647,9 +638,7 @@ EXPORT_SYMBOL(drm_gem_shmem_print_info);
-  * @obj: GEM object
-  *
-  * This function exports a scatter/gather table suitable for PRIME usage by
-- * calling the standard DMA mapping API. Drivers should not call this function
-- * directly, instead it should only be used as an implementation for
-- * &drm_gem_object_funcs.get_sg_table.
-+ * calling the standard DMA mapping API.
-  *
-  * Drivers who need to acquire an scatter/gather table for objects need to call
-  * drm_gem_shmem_get_pages_sgt() instead.
-diff --git a/drivers/gpu/drm/lima/lima_gem.c b/drivers/gpu/drm/lima/lima_gem.c
-index de62966243cd..6590e1cae4ee 100644
---- a/drivers/gpu/drm/lima/lima_gem.c
-+++ b/drivers/gpu/drm/lima/lima_gem.c
-@@ -206,12 +206,12 @@ static const struct drm_gem_object_funcs lima_gem_funcs = {
- 	.free = lima_gem_free_object,
- 	.open = lima_gem_object_open,
- 	.close = lima_gem_object_close,
--	.print_info = drm_gem_shmem_print_info,
-+	.print_info = drm_gem_shmem_object_print_info,
- 	.pin = lima_gem_pin,
--	.unpin = drm_gem_shmem_unpin,
--	.get_sg_table = drm_gem_shmem_get_sg_table,
-+	.unpin = drm_gem_shmem_object_unpin,
-+	.get_sg_table = drm_gem_shmem_object_get_sg_table,
- 	.vmap = lima_gem_vmap,
--	.vunmap = drm_gem_shmem_vunmap,
-+	.vunmap = drm_gem_shmem_object_vunmap,
- 	.mmap = lima_gem_mmap,
- };
- 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
-index 23377481f4e3..be1cc6579a71 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gem.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
-@@ -197,13 +197,13 @@ static const struct drm_gem_object_funcs panfrost_gem_funcs = {
- 	.free = panfrost_gem_free_object,
- 	.open = panfrost_gem_open,
- 	.close = panfrost_gem_close,
--	.print_info = drm_gem_shmem_print_info,
-+	.print_info = drm_gem_shmem_object_print_info,
- 	.pin = panfrost_gem_pin,
--	.unpin = drm_gem_shmem_unpin,
--	.get_sg_table = drm_gem_shmem_get_sg_table,
--	.vmap = drm_gem_shmem_vmap,
--	.vunmap = drm_gem_shmem_vunmap,
--	.mmap = drm_gem_shmem_mmap,
-+	.unpin = drm_gem_shmem_object_unpin,
-+	.get_sg_table = drm_gem_shmem_object_get_sg_table,
-+	.vmap = drm_gem_shmem_object_vmap,
-+	.vunmap = drm_gem_shmem_object_vunmap,
-+	.mmap = drm_gem_shmem_object_mmap,
- };
- 
- /**
-diff --git a/drivers/gpu/drm/v3d/v3d_bo.c b/drivers/gpu/drm/v3d/v3d_bo.c
-index 6a8731ab9d7d..b50677beb6ac 100644
---- a/drivers/gpu/drm/v3d/v3d_bo.c
-+++ b/drivers/gpu/drm/v3d/v3d_bo.c
-@@ -52,13 +52,13 @@ void v3d_free_object(struct drm_gem_object *obj)
- 
- static const struct drm_gem_object_funcs v3d_gem_funcs = {
- 	.free = v3d_free_object,
--	.print_info = drm_gem_shmem_print_info,
--	.pin = drm_gem_shmem_pin,
--	.unpin = drm_gem_shmem_unpin,
--	.get_sg_table = drm_gem_shmem_get_sg_table,
--	.vmap = drm_gem_shmem_vmap,
--	.vunmap = drm_gem_shmem_vunmap,
--	.mmap = drm_gem_shmem_mmap,
-+	.print_info = drm_gem_shmem_object_print_info,
-+	.pin = drm_gem_shmem_object_pin,
-+	.unpin = drm_gem_shmem_object_unpin,
-+	.get_sg_table = drm_gem_shmem_object_get_sg_table,
-+	.vmap = drm_gem_shmem_object_vmap,
-+	.vunmap = drm_gem_shmem_object_vunmap,
-+	.mmap = drm_gem_shmem_object_mmap,
- };
- 
- /* gem_create_object function for allocating a BO struct and doing
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
-index f648b0e24447..698431d233b8 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -116,15 +116,14 @@ static const struct drm_gem_object_funcs virtio_gpu_shmem_funcs = {
- 	.free = virtio_gpu_free_object,
- 	.open = virtio_gpu_gem_object_open,
- 	.close = virtio_gpu_gem_object_close,
--
--	.print_info = drm_gem_shmem_print_info,
-+	.print_info = drm_gem_shmem_object_print_info,
- 	.export = virtgpu_gem_prime_export,
--	.pin = drm_gem_shmem_pin,
--	.unpin = drm_gem_shmem_unpin,
--	.get_sg_table = drm_gem_shmem_get_sg_table,
--	.vmap = drm_gem_shmem_vmap,
--	.vunmap = drm_gem_shmem_vunmap,
--	.mmap = drm_gem_shmem_mmap,
-+	.pin = drm_gem_shmem_object_pin,
-+	.unpin = drm_gem_shmem_object_unpin,
-+	.get_sg_table = drm_gem_shmem_object_get_sg_table,
-+	.vmap = drm_gem_shmem_object_vmap,
-+	.vunmap = drm_gem_shmem_object_vunmap,
-+	.mmap = drm_gem_shmem_object_mmap,
- };
- 
- bool virtio_gpu_is_shmem(struct virtio_gpu_object *bo)
-diff --git a/include/drm/drm_gem_shmem_helper.h b/include/drm/drm_gem_shmem_helper.h
-index 6b47eb7d9f76..4199877ae588 100644
---- a/include/drm/drm_gem_shmem_helper.h
-+++ b/include/drm/drm_gem_shmem_helper.h
-@@ -137,6 +137,126 @@ void drm_gem_shmem_print_info(struct drm_printer *p, unsigned int indent,
- 			      const struct drm_gem_object *obj);
- 
- struct sg_table *drm_gem_shmem_get_sg_table(struct drm_gem_object *obj);
-+
-+/*
-+ * GEM object functions
-+ */
-+
-+/**
-+ * drm_gem_shmem_object_free - GEM object function for drm_gem_shmem_free_object()
-+ * @obj: GEM object to free
-+ *
-+ * This function wraps drm_gem_shmem_free_object(). Drivers that employ the shmem helpers
-+ * should use it as their &drm_gem_object_funcs.free handler.
-+ */
-+static inline void drm_gem_shmem_object_free(struct drm_gem_object *obj)
-+{
-+	drm_gem_shmem_free_object(obj);
-+}
-+
-+/**
-+ * drm_gem_shmem_object_print_info() - Print &drm_gem_shmem_object info for debugfs
-+ * @p: DRM printer
-+ * @indent: Tab indentation level
-+ * @obj: GEM object
-+ *
-+ * This function wraps drm_gem_shmem_print_info(). Drivers that employ the shmem helpers should
-+ * use this function as their &drm_gem_object_funcs.print_info handler.
-+ */
-+static inline void drm_gem_shmem_object_print_info(struct drm_printer *p, unsigned int indent,
-+						   const struct drm_gem_object *obj)
-+{
-+	drm_gem_shmem_print_info(p, indent, obj);
-+}
-+
-+/**
-+ * drm_gem_shmem_object_pin - GEM object function for drm_gem_shmem_pin()
-+ * @obj: GEM object
-+ *
-+ * This function wraps drm_gem_shmem_pin(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.pin handler.
-+ */
-+static inline int drm_gem_shmem_object_pin(struct drm_gem_object *obj)
-+{
-+	return drm_gem_shmem_pin(obj);
-+}
-+
-+/**
-+ * drm_gem_shmem_object_unpin - GEM object function for drm_gem_shmem_unpin()
-+ * @obj: GEM object
-+ *
-+ * This function wraps drm_gem_shmem_unpin(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.unpin handler.
-+ */
-+static inline void drm_gem_shmem_object_unpin(struct drm_gem_object *obj)
-+{
-+	drm_gem_shmem_unpin(obj);
-+}
-+
-+/**
-+ * drm_gem_shmem_object_get_sg_table - GEM object function for drm_gem_shmem_get_sg_table()
-+ * @obj: GEM object
-+ *
-+ * This function wraps drm_gem_shmem_get_sg_table(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.get_sg_table handler.
-+ *
-+ * Returns:
-+ * A pointer to the scatter/gather table of pinned pages or NULL on failure.
-+ */
-+static inline struct sg_table *drm_gem_shmem_object_get_sg_table(struct drm_gem_object *obj)
-+{
-+	return drm_gem_shmem_get_sg_table(obj);
-+}
-+
-+/*
-+ * drm_gem_shmem_object_vmap - GEM object function for drm_gem_shmem_vmap()
-+ * @obj: GEM object
-+ * @map: Returns the kernel virtual address of the SHMEM GEM object's backing store.
-+ *
-+ * This function wraps drm_gem_shmem_vmap(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.vmap handler.
-+ *
-+ * Returns:
-+ * 0 on success or a negative error code on failure.
-+ */
-+static inline int drm_gem_shmem_object_vmap(struct drm_gem_object *obj, struct dma_buf_map *map)
-+{
-+	return drm_gem_shmem_vmap(obj, map);
-+}
-+
-+/*
-+ * drm_gem_shmem_object_vunmap - GEM object function for drm_gem_shmem_vunmap()
-+ * @obj: GEM object
-+ * @map: Kernel virtual address where the SHMEM GEM object was mapped
-+ *
-+ * This function wraps drm_gem_shmem_vunmap(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.vunmap handler.
-+ */
-+static inline void drm_gem_shmem_object_vunmap(struct drm_gem_object *obj, struct dma_buf_map *map)
-+{
-+	drm_gem_shmem_vunmap(obj, map);
-+}
-+
-+/**
-+ * drm_gem_shmem_object_mmap - GEM object function for drm_gem_shmem_mmap()
-+ * @obj: GEM object
-+ * @vma: VMA for the area to be mapped
-+ *
-+ * This function wraps drm_gem_shmem_mmap(). Drivers that employ the shmem helpers should
-+ * use it as their &drm_gem_object_funcs.mmap handler.
-+ *
-+ * Returns:
-+ * 0 on success or a negative error code on failure.
-+ */
-+static inline int drm_gem_shmem_object_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
-+{
-+	return drm_gem_shmem_mmap(obj, vma);
-+}
-+
-+/*
-+ * Driver ops
-+ */
-+
- struct drm_gem_object *
- drm_gem_shmem_prime_import_sg_table(struct drm_device *dev,
- 				    struct dma_buf_attachment *attach,
+ 	if (*pos)
 -- 
 2.35.1
 
