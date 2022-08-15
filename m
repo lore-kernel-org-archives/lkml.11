@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48461C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F956C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240247AbiHOST0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
+        id S238925AbiHOST3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239866AbiHOSSW (ORCPT
+        with ESMTP id S233444AbiHOSSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:18:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE532B61D;
-        Mon, 15 Aug 2022 11:15:55 -0700 (PDT)
+        Mon, 15 Aug 2022 14:18:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D642B252;
+        Mon, 15 Aug 2022 11:15:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B79C961299;
-        Mon, 15 Aug 2022 18:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D2AC433D6;
-        Mon, 15 Aug 2022 18:15:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87F496129E;
+        Mon, 15 Aug 2022 18:15:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD4DC433D6;
+        Mon, 15 Aug 2022 18:15:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587354;
-        bh=musA/adu+OaoSS9A8oVAYwrN4pp+t9NhjPKiqJJdkMM=;
+        s=korg; t=1660587357;
+        bh=neXb9KTr9GRL9Tu9sQdl0k7yuZVxlsmpLVStMiQm83g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YSOaPG8zTh7BA0RMx7ErBvDM/9F9cab9E72hKUlNxJ+8k+aLIhlW8rwGKnKkCAnce
-         s80d0lZm8oTSb8VbPXVnVQWbST8ptPW67mo3tmto6FAltuYsE6IYKYOpIQ9l3b7yq1
-         pJ1QcixQv2LybZxoTCtXGh69YHAgjnHYolEuleYc=
+        b=y0vd2kyIdgqTdKTyO01wPA2cThlg6vl3WVUJvbyJuLcBfyVajOzPTBLU4/+Tjts4d
+         yDNoRhsFfeLJg5T+yIk2wjpqUyljkscILfD697hJJwyXo5a+Wwt03ljAkpc4SJ4spE
+         vTQ5/gkYZQGlEEWgPKQCNJGxiFuFMH9WLLK5YlLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 026/779] KVM: nVMX: Account for KVM reserved CR4 bits in consistency checks
-Date:   Mon, 15 Aug 2022 19:54:30 +0200
-Message-Id: <20220815180338.325363963@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 017/779] HID: hid-input: add Surface Go battery quirk
+Date:   Mon, 15 Aug 2022 19:54:21 +0200
+Message-Id: <20220815180337.929205479@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,45 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit ca58f3aa53d165afe4ab74c755bc2f6d168617ac upstream.
+commit db925d809011c37b246434fdce71209fc2e6c0c2 upstream.
 
-Check that the guest (L2) and host (L1) CR4 values that would be loaded
-by nested VM-Enter and VM-Exit respectively are valid with respect to
-KVM's (L0 host) allowed CR4 bits.  Failure to check KVM reserved bits
-would allow L1 to load an illegal CR4 (or trigger hardware VM-Fail or
-failed VM-Entry) by massaging guest CPUID to allow features that are not
-supported by KVM.  Amusingly, KVM itself is an accomplice in its doom, as
-KVM adjusts L1's MSR_IA32_VMX_CR4_FIXED1 to allow L1 to enable bits for
-L2 based on L1's CPUID model.
+Similar to the Surface Go (1), the (Elantech) touchscreen/digitizer in
+the Surface Go 2 mistakenly reports the battery of the stylus. Instead
+of over the touchscreen device, battery information is provided via
+bluetooth and the touchscreen device reports an empty battery.
 
-Note, although nested_{guest,host}_cr4_valid() are _currently_ used if
-and only if the vCPU is post-VMXON (nested.vmxon == true), that may not
-be true in the future, e.g. emulating VMXON has a bug where it doesn't
-check the allowed/required CR0/CR4 bits.
+Apply the HID_BATTERY_QUIRK_IGNORE quirk to ignore this battery and
+prevent the erroneous low battery warnings.
 
 Cc: stable@vger.kernel.org
-Fixes: 3899152ccbf4 ("KVM: nVMX: fix checks on CR{0,4} during virtual VMX operation")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/hid-ids.h   |    1 +
+ drivers/hid/hid-input.c |    2 ++
+ 2 files changed, 3 insertions(+)
 
---- a/arch/x86/kvm/vmx/nested.h
-+++ b/arch/x86/kvm/vmx/nested.h
-@@ -280,7 +280,8 @@ static inline bool nested_cr4_valid(stru
- 	u64 fixed0 = to_vmx(vcpu)->nested.msrs.cr4_fixed0;
- 	u64 fixed1 = to_vmx(vcpu)->nested.msrs.cr4_fixed1;
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -398,6 +398,7 @@
+ #define USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN	0x2544
+ #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
+ #define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
++#define I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN	0x2A1C
  
--	return fixed_bits_valid(val, fixed0, fixed1);
-+	return fixed_bits_valid(val, fixed0, fixed1) &&
-+	       __kvm_is_valid_cr4(vcpu, val);
- }
+ #define USB_VENDOR_ID_ELECOM		0x056e
+ #define USB_DEVICE_ID_ELECOM_BM084	0x0061
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -333,6 +333,8 @@ static const struct hid_device_id hid_ba
+ 	  HID_BATTERY_QUIRK_IGNORE },
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
+ 	  HID_BATTERY_QUIRK_IGNORE },
++	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN),
++	  HID_BATTERY_QUIRK_IGNORE },
+ 	{}
+ };
  
- /* No difference in the restrictions on guest and host CR4 in VMX operation. */
 
 
