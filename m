@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5E7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE8C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350759AbiHOWkk (ORCPT
+        id S1350851AbiHOWkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
+        Mon, 15 Aug 2022 18:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350190AbiHOWfz (ORCPT
+        with ESMTP id S1350452AbiHOWgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:35:55 -0400
+        Mon, 15 Aug 2022 18:36:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5900371BF1;
-        Mon, 15 Aug 2022 12:49:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BF35A2CC;
+        Mon, 15 Aug 2022 12:50:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CB52B8114D;
-        Mon, 15 Aug 2022 19:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E22CC433D6;
-        Mon, 15 Aug 2022 19:49:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6299BB80EAD;
+        Mon, 15 Aug 2022 19:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8ABFC433D6;
+        Mon, 15 Aug 2022 19:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592967;
-        bh=MNK7u5dyCfo7vAH0daYRM5AOYYJy+wYIqzg5aLVcy9A=;
+        s=korg; t=1660593014;
+        bh=trG8oyJvYdJGnFL4oAnns9pnq+hwSnbarSZgSlzOSAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WOZmHCspgGrBey04IOvCquv4ytgK9e8vWLYBTP5qQ2JWxEhDxNcvMCfJHcz3xjASw
-         c6AXFa0JNAFoADVH5urdlHfaXNJMFMzEC9617mpvapCRIebF1lo+6a7FA4NIeUIpCI
-         ODDsIX+Oe/Vrh5Y4GT7WJZhk4YJLYmnSnmM0FFsM=
+        b=ki27J9mOd0GfVFehM2nCgArNcaIS6EJWUvWYelBJZeLB5r2B336+iqSzYM1oqxOQU
+         gyQttrh5nI1yd5juUltruugVa43FA/PhysgBa6YIY/Fcn5UwRFWHu3CzuRR7JxS4sO
+         pjoTv00s8NRwXzxTFbGrEwjePDeXd/re7MIhW+pI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0873/1095] tty: n_gsm: fix flow control handling in tx path
-Date:   Mon, 15 Aug 2022 20:04:32 +0200
-Message-Id: <20220815180505.489476843@linuxfoundation.org>
+Subject: [PATCH 5.19 0200/1157] spi: spi-altera-dfl: Fix an error handling path
+Date:   Mon, 15 Aug 2022 19:52:36 +0200
+Message-Id: <20220815180447.683159381@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 59ff0680ecbfec742b1e0381e7cc46b41eb06647 ]
+[ Upstream commit 8e3ca32f46994e74b7f43c57731150b2aedb2630 ]
 
-The current implementation constipates all transmission paths during flow
-control except for flow control frames. However, these may not be located
-at the beginning of the transmission queue of the control channel.
-Ensure that flow control frames in the transmission queue for the control
-channel are always handled even if constipated by skipping through other
-messages.
+The spi_alloc_master() call is not undone in all error handling paths.
+Moreover, there is no .remove function to release the allocated memory.
 
-Fixes: 0af021678d5d ("tty: n_gsm: fix deadlock and link starvation in outgoing data path")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-3-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In order to fix both this issues, switch to devm_spi_alloc_master().
+
+This allows further simplification of the probe.
+
+Fixes: ba2fc167e944 ("spi: altera: Add DFL bus driver for Altera API Controller")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/0607bb59f4073f86abe5c585d35245aef0b045c6.1653805901.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-altera-dfl.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 8b8c7312935f..7749de4f269a 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -891,7 +891,7 @@ static int gsm_data_kick(struct gsm_mux *gsm)
- 	/* Serialize control messages and control channel messages first */
- 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_ctrl_list, list) {
- 		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
--			return -EAGAIN;
-+			continue;
- 		ret = gsm_send_packet(gsm, msg);
- 		switch (ret) {
- 		case -ENOSPC:
+diff --git a/drivers/spi/spi-altera-dfl.c b/drivers/spi/spi-altera-dfl.c
+index ca40923258af..596e181ae136 100644
+--- a/drivers/spi/spi-altera-dfl.c
++++ b/drivers/spi/spi-altera-dfl.c
+@@ -128,9 +128,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	struct spi_master *master;
+ 	struct altera_spi *hw;
+ 	void __iomem *base;
+-	int err = -ENODEV;
++	int err;
+ 
+-	master = spi_alloc_master(dev, sizeof(struct altera_spi));
++	master = devm_spi_alloc_master(dev, sizeof(struct altera_spi));
+ 	if (!master)
+ 		return -ENOMEM;
+ 
+@@ -159,10 +159,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	altera_spi_init_master(master);
+ 
+ 	err = devm_spi_register_master(dev, master);
+-	if (err) {
+-		dev_err(dev, "%s failed to register spi master %d\n", __func__, err);
+-		goto exit;
+-	}
++	if (err)
++		return dev_err_probe(dev, err, "%s failed to register spi master\n",
++				     __func__);
+ 
+ 	if (dfl_dev->revision == FME_FEATURE_REV_MAX10_SPI_N5010)
+ 		strscpy(board_info.modalias, "m10-n5010", SPI_NAME_SIZE);
+@@ -179,9 +178,6 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	}
+ 
+ 	return 0;
+-exit:
+-	spi_master_put(master);
+-	return err;
+ }
+ 
+ static const struct dfl_device_id dfl_spi_altera_ids[] = {
 -- 
 2.35.1
 
