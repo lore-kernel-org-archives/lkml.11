@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B845CC2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF3AC2BB47
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233294AbiHPEuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S233331AbiHPEu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbiHPEq6 (ORCPT
+        with ESMTP id S232289AbiHPEq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:46:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32126AFAC9;
-        Mon, 15 Aug 2022 13:43:16 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738A2A2208;
+        Mon, 15 Aug 2022 13:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1060611FA;
-        Mon, 15 Aug 2022 20:43:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F326C433C1;
-        Mon, 15 Aug 2022 20:43:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C3A74CE12E9;
+        Mon, 15 Aug 2022 20:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBCDC433D6;
+        Mon, 15 Aug 2022 20:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596195;
-        bh=keQl0RqzTCXOjfuUaTm3QR3v50m15zFuKa0dQ4j6y1c=;
+        s=korg; t=1660596192;
+        bh=05K6e8DDsGvu0xMBaRum+fYSQ7upnYPuRy7qrtX142g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMu6YL118bBdmoqL25LOIcrsoIjYKbWjJnJwb12zY7XS4m08C1ueVVGsPwOpxTYgu
-         +XK/1ONn8sNvnkP+fZSzsCv/ilefz9JXMCYqj4KQyisSy8bbAfbHzjbf948kopKbSD
-         tKymAJCVYQP4G5nDvqlVm0RvVjCSwHv2S6eN2JYA=
+        b=g2TRFBWoZLO2g8vy0UCxYJ1T3YCAfiZzwkdMN7BRvzlm20rgETjS2WiuY6G8SAiPD
+         rN89gfgtfzqXOCXowzy+k1autXLxzYbauQLawTxZoMDMMBoWHVgq7pjz2fCrwb5v0X
+         1tKR+ED5MZrwA2jrqhhJNXhl7PX35liXSl+wZm1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guo Mengqi <guomengqi3@huawei.com>,
+        stable@vger.kernel.org, Sunil V L <sunilvl@ventanamicro.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1001/1157] serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
-Date:   Mon, 15 Aug 2022 20:05:57 +0200
-Message-Id: <20220815180519.824818825@linuxfoundation.org>
+Subject: [PATCH 5.19 0974/1157] riscv: spinwait: Fix hartid variable type
+Date:   Mon, 15 Aug 2022 20:05:30 +0200
+Message-Id: <20220815180518.681002556@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,52 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Mengqi <guomengqi3@huawei.com>
+From: Sunil V L <sunilvl@ventanamicro.com>
 
-[ Upstream commit b9f1736e475dba0d6da48fdcb831248ab1597886 ]
+[ Upstream commit c029e487e7c00e5594a4ae946952605db34e359b ]
 
-The error path when get clock frequency fails in bcm2835aux_serial
-driver does not correctly disable the clock.
+The hartid variable is of type int but compared with
+ULONG_MAX(INVALID_HARTID). This issue is fixed by changing
+the hartid variable type to unsigned long.
 
-This flaw was found using a static analysis tool "Hulk Robot", which
-reported the following warning when analyzing linux-next/master:
+Fixes: c78f94f35cf6 ("RISC-V: Use __cpu_up_stack/task_pointer only for spinwait method")
 
-    drivers/tty/serial/8250/8250_bcm2835aux.c:
-    warning: clk_disable_unprepare_missing.cocci
-
-The cocci script checks for the existence of clk_disable_unprepare()
-paired with clk_prepare_enable().
-
-Add the missing clk_disable_unprepare() to the error path.
-
-Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
-Link: https://lore.kernel.org/r/20220715023312.37808-1-guomengqi3@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+Link: https://lore.kernel.org/r/20220527051743.2829940-3-sunilvl@ventanamicro.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/riscv/kernel/cpu_ops_spinwait.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-index 2a1226a78a0c..21939bb44613 100644
---- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-+++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-@@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 	uartclk = clk_get_rate(data->clk);
- 	if (!uartclk) {
- 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
--		if (ret)
--			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+		if (ret) {
-+			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+			goto dis_clk;
-+		}
- 	}
+diff --git a/arch/riscv/kernel/cpu_ops_spinwait.c b/arch/riscv/kernel/cpu_ops_spinwait.c
+index c662a7cf10a4..d98d19226b5f 100644
+--- a/arch/riscv/kernel/cpu_ops_spinwait.c
++++ b/arch/riscv/kernel/cpu_ops_spinwait.c
+@@ -20,7 +20,7 @@ void *__cpu_spinwait_task_pointer[NR_CPUS] __section(".data");
+ static void cpu_update_secondary_bootdata(unsigned int cpuid,
+ 				   struct task_struct *tidle)
+ {
+-	int hartid = cpuid_to_hartid_map(cpuid);
++	unsigned long hartid = cpuid_to_hartid_map(cpuid);
  
- 	/* the HW-clock divider for bcm2835aux is 8,
+ 	/*
+ 	 * The hartid must be less than NR_CPUS to avoid out-of-bound access
+@@ -29,7 +29,7 @@ static void cpu_update_secondary_bootdata(unsigned int cpuid,
+ 	 * spinwait booting is not the recommended approach for any platforms
+ 	 * booting Linux in S-mode and can be disabled in the future.
+ 	 */
+-	if (hartid == INVALID_HARTID || hartid >= NR_CPUS)
++	if (hartid == INVALID_HARTID || hartid >= (unsigned long) NR_CPUS)
+ 		return;
+ 
+ 	/* Make sure tidle is updated */
 -- 
 2.35.1
 
