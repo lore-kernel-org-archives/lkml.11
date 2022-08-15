@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D449CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BEA6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243318AbiHOXYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S244694AbiHOXYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241501AbiHOXTM (ORCPT
+        with ESMTP id S245427AbiHOXTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:19:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642F514A1D6;
-        Mon, 15 Aug 2022 13:03:58 -0700 (PDT)
+        Mon, 15 Aug 2022 19:19:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E8514A1DF;
+        Mon, 15 Aug 2022 13:04:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E785D612E7;
-        Mon, 15 Aug 2022 20:03:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4CEC433C1;
-        Mon, 15 Aug 2022 20:03:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 314B3612DF;
+        Mon, 15 Aug 2022 20:04:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07189C433D6;
+        Mon, 15 Aug 2022 20:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593837;
-        bh=yRT4IHXH0eUR1dS7EIU5gkV3QRpYBYJ2aPTxUU5DRiw=;
+        s=korg; t=1660593840;
+        bh=kdQprRVNjt2FpuiOyeH0A+5fDsgo/qokRp7Jrnl5duM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVUGZmLodEhrjLjZN9P/PqVzqZrd7k6tbrRcym8FOBkqwOxbArfTJAW2elYz+Nh6u
-         9fYf1+EouqzZA6OI3leaSyQ5Leq52567X5NCm4uxpdpUNQHgILeuvK4eiPZM1O4I3u
-         OY+u3jQe28hi5NIHLdPwFOaKzeEQbbEkcn7JDdNI=
+        b=kbP9ZGM5ie30XzDkNojqtZIr2SS5ZyHynojoxels9lmZunVw2+Jzo3PS2r9UX9NGK
+         GSZDAw1GA+00n6dsoaA6mu+NjGjNso3tzugk2JWgHAyQ5hs4fXSwVJIwJCjK5zaamR
+         8iND2vzGtZ0Tkn6xBrohSFfnowoA2TWaZmS2Y9As=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Ansuel Marangi <ansuelsmth@gmail.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0333/1157] ath11k: fix missing skb drop on htc_tx_completion error
-Date:   Mon, 15 Aug 2022 19:54:49 +0200
-Message-Id: <20220815180452.977503852@linuxfoundation.org>
+Subject: [PATCH 5.18 1014/1095] btrfs: fix error handling of fallback uncompress write
+Date:   Mon, 15 Aug 2022 20:06:53 +0200
+Message-Id: <20220815180511.050514969@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit e5646fe3b7ef739c392e59da7db6adf5e1fdef42 ]
+[ Upstream commit 71aa147b4d9d81fa65afa6016f50d7818b64a54f ]
 
-On htc_tx_completion error the skb is not dropped. This is wrong since
-the completion_handler logic expect the skb to be consumed anyway even
-when an error is triggered. Not freeing the skb on error is a memory
-leak since the skb won't be freed anywere else. Correctly free the
-packet on eid >= ATH11K_HTC_EP_COUNT before returning.
+When cow_file_range() fails in the middle of the allocation loop, it
+unlocks the pages but leaves the ordered extents intact. Thus, we need
+to call btrfs_cleanup_ordered_extents() to finish the created ordered
+extents.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+Also, we need to call end_extent_writepage() if locked_page is available
+because btrfs_cleanup_ordered_extents() never processes the region on
+the locked_page.
 
-Fixes: f951380a6022 ("ath11k: Disabling credit flow for WMI path")
-Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220528142516.20819-2-ansuelsmth@gmail.com
+Furthermore, we need to set the mapping as error if locked_page is
+unavailable before unlocking the pages, so that the errno is properly
+propagated to the user space.
+
+CC: stable@vger.kernel.org # 5.18+
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/htc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/btrfs/inode.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/htc.c b/drivers/net/wireless/ath/ath11k/htc.c
-index 069c29a4fac7..ca3aedc0252d 100644
---- a/drivers/net/wireless/ath/ath11k/htc.c
-+++ b/drivers/net/wireless/ath/ath11k/htc.c
-@@ -258,8 +258,10 @@ void ath11k_htc_tx_completion_handler(struct ath11k_base *ab,
- 	u8 eid;
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 54afa9e538c5..1e404476fe6a 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -891,8 +891,18 @@ static int submit_uncompressed_range(struct btrfs_inode *inode,
+ 		goto out;
+ 	}
+ 	if (ret < 0) {
+-		if (locked_page)
++		btrfs_cleanup_ordered_extents(inode, locked_page, start, end - start + 1);
++		if (locked_page) {
++			const u64 page_start = page_offset(locked_page);
++			const u64 page_end = page_start + PAGE_SIZE - 1;
++
++			btrfs_page_set_error(inode->root->fs_info, locked_page,
++					     page_start, PAGE_SIZE);
++			set_page_writeback(locked_page);
++			end_page_writeback(locked_page);
++			end_extent_writepage(locked_page, ret, page_start, page_end);
+ 			unlock_page(locked_page);
++		}
+ 		goto out;
+ 	}
  
- 	eid = ATH11K_SKB_CB(skb)->eid;
--	if (eid >= ATH11K_HTC_EP_COUNT)
-+	if (eid >= ATH11K_HTC_EP_COUNT) {
-+		dev_kfree_skb_any(skb);
- 		return;
+@@ -1341,9 +1351,12 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 	 * However, in case of unlock == 0, we still need to unlock the pages
+ 	 * (except @locked_page) to ensure all the pages are unlocked.
+ 	 */
+-	if (!unlock && orig_start < start)
++	if (!unlock && orig_start < start) {
++		if (!locked_page)
++			mapping_set_error(inode->vfs_inode.i_mapping, ret);
+ 		extent_clear_unlock_delalloc(inode, orig_start, start - 1,
+ 					     locked_page, 0, page_ops);
 +	}
  
- 	ep = &htc->endpoint[eid];
- 	spin_lock_bh(&htc->tx_lock);
+ 	/*
+ 	 * For the range (2). If we reserved an extent for our delalloc range
 -- 
 2.35.1
 
