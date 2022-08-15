@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98359C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77DEC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350971AbiHOWsJ (ORCPT
+        id S1344794AbiHOWsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        Mon, 15 Aug 2022 18:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350518AbiHOWoa (ORCPT
+        with ESMTP id S1351557AbiHOWpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:44:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B1133A62;
-        Mon, 15 Aug 2022 12:52:37 -0700 (PDT)
+        Mon, 15 Aug 2022 18:45:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC7F13420E;
+        Mon, 15 Aug 2022 12:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D38461206;
-        Mon, 15 Aug 2022 19:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFF6C433D6;
-        Mon, 15 Aug 2022 19:52:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A489B80EAB;
+        Mon, 15 Aug 2022 19:52:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46043C433C1;
+        Mon, 15 Aug 2022 19:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593156;
-        bh=ELguIUk4SGcF73osMAg65DOO9y8WrYs9XvjG4oFTOso=;
+        s=korg; t=1660593159;
+        bh=cvYEl2v7R6jrqGqPloGDNravZIBuaPQgB2qMj5zfhmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hop7YbLBhmkzSKN6N8WRGefhwpgZZXKSrLtD6HxYzYpNKMlUvSH13gF2XlBeGQLH4
-         /bGlMH+SoVYgRgSqe8LBea8vfAPSB4/xi3Oi3eKsqGani5u5adwj/QVmNNaexDqj0g
-         qBzX4aGXFdXK1t6y3O3wf6EDbSiIHB0DTU4XTsPc=
+        b=TMeLf7SFd5y3m5GzKcEr0xO8vvZk0yvPoO+H26m4hXsLLlRjIHthYn6bEUNNAprHF
+         4ar2LZI81RSeLmqcmbnI0kHAu334JT27Dp+MRbgalC5weIgUcSWN0QUzYyHCayccEN
+         Td+EyXvNDpA+3Qhj42WI15gd99zZzAyS0e4g1mK0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0904/1095] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
-Date:   Mon, 15 Aug 2022 20:05:03 +0200
-Message-Id: <20220815180506.699055084@linuxfoundation.org>
+Subject: [PATCH 5.19 0223/1157] soc: fsl: guts: machine variable might be unset
+Date:   Mon, 15 Aug 2022 19:52:59 +0200
+Message-Id: <20220815180448.510675220@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
+[ Upstream commit ab3f045774f704c4e7b6a878102f4e9d4ae7bc74 ]
 
-find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
-So 'idx' should be tested with ">=" or the test can't match.
+If both the model and the compatible properties are missing, then
+machine will not be set. Initialize it with NULL.
 
-Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 34c1c21e94ac ("soc: fsl: fix section mismatch build warnings")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/qdsp6/q6adm.c | 2 +-
+ drivers/soc/fsl/guts.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
-index 72c5719f1d25..a0678e8cf20a 100644
---- a/sound/soc/qcom/qdsp6/q6adm.c
-+++ b/sound/soc/qcom/qdsp6/q6adm.c
-@@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
- 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
- 				  MAX_COPPS_PER_PORT);
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 5ed2fc1c53a0..be18d46c7b0f 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -140,7 +140,7 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	struct device_node *root, *np = pdev->dev.of_node;
+ 	struct device *dev = &pdev->dev;
+ 	const struct fsl_soc_die_attr *soc_die;
+-	const char *machine;
++	const char *machine = NULL;
+ 	u32 svr;
  
--	if (idx > MAX_COPPS_PER_PORT)
-+	if (idx >= MAX_COPPS_PER_PORT)
- 		return ERR_PTR(-EBUSY);
- 
- 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+ 	/* Initialize guts */
 -- 
 2.35.1
 
