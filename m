@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20469C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B1AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344335AbiHOTkH (ORCPT
+        id S1344346AbiHOTkK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
+        Mon, 15 Aug 2022 15:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344437AbiHOTgk (ORCPT
+        with ESMTP id S1344493AbiHOTgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:36:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A615B30F6B;
-        Mon, 15 Aug 2022 11:46:07 -0700 (PDT)
+        Mon, 15 Aug 2022 15:36:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F180D3121B;
+        Mon, 15 Aug 2022 11:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 514D5B81071;
-        Mon, 15 Aug 2022 18:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD77C433C1;
-        Mon, 15 Aug 2022 18:46:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80C7F611EC;
+        Mon, 15 Aug 2022 18:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFCB2C433B5;
+        Mon, 15 Aug 2022 18:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589165;
-        bh=NQ/7lkw2mnIkkDW+T812q2jdHGkwZYAPQVpi7RPSVnU=;
+        s=korg; t=1660589171;
+        bh=cRlLFjAVgnrgy41c8V3O5sjZBDaCSnMXi0/hnIxRhHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xhvZxD6JBY4IRjD7gSluDFw0MGyDBvRYoWzr2ATCj5LCqTa3tdN3b6WhWwJzlM2jS
-         bX2Jesw0afpIV/pofEJsl8H9baGSiNT3RyCre26OdFGBfwEnRzo8RH6WGyLCH7pwre
-         hHyfZf00GtFO4jKHYqzdvUwT0fgsWcqlqMkGgVMc=
+        b=sG0lRVrTTPjT3TmXGIWDQaTbzay3DUxlUYOwPn/Ex0DH8Mp0DXkbbijk5holPtN8J
+         OyYDvxbaDS7lIXss2ONas5PYGtja7edCx0B9gg6rK6tzWA50mHWonoMFWiTxG38MSW
+         L1VHrvvgMaZlqH8qLjtCN9LqTzhxAW8poL04bGM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 592/779] ASoC: imx-card: Fix DSD/PDM mclk frequency
-Date:   Mon, 15 Aug 2022 20:03:56 +0200
-Message-Id: <20220815180402.631828875@linuxfoundation.org>
+Subject: [PATCH 5.15 636/779] powerpc/32: Do not allow selection of e5500 or e6500 CPUs on PPC32
+Date:   Mon, 15 Aug 2022 20:04:40 +0200
+Message-Id: <20220815180404.529163114@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,57 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit c0fabd12a8570cb932f13d9388f3d887ad44369b ]
+[ Upstream commit 9be013b2a9ecb29b5168e4b9db0e48ed53acf37c ]
 
-The DSD/PDM rate not only DSD64/128/256/512, which are the
-multiple rate of 44.1kHz,  but also support the multiple
-rate of 8kHz, so can't force all mclk frequency to be
-22579200Hz, need to assign the frequency according to
-rate.
+Commit 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+enlarged the CPU selection logic to PPC32 by removing depend to
+PPC64, and failed to restrict that depend to E5500_CPU and E6500_CPU.
+Fortunately that got unnoticed because -mcpu=8540 will override the
+-mcpu=e500mc64 or -mpcu=e6500 as they are ealier, but that's
+fragile and may no be right in the future.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1657100575-8261-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Add back the depend PPC64 on E5500_CPU and E6500_CPU.
+
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-card.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/Kconfig.cputype | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index 55bc1bb0dbbd..b28b30c69a3f 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -17,6 +17,9 @@
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index 87a95cbff2f3..81f8c9634832 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -170,11 +170,11 @@ config POWER9_CPU
  
- #include "fsl_sai.h"
+ config E5500_CPU
+ 	bool "Freescale e5500"
+-	depends on E500
++	depends on PPC64 && E500
  
-+#define IMX_CARD_MCLK_22P5792MHZ  22579200
-+#define IMX_CARD_MCLK_24P576MHZ   24576000
-+
- enum codec_type {
- 	CODEC_DUMMY = 0,
- 	CODEC_AK5558 = 1,
-@@ -353,9 +356,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
- 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
- 	else
- 		mclk_freq = params_rate(params) * slots * slot_width;
--	/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
--	if (format_is_dsd(params))
--		mclk_freq = 22579200;
-+
-+	if (format_is_dsd(params)) {
-+		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
-+		if (!(params_rate(params) % 11025))
-+			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
-+		else
-+			mclk_freq = IMX_CARD_MCLK_24P576MHZ;
-+	}
+ config E6500_CPU
+ 	bool "Freescale e6500"
+-	depends on E500
++	depends on PPC64 && E500
  
- 	ret = snd_soc_dai_set_sysclk(cpu_dai, link_data->cpu_sysclk_id, mclk_freq,
- 				     SND_SOC_CLOCK_OUT);
+ config 860_CPU
+ 	bool "8xx family"
 -- 
 2.35.1
 
