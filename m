@@ -2,253 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDE3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A7AC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240851AbiHOEPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 00:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
+        id S231124AbiHOESQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 00:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240369AbiHOEPW (ORCPT
+        with ESMTP id S230237AbiHOESO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 00:15:22 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259AE14082
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660536912; x=1692072912;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ds9Ls73+GWfzKa4/92sftksfxawt2Atz4orB+uMy8Go=;
-  b=fTyW3NyUKxRNDn80gH5c+6bBcs0MkJwUhE8vNsdjNO8cvnb+hImYrfLw
-   DcSn88hkFJTWPYWevZkmPw2Ew6IEvQDuGXeRsS9KU9EbudsDH3zSCa/qq
-   q60IwTT9PxtaG13GYOQ5HOvivFAPxPTaZvqLBAcB/U69N2F+/YDhMMiHP
-   A7DduYuFJq2HPb5VuCn26J/44yFZZqstFqn5/y3CGaLJM7ERvcwQye2pw
-   mZzVelQGhYZ/y3twtCIvj7YYsqVW77nGQ6ZYbIyMoWnZlhV4tOn7heM+v
-   nwDXVMvIAN+E07bGTx+RJMcPMp//HlsmgAWFIzfDm9FmN7W0P5WsUrsKU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="289455874"
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="289455874"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:11 -0700
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="557160547"
-Received: from dmalka-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.249.42.26])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:07 -0700
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 71CB2104A6C; Mon, 15 Aug 2022 07:18:04 +0300 (+03)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv6 07/11] x86: Expose untagging mask in /proc/$PID/arch_status
-Date:   Mon, 15 Aug 2022 07:17:59 +0300
-Message-Id: <20220815041803.17954-8-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
-References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+        Mon, 15 Aug 2022 00:18:14 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0146260C2
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:18:13 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id o3so5478281ple.5
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:18:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=E+SbdWKle26nrNTvjrwjORRMK5B3fUHqQoLgOh5gagc=;
+        b=YCiOrOI4t57JroaK+DvgxUd40PqFb566csy0KZpoHxIAjL/vPPk6J1m/YLVAQJgafF
+         MBc/BEm1UbTvtrczItUPUi4//hLIjk/GfM4ooAEfFoZVAo14khCxzIa/7Xg2+FZDNVLe
+         Wc5wsr2o66GeVKuXZe7WjOqecyDFXKE0pAno4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=E+SbdWKle26nrNTvjrwjORRMK5B3fUHqQoLgOh5gagc=;
+        b=XF4busZF12fJkh6rZFE+LUUdMLn50SKBC6MI64EFIVWnk0iIXDzA9A8wGFuo13h9rM
+         3hZYbjbOnY/3k7w8TRxIXos7yjS7EqtlKm6B0ig2oYcRleesmFg1HCtDscKc+0T1hBJF
+         BeW8XdbSR4vMYCwYskr3X6Jvoi3hoTs4ZCTTQb8YchdjIUt2cugDSyrpb6J4ST/M4eru
+         3AxOyL93LFRcBoO5TETtTBorybA4P+XHrgldAAK8jjeANWwD78xijnRIV60dhRFZZWA4
+         wRR4iyIQfGkwdRlH6vlCQgfj2ImX+pphQsLtuHF1L9/ifF3I7iQS/hEyXYjf/+G6yHK4
+         bwkA==
+X-Gm-Message-State: ACgBeo3gQyaGV/MdXNXinUn1AG2Rp23cszXKP2cjx3F1j9MXPbAPEoDV
+        +dcKZLOyu2mtDafC/CYWIe+wtw==
+X-Google-Smtp-Source: AA6agR6GXAxP7HE9fOcv7/Zk0pGt69h2rxMcVW4JHZ34d0rGzZis2n5ZicCc9p418kS+2Tm2EbU2Cw==
+X-Received: by 2002:a17:90b:3807:b0:1f4:ecf7:5987 with SMTP id mq7-20020a17090b380700b001f4ecf75987mr15932324pjb.13.1660537092524;
+        Sun, 14 Aug 2022 21:18:12 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
+        by smtp.gmail.com with ESMTPSA id 6-20020a170902c20600b0016d2d0ce376sm6114433pll.215.2022.08.14.21.18.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 21:18:11 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v1] arm64: dts: qcom: sc7280: Use "PP1800_L2C" as the DMIC power source.
+Date:   Mon, 15 Aug 2022 04:18:04 +0000
+Message-Id: <20220815041804.583181-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a line in /proc/$PID/arch_status to report untag_mask. It can be
-used to find out LAM status of the process from the outside. It is
-useful for debuggers.
+Use "PP1800_L2C" as the DMIC power source.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Tested-by: Alexander Potapenko <glider@google.com>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
 ---
- arch/x86/include/asm/mmu_context.h | 10 +++++
- arch/x86/kernel/Makefile           |  2 +
- arch/x86/kernel/fpu/xstate.c       | 47 -----------------------
- arch/x86/kernel/proc.c             | 60 ++++++++++++++++++++++++++++++
- 4 files changed, 72 insertions(+), 47 deletions(-)
- create mode 100644 arch/x86/kernel/proc.c
+This patch depends on:
+arm64: dts: qcom: sc7280: Add herobrine-villager-r1. [1]
 
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index 5bd3d46685dc..b0e9ea23758b 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -103,6 +103,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- 	mm->context.untag_mask = oldmm->context.untag_mask;
- }
- 
-+static inline unsigned long mm_untag_mask(struct mm_struct *mm)
-+{
-+	return mm->context.untag_mask;
-+}
+[1]
+https://patchwork.kernel.org/patch/12926099/
+
+
+ .../dts/qcom/sc7280-herobrine-villager-r1.dts | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+index c03b3ae4de50..983defa7c76d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+@@ -12,3 +12,31 @@ / {
+ 	model = "Google Villager (rev1+)";
+ 	compatible = "google,villager", "qcom,sc7280";
+ };
 +
- static inline void mm_reset_untag_mask(struct mm_struct *mm)
- {
- 	mm->context.untag_mask = -1UL;
-@@ -119,6 +124,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- }
- 
-+static inline unsigned long mm_untag_mask(struct mm_struct *mm)
-+{
-+	return -1UL;
-+}
++&lpass_va_macro {
++	vdd-micb-supply = <&pp1800_l2c>;
++};
 +
- static inline void mm_reset_untag_mask(struct mm_struct *mm)
- {
- }
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index a20a5ebfacd7..fada0e36031b 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -139,6 +139,8 @@ obj-$(CONFIG_UNWINDER_GUESS)		+= unwind_guess.o
- 
- obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= sev.o
- 
-+obj-$(CONFIG_PROC_FS)			+= proc.o
++&sound {
++	audio-routing =
++			"IN1_HPHL", "HPHL_OUT",
++			"IN2_HPHR", "HPHR_OUT",
++			"AMIC1", "MIC BIAS1",
++			"AMIC2", "MIC BIAS2",
++			"VA DMIC0", "vdd-micb",
++			"VA DMIC1", "vdd-micb",
++			"VA DMIC2", "vdd-micb",
++			"VA DMIC3", "vdd-micb",
++			"TX SWR_ADC0", "ADC1_OUTPUT",
++			"TX SWR_ADC1", "ADC2_OUTPUT",
++			"TX SWR_ADC2", "ADC3_OUTPUT",
++			"TX SWR_DMIC0", "DMIC1_OUTPUT",
++			"TX SWR_DMIC1", "DMIC2_OUTPUT",
++			"TX SWR_DMIC2", "DMIC3_OUTPUT",
++			"TX SWR_DMIC3", "DMIC4_OUTPUT",
++			"TX SWR_DMIC4", "DMIC5_OUTPUT",
++			"TX SWR_DMIC5", "DMIC6_OUTPUT",
++			"TX SWR_DMIC6", "DMIC7_OUTPUT",
++			"TX SWR_DMIC7", "DMIC8_OUTPUT";
 +
- ###
- # 64 bit specific files
- ifeq ($(CONFIG_X86_64),y)
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index c8340156bfd2..838a6f0627fd 100644
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -10,8 +10,6 @@
- #include <linux/mman.h>
- #include <linux/nospec.h>
- #include <linux/pkeys.h>
--#include <linux/seq_file.h>
--#include <linux/proc_fs.h>
- #include <linux/vmalloc.h>
- 
- #include <asm/fpu/api.h>
-@@ -1745,48 +1743,3 @@ long fpu_xstate_prctl(int option, unsigned long arg2)
- 		return -EINVAL;
- 	}
- }
--
--#ifdef CONFIG_PROC_PID_ARCH_STATUS
--/*
-- * Report the amount of time elapsed in millisecond since last AVX512
-- * use in the task.
-- */
--static void avx512_status(struct seq_file *m, struct task_struct *task)
--{
--	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
--	long delta;
--
--	if (!timestamp) {
--		/*
--		 * Report -1 if no AVX512 usage
--		 */
--		delta = -1;
--	} else {
--		delta = (long)(jiffies - timestamp);
--		/*
--		 * Cap to LONG_MAX if time difference > LONG_MAX
--		 */
--		if (delta < 0)
--			delta = LONG_MAX;
--		delta = jiffies_to_msecs(delta);
--	}
--
--	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
--	seq_putc(m, '\n');
--}
--
--/*
-- * Report architecture specific information
-- */
--int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
--			struct pid *pid, struct task_struct *task)
--{
--	/*
--	 * Report AVX512 state if the processor and build option supported.
--	 */
--	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
--		avx512_status(m, task);
--
--	return 0;
--}
--#endif /* CONFIG_PROC_PID_ARCH_STATUS */
-diff --git a/arch/x86/kernel/proc.c b/arch/x86/kernel/proc.c
-new file mode 100644
-index 000000000000..9765b4d05ce4
---- /dev/null
-+++ b/arch/x86/kernel/proc.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/proc_fs.h>
-+#include <linux/sched/mm.h>
-+#include <linux/seq_file.h>
-+#include <uapi/asm/prctl.h>
-+#include <asm/mmu_context.h>
-+
-+/*
-+ * Report the amount of time elapsed in millisecond since last AVX512
-+ * use in the task.
-+ */
-+static void avx512_status(struct seq_file *m, struct task_struct *task)
-+{
-+	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
-+	long delta;
-+
-+	if (!timestamp) {
-+		/*
-+		 * Report -1 if no AVX512 usage
-+		 */
-+		delta = -1;
-+	} else {
-+		delta = (long)(jiffies - timestamp);
-+		/*
-+		 * Cap to LONG_MAX if time difference > LONG_MAX
-+		 */
-+		if (delta < 0)
-+			delta = LONG_MAX;
-+		delta = jiffies_to_msecs(delta);
-+	}
-+
-+	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
-+	seq_putc(m, '\n');
-+}
-+
-+/*
-+ * Report architecture specific information
-+ */
-+int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
-+			struct pid *pid, struct task_struct *task)
-+{
-+	struct mm_struct *mm;
-+	unsigned long untag_mask = -1UL;
-+
-+	/*
-+	 * Report AVX512 state if the processor and build option supported.
-+	 */
-+	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
-+		avx512_status(m, task);
-+
-+	mm = get_task_mm(task);
-+	if (mm) {
-+		untag_mask = mm_untag_mask(task->mm);
-+		mmput(mm);
-+	}
-+
-+	seq_printf(m, "untag_mask:\t%#lx\n", untag_mask);
-+
-+	return 0;
-+}
++};
 -- 
-2.35.1
+2.31.0
 
