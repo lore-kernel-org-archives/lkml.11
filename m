@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4916EC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A4DC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346808AbiHOWCt (ORCPT
+        id S1347038AbiHOWDE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
+        Mon, 15 Aug 2022 18:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347213AbiHOWAj (ORCPT
+        with ESMTP id S1347537AbiHOWAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:00:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2D110FF4;
-        Mon, 15 Aug 2022 12:35:24 -0700 (PDT)
+        Mon, 15 Aug 2022 18:00:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53877167F1;
+        Mon, 15 Aug 2022 12:35:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD8BDB80EA7;
-        Mon, 15 Aug 2022 19:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B9AC433D7;
-        Mon, 15 Aug 2022 19:35:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0DFE611E4;
+        Mon, 15 Aug 2022 19:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBBD4C433D6;
+        Mon, 15 Aug 2022 19:35:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592119;
-        bh=yP2LSs1kUhR4I5yiAyJfoW7fRrgO1ZwT2JlJkMnRY9A=;
+        s=korg; t=1660592109;
+        bh=Wujj5i866p9om6sVU/5OKGHjwQgKQ35nherAfS8OOgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5eUBA/JP0Rqvc6KgenuD85DyG0m+rCaWwY7ZTBa1uIX3ulRc42rl5OT6EEPvtZG7
-         IPePIU9ZCIErW5rKjsMdqEoMpr9jwnQNLs+09yo+RwjkGocIvT/Tml/QxaD7HUCcVE
-         GM5gdKW7AQ7t6bn6XDoCMOopFpORKsClRTBIzd3k=
+        b=Luna2qnUDcZ9YV/yIKjYA52ygw9clZOCo5BtYeUFaDGWmb22xTA+k5RZjaEFq4Z/9
+         POWslPxCmngccm4O1SpwB8Y4Cq/2MrSeVN5id85rVTfwxkgvFSPPCWHwbqKYj1XZ/X
+         eTKeC9o6ky3bNCzTP6CxyisIzTCnyyi8ggOzYOQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0728/1095] soundwire: revisit driver bind/unbind and callbacks
-Date:   Mon, 15 Aug 2022 20:02:07 +0200
-Message-Id: <20220815180459.502054610@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>, stable@kernel.org
+Subject: [PATCH 5.19 0060/1157] fix short copy handling in copy_mc_pipe_to_iter()
+Date:   Mon, 15 Aug 2022 19:50:16 +0200
+Message-Id: <20220815180441.901113302@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,447 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit bd29c00edd0a5dac8b6e7332bb470cd50f92e893 ]
+commit c3497fd009ef2c59eea60d21c3ac22de3585ed7d upstream.
 
-In the SoundWire probe, we store a pointer from the driver ops into
-the 'slave' structure. This can lead to kernel oopses when unbinding
-codec drivers, e.g. with the following sequence to remove machine
-driver and codec driver.
+Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
+result in a short copy.  In that case we need to trim the unused
+buffers, as well as the length of partially filled one - it's not
+enough to set ->head, ->iov_offset and ->count to reflect how
+much had we copied.  Not hard to fix, fortunately...
 
-/sbin/modprobe -r snd_soc_sof_sdw
-/sbin/modprobe -r snd_soc_rt711
+I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
+rather than iov_iter.c - it has nothing to do with iov_iter and
+having it will allow us to avoid an ugly kludge in fs/splice.c.
+We could put it into lib/iov_iter.c for now and move it later,
+but I don't see the point going that way...
 
-The full details can be found in the BugLink below, for reference the
-two following examples show different cases of driver ops/callbacks
-being invoked after the driver .remove().
-
-kernel: BUG: kernel NULL pointer dereference, address: 0000000000000150
-kernel: Workqueue: events cdns_update_slave_status_work [soundwire_cadence]
-kernel: RIP: 0010:mutex_lock+0x19/0x30
-kernel: Call Trace:
-kernel:  ? sdw_handle_slave_status+0x426/0xe00 [soundwire_bus 94ff184bf398570c3f8ff7efe9e32529f532e4ae]
-kernel:  ? newidle_balance+0x26a/0x400
-kernel:  ? cdns_update_slave_status_work+0x1e9/0x200 [soundwire_cadence 1bcf98eebe5ba9833cd433323769ac923c9c6f82]
-
-kernel: BUG: unable to handle page fault for address: ffffffffc07654c8
-kernel: Workqueue: pm pm_runtime_work
-kernel: RIP: 0010:sdw_bus_prep_clk_stop+0x6f/0x160 [soundwire_bus]
-kernel: Call Trace:
-kernel:  <TASK>
-kernel:  sdw_cdns_clock_stop+0xb5/0x1b0 [soundwire_cadence 1bcf98eebe5ba9833cd433323769ac923c9c6f82]
-kernel:  intel_suspend_runtime+0x5f/0x120 [soundwire_intel aca858f7c87048d3152a4a41bb68abb9b663a1dd]
-kernel:  ? dpm_sysfs_remove+0x60/0x60
-
-This was not detected earlier in Intel tests since the tests first
-remove the parent PCI device and shut down the bus. The sequence
-above is a corner case which keeps the bus operational but without a
-driver bound.
-
-While trying to solve this kernel oopses, it became clear that the
-existing SoundWire bus does not deal well with the unbind case.
-
-Commit 528be501b7d4a ("soundwire: sdw_slave: add probe_complete structure and new fields")
-added a 'probed' status variable and a 'probe_complete'
-struct completion. This status is however not reset on remove and
-likewise the 'probe complete' is not re-initialized, so the
-bind/unbind/bind test cases would fail. The timeout used before the
-'update_status' callback was also a bad idea in hindsight, there
-should really be no timing assumption as to if and when a driver is
-bound to a device.
-
-An initial draft was based on device_lock() and device_unlock() was
-tested. This proved too complicated, with deadlocks created during the
-suspend-resume sequences, which also use the same device_lock/unlock()
-as the bind/unbind sequences. On a CometLake device, a bad DSDT/BIOS
-caused spurious resumes and the use of device_lock() caused hangs
-during suspend. After multiple weeks or testing and painful
-reverse-engineering of deadlocks on different devices, we looked for
-alternatives that did not interfere with the device core.
-
-A bus notifier was used successfully to keep track of DRIVER_BOUND and
-DRIVER_UNBIND events. This solved the bind-unbind-bind case in tests,
-but it can still be defeated with a theoretical corner case where the
-memory is freed by a .remove while the callback is in use. The
-notifier only helps make sure the driver callbacks are valid, but not
-that the memory allocated in probe remains valid while the callbacks
-are invoked.
-
-This patch suggests the introduction of a new 'sdw_dev_lock' mutex
-protecting probe/remove and all driver callbacks. Since this mutex is
-'local' to SoundWire only, it does not interfere with existing locks
-and does not create deadlocks. In addition, this patch removes the
-'probe_complete' completion, instead we directly invoke the
-'update_status' from the probe routine. That removes any sort of
-timing dependency and a much better support for the device/driver
-model, the driver could be bound before the bus started, or eons after
-the bus started and the hardware would be properly initialized in all
-cases.
-
-BugLink: https://github.com/thesofproject/linux/issues/3531
-Fixes: 56d4fe31af77 ("soundwire: Add MIPI DisCo property helpers")
-Fixes: 528be501b7d4a ("soundwire: sdw_slave: add probe_complete structure and new fields")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220621225641.221170-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org # 4.19+
+Fixes: ca146f6f091e "lib/iov_iter: Fix pipe handling in _copy_to_iter_mcsafe()"
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soundwire/bus.c       | 75 ++++++++++++++++++++---------------
- drivers/soundwire/bus_type.c  | 30 +++++++++++---
- drivers/soundwire/slave.c     |  3 +-
- drivers/soundwire/stream.c    | 53 ++++++++++++++++---------
- include/linux/soundwire/sdw.h |  6 +--
- 5 files changed, 106 insertions(+), 61 deletions(-)
+ include/linux/pipe_fs_i.h |    9 +++++++++
+ lib/iov_iter.c            |   15 +++++++++++----
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-index 354d3f89366f..f1cf78c6d477 100644
---- a/drivers/soundwire/bus.c
-+++ b/drivers/soundwire/bus.c
-@@ -7,6 +7,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/soundwire/sdw_registers.h>
- #include <linux/soundwire/sdw.h>
-+#include <linux/soundwire/sdw_type.h>
- #include "bus.h"
- #include "sysfs_local.h"
- 
-@@ -846,15 +847,21 @@ static int sdw_slave_clk_stop_callback(struct sdw_slave *slave,
- 				       enum sdw_clk_stop_mode mode,
- 				       enum sdw_clk_stop_type type)
- {
--	int ret;
-+	int ret = 0;
- 
--	if (slave->ops && slave->ops->clk_stop) {
--		ret = slave->ops->clk_stop(slave, mode, type);
--		if (ret < 0)
--			return ret;
-+	mutex_lock(&slave->sdw_dev_lock);
-+
-+	if (slave->probed)  {
-+		struct device *dev = &slave->dev;
-+		struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
-+
-+		if (drv->ops && drv->ops->clk_stop)
-+			ret = drv->ops->clk_stop(slave, mode, type);
- 	}
- 
--	return 0;
-+	mutex_unlock(&slave->sdw_dev_lock);
-+
-+	return ret;
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -229,6 +229,15 @@ static inline bool pipe_buf_try_steal(st
+ 	return buf->ops->try_steal(pipe, buf);
  }
  
- static int sdw_slave_clk_stop_prepare(struct sdw_slave *slave,
-@@ -1616,14 +1623,24 @@ static int sdw_handle_slave_alerts(struct sdw_slave *slave)
- 		}
- 
- 		/* Update the Slave driver */
--		if (slave_notify && slave->ops &&
--		    slave->ops->interrupt_callback) {
--			slave_intr.sdca_cascade = sdca_cascade;
--			slave_intr.control_port = clear;
--			memcpy(slave_intr.port, &port_status,
--			       sizeof(slave_intr.port));
--
--			slave->ops->interrupt_callback(slave, &slave_intr);
-+		if (slave_notify) {
-+			mutex_lock(&slave->sdw_dev_lock);
++static inline void pipe_discard_from(struct pipe_inode_info *pipe,
++		unsigned int old_head)
++{
++	unsigned int mask = pipe->ring_size - 1;
 +
-+			if (slave->probed) {
-+				struct device *dev = &slave->dev;
-+				struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
++	while (pipe->head > old_head)
++		pipe_buf_release(pipe, &pipe->bufs[--pipe->head & mask]);
++}
 +
-+				if (drv->ops && drv->ops->interrupt_callback) {
-+					slave_intr.sdca_cascade = sdca_cascade;
-+					slave_intr.control_port = clear;
-+					memcpy(slave_intr.port, &port_status,
-+					       sizeof(slave_intr.port));
-+
-+					drv->ops->interrupt_callback(slave, &slave_intr);
-+				}
-+			}
-+
-+			mutex_unlock(&slave->sdw_dev_lock);
- 		}
+ /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
+    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
+ #define PIPE_SIZE		PAGE_SIZE
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -689,6 +689,7 @@ static size_t copy_mc_pipe_to_iter(const
+ 	struct pipe_inode_info *pipe = i->pipe;
+ 	unsigned int p_mask = pipe->ring_size - 1;
+ 	unsigned int i_head;
++	unsigned int valid = pipe->head;
+ 	size_t n, off, xfer = 0;
  
- 		/* Ack interrupt */
-@@ -1697,29 +1714,21 @@ static int sdw_handle_slave_alerts(struct sdw_slave *slave)
- static int sdw_update_slave_status(struct sdw_slave *slave,
- 				   enum sdw_slave_status status)
- {
--	unsigned long time;
-+	int ret = 0;
- 
--	if (!slave->probed) {
--		/*
--		 * the slave status update is typically handled in an
--		 * interrupt thread, which can race with the driver
--		 * probe, e.g. when a module needs to be loaded.
--		 *
--		 * make sure the probe is complete before updating
--		 * status.
--		 */
--		time = wait_for_completion_timeout(&slave->probe_complete,
--				msecs_to_jiffies(DEFAULT_PROBE_TIMEOUT));
--		if (!time) {
--			dev_err(&slave->dev, "Probe not complete, timed out\n");
--			return -ETIMEDOUT;
--		}
-+	mutex_lock(&slave->sdw_dev_lock);
-+
-+	if (slave->probed) {
-+		struct device *dev = &slave->dev;
-+		struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
-+
-+		if (drv->ops && drv->ops->update_status)
-+			ret = drv->ops->update_status(slave, status);
- 	}
- 
--	if (!slave->ops || !slave->ops->update_status)
--		return 0;
-+	mutex_unlock(&slave->sdw_dev_lock);
- 
--	return slave->ops->update_status(slave, status);
-+	return ret;
- }
- 
- /**
-diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
-index b81e04dd3a9f..04b3529f8929 100644
---- a/drivers/soundwire/bus_type.c
-+++ b/drivers/soundwire/bus_type.c
-@@ -98,8 +98,6 @@ static int sdw_drv_probe(struct device *dev)
- 	if (!id)
- 		return -ENODEV;
- 
--	slave->ops = drv->ops;
--
- 	/*
- 	 * attach to power domain but don't turn on (last arg)
- 	 */
-@@ -107,19 +105,23 @@ static int sdw_drv_probe(struct device *dev)
- 	if (ret)
- 		return ret;
- 
-+	mutex_lock(&slave->sdw_dev_lock);
-+
- 	ret = drv->probe(slave, id);
- 	if (ret) {
- 		name = drv->name;
- 		if (!name)
- 			name = drv->driver.name;
-+		mutex_unlock(&slave->sdw_dev_lock);
-+
- 		dev_err(dev, "Probe of %s failed: %d\n", name, ret);
- 		dev_pm_domain_detach(dev, false);
- 		return ret;
- 	}
- 
- 	/* device is probed so let's read the properties now */
--	if (slave->ops && slave->ops->read_prop)
--		slave->ops->read_prop(slave);
-+	if (drv->ops && drv->ops->read_prop)
-+		drv->ops->read_prop(slave);
- 
- 	/* init the sysfs as we have properties now */
- 	ret = sdw_slave_sysfs_init(slave);
-@@ -139,7 +141,19 @@ static int sdw_drv_probe(struct device *dev)
- 					     slave->prop.clk_stop_timeout);
- 
- 	slave->probed = true;
--	complete(&slave->probe_complete);
-+
-+	/*
-+	 * if the probe happened after the bus was started, notify the codec driver
-+	 * of the current hardware status to e.g. start the initialization.
-+	 * Errors are only logged as warnings to avoid failing the probe.
-+	 */
-+	if (drv->ops && drv->ops->update_status) {
-+		ret = drv->ops->update_status(slave, slave->status);
-+		if (ret < 0)
-+			dev_warn(dev, "%s: update_status failed with status %d\n", __func__, ret);
-+	}
-+
-+	mutex_unlock(&slave->sdw_dev_lock);
- 
- 	dev_dbg(dev, "probe complete\n");
- 
-@@ -152,9 +166,15 @@ static int sdw_drv_remove(struct device *dev)
- 	struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
- 	int ret = 0;
- 
-+	mutex_lock(&slave->sdw_dev_lock);
-+
-+	slave->probed = false;
-+
- 	if (drv->remove)
- 		ret = drv->remove(slave);
- 
-+	mutex_unlock(&slave->sdw_dev_lock);
-+
- 	dev_pm_domain_detach(dev, false);
- 
- 	return ret;
-diff --git a/drivers/soundwire/slave.c b/drivers/soundwire/slave.c
-index 669d7573320b..25e76b5d4a1a 100644
---- a/drivers/soundwire/slave.c
-+++ b/drivers/soundwire/slave.c
-@@ -12,6 +12,7 @@ static void sdw_slave_release(struct device *dev)
- {
- 	struct sdw_slave *slave = dev_to_sdw_dev(dev);
- 
-+	mutex_destroy(&slave->sdw_dev_lock);
- 	kfree(slave);
- }
- 
-@@ -58,9 +59,9 @@ int sdw_slave_add(struct sdw_bus *bus,
- 	init_completion(&slave->enumeration_complete);
- 	init_completion(&slave->initialization_complete);
- 	slave->dev_num = 0;
--	init_completion(&slave->probe_complete);
- 	slave->probed = false;
- 	slave->first_interrupt_done = false;
-+	mutex_init(&slave->sdw_dev_lock);
- 
- 	for (i = 0; i < SDW_MAX_PORTS; i++)
- 		init_completion(&slave->port_ready[i]);
-diff --git a/drivers/soundwire/stream.c b/drivers/soundwire/stream.c
-index f273459b2023..6963e5f7ea6d 100644
---- a/drivers/soundwire/stream.c
-+++ b/drivers/soundwire/stream.c
-@@ -13,6 +13,7 @@
- #include <linux/slab.h>
- #include <linux/soundwire/sdw_registers.h>
- #include <linux/soundwire/sdw.h>
-+#include <linux/soundwire/sdw_type.h>
- #include <sound/soc.h>
- #include "bus.h"
- 
-@@ -401,20 +402,26 @@ static int sdw_do_port_prep(struct sdw_slave_runtime *s_rt,
- 			    struct sdw_prepare_ch prep_ch,
- 			    enum sdw_port_prep_ops cmd)
- {
--	const struct sdw_slave_ops *ops = s_rt->slave->ops;
--	int ret;
-+	int ret = 0;
-+	struct sdw_slave *slave = s_rt->slave;
- 
--	if (ops->port_prep) {
--		ret = ops->port_prep(s_rt->slave, &prep_ch, cmd);
--		if (ret < 0) {
--			dev_err(&s_rt->slave->dev,
--				"Slave Port Prep cmd %d failed: %d\n",
--				cmd, ret);
--			return ret;
-+	mutex_lock(&slave->sdw_dev_lock);
-+
-+	if (slave->probed) {
-+		struct device *dev = &slave->dev;
-+		struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
-+
-+		if (drv->ops && drv->ops->port_prep) {
-+			ret = drv->ops->port_prep(slave, &prep_ch, cmd);
-+			if (ret < 0)
-+				dev_err(dev, "Slave Port Prep cmd %d failed: %d\n",
-+					cmd, ret);
- 		}
- 	}
- 
--	return 0;
-+	mutex_unlock(&slave->sdw_dev_lock);
-+
-+	return ret;
- }
- 
- static int sdw_prep_deprep_slave_ports(struct sdw_bus *bus,
-@@ -578,7 +585,7 @@ static int sdw_notify_config(struct sdw_master_runtime *m_rt)
- 	struct sdw_slave_runtime *s_rt;
- 	struct sdw_bus *bus = m_rt->bus;
- 	struct sdw_slave *slave;
--	int ret = 0;
-+	int ret;
- 
- 	if (bus->ops->set_bus_conf) {
- 		ret = bus->ops->set_bus_conf(bus, &bus->params);
-@@ -589,17 +596,27 @@ static int sdw_notify_config(struct sdw_master_runtime *m_rt)
- 	list_for_each_entry(s_rt, &m_rt->slave_rt_list, m_rt_node) {
- 		slave = s_rt->slave;
- 
--		if (slave->ops->bus_config) {
--			ret = slave->ops->bus_config(slave, &bus->params);
--			if (ret < 0) {
--				dev_err(bus->dev, "Notify Slave: %d failed\n",
--					slave->dev_num);
--				return ret;
-+		mutex_lock(&slave->sdw_dev_lock);
-+
-+		if (slave->probed) {
-+			struct device *dev = &slave->dev;
-+			struct sdw_driver *drv = drv_to_sdw_driver(dev->driver);
-+
-+			if (drv->ops && drv->ops->bus_config) {
-+				ret = drv->ops->bus_config(slave, &bus->params);
-+				if (ret < 0) {
-+					dev_err(dev, "Notify Slave: %d failed\n",
-+						slave->dev_num);
-+					mutex_unlock(&slave->sdw_dev_lock);
-+					return ret;
-+				}
- 			}
- 		}
-+
-+		mutex_unlock(&slave->sdw_dev_lock);
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- /**
-diff --git a/include/linux/soundwire/sdw.h b/include/linux/soundwire/sdw.h
-index 76ce3f3ac0f2..bf6f0decb3f6 100644
---- a/include/linux/soundwire/sdw.h
-+++ b/include/linux/soundwire/sdw.h
-@@ -646,9 +646,6 @@ struct sdw_slave_ops {
-  * @dev_num: Current Device Number, values can be 0 or dev_num_sticky
-  * @dev_num_sticky: one-time static Device Number assigned by Bus
-  * @probed: boolean tracking driver state
-- * @probe_complete: completion utility to control potential races
-- * on startup between driver probe/initialization and SoundWire
-- * Slave state changes/implementation-defined interrupts
-  * @enumeration_complete: completion utility to control potential races
-  * on startup between device enumeration and read/write access to the
-  * Slave device
-@@ -663,6 +660,7 @@ struct sdw_slave_ops {
-  * for a Slave happens for the first time after enumeration
-  * @is_mockup_device: status flag used to squelch errors in the command/control
-  * protocol for SoundWire mockup devices
-+ * @sdw_dev_lock: mutex used to protect callbacks/remove races
-  */
- struct sdw_slave {
- 	struct sdw_slave_id id;
-@@ -680,12 +678,12 @@ struct sdw_slave {
- 	u16 dev_num;
- 	u16 dev_num_sticky;
- 	bool probed;
--	struct completion probe_complete;
- 	struct completion enumeration_complete;
- 	struct completion initialization_complete;
- 	u32 unattach_request;
- 	bool first_interrupt_done;
- 	bool is_mockup_device;
-+	struct mutex sdw_dev_lock; /* protect callbacks/remove races */
- };
- 
- #define dev_to_sdw_dev(_dev) container_of(_dev, struct sdw_slave, dev)
--- 
-2.35.1
-
+ 	if (!sanity(i))
+@@ -702,11 +703,17 @@ static size_t copy_mc_pipe_to_iter(const
+ 		rem = copy_mc_to_kernel(p + off, addr + xfer, chunk);
+ 		chunk -= rem;
+ 		kunmap_local(p);
+-		i->head = i_head;
+-		i->iov_offset = off + chunk;
+-		xfer += chunk;
+-		if (rem)
++		if (chunk) {
++			i->head = i_head;
++			i->iov_offset = off + chunk;
++			xfer += chunk;
++			valid = i_head + 1;
++		}
++		if (rem) {
++			pipe->bufs[i_head & p_mask].len -= rem;
++			pipe_discard_from(pipe, valid);
+ 			break;
++		}
+ 		n -= chunk;
+ 		off = 0;
+ 		i_head++;
 
 
