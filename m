@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C223C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E16CDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243408AbiHOURq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        id S241913AbiHOURv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346175AbiHOUK7 (ORCPT
+        with ESMTP id S1347013AbiHOUMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:10:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28635598;
-        Mon, 15 Aug 2022 11:56:51 -0700 (PDT)
+        Mon, 15 Aug 2022 16:12:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A2289934;
+        Mon, 15 Aug 2022 11:58:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 567506125B;
-        Mon, 15 Aug 2022 18:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D2BC433D7;
-        Mon, 15 Aug 2022 18:56:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AAAEB810A2;
+        Mon, 15 Aug 2022 18:58:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3349C433D7;
+        Mon, 15 Aug 2022 18:58:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589810;
-        bh=pqBJ1NWS1RN2vBwc3PaPKuwfdOzMrRfU7YsQ6GivFJc=;
+        s=korg; t=1660589923;
+        bh=qFEqlYR364zAMF8tGKZfx7jNJoYRaN3R5KeD+djXNmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=twz3rajwPB3oZ/nul8KbjYFrlrB4YQ6FuOHzyMnjhar8LSJ4/igoyO0UfrouT64iQ
-         tbnGE2gLotss/ZSuUVEzSohBi6zE7khBXibZvfa5ZVyx6OV7W2e63qb7hyhd+uzBoz
-         tYYJBjMuvCr0/LJUCz7kRNY1f1yqwAR6Ao9xqvIQ=
+        b=PENRnJYZmvBDnx18ONxylWX75ngg04y8xxyg4dj/P8fETtMFR5Pj8RGUHRiyExz0S
+         9fpdRwt8jHJKsZDg5ZbVWdy/pI2VN2w550lfCgpXY0mfWb/QW+VqEjqLASIPdFHqrQ
+         9tvYc1UGn5q0bGN+1OmehnR9oUOf7hdstBm5CHNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongbo Yin <yinhongbo@bytedance.com>,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
-        Tianci Zhang <zhangtianci.1997@bytedance.com>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.18 0055/1095] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
-Date:   Mon, 15 Aug 2022 19:50:54 +0200
-Message-Id: <20220815180431.744923553@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 0091/1095] um: seed rng using host OS rng
+Date:   Mon, 15 Aug 2022 19:51:30 +0200
+Message-Id: <20220815180433.291146539@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,57 +49,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit dd524b7f317de8d31d638cbfdc7be4cf9b770e42 upstream.
+commit 0b9ba6135d7f18b82f3d8bebb55ded725ba88e0e upstream.
 
-Some code paths cannot guarantee the inode have any dentry alias. So
-WARN_ON() all !dentry may flood the kernel logs.
+UML generally does not provide access to special CPU instructions like
+RDRAND, and execution tends to be rather deterministic, with no real
+hardware interrupts, making good randomness really very hard, if not
+all together impossible. Not only is this a security eyebrow raiser, but
+it's also quite annoying when trying to do various pieces of UML-based
+automation that takes a long time to boot, if ever.
 
-For example, when an overlayfs inode is watched by inotifywait (1), and
-someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
-at that time if the dentry has been reclaimed by kernel (such as
-echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
-printed call stack would be like:
+Fix this by trivially calling getrandom() in the host and using that
+seed as "bootloader randomness", which initializes the rng immediately
+at UML boot.
 
-    ? show_mark_fhandle+0xf0/0xf0
-    show_mark_fhandle+0x4a/0xf0
-    ? show_mark_fhandle+0xf0/0xf0
-    ? seq_vprintf+0x30/0x50
-    ? seq_printf+0x53/0x70
-    ? show_mark_fhandle+0xf0/0xf0
-    inotify_fdinfo+0x70/0x90
-    show_fdinfo.isra.4+0x53/0x70
-    seq_show+0x130/0x170
-    seq_read+0x153/0x440
-    vfs_read+0x94/0x150
-    ksys_read+0x5f/0xe0
-    do_syscall_64+0x59/0x1e0
-    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+The old behavior can be restored the same way as on any other arch, by
+way of CONFIG_TRUST_BOOTLOADER_RANDOMNESS=n or
+random.trust_bootloader=0. So seen from that perspective, this just
+makes UML act like other archs, which is positive in its own right.
 
-So let's drop WARN_ON() to avoid kernel log flooding.
+Additionally, wire up arch_get_random_{int,long}() in the same way, so
+that reseeds can also make use of the host RNG, controllable by
+CONFIG_TRUST_CPU_RANDOMNESS and random.trust_cpu, per usual.
 
-Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
-Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
-Fixes: 8ed5eec9d6c4 ("ovl: encode pure upper file handles")
-Cc: <stable@vger.kernel.org> # v4.16
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Cc: stable@vger.kernel.org
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/overlayfs/export.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/um/include/asm/archrandom.h |   30 ++++++++++++++++++++++++++++++
+ arch/um/include/shared/os.h      |    7 +++++++
+ arch/um/kernel/um_arch.c         |    8 ++++++++
+ arch/um/os-Linux/util.c          |    6 ++++++
+ 4 files changed, 51 insertions(+)
+ create mode 100644 arch/um/include/asm/archrandom.h
 
---- a/fs/overlayfs/export.c
-+++ b/fs/overlayfs/export.c
-@@ -259,7 +259,7 @@ static int ovl_encode_fh(struct inode *i
- 		return FILEID_INVALID;
+--- /dev/null
++++ b/arch/um/include/asm/archrandom.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_UM_ARCHRANDOM_H__
++#define __ASM_UM_ARCHRANDOM_H__
++
++#include <linux/types.h>
++
++/* This is from <os.h>, but better not to #include that in a global header here. */
++ssize_t os_getrandom(void *buf, size_t len, unsigned int flags);
++
++static inline bool __must_check arch_get_random_long(unsigned long *v)
++{
++	return os_getrandom(v, sizeof(*v), 0) == sizeof(*v);
++}
++
++static inline bool __must_check arch_get_random_int(unsigned int *v)
++{
++	return os_getrandom(v, sizeof(*v), 0) == sizeof(*v);
++}
++
++static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
++{
++	return false;
++}
++
++static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
++{
++	return false;
++}
++
++#endif
+--- a/arch/um/include/shared/os.h
++++ b/arch/um/include/shared/os.h
+@@ -11,6 +11,12 @@
+ #include <irq_user.h>
+ #include <longjmp.h>
+ #include <mm_id.h>
++/* This is to get size_t */
++#ifndef __UM_HOST__
++#include <linux/types.h>
++#else
++#include <sys/types.h>
++#endif
  
- 	dentry = d_find_any_alias(inode);
--	if (WARN_ON(!dentry))
-+	if (!dentry)
- 		return FILEID_INVALID;
+ #define CATCH_EINTR(expr) while ((errno = 0, ((expr) < 0)) && (errno == EINTR))
  
- 	bytes = ovl_dentry_to_fid(ofs, dentry, fid, buflen);
+@@ -243,6 +249,7 @@ extern void stack_protections(unsigned l
+ extern int raw(int fd);
+ extern void setup_machinename(char *machine_out);
+ extern void setup_hostinfo(char *buf, int len);
++extern ssize_t os_getrandom(void *buf, size_t len, unsigned int flags);
+ extern void os_dump_core(void) __attribute__ ((noreturn));
+ extern void um_early_printk(const char *s, unsigned int n);
+ extern void os_fix_helper_signals(void);
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -16,6 +16,7 @@
+ #include <linux/sched/task.h>
+ #include <linux/kmsg_dump.h>
+ #include <linux/suspend.h>
++#include <linux/random.h>
+ 
+ #include <asm/processor.h>
+ #include <asm/cpufeature.h>
+@@ -406,6 +407,8 @@ int __init __weak read_initrd(void)
+ 
+ void __init setup_arch(char **cmdline_p)
+ {
++	u8 rng_seed[32];
++
+ 	stack_protections((unsigned long) &init_thread_info);
+ 	setup_physmem(uml_physmem, uml_reserved, physmem_size, highmem);
+ 	mem_total_pages(physmem_size, iomem_size, highmem);
+@@ -416,6 +419,11 @@ void __init setup_arch(char **cmdline_p)
+ 	strlcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+ 	setup_hostinfo(host_info, sizeof host_info);
++
++	if (os_getrandom(rng_seed, sizeof(rng_seed), 0) == sizeof(rng_seed)) {
++		add_bootloader_randomness(rng_seed, sizeof(rng_seed));
++		memzero_explicit(rng_seed, sizeof(rng_seed));
++	}
+ }
+ 
+ void __init check_bugs(void)
+--- a/arch/um/os-Linux/util.c
++++ b/arch/um/os-Linux/util.c
+@@ -14,6 +14,7 @@
+ #include <sys/wait.h>
+ #include <sys/mman.h>
+ #include <sys/utsname.h>
++#include <sys/random.h>
+ #include <init.h>
+ #include <os.h>
+ 
+@@ -96,6 +97,11 @@ static inline void __attribute__ ((noret
+ 			exit(127);
+ }
+ 
++ssize_t os_getrandom(void *buf, size_t len, unsigned int flags)
++{
++	return getrandom(buf, len, flags);
++}
++
+ /*
+  * UML helper threads must not handle SIGWINCH/INT/TERM
+  */
 
 
