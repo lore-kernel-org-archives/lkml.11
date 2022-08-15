@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01111C32757
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C0CC2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350589AbiHOWgr (ORCPT
+        id S1350641AbiHOWgu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        Mon, 15 Aug 2022 18:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351070AbiHOW1d (ORCPT
+        with ESMTP id S1351254AbiHOW17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57961422D1;
-        Mon, 15 Aug 2022 12:46:59 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE6F6FA15;
+        Mon, 15 Aug 2022 12:47:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 197E0B80EB2;
-        Mon, 15 Aug 2022 19:46:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54EB7C433D6;
-        Mon, 15 Aug 2022 19:46:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 136A061231;
+        Mon, 15 Aug 2022 19:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1998FC433C1;
+        Mon, 15 Aug 2022 19:47:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592816;
-        bh=DxR5Te+0hr5YPpVC4TDSEMJ/BVrdzLv1VvmTAOdfL3I=;
+        s=korg; t=1660592870;
+        bh=IVk6LSqpcL/QqL+Fmi/ypollB5miE9Yu22CKICMxIbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdhUyics8wCDWsDBg/SbQ8KqDx+7D5ac7aTuLHBsqzzhdi6Z15FzO9nwuyJdVhw6o
-         haCNjveIowU8LICgWHRPo2h3Rk6C2jbUIgB88bAIWBJwu2wEMS4sf/lq2z+oczf1Rk
-         RA3oDDjOJlfmNpdlYaBnGoSiZi4eKeC84Uat5NjA=
+        b=cCSBgpGs61JfFM5b5CuzQiqRPdrKO9sWAN6duE4zFoYTJlIhzQQrmFM2TBFRYCniF
+         TchMBHCMLrb46YYdpEk55iPs6WHqOtd6VC+En/BX1/maG5jyew/PUNV58npFRlDabS
+         InOQaRwNrI7BIe1R5crhCeNOFqr/TajprN5UJnRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0849/1095] ASoC: samsung: change gpiod_speaker_power and rx1950_audio from global to static variables
-Date:   Mon, 15 Aug 2022 20:04:08 +0200
-Message-Id: <20220815180504.456123383@linuxfoundation.org>
+Subject: [PATCH 5.19 0176/1157] ARM: OMAP2+: pdata-quirks: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:52:12 +0200
+Message-Id: <20220815180446.771169988@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit d2294461b90e0c5b3bbfaaf2c8baff4fd3e2bb13 ]
+[ Upstream commit 5cdbab96bab314c6f2f5e4e8b8a019181328bf5f ]
 
-sparse reports
-sound/soc/samsung/rx1950_uda1380.c:131:18: warning: symbol 'gpiod_speaker_power' was not declared. Should it be static?
-sound/soc/samsung/rx1950_uda1380.c:231:24: warning: symbol 'rx1950_audio' was not declared. Should it be static?
+In pdata_quirks_init_clocks(), the loop contains
+of_find_node_by_name() but without corresponding of_node_put().
 
-Both gpiod_speaker_power and rx1950_audio are only used in rx1950_uda1380.c,
-so their storage class specifiers should be static.
-
-Fixes: 83d74e354200 ("ASoC: samsung: rx1950: turn into platform driver")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220629185345.910406-1-trix@redhat.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220618020603.4055792-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/rx1950_uda1380.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-omap2/pdata-quirks.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/samsung/rx1950_uda1380.c b/sound/soc/samsung/rx1950_uda1380.c
-index 6ea1c8cc9167..2820097b00b9 100644
---- a/sound/soc/samsung/rx1950_uda1380.c
-+++ b/sound/soc/samsung/rx1950_uda1380.c
-@@ -128,7 +128,7 @@ static int rx1950_startup(struct snd_pcm_substream *substream)
- 					&hw_rates);
+diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+index 13f1b89f74b8..5b99d602c87b 100644
+--- a/arch/arm/mach-omap2/pdata-quirks.c
++++ b/arch/arm/mach-omap2/pdata-quirks.c
+@@ -540,6 +540,8 @@ pdata_quirks_init_clocks(const struct of_device_id *omap_dt_match_table)
+ 
+ 		of_platform_populate(np, omap_dt_match_table,
+ 				     omap_auxdata_lookup, NULL);
++
++		of_node_put(np);
+ 	}
  }
  
--struct gpio_desc *gpiod_speaker_power;
-+static struct gpio_desc *gpiod_speaker_power;
- 
- static int rx1950_spk_power(struct snd_soc_dapm_widget *w,
- 				struct snd_kcontrol *kcontrol, int event)
-@@ -227,7 +227,7 @@ static int rx1950_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_card(dev, &rx1950_asoc);
- }
- 
--struct platform_driver rx1950_audio = {
-+static struct platform_driver rx1950_audio = {
- 	.driver = {
- 		.name = "rx1950-audio",
- 		.pm = &snd_soc_pm_ops,
 -- 
 2.35.1
 
