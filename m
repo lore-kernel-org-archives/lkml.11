@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EC3C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:04:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2111CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346755AbiHOWEC (ORCPT
+        id S1347754AbiHOWEG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
+        Mon, 15 Aug 2022 18:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349705AbiHOWBj (ORCPT
+        with ESMTP id S1349751AbiHOWBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629DD111C2B;
-        Mon, 15 Aug 2022 12:35:59 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F4F112313;
+        Mon, 15 Aug 2022 12:36:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40C16B80EA7;
-        Mon, 15 Aug 2022 19:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD04C433C1;
-        Mon, 15 Aug 2022 19:35:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5662FB80EA8;
+        Mon, 15 Aug 2022 19:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56D2C433D6;
+        Mon, 15 Aug 2022 19:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592155;
-        bh=n8kGDEThAQHhugP3eQZrg2pbr2WIP20ZO2NAN93hyeo=;
+        s=korg; t=1660592144;
+        bh=Muz+6devd5UaSOJcMQZ9LRIIl260cRIsDAwDtiF54MI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjLHHk5dYGxvfkNqxF5SmuzepBOaSMxoDT2Zu72+lae5xPMz+Xbyx8j1UYqwUn3lH
-         wP400IVR27wRslv/r+0Hdhij53U4MrC0o9ioE5I5nlcTG1nP2P35/txsi47e+VIe6C
-         QwsJuf9pvqpjeHqSvzjEFalVxo9OmjVwFpDeS83g=
+        b=p7otFxrT9ixeHUZVbaWYYd1OhSCqAPPfXftSWJ4aZLnkW2ITmglkXrvaoZXomJYhW
+         PjUcyZWBaOmmJJianO0UT5R6wSzPvNul/bK6RZ/H4xBH96pEK85eoWsSohYl8b3QxW
+         60iw6whE8SsUq1k+9hBsNVRVJrsqQbu4OFKCS95k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0742/1095] mmc: renesas_sdhi: Get the reset handle early in the probe
-Date:   Mon, 15 Aug 2022 20:02:21 +0200
-Message-Id: <20220815180500.060476774@linuxfoundation.org>
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.19 0065/1157] parisc: Check the return value of ioremap() in lba_driver_probe()
+Date:   Mon, 15 Aug 2022 19:50:21 +0200
+Message-Id: <20220815180442.111482026@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,57 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit 0dac1e498f8130fdacfdd5289e3a7ac87ec1b9ad ]
+commit cf59f34d7f978d14d6520fd80a78a5ad5cb8abf8 upstream.
 
-In case of devm_reset_control_get_optional_exclusive() failure we returned
-directly instead of jumping to the error path to roll back initialization.
+The function ioremap() in lba_driver_probe() can fail, so
+its return value should be checked.
 
-This patch moves devm_reset_control_get_optional_exclusive() early in the
-probe so that we have the reset handle prior to initialization of the
-hardware.
-
-Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/20220624181438.4355-2-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v5.6+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/renesas_sdhi_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/parisc/lba_pci.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
-index ddb5ca2f559e..4fb49306275e 100644
---- a/drivers/mmc/host/renesas_sdhi_core.c
-+++ b/drivers/mmc/host/renesas_sdhi_core.c
-@@ -940,6 +940,10 @@ int renesas_sdhi_probe(struct platform_device *pdev,
- 	if (IS_ERR(priv->clk_cd))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->clk_cd), "cannot get cd clock");
+--- a/drivers/parisc/lba_pci.c
++++ b/drivers/parisc/lba_pci.c
+@@ -1476,9 +1476,13 @@ lba_driver_probe(struct parisc_device *d
+ 	u32 func_class;
+ 	void *tmp_obj;
+ 	char *version;
+-	void __iomem *addr = ioremap(dev->hpa.start, 4096);
++	void __iomem *addr;
+ 	int max;
  
-+	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
-+	if (IS_ERR(priv->rstc))
-+		return PTR_ERR(priv->rstc);
++	addr = ioremap(dev->hpa.start, 4096);
++	if (addr == NULL)
++		return -ENOMEM;
 +
- 	priv->pinctrl = devm_pinctrl_get(&pdev->dev);
- 	if (!IS_ERR(priv->pinctrl)) {
- 		priv->pins_default = pinctrl_lookup_state(priv->pinctrl,
-@@ -1032,10 +1036,6 @@ int renesas_sdhi_probe(struct platform_device *pdev,
- 	if (ret)
- 		goto efree;
+ 	/* Read HW Rev First */
+ 	func_class = READ_REG32(addr + LBA_FCLASS);
  
--	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
--	if (IS_ERR(priv->rstc))
--		return PTR_ERR(priv->rstc);
--
- 	ver = sd_ctrl_read16(host, CTL_VERSION);
- 	/* GEN2_SDR104 is first known SDHI to use 32bit block count */
- 	if (ver < SDHI_VER_GEN2_SDR104 && mmc_data->max_blk_count > U16_MAX)
--- 
-2.35.1
-
 
 
