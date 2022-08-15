@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42173C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E2EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348595AbiHOVx3 (ORCPT
+        id S1344835AbiHOVxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        Mon, 15 Aug 2022 17:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350218AbiHOVuw (ORCPT
+        with ESMTP id S1350285AbiHOVu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:50:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF530DEB57;
-        Mon, 15 Aug 2022 12:32:21 -0700 (PDT)
+        Mon, 15 Aug 2022 17:50:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D83DEB7D;
+        Mon, 15 Aug 2022 12:32:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76B89B81126;
-        Mon, 15 Aug 2022 19:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC52AC433C1;
-        Mon, 15 Aug 2022 19:32:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 967A6B80FD3;
+        Mon, 15 Aug 2022 19:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3291C433D6;
+        Mon, 15 Aug 2022 19:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591939;
-        bh=Sl8pAt6Q0dhidSZAmwSvNFkkV5IgZon/SaDP+uWCIr0=;
+        s=korg; t=1660591942;
+        bh=RIXvlqtErnqUU+6Rz5r6bqonG4MImcLLPCMCxhVxYak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JF4CRkpFMQRi/6zirq/w9cGhy/l40AIDNwNerQsxoCInHzvBVfgOnJTvSJZcLTSRZ
-         5EUzPaZA6D0GuXhGhgU5L1eNBHMQ0PajVIcu94ALiqMD+XRujtJMpY38nLGDbMJE0n
-         TKjUAa56W9uxo3EaH0SqlLGYe80WlErgFaC7fwDM=
+        b=gVudz0XcvtFdoKs2UH7LtgyjxoH0EgXd3/6idn3t+GtQ54+yrdBrrweaeppHs6fst
+         MbrRMn67yowA0kzbt8n09eb9qkGrmGxzW4WF2yReN4H/jMQbYsnKFTPdmtGODTr1RH
+         I4LHmlGa2qEUEgU+qtwMipmLLleBM/HEv68/3YQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0707/1095] clk: qcom: ipq8074: SW workaround for UBI32 PLL lock
-Date:   Mon, 15 Aug 2022 20:01:46 +0200
-Message-Id: <20220815180458.639328837@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0034/1157] KVM: nVMX: Account for KVM reserved CR4 bits in consistency checks
+Date:   Mon, 15 Aug 2022 19:49:50 +0200
+Message-Id: <20220815180440.799547938@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 3401ea2856ef84f39b75f0dc5ebcaeda81cb90ec ]
+commit ca58f3aa53d165afe4ab74c755bc2f6d168617ac upstream.
 
-UBI32 Huayra PLL fails to lock in 5 us in some SoC silicon and thus it
-will cause the wait_for_pll() to timeout and thus return the error
-indicating that the PLL failed to lock.
+Check that the guest (L2) and host (L1) CR4 values that would be loaded
+by nested VM-Enter and VM-Exit respectively are valid with respect to
+KVM's (L0 host) allowed CR4 bits.  Failure to check KVM reserved bits
+would allow L1 to load an illegal CR4 (or trigger hardware VM-Fail or
+failed VM-Entry) by massaging guest CPUID to allow features that are not
+supported by KVM.  Amusingly, KVM itself is an accomplice in its doom, as
+KVM adjusts L1's MSR_IA32_VMX_CR4_FIXED1 to allow L1 to enable bits for
+L2 based on L1's CPUID model.
 
-This is bug in Huayra PLL HW for which SW workaround
-is to set bit 26 of TEST_CTL register.
+Note, although nested_{guest,host}_cr4_valid() are _currently_ used if
+and only if the vCPU is post-VMXON (nested.vmxon == true), that may not
+be true in the future, e.g. emulating VMXON has a bug where it doesn't
+check the allowed/required CR0/CR4 bits.
 
-This is ported from the QCA 5.4 based downstream kernel.
-
-Fixes: b8e7e519625f ("clk: qcom: ipq8074: add remaining PLL’s")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-2-robimarko@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 3899152ccbf4 ("KVM: nVMX: fix checks on CR{0,4} during virtual VMX operation")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/vmx/nested.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 1a5141da7e23..b4291ba53c78 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -4805,6 +4805,9 @@ static int gcc_ipq8074_probe(struct platform_device *pdev)
- 	if (IS_ERR(regmap))
- 		return PTR_ERR(regmap);
+--- a/arch/x86/kvm/vmx/nested.h
++++ b/arch/x86/kvm/vmx/nested.h
+@@ -281,7 +281,8 @@ static inline bool nested_cr4_valid(stru
+ 	u64 fixed0 = to_vmx(vcpu)->nested.msrs.cr4_fixed0;
+ 	u64 fixed1 = to_vmx(vcpu)->nested.msrs.cr4_fixed1;
  
-+	/* SW Workaround for UBI32 Huayra PLL */
-+	regmap_update_bits(regmap, 0x2501c, BIT(26), BIT(26));
-+
- 	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
- 	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
- 				&nss_crypto_pll_config);
--- 
-2.35.1
-
+-	return fixed_bits_valid(val, fixed0, fixed1);
++	return fixed_bits_valid(val, fixed0, fixed1) &&
++	       __kvm_is_valid_cr4(vcpu, val);
+ }
+ 
+ /* No difference in the restrictions on guest and host CR4 in VMX operation. */
 
 
