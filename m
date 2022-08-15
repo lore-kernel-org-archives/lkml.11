@@ -2,219 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D98C25B0F
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37719C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiHPFZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        id S232166AbiHPF0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232695AbiHPFZJ (ORCPT
+        with ESMTP id S231923AbiHPF0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:25:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 204E95E654
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660600602;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Mm/CnM1h4B5dRbBk+BycTCdz0sdSVv31NtnIHgtZL8=;
-        b=Jl0bGLC1VU/LWVfl15S0TjN+AdtgU1UxNO6+6v1gQlMCaHFTtF82rcrEtY8oAUP5th8lrx
-        47sYE8SB7wQCZwBR9AtamE2iKp6FvsnwChexDQR6G6EIBHKovaZWlo0lSDXX3OtWMcdhf2
-        1I7N8b+hf0wN1M3dXOnAsc4U6cdSrGs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-586-HjxEIf0kMKSkdfFjTwzv9Q-1; Mon, 15 Aug 2022 17:56:38 -0400
-X-MC-Unique: HjxEIf0kMKSkdfFjTwzv9Q-1
-Received: by mail-wm1-f71.google.com with SMTP id b4-20020a05600c4e0400b003a5a96f1756so9271377wmq.0
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:56:38 -0700 (PDT)
+        Tue, 16 Aug 2022 01:26:31 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9682113DEF
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:03:26 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id w18so1771055qki.8
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=ikVyv3Nj/OCfAyLRBroKSzO1rCNd6fD5hCL0P0dEi4w=;
+        b=WElxrXXwMY01hED9C3n34QZdS5lGbKgu51+mv/JViPAV4w25oBAWNZlUzKpz4douBe
+         PbtZuEhrb6DD5u3PFC5O4lJQlaX6Q2+zIDljN8gn2gcvSovaRtO+cKmntlpJ56HgcRRL
+         5lKSKd2bHBAY+P7wNJ9ySX+NECdgq/15WDADQJL6JLxhOdBx4AEjpdSAsc75rstZ+2AT
+         clwbswHEaakCW1hYYNWdZGenxOqQJdr8kB7IG3Dtuqsst6pcfeFX+mQJI/FaagEKbN1i
+         cJP6LiSW40aVSKcaG8lAUWD+srJtBO8dZcPeHTVlkCk3T9g4gY9YzHqaOaAwZc0aPkay
+         uKqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=8Mm/CnM1h4B5dRbBk+BycTCdz0sdSVv31NtnIHgtZL8=;
-        b=KSMkfTKuQUb8eizgUriRv31WkkR9rLdi2PIMZqyG2yr5FNAPGUH376/ampuO0LxtJr
-         tGXIwW8gmBA4oS+T+Ucm0LJT3mKH1K8f/QrD05TCBmt0MwRFEnh94lWydv1PTtlp8JRP
-         PNkVfHEBU2ilxbyOZThHihKLJsMWRRQe88W3b+tpw5CSO02BiUfOKg0SN/qIg4SjK+6e
-         ySyzP6ymibmId5n9YtIL37uqgIjRjcXFl2YkugGqvOkZsf5AmWRFCQbyKAzWj4AY+H7L
-         luzMjXFhvWR5MQH8BCsvbMsRpvHNOC14EokZqxJmYszXcPYGfshTFx0YE0z7R5/PPblT
-         Albg==
-X-Gm-Message-State: ACgBeo1tlOLs0ZGSX38OMwiEWelviXK2q4EUtsHa754aqUZvAibg8Z5b
-        ce9TiNsqtL9Tp65rrW5pHlLZDkBbsBV1IrwccGe5r5SssXdv+8B8P1ac9EaIOT15M1DiHoxsxxZ
-        kOrOoyp8ylpj0IAzGxAofm+YDUe0xHmo+LqzzR92z5B3OLIWpMk32eBtl/07wVKAj1Al0RQ==
-X-Received: by 2002:a5d:4646:0:b0:220:5c35:d4f2 with SMTP id j6-20020a5d4646000000b002205c35d4f2mr9776336wrs.475.1660600597169;
-        Mon, 15 Aug 2022 14:56:37 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR446rc1SI6gJKMPP11qXiQWWOXXuovFOjed61tFUBD5H8GPlv+4YWAmEn44A+sTFWCC57gMXw==
-X-Received: by 2002:a5d:4646:0:b0:220:5c35:d4f2 with SMTP id j6-20020a5d4646000000b002205c35d4f2mr9776312wrs.475.1660600596795;
-        Mon, 15 Aug 2022 14:56:36 -0700 (PDT)
-Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id az34-20020a05600c602200b003a5e7435190sm8296828wmb.32.2022.08.15.14.56.33
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=ikVyv3Nj/OCfAyLRBroKSzO1rCNd6fD5hCL0P0dEi4w=;
+        b=2geyE0njvReyv5YolhaeaARsyEFf/RShAPU0+1Eh477pszIUcRF3+F44yWJ9rQoVwZ
+         TljG40AgwLrAxP4oiD1SNEzpLMluoJQacEu2ZZ4lLbQ4wTVX9xlKzpIgdKoOcD5Ni3AM
+         d/su8dAc0SyixnkAYiRCxmYfJ7W+qU6cOWKxNuYZ5JmNmQEL8qRLnM3otuvNVha2rm2B
+         0pqh+B/GM3jd/qWkBrS3wkLmLG7NTz39PYg5ujNoz5HTsRVbgOk7zswQC2XTT2AgR9OU
+         k+kcOnqgi5QxvbXlST7wmvENBLw78wsSPWFGts9JL3yIoLBSewrIyZb6z0HTsOUwhbB4
+         XAxg==
+X-Gm-Message-State: ACgBeo1joy69yBncnCKG0snfKhqWqxEqxSDe8aV9oDrPqkf+CcFSiGyI
+        EnK+6I/sNz/llx+jgDB00yJaMA==
+X-Google-Smtp-Source: AA6agR7aFgUUiNSzVKx3EPZYfHModod2MDuo96s8nq0O3+F5wM8X0UjbCfH2Rd0mBkPoimTBsicvSg==
+X-Received: by 2002:a05:620a:4384:b0:6bb:268c:1c3c with SMTP id a4-20020a05620a438400b006bb268c1c3cmr5318691qkp.16.1660601005346;
+        Mon, 15 Aug 2022 15:03:25 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id gd24-20020a05622a5c1800b003445bb107basm3667300qtb.75.2022.08.15.15.03.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 14:56:36 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 17:56:31 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Ricardo =?iso-8859-1?Q?Ca=F1uelo?= 
-        <ricardo.canuelo@collabora.com>, Cornelia Huck <cohuck@redhat.com>
-Subject: Re: [PATCH v2 1/1] virtio: kerneldocs fixes and enhancements
-Message-ID: <20220815175549-mutt-send-email-mst@kernel.org>
-References: <20220815215251.154451-1-mst@redhat.com>
- <20220815215251.154451-2-mst@redhat.com>
+        Mon, 15 Aug 2022 15:03:24 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        David Lechner <david@lechnology.com>
+Subject: [PATCH] counter: Move symbols into COUNTER namespace
+Date:   Mon, 15 Aug 2022 18:03:21 -0400
+Message-Id: <20220815220321.74161-1-william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220815215251.154451-2-mst@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 05:53:24PM -0400, Michael S. Tsirkin wrote:
-> From: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-> 
-> Fix variable names in some kerneldocs, naming in others.
-> Add kerneldocs for struct vring_desc and vring_interrupt.
-> 
-> Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-> Message-Id: <20220810094004.1250-2-ricardo.canuelo@collabora.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Counter subsystem symbols are only relevant to counter drivers. A
+COUNTER namespace is created to control the availability of these
+symbols to modules that import this namespace explicitly.
 
+Cc: Patrick Havelange <patrick.havelange@essensium.com>
+Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: David Lechner <david@lechnology.com>
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/counter/104-quad-8.c            |  1 +
+ drivers/counter/counter-chrdev.c        |  2 +-
+ drivers/counter/counter-core.c          | 14 +++++++-------
+ drivers/counter/ftm-quaddec.c           |  1 +
+ drivers/counter/intel-qep.c             |  1 +
+ drivers/counter/interrupt-cnt.c         |  1 +
+ drivers/counter/microchip-tcb-capture.c |  1 +
+ drivers/counter/stm32-lptimer-cnt.c     |  1 +
+ drivers/counter/stm32-timer-cnt.c       |  1 +
+ drivers/counter/ti-eqep.c               |  1 +
+ 10 files changed, 16 insertions(+), 8 deletions(-)
 
-Ouch this got here by mistake. Just ignore this patch pls -
-it's already in my tree but does not belong in the patchset.
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 62c2b7ac4339..1323edfbe40c 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -1241,3 +1241,4 @@ module_isa_driver(quad8_driver, num_quad8);
+ MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+ MODULE_DESCRIPTION("ACCES 104-QUAD-8 driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
+index 69d340be9c93..4e71a19d7e6a 100644
+--- a/drivers/counter/counter-chrdev.c
++++ b/drivers/counter/counter-chrdev.c
+@@ -574,4 +574,4 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
+ 	if (copied)
+ 		wake_up_poll(&counter->events_wait, EPOLLIN);
+ }
+-EXPORT_SYMBOL_GPL(counter_push_event);
++EXPORT_SYMBOL_NS_GPL(counter_push_event, COUNTER);
+diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
+index 938651f9e9e0..09c77afb33ca 100644
+--- a/drivers/counter/counter-core.c
++++ b/drivers/counter/counter-core.c
+@@ -73,7 +73,7 @@ void *counter_priv(const struct counter_device *const counter)
+ 
+ 	return &ch->privdata;
+ }
+-EXPORT_SYMBOL_GPL(counter_priv);
++EXPORT_SYMBOL_NS_GPL(counter_priv, COUNTER);
+ 
+ /**
+  * counter_alloc - allocate a counter_device
+@@ -133,13 +133,13 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
+ 
+ 	return NULL;
+ }
+-EXPORT_SYMBOL_GPL(counter_alloc);
++EXPORT_SYMBOL_NS_GPL(counter_alloc, COUNTER);
+ 
+ void counter_put(struct counter_device *counter)
+ {
+ 	put_device(&counter->dev);
+ }
+-EXPORT_SYMBOL_GPL(counter_put);
++EXPORT_SYMBOL_NS_GPL(counter_put, COUNTER);
+ 
+ /**
+  * counter_add - complete registration of a counter
+@@ -166,7 +166,7 @@ int counter_add(struct counter_device *counter)
+ 	/* implies device_add(dev) */
+ 	return cdev_device_add(&counter->chrdev, dev);
+ }
+-EXPORT_SYMBOL_GPL(counter_add);
++EXPORT_SYMBOL_NS_GPL(counter_add, COUNTER);
+ 
+ /**
+  * counter_unregister - unregister Counter from the system
+@@ -188,7 +188,7 @@ void counter_unregister(struct counter_device *const counter)
+ 
+ 	mutex_unlock(&counter->ops_exist_lock);
+ }
+-EXPORT_SYMBOL_GPL(counter_unregister);
++EXPORT_SYMBOL_NS_GPL(counter_unregister, COUNTER);
+ 
+ static void devm_counter_release(void *counter)
+ {
+@@ -223,7 +223,7 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
+ 
+ 	return counter;
+ }
+-EXPORT_SYMBOL_GPL(devm_counter_alloc);
++EXPORT_SYMBOL_NS_GPL(devm_counter_alloc, COUNTER);
+ 
+ /**
+  * devm_counter_add - complete registration of a counter
+@@ -244,7 +244,7 @@ int devm_counter_add(struct device *dev,
+ 
+ 	return devm_add_action_or_reset(dev, devm_counter_release, counter);
+ }
+-EXPORT_SYMBOL_GPL(devm_counter_add);
++EXPORT_SYMBOL_NS_GPL(devm_counter_add, COUNTER);
+ 
+ #define COUNTER_DEV_MAX 256
+ 
+diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
+index 2a58582a9df4..aea6622a9b13 100644
+--- a/drivers/counter/ftm-quaddec.c
++++ b/drivers/counter/ftm-quaddec.c
+@@ -325,3 +325,4 @@ module_platform_driver(ftm_quaddec_driver);
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com>");
+ MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com>");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+index 47a6a9dfc9e8..af5942e66f7d 100644
+--- a/drivers/counter/intel-qep.c
++++ b/drivers/counter/intel-qep.c
+@@ -523,3 +523,4 @@ MODULE_AUTHOR("Jarkko Nikula <jarkko.nikula@linux.intel.com>");
+ MODULE_AUTHOR("Raymond Tan <raymond.tan@intel.com>");
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Intel Quadrature Encoder Peripheral driver");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+index 3b13f56bbb11..5a11b65fc0e5 100644
+--- a/drivers/counter/interrupt-cnt.c
++++ b/drivers/counter/interrupt-cnt.c
+@@ -242,3 +242,4 @@ MODULE_ALIAS("platform:interrupt-counter");
+ MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
+ MODULE_DESCRIPTION("Interrupt counter driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 00844445143b..f9dee15d9777 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -394,3 +394,4 @@ module_platform_driver(mchp_tc_driver);
+ MODULE_AUTHOR("Kamel Bouhara <kamel.bouhara@bootlin.com>");
+ MODULE_DESCRIPTION("Microchip TCB Capture driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+index 68031d93ce89..d6b80b6dfc28 100644
+--- a/drivers/counter/stm32-lptimer-cnt.c
++++ b/drivers/counter/stm32-lptimer-cnt.c
+@@ -520,3 +520,4 @@ MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
+ MODULE_ALIAS("platform:stm32-lptimer-counter");
+ MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM counter driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+index 5779ae7c73cf..9bf20a5d6bda 100644
+--- a/drivers/counter/stm32-timer-cnt.c
++++ b/drivers/counter/stm32-timer-cnt.c
+@@ -417,3 +417,4 @@ MODULE_AUTHOR("Benjamin Gaignard <benjamin.gaignard@st.com>");
+ MODULE_ALIAS("platform:stm32-timer-counter");
+ MODULE_DESCRIPTION("STMicroelectronics STM32 TIMER counter driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index 0489d26eb47c..b0f24cf3e891 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -456,3 +456,4 @@ module_platform_driver(ti_eqep_driver);
+ MODULE_AUTHOR("David Lechner <david@lechnology.com>");
+ MODULE_DESCRIPTION("TI eQEP counter driver");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(COUNTER);
 
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index d66c8e6d0ef3..4620e9d79dde 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -2426,6 +2426,14 @@ static inline bool more_used(const struct vring_virtqueue *vq)
->  	return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
->  }
->  
-> +/**
-> + * vring_interrupt - notify a virtqueue on an interrupt
-> + * @irq: the IRQ number (ignored)
-> + * @_vq: the struct virtqueue to notify
-> + *
-> + * Calls the callback function of @_vq to process the virtqueue
-> + * notification.
-> + */
->  irqreturn_t vring_interrupt(int irq, void *_vq)
->  {
->  	struct vring_virtqueue *vq = to_vvq(_vq);
-> diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> index a3f73bb6733e..dcab9c7e8784 100644
-> --- a/include/linux/virtio.h
-> +++ b/include/linux/virtio.h
-> @@ -11,7 +11,7 @@
->  #include <linux/gfp.h>
->  
->  /**
-> - * virtqueue - a queue to register buffers for sending or receiving.
-> + * struct virtqueue - a queue to register buffers for sending or receiving.
->   * @list: the chain of virtqueues for this device
->   * @callback: the function to call when buffers are consumed (can be NULL).
->   * @name: the name of this virtqueue (mainly for debugging)
-> @@ -97,7 +97,7 @@ int virtqueue_resize(struct virtqueue *vq, u32 num,
->  		     void (*recycle)(struct virtqueue *vq, void *buf));
->  
->  /**
-> - * virtio_device - representation of a device using virtio
-> + * struct virtio_device - representation of a device using virtio
->   * @index: unique position on the virtio bus
->   * @failed: saved value for VIRTIO_CONFIG_S_FAILED bit (for restore)
->   * @config_enabled: configuration change reporting enabled
-> @@ -156,7 +156,7 @@ size_t virtio_max_dma_size(struct virtio_device *vdev);
->  	list_for_each_entry(vq, &vdev->vqs, list)
->  
->  /**
-> - * virtio_driver - operations for a virtio I/O driver
-> + * struct virtio_driver - operations for a virtio I/O driver
->   * @driver: underlying device driver (populate name and owner).
->   * @id_table: the ids serviced by this driver.
->   * @feature_table: an array of feature numbers supported by this driver.
-> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-> index 36ec7be1f480..4b517649cfe8 100644
-> --- a/include/linux/virtio_config.h
-> +++ b/include/linux/virtio_config.h
-> @@ -239,7 +239,7 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
->  
->  /**
->   * virtio_synchronize_cbs - synchronize with virtqueue callbacks
-> - * @vdev: the device
-> + * @dev: the virtio device
->   */
->  static inline
->  void virtio_synchronize_cbs(struct virtio_device *dev)
-> @@ -258,7 +258,7 @@ void virtio_synchronize_cbs(struct virtio_device *dev)
->  
->  /**
->   * virtio_device_ready - enable vq use in probe function
-> - * @vdev: the device
-> + * @dev: the virtio device
->   *
->   * Driver must call this to use vqs in the probe function.
->   *
-> @@ -306,7 +306,7 @@ const char *virtio_bus_name(struct virtio_device *vdev)
->  /**
->   * virtqueue_set_affinity - setting affinity for a virtqueue
->   * @vq: the virtqueue
-> - * @cpu: the cpu no.
-> + * @cpu_mask: the cpu mask
->   *
->   * Pay attention the function are best-effort: the affinity hint may not be set
->   * due to config support, irq type and sharing.
-> diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
-> index 476d3e5c0fe7..f8c20d3de8da 100644
-> --- a/include/uapi/linux/virtio_ring.h
-> +++ b/include/uapi/linux/virtio_ring.h
-> @@ -93,15 +93,21 @@
->  #define VRING_USED_ALIGN_SIZE 4
->  #define VRING_DESC_ALIGN_SIZE 16
->  
-> -/* Virtio ring descriptors: 16 bytes.  These can chain together via "next". */
-> +/**
-> + * struct vring_desc - Virtio ring descriptors,
-> + * 16 bytes long. These can chain together via @next.
-> + *
-> + * @addr: buffer address (guest-physical)
-> + * @len: buffer length
-> + * @flags: descriptor flags
-> + * @next: index of the next descriptor in the chain,
-> + *        if the VRING_DESC_F_NEXT flag is set. We chain unused
-> + *        descriptors via this, too.
-> + */
->  struct vring_desc {
-> -	/* Address (guest-physical). */
->  	__virtio64 addr;
-> -	/* Length. */
->  	__virtio32 len;
-> -	/* The flags as indicated above. */
->  	__virtio16 flags;
-> -	/* We chain unused descriptors via this, too */
->  	__virtio16 next;
->  };
->  
-> -- 
-> MST
-> 
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.2
 
