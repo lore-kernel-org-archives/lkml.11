@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17586C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E28C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345979AbiHOXaR (ORCPT
+        id S1346592AbiHOXav (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34146 "EHLO
+        Mon, 15 Aug 2022 19:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244637AbiHOXYP (ORCPT
+        with ESMTP id S244913AbiHOXYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:24:15 -0400
+        Mon, 15 Aug 2022 19:24:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD7F876B6;
-        Mon, 15 Aug 2022 13:05:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB164804BD;
+        Mon, 15 Aug 2022 13:05:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA2B6068D;
-        Mon, 15 Aug 2022 20:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03EAC433D6;
-        Mon, 15 Aug 2022 20:05:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B42A56069F;
+        Mon, 15 Aug 2022 20:05:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE282C433C1;
+        Mon, 15 Aug 2022 20:05:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593947;
-        bh=kcuCtULqp2kPi5vMU4qtw7Ki1COObkUW6h4KdKchGMQ=;
+        s=korg; t=1660593950;
+        bh=Qq5+Pd5ZEXH8JI+FXJrqFDMhbWQ9+lFV5YV4MmmrBQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z3tSE//f4wVND0u8N9564HmSFHTwpmPtj/AS6191Eb732JJwYk83QBLtKfHQqXFaQ
-         yQQlcK5Nvam3ho9xou4lISKcz7sfvUo72iJoXhD7qq639NCb84ogQBRm12OO0CaD6C
-         DGfLBL4AxPa0SBggoB2Dh59+qCkDcr8fAAiULqnw=
+        b=xHut8VJsBFR2u6ji1Gf2YD88erOT4Cm5EFPpASnjx3S955D8aUdxAER8QRe7QopZE
+         t6BqFa2YaLyv/ZadiuxolggDbNEwhB23jeE7KfBy5RU21zRKdLIpUTBvLijddbQuWb
+         daKgJ9dFoVac2tZ7X+CEvHvo5EQOqk9Jv55UZUrE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1033/1095] intel_idle: make SPR C1 and C1E be independent
-Date:   Mon, 15 Aug 2022 20:07:12 +0200
-Message-Id: <20220815180511.794102365@linuxfoundation.org>
+Subject: [PATCH 5.19 0353/1157] crypto: sun8i-ss - Fix error codes for dma_mapping_error()
+Date:   Mon, 15 Aug 2022 19:55:09 +0200
+Message-Id: <20220815180453.834444151@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 1548fac47a114b42063def551eb152a536ed9697 ]
+[ Upstream commit 6cb3f9b25c55928b95a02b9ed8e87ed653b3cce8 ]
 
-This patch partially reverts the changes made by the following commit:
+If there is a dma_mapping_error() then return negative error codes.
+Currently this code returns success.
 
-da0e58c038e6 intel_idle: add 'preferred_cstates' module argument
-
-As that commit describes, on early Sapphire Rapids Xeon platforms the C1 and
-C1E states were mutually exclusive, so that users could only have either C1 and
-C6, or C1E and C6.
-
-However, Intel firmware engineers managed to remove this limitation and make C1
-and C1E to be completely independent, just like on previous Xeon platforms.
-
-Therefore, this patch:
- * Removes commentary describing the old, and now non-existing SPR C1E
-   limitation.
- * Marks SPR C1E as available by default.
- * Removes the 'preferred_cstates' parameter handling for SPR. Both C1 and
-   C1E will be available regardless of 'preferred_cstates' value.
-
-We expect that all SPR systems are shipping with new firmware, which includes
-the C1/C1E improvement.
-
-Cc: v5.18+ <stable@vger.kernel.org> # v5.18+
-Signed-off-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 801b7d572c0a ("crypto: sun8i-ss - add hmac(sha1)")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/idle/intel_idle.c | 24 +-----------------------
- 1 file changed, 1 insertion(+), 23 deletions(-)
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index 907700d1e78e..9515a3146dc9 100644
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -911,16 +911,6 @@ static struct cpuidle_state adl_l_cstates[] __initdata = {
- 		.enter = NULL }
- };
- 
--/*
-- * On Sapphire Rapids Xeon C1 has to be disabled if C1E is enabled, and vice
-- * versa. On SPR C1E is enabled only if "C1E promotion" bit is set in
-- * MSR_IA32_POWER_CTL. But in this case there effectively no C1, because C1
-- * requests are promoted to C1E. If the "C1E promotion" bit is cleared, then
-- * both C1 and C1E requests end up with C1, so there is effectively no C1E.
-- *
-- * By default we enable C1 and disable C1E by marking it with
-- * 'CPUIDLE_FLAG_UNUSABLE'.
-- */
- static struct cpuidle_state spr_cstates[] __initdata = {
- 	{
- 		.name = "C1",
-@@ -933,8 +923,7 @@ static struct cpuidle_state spr_cstates[] __initdata = {
- 	{
- 		.name = "C1E",
- 		.desc = "MWAIT 0x01",
--		.flags = MWAIT2flg(0x01) | CPUIDLE_FLAG_ALWAYS_ENABLE |
--					   CPUIDLE_FLAG_UNUSABLE,
-+		.flags = MWAIT2flg(0x01) | CPUIDLE_FLAG_ALWAYS_ENABLE,
- 		.exit_latency = 2,
- 		.target_residency = 4,
- 		.enter = &intel_idle,
-@@ -1756,17 +1745,6 @@ static void __init spr_idle_state_table_update(void)
- {
- 	unsigned long long msr;
- 
--	/* Check if user prefers C1E over C1. */
--	if ((preferred_states_mask & BIT(2)) &&
--	    !(preferred_states_mask & BIT(1))) {
--		/* Disable C1 and enable C1E. */
--		spr_cstates[0].flags |= CPUIDLE_FLAG_UNUSABLE;
--		spr_cstates[1].flags &= ~CPUIDLE_FLAG_UNUSABLE;
--
--		/* Enable C1E using the "C1E promotion" bit. */
--		c1e_promotion = C1E_PROMOTION_ENABLE;
--	}
--
- 	/*
- 	 * By default, the C6 state assumes the worst-case scenario of package
- 	 * C6. However, if PC6 is disabled, we update the numbers to match
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
+index ac417a6b39e5..845019bd9591 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
+@@ -586,7 +586,8 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
+ 			rctx->t_dst[k + 1].len = rctx->t_dst[k].len;
+ 		}
+ 		addr_xpad = dma_map_single(ss->dev, tfmctx->ipad, bs, DMA_TO_DEVICE);
+-		if (dma_mapping_error(ss->dev, addr_xpad)) {
++		err = dma_mapping_error(ss->dev, addr_xpad);
++		if (err) {
+ 			dev_err(ss->dev, "Fail to create DMA mapping of ipad\n");
+ 			goto err_dma_xpad;
+ 		}
+@@ -612,7 +613,8 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
+ 			goto err_dma_result;
+ 		}
+ 		addr_xpad = dma_map_single(ss->dev, tfmctx->opad, bs, DMA_TO_DEVICE);
+-		if (dma_mapping_error(ss->dev, addr_xpad)) {
++		err = dma_mapping_error(ss->dev, addr_xpad);
++		if (err) {
+ 			dev_err(ss->dev, "Fail to create DMA mapping of opad\n");
+ 			goto err_dma_xpad;
+ 		}
 -- 
 2.35.1
 
