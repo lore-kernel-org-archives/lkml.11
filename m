@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84113C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B11C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346294AbiHOXjV (ORCPT
+        id S1353355AbiHOXjd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
+        Mon, 15 Aug 2022 19:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353829AbiHOXgm (ORCPT
+        with ESMTP id S1353854AbiHOXgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:36:42 -0400
+        Mon, 15 Aug 2022 19:36:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F79BCCE0;
-        Mon, 15 Aug 2022 13:09:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8037BCCF1;
+        Mon, 15 Aug 2022 13:09:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 464F1B810C5;
-        Mon, 15 Aug 2022 20:09:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91591C433C1;
-        Mon, 15 Aug 2022 20:09:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02386B80EA8;
+        Mon, 15 Aug 2022 20:09:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FE1C433D7;
+        Mon, 15 Aug 2022 20:09:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594157;
-        bh=x6NVRyUZTEf4nFxk/dq0sp7TxgAoTWMakjs1/z/O3Hs=;
+        s=korg; t=1660594160;
+        bh=FMs/sWj9WFMQUIEfGyLx6NRo6/tJlhfm8nDKhrM5/EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWr66RVgxtEIgrdSC8gPSLzFo539WRNIW3i+3eVredzpYVVDCRV5hur8TXjnggx5+
-         V2aED5Lj8blo/kFL480oVWvjCcpKD4MfahwA1r7/PJ2+YPJVMJaqrl2pr/Vi9iPdTt
-         DdaJ2+T12WKVZ9G6sjhC+gstkx/foS1PMnLKHEBU=
+        b=0p1NqNdUJdaQ0+wdlTySLPCOAz/knS3tpvh9lQ6294w95ngOHTKZHRAmAn1p53UzR
+         aEPG4BO3NfDEuvGPZw7dDqEFmx8nsulCox+hv73OjWl/butlm/xhicaYsLOpieuUDq
+         xOkcqBSWlEqtJcHdX6fO5Y5CyCxt6su2f4cQsTGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0374/1157] media: amphion: return error if format is unsupported by vpu
-Date:   Mon, 15 Aug 2022 19:55:30 +0200
-Message-Id: <20220815180454.682192679@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1065/1095] ext4: unindent codeblock in ext4_xattr_block_set()
+Date:   Mon, 15 Aug 2022 20:07:44 +0200
+Message-Id: <20220815180513.102937573@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,55 +49,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit a3a2efca36a3a1ddba229a7be7991e8b5de4ac35 ]
+[ Upstream commit fd48e9acdf26d0cbd80051de07d4a735d05d29b2 ]
 
-return error if format is unsupported by vpu,
-otherwise the vpu will be stalled at decoding
+Remove unnecessary else (and thus indentation level) from a code block
+in ext4_xattr_block_set(). It will also make following code changes
+easier. No functional changes.
 
-Fixes: 3cd084519c6f9 ("media: amphion: add vpu v4l2 m2m support")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-4-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/amphion/vpu_malone.c | 2 ++
- drivers/media/platform/amphion/vpu_v4l2.c   | 6 ++++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ fs/ext4/xattr.c | 77 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 38 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/media/platform/amphion/vpu_malone.c b/drivers/media/platform/amphion/vpu_malone.c
-index f29c223eefce..40267c73b1f9 100644
---- a/drivers/media/platform/amphion/vpu_malone.c
-+++ b/drivers/media/platform/amphion/vpu_malone.c
-@@ -610,6 +610,8 @@ static int vpu_malone_set_params(struct vpu_shared_addr *shared,
- 	enum vpu_malone_format malone_format;
+diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
+index d92d50de5a01..a25942a74929 100644
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -1850,6 +1850,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ #define header(x) ((struct ext4_xattr_header *)(x))
  
- 	malone_format = vpu_malone_format_remap(params->codec_format);
-+	if (WARN_ON(malone_format == MALONE_FMT_NULL))
-+		return -EINVAL;
- 	iface->udata_buffer[instance].base = params->udata.base;
- 	iface->udata_buffer[instance].slot_size = params->udata.size;
+ 	if (s->base) {
++		int offset = (char *)s->here - bs->bh->b_data;
++
+ 		BUFFER_TRACE(bs->bh, "get_write_access");
+ 		error = ext4_journal_get_write_access(handle, sb, bs->bh,
+ 						      EXT4_JTR_NONE);
+@@ -1882,49 +1884,46 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ 			if (error)
+ 				goto cleanup;
+ 			goto inserted;
+-		} else {
+-			int offset = (char *)s->here - bs->bh->b_data;
++		}
++		unlock_buffer(bs->bh);
++		ea_bdebug(bs->bh, "cloning");
++		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
++		error = -ENOMEM;
++		if (s->base == NULL)
++			goto cleanup;
++		s->first = ENTRY(header(s->base)+1);
++		header(s->base)->h_refcount = cpu_to_le32(1);
++		s->here = ENTRY(s->base + offset);
++		s->end = s->base + bs->bh->b_size;
  
-diff --git a/drivers/media/platform/amphion/vpu_v4l2.c b/drivers/media/platform/amphion/vpu_v4l2.c
-index 446f07d09d0b..da455e5ab337 100644
---- a/drivers/media/platform/amphion/vpu_v4l2.c
-+++ b/drivers/media/platform/amphion/vpu_v4l2.c
-@@ -500,10 +500,12 @@ static int vpu_vb2_start_streaming(struct vb2_queue *q, unsigned int count)
- 		  fmt->sizeimage[1], fmt->bytesperline[1],
- 		  fmt->sizeimage[2], fmt->bytesperline[2],
- 		  q->num_buffers);
--	call_void_vop(inst, start, q->type);
-+	ret = call_vop(inst, start, q->type);
- 	vb2_clear_last_buffer_dequeued(q);
-+	if (ret)
-+		vpu_vb2_buffers_return(inst, q->type, VB2_BUF_STATE_QUEUED);
+-			unlock_buffer(bs->bh);
+-			ea_bdebug(bs->bh, "cloning");
+-			s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
+-			error = -ENOMEM;
+-			if (s->base == NULL)
++		/*
++		 * If existing entry points to an xattr inode, we need
++		 * to prevent ext4_xattr_set_entry() from decrementing
++		 * ref count on it because the reference belongs to the
++		 * original block. In this case, make the entry look
++		 * like it has an empty value.
++		 */
++		if (!s->not_found && s->here->e_value_inum) {
++			ea_ino = le32_to_cpu(s->here->e_value_inum);
++			error = ext4_xattr_inode_iget(inode, ea_ino,
++				      le32_to_cpu(s->here->e_hash),
++				      &tmp_inode);
++			if (error)
+ 				goto cleanup;
+-			s->first = ENTRY(header(s->base)+1);
+-			header(s->base)->h_refcount = cpu_to_le32(1);
+-			s->here = ENTRY(s->base + offset);
+-			s->end = s->base + bs->bh->b_size;
  
--	return 0;
-+	return ret;
- }
- 
- static void vpu_vb2_stop_streaming(struct vb2_queue *q)
+-			/*
+-			 * If existing entry points to an xattr inode, we need
+-			 * to prevent ext4_xattr_set_entry() from decrementing
+-			 * ref count on it because the reference belongs to the
+-			 * original block. In this case, make the entry look
+-			 * like it has an empty value.
+-			 */
+-			if (!s->not_found && s->here->e_value_inum) {
+-				ea_ino = le32_to_cpu(s->here->e_value_inum);
+-				error = ext4_xattr_inode_iget(inode, ea_ino,
+-					      le32_to_cpu(s->here->e_hash),
+-					      &tmp_inode);
+-				if (error)
+-					goto cleanup;
+-
+-				if (!ext4_test_inode_state(tmp_inode,
+-						EXT4_STATE_LUSTRE_EA_INODE)) {
+-					/*
+-					 * Defer quota free call for previous
+-					 * inode until success is guaranteed.
+-					 */
+-					old_ea_inode_quota = le32_to_cpu(
+-							s->here->e_value_size);
+-				}
+-				iput(tmp_inode);
+-
+-				s->here->e_value_inum = 0;
+-				s->here->e_value_size = 0;
++			if (!ext4_test_inode_state(tmp_inode,
++					EXT4_STATE_LUSTRE_EA_INODE)) {
++				/*
++				 * Defer quota free call for previous
++				 * inode until success is guaranteed.
++				 */
++				old_ea_inode_quota = le32_to_cpu(
++						s->here->e_value_size);
+ 			}
++			iput(tmp_inode);
++
++			s->here->e_value_inum = 0;
++			s->here->e_value_size = 0;
+ 		}
+ 	} else {
+ 		/* Allocate a buffer where we construct the new block. */
 -- 
 2.35.1
 
