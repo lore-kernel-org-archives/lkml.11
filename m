@@ -2,135 +2,404 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5A6C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42113C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231825AbiHOHoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        id S231517AbiHOHpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiHOHoD (ORCPT
+        with ESMTP id S241138AbiHOHpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:44:03 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33041D0C2;
-        Mon, 15 Aug 2022 00:44:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1660549441; x=1692085441;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SIE66MGxDpRWZ2cps44EOenrs9VP7SJORPjECIaM/J8=;
-  b=aY0gkhy6FItAB7lqXiE4xb9u1vFeyoOspms8tB/31nCXS6SMbt+j/aaV
-   YL7N8xABz2WuYmM1JmmizN+EhstjBtBWb+Ep0O3VLbmRCrbqb87JSuQWc
-   Uo/Te1BE/awb1sX47qjmH0Cmrz8m3LXXjXAxHELitoMWFpuBC7FUCkJVO
-   1nzdtcoGZC86CaafH0JBhWN5upGxhSPF+/XDJd+mdAdcMG/UluiJwkY4M
-   mNjJNDP4p7ckXvR0xZqw7lLUYhLNnzwyb+YGYICFxBKqVhYI1miyPsoFE
-   8HRG5c4E+hU0n2Sy8jp4qMqrOCstBHTUoa7J1ODANCkStzIqFYc+UJ2JH
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,237,1654552800"; 
-   d="scan'208";a="25601393"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 15 Aug 2022 09:43:57 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 15 Aug 2022 09:43:58 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 15 Aug 2022 09:43:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1660549438; x=1692085438;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SIE66MGxDpRWZ2cps44EOenrs9VP7SJORPjECIaM/J8=;
-  b=OPTI+PZvpxikOTum61xgzpOJTqIyb8naeDbElgSclZVGyI9eVyMbyxL+
-   Cnu8EMhptZqZ+H3Q2W5xK1Dt3dgwlfAYtCD3mLwAwD3aItQFVjekVEoqQ
-   LM8/wyhRvu68wFW6raE3sCVzOXK0tuXrZUtxE2wfd5exJyjNWfTDpNcEC
-   cJxPjZB+ahu4wiFM8BH9sWdVH8VLaeZYmC1Qn6KKbky/GC57fm7Xv4Dkr
-   odUhmrKnvU+kyR9NBQGAM9acabrFXE+YOtMSXJRTD3Mr0rsjuTqh+4MIP
-   FhqrhyRlkj5cHMzrcO/LjySM7gnnpGbS1YzjdzVPQd+lA+CbqYDB7XXwo
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,237,1654552800"; 
-   d="scan'208";a="25601392"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 15 Aug 2022 09:43:57 +0200
-Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id ABA9F280056;
-        Mon, 15 Aug 2022 09:43:57 +0200 (CEST)
-Message-ID: <c434ba87606d3d7696ae076684ceea67bfe662e3.camel@ew.tq-group.com>
-Subject: Re: [PATCH 0/9] Input: synaptics-rmi4 - Bootloader v7/v8 firmware
- update improvements
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Lyude Paul <lyude@redhat.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 15 Aug 2022 09:43:52 +0200
-In-Reply-To: <26790cfecb827245187233bc81f9fb89553bb4a7.camel@ew.tq-group.com>
-References: <20220608124808.51402-1-matthias.schiffer@ew.tq-group.com>
-         <26790cfecb827245187233bc81f9fb89553bb4a7.camel@ew.tq-group.com>
+        Mon, 15 Aug 2022 03:45:35 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67C06358;
+        Mon, 15 Aug 2022 00:45:33 -0700 (PDT)
+Received: from [IPv6:2a00:23c6:c311:3401:3486:284d:25cf:55c7] (unknown [IPv6:2a00:23c6:c311:3401:3486:284d:25cf:55c7])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4F0776601B73;
+        Mon, 15 Aug 2022 08:45:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660549531;
+        bh=E5ZBpiuxusCD8NkZNtw1vu9faUutMAh/sb5xwpmbkBc=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=XNLE4LD8AJgsnyh+IvlZzJiy7vP5edKRv0yH5X0Dq0E665HAHMCFsGbHgbRkopn05
+         TuKWOKraTHgYgaOMNeSuxNzKnYFv+7dNp2vaS4sS/pALRF4ImSC+gA9ovZhM+6/SFu
+         T92jzayaemkcuhzZwlB7a5zJtK+Gj0HFbp6YCacnClmuE0iU3MMYL+x5jPLTc0yKz4
+         zL8aUULG3juHj3m2UReEi/7BtddxwDpdwNX3KHsUhVqGijFzjbD5vt7j3W8au9M6pm
+         1cKjjNzHaDnjXSnKOWfmYwp0CN1TYeJ0ChIR6l2Wlk1W2cSedWPKSLTrKnhJG7z31P
+         fJkq2k/pncGpw==
+Message-ID: <dc944acacf64f19b46e1d865d9608853b44a686a.camel@collabora.com>
+Subject: Re: [PATCH v4 2/2] arm64: dts: imx8mp-msc-sm2s: Add device trees
+ for MSC SM2S-IMX8PLUS SoM and carrier board
+From:   Martyn Welch <martyn.welch@collabora.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     kernel@collabora.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Date:   Mon, 15 Aug 2022 08:45:30 +0100
+In-Reply-To: <993a4559-c9f4-c6e2-8854-d2018180fd6a@linaro.org>
+References: <20220812084120.376042-1-martyn.welch@collabora.com>
+         <20220812084120.376042-2-martyn.welch@collabora.com>
+         <8962b7ed-a21c-0b7f-7a6d-5db3db84e4cb@linaro.org>
+         <65a094d5d03ad8f7b35196c9dff6ffc6cf0ea151.camel@collabora.com>
+         <15ddd798-873e-d90d-11e9-c6dd46ca03f4@linaro.org>
+         <c874e1db8526bfa915baca1f0bb28d0c5f5a1feb.camel@collabora.com>
+         <993a4559-c9f4-c6e2-8854-d2018180fd6a@linaro.org>
+Organization: Collabora Ltd.
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3-2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-27 at 10:31 +0200, Matthias Schiffer wrote:
-> On Wed, 2022-06-08 at 14:47 +0200, Matthias Schiffer wrote:
-> > This fixes the firmware update function with bootloader v8, allows to
-> > recover from interrupted updates with v7/v8, and does some code cleanup.
-> > 
-> > I believe that the code that allows to recover from a broken partition
-> > table is also necessary to make flashing a different partition table
-> > work at all, but I wasn't able to verify that, as I don't have any firmware
-> > images with different partition tables to test with. In any case, I'm
-> > pretty sure that it is working correctly now, as recovery from a mostly
-> > empty flash without partition table has been tested successfully.
-> > 
-> > I have only tested the new code with bootloader v8, and I don't have the
-> > documentation / interfacing guide for v7, so it would be great if anyone
-> > could check that I didn't break updates for v7.
-> 
-> Hi everyone,
-> 
-> any news regarding this patch series?
-> 
-> 
-> Kind regards,
-> Matthias
+On Fri, 2022-08-12 at 20:31 +0300, Krzysztof Kozlowski wrote:
+> On 12/08/2022 18:03, Martyn Welch wrote:
+> > The tests threw quite a few errors that seemed to be related to the
+> > imx8mp.dtsi. The only ones that seemed to be related to the files
+> > I've
+> > created seem to be the result of including optional pins in the pin
+> > muxing, which need to be there AFAIK, but seem to be resulting in
+> > warnings from the tool.
+>=20
+> Your DTS defined three compatibles which were not documented by the
+> bindings change, therefore I expect the warning from schema.
+>=20
+> To be sure, I just run it and it is clearly visible:
+>=20
+> /home/krzk/dev/linux/linux/out/arch/arm64/boot/dts/freescale/imx8mp-
+> msc-sm2s-14N0600E.dtb:
+> /: compatible: 'oneOf' conditional failed, one must be fixed:
+>=20
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0['avnet,sm2s-imx8mp-14N06=
+00E', 'avnet,sm2s-imx8mp',
+> 'fsl,imx8mp'] is
+> too long
+>=20
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0['avnet,sm2s-imx8mp-14N06=
+00E', 'avnet,sm2s-imx8mp',
+> 'fsl,imx8mp'] is
+> too short
+>=20
+>=20
+> It's not possible to miss it, it's the biggest warning...
+>=20
 
-Ping - can we get this applied, or at least any kind of feedback?
+This is the sum total of what I'm getting when running it:
+
+$ make dtbs_check
+warning: python package 'yamllint' not installed, skipping
+  CHKDT   Documentation/devicetree/bindings/processed-schema.json
+  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+  DTC     arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb
+  CHECK   arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: ecspi1grp:fsl,pins:0: [488, 1096, 1372, 0, 0, 130,
+484, 1092, 1376, 0, 0, 130, 480, 1088, 1368, 0, 0, 130, 492, 1100,
+1380, 0, 0, 262144, 172, 780, 0, 5, 0, 262144] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: ecspi2grp:fsl,pins:0: [504, 1112, 1388, 0, 1, 130,
+500, 1108, 1392, 0, 1, 130, 496, 1104, 1384, 0, 1, 130, 508, 1116,
+1396, 0, 1, 262144, 176, 784, 0, 5, 0, 262144] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: eqosgrp:fsl,pins:0: [84, 692, 0, 0, 0, 3, 88, 696,
+1424, 0, 1, 3, 124, 732, 0, 0, 0, 145, 128, 736, 0, 0, 0, 145, 132,
+740, 0, 0, 0, 145, 136, 744, 0, 0, 0, 145, 120, 728, 0, 0, 0, 145, 116,
+724, 0, 0, 0, 145, 104, 712, 0, 0, 0, 31, 100, 708, 0, 0, 0, 31, 96,
+704, 0, 0, 0, 31, 92, 700, 0, 0, 0, 31, 108, 716, 0, 0, 0, 31, 112,
+720, 0, 0, 0, 31] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: fecgrp:fsl,pins:0: [344, 952, 0, 4, 0, 3, 348, 956,
+1404, 4, 1, 3, 352, 960, 1408, 4, 1, 145, 356, 964, 1412, 4, 1, 145,
+360, 968, 0, 4, 0, 145, 364, 972, 0, 4, 0, 145, 372, 980, 0, 4, 0, 145,
+368, 976, 1416, 4, 1, 145, 376, 984, 0, 4, 0, 31, 380, 988, 0, 4, 0,
+31, 384, 992, 0, 4, 0, 31, 388, 996, 0, 4, 0, 31, 392, 1000, 0, 4, 0,
+31, 396, 1004, 0, 4, 0, 31] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: flexcan1grp:fsl,pins:0: [312, 920, 0, 6, 0, 340, 316,
+924, 1356, 6, 0, 340] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: flexcan2grp:fsl,pins:0: [324, 932, 1360, 6, 0, 340,
+320, 928, 0, 6, 0, 340] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: flexspi0grp:fsl,pins:0: [224, 832, 0, 1, 0, 450, 228,
+836, 0, 1, 0, 130, 248, 856, 0, 1, 0, 130, 252, 860, 0, 1, 0, 130, 256,
+864, 0, 1, 0, 130, 260, 868, 0, 1, 0, 130, 280, 888, 0, 5, 0, 25] is
+too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c1grp:fsl,pins:0: [512, 1120, 1444, 0, 2,
+1073742275, 516, 1124, 1448, 0, 2, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c2grp:fsl,pins:0: [520, 1128, 1452, 0, 2,
+1073742275, 524, 1132, 1456, 0, 2, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c3grp:fsl,pins:0: [528, 1136, 1460, 0, 4,
+1073742275, 532, 1140, 1464, 0, 4, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c4grp:fsl,pins:0: [536, 1144, 1468, 0, 5,
+1073742275, 540, 1148, 1472, 0, 5, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c5grp:fsl,pins:0: [468, 1076, 1476, 2, 2,
+1073742275, 472, 1080, 1480, 2, 2, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: i2c6grp:fsl,pins:0: [300, 908, 1484, 3, 1,
+1073742275, 304, 912, 1488, 3, 1, 1073742275] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: uart1grp:fsl,pins:0: [544, 1152, 1512, 0, 4, 73, 548,
+1156, 0, 0, 0, 73] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: uart2grp:fsl,pins:0: [164, 772, 0, 5, 0, 452, 168,
+776, 0, 5, 0, 452, 552, 1160, 1520, 0, 6, 73, 556, 1164, 0, 0, 0, 73]
+is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: uart3grp:fsl,pins:0: [180, 788, 0, 5, 0, 452, 184,
+792, 0, 5, 0, 452, 560, 1168, 1528, 0, 6, 73, 564, 1172, 0, 0, 0, 73]
+is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: uart4grp:fsl,pins:0: [568, 1176, 1536, 0, 8, 73, 572,
+1180, 0, 0, 0, 73] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc2-gpiogrp:fsl,pins:0: [188, 796, 0, 5, 0, 452,
+220, 828, 0, 5, 0, 452] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc2grp:fsl,pins:0: [192, 800, 0, 0, 0, 400, 196,
+804, 0, 0, 0, 464, 200, 808, 0, 0, 0, 464, 204, 812, 0, 0, 0, 464, 208,
+816, 0, 0, 0, 464, 212, 820, 0, 0, 0, 464, 36, 644, 0, 1, 0, 193] is
+too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc2-100mhzgrp:fsl,pins:0: [192, 800, 0, 0, 0, 404,
+196, 804, 0, 0, 0, 468, 200, 808, 0, 0, 0, 468, 204, 812, 0, 0, 0, 468,
+208, 816, 0, 0, 0, 468, 212, 820, 0, 0, 0, 468, 36, 644, 0, 1, 0, 193]
+is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc2-200mhzgrp:fsl,pins:0: [192, 800, 0, 0, 0, 406,
+196, 804, 0, 0, 0, 470, 200, 808, 0, 0, 0, 470, 204, 812, 0, 0, 0, 470,
+208, 816, 0, 0, 0, 470, 212, 820, 0, 0, 0, 470, 36, 644, 0, 1, 0, 193]
+is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc3grp:fsl,pins:0: [292, 900, 1540, 2, 1, 400,
+296, 904, 1548, 2, 1, 464, 264, 872, 1552, 2, 1, 464, 268, 876, 1556,
+2, 1, 464, 272, 880, 1560, 2, 1, 464, 276, 884, 1564, 2, 1, 464, 284,
+892, 1568, 2, 1, 464, 236, 844, 1572, 2, 1, 464, 240, 848, 1576, 2, 1,
+464, 244, 852, 1580, 2, 1, 464, 232, 840, 1584, 2, 1, 400] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc3-100mhzgrp:fsl,pins:0: [292, 900, 1540, 2, 1,
+404, 296, 904, 1548, 2, 1, 468, 264, 872, 1552, 2, 1, 468, 268, 876,
+1556, 2, 1, 468, 272, 880, 1560, 2, 1, 468, 276, 884, 1564, 2, 1, 468,
+284, 892, 1568, 2, 1, 468, 236, 844, 1572, 2, 1, 468, 240, 848, 1576,
+2, 1, 468, 244, 852, 1580, 2, 1, 468, 232, 840, 1584, 2, 1, 404] is too
+long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: usdhc3-200mhzgrp:fsl,pins:0: [292, 900, 1540, 2, 1,
+406, 296, 904, 1548, 2, 1, 470, 264, 872, 1552, 2, 1, 470, 268, 876,
+1556, 2, 1, 470, 272, 880, 1560, 2, 1, 470, 276, 884, 1564, 2, 1, 470,
+284, 892, 1568, 2, 1, 470, 236, 844, 1572, 2, 1, 470, 240, 848, 1576,
+2, 1, 470, 244, 852, 1580, 2, 1, 470, 232, 840, 1584, 2, 1, 406] is too
+long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+pinctrl@30330000: smarcgpiosgrp:fsl,pins:0: [64, 672, 0, 0, 0, 25, 332,
+940, 0, 5, 0, 25, 336, 944, 0, 5, 0, 25, 340, 948, 0, 5, 0, 25, 444,
+1052, 0, 5, 0, 25, 464, 1072, 0, 5, 0, 25, 400, 1008, 0, 5, 0, 25, 60,
+668, 0, 0, 0, 25, 408, 1016, 0, 5, 0, 25, 412, 1020, 0, 5, 0, 25, 416,
+1024, 0, 5, 0, 25, 440, 1048, 0, 5, 0, 25, 404, 1012, 0, 5, 0, 25, 328,
+936, 0, 5, 0, 25] is too long
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/pinctrl/fsl,imx8mp-
+pinctrl.yaml
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/iomuxc-gpr@30340000: failed to match any schema
+with compatible: ['fsl,imx8mp-iomuxc-gpr', 'syscon']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/anatop@30360000: failed to match any schema with
+compatible: ['fsl,imx8mp-anatop', 'fsl,imx8mm-anatop', 'syscon']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/anatop@30360000: failed to match any schema with
+compatible: ['fsl,imx8mp-anatop', 'fsl,imx8mm-anatop', 'syscon']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/snvs@30370000: failed to match any schema with
+compatible: ['fsl,sec-v4.0-mon', 'syscon', 'simple-mfd']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/snvs@30370000/snvs-rtc-lp: failed to match any
+schema with compatible: ['fsl,sec-v4.0-mon-rtc-lp']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30000000/snvs@30370000/snvs-powerkey: failed to match any
+schema with compatible: ['fsl,sec-v4.0-pwrkey']
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+gpc@303a0000: 'oneOf' conditional failed, one must be fixed:
+	'interrupts' is a required property
+	'interrupts-extended' is a required property
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/power/fsl,imx-gpcv2.yaml
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/crypto@30900000: failed to match any schema with
+compatible: ['fsl,sec-v4.0']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/crypto@30900000/jr@1000: failed to match any schema
+with compatible: ['fsl,sec-v4.0-job-ring']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/crypto@30900000/jr@2000: failed to match any schema
+with compatible: ['fsl,sec-v4.0-job-ring']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/crypto@30900000/jr@3000: failed to match any schema
+with compatible: ['fsl,sec-v4.0-job-ring']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/dma-controller@30bd0000: failed to match any schema
+with compatible: ['fsl,imx8mp-sdma', 'fsl,imx8mq-sdma']
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0:
+/soc@0/bus@30800000/dma-controller@30bd0000: failed to match any schema
+with compatible: ['fsl,imx8mp-sdma', 'fsl,imx8mq-sdma']
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+usb-phy@381f0040: 'power-domains' does not match any of the regexes:
+'pinctrl-[0-9]+'
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/phy/fsl,imx8mq-usb-phy.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+usb@32f10100: 'power-domains' does not match any of the regexes:
+'^usb@[0-9a-f]+$', 'pinctrl-[0-9]+'
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/usb/fsl,imx8mp-dwc3.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+usb-phy@382f0040: 'power-domains' does not match any of the regexes:
+'pinctrl-[0-9]+'
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/phy/fsl,imx8mq-usb-phy.yaml
+/home/martyn/Documents/geh0003/linux-
+upstream/arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:
+usb@32f10108: 'power-domains' does not match any of the regexes:
+'^usb@[0-9a-f]+$', 'pinctrl-[0-9]+'
+	From schema: /home/martyn/Documents/geh0003/linux-
+upstream/Documentation/devicetree/bindings/usb/fsl,imx8mp-dwc3.yaml
+arch/arm64/boot/dts/freescale/imx8mp-msc-sm2s-ep1.dtb:0:0: /extcon-
+usb0: failed to match any schema with compatible: ['linux,extcon-usb-
+gpio']
 
 
-Kind regards,
-Matthias
+Unless I'm missing something, that's all from dtsi I'm including, not
+from the files I'm trying to add (with the possible exception of the
+tools not understanding that pinctrl nodes might have optional entities
+in them.
 
+Do you have patch 1 of the series in your tree?:
 
+https://lore.kernel.org/linux-devicetree/20220812084120.376042-1-martyn.wel=
+ch@collabora.com/
 
-> 
-> 
-> 
-> > 
-> > Matthias Schiffer (9):
-> >   Input: synaptics-rmi4 - fix firmware update operations with bootloader
-> >     v8
-> >   Input: synaptics-rmi4 - introduce rmi_f34v7_check_command_status()
-> >     helper
-> >   Input: synaptics-rmi4 - fix command completion check for bootloader
-> >     v7/v8
-> >   Input: synaptics-rmi4 - rewrite partition table unconditionally
-> >   Input: synaptics-rmi4 - reset after writing partition table
-> >   Input: synaptics-rmi4 - make rmi_f34v7_erase_all() use the "erase all"
-> >     command
-> >   Input: synaptics-rmi4 - remove unneeded struct register_offset
-> >   Input: synaptics-rmi4 - simplify rmi_f34v7_start_reflash()
-> >   Input: synaptics-rmi4 - drop useless gotos in rmi_f34v7_do_reflash()
-> > 
-> >  drivers/input/rmi4/rmi_f34.c   |  16 +-
-> >  drivers/input/rmi4/rmi_f34.h   |  17 --
-> >  drivers/input/rmi4/rmi_f34v7.c | 349 +++++++--------------------------
-> >  3 files changed, 81 insertions(+), 301 deletions(-)
-> > 
+I thought that was exactly what that was doing...=20
+
+Martyn
+
+> Best regards,
+> Krzysztof
 
