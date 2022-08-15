@@ -2,89 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 210C3C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B124C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234060AbiHPATz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
+        id S1348895AbiHPAUE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357262AbiHPANR (ORCPT
+        with ESMTP id S1357359AbiHPANY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:13:17 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CF917651B
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:29:53 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so4418719wms.5
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Xr+UfO+qh4isF9IlG5bCz7LtZXBHMAXoplA9/7WZzXo=;
-        b=W4xaU/BQRB9QDvjZod3/K3AWAoKIGLhJ9kSF6a1Iya5gjWDxGbWWn/dZ285MabIA9M
-         ay2Id7daU2+BUbMKABA3ixnJor0fQfOk85SxhM22w47UmU/gksLCG4KajVtQfVRAvri7
-         YkMbZ+/h+pF+dbho4ih9LjpsT6URElhZmiKctKEqOqehyEgr2Ew0L+uTpfy58iXpjCOm
-         X3QIZwo2PtKT/6AldR1qYt/qgDL217r7mHpzBLNi8p1yyZd7pBF9XVyVoVKQWyVFY5yW
-         Xk5ag8m8afmpc2Uipn/qL3gC55NG/b780t1nk9B0pVPxSREuswL5T6zhJ/5elaga/BX3
-         iOPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Xr+UfO+qh4isF9IlG5bCz7LtZXBHMAXoplA9/7WZzXo=;
-        b=sijieU1/qKPgrGIJFXG43BwZuHDfMY6riYDbWyU2T/fpZ2kMpYz6/rncwNXpMap9nS
-         PWcdz1GwKiiqYB7hH2v96Mynvw1qxdjWjbP1orzUMmovnrdAPdh242GVbYLuivek9Uc5
-         UNYXdtc2lyiz5gDIgV+JoMqLGC0aAEmbfBW4kVN0MM0FnnH+rOKt1HXzEoaQaQtRLzC0
-         +j9llIM281J6+8dMK7NOaJMH+30nZ9UWCAhi+mVLTvmeUt15eVWTLQA4erFTO2IWMBvm
-         SG9wlS/e1+QA3+/oegtVK2O85b10suZZl3UmW6V6sQIsH4qjTZaqRV9iiNcFm2FtXClj
-         QHkQ==
-X-Gm-Message-State: ACgBeo1FnwWvHNw6eLE/HmcpXpaVgyGrf7J+u27QethV4tvdyosHOj7G
-        zezhHyKvlWeEDI079d4hYdzjGg==
-X-Google-Smtp-Source: AA6agR7dfZyQkZTV2Qp0fB4jebLEk+ydPCl/oc9p/QV2VmrnbmA80BIWxTHmCnHaPLjxKiwjgswSig==
-X-Received: by 2002:a1c:3b46:0:b0:3a5:a92d:9e62 with SMTP id i67-20020a1c3b46000000b003a5a92d9e62mr10852053wma.175.1660595391981;
-        Mon, 15 Aug 2022 13:29:51 -0700 (PDT)
-Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id e10-20020adf9bca000000b0022515d9e2ddsm323905wrc.45.2022.08.15.13.29.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:29:51 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     conor.dooley@microchip.com, daire.mcnamara@microchip.com
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, broonie@kernel.org,
-        nagasuresh.relli@microchip.com,
-        valentina.fernandezalanis@microchip.com,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH] riscv: dts: microchip: add qspi compatible fallback
-Date:   Mon, 15 Aug 2022 21:29:37 +0100
-Message-Id: <166059535262.2709508.15329793193826864091.b4-ty@microchip.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810085914.801170-1-conor.dooley@microchip.com>
-References: <20220810085914.801170-1-conor.dooley@microchip.com>
+        Mon, 15 Aug 2022 20:13:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D6B176DC1;
+        Mon, 15 Aug 2022 13:29:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D956117D;
+        Mon, 15 Aug 2022 20:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7813C433D7;
+        Mon, 15 Aug 2022 20:29:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660595397;
+        bh=z2ppMhTPiC/F2H1GoH0DGMhpTjqq0uo0VJ7PpbIH8zo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C9zi2li8XTGj2inps55nQxrV/9lC15mADZowTiSGXMKhTbsYOslROGJ2o+h89Qcd1
+         k2Gv9sha742jycH9uRhHqK53kdGJbkHOjJ795XzueLtEwhn3jUjAEnb9jdv0SBxa7A
+         9th3c6lKVGTp6cKxL15nZP1H5em4lgVSIPFVamGM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0751/1157] clk: qcom: gcc-msm8939: Point MM peripherals to system_mm_noc clock
+Date:   Mon, 15 Aug 2022 20:01:47 +0200
+Message-Id: <20220815180509.534624716@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-On Wed, 10 Aug 2022 09:59:15 +0100, Conor Dooley wrote:
-> The "hard" QSPI peripheral on PolarFire SoC is derived from version 2
-> of the FPGA IP core. The original binding had no fallback etc, so this
-> device tree is valid as is. There was also no functional driver for the
-> QSPI IP, so no device with a devicetree from a previous mainline
-> release will regress.
-> 
-> 
-> [...]
+[ Upstream commit 05eed0990927aa9634682fec58660e30f7b7ae30 ]
 
-Applied to dt-for-next, thanks!
+Qcom docs indciate the following peripherals operating from System NOC
+MM not from System NOC clocks.
 
-[1/1] riscv: dts: microchip: add qspi compatible fallback
-      https://git.kernel.org/conor/c/7eac0081a8e9
+- MDP
+- VFE
+- JPEGe
+- Venus
 
-Thanks,
-Conor.
+Switch over the relevant parent pointers.
+
+Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-5-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/clk/qcom/gcc-msm8939.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
+index 12bab9067ea8..c7377ec0f423 100644
+--- a/drivers/clk/qcom/gcc-msm8939.c
++++ b/drivers/clk/qcom/gcc-msm8939.c
+@@ -2453,7 +2453,7 @@ static struct clk_branch gcc_camss_jpeg_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_camss_jpeg_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -2657,7 +2657,7 @@ static struct clk_branch gcc_camss_vfe_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_camss_vfe_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -2813,7 +2813,7 @@ static struct clk_branch gcc_mdss_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_mdss_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3205,7 +3205,7 @@ static struct clk_branch gcc_mdp_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_mdp_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3223,7 +3223,7 @@ static struct clk_branch gcc_venus_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_venus_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3241,7 +3241,7 @@ static struct clk_branch gcc_vfe_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_vfe_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3259,7 +3259,7 @@ static struct clk_branch gcc_jpeg_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_jpeg_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3496,7 +3496,7 @@ static struct clk_branch gcc_venus0_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_venus0_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+-- 
+2.35.1
+
+
+
