@@ -2,56 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA74C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9DCC2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352845AbiHOXBQ (ORCPT
+        id S1352872AbiHOXBU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        Mon, 15 Aug 2022 19:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344550AbiHOW6h (ORCPT
+        with ESMTP id S1345864AbiHOW6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:58:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B758422D9;
-        Mon, 15 Aug 2022 12:57:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3679474DC;
+        Mon, 15 Aug 2022 12:57:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C8F1B80EAD;
-        Mon, 15 Aug 2022 19:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44AA1C433C1;
-        Mon, 15 Aug 2022 19:56:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80C526113B;
+        Mon, 15 Aug 2022 19:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83240C433D6;
+        Mon, 15 Aug 2022 19:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593418;
-        bh=e25EplunFs+xhOssElaZHcLWfqW4P+ZY5UR2hRo+Ob0=;
+        s=korg; t=1660593421;
+        bh=dC3DNuwK+mEw99lMl/mt9cbWGoqxAMyTQd+LbtZwKyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OThCGE48TG2ltrbitrGnORhov2UuqBJXpBHG4moL6w4rA/mWGrbwffRzXSEgT5qW7
-         6i+uVIqMtSigrtesPUH+UJ/dD+w7KlWuES/CmdjB7nuUuI3KPv8qctimazlUUuIfJu
-         PqdrH0Lf/UuusZn6PZAWbHQPO6HTVvmqkeIKo9jQ=
+        b=2kky4/ofQe7I71yG7WULP2jsj3OJ+A0vViga+BK8UL3gL0a4/IjH6u8UjJ7PfB69+
+         CfEkcSTAoOtXuA2A/OFu78BYIYufbevr/YXU4g7dZj+GRkV+fMyyVFBTmETuox123C
+         btgqUf4bPUygJUegMf/3C6JRHzwWfEC28t/Y0wcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=E8=B0=AD=E6=A2=93=E7=85=8A?= <tanzixuan.me@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Yuwen Chen <chenyuwen1@meizu.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0943/1095] genelf: Use HAVE_LIBCRYPTO_SUPPORT, not the never defined HAVE_LIBCRYPTO
-Date:   Mon, 15 Aug 2022 20:05:42 +0200
-Message-Id: <20220815180508.184132690@linuxfoundation.org>
+Subject: [PATCH 5.19 0265/1157] erofs: wake up all waiters after z_erofs_lzma_head ready
+Date:   Mon, 15 Aug 2022 19:53:41 +0200
+Message-Id: <20220815180450.191033016@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -60,53 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Yuwen Chen <chenyuwen1@meizu.com>
 
-[ Upstream commit 91cea6be90e436c55cde8770a15e4dac9d3032d0 ]
+[ Upstream commit 2df7c4bd7c1d2bc5ece5e9ed19dbd386810c2a65 ]
 
-When genelf was introduced it tested for HAVE_LIBCRYPTO not
-HAVE_LIBCRYPTO_SUPPORT, which is the define the feature test for openssl
-defines, fix it.
+When the user mounts the erofs second times, the decompression thread
+may hung. The problem happens due to a sequence of steps like the
+following:
 
-This also adds disables the deprecation warning, someone has to fix this
-to build with openssl 3.0 before the warning becomes a hard error.
+1) Task A called z_erofs_load_lzma_config which obtain all of the node
+   from the z_erofs_lzma_head.
 
-Fixes: 9b07e27f88b9cd78 ("perf inject: Add jitdump mmap injection support")
-Reported-by: 谭梓煊 <tanzixuan.me@gmail.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Nick Terrell <terrelln@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Link: http://lore.kernel.org/lkml/YulpPqXSOG0Q4J1o@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+2) At this time, task B called the z_erofs_lzma_decompress and wanted to
+   get a node. But the z_erofs_lzma_head was empty, the Task B had to
+   sleep.
+
+3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
+   task B was still sleeping.
+
+One example report when the hung happens:
+task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
+Workqueue: erofs_unzipd z_erofs_decompressqueue_work
+Call Trace:
+ <TASK>
+ __schedule+0x281/0x760
+ schedule+0x49/0xb0
+ z_erofs_lzma_decompress+0x4bc/0x580
+ ? cpu_core_flags+0x10/0x10
+ z_erofs_decompress_pcluster+0x49b/0xba0
+ ? __update_load_avg_se+0x2b0/0x330
+ ? __update_load_avg_se+0x2b0/0x330
+ ? update_load_avg+0x5f/0x690
+ ? update_load_avg+0x5f/0x690
+ ? set_next_entity+0xbd/0x110
+ ? _raw_spin_unlock+0xd/0x20
+ z_erofs_decompress_queue.isra.0+0x2e/0x50
+ z_erofs_decompressqueue_work+0x30/0x60
+ process_one_work+0x1d3/0x3a0
+ worker_thread+0x45/0x3a0
+ ? process_one_work+0x3a0/0x3a0
+ kthread+0xe2/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Signed-off-by: Yuwen Chen <chenyuwen1@meizu.com>
+Fixes: 622ceaddb764 ("erofs: lzma compression support")
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220626224041.4288-1-chenyuwen1@meizu.com
+Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/genelf.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ fs/erofs/decompressor_lzma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/perf/util/genelf.c b/tools/perf/util/genelf.c
-index aed49806a09b..953338b9e887 100644
---- a/tools/perf/util/genelf.c
-+++ b/tools/perf/util/genelf.c
-@@ -30,7 +30,11 @@
+diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
+index 05a3063cf2bc..5e59b3f523eb 100644
+--- a/fs/erofs/decompressor_lzma.c
++++ b/fs/erofs/decompressor_lzma.c
+@@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
+ 	DBG_BUGON(z_erofs_lzma_head);
+ 	z_erofs_lzma_head = head;
+ 	spin_unlock(&z_erofs_lzma_lock);
++	wake_up_all(&z_erofs_lzma_wq);
  
- #define BUILD_ID_URANDOM /* different uuid for each run */
- 
--#ifdef HAVE_LIBCRYPTO
-+// FIXME, remove this and fix the deprecation warnings before its removed and
-+// We'll break for good here...
-+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-+
-+#ifdef HAVE_LIBCRYPTO_SUPPORT
- 
- #define BUILD_ID_MD5
- #undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
+ 	z_erofs_lzma_max_dictsize = dict_size;
+ 	mutex_unlock(&lzma_resize_mutex);
 -- 
 2.35.1
 
