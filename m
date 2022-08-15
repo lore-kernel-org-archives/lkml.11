@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1511C32757
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21686C2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349754AbiHOVlx (ORCPT
+        id S1349633AbiHOVlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        Mon, 15 Aug 2022 17:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348870AbiHOVhs (ORCPT
+        with ESMTP id S244325AbiHOVhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C9811A31;
-        Mon, 15 Aug 2022 12:27:41 -0700 (PDT)
+        Mon, 15 Aug 2022 17:37:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B9A625D;
+        Mon, 15 Aug 2022 12:27:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 832326102C;
-        Mon, 15 Aug 2022 19:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D32DC433C1;
-        Mon, 15 Aug 2022 19:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54ED56102C;
+        Mon, 15 Aug 2022 19:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415B8C433D6;
+        Mon, 15 Aug 2022 19:27:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591660;
-        bh=8LUaCd4bTBKPuxdWhBKc9IuyNYhTts+CufpvhOlETNY=;
+        s=korg; t=1660591644;
+        bh=qC+fTR72lKNazJDRxV9oVf7A+NTEtgKs6MUoauoVF+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsBLz2iENtBa/ssq7Xis8VXTnWap/MaivUDCgoYI+nxbQh/DHzzZ4QA1RFbHpuSao
-         g2bJBrW7C4QAuDNuQykPbGkL1oyJGUvOI1wz5ob/SQqqtL5bh2rap5vWhej9aY2VES
-         WwpORWLSWy3FCCh2P/8pJtjvGEFO5eDuIy2kD5HM=
+        b=JbahZjsL/YSn9Jiyu9ZnmMeC1OejoZLunMebMxszgRmtJ0loWsAswBlS3BlOMIj2E
+         oY/JD21p8HhOLf4MSitLBDmvM9od7n7Y0lohmrDCbgAu7mczIiZbseOgXghLDa19Ek
+         iGn+f3bO7J2MbwpqN0sr4MAngKm0+LOUYY2nsHU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0650/1095] iio: frequency: adf4350: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:49 +0200
-Message-Id: <20220815180456.280292936@linuxfoundation.org>
+Subject: [PATCH 5.18 0646/1095] iio: dac: ti-dac5571: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:45 +0200
+Message-Id: <20220815180456.117078873@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,41 +54,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 389b8972eb2a614cb3189e5fa55b1b7f66142c71 ]
+[ Upstream commit 58e22371539e01c742be5c30295f591a6a17e348 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Updated help text to 'may' require buffers to be in their own cacheline.
-
-Fixes: e31166f0fd48 ("iio: frequency: New driver for Analog Devices ADF4350/ADF4351 Wideband Synthesizers")
+Fixes: df38a4a72a3b ("iio: dac: add TI DAC5571 family support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-67-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-63-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/frequency/adf4350.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/dac/ti-dac5571.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index be1218d86291..85e289700c3c 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -56,10 +56,10 @@ struct adf4350_state {
- 	 */
- 	struct mutex			lock;
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
-+	 * DMA (thus cache coherency maintenance) may require that
-+	 * transfer buffers live in their own cache lines.
- 	 */
--	__be32				val ____cacheline_aligned;
-+	__be32				val __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
+index 0b775f943db3..ba68ea1e3455 100644
+--- a/drivers/iio/dac/ti-dac5571.c
++++ b/drivers/iio/dac/ti-dac5571.c
+@@ -52,7 +52,7 @@ struct dac5571_data {
+ 	struct dac5571_spec const *spec;
+ 	int (*dac5571_cmd)(struct dac5571_data *data, int channel, u16 val);
+ 	int (*dac5571_pwrdwn)(struct dac5571_data *data, int channel, u8 pwrdwn);
+-	u8 buf[3] ____cacheline_aligned;
++	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- static struct adf4350_platform_data default_pdata = {
+ #define DAC5571_POWERDOWN(mode)		((mode) + 1)
 -- 
 2.35.1
 
