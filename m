@@ -2,145 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 519CFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB59C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbiHOJRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
+        id S230225AbiHOJSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbiHOJRV (ORCPT
+        with ESMTP id S241666AbiHOJRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:17:21 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AF122528;
-        Mon, 15 Aug 2022 02:17:17 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id d14so9835379lfl.13;
-        Mon, 15 Aug 2022 02:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=eiqkvF+xYiNF2DpRXQeLPgqIYFAmFLS0V8w6NeOkAps=;
-        b=nLzwUzH1mFhYYOp7STOZsHfn7f2SW3Gl6xJ8vP+9vPX2YAZB2C6OlzaSKAeYnmAQv1
-         1PdjeD/WpfSf7CrTfALpgrSOS4Z5IcOcuc/ZJTLrj+ypqyWlP8AusY08hpNwC6czmjy0
-         zc3VJeNGhdWq/xRoIuGB7Kygb2vskfasVGLXx0rbvEwJgKMLskTKjBNlQ388bRI6Mpcf
-         RvjU2kUboC2pvVZnkXL00TmNZnpEmLvxb59g9DI9T5v/teeX3DQaOM+ybyPGLI1qOL7l
-         Ys5Ddw4/L4rYxBm9Vvmxcq23T86HxaW/lYWcHNVjV0cjAhfpCGgmjCbWXyayuOFE9Om/
-         oqWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=eiqkvF+xYiNF2DpRXQeLPgqIYFAmFLS0V8w6NeOkAps=;
-        b=nCz0ovPiC8u3aMwwcLR9eiegH+kRAWzmqzTr+zvOppZUqgG0Z4qDNpG8j6ahVJ9d6Q
-         Z4itMMY/N1wu0xKxK8Q68t7iVVWwkTxv0pPZokRenzk6eMa8Vjvhdv9FkSK4DPon71SK
-         Ydspf3lCeh9Chb91nWxUoK49m/UFER4zdu4Cf8PREJDxbaKnQCFYlL9jV8X3zYPkvjqk
-         3mXqR0fL5UAnQLmOHaPxyOWw/RxbhwCJ6StVP00bffkx3dQOXCC/jzE+q0CAY+mN41kJ
-         qh9UJ4lhUODH/YQWwSm8vjOXpf9mQM+D0aUgN6nUwUGsy6DUKJ0tsmWafn+UUbGS6uDf
-         R8dw==
-X-Gm-Message-State: ACgBeo1FcuAdcwZXVKzdgSrPF44ZT0Qp2vsmtz3RVD7/aUBc8U8/FuYr
-        Ji/rtghYLE77Hng4G2QKtaqEO0t+W+8XYFJgQAM=
-X-Google-Smtp-Source: AA6agR6NRl73OVz82MXGLJl9DCyFw+Kd1gGiZOJDreYij/FP+Eg+bC+4oLHzg/8uCquuCYWlmwyz99uA1rF3z7USpMI=
-X-Received: by 2002:ac2:4e4f:0:b0:48c:e6b6:9d7e with SMTP id
- f15-20020ac24e4f000000b0048ce6b69d7emr4850618lfr.128.1660555035731; Mon, 15
- Aug 2022 02:17:15 -0700 (PDT)
+        Mon, 15 Aug 2022 05:17:53 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 02:17:52 PDT
+Received: from rcdn-iport-1.cisco.com (rcdn-iport-1.cisco.com [173.37.86.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27229220FF;
+        Mon, 15 Aug 2022 02:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=1852; q=dns/txt; s=iport;
+  t=1660555072; x=1661764672;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QpiiM3DbmqyBkHT2kZF2nZitt5ASAzlJNOnL9SvqktM=;
+  b=PVvRZpYd4WK+1mFHJ1YwD6rVp8cbLv4Q3juDokyIJ5YEj7MCwkmw1kQA
+   E8ZUe9CckzWZ1zdZypNpHazoz2/HRUHNUkCYuGyNxsoQx753XX7KJkOv3
+   B0l8Qz9GUYyxV5c3afW8FQxawtPWpRsZABd7ubOxBgiMm1ofbDYGLIdcw
+   w=;
+IronPort-Data: =?us-ascii?q?A9a23=3AY7G1CaK0b7FTBaysFE+RbZclxSXFcZb7ZxGr2?=
+ =?us-ascii?q?PjKsXjdYENS3zMEzGYcWWvVOfbbMGr8Kt8nb9yy8BlVv8fcxoBmTFAd+CA2R?=
+ =?us-ascii?q?RqmiyZq6fd1j6vI0qj7wvTrFCqL1O1DLIiZRCwIZiWE/E31b+G/9SAUOZygH?=
+ =?us-ascii?q?9IQNsaVYkideic8IMsRoUoLd98R2uaEs/Dga+++kYuaT/nkBbOQ82Uc3lT4R?=
+ =?us-ascii?q?E60gEgHUPza4Fv0t7GlDBxBlAe2e3I9VPrzKUwtRkYUTLW4HsbiLwrC5Kuy8?=
+ =?us-ascii?q?mWc9BA3B5b71L36aUYNBLXVOGBiiFIPBPPk2UcE93d0i/tkXBYfQR8/ZzGhk?=
+ =?us-ascii?q?8J4x9JXqJ2YQgYyNaqKk+MYO/VdO3gmYfIWp+6ecCPXXcu7iheun2HX69BjC?=
+ =?us-ascii?q?k5wGYww5edxDXtP6/ECbjsKa3irg+Ow3aL+SeR2gMknBNfkMZlZuXx6yzzdS?=
+ =?us-ascii?q?/E8TvjrR6TM+M8d3TY3rt5BEOyYZMcDbzdrKhPabHVnJxEUDJ8/murthX7yd?=
+ =?us-ascii?q?TxXgEqYo6Uq/3LUyg1hlrTgWPLRc8aRbcBYgk+WoWWA82mRKhMbP4bE4TmI6?=
+ =?us-ascii?q?HShgqnIhyyTcKcTH72x+/osoFCVwGEJCRYWfVK9qP2+hQi1XNc3FqC+0kLCt?=
+ =?us-ascii?q?oAo/0CtC9L6RRD9/jiPvwUXXJxbFOhS1e1E8YKMiy7xO4TOZmMphAQaifIL?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Aa0ie3au/IpkwDzoGlZnXaT+J7skDd9V00z?=
+ =?us-ascii?q?EX/kB9WHVpmwKj+PxG+85rsSMc6QxhPU3I9urgBEDtex7hHP1OkOss1MmZPD?=
+ =?us-ascii?q?UO0VHAROoJ0WKI+VPd8kPFmtK1rZ0QEJSXzLbLfD5HZQGQ2njeL+od?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0A5AAB2bIJi/51dJa1aHQEBAQEJARI?=
+ =?us-ascii?q?BBQUBQIE7CAELAYIqgUs9Q4ROiCGIapxngXwLAQEBDQEBQgQBAYUChUACJTQ?=
+ =?us-ascii?q?JDgECBAEBARIBAQUBAQECAQcEgQkThWgNhmwECwFGMAUCJgIuMgkJgn2DGKt?=
+ =?us-ascii?q?Wen8ygQGIGYFlgRAsAYlDgQGEQhyBSUSEfYFQhkqCZQSVYzsDCQYHBTmBBRK?=
+ =?us-ascii?q?BIXEBCAYGBwoFMgYCDBgUBAITElMMEgITDAocDg5GGQwPAxIDEQEHAgsSCBU?=
+ =?us-ascii?q?sCAMCAwgDAgMjCwIDGAkHCgMdCAocEhAUAgQTHwsIAxofLQkCBA4DQwgLCgM?=
+ =?us-ascii?q?RBAMTGAsWCBAEBgMJLw0oCwMFDw8BBgMGAgUFAQMgAxQDBScHAyEHCyYNDQQ?=
+ =?us-ascii?q?jHQMDBSYDAgIbBwICAwIGFwYCAkAxCigNCAQIBBweJQ4FBQIHMQUELwIeBAU?=
+ =?us-ascii?q?GEQkCFgIGBAUCBAQWAgISCAIIJxsHFjYZAQVdBgsJIxwsEQUGFgMmUgYiHAG?=
+ =?us-ascii?q?WcD4zARZuCoFxDL9fgi2DVp9wGjGDdZMckUUBkTiFLiCiOYQlAgQGBQIWgWE?=
+ =?us-ascii?q?8gVkzGggbFYMjURkPlViHGEQxOwIGAQoBAQMJkRoBAQ?=
+X-IronPort-AV: E=Sophos;i="5.91,230,1647302400"; 
+   d="scan'208";a="1047879193"
+Received: from rcdn-core-6.cisco.com ([173.37.93.157])
+  by rcdn-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 15 Aug 2022 09:16:48 +0000
+Received: from sjc-ads-9103.cisco.com (sjc-ads-9103.cisco.com [10.30.208.113])
+        by rcdn-core-6.cisco.com (8.15.2/8.15.2) with ESMTPS id 27F9GlH3015491
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 15 Aug 2022 09:16:48 GMT
+Received: by sjc-ads-9103.cisco.com (Postfix, from userid 487941)
+        id 698EACC128E; Mon, 15 Aug 2022 02:16:47 -0700 (PDT)
+From:   Denys Zagorui <dzagorui@cisco.com>
+To:     Meng.Li@windriver.com, jic23@kernel.org
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] iio: ltc2497: Fix reading conversion results
+Date:   Mon, 15 Aug 2022 09:16:47 +0000
+Message-Id: <20220815091647.1523532-1-dzagorui@cisco.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <1660298966-11493-1-git-send-email-zhaoyang.huang@unisoc.com>
- <YvakpukeF9d35Bc8@slm.duckdns.org> <CAGWkznG6n=+v7hUKR8Rmg8VEF=BTDegk8bh6aHfvOU5TbmeXDw@mail.gmail.com>
- <CAGWkznHa9WTV2oK=HB1OVEdKeMZ1V2omDDiNrRdyBdyYd=q5Fg@mail.gmail.com>
-In-Reply-To: <CAGWkznHa9WTV2oK=HB1OVEdKeMZ1V2omDDiNrRdyBdyYd=q5Fg@mail.gmail.com>
-From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
-Date:   Mon, 15 Aug 2022 17:17:03 +0800
-Message-ID: <CAGWkznEQ_njmNt8usr-DyaiYDAHJE-niC2QxoXPQkDqY7v_Mqg@mail.gmail.com>
-Subject: Re: [RFC PATCH] cgroup: use root_mem_cgroup as css when current is
- not enabled
-To:     Tejun Heo <tj@kernel.org>
-Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>,
-        Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Suren Baghdasaryan <surenb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Outbound-SMTP-Client: 10.30.208.113, sjc-ads-9103.cisco.com
+X-Outbound-Node: rcdn-core-6.cisco.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:38 AM Zhaoyang Huang <huangzhaoyang@gmail.com> wrote:
->
-> On Sun, Aug 14, 2022 at 2:40 PM Zhaoyang Huang <huangzhaoyang@gmail.com> wrote:
-> >
-> > On Sat, Aug 13, 2022 at 3:06 AM Tejun Heo <tj@kernel.org> wrote:
-> > >
-> > > On Fri, Aug 12, 2022 at 06:09:26PM +0800, zhaoyang.huang wrote:
-> > > > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-> > > >
-> > > > Memory charged on group B abserved on belowing v2 hierarchy where we just would
-> > > > like to only have group E's memory be controlled and B's descendants compete freely
-> > > > for memory. This should be the consequences of unified hierarchy. Solve this by
-> > > > have the cgroup without valid memory css alloced use root_mem_cgroup instead of
-> > > > its ancestor's.
-> > > >
-> > > >  A(subtree_control = memory) - B(subtree_control = NULL) - C()
-> > > >                                                          \ D()
-> > > >                            - E(subtree_control = memory) - F()
-> > > >                                                          \ G()
-> > > >
-> > > > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-> > > > ---
-> > > >  kernel/cgroup/cgroup.c | 8 ++++++++
-> > > >  1 file changed, 8 insertions(+)
-> > > >
-> > > > diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-> > > > index 1779ccd..b29b3f6 100644
-> > > > --- a/kernel/cgroup/cgroup.c
-> > > > +++ b/kernel/cgroup/cgroup.c
-> > > > @@ -533,6 +533,14 @@ static struct cgroup_subsys_state *cgroup_e_css_by_mask(struct cgroup *cgrp,
-> > > >        * can't test the csses directly.  Test ss_mask.
-> > > >        */
-> > > >       while (!(cgroup_ss_mask(cgrp) & (1 << ss->id))) {
-> > > > +             /*
-> > > > +              * charging to the parent cgroup which hasn't distribute
-> > > > +              * memory control to its descendants doesn't make sense
-> > > > +              * especially on cgroup v2, where the parent could be configured
-> > > > +              * to use memory controller as its sibling want to use it
-> > > > +              */
-> > > > +             if (memory_cgrp_id == ss->id)
-> > > > +                     return &root_mem_cgroup->css;
-> > >
-> > > This is gonna be a hard nack. A given cgroup always encompasses all the
-> > > resources consumed in its self-including subtree.
-> > >
-> > > Thanks.
-> > IMHO, I would like to say if it makes more sense as "A given cgroup
-> > always encompasses all the resources consumed in its ENABLED
-> > self-including subtree." Otherwise, how should I couple with the
-> > scenarios I raised in the commit message which I prefer parts of the
-> > subtrees compete for "memory" while others are free for it. The free
-> > here is not only without "min/low/high watermarks" but also not
-> > charged to their own LRU.
-> I would like to state more why these make sense. Memory cgroup is a
-> little bit different to other cgroups, that is, memcg will have real
-> physical resources attached, say pages. From perspective of memory
-> reclaiming, it is odd to find that pages under free memcgs are charged
-> to separate LRUs but without any management(no watermark control) and
-> perhaps affect workingset mechanism by LRU reason. Furthermore, v2
-> should grant the groups with the right to reject the subsys which
-> introduced by sibling enable, which could be deemed as v2's
-> inconvenient. The memcg could also apply subtree_control to enroll all
-> memory back whenever it want.
-As suggested by zefan, raise the practical scenario here to make more
-sense. The issue is observed in android system where per-app cgroup is
-demanded by freezer subsys and part of them require memory control.
-Under this scenario, less efficient memory reclaim is observed when
-comparing with no memory control. It is believed that multi LRU
-scanning introduces some of the overhead. Furthermore, page thrashing
-is also heavier than global LRU which could be the consequences of
-partial failure of WORKINGSET mechanism as LRU is too short to protect
-the active pages.
-> > >
-> > > --
-> > > tejun
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+After the result of the previous conversion is read the chip
+automatically starts a new conversion and doesn't accept new i2c
+transfers until this conversion is completed which makes the function
+return failure.
+
+So add an early return iff the programming of the new address isn't
+needed. Note this will not fix the problem in general, but all cases
+that are currently used. Once this changes we get the failure back, but
+this can be addressed when the need arises.
+
+Fixes: 69548b7c2c4f ("iio: adc: ltc2497: split protocol independent part in a separate module ")
+Reported-by: Meng Li <Meng.Li@windriver.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Denys Zagorui <dzagorui@cisco.com>
+---
+ drivers/iio/adc/ltc2497.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+index f7c786f37ceb..78b93c99cc47 100644
+--- a/drivers/iio/adc/ltc2497.c
++++ b/drivers/iio/adc/ltc2497.c
+@@ -41,6 +41,19 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
+ 		}
+ 
+ 		*val = (be32_to_cpu(st->buf) >> 14) - (1 << 17);
++
++		/*
++		 * The part started a new conversion at the end of the above i2c
++		 * transfer, so if the address didn't change since the last call
++		 * everything is fine and we can return early.
++		 * If not (which should only happen when some sort of bulk
++		 * conversion is implemented) we have to program the new
++		 * address. Note that this probably fails as the conversion that
++		 * was triggered above is like not complete yet and the two
++		 * operations have to be done in a single transfer.
++		 */
++		if (ddata->addr_prev == address)
++			return 0;
+ 	}
+ 
+ 	ret = i2c_smbus_write_byte(st->client,
+-- 
+2.28.0
+
