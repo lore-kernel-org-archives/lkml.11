@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A58C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F90C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344482AbiHOTnQ (ORCPT
+        id S1344507AbiHOTn0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32868 "EHLO
+        Mon, 15 Aug 2022 15:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344223AbiHOTjM (ORCPT
+        with ESMTP id S1344195AbiHOTip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:39:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D873FA36;
-        Mon, 15 Aug 2022 11:46:49 -0700 (PDT)
+        Mon, 15 Aug 2022 15:38:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF6921B9;
+        Mon, 15 Aug 2022 11:46:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48775611EA;
-        Mon, 15 Aug 2022 18:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B668C433C1;
-        Mon, 15 Aug 2022 18:46:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDA2FB81082;
+        Mon, 15 Aug 2022 18:46:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F954C433D6;
+        Mon, 15 Aug 2022 18:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589208;
-        bh=oh8spEm7HRDLUB099iOQF8whp8gjdsZtkabb2xOHksk=;
+        s=korg; t=1660589205;
+        bh=9aQn6HVkvYsPal5YbQdM+9fKm2iAIf76v5YHe/43/XA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WXgsUPlQQzoei0LZwzMqhZ+gKK0quMjwKAm8gFeMiz+HszhrBj+NvN9P7TZ/SSRk/
-         zQkqzboSD/u8LOmb8y087zygeTQw8NIqZLqJ0fBoLLtpDKePxw+FK3Q2prGeOK/pUH
-         neco8c5SxfuFNEUoz+FnqOaYeCGkmfD+cQeu6QkY=
+        b=GzOswDYptWuQuZonavXj/TOgKfHQeuU15DkMhlL3Lv7fV9ZLGPQO4a3yCyjcNZ6GF
+         riwUoOIaDUopefftlXZs4dzAYmM+RH5xtWx08Aj8sHX8xZeWWPOerAhAtHM5nuHXfA
+         N5DF81h2nSN1izEC/EiCeKxGa07dtC2mAuhsM8Bw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 646/779] powerpc/spufs: Fix refcount leak in spufs_init_isolated_loader
-Date:   Mon, 15 Aug 2022 20:04:50 +0200
-Message-Id: <20220815180404.979237902@linuxfoundation.org>
+Subject: [PATCH 5.15 628/779] fuse: Remove the control interface for virtio-fs
+Date:   Mon, 15 Aug 2022 20:04:32 +0200
+Message-Id: <20220815180404.220639286@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,36 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit 6ac059dacffa8ab2f7798f20e4bd3333890c541c ]
+[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
 
-of_find_node_by_path() returns remote device nodepointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
+unmount") tries to remove the control interface for virtio-fs since it does
+not support aborting requests which are being processed. But it doesn't
+work now.
 
-Fixes: 0afacde3df4c ("[POWERPC] spufs: allow isolated mode apps by starting the SPE loader")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220603121543.22884-1-linmq006@gmail.com
+This patch fixes it by skipping creating the control interface if
+fuse_conn->no_control is set.
+
+Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/spufs/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/fuse/control.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/spufs/inode.c b/arch/powerpc/platforms/cell/spufs/inode.c
-index bed05b644c2c..ed37a93bf858 100644
---- a/arch/powerpc/platforms/cell/spufs/inode.c
-+++ b/arch/powerpc/platforms/cell/spufs/inode.c
-@@ -659,6 +659,7 @@ spufs_init_isolated_loader(void)
+diff --git a/fs/fuse/control.c b/fs/fuse/control.c
+index 000d2e5627e9..79f01d09c78c 100644
+--- a/fs/fuse/control.c
++++ b/fs/fuse/control.c
+@@ -275,7 +275,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
+ 	struct dentry *parent;
+ 	char name[32];
+ 
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return 0;
+ 
+ 	parent = fuse_control_sb->s_root;
+@@ -313,7 +313,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
+ {
+ 	int i;
+ 
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
  		return;
  
- 	loader = of_get_property(dn, "loader", &size);
-+	of_node_put(dn);
- 	if (!loader)
- 		return;
- 
+ 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 -- 
 2.35.1
 
