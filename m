@@ -2,78 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D8AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CE6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240359AbiHODpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49068 "EHLO
+        id S240343AbiHODpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240033AbiHODo5 (ORCPT
+        with ESMTP id S240181AbiHODo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:44:57 -0400
+        Sun, 14 Aug 2022 23:44:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F71511451
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A1113F23
         for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:44:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD136B80D00
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA277B80D04
         for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A197C433C1;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7BE0BC43470;
         Mon, 15 Aug 2022 03:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660535094;
-        bh=jW+0ZFohx2G586FV048mUqyxvKukDHT+COl6WSW5u2g=;
+        bh=r/x3vZ3Q7kN3eSNpeyQVl4c+2bbKKii9y8fY1wImfUw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AmWbLoYajg1BtgWy++EwInARncRgc23j1/64xYxL4RT8hru2LEODd5/VzoBOiZitg
-         DR1Ux87TcerfBOY/0E0dEIVeQ4F3Z1oJy1QHpUa0Sl2xGXhffriYRddE43tThqG9QG
-         cNAMzeRzbSun9Dfxn+zwSv8LVq8msJtdvHdhO160Emcfam0O2kacT2V7yGCGvd0Gd1
-         443sx2chPFAu4e05JpHHuExuk29BS1q0VF9y35Y+IWzIsGl/0OXfSVD77Z+kv9Ux/T
-         bDqrFmhUHeVJvkxa9rkI0anMJKP4lZCKBdxWSkCXZ+rUadocipnrWKNi9qjfClf7Oz
-         ZRO0wLyZE5iiQ==
+        b=NlcekeVBt29OCuEshgw/AxbBWR9b9HScfll6DfK5hJy/grj/8I3HxSmqHofn6CnAN
+         fyq7NiFRGy70YZP63Kgsyja7MWfw0Ss919lK1+xSMPynL/cGKoKueKlOvXIArg2QpV
+         EamRsQdCJv/X4WaDrckNheQYLkT0YT1BBkM+xaMvCNrcQuqRHXFfkyNTtimgyaqv0O
+         HKaToMml4hjt1ncS/vFyYPB65bwj6kifSw9h39KFQM4NyOrGnjWSTwxn7pUVvXSWZ9
+         S3un7RflPH+SxcczLl9nM/IlyNk61YWQLrZPdlIXQSqbrrb8+kq+wcAM0yU0vCr0rQ
+         g1QoeO2K1rQHw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4D196E2A04D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5FB77E2A04C;
         Mon, 15 Aug 2022 03:44:54 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1] platform/chrome: cros_ec_proto: Update version on
- GET_NEXT_EVENT failure
+Subject: Re: [GIT PULL] chrome-platform changes for v5.20
 From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <166053509430.30867.12752434668482638475.git-patchwork-notify@kernel.org>
+Message-Id: <166053509438.30867.8572544538142335376.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Aug 2022 03:44:54 +0000
-References: <20220802154128.21175-1-pdk@semihalf.com>
-In-Reply-To: <20220802154128.21175-1-pdk@semihalf.com>
-To:     Patryk Duda <pdk@semihalf.com>
-Cc:     bleung@chromium.org, groeck@chromium.org, gwendal@google.com,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        upstream@semihalf.com
+References: <Yun1yFEsqpF59Tdy@google.com>
+In-Reply-To: <Yun1yFEsqpF59Tdy@google.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     torvalds@linux-foundation.org, pmalani@chromium.org,
+        bleung@chromium.org, groeck@chromium.org,
+        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to chrome-platform/linux.git (for-kernelci)
-by Tzung-Bi Shih <tzungbi@kernel.org>:
+This pull request was applied to chrome-platform/linux.git (for-kernelci)
+by Linus Torvalds <torvalds@linux-foundation.org>:
 
-On Tue,  2 Aug 2022 17:41:28 +0200 you wrote:
-> Some EC based devices (e.g. Fingerpint MCU) can jump to RO part of the
-> firmware (intentionally or due to device reboot). The RO part doesn't
-> change during the device lifecycle, so it won't support newer version
-> of EC_CMD_GET_NEXT_EVENT command.
+On Wed, 3 Aug 2022 04:12:56 +0000 you wrote:
+> Linus,
 > 
-> Function cros_ec_query_all() is responsible for finding maximum
-> supported MKBP event version. It's usually called when the device is
-> running RW part of the firmware, so the command version can be
-> potentially higher than version supported by the RO.
+> Please pull chrome-platform updates for v5.20.
+> 
+> Thanks,
+> TzungBi
 > 
 > [...]
 
 Here is the summary with links:
-  - [v1] platform/chrome: cros_ec_proto: Update version on GET_NEXT_EVENT failure
-    https://git.kernel.org/chrome-platform/c/f74c7557ed0d
+  - [GIT,PULL] chrome-platform changes for v5.20
+    https://git.kernel.org/chrome-platform/c/5bb3bf24b0aa
 
 You are awesome, thank you!
 -- 
