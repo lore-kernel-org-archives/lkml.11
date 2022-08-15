@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D40C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7459DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344092AbiHOWHZ (ORCPT
+        id S1347437AbiHOWHd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
+        Mon, 15 Aug 2022 18:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350421AbiHOWCG (ORCPT
+        with ESMTP id S1350418AbiHOWCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:02:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE02627CCE;
-        Mon, 15 Aug 2022 12:36:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1BE27CCA;
+        Mon, 15 Aug 2022 12:36:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C614610A5;
-        Mon, 15 Aug 2022 19:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65DB3C433C1;
-        Mon, 15 Aug 2022 19:36:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F207EB80EA8;
+        Mon, 15 Aug 2022 19:36:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BC6C433C1;
+        Mon, 15 Aug 2022 19:36:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592196;
-        bh=JWKploH5ZXiF/mEx7xgqrDToPZDgKAMm4bwSmyYeTTY=;
+        s=korg; t=1660592193;
+        bh=BquEyuFVINTO9pj6c/C0lL1koQzpgtW1m20hzVLlITU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m33XUKT3RlwTOvY+P/5UA4YjhlCh6k6Egh6nw6Jlfx0g6GcuuvK++trkUCp8Lf6Vr
-         wE6bg1lohKVVbRZKJkvKGmShnOCA3tHAzm0EjTxVnh4uHPqOmC42NlLCVA/guPSqFL
-         S7BBS3v3ndiopeyaQWb4mZjlxA/k4ecWdstkELu4=
+        b=euS0r8B2uZfnkCb2hU4L9YbPD3htWGDoiEKJAxEUBJR3LIKrkgxvkbQOOVrXEuNZV
+         S1mOBahi6vvC9k271699F/YB48j6DpafA3QCjFQ9EP2bRq8xXPAw4AgGLH9+mXS6rW
+         tCCnWQdoU1ib8LshGNCkNkf9rz/8Fe0oE4JroKXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0748/1095] KVM: s390: pv: leak the topmost page table when destroy fails
-Date:   Mon, 15 Aug 2022 20:02:27 +0200
-Message-Id: <20220815180500.303645592@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.19 0072/1157] RISC-V: Declare cpu_ops_spinwait in <asm/cpu_ops.h>
+Date:   Mon, 15 Aug 2022 19:50:28 +0200
+Message-Id: <20220815180442.405075717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,173 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudio Imbrenda <imbrenda@linux.ibm.com>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-[ Upstream commit faa2f72cb3569256480c5540d242c84e99965160 ]
+commit da6d2128e56a50a0d497c8e41ca1d33d88bcc0aa upstream.
 
-Each secure guest must have a unique ASCE (address space control
-element); we must avoid that new guests use the same page for their
-ASCE, to avoid errors.
+The cpu_ops_spinwait is used in a couple of places in arch/riscv
+and is causing a sparse warning due to no declaration. Add this
+to <asm/cpu_ops.h> with the others to fix the following:
 
-Since the ASCE mostly consists of the address of the topmost page table
-(plus some flags), we must not return that memory to the pool unless
-the ASCE is no longer in use.
+arch/riscv/kernel/cpu_ops_spinwait.c:16:29: warning: symbol 'cpu_ops_spinwait' was not declared. Should it be static?
 
-Only a successful Destroy Secure Configuration UVC will make the ASCE
-reusable again.
-
-If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
-secure guest (either for the ASCE or for other memory areas). To avoid
-a collision, it must not be used again. This is a permanent error and
-the page becomes in practice unusable, so we set it aside and leak it.
-On failure we already leak other memory that belongs to the ultravisor
-(i.e. the variable and base storage for a guest) and not leaking the
-topmost page table was an oversight.
-
-This error (and thus the leakage) should not happen unless the hardware
-is broken or KVM has some unknown serious bug.
-
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220628135619.32410-2-imbrenda@linux.ibm.com
-Message-Id: <20220628135619.32410-2-imbrenda@linux.ibm.com>
-Signed-off-by: Janosch Frank <frankja@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220714071811.187491-1-ben.dooks@sifive.com
+[Palmer: Drop the extern from cpu_ops.c]
+Fixes: 2ffc48fc7071 ("RISC-V: Move spinwait booting method to its own config")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/gmap.h |  2 +
- arch/s390/kvm/pv.c           |  9 ++--
- arch/s390/mm/gmap.c          | 86 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 94 insertions(+), 3 deletions(-)
+ arch/riscv/include/asm/cpu_ops.h |    1 +
+ arch/riscv/kernel/cpu_ops.c      |    4 +---
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
-index 40264f60b0da..f4073106e1f3 100644
---- a/arch/s390/include/asm/gmap.h
-+++ b/arch/s390/include/asm/gmap.h
-@@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
- 			     unsigned long gaddr, unsigned long vmaddr);
- int gmap_mark_unmergeable(void);
- void s390_reset_acc(struct mm_struct *mm);
-+void s390_unlist_old_asce(struct gmap *gmap);
-+int s390_replace_asce(struct gmap *gmap);
- #endif /* _ASM_S390_GMAP_H */
-diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index cc7c9599f43e..8eee3fc414e5 100644
---- a/arch/s390/kvm/pv.c
-+++ b/arch/s390/kvm/pv.c
-@@ -161,10 +161,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
- 	atomic_set(&kvm->mm->context.is_protected, 0);
- 	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
- 	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
--	/* Inteded memory leak on "impossible" error */
--	if (!cc)
-+	/* Intended memory leak on "impossible" error */
-+	if (!cc) {
- 		kvm_s390_pv_dealloc_vm(kvm);
--	return cc ? -EIO : 0;
-+		return 0;
-+	}
-+	s390_replace_asce(kvm->arch.gmap);
-+	return -EIO;
- }
+--- a/arch/riscv/include/asm/cpu_ops.h
++++ b/arch/riscv/include/asm/cpu_ops.h
+@@ -38,6 +38,7 @@ struct cpu_operations {
+ #endif
+ };
  
- int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-index b8ae4a4aa2ba..85cab61d87a9 100644
---- a/arch/s390/mm/gmap.c
-+++ b/arch/s390/mm/gmap.c
-@@ -2735,3 +2735,89 @@ void s390_reset_acc(struct mm_struct *mm)
- 	mmput(mm);
- }
- EXPORT_SYMBOL_GPL(s390_reset_acc);
-+
-+/**
-+ * s390_unlist_old_asce - Remove the topmost level of page tables from the
-+ * list of page tables of the gmap.
-+ * @gmap: the gmap whose table is to be removed
-+ *
-+ * On s390x, KVM keeps a list of all pages containing the page tables of the
-+ * gmap (the CRST list). This list is used at tear down time to free all
-+ * pages that are now not needed anymore.
-+ *
-+ * This function removes the topmost page of the tree (the one pointed to by
-+ * the ASCE) from the CRST list.
-+ *
-+ * This means that it will not be freed when the VM is torn down, and needs
-+ * to be handled separately by the caller, unless a leak is actually
-+ * intended. Notice that this function will only remove the page from the
-+ * list, the page will still be used as a top level page table (and ASCE).
-+ */
-+void s390_unlist_old_asce(struct gmap *gmap)
-+{
-+	struct page *old;
-+
-+	old = virt_to_page(gmap->table);
-+	spin_lock(&gmap->guest_table_lock);
-+	list_del(&old->lru);
-+	/*
-+	 * Sometimes the topmost page might need to be "removed" multiple
-+	 * times, for example if the VM is rebooted into secure mode several
-+	 * times concurrently, or if s390_replace_asce fails after calling
-+	 * s390_remove_old_asce and is attempted again later. In that case
-+	 * the old asce has been removed from the list, and therefore it
-+	 * will not be freed when the VM terminates, but the ASCE is still
-+	 * in use and still pointed to.
-+	 * A subsequent call to replace_asce will follow the pointer and try
-+	 * to remove the same page from the list again.
-+	 * Therefore it's necessary that the page of the ASCE has valid
-+	 * pointers, so list_del can work (and do nothing) without
-+	 * dereferencing stale or invalid pointers.
-+	 */
-+	INIT_LIST_HEAD(&old->lru);
-+	spin_unlock(&gmap->guest_table_lock);
-+}
-+EXPORT_SYMBOL_GPL(s390_unlist_old_asce);
-+
-+/**
-+ * s390_replace_asce - Try to replace the current ASCE of a gmap with a copy
-+ * @gmap: the gmap whose ASCE needs to be replaced
-+ *
-+ * If the allocation of the new top level page table fails, the ASCE is not
-+ * replaced.
-+ * In any case, the old ASCE is always removed from the gmap CRST list.
-+ * Therefore the caller has to make sure to save a pointer to it
-+ * beforehand, unless a leak is actually intended.
-+ */
-+int s390_replace_asce(struct gmap *gmap)
-+{
-+	unsigned long asce;
-+	struct page *page;
-+	void *table;
-+
-+	s390_unlist_old_asce(gmap);
-+
-+	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
-+	if (!page)
-+		return -ENOMEM;
-+	table = page_to_virt(page);
-+	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
-+
-+	/*
-+	 * The caller has to deal with the old ASCE, but here we make sure
-+	 * the new one is properly added to the CRST list, so that
-+	 * it will be freed when the VM is torn down.
-+	 */
-+	spin_lock(&gmap->guest_table_lock);
-+	list_add(&page->lru, &gmap->crst_list);
-+	spin_unlock(&gmap->guest_table_lock);
-+
-+	/* Set new table origin while preserving existing ASCE control bits */
-+	asce = (gmap->asce & ~_ASCE_ORIGIN) | __pa(table);
-+	WRITE_ONCE(gmap->asce, asce);
-+	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
-+	WRITE_ONCE(gmap->table, table);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(s390_replace_asce);
--- 
-2.35.1
-
++extern const struct cpu_operations cpu_ops_spinwait;
+ extern const struct cpu_operations *cpu_ops[NR_CPUS];
+ void __init cpu_set_ops(int cpu);
+ 
+--- a/arch/riscv/kernel/cpu_ops.c
++++ b/arch/riscv/kernel/cpu_ops.c
+@@ -15,9 +15,7 @@
+ const struct cpu_operations *cpu_ops[NR_CPUS] __ro_after_init;
+ 
+ extern const struct cpu_operations cpu_ops_sbi;
+-#ifdef CONFIG_RISCV_BOOT_SPINWAIT
+-extern const struct cpu_operations cpu_ops_spinwait;
+-#else
++#ifndef CONFIG_RISCV_BOOT_SPINWAIT
+ const struct cpu_operations cpu_ops_spinwait = {
+ 	.name		= "",
+ 	.cpu_prepare	= NULL,
 
 
