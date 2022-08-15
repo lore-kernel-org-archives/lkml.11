@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B1AC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31CDC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352005AbiHPA3f (ORCPT
+        id S1347810AbiHPA3n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
+        Mon, 15 Aug 2022 20:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351671AbiHPA2f (ORCPT
+        with ESMTP id S1351734AbiHPA2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:28:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CE11815EE;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23D91815F2;
         Mon, 15 Aug 2022 13:35:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7342F61089;
-        Mon, 15 Aug 2022 20:34:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62C0CC433D6;
-        Mon, 15 Aug 2022 20:34:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0CC2611FC;
+        Mon, 15 Aug 2022 20:35:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6F01C433C1;
+        Mon, 15 Aug 2022 20:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595659;
-        bh=RZ0vulzf7UEz5azfjdo4BMoZmo2urF2aS/b4lpbo9RY=;
+        s=korg; t=1660595704;
+        bh=fOdGFFtHb2u3F0BRb8234h0PP4eJ3kgUdjnmltyekLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T4nVmrJVCUcW29YZk3RtD68jptF+tmi3rG7Y3oY1wFihmk3PPEoYpUfNoY6uU8hz/
-         xgyjYqZhydlHth5EWhgQJUnorL1Bx/YB15/ExUpuvVy+urt43Eb7hmZx4sSeuiRVyW
-         EX8RFYMoai1FSiRDP+2uAHJbUNtewb9KaScleL2U=
+        b=Q+jbOwO52KBCJx2stPuMg+QznI0RCqu9GTfwMXdO+RDjvr+ulQ3HY1oicZRpftFB6
+         QR5aswPpV8uNa9yl1D8932Csu7AdIP7jrSUf9RdP3+gryMLgMFC5RTL48SfSoBrMgW
+         INi7bDBuYMWOAJPCiH3uz5bLHKAmhqRX8OmKVMJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cheng Xu <chengyou@linux.alibaba.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0827/1157] RDMA/siw: Fix duplicated reported IW_CM_EVENT_CONNECT_REPLY event
-Date:   Mon, 15 Aug 2022 20:03:03 +0200
-Message-Id: <20220815180512.565150706@linuxfoundation.org>
+Subject: [PATCH 5.19 0848/1157] PCI: tegra194: Fix link up retry sequence
+Date:   Mon, 15 Aug 2022 20:03:24 +0200
+Message-Id: <20220815180513.419158047@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,71 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Xu <chengyou@linux.alibaba.com>
+From: Vidya Sagar <vidyas@nvidia.com>
 
-[ Upstream commit 3056fc6c32e613b760422b94c7617ac9a24a4721 ]
+[ Upstream commit e05fd6ae77c3e2cc0dba283005d24b6d56d2b1fa ]
 
-If siw_recv_mpa_rr returns -EAGAIN, it means that the MPA reply hasn't
-been received completely, and should not report IW_CM_EVENT_CONNECT_REPLY
-in this case. This may trigger a call trace in iw_cm. A simple way to
-trigger this:
- server: ib_send_lat
- client: ib_send_lat -R <server_ip>
+Add the missing DLF capability offset while clearing DL_FEATURE_EXCHANGE_EN
+bit during link up retry.
 
-The call trace looks like this:
-
- kernel BUG at drivers/infiniband/core/iwcm.c:894!
- invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
- <...>
- Workqueue: iw_cm_wq cm_work_handler [iw_cm]
- Call Trace:
-  <TASK>
-  cm_work_handler+0x1dd/0x370 [iw_cm]
-  process_one_work+0x1e2/0x3b0
-  worker_thread+0x49/0x2e0
-  ? rescuer_thread+0x370/0x370
-  kthread+0xe5/0x110
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x1f/0x30
-  </TASK>
-
-Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
-Link: https://lore.kernel.org/r/dae34b5fd5c2ea2bd9744812c1d2653a34a94c67.1657706960.git.chengyou@linux.alibaba.com
-Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Link: https://lore.kernel.org/r/20220721142052.25971-15-vidyas@nvidia.com
+Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/siw/siw_cm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw/siw_cm.c
-index 17f34d584cd9..f88d2971c2c6 100644
---- a/drivers/infiniband/sw/siw/siw_cm.c
-+++ b/drivers/infiniband/sw/siw/siw_cm.c
-@@ -725,11 +725,11 @@ static int siw_proc_mpareply(struct siw_cep *cep)
- 	enum mpa_v2_ctrl mpa_p2p_mode = MPA_V2_RDMA_NO_RTR;
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 0bab700086f9..67e8372a3243 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -976,7 +976,7 @@ static int tegra194_pcie_start_link(struct dw_pcie *pci)
+ 		offset = dw_pcie_find_ext_capability(pci, PCI_EXT_CAP_ID_DLF);
+ 		val = dw_pcie_readl_dbi(pci, offset + PCI_DLF_CAP);
+ 		val &= ~PCI_DLF_EXCHANGE_ENABLE;
+-		dw_pcie_writel_dbi(pci, offset, val);
++		dw_pcie_writel_dbi(pci, offset + PCI_DLF_CAP, val);
  
- 	rv = siw_recv_mpa_rr(cep);
--	if (rv != -EAGAIN)
--		siw_cancel_mpatimer(cep);
- 	if (rv)
- 		goto out_err;
- 
-+	siw_cancel_mpatimer(cep);
-+
- 	rep = &cep->mpa.hdr;
- 
- 	if (__mpa_rr_revision(rep->params.bits) > MPA_REVISION_2) {
-@@ -895,7 +895,8 @@ static int siw_proc_mpareply(struct siw_cep *cep)
- 	}
- 
- out_err:
--	siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY, -EINVAL);
-+	if (rv != -EAGAIN)
-+		siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY, -EINVAL);
- 
- 	return rv;
- }
+ 		tegra194_pcie_host_init(pp);
+ 		dw_pcie_setup_rc(pp);
 -- 
 2.35.1
 
