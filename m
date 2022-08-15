@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FF8C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BADB1C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345962AbiHOUe1 (ORCPT
+        id S1345999AbiHOUeh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        Mon, 15 Aug 2022 16:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346172AbiHOUae (ORCPT
+        with ESMTP id S1347148AbiHOUbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:30:34 -0400
+        Mon, 15 Aug 2022 16:31:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7766BA2854;
-        Mon, 15 Aug 2022 12:04:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF985A4B08;
+        Mon, 15 Aug 2022 12:04:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F5AFB810A2;
-        Mon, 15 Aug 2022 19:04:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED4DC433D6;
-        Mon, 15 Aug 2022 19:04:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4B8DB8110B;
+        Mon, 15 Aug 2022 19:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 162A8C43143;
+        Mon, 15 Aug 2022 19:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590250;
-        bh=or9ghtm9eTD9b4MK7ycw9/x0MKycVDa98HnF9GQBIvY=;
+        s=korg; t=1660590265;
+        bh=rx8tBdlS4PuAi21PIO2gDMc5pLYpRji2eOvSJm4wlIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6Ar4F4xtWZwG/aebH7PTfYai2xLyxz29uVc+2Qjj/PAbxBpi/m2BsNoTa2jy4Ap9
-         glr1wdYLJX0AhVwH++Ycpxso4vQ5QotC2kBhnkcDr0Zr5eS3CEmADUFQNwD85hbTMb
-         rd3sJ5XoF+W5HYrDh7Zxbc4+P22cw3+pp0Bcx3Xc=
+        b=z/m7xuqwdVqt/GuWUUdrckuIKkmB+39e+szujyx1l/o5mZQVZrYvIn+Ov6kLjOMhT
+         Ed3VetFhJMeGmno86DzdCpqsG5rKHLTGRtCVJgVFmpeZSp8povM586lEzl+oo7vIMF
+         IhJ/jZRmqidqHACHBWsTmer7cIw2NytPqXZsYwGg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0170/1095] arm64: dts: qcom: ipq8074: fix NAND node name
-Date:   Mon, 15 Aug 2022 19:52:49 +0200
-Message-Id: <20220815180436.654095684@linuxfoundation.org>
+Subject: [PATCH 5.18 0206/1095] locking/lockdep: Fix lockdep_init_map_*() confusion
+Date:   Mon, 15 Aug 2022 19:53:25 +0200
+Message-Id: <20220815180438.193194149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,35 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
+[ Upstream commit eae6d58d67d9739be5f7ae2dbead1d0ef6528243 ]
 
-Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-Fix it to match nand-controller.yaml requirements.
+Commit dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t") added yet
+another lockdep_init_map_*() variant, but forgot to update all the
+existing users of the most complicated version.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
+This could lead to a loss of lock_type and hence an incorrect report.
+Given the relative rarity of both local_lock and these annotations,
+this is unlikely to happen in practise, still, best fix things.
+
+Fixes: dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/lockdep.h  | 30 +++++++++++++++++-------------
+ kernel/locking/lockdep.c |  7 ++++---
+ 2 files changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index 8d4e0e193439..664fba3632b1 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -534,7 +534,7 @@ qpic_bam: dma-controller@7984000 {
- 			status = "disabled";
- 		};
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 467b94257105..0a9afe84ea44 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -192,7 +192,7 @@ static inline void
+ lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
+ 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
+ {
+-	lockdep_init_map_type(lock, name, key, subclass, inner, LD_WAIT_INV, LD_LOCK_NORMAL);
++	lockdep_init_map_type(lock, name, key, subclass, inner, outer, LD_LOCK_NORMAL);
+ }
  
--		qpic_nand: nand@79b0000 {
-+		qpic_nand: nand-controller@79b0000 {
- 			compatible = "qcom,ipq8074-nand";
- 			reg = <0x079b0000 0x10000>;
- 			#address-cells = <1>;
+ static inline void
+@@ -215,24 +215,28 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
+  * or they are too narrow (they suffer from a false class-split):
+  */
+ #define lockdep_set_class(lock, key)				\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_name(lock, key, name)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, name, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, name, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_subclass(lock, key, sub)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, sub,\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, sub,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_subclass(lock, sub)					\
+-	lockdep_init_map_waits(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
+-			       (lock)->dep_map.wait_type_inner,		\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
++			      (lock)->dep_map.wait_type_inner,		\
++			      (lock)->dep_map.wait_type_outer,		\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_novalidate_class(lock) \
+ 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index c06cab6546ed..e45ec82b42e6 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5214,9 +5214,10 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
+ 		return 0;
+ 	}
+ 
+-	lockdep_init_map_waits(lock, name, key, 0,
+-			       lock->wait_type_inner,
+-			       lock->wait_type_outer);
++	lockdep_init_map_type(lock, name, key, 0,
++			      lock->wait_type_inner,
++			      lock->wait_type_outer,
++			      lock->lock_type);
+ 	class = register_lock_class(lock, subclass, 0);
+ 	hlock->class_idx = class - lock_classes;
+ 
 -- 
 2.35.1
 
