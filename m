@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DCAC32762
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFD6C3276A
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350373AbiHOW0k (ORCPT
+        id S1350998AbiHOW1Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        Mon, 15 Aug 2022 18:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349919AbiHOWRR (ORCPT
+        with ESMTP id S1348670AbiHOWVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:17:17 -0400
+        Mon, 15 Aug 2022 18:21:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BBC3F313;
-        Mon, 15 Aug 2022 12:40:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3069C1E1;
+        Mon, 15 Aug 2022 12:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C01EC61217;
-        Mon, 15 Aug 2022 19:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D36C43470;
-        Mon, 15 Aug 2022 19:40:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C05EB610A3;
+        Mon, 15 Aug 2022 19:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F38C433C1;
+        Mon, 15 Aug 2022 19:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592423;
-        bh=YHnaOV5Y4krgMZM6veswHxagQoNsgvH0gQzfp0blJqo=;
+        s=korg; t=1660592611;
+        bh=s+9l6JxnWVUGQGC5nFOt24RzEXuAO/JrTuKd3o9IIAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xcd5ZAfeNvmAu0IIOlurHnNzaRbhtleCcmiRvztfdLL7ZK+fvpZQahqT4gSpNit6u
-         tgJiFg7cNxJXxhjj8NQvi7e0K9FzNpWhJhyPUYfc0zqh8+JfQs3/FPJTgXQ6jTmSSB
-         p25u947ROUD6EvyLo/comO1Y3VLNpa3hkuINYneU=
+        b=euI3DBJjg0DQO8vRhY9oIgGHzV6Z7md8cqpe6THxTKPE0MPW4yfma3Tk7Ysv/Kivo
+         v6SJcY5BUJ9Uy1jWTPebwRlkCrfeBhUQly+WUp9J4aVB+efVXTlGsYhtpKVMucD4QP
+         zN7OkkF5ydGPLZv/MYM7PjNgNRRbkQmckZhZHO+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Peng Fan <peng.fan@nxp.com>, Georgi Djakov <djakov@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0762/1095] interconnect: imx: fix max_node_id
-Date:   Mon, 15 Aug 2022 20:02:41 +0200
-Message-Id: <20220815180500.792253160@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
+Subject: [PATCH 5.19 0137/1157] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
+Date:   Mon, 15 Aug 2022 19:51:33 +0200
+Message-Id: <20220815180445.110781884@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit bd734481e172b4827af09c9ab06c51d2ab7201e6 ]
+commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
 
-max_node_id not equal to the ARRAY_SIZE of node array, need increase 1,
-otherwise xlate will fail for the last entry. And rename max_node_id
-to num_nodes to reflect the reality.
+The syzbot fuzzer found a race between uevent callbacks and gadget
+driver unregistration that can cause a use-after-free bug:
 
-Fixes: f0d8048525d7d ("interconnect: Add imx core driver")
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220703091132.1412063-5-peng.fan@oss.nxp.com
-Signed-off-by: Georgi Djakov <djakov@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+---------------------------------------------------------------
+BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
+drivers/usb/gadget/udc/core.c:1732
+Read of size 8 at addr ffff888078ce2050 by task udevd/2968
+
+CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
+06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+ usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
+ dev_uevent+0x290/0x770 drivers/base/core.c:2424
+---------------------------------------------------------------
+
+The bug occurs because usb_udc_uevent() dereferences udc->driver but
+does so without acquiring the udc_lock mutex, which protects this
+field.  If the gadget driver is unbound from the udc concurrently with
+uevent processing, the driver structure may be accessed after it has
+been deallocated.
+
+To prevent the race, we make sure that the routine holds the mutex
+around the racing accesses.
+
+Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
+CC: stable@vger.kernel.org # fc274c1e9973
+Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/interconnect/imx/imx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/udc/core.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/interconnect/imx/imx.c b/drivers/interconnect/imx/imx.c
-index 249ca25d1d55..4406ec45fa90 100644
---- a/drivers/interconnect/imx/imx.c
-+++ b/drivers/interconnect/imx/imx.c
-@@ -234,16 +234,16 @@ int imx_icc_register(struct platform_device *pdev,
- 	struct device *dev = &pdev->dev;
- 	struct icc_onecell_data *data;
- 	struct icc_provider *provider;
--	int max_node_id;
-+	int num_nodes;
- 	int ret;
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1728,13 +1728,14 @@ static int usb_udc_uevent(struct device
+ 		return ret;
+ 	}
  
- 	/* icc_onecell_data is indexed by node_id, unlike nodes param */
--	max_node_id = get_max_node_id(nodes, nodes_count);
--	data = devm_kzalloc(dev, struct_size(data, nodes, max_node_id),
-+	num_nodes = get_max_node_id(nodes, nodes_count) + 1;
-+	data = devm_kzalloc(dev, struct_size(data, nodes, num_nodes),
- 			    GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
--	data->num_nodes = max_node_id;
-+	data->num_nodes = num_nodes;
+-	if (udc->driver) {
++	mutex_lock(&udc_lock);
++	if (udc->driver)
+ 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
+ 				udc->driver->function);
+-		if (ret) {
+-			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
+-			return ret;
+-		}
++	mutex_unlock(&udc_lock);
++	if (ret) {
++		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
++		return ret;
+ 	}
  
- 	provider = devm_kzalloc(dev, sizeof(*provider), GFP_KERNEL);
- 	if (!provider)
--- 
-2.35.1
-
+ 	return 0;
 
 
