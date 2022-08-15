@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F59DC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785C3C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348305AbiHOVaq (ORCPT
+        id S1348412AbiHOVbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
+        Mon, 15 Aug 2022 17:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348361AbiHOV13 (ORCPT
+        with ESMTP id S1348435AbiHOV1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:27:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72657EA32E;
-        Mon, 15 Aug 2022 12:23:11 -0700 (PDT)
+        Mon, 15 Aug 2022 17:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5E5EA8A9;
+        Mon, 15 Aug 2022 12:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 765A66100A;
-        Mon, 15 Aug 2022 19:23:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D0A1C433C1;
-        Mon, 15 Aug 2022 19:23:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 648FEB80FD3;
+        Mon, 15 Aug 2022 19:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A5DC433C1;
+        Mon, 15 Aug 2022 19:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591389;
-        bh=lKxoAvXVsGRe9PiFvoNGpQWBXTPaZ/60XQ9q76tymYU=;
+        s=korg; t=1660591399;
+        bh=CXgv/mwnDeY7ZKskEA+lAuZOc1xXfXxQx4KsFMlI+pU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WCOE5TzEgCnKXBNRICTwovUEELaRppJmD2ojniejxFXzbIiQBiSsaHcSxfDOHRUdj
-         sCthMOCeeBni6R30Qy24y4P49m3Xo1gRKnfII17cMXRHiGiJK7civJq9bJjTPcUe/r
-         f5cM1vysvJL/AA5J9doy//pu3W4lTArNBuQKHRfk=
+        b=AB8m6qY01CfEzQMHJyY9zMvkc4vIMEiH86Nze/ACgOWgk/ZEdYpz57+uY92FXI8w2
+         vewymdgCYGxDWjuIYFTPTHteNFtwVVp86gDeYoLklraIw3kB23oZ1M6RpFvZzPD8Z7
+         vp66Z7fzer45rjZ3etFHVJJuSthDivumOobkXrSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0537/1095] net/mlx5e: xsk: Discard unaligned XSK frames on striding RQ
-Date:   Mon, 15 Aug 2022 19:58:56 +0200
-Message-Id: <20220815180451.761190961@linuxfoundation.org>
+Subject: [PATCH 5.18 0566/1095] mtd: st_spi_fsm: Add a clk_disable_unprepare() in .probe()s error path
+Date:   Mon, 15 Aug 2022 19:59:25 +0200
+Message-Id: <20220815180452.988843466@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,97 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 8eaa1d110800fac050bab44001732747a1c39894 ]
+[ Upstream commit 28607b426c3d050714f250d0faeb99d2e9106e90 ]
 
-Striding RQ uses MTT page mapping, where each page corresponds to an XSK
-frame. MTT pages have alignment requirements, and XSK frames don't have
-any alignment guarantees in the unaligned mode. Frames with improper
-alignment must be discarded, otherwise the packet data will be written
-at a wrong address.
+For all but one error path clk_disable_unprepare() is already there. Add
+it to the one location where it's missing.
 
-Fixes: 282c0c798f8e ("net/mlx5e: Allow XSK frames smaller than a page")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Link: https://lore.kernel.org/r/20220729121356.3990867-1-maximmi@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 481815a6193b ("mtd: st_spi_fsm: Handle clk_prepare_enable/clk_disable_unprepare.")
+Fixes: 69d5af8d016c ("mtd: st_spi_fsm: Obtain and use EMI clock")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220607152458.232847-2-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    | 14 ++++++++++++++
- include/net/xdp_sock_drv.h                         | 11 +++++++++++
- 2 files changed, 25 insertions(+)
+ drivers/mtd/devices/st_spi_fsm.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index 7f88ccf67fdd..8b56cb8b4743 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -7,6 +7,8 @@
- #include "en.h"
- #include <net/xdp_sock_drv.h>
+diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
+index 983999c020d6..48bda2dd1bb5 100644
+--- a/drivers/mtd/devices/st_spi_fsm.c
++++ b/drivers/mtd/devices/st_spi_fsm.c
+@@ -2115,10 +2115,12 @@ static int stfsm_probe(struct platform_device *pdev)
+ 		(long long)fsm->mtd.size, (long long)(fsm->mtd.size >> 20),
+ 		fsm->mtd.erasesize, (fsm->mtd.erasesize >> 10));
  
-+#define MLX5E_MTT_PTAG_MASK 0xfffffffffffffff8ULL
-+
- /* RX data path */
- 
- struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
-@@ -22,6 +24,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- static inline int mlx5e_xsk_page_alloc_pool(struct mlx5e_rq *rq,
- 					    struct mlx5e_dma_info *dma_info)
- {
-+retry:
- 	dma_info->xsk = xsk_buff_alloc(rq->xsk_pool);
- 	if (!dma_info->xsk)
- 		return -ENOMEM;
-@@ -33,6 +36,17 @@ static inline int mlx5e_xsk_page_alloc_pool(struct mlx5e_rq *rq,
- 	 */
- 	dma_info->addr = xsk_buff_xdp_get_frame_dma(dma_info->xsk);
- 
-+	/* MTT page mapping has alignment requirements. If they are not
-+	 * satisfied, leak the descriptor so that it won't come again, and try
-+	 * to allocate a new one.
-+	 */
-+	if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
-+		if (unlikely(dma_info->addr & ~MLX5E_MTT_PTAG_MASK)) {
-+			xsk_buff_discard(dma_info->xsk);
-+			goto retry;
-+		}
+-	return mtd_device_register(&fsm->mtd, NULL, 0);
+-
++	ret = mtd_device_register(&fsm->mtd, NULL, 0);
++	if (ret) {
+ err_clk_unprepare:
+-	clk_disable_unprepare(fsm->clk);
++		clk_disable_unprepare(fsm->clk);
 +	}
 +
- 	return 0;
+ 	return ret;
  }
  
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index 4aa031849668..0774ce97c2f1 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -95,6 +95,13 @@ static inline void xsk_buff_free(struct xdp_buff *xdp)
- 	xp_free(xskb);
- }
- 
-+static inline void xsk_buff_discard(struct xdp_buff *xdp)
-+{
-+	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
-+
-+	xp_release(xskb);
-+}
-+
- static inline void xsk_buff_set_size(struct xdp_buff *xdp, u32 size)
- {
- 	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-@@ -238,6 +245,10 @@ static inline void xsk_buff_free(struct xdp_buff *xdp)
- {
- }
- 
-+static inline void xsk_buff_discard(struct xdp_buff *xdp)
-+{
-+}
-+
- static inline void xsk_buff_set_size(struct xdp_buff *xdp, u32 size)
- {
- }
 -- 
 2.35.1
 
