@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D55C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3F2C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352588AbiHPAS6 (ORCPT
+        id S1350418AbiHPATH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        Mon, 15 Aug 2022 20:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356836AbiHPAMY (ORCPT
+        with ESMTP id S1356877AbiHPAM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:12:24 -0400
+        Mon, 15 Aug 2022 20:12:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54888A0615;
-        Mon, 15 Aug 2022 13:29:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DF6175E08;
+        Mon, 15 Aug 2022 13:29:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86534B80EA8;
-        Mon, 15 Aug 2022 20:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7709C433D6;
-        Mon, 15 Aug 2022 20:29:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 237DAB81197;
+        Mon, 15 Aug 2022 20:29:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26062C433D6;
+        Mon, 15 Aug 2022 20:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595371;
-        bh=S5qTaqV6ki+rTfk7bI7WRpx3IPmezSobbUWzNR7BN/g=;
+        s=korg; t=1660595380;
+        bh=6JLjxT/Lu+DUMinJzcdWuuAg5ranlTsisFvAYUj8FuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DeYcgdcJQq8elYVMyAfCqKWRQr62Wf8euLmZUjs8zx084HvYs/zvRhMPtp13MruQQ
-         jq9X0Nly+SgnHAewNlPRrTadv9a072368ea3hnYkKo43Noc8h0mFL5+J3vBw1YWm0T
-         51NdJOJ+7DigG7J4yciMSPqIyDtElc+b38SiR28Q=
+        b=GWgFHBfHvMYZ0uumRqDUL4MAPA7zP5O7Vm6dPe3UyzS5CHWNycuiXHYtHLLL4KH+/
+         wUWeDM+JbTAtoLe8e9BNllMxYeRVNWo/HQUxESzb9AFbrH1zxFfwx3tq+l4zoWG4da
+         18YM1alGW3HR6h8Ji9W5Zz5vdQXKS8kDX0YiijCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
+        stable@vger.kernel.org, Suzuki Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0743/1157] driver core: fix potential deadlock in __driver_attach
-Date:   Mon, 15 Aug 2022 20:01:39 +0200
-Message-Id: <20220815180509.190703627@linuxfoundation.org>
+Subject: [PATCH 5.19 0746/1157] coresight: syscfg: Update load and unload operations
+Date:   Mon, 15 Aug 2022 20:01:42 +0200
+Message-Id: <20220815180509.307913812@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,118 +51,401 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Mike Leach <mike.leach@linaro.org>
 
-[ Upstream commit 70fe758352cafdee72a7b13bf9db065f9613ced8 ]
+[ Upstream commit 8add26f7ef33bba7984cb6ff7911c6aa970fe55a ]
 
-In __driver_attach function, There are also AA deadlock problem,
-like the commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
+The configfs system is a source of access to the config information in the
+configuration and feature lists.
 
-stack like commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
-list below:
-    In __driver_attach function, The lock holding logic is as follows:
-    ...
-    __driver_attach
-    if (driver_allows_async_probing(drv))
-      device_lock(dev)      // get lock dev
-        async_schedule_dev(__driver_attach_async_helper, dev); // func
-          async_schedule_node
-            async_schedule_node_domain(func)
-              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-              /* when fail or work limit, sync to execute func, but
-                 __driver_attach_async_helper will get lock dev as
-                 will, which will lead to A-A deadlock.  */
-              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-                func;
-              else
-                queue_work_node(node, system_unbound_wq, &entry->work)
-      device_unlock(dev)
+This can result in additional LOCKDEP issues as a result of the mutex
+ordering between the config list mutex (cscfg_mutex) and the configfs
+system mutexes.
 
-    As above show, when it is allowed to do async probes, because of
-    out of memory or work limit, async work is not be allowed, to do
-    sync execute instead. it will lead to A-A deadlock because of
-    __driver_attach_async_helper getting lock dev.
+As such we need to adjust how load/unload operations work to ensure correct
+operation.
 
-Reproduce:
-and it can be reproduce by make the condition
-(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
-below:
+1) Previously the cscfg_mutex was held throughout the load/unload
+operation. This is now only held during configuration list manipulations,
+resulting in a multi-stage load/unload process.
 
-[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
-this message.
-[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
-0 flags:0x00004000
-[  370.788865] Call Trace:
-[  370.789374]  <TASK>
-[  370.789841]  __schedule+0x482/0x1050
-[  370.790613]  schedule+0x92/0x1a0
-[  370.791290]  schedule_preempt_disabled+0x2c/0x50
-[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
-[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
-[  370.794079]  mutex_lock+0x50/0x60
-[  370.794795]  __device_driver_lock+0x2f/0x70
-[  370.795677]  ? driver_probe_device+0xd0/0xd0
-[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
-[  370.797318]  ? driver_probe_device+0xd0/0xd0
-[  370.797957]  async_schedule_node_domain+0xa5/0xc0
-[  370.798652]  async_schedule_node+0x19/0x30
-[  370.799243]  __driver_attach+0x246/0x290
-[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
-[  370.800548]  bus_for_each_dev+0x9d/0x130
-[  370.801132]  driver_attach+0x22/0x30
-[  370.801666]  bus_add_driver+0x290/0x340
-[  370.802246]  driver_register+0x88/0x140
-[  370.802817]  ? virtio_scsi_init+0x116/0x116
-[  370.803425]  scsi_register_driver+0x1a/0x30
-[  370.804057]  init_sd+0x184/0x226
-[  370.804533]  do_one_initcall+0x71/0x3a0
-[  370.805107]  kernel_init_freeable+0x39a/0x43a
-[  370.805759]  ? rest_init+0x150/0x150
-[  370.806283]  kernel_init+0x26/0x230
-[  370.806799]  ret_from_fork+0x1f/0x30
+2) All operations that manipulate the configfs representation of the
+configurations and features are now separated out and run without the
+cscfg_mutex being held. This avoids circular lock_dep issue with the
+built-in configfs mutexes and semaphores
 
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
+3) As the load and unload is now multi-stage, some parts under the
+cscfg_mutex and others not:
+i) A flag indicating a load / unload operation in progress is used to
+serialise load / unload operations.
+ii) activating any configuration not possible when unload is in progress.
+iii) Configurations have an "available" flag set only after the last load
+stage for the configuration is complete. Activation of the configuration
+not possible till flag is set.
 
-Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220622074327.497102-1-zhangwensheng5@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+4) Following load/unload rules remain:
+i) Unload prevented while any configuration is active remains.
+ii) Unload in strict reverse order of load.
+iii) Existing configurations can be activated while a new load operation
+is underway. (by definition there can be no dependencies between an
+existing configuration and a new loading one due to ii) above.)
+
+Fixes: eb2ec49606c2 ("coresight: syscfg: Update load API for config loadable modules")
+Reported-by: Suzuki Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+Reviewed-and-tested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20220628173004.30002-3-mike.leach@linaro.org
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../hwtracing/coresight/coresight-config.h    |   2 +
+ .../hwtracing/coresight/coresight-syscfg.c    | 191 ++++++++++++++----
+ .../hwtracing/coresight/coresight-syscfg.h    |  13 ++
+ 3 files changed, 165 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 11b0fb6414d3..b766968a873c 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -1115,6 +1115,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __driver_attach(struct device *dev, void *data)
- {
- 	struct device_driver *drv = data;
-+	bool async = false;
- 	int ret;
+diff --git a/drivers/hwtracing/coresight/coresight-config.h b/drivers/hwtracing/coresight/coresight-config.h
+index 2e1670523461..6ba013975741 100644
+--- a/drivers/hwtracing/coresight/coresight-config.h
++++ b/drivers/hwtracing/coresight/coresight-config.h
+@@ -134,6 +134,7 @@ struct cscfg_feature_desc {
+  * @active_cnt:		ref count for activate on this configuration.
+  * @load_owner:		handle to load owner for dynamic load and unload of configs.
+  * @fs_group:		reference to configfs group for dynamic unload.
++ * @available:		config can be activated - multi-stage load sets true on completion.
+  */
+ struct cscfg_config_desc {
+ 	const char *name;
+@@ -148,6 +149,7 @@ struct cscfg_config_desc {
+ 	atomic_t active_cnt;
+ 	void *load_owner;
+ 	struct config_group *fs_group;
++	bool available;
+ };
  
- 	/*
-@@ -1153,9 +1154,11 @@ static int __driver_attach(struct device *dev, void *data)
- 		if (!dev->driver && !dev->p->async_driver) {
- 			get_device(dev);
- 			dev->p->async_driver = drv;
--			async_schedule_dev(__driver_attach_async_helper, dev);
-+			async = true;
+ /**
+diff --git a/drivers/hwtracing/coresight/coresight-syscfg.c b/drivers/hwtracing/coresight/coresight-syscfg.c
+index 17e728ab5c99..11138a9762b0 100644
+--- a/drivers/hwtracing/coresight/coresight-syscfg.c
++++ b/drivers/hwtracing/coresight/coresight-syscfg.c
+@@ -447,6 +447,8 @@ static void cscfg_unload_owned_cfgs_feats(void *load_owner)
+ 	struct cscfg_feature_desc *feat_desc, *feat_tmp;
+ 	struct cscfg_registered_csdev *csdev_item;
+ 
++	lockdep_assert_held(&cscfg_mutex);
++
+ 	/* remove from each csdev instance feature and config lists */
+ 	list_for_each_entry(csdev_item, &cscfg_mgr->csdev_desc_list, item) {
+ 		/*
+@@ -460,7 +462,6 @@ static void cscfg_unload_owned_cfgs_feats(void *load_owner)
+ 	/* remove from the config descriptor lists */
+ 	list_for_each_entry_safe(config_desc, cfg_tmp, &cscfg_mgr->config_desc_list, item) {
+ 		if (config_desc->load_owner == load_owner) {
+-			cscfg_configfs_del_config(config_desc);
+ 			etm_perf_del_symlink_cscfg(config_desc);
+ 			list_del(&config_desc->item);
  		}
- 		device_unlock(dev);
-+		if (async)
-+			async_schedule_dev(__driver_attach_async_helper, dev);
- 		return 0;
+@@ -469,12 +470,90 @@ static void cscfg_unload_owned_cfgs_feats(void *load_owner)
+ 	/* remove from the feature descriptor lists */
+ 	list_for_each_entry_safe(feat_desc, feat_tmp, &cscfg_mgr->feat_desc_list, item) {
+ 		if (feat_desc->load_owner == load_owner) {
+-			cscfg_configfs_del_feature(feat_desc);
+ 			list_del(&feat_desc->item);
+ 		}
+ 	}
+ }
+ 
++/*
++ * load the features and configs to the lists - called with list mutex held
++ */
++static int cscfg_load_owned_cfgs_feats(struct cscfg_config_desc **config_descs,
++				       struct cscfg_feature_desc **feat_descs,
++				       struct cscfg_load_owner_info *owner_info)
++{
++	int i, err;
++
++	lockdep_assert_held(&cscfg_mutex);
++
++	/* load features first */
++	if (feat_descs) {
++		for (i = 0; feat_descs[i]; i++) {
++			err = cscfg_load_feat(feat_descs[i]);
++			if (err) {
++				pr_err("coresight-syscfg: Failed to load feature %s\n",
++				       feat_descs[i]->name);
++				return err;
++			}
++			feat_descs[i]->load_owner = owner_info;
++		}
++	}
++
++	/* next any configurations to check feature dependencies */
++	if (config_descs) {
++		for (i = 0; config_descs[i]; i++) {
++			err = cscfg_load_config(config_descs[i]);
++			if (err) {
++				pr_err("coresight-syscfg: Failed to load configuration %s\n",
++				       config_descs[i]->name);
++				return err;
++			}
++			config_descs[i]->load_owner = owner_info;
++			config_descs[i]->available = false;
++		}
++	}
++	return 0;
++}
++
++/* set configurations as available to activate at the end of the load process */
++static void cscfg_set_configs_available(struct cscfg_config_desc **config_descs)
++{
++	int i;
++
++	lockdep_assert_held(&cscfg_mutex);
++
++	if (config_descs) {
++		for (i = 0; config_descs[i]; i++)
++			config_descs[i]->available = true;
++	}
++}
++
++/*
++ * Create and register each of the configurations and features with configfs.
++ * Called without mutex being held.
++ */
++static int cscfg_fs_register_cfgs_feats(struct cscfg_config_desc **config_descs,
++					struct cscfg_feature_desc **feat_descs)
++{
++	int i, err;
++
++	if (feat_descs) {
++		for (i = 0; feat_descs[i]; i++) {
++			err = cscfg_configfs_add_feature(feat_descs[i]);
++			if (err)
++				return err;
++		}
++	}
++	if (config_descs) {
++		for (i = 0; config_descs[i]; i++) {
++			err = cscfg_configfs_add_config(config_descs[i]);
++			if (err)
++				return err;
++		}
++	}
++	return 0;
++}
++
+ /**
+  * cscfg_load_config_sets - API function to load feature and config sets.
+  *
+@@ -497,57 +576,63 @@ int cscfg_load_config_sets(struct cscfg_config_desc **config_descs,
+ 			   struct cscfg_feature_desc **feat_descs,
+ 			   struct cscfg_load_owner_info *owner_info)
+ {
+-	int err = 0, i = 0;
++	int err = 0;
+ 
+ 	mutex_lock(&cscfg_mutex);
+-
+-	/* load features first */
+-	if (feat_descs) {
+-		while (feat_descs[i]) {
+-			err = cscfg_load_feat(feat_descs[i]);
+-			if (!err)
+-				err = cscfg_configfs_add_feature(feat_descs[i]);
+-			if (err) {
+-				pr_err("coresight-syscfg: Failed to load feature %s\n",
+-				       feat_descs[i]->name);
+-				cscfg_unload_owned_cfgs_feats(owner_info);
+-				goto exit_unlock;
+-			}
+-			feat_descs[i]->load_owner = owner_info;
+-			i++;
+-		}
++	if (cscfg_mgr->load_state != CSCFG_NONE) {
++		mutex_unlock(&cscfg_mutex);
++		return -EBUSY;
+ 	}
++	cscfg_mgr->load_state = CSCFG_LOAD;
+ 
+-	/* next any configurations to check feature dependencies */
+-	i = 0;
+-	if (config_descs) {
+-		while (config_descs[i]) {
+-			err = cscfg_load_config(config_descs[i]);
+-			if (!err)
+-				err = cscfg_configfs_add_config(config_descs[i]);
+-			if (err) {
+-				pr_err("coresight-syscfg: Failed to load configuration %s\n",
+-				       config_descs[i]->name);
+-				cscfg_unload_owned_cfgs_feats(owner_info);
+-				goto exit_unlock;
+-			}
+-			config_descs[i]->load_owner = owner_info;
+-			i++;
+-		}
+-	}
++	/* first load and add to the lists */
++	err = cscfg_load_owned_cfgs_feats(config_descs, feat_descs, owner_info);
++	if (err)
++		goto err_clean_load;
+ 
+ 	/* add the load owner to the load order list */
+ 	list_add_tail(&owner_info->item, &cscfg_mgr->load_order_list);
+ 	if (!list_is_singular(&cscfg_mgr->load_order_list)) {
+ 		/* lock previous item in load order list */
+ 		err = cscfg_owner_get(list_prev_entry(owner_info, item));
+-		if (err) {
+-			cscfg_unload_owned_cfgs_feats(owner_info);
+-			list_del(&owner_info->item);
+-		}
++		if (err)
++			goto err_clean_owner_list;
  	}
  
++	/*
++	 * make visible to configfs - configfs manipulation must occur outside
++	 * the list mutex lock to avoid circular lockdep issues with configfs
++	 * built in mutexes and semaphores. This is safe as it is not possible
++	 * to start a new load/unload operation till the current one is done.
++	 */
++	mutex_unlock(&cscfg_mutex);
++
++	/* create the configfs elements */
++	err = cscfg_fs_register_cfgs_feats(config_descs, feat_descs);
++	mutex_lock(&cscfg_mutex);
++
++	if (err)
++		goto err_clean_cfs;
++
++	/* mark any new configs as available for activation */
++	cscfg_set_configs_available(config_descs);
++	goto exit_unlock;
++
++err_clean_cfs:
++	/* cleanup after error registering with configfs */
++	cscfg_fs_unregister_cfgs_feats(owner_info);
++
++	if (!list_is_singular(&cscfg_mgr->load_order_list))
++		cscfg_owner_put(list_prev_entry(owner_info, item));
++
++err_clean_owner_list:
++	list_del(&owner_info->item);
++
++err_clean_load:
++	cscfg_unload_owned_cfgs_feats(owner_info);
++
+ exit_unlock:
++	cscfg_mgr->load_state = CSCFG_NONE;
+ 	mutex_unlock(&cscfg_mutex);
+ 	return err;
+ }
+@@ -564,6 +649,9 @@ EXPORT_SYMBOL_GPL(cscfg_load_config_sets);
+  * 1) no configurations are active.
+  * 2) the set being unloaded was the last to be loaded to maintain dependencies.
+  *
++ * Once the unload operation commences, we disallow any configuration being
++ * made active until it is complete.
++ *
+  * @owner_info:	Information on owner for set being unloaded.
+  */
+ int cscfg_unload_config_sets(struct cscfg_load_owner_info *owner_info)
+@@ -572,6 +660,13 @@ int cscfg_unload_config_sets(struct cscfg_load_owner_info *owner_info)
+ 	struct cscfg_load_owner_info *load_list_item = NULL;
+ 
+ 	mutex_lock(&cscfg_mutex);
++	if (cscfg_mgr->load_state != CSCFG_NONE) {
++		mutex_unlock(&cscfg_mutex);
++		return -EBUSY;
++	}
++
++	/* unload op in progress also prevents activation of any config */
++	cscfg_mgr->load_state = CSCFG_UNLOAD;
+ 
+ 	/* cannot unload if anything is active */
+ 	if (atomic_read(&cscfg_mgr->sys_active_cnt)) {
+@@ -592,7 +687,12 @@ int cscfg_unload_config_sets(struct cscfg_load_owner_info *owner_info)
+ 		goto exit_unlock;
+ 	}
+ 
+-	/* unload all belonging to load_owner */
++	/* remove from configfs - again outside the scope of the list mutex */
++	mutex_unlock(&cscfg_mutex);
++	cscfg_fs_unregister_cfgs_feats(owner_info);
++	mutex_lock(&cscfg_mutex);
++
++	/* unload everything from lists belonging to load_owner */
+ 	cscfg_unload_owned_cfgs_feats(owner_info);
+ 
+ 	/* remove from load order list */
+@@ -603,6 +703,7 @@ int cscfg_unload_config_sets(struct cscfg_load_owner_info *owner_info)
+ 	list_del(&owner_info->item);
+ 
+ exit_unlock:
++	cscfg_mgr->load_state = CSCFG_NONE;
+ 	mutex_unlock(&cscfg_mutex);
+ 	return err;
+ }
+@@ -780,8 +881,15 @@ static int _cscfg_activate_config(unsigned long cfg_hash)
+ 	struct cscfg_config_desc *config_desc;
+ 	int err = -EINVAL;
+ 
++	if (cscfg_mgr->load_state == CSCFG_UNLOAD)
++		return -EBUSY;
++
+ 	list_for_each_entry(config_desc, &cscfg_mgr->config_desc_list, item) {
+ 		if ((unsigned long)config_desc->event_ea->var == cfg_hash) {
++			/* if we happen upon a partly loaded config, can't use it */
++			if (config_desc->available == false)
++				return -EBUSY;
++
+ 			/* must ensure that config cannot be unloaded in use */
+ 			err = cscfg_owner_get(config_desc->load_owner);
+ 			if (err)
+@@ -1071,6 +1179,7 @@ static int cscfg_create_device(void)
+ 	INIT_LIST_HEAD(&cscfg_mgr->config_desc_list);
+ 	INIT_LIST_HEAD(&cscfg_mgr->load_order_list);
+ 	atomic_set(&cscfg_mgr->sys_active_cnt, 0);
++	cscfg_mgr->load_state = CSCFG_NONE;
+ 
+ 	/* setup the device */
+ 	dev = cscfg_device();
+diff --git a/drivers/hwtracing/coresight/coresight-syscfg.h b/drivers/hwtracing/coresight/coresight-syscfg.h
+index 9106ffab4833..66e2db890d82 100644
+--- a/drivers/hwtracing/coresight/coresight-syscfg.h
++++ b/drivers/hwtracing/coresight/coresight-syscfg.h
+@@ -12,6 +12,17 @@
+ 
+ #include "coresight-config.h"
+ 
++/*
++ * Load operation types.
++ * When loading or unloading, another load operation cannot be run.
++ * When unloading configurations cannot be activated.
++ */
++enum cscfg_load_ops {
++	CSCFG_NONE,
++	CSCFG_LOAD,
++	CSCFG_UNLOAD
++};
++
+ /**
+  * System configuration manager device.
+  *
+@@ -30,6 +41,7 @@
+  * @cfgfs_subsys:	configfs subsystem used to manage configurations.
+  * @sysfs_active_config:Active config hash used if CoreSight controlled from sysfs.
+  * @sysfs_active_preset:Active preset index used if CoreSight controlled from sysfs.
++ * @load_state:		A multi-stage load/unload operation is in progress.
+  */
+ struct cscfg_manager {
+ 	struct device dev;
+@@ -41,6 +53,7 @@ struct cscfg_manager {
+ 	struct configfs_subsystem cfgfs_subsys;
+ 	u32 sysfs_active_config;
+ 	int sysfs_active_preset;
++	enum cscfg_load_ops load_state;
+ };
+ 
+ /* get reference to dev in cscfg_manager */
 -- 
 2.35.1
 
