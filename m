@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D65CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2328C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348065AbiHOUcC (ORCPT
+        id S1348030AbiHOUb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
+        Mon, 15 Aug 2022 16:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347530AbiHOUZz (ORCPT
+        with ESMTP id S1347525AbiHOUZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:25:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F1E357CE;
-        Mon, 15 Aug 2022 12:03:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C6D9C225;
+        Mon, 15 Aug 2022 12:03:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B3B161296;
-        Mon, 15 Aug 2022 19:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109D6C433D6;
-        Mon, 15 Aug 2022 19:03:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACFE3B8107A;
+        Mon, 15 Aug 2022 19:03:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05940C433C1;
+        Mon, 15 Aug 2022 19:03:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590192;
-        bh=XBYd5KmOyO7N25HDSPYLqT45ga2LwnRyBjaXX8A/4ks=;
+        s=korg; t=1660590183;
+        bh=VJCmYCac8+0GtJU2jX1P9L9/IdytulRpy/aYEWsiEso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5xLvD7zErpaUOEfC+spg+kPlzmI0giqLLOE//KaJ751RKEazSPcuUEDQ2vuEm4ZI
-         MGFuxbDtk8ubgxPZ8xQno3KVU4Oq5w7OuJGjzVSQgm+bcpZ5SqCBHk9eoh2gdKcos4
-         8g8jA72velU8SRgarUl0kiv/y7G6av9ocCvKzFSs=
+        b=xB+4q/Pd+DDRqUjc94LIz9JwVT8mNi3NQUrAXZ2mYotMUEkRC4KX6HSRm+ZVii3II
+         Xvz72sGB2k37E4C1td7+0z5diWc2ZaUVRYGDX8rxapAy2wlZkNCSzXv3/wzKPbj77b
+         /AtaRAOqm21RAn2PQwwOYPGgl/IvtdFptnGGSDoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0164/1095] ACPI: EC: Remove duplicate ThinkPad X1 Carbon 6th entry from DMI quirks
-Date:   Mon, 15 Aug 2022 19:52:43 +0200
-Message-Id: <20220815180436.367559933@linuxfoundation.org>
+Subject: [PATCH 5.18 0179/1095] selinux: Add boundary check in put_entry()
+Date:   Mon, 15 Aug 2022 19:52:58 +0200
+Message-Id: <20220815180437.044913329@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,39 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit 0dd6db359e5f206cbf1dd1fd40dd211588cd2725 ]
+[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
 
-Somehow the "ThinkPad X1 Carbon 6th" entry ended up twice in the
-struct dmi_system_id acpi_ec_no_wakeup[] array. Remove one of
-the entries.
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/ec.c | 7 -------
- 1 file changed, 7 deletions(-)
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index a1b871a418f8..f6a022892ee0 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2207,13 +2207,6 @@ static const struct dmi_system_id acpi_ec_no_wakeup[] = {
- 			DMI_MATCH(DMI_PRODUCT_FAMILY, "Thinkpad X1 Carbon 6th"),
- 		},
- 	},
--	{
--		.ident = "ThinkPad X1 Carbon 6th",
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Carbon 6th"),
--		},
--	},
- 	{
- 		.ident = "ThinkPad X1 Yoga 3rd",
- 		.matches = {
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index c24d4e1063ea..ffc4e7bad205 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -370,6 +370,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
+ 
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
 -- 
 2.35.1
 
