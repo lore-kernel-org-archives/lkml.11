@@ -2,104 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CD2C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491A4C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233806AbiHPE7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
+        id S233801AbiHPFBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234072AbiHPE6J (ORCPT
+        with ESMTP id S234729AbiHPFB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:58:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629D1BC82E;
-        Mon, 15 Aug 2022 13:51:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D57C7B811A6;
-        Mon, 15 Aug 2022 20:51:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10096C433C1;
-        Mon, 15 Aug 2022 20:51:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596707;
-        bh=HubnvPKLK/24iZKT7eHbcqFhZULylH0KNpVFqRjJCys=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QERzGDnUWg6myrFkl76uG3qCBwKXTf5W/I0pOvRd4kdU2mUXLDB3SPfiTfLkQFZ6q
-         e4TNkvchVfVrWG//1fZW+kVdw/fGODHks7erGpJwyGUZeNzOVEaruXiOpMaW5Y/+55
-         fFq5tCW1MKe/4kBblIhcWYhcjGHYjwitaoD3pL/s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.19 1152/1157] tracing: Use a copy of the va_list for __assign_vstr()
-Date:   Mon, 15 Aug 2022 20:08:28 +0200
-Message-Id: <20220815180526.618951842@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 16 Aug 2022 01:01:27 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C2150054
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:56:44 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-32194238c77so103111107b3.4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=D0fn3micXKWrfIVT3rhbLog8MKgivLXDeSRBFlVQCe0=;
+        b=pWNCA5tjhz3ifbg/zoi8mxeHNbQqyS6Wr+tkXqszwau/3juKJt1cJiDeWd/xTUYikf
+         3m+lUs8TRS/ONqZP2kr37pSkam/ltj8dFUHNbQSVUtOocrZd8kNivuozAsPDZGUebja5
+         8qoXrSub6bi/48WY6kMdn5wD62DzaKBuNTtBjPgC1vqE2ofoH7+pemKiSTDhtCXK+BKg
+         tM0mwmFWdjDKI5x8PolzvWsp9Wa9f7ueMXN26rQ8TanPpj13nakHNrDAbc0WTCILPcKm
+         sITU3U2AXFoq3SQH3e7W+zw/P6tvdNfqQuIWIBXSOdodHIwUTxZT8vAAFSIly2OhmtPn
+         X4/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=D0fn3micXKWrfIVT3rhbLog8MKgivLXDeSRBFlVQCe0=;
+        b=OiL/7UNjaqBMfjzddNYw6WiFDL0tiE6CIfCBlPMXa3hTZRTHrZyFSkW6EQMHNvvQBi
+         eso5so5C22PKIzqFAdPz9S2nVj0Q2cbQoAAt08CjKifn1xtlpUrO8Up9Zq+KkH6TltNI
+         1GUhUFpA+8JGih9hpDsFOEBEYYeABekYb2kuhei1BdSz1L/YPhpnH3JZmI4Oq/+Z/Bml
+         8lZ3xEerSnOi8+T6WSbmExja5SN5fNuT1oD+VynsWiEgWUPa6l2WZiAsDm0lTEpcc9rH
+         sWKZrQ79iPszQCnHWkOEt5z9c1SE6soq/GNrBWp7OLCf/RoT/I8ZrWVoPCEm+hRhtYz8
+         IZTg==
+X-Gm-Message-State: ACgBeo2LkPN4xJ2KwGqrF/iA76RgYuixTZjWBr47//j5nglecfiCYCUT
+        n3H4WhxVNG2LgOMBAt+5OwcArEUYuvqM+Q5M65E+DQ==
+X-Google-Smtp-Source: AA6agR4LEloPmUVOkPnMV81xQJEVCPf91bSwXVvWmCOFrRCoq8LfZMc0EKGNipgQdo+jv9Jrr6eZZKs9QGFjnp+Twkw=
+X-Received: by 2002:a0d:efc1:0:b0:32a:8e40:cd70 with SMTP id
+ y184-20020a0defc1000000b0032a8e40cd70mr14737568ywe.83.1660597003258; Mon, 15
+ Aug 2022 13:56:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810060040.321697-1-saravanak@google.com> <3601760.iIbC2pHGDl@steina-w>
+ <CAGETcx_tSndU0xerz=DF9JQxYFRC2aaxyOE-bR2JpM0L0ht=sw@mail.gmail.com>
+In-Reply-To: <CAGETcx_tSndU0xerz=DF9JQxYFRC2aaxyOE-bR2JpM0L0ht=sw@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 15 Aug 2022 13:56:07 -0700
+Message-ID: <CAGETcx-JUV1nj8wBJrTPfyvM7=Mre5j_vkVmZojeiumUGG6QZQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/9] fw_devlink improvements
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, Abel Vesa <abel.vesa@linaro.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        John Stultz <jstultz@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+On Mon, Aug 15, 2022 at 12:17 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Mon, Aug 15, 2022 at 5:39 AM Alexander Stein
+> <alexander.stein@ew.tq-group.com> wrote:
+> >
+> > Hello Saravana,
+> >
+> > Am Mittwoch, 10. August 2022, 08:00:29 CEST schrieb Saravana Kannan:
+> > > Alexander,
+> > >
+> > > This should fix your issue where the power domain device not having a
+> > > compatible property. Can you give it a shot please?
+> >
+> > thanks for the update. Unfortunately this does not work:
+> >
+> > > [    0.774838] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@0
+> > > [    0.775100] imx-pgc imx-pgc-domain.1: __genpd_dev_pm_attach() failed to
+> > find PM domain: -2
+> > > [    0.775324] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@2
+> > > [    0.775601] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@3
+> > > [    0.775842] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@4
+> > > [    0.776642] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@7
+> > > [    0.776897] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@8
+> > > [    0.777158] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@9
+> > > [    0.777405] PM: Added domain provider from /soc@0/bus@30000000/
+> > gpc@303a0000/pgc/power-domain@a
+> > > [    0.779342] genpd genpd:0:38320000.blk-ctrl: __genpd_dev_pm_attach()
+> > failed to find PM domain: -2
+> > > [    0.779422] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed to
+> > attach power domain "bus"
+> > > [    0.848785] etnaviv-gpu 38000000.gpu: __genpd_dev_pm_attach() failed to
+> > find PM domain: -2
+> > > [    1.114220] pfuze100-regulator 0-0008: Full layer: 2, Metal layer: 1
+> > > [    1.122267] pfuze100-regulator 0-0008: FAB: 0, FIN: 0
+> > > [    1.132970] pfuze100-regulator 0-0008: pfuze100 found.
+> > > [    1.157011] imx-gpcv2 303a0000.gpc: Failed to create device link with
+> > 0-0008
+> > > [    1.164094] imx-gpcv2 303a0000.gpc: Failed to create device link with
+> > 0-0008
+> >
+> > The required power-supply for the power domains is still not yet available.
+> > Does this series require some other patches as well?
+>
+> Ah sorry, yeah, this needs additional patches. The one I gave in the
+> other thread when I debugged this and I also noticed another issue.
+> Here's the combined diff of what's needed. Can you add this on top of
+> the series and test it?
+>
+> diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
+> index b9c22f764b4d..8a0e82067924 100644
+> --- a/drivers/irqchip/irq-imx-gpcv2.c
+> +++ b/drivers/irqchip/irq-imx-gpcv2.c
+> @@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
+> device_node *node,
+>          * later the GPC power domain driver will not be skipped.
+>          */
+>         of_node_clear_flag(node, OF_POPULATED);
+> +       fwnode_dev_initialized(domain->fwnode, false);
+>         return 0;
+>  }
+>
+> diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+> index 6383a4edc360..181fbfe5bd4d 100644
+> --- a/drivers/soc/imx/gpcv2.c
+> +++ b/drivers/soc/imx/gpcv2.c
+> @@ -1513,6 +1513,7 @@ static int imx_gpcv2_probe(struct platform_device *pdev)
+>
+>                 pd_pdev->dev.parent = dev;
+>                 pd_pdev->dev.of_node = np;
+> +               pd_pdev->dev.fwnode = of_fwnode_handle(np);
+>
+>                 ret = platform_device_add(pd_pdev);
+>                 if (ret) {
+>
+> With this patch, I'd really expect the power domain dependency to be
+> handled correctly.
+>
+> > Whats worse, starting with commit 9/9 [of: property: Simplify
+> > of_link_to_phandle()], other drivers fail to probe waiting for pinctrl to be
+> > available.
+>
+> Heh, Patch 9/9 and all its other dependencies in this series was to
+> fix your use case. Ironic that it's causing you more issues.
+>
+> > > $ cat /sys/kernel/debug/devices_deferred
+> > > gpio-leds       platform: wait for supplier gpioledgrp
+> > > extcon-usbotg0  platform: wait for supplier usb0congrp
+> > > gpio-keys       platform: wait for supplier gpiobuttongrp
+> > > regulator-otg-vbus      platform: wait for supplier reggotgvbusgrp
+> > > regulator-vdd-arm       platform: wait for supplier dvfsgrp
+> >
+> > Apparently for some reason they are not probed again, once the pinctrl driver
+> > probed.
+>
+> I'm hoping that this is just some issue due to the missing patch
+> above, but doesn't sound like it if you say that the pinctrl ended up
+> probing eventually.
+>
+> So when device_links_driver_bound() calls
+> __fw_devlink_pickup_dangling_consumers(), it should have picked up the
+> consumers of node like gpiobuttongrp and moved it to the pinctrl
+> device. And right after that we call __fw_devlink_link_to_consumers()
+> that would have created the device links. And then right after that,
+> we go through all the consumers and add them to the deferred probe
+> list. After that deferred probe should have run... either because it's
+> enabled at late_initcall() or because a new device probed
+> successfully.
+>
+> Can you check which one of my expectations isn't true in your case?
 
-commit 3a2dcbaf4d31023106975d6ae75b6df080c454cb upstream.
+Actually I have a hypothesis on what might be happening. It could be a
+case of the consumer device getting added after the supplier has been
+initialized.
 
-If an instance of tracing enables the same trace event as another
-instance, or the top level instance, or even perf, then the va_list passed
-into some tracepoints can be used more than once.
+If the patch above doesn't fix everything, can you add this diff on
+top of the patch above and see if that fixes everything? If it fixes
+the pinctrl issue, can you check my hypothesis be checking in what
+order the devices get added and get probed?
 
-As va_list can only be traversed once, this can cause issues:
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 2f012e826986..866755d8ad95 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device *con,
+                device_links_write_unlock();
+        }
 
- # cat /sys/kernel/tracing/instances/qla2xxx/trace
-             cat-56106   [012] ..... 2419873.470098: ql_dbg_log: qla2xxx [0000:05:00.0]-1054:14:  Entered (null).
-             cat-56106   [012] ..... 2419873.470101: ql_dbg_log: qla2xxx [0000:05:00.0]-1000:14:  Entered ×+<96>²Ü<98>^H.
-             cat-56106   [012] ..... 2419873.470102: ql_dbg_log: qla2xxx [0000:05:00.0]-1006:14:  Prepare to issue mbox cmd=0xde589000.
+-       sup_dev = get_dev_from_fwnode(sup_handle);
++       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
++               sup_dev = fwnode_get_next_parent_dev(sup_handle);
++       else
++               sup_dev = get_dev_from_fwnode(sup_handle);
++
+        if (sup_dev) {
+                /*
+                 * If it's one of those drivers that don't actually bind to
 
- # cat /sys/kernel/tracing/trace
-             cat-56106   [012] ..... 2419873.470097: ql_dbg_log: qla2xxx [0000:05:00.0]-1054:14:  Entered qla2x00_get_firmware_state.
-             cat-56106   [012] ..... 2419873.470100: ql_dbg_log: qla2xxx [0000:05:00.0]-1000:14:  Entered qla2x00_mailbox_command.
-             cat-56106   [012] ..... 2419873.470102: ql_dbg_log: qla2xxx [0000:05:00.0]-1006:14:  Prepare to issue mbox cmd=0x69.
-
-The instance version is corrupted because the top level instance iterated
-the va_list first.
-
-Use va_copy() in the __assign_vstr() macro to make sure that each trace
-event for each use case gets a fresh va_list.
-
-Link: https://lore.kernel.org/all/259d53a5-958e-6508-4e45-74dba2821242@marvell.com/
-Link: https://lkml.kernel.org/r/20220719182004.21daa83e@gandalf.local.home
-
-Fixes: 0563231f93c6d ("tracing/events: Add __vstring() and __assign_vstr() helper macros")
-Reported-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/trace/stages/stage6_event_callback.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
---- a/include/trace/stages/stage6_event_callback.h
-+++ b/include/trace/stages/stage6_event_callback.h
-@@ -40,7 +40,12 @@
- 
- #undef __assign_vstr
- #define __assign_vstr(dst, fmt, va)					\
--	vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, *(va))
-+	do {								\
-+		va_list __cp_va;					\
-+		va_copy(__cp_va, *(va));				\
-+		vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, __cp_va); \
-+		va_end(__cp_va);					\
-+	} while (0)
- 
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
-
-
+Thanks,
+Saravana
