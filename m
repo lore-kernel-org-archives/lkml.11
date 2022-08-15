@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AF5C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0ADAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354337AbiHOXtt (ORCPT
+        id S1354731AbiHOXt5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        Mon, 15 Aug 2022 19:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354287AbiHOXoL (ORCPT
+        with ESMTP id S1354421AbiHOXp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:44:11 -0400
+        Mon, 15 Aug 2022 19:45:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1547586C00;
-        Mon, 15 Aug 2022 13:14:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668F589834;
+        Mon, 15 Aug 2022 13:14:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37824B80EA9;
-        Mon, 15 Aug 2022 20:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A53C433D6;
-        Mon, 15 Aug 2022 20:14:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A2D2B80EAB;
+        Mon, 15 Aug 2022 20:14:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0653AC433C1;
+        Mon, 15 Aug 2022 20:14:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594441;
-        bh=FiWPRepBVlrOCz8sETsw5mhm5qijt3xISAdoOf8lMx8=;
+        s=korg; t=1660594453;
+        bh=UDGcVwRi7O++OPdySi9hrL7ej4PyhcDWLK6vrD9AdiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qoCaXMUxiL2QDD0u6ambXfpv2ppLFGduAE3RYKe/XZy7ZgUvQeztF1/Ym/XQvzYre
-         lUcLbgj09Vf7F77JhL3vPFqPMXYK6R2C9pty4Ag3HaQWf9BGUYGGsLHG8aLRicXDj0
-         xJxqn4Um+UkBqYg/iwmZC1AyB+Ior/+r8mZgJ2TQ=
+        b=hgqa2Fl91YyQHKS0eXbvDqa/BcAoRBTgutkskw7roPAwB+tMcpCmB1F7pPDWJiFiA
+         nbJgXU0C/aLdK58FDn1kzSI75Ct8jA0tGrdAlqljMJdvFe4J0NTd7jgNazTo5qkPkR
+         VuvZB5BencwQeKLKq0gAehLjGJ3JRvv26YI4+olM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yixun Lan <dlan@gentoo.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Amjad OULED-AMEUR <ouledameur.amjad@gmail.com>,
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0449/1157] libbpf, riscv: Use a0 for RC register
-Date:   Mon, 15 Aug 2022 19:56:45 +0200
-Message-Id: <20220815180457.555616682@linuxfoundation.org>
+Subject: [PATCH 5.19 0453/1157] crypto: hisilicon - Kunpeng916 crypto driver dont sleep when in softirq
+Date:   Mon, 15 Aug 2022 19:56:49 +0200
+Message-Id: <20220815180457.724541181@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,41 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yixun Lan <dlan@gentoo.org>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-[ Upstream commit 935dc35c75318fa213d26808ad8bb130fb0b486e ]
+[ Upstream commit 68740ab505431f268dc1ee26a54b871e75f0ddaa ]
 
-According to the RISC-V calling convention register usage here [0], a0
-is used as return value register, so rename it to make it consistent
-with the spec.
+When kunpeng916 encryption driver is used to deencrypt and decrypt
+packets during the softirq, it is not allowed to use mutex lock.
 
-  [0] section 18.2, table 18.2
-      https://riscv.org/wp-content/uploads/2015/01/riscv-calling.pdf
-
-Fixes: 589fed479ba1 ("riscv, libbpf: Add RISC-V (RV64) support to bpf_tracing.h")
-Signed-off-by: Yixun Lan <dlan@gentoo.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Björn Töpel <bjorn@kernel.org>
-Acked-by: Amjad OULED-AMEUR <ouledameur.amjad@gmail.com>
-Link: https://lore.kernel.org/bpf/20220706140204.47926-1-dlan@gentoo.org
+Fixes: 915e4e8413da ("crypto: hisilicon - SEC security accelerator driver")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/bpf_tracing.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/hisilicon/sec/sec_algs.c | 14 +++++++-------
+ drivers/crypto/hisilicon/sec/sec_drv.h  |  2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-index 01ce121c302d..11f9096407fc 100644
---- a/tools/lib/bpf/bpf_tracing.h
-+++ b/tools/lib/bpf/bpf_tracing.h
-@@ -233,7 +233,7 @@ struct pt_regs___arm64 {
- #define __PT_PARM5_REG a4
- #define __PT_RET_REG ra
- #define __PT_FP_REG s0
--#define __PT_RC_REG a5
-+#define __PT_RC_REG a0
- #define __PT_SP_REG sp
- #define __PT_IP_REG pc
- /* riscv does not select ARCH_HAS_SYSCALL_WRAPPER. */
+diff --git a/drivers/crypto/hisilicon/sec/sec_algs.c b/drivers/crypto/hisilicon/sec/sec_algs.c
+index 0a3c8f019b02..490e1542305e 100644
+--- a/drivers/crypto/hisilicon/sec/sec_algs.c
++++ b/drivers/crypto/hisilicon/sec/sec_algs.c
+@@ -449,7 +449,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 		 */
+ 	}
+ 
+-	mutex_lock(&ctx->queue->queuelock);
++	spin_lock_bh(&ctx->queue->queuelock);
+ 	/* Put the IV in place for chained cases */
+ 	switch (ctx->cipher_alg) {
+ 	case SEC_C_AES_CBC_128:
+@@ -509,7 +509,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 			list_del(&backlog_req->backlog_head);
+ 		}
+ 	}
+-	mutex_unlock(&ctx->queue->queuelock);
++	spin_unlock_bh(&ctx->queue->queuelock);
+ 
+ 	mutex_lock(&sec_req->lock);
+ 	list_del(&sec_req_el->head);
+@@ -798,7 +798,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 	 */
+ 
+ 	/* Grab a big lock for a long time to avoid concurrency issues */
+-	mutex_lock(&queue->queuelock);
++	spin_lock_bh(&queue->queuelock);
+ 
+ 	/*
+ 	 * Can go on to queue if we have space in either:
+@@ -814,15 +814,15 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 		ret = -EBUSY;
+ 		if ((skreq->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
+ 			list_add_tail(&sec_req->backlog_head, &ctx->backlog);
+-			mutex_unlock(&queue->queuelock);
++			spin_unlock_bh(&queue->queuelock);
+ 			goto out;
+ 		}
+ 
+-		mutex_unlock(&queue->queuelock);
++		spin_unlock_bh(&queue->queuelock);
+ 		goto err_free_elements;
+ 	}
+ 	ret = sec_send_request(sec_req, queue);
+-	mutex_unlock(&queue->queuelock);
++	spin_unlock_bh(&queue->queuelock);
+ 	if (ret)
+ 		goto err_free_elements;
+ 
+@@ -881,7 +881,7 @@ static int sec_alg_skcipher_init(struct crypto_skcipher *tfm)
+ 	if (IS_ERR(ctx->queue))
+ 		return PTR_ERR(ctx->queue);
+ 
+-	mutex_init(&ctx->queue->queuelock);
++	spin_lock_init(&ctx->queue->queuelock);
+ 	ctx->queue->havesoftqueue = false;
+ 
+ 	return 0;
+diff --git a/drivers/crypto/hisilicon/sec/sec_drv.h b/drivers/crypto/hisilicon/sec/sec_drv.h
+index 179a8250d691..e2a50bf2234b 100644
+--- a/drivers/crypto/hisilicon/sec/sec_drv.h
++++ b/drivers/crypto/hisilicon/sec/sec_drv.h
+@@ -347,7 +347,7 @@ struct sec_queue {
+ 	DECLARE_BITMAP(unprocessed, SEC_QUEUE_LEN);
+ 	DECLARE_KFIFO_PTR(softqueue, typeof(struct sec_request_el *));
+ 	bool havesoftqueue;
+-	struct mutex queuelock;
++	spinlock_t queuelock;
+ 	void *shadow[SEC_QUEUE_LEN];
+ };
+ 
 -- 
 2.35.1
 
