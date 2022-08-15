@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDA3C32763
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9527EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351394AbiHOWmH (ORCPT
+        id S1350191AbiHOWmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        Mon, 15 Aug 2022 18:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350866AbiHOWhP (ORCPT
+        with ESMTP id S1351038AbiHOWhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0857277;
-        Mon, 15 Aug 2022 12:50:36 -0700 (PDT)
+        Mon, 15 Aug 2022 18:37:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6846D72876;
+        Mon, 15 Aug 2022 12:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 484B0B80EA9;
-        Mon, 15 Aug 2022 19:49:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81042C433C1;
-        Mon, 15 Aug 2022 19:49:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9484960FD8;
+        Mon, 15 Aug 2022 19:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92852C433D6;
+        Mon, 15 Aug 2022 19:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592978;
-        bh=Yjb9Y4qVJPHM6/fkJw0FSZx+TJgkUbWAT0nB14c/RKE=;
+        s=korg; t=1660593034;
+        bh=lwen1EgOL0WIJxndcyGGj6vv0zvik1mBKliZtD3eSSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cnKSwYY8CTbLMIYNHkxHnNiTAWxwngZTzUI+BFV7cL9RAEDfsZOBpOkdaWc9SQBfd
-         8W2J7Ve7NZ6smXOBIMPvB/qpzUzK1pULib5T79KjK/wFm0RpKT1ASmD5trqxzJGGH8
-         4AeDy3eYL5dD5Zk+E8JGOAET9LZXfR/GJ6PvjCs8=
+        b=srezJdxYtLl44m/LBzslARw3SN+EKAcV3Bm6IWN6KyZHf19ROhbZDkJGmzmeJa1/e
+         7WpEmxtD5IsjH5CzCeus/VPQsnZVEbRNXwcXVDDQEW5XO6rpr3oYRIrkULZZ5lvDV8
+         jjnHUatvnGo3ft0t0YwglrjHQONUFD0E1B7H8WqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0195/1157] io_uring: fix io_uring_cqe_overflow trace format
-Date:   Mon, 15 Aug 2022 19:52:31 +0200
-Message-Id: <20220815180447.527028256@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0203/1157] ARM: dts: imx7d-colibri-emmc: add cpu1 supply
+Date:   Mon, 15 Aug 2022 19:52:39 +0200
+Message-Id: <20220815180447.792758299@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,33 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-[ Upstream commit 9b26e811e934eebda59362c9a03d082852552574 ]
+[ Upstream commit ba28db60d34271e8a3cf4d7158d71607e8b1e57f ]
 
-Make the trace format consistent with io_uring_complete for cflags
+Each cpu-core is supposed to list its supply separately, add supply for
+cpu1.
 
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220630091231.1456789-12-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 2d7401f8632f ("ARM: dts: imx7d: Add cpu1 supply")
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/io_uring.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/imx7d-colibri-emmc.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_uring.h
-index aa2f951b07cd..6a12eef3ffb7 100644
---- a/include/trace/events/io_uring.h
-+++ b/include/trace/events/io_uring.h
-@@ -622,7 +622,7 @@ TRACE_EVENT(io_uring_cqe_overflow,
- 		__entry->ocqe		= ocqe;
- 	),
+diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+index af39e5370fa1..045e4413d339 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
++++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+@@ -13,6 +13,10 @@ memory@80000000 {
+ 	};
+ };
  
--	TP_printk("ring %p, user_data 0x%llx, res %d, flags %x, "
-+	TP_printk("ring %p, user_data 0x%llx, res %d, cflags 0x%x, "
- 		  "overflow_cqe %p",
- 		  __entry->ctx, __entry->user_data, __entry->res,
- 		  __entry->cflags, __entry->ocqe)
++&cpu1 {
++	cpu-supply = <&reg_DCDC2>;
++};
++
+ &gpio6 {
+ 	gpio-line-names = "",
+ 			  "",
 -- 
 2.35.1
 
