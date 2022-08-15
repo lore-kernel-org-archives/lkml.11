@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1852DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E120C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348172AbiHOV35 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
+        id S243428AbiHOVaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347665AbiHOV0G (ORCPT
+        with ESMTP id S1348017AbiHOV0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:26:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9277CE8320;
-        Mon, 15 Aug 2022 12:22:40 -0700 (PDT)
+        Mon, 15 Aug 2022 17:26:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F36E97C2;
+        Mon, 15 Aug 2022 12:22:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6AF960FDA;
-        Mon, 15 Aug 2022 19:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE19DC433D6;
-        Mon, 15 Aug 2022 19:22:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B50DBB810C6;
+        Mon, 15 Aug 2022 19:22:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF8D3C433C1;
+        Mon, 15 Aug 2022 19:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591359;
-        bh=EpI4s0rZZlvhdv4EB9lnUgtUdH7otxTdlujJi/PPPfA=;
+        s=korg; t=1660591365;
+        bh=egGKbDqvXc1EvJ4PBDPmmMxMGc9KA8xbMp/xsy6gDFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNIRlgljrtXuk2X9mxXe8jlm18rzuT1SEjhhoncdeeDUSXBIf3QI2GYfNsKBkXcGC
-         X/SbgogDcE3aoouFbF4Ec+qIzSGi2HCF73I1/QGfemaZ3rq2MdiapZ6pSEKtIsXZWw
-         eoWHcGm6pOtuydO9GaTwywymgb0ODnyiAV55zTnw=
+        b=vjBhLi35tXOzsTa5VyyzO5PHuosMAyVWonOZOXdwW9xNVk0bfYECKI9w3o5hJgCTO
+         W2ni+w45d+kneiVOv+nqQZGw1xZwnenVDtbtF9xpVbZynWQFGGjjOI0KTuJsKKOZzB
+         XvlY1kPL7PauZwYb5AoVt1hty/dyqmakcx5UKM3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0554/1095] scsi: qla2xxx: edif: Fix n2n discovery issue with secure target
-Date:   Mon, 15 Aug 2022 19:59:13 +0200
-Message-Id: <20220815180452.472169540@linuxfoundation.org>
+Subject: [PATCH 5.18 0556/1095] KVM: SVM: Unwind "speculative" RIP advancement if INTn injection "fails"
+Date:   Mon, 15 Aug 2022 19:59:15 +0200
+Message-Id: <20220815180452.559585831@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,39 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 789d54a4178634850e441f60c0326124138e7269 ]
+[ Upstream commit cd9e6da8048c5b40315ee2d929b6230ce1252c3c ]
 
-User failed to see disk via n2n topology. Driver used up all login retries
-before authentication application started. When authentication application
-started, driver did not have enough login retries to connect securely. On
-app_start, driver will reset the login retry attempt count.
+Unwind the RIP advancement done by svm_queue_exception() when injecting
+an INT3 ultimately "fails" due to the CPU encountering a VM-Exit while
+vectoring the injected event, even if the exception reported by the CPU
+isn't the same event that was injected.  If vectoring INT3 encounters an
+exception, e.g. #NP, and vectoring the #NP encounters an intercepted
+exception, e.g. #PF when KVM is using shadow paging, then the #NP will
+be reported as the event that was in-progress.
 
-Link: https://lore.kernel.org/r/20220607044627.19563-10-njavali@marvell.com
-Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Note, this is still imperfect, as it will get a false positive if the
+INT3 is cleanly injected, no VM-Exit occurs before the IRET from the INT3
+handler in the guest, the instruction following the INT3 generates an
+exception (directly or indirectly), _and_ vectoring that exception
+encounters an exception that is intercepted by KVM.  The false positives
+could theoretically be solved by further analyzing the vectoring event,
+e.g. by comparing the error code against the expected error code were an
+exception to occur when vectoring the original injected exception, but
+SVM without NRIPS is a complete disaster, trying to make it 100% correct
+is a waste of time.
+
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Message-Id: <450133cf0a026cb9825a2ff55d02cb136a1cb111.1651440202.git.maciej.szmigiero@oracle.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/svm/svm.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index ce893ddb13df..c17e177864d3 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -515,6 +515,9 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	}
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 2851d1e58cb8..e4c736d74fcb 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3613,6 +3613,18 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+ 	vector = exitintinfo & SVM_EXITINTINFO_VEC_MASK;
+ 	type = exitintinfo & SVM_EXITINTINFO_TYPE_MASK;
  
- 	if (N2N_TOPO(vha->hw)) {
-+		list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list)
-+			fcport->n2n_link_reset_cnt = 0;
++	/*
++	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
++	 * injecting the soft exception/interrupt.  That advancement needs to
++	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
++	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
++	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
++	 * be the reported vectored event, but RIP still needs to be unwound.
++	 */
++	if (int3_injected && type == SVM_EXITINTINFO_TYPE_EXEPT &&
++	   kvm_is_linear_rip(vcpu, svm->int3_rip))
++		kvm_rip_write(vcpu, kvm_rip_read(vcpu) - int3_injected);
 +
- 		if (vha->hw->flags.n2n_fw_acc_sec)
- 			set_bit(N2N_LINK_RESET, &vha->dpc_flags);
- 		else
+ 	switch (type) {
+ 	case SVM_EXITINTINFO_TYPE_NMI:
+ 		vcpu->arch.nmi_injected = true;
+@@ -3626,16 +3638,11 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+ 
+ 		/*
+ 		 * In case of software exceptions, do not reinject the vector,
+-		 * but re-execute the instruction instead. Rewind RIP first
+-		 * if we emulated INT3 before.
++		 * but re-execute the instruction instead.
+ 		 */
+-		if (kvm_exception_is_soft(vector)) {
+-			if (vector == BP_VECTOR && int3_injected &&
+-			    kvm_is_linear_rip(vcpu, svm->int3_rip))
+-				kvm_rip_write(vcpu,
+-					      kvm_rip_read(vcpu) - int3_injected);
++		if (kvm_exception_is_soft(vector))
+ 			break;
+-		}
++
+ 		if (exitintinfo & SVM_EXITINTINFO_VALID_ERR) {
+ 			u32 err = svm->vmcb->control.exit_int_info_err;
+ 			kvm_requeue_exception_e(vcpu, vector, err);
 -- 
 2.35.1
 
