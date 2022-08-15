@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B70C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F03BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352839AbiHOXJF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S239303AbiHOXJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353131AbiHOXHP (ORCPT
+        with ESMTP id S1353145AbiHOXHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:07:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFDF1423DD;
-        Mon, 15 Aug 2022 12:59:18 -0700 (PDT)
+        Mon, 15 Aug 2022 19:07:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401761423EE;
+        Mon, 15 Aug 2022 12:59:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AD4DB8113E;
-        Mon, 15 Aug 2022 19:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF389C433C1;
-        Mon, 15 Aug 2022 19:59:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A7294CE12C1;
+        Mon, 15 Aug 2022 19:59:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBBBC433C1;
+        Mon, 15 Aug 2022 19:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593556;
-        bh=AO/atSuiRUhw9FDPKtlJLDzo6dX4EqskW1e8asz4lBo=;
+        s=korg; t=1660593559;
+        bh=LVHA3YzYWEMPoW5ZgxNE0Ccb4/VJ6WQwYu7SWqFJdg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B00r1SdVT/dh06ypB6s6GULcJwwMDO98dZVduTopFu9PScN5gSYALIK0+pKFUHNS6
-         GY8FCJYZSlf7TqEZ9TgXwsrpldVy2CNQOpTiJK6gQAoMnEL2a8s0H1ewfRuC9eiw7r
-         Q3jwTVehfyRTnjdZxFOwnP/pV1p0EH5krb1lJnh8=
+        b=kN3kpXkiNwb6SjPq6wtXPCoU1dDf2GkoBOsggcc4f4qOY06hVlv06IMck93YBObnm
+         cxcF3ejTvkS3J8jN9qYWyHyi1ialOBNs5ktM4FrFrS8MBfeT8usCrapsTyPRpgMwyI
+         yqBaGaY3W58VfgQk2C1oO83EZ6wSTrsLWozhFkxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 0967/1095] scsi: qla2xxx: Wind down adapter after PCIe error
-Date:   Mon, 15 Aug 2022 20:06:06 +0200
-Message-Id: <20220815180509.072615781@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        German Gomez <german.gomez@arm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0288/1157] drivers/perf: arm_spe: Fix consistency of SYS_PMSCR_EL1.CX
+Date:   Mon, 15 Aug 2022 19:54:04 +0200
+Message-Id: <20220815180451.138467006@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,199 +54,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-commit d3117c83ba316b3200d9f2fe900f2b9a5525a25c upstream.
+[ Upstream commit 92f2b8bafa3d6e89c750e9d301a8b7ab76aaa8b6 ]
 
-Put adapter into a wind down state if OS does not make any attempt to
-recover the adapter after PCIe error.
+The arm_spe_pmu driver will enable SYS_PMSCR_EL1.CX in order to add CONTEXT
+packets into the traces, if the owner of the perf event runs with required
+capabilities i.e CAP_PERFMON or CAP_SYS_ADMIN via perfmon_capable() helper.
 
-Link: https://lore.kernel.org/r/20220616053508.27186-4-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The value of this bit is computed in the arm_spe_event_to_pmscr() function
+but the check for capabilities happens in the pmu event init callback i.e
+arm_spe_pmu_event_init(). This suggests that the value of the CX bit should
+remain consistent for the duration of the perf session.
+
+However, the function arm_spe_event_to_pmscr() may be called later during
+the event start callback i.e arm_spe_pmu_start() when the "current" process
+is not the owner of the perf session, hence the CX bit setting is currently
+not consistent.
+
+One way to fix this, is by caching the required value of the CX bit during
+the initialization of the PMU event, so that it remains consistent for the
+duration of the session. It uses currently unused 'event->hw.flags' element
+to cache perfmon_capable() value, which can be referred during event start
+callback to compute SYS_PMSCR_EL1.CX. This ensures consistent availability
+of context packets in the trace as per event owner capabilities.
+
+Drop BIT(SYS_PMSCR_EL1_CX_SHIFT) check in arm_spe_pmu_event_init(), because
+now CX bit cannot be set in arm_spe_event_to_pmscr() with perfmon_capable()
+disabled.
+
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Fixes: d5d9696b0380 ("drivers/perf: Add support for ARMv8.2 Statistical Profiling Extension")
+Reported-by: German Gomez <german.gomez@arm.com>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20220714061302.2715102-1-anshuman.khandual@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_bsg.c  |   10 +++++++-
- drivers/scsi/qla2xxx/qla_def.h  |    4 +++
- drivers/scsi/qla2xxx/qla_init.c |   20 ++++++++++++++++
- drivers/scsi/qla2xxx/qla_os.c   |   48 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 81 insertions(+), 1 deletion(-)
+ drivers/perf/arm_spe_pmu.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_bsg.c
-+++ b/drivers/scsi/qla2xxx/qla_bsg.c
-@@ -2975,6 +2975,13 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_
+diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
+index db670b265897..b65a7d9640e1 100644
+--- a/drivers/perf/arm_spe_pmu.c
++++ b/drivers/perf/arm_spe_pmu.c
+@@ -39,6 +39,24 @@
+ #include <asm/mmu.h>
+ #include <asm/sysreg.h>
  
- 	ql_log(ql_log_info, vha, 0x708b, "%s CMD timeout. bsg ptr %p.\n",
- 	    __func__, bsg_job);
++/*
++ * Cache if the event is allowed to trace Context information.
++ * This allows us to perform the check, i.e, perfmon_capable(),
++ * in the context of the event owner, once, during the event_init().
++ */
++#define SPE_PMU_HW_FLAGS_CX			BIT(0)
 +
-+	if (qla2x00_isp_reg_stat(ha)) {
-+		ql_log(ql_log_info, vha, 0x9007,
-+		    "PCI/Register disconnect.\n");
-+		qla_pci_set_eeh_busy(vha);
-+	}
-+
- 	/* find the bsg job from the active list of commands */
- 	spin_lock_irqsave(&ha->hardware_lock, flags);
- 	for (que = 0; que < ha->max_req_queues; que++) {
-@@ -2992,7 +2999,8 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_
- 			    sp->u.bsg_job == bsg_job) {
- 				req->outstanding_cmds[cnt] = NULL;
- 				spin_unlock_irqrestore(&ha->hardware_lock, flags);
--				if (ha->isp_ops->abort_command(sp)) {
-+
-+				if (!ha->flags.eeh_busy && ha->isp_ops->abort_command(sp)) {
- 					ql_log(ql_log_warn, vha, 0x7089,
- 					    "mbx abort_command failed.\n");
- 					bsg_reply->result = -EIO;
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -4048,6 +4048,9 @@ struct qla_hw_data {
- 		uint32_t	n2n_fw_acc_sec:1;
- 		uint32_t	plogi_template_valid:1;
- 		uint32_t	port_isolated:1;
-+		uint32_t	eeh_flush:2;
-+#define EEH_FLUSH_RDY  1
-+#define EEH_FLUSH_DONE 2
- 	} flags;
- 
- 	uint16_t max_exchg;
-@@ -4082,6 +4085,7 @@ struct qla_hw_data {
- 	uint32_t		rsp_que_len;
- 	uint32_t		req_que_off;
- 	uint32_t		rsp_que_off;
-+	unsigned long		eeh_jif;
- 
- 	/* Multi queue data structs */
- 	device_reg_t *mqiobase;
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -47,6 +47,7 @@ qla2x00_sp_timeout(struct timer_list *t)
- {
- 	srb_t *sp = from_timer(sp, t, u.iocb_cmd.timer);
- 	struct srb_iocb *iocb;
-+	scsi_qla_host_t *vha = sp->vha;
- 
- 	WARN_ON(irqs_disabled());
- 	iocb = &sp->u.iocb_cmd;
-@@ -54,6 +55,12 @@ qla2x00_sp_timeout(struct timer_list *t)
- 
- 	/* ref: TMR */
- 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
-+
-+	if (vha && qla2x00_isp_reg_stat(vha->hw)) {
-+		ql_log(ql_log_info, vha, 0x9008,
-+		    "PCI/Register disconnect.\n");
-+		qla_pci_set_eeh_busy(vha);
-+	}
- }
- 
- void qla2x00_sp_free(srb_t *sp)
-@@ -9702,6 +9709,12 @@ int qla2xxx_disable_port(struct Scsi_Hos
- 
- 	vha->hw->flags.port_isolated = 1;
- 
-+	if (qla2x00_isp_reg_stat(vha->hw)) {
-+		ql_log(ql_log_info, vha, 0x9006,
-+		    "PCI/Register disconnect, exiting.\n");
-+		qla_pci_set_eeh_busy(vha);
-+		return FAILED;
-+	}
- 	if (qla2x00_chip_is_down(vha))
- 		return 0;
- 
-@@ -9717,6 +9730,13 @@ int qla2xxx_enable_port(struct Scsi_Host
- {
- 	scsi_qla_host_t *vha = shost_priv(host);
- 
-+	if (qla2x00_isp_reg_stat(vha->hw)) {
-+		ql_log(ql_log_info, vha, 0x9001,
-+		    "PCI/Register disconnect, exiting.\n");
-+		qla_pci_set_eeh_busy(vha);
-+		return FAILED;
-+	}
-+
- 	vha->hw->flags.port_isolated = 0;
- 	/* Set the flag to 1, so that isp_abort can proceed */
- 	vha->flags.online = 1;
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -333,6 +333,11 @@ MODULE_PARM_DESC(ql2xabts_wait_nvme,
- 		 "To wait for ABTS response on I/O timeouts for NVMe. (default: 1)");
- 
- 
-+u32 ql2xdelay_before_pci_error_handling = 5;
-+module_param(ql2xdelay_before_pci_error_handling, uint, 0644);
-+MODULE_PARM_DESC(ql2xdelay_before_pci_error_handling,
-+	"Number of seconds delayed before qla begin PCI error self-handling (default: 5).\n");
-+
- static void qla2x00_clear_drv_active(struct qla_hw_data *);
- static void qla2x00_free_device(scsi_qla_host_t *);
- static int qla2xxx_map_queues(struct Scsi_Host *shost);
-@@ -7258,6 +7263,44 @@ static void qla_heart_beat(struct scsi_q
- 	}
- }
- 
-+static void qla_wind_down_chip(scsi_qla_host_t *vha)
++static void set_spe_event_has_cx(struct perf_event *event)
 +{
-+	struct qla_hw_data *ha = vha->hw;
-+
-+	if (!ha->flags.eeh_busy)
-+		return;
-+	if (ha->pci_error_state)
-+		/* system is trying to recover */
-+		return;
-+
-+	/*
-+	 * Current system is not handling PCIE error.  At this point, this is
-+	 * best effort to wind down the adapter.
-+	 */
-+	if (time_after_eq(jiffies, ha->eeh_jif + ql2xdelay_before_pci_error_handling * HZ) &&
-+	    !ha->flags.eeh_flush) {
-+		ql_log(ql_log_info, vha, 0x9009,
-+		    "PCI Error detected, attempting to reset hardware.\n");
-+
-+		ha->isp_ops->reset_chip(vha);
-+		ha->isp_ops->disable_intrs(ha);
-+
-+		ha->flags.eeh_flush = EEH_FLUSH_RDY;
-+		ha->eeh_jif = jiffies;
-+
-+	} else if (ha->flags.eeh_flush == EEH_FLUSH_RDY &&
-+	    time_after_eq(jiffies, ha->eeh_jif +  5 * HZ)) {
-+		pci_clear_master(ha->pdev);
-+
-+		/* flush all command */
-+		qla2x00_abort_isp_cleanup(vha);
-+		ha->flags.eeh_flush = EEH_FLUSH_DONE;
-+
-+		ql_log(ql_log_info, vha, 0x900a,
-+		    "PCI Error handling complete, all IOs aborted.\n");
-+	}
++	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && perfmon_capable())
++		event->hw.flags |= SPE_PMU_HW_FLAGS_CX;
 +}
 +
- /**************************************************************************
- *   qla2x00_timer
- *
-@@ -7281,6 +7324,8 @@ qla2x00_timer(struct timer_list *t)
- 	fc_port_t *fcport = NULL;
- 
- 	if (ha->flags.eeh_busy) {
-+		qla_wind_down_chip(vha);
++static bool get_spe_event_has_cx(struct perf_event *event)
++{
++	return !!(event->hw.flags & SPE_PMU_HW_FLAGS_CX);
++}
 +
- 		ql_dbg(ql_dbg_timer, vha, 0x6000,
- 		    "EEH = %d, restarting timer.\n",
- 		    ha->flags.eeh_busy);
-@@ -7861,6 +7906,9 @@ void qla_pci_set_eeh_busy(struct scsi_ql
+ #define ARM_SPE_BUF_PAD_BYTE			0
  
- 	spin_lock_irqsave(&base_vha->work_lock, flags);
- 	if (!ha->flags.eeh_busy) {
-+		ha->eeh_jif = jiffies;
-+		ha->flags.eeh_flush = 0;
-+
- 		ha->flags.eeh_busy = 1;
- 		do_cleanup = true;
- 	}
+ struct arm_spe_pmu_buf {
+@@ -272,7 +290,7 @@ static u64 arm_spe_event_to_pmscr(struct perf_event *event)
+ 	if (!attr->exclude_kernel)
+ 		reg |= BIT(SYS_PMSCR_EL1_E1SPE_SHIFT);
+ 
+-	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && perfmon_capable())
++	if (get_spe_event_has_cx(event))
+ 		reg |= BIT(SYS_PMSCR_EL1_CX_SHIFT);
+ 
+ 	return reg;
+@@ -709,10 +727,10 @@ static int arm_spe_pmu_event_init(struct perf_event *event)
+ 	    !(spe_pmu->features & SPE_PMU_FEAT_FILT_LAT))
+ 		return -EOPNOTSUPP;
+ 
++	set_spe_event_has_cx(event);
+ 	reg = arm_spe_event_to_pmscr(event);
+ 	if (!perfmon_capable() &&
+ 	    (reg & (BIT(SYS_PMSCR_EL1_PA_SHIFT) |
+-		    BIT(SYS_PMSCR_EL1_CX_SHIFT) |
+ 		    BIT(SYS_PMSCR_EL1_PCT_SHIFT))))
+ 		return -EACCES;
+ 
+-- 
+2.35.1
+
 
 
