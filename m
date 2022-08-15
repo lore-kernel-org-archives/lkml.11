@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46005C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E334C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356012AbiHPAGv (ORCPT
+        id S1356071AbiHPAG6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        Mon, 15 Aug 2022 20:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354040AbiHOX6x (ORCPT
+        with ESMTP id S1353860AbiHOX6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2104F804AD;
-        Mon, 15 Aug 2022 13:20:57 -0700 (PDT)
+        Mon, 15 Aug 2022 19:58:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01658C740C;
+        Mon, 15 Aug 2022 13:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B08DA61007;
-        Mon, 15 Aug 2022 20:20:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB8F3C433C1;
-        Mon, 15 Aug 2022 20:20:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21C4BB80EA8;
+        Mon, 15 Aug 2022 20:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 686A4C433C1;
+        Mon, 15 Aug 2022 20:20:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594856;
-        bh=aRQIsfM1DlDmmnhgQS9E3HmvnGvp5qyhm8dCDWeSy6Q=;
+        s=korg; t=1660594824;
+        bh=6WkHnJVm5rzOj2ShWWfniZvz3jfM09Vn7mLBc0nYWV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OH8OuCkXIE2u9Qz6AgsTFDMpJ5KKOYgtUQdgsWRfwPfEhMFyHXFVz5dPnqzZXyczn
-         822sFr11dM6v6wMIlOo2hMsDbqPJg4XzJBtvWY3VgOAg7Q0cG+lVegULNqhVS6tYQ3
-         CPqO7GhoKinp2RCdhc81lZtSFFBONI066GMqd62E=
+        b=UDihl3pW9iwYfSCEedAdEsqUDk6fs1MBffGJQpXL1QmBR0ZZO/fPzSiXtpp1tPJim
+         ckVT3ruqfnA+TXbYaORNIBxZ3hZyOwT+XAifqeA8q7+XslvLxcieeyVr/oFkLZmZHA
+         9W9paclPxw6I17LQ0Jd3nCUOJ+vQWSFqgN7wm/84=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        stable@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
+        Hayes Wang <hayeswang@realtek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0579/1157] clk: renesas: rzg2l: Fix reset status function
-Date:   Mon, 15 Aug 2022 19:58:55 +0200
-Message-Id: <20220815180502.808916209@linuxfoundation.org>
+Subject: [PATCH 5.19 0570/1157] net: usb: make USB_RTL8153_ECM non user configurable
+Date:   Mon, 15 Aug 2022 19:58:46 +0200
+Message-Id: <20220815180502.420456612@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,44 +54,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Maciej Żenczykowski <maze@google.com>
 
-[ Upstream commit 02c96ed9e4cd1f47bfcd10296fec6b0b69d6b3c6 ]
+[ Upstream commit f56530dcdb0684406661ac9f1accf48319d07600 ]
 
-As per RZ/G2L HW(Rev.1.10) manual, reset monitor register value 0 means
-reset signal is not applied (deassert state) and 1 means reset signal
-is applied (assert state).
+This refixes:
 
-reset_control_status() expects a positive value if the reset line is
-asserted. But rzg2l_cpg_status function returns zero for asserted
-state.
+    commit 7da17624e7948d5d9660b910f8079d26d26ce453
+    nt: usb: USB_RTL8153_ECM should not default to y
 
-This patch fixes the issue by adding double inverted logic, so that
-reset_control_status returns a positive value if the reset line is
-asserted.
+    In general, device drivers should not be enabled by default.
 
-Fixes: ef3c613ccd68 ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220531071657.104121-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+which basically broke the commit it claimed to fix, ie:
+
+    commit 657bc1d10bfc23ac06d5d687ce45826c760744f9
+    r8153_ecm: avoid to be prior to r8152 driver
+
+    Avoid r8153_ecm is compiled as built-in, if r8152 driver is compiled
+    as modules. Otherwise, the r8153_ecm would be used, even though the
+    device is supported by r8152 driver.
+
+this commit amounted to:
+
+drivers/net/usb/Kconfig:
+
++config USB_RTL8153_ECM
++       tristate "RTL8153 ECM support"
++       depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
++       default y
++       help
++         This option supports ECM mode for RTL8153 ethernet adapter, when
++         CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
++         supported by r8152 driver.
+
+drivers/net/usb/Makefile:
+
+-obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o r8153_ecm.o
++obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o
++obj-$(CONFIG_USB_RTL8153_ECM)  += r8153_ecm.o
+
+And as can be seen it pulls a piece of the cdc_ether driver out into
+a separate config option to be able to make this piece modular in case
+cdc_ether is builtin, while r8152 is modular.
+
+While in general, device drivers should indeed not be enabled by default:
+this isn't a device driver per say, but rather this is support code for
+the CDCETHER (ECM) driver, and should thus be enabled if it is enabled.
+
+See also email thread at:
+  https://www.spinics.net/lists/netdev/msg767649.html
+
+In:
+  https://www.spinics.net/lists/netdev/msg768284.html
+
+Jakub wrote:
+  And when we say "removed" we can just hide it from what's prompted
+  to the user (whatever such internal options are called)? I believe
+  this way we don't bring back Marek's complaint.
+
+Side note: these incorrect defaults will result in Android 13
+on 5.15 GKI kernels lacking USB_RTL8153_ECM support while having
+USB_NET_CDCETHER (luckily we also have USB_RTL8150 and USB_RTL8152,
+so it's probably only an issue for very new RTL815x hardware with
+no native 5.15 driver).
+
+Fixes: 7da17624e7948d5d ("nt: usb: USB_RTL8153_ECM should not default to y")
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hayes Wang <hayeswang@realtek.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Link: https://lore.kernel.org/r/20220730230113.4138858-1-zenczykowski@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/renesas/rzg2l-cpg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
-index e2999ab2b53c..3ff6ecd61756 100644
---- a/drivers/clk/renesas/rzg2l-cpg.c
-+++ b/drivers/clk/renesas/rzg2l-cpg.c
-@@ -1180,7 +1180,7 @@ static int rzg2l_cpg_status(struct reset_controller_dev *rcdev,
- 	s8 monbit = info->resets[id].monbit;
+diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
+index e62fc4f2aee0..76659c1c525a 100644
+--- a/drivers/net/usb/Kconfig
++++ b/drivers/net/usb/Kconfig
+@@ -637,8 +637,9 @@ config USB_NET_AQC111
+ 	  * Aquantia AQtion USB to 5GbE
  
- 	if (info->has_clk_mon_regs) {
--		return !(readl(priv->base + CLK_MRST_R(reg)) & bitmask);
-+		return !!(readl(priv->base + CLK_MRST_R(reg)) & bitmask);
- 	} else if (monbit >= 0) {
- 		u32 monbitmask = BIT(monbit);
- 
+ config USB_RTL8153_ECM
+-	tristate "RTL8153 ECM support"
++	tristate
+ 	depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
++	default y
+ 	help
+ 	  This option supports ECM mode for RTL8153 ethernet adapter, when
+ 	  CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
 -- 
 2.35.1
 
