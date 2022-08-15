@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF898C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C933EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347220AbiHOWIQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        id S232000AbiHOWIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344113AbiHOWCw (ORCPT
+        with ESMTP id S1347517AbiHOWDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:02:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1F082D24;
-        Mon, 15 Aug 2022 12:37:11 -0700 (PDT)
+        Mon, 15 Aug 2022 18:03:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E7182D3A;
+        Mon, 15 Aug 2022 12:37:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84CCBB80EAD;
-        Mon, 15 Aug 2022 19:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B603BC433D6;
-        Mon, 15 Aug 2022 19:37:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 965DEB80EA9;
+        Mon, 15 Aug 2022 19:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C89CDC433D6;
+        Mon, 15 Aug 2022 19:37:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592228;
-        bh=QJS/R1P+cg/xZTzIpbbkM8/b12fmW1LwuZjmzleKuTA=;
+        s=korg; t=1660592231;
+        bh=PCAo73Hw2NLQ3lErF5pXmj2+7jaMLRIg15cWMfprYbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LszV3+6pbsKXUvlaee9+jBG3X39jBaMvEdCFAufllCtkD5T2q2eS8ejIHFv8OOcVd
-         BY4/kZvzBRsDsVjXqdRvUAI6IsUHCPcPJ80WMIDo+BfnIZdLm3IUGvN5FcszovwX/1
-         UmlXgF+fCQp5y4pSS4UnMI6eNtTFErZgBiHJsGl0=
+        b=dm6eXAUMgUuq3O5ru9q2+dVZqxPwUSCSVhsMcjlPKLefYPmQzwJxOtqTAsGmkbmdP
+         qanXvlorMGMmQLSixwblL202PZEmkYmhzX2cT7GN0RRKMUMP2DeCa0xIJgoP7AzGH+
+         0de3nE18C1cjPD+T/tOF+SSZou4ArTJlmeUQhmmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0077/1157] RISC-V: Fix counter restart during overflow for RV32
-Date:   Mon, 15 Aug 2022 19:50:33 +0200
-Message-Id: <20220815180442.608060612@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0753/1095] xtensa: iss: fix handling error cases in iss_net_configure()
+Date:   Mon, 15 Aug 2022 20:02:32 +0200
+Message-Id: <20220815180500.490663374@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit acc1b919f47926b089be21b8aaa29ec91fef0aa2 upstream.
+[ Upstream commit 628ccfc8f5f79dd548319408fcc53949fe97b258 ]
 
-Pass the upper half of the initial value of the counter correctly
-for RV32.
+The 'pdev' and 'netdev' need to be released in error cases of
+iss_net_configure().
 
-Fixes: 4905ec2fb7e6 ("RISC-V: Add sscofpmf extension support")
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220711174632.4186047-2-atishp@rivosinc.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Change the return type of iss_net_configure() to void, because it's
+not used.
+
+Fixes: 7282bee78798 ("[PATCH] xtensa: Architecture support for Tensilica Xtensa Part 8")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/riscv_pmu_sbi.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/xtensa/platforms/iss/network.c | 32 ++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -525,8 +525,13 @@ static inline void pmu_sbi_start_overflo
- 			hwc = &event->hw;
- 			max_period = riscv_pmu_ctr_get_width_mask(event);
- 			init_val = local64_read(&hwc->prev_count) & max_period;
-+#if defined(CONFIG_32BIT)
-+			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
-+				  flag, init_val, init_val >> 32, 0);
-+#else
- 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
- 				  flag, init_val, 0, 0);
-+#endif
- 		}
- 		ctr_ovf_mask = ctr_ovf_mask >> 1;
- 		idx++;
+diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
+index 24f162bd5874..eee389187807 100644
+--- a/arch/xtensa/platforms/iss/network.c
++++ b/arch/xtensa/platforms/iss/network.c
+@@ -512,16 +512,15 @@ static void iss_net_pdev_release(struct device *dev)
+ 	free_netdev(lp->dev);
+ }
+ 
+-static int iss_net_configure(int index, char *init)
++static void iss_net_configure(int index, char *init)
+ {
+ 	struct net_device *dev;
+ 	struct iss_net_private *lp;
+-	int err;
+ 
+ 	dev = alloc_etherdev(sizeof(*lp));
+ 	if (dev == NULL) {
+ 		pr_err("eth_configure: failed to allocate device\n");
+-		return 1;
++		return;
+ 	}
+ 
+ 	/* Initialize private element. */
+@@ -550,7 +549,7 @@ static int iss_net_configure(int index, char *init)
+ 	if (!tuntap_probe(lp, index, init)) {
+ 		pr_err("%s: invalid arguments. Skipping device!\n",
+ 		       dev->name);
+-		goto errout;
++		goto err_free_netdev;
+ 	}
+ 
+ 	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
+@@ -558,7 +557,8 @@ static int iss_net_configure(int index, char *init)
+ 	/* sysfs register */
+ 
+ 	if (!driver_registered) {
+-		platform_driver_register(&iss_net_driver);
++		if (platform_driver_register(&iss_net_driver))
++			goto err_free_netdev;
+ 		driver_registered = 1;
+ 	}
+ 
+@@ -569,7 +569,8 @@ static int iss_net_configure(int index, char *init)
+ 	lp->pdev.id = index;
+ 	lp->pdev.name = DRIVER_NAME;
+ 	lp->pdev.dev.release = iss_net_pdev_release;
+-	platform_device_register(&lp->pdev);
++	if (platform_device_register(&lp->pdev))
++		goto err_free_netdev;
+ 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
+ 
+ 	dev->netdev_ops = &iss_netdev_ops;
+@@ -578,23 +579,20 @@ static int iss_net_configure(int index, char *init)
+ 	dev->irq = -1;
+ 
+ 	rtnl_lock();
+-	err = register_netdevice(dev);
+-	rtnl_unlock();
+-
+-	if (err) {
++	if (register_netdevice(dev)) {
++		rtnl_unlock();
+ 		pr_err("%s: error registering net device!\n", dev->name);
+-		/* XXX: should we call ->remove() here? */
+-		free_netdev(dev);
+-		return 1;
++		platform_device_unregister(&lp->pdev);
++		return;
+ 	}
++	rtnl_unlock();
+ 
+ 	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
+ 
+-	return 0;
++	return;
+ 
+-errout:
+-	/* FIXME: unregister; free, etc.. */
+-	return -EIO;
++err_free_netdev:
++	free_netdev(dev);
+ }
+ 
+ /* ------------------------------------------------------------------------- */
+-- 
+2.35.1
+
 
 
