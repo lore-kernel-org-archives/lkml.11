@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB7AC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42849C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347897AbiHOWH7 (ORCPT
+        id S1347909AbiHOWIE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        Mon, 15 Aug 2022 18:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350493AbiHOWCQ (ORCPT
+        with ESMTP id S1350512AbiHOWCT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:02:16 -0400
+        Mon, 15 Aug 2022 18:02:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EC03057E;
-        Mon, 15 Aug 2022 12:36:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92D372695;
+        Mon, 15 Aug 2022 12:37:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF563610A5;
-        Mon, 15 Aug 2022 19:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE95C433D6;
-        Mon, 15 Aug 2022 19:36:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766EF610A5;
+        Mon, 15 Aug 2022 19:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19029C43143;
+        Mon, 15 Aug 2022 19:37:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592218;
-        bh=S03DrVIez8ZhURF5AK3S4u4nvNPVH0sG3GwEDu/RG8s=;
+        s=korg; t=1660592221;
+        bh=dyc6z0TjG+7MCpzbubP6giLnQNX48WuaU49Qi4JOdNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hU2Atgml2UGkoAsbDyn7ImVdn5Akhj1IpoT91dg6AOfwufUVxUp5GzUy5iPa/iMmF
-         fp1b58NroqaRqh/ZXv6ObwRNfTI7RFBkhBPZRum/txug9abg50smPSbrO7a6VsLDv/
-         pJEvbVSl+OpxwY6Uo7cBrqffgXRfYTseN8ucA5w4=
+        b=xiT7+AXqF1y0ZEIW+Fb/cLtVAVI3Fv6IBpp97ThcuzFvnGEKu3BJb63Yd4azE3B6C
+         IJ8Fd63QIMfS1qHrZbs9t+O//MB3K1GGD8/Y6aoOggjixLJsKPhV5qDVAfveLhwDLS
+         NdcDZcUJDsSTgFw5V0SfjW6luQvLkjPzhBZlQRlo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0076/1157] RISC-V: Add modules to virtual kernel memory layout dump
-Date:   Mon, 15 Aug 2022 19:50:32 +0200
-Message-Id: <20220815180442.559813771@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Jeff Layton <jlayton@kernel.org>
+Subject: [PATCH 5.19 0054/1157] fs: Add missing umask strip in vfs_tmpfile
+Date:   Mon, 15 Aug 2022 19:50:10 +0200
+Message-Id: <20220815180441.618554027@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,45 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-commit f9293ad46d8ba9909187a37b7215324420ad4596 upstream.
+commit ac6800e279a22b28f4fc21439843025a0d5bf03e upstream.
 
-Modules always live before the kernel, MODULES_END is fixed but
-MODULES_VADDR isn't fixed, it depends on the kernel size.
-Let's add it to virtual kernel memory layout dump.
+All creation paths except for O_TMPFILE handle umask in the vfs directly
+if the filesystem doesn't support or enable POSIX ACLs. If the filesystem
+does then umask handling is deferred until posix_acl_create().
+Because, O_TMPFILE misses umask handling in the vfs it will not honor
+umask settings. Fix this by adding the missing umask handling.
 
-As MODULES is only defined for CONFIG_64BIT, so we dump it when
-CONFIG_64BIT=y.
-
-eg,
-MODULES_VADDR - MODULES_END
-0xffffffff01133000 - 0xffffffff80000000
-
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220811074150.3020189-5-xianting.tian@linux.alibaba.com
-Cc: stable@vger.kernel.org
-Fixes: 2bfc6cd81bd1 ("riscv: Move kernel mapping outside of linear mapping")
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Link: https://lore.kernel.org/r/1657779088-2242-2-git-send-email-xuyang2018.jy@fujitsu.com
+Fixes: 60545d0d4610 ("[O_TMPFILE] it's still short a few helpers, but infrastructure should be OK now...")
+Cc: <stable@vger.kernel.org> # 4.19+
+Reported-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-and-Tested-by: Jeff Layton <jlayton@kernel.org>
+Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/mm/init.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ fs/namei.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -135,6 +135,10 @@ static void __init print_vm_layout(void)
- 		(unsigned long)VMEMMAP_END);
- 	print_ml("vmalloc", (unsigned long)VMALLOC_START,
- 		(unsigned long)VMALLOC_END);
-+#ifdef CONFIG_64BIT
-+	print_ml("modules", (unsigned long)MODULES_VADDR,
-+		(unsigned long)MODULES_END);
-+#endif
- 	print_ml("lowmem", (unsigned long)PAGE_OFFSET,
- 		(unsigned long)high_memory);
- 	if (IS_ENABLED(CONFIG_64BIT)) {
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3565,6 +3565,8 @@ struct dentry *vfs_tmpfile(struct user_n
+ 	child = d_alloc(dentry, &slash_name);
+ 	if (unlikely(!child))
+ 		goto out_err;
++	if (!IS_POSIXACL(dir))
++		mode &= ~current_umask();
+ 	error = dir->i_op->tmpfile(mnt_userns, dir, child, mode);
+ 	if (error)
+ 		goto out_err;
 
 
