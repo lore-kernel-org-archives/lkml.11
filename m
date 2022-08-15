@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B220C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAACFC2BB41
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355672AbiHPABH (ORCPT
+        id S1355694AbiHPABN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        Mon, 15 Aug 2022 20:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356006AbiHOXxa (ORCPT
+        with ESMTP id S1356021AbiHOXxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:53:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5B115CE3F;
-        Mon, 15 Aug 2022 13:18:23 -0700 (PDT)
+        Mon, 15 Aug 2022 19:53:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BCC15D884;
+        Mon, 15 Aug 2022 13:18:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FC14B8115B;
-        Mon, 15 Aug 2022 20:18:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB0E8C433B5;
-        Mon, 15 Aug 2022 20:18:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F345560FA3;
+        Mon, 15 Aug 2022 20:18:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BE1C433C1;
+        Mon, 15 Aug 2022 20:18:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594696;
-        bh=bG0UNHZ0ezxQ5XIhk9xy53ikELEQGQ7wHxTXr6HVsOY=;
+        s=korg; t=1660594702;
+        bh=+WsUujaUX16uNZwXOFPHPQA32H5LpTszdrEHVfVb+Uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4mzIhUOYvQa99a4+PVXXr+/qlsfmf4zIuI79E9/9yB0WAasx+OBcxwtXcfHGMMaK
-         Pm8ew+f45sOZ3/FaeXz6LiSGX6Ae82rmdDhv7Ob6DeA1IcwNEPMaTOgi8Ek/b05BOf
-         aiTV+J7my78LjZPjF2AmLrtMRUo9rUnOlirplUcs=
+        b=vQFdJBX81g9UjlGlIsovc3Td8C8XD7u9zWMSDbGKC4gAVl7CWmyjSWf1ooBFXOv6V
+         mRlQPz+B6Yp+Ic/JNI9n3zbhfuKsatvqWw4rplE7IJ0P1mikxP5iRNYqgQYdZao2Oh
+         H380IJzdUveSSte7aACq70SfRKkPzKiPKdnEJ2Tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhengping Jiang <jiangzp@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0530/1157] Bluetooth: hci_sync: Fix resuming scan after suspend resume
-Date:   Mon, 15 Aug 2022 19:58:06 +0200
-Message-Id: <20220815180500.849909054@linuxfoundation.org>
+Subject: [PATCH 5.19 0514/1157] selftests/bpf: fix a test for snprintf() overflow
+Date:   Mon, 15 Aug 2022 19:57:50 +0200
+Message-Id: <20220815180500.250630165@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,54 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengping Jiang <jiangzp@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 68253f3cd715e819bc4bff2b0e6b21234e259d56 ]
+[ Upstream commit c5d22f4cfe8dfb93f1db0a1e7e2e7ebc41395d98 ]
 
-After resuming, remove setting scanning_paused to false, because it is
-checked and set to false in hci_resume_scan_sync. Also move setting
-the value to false before updating passive scan, because the value is
-used when resuming passive scan.
+The snprintf() function returns the number of bytes which *would*
+have been copied if there were space.  In other words, it can be
+> sizeof(pin_path).
 
-Fixes: 3b42055388c30 (Bluetooth: hci_sync: Fix attempting to suspend with
-unfiltered passive scan)
-
-Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Fixes: c0fa1b6c3efc ("bpf: btf: Add BTF tests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/YtZ+aD/tZMkgOUw+@kili
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index c17021642234..1641db8722e0 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -5039,13 +5039,13 @@ static int hci_resume_scan_sync(struct hci_dev *hdev)
- 	if (!hdev->scanning_paused)
- 		return 0;
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+index ba5bde53d418..5af690063af5 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+@@ -5324,7 +5324,7 @@ static void do_test_pprint(int test_num)
+ 	ret = snprintf(pin_path, sizeof(pin_path), "%s/%s",
+ 		       "/sys/fs/bpf", test->map_name);
  
-+	hdev->scanning_paused = false;
-+
- 	hci_update_scan_sync(hdev);
- 
- 	/* Reset passive scanning to normal */
- 	hci_update_passive_scan_sync(hdev);
- 
--	hdev->scanning_paused = false;
--
- 	return 0;
- }
- 
-@@ -5064,7 +5064,6 @@ int hci_resume_sync(struct hci_dev *hdev)
- 		return 0;
- 
- 	hdev->suspended = false;
--	hdev->scanning_paused = false;
- 
- 	/* Restore event mask */
- 	hci_set_event_mask_sync(hdev);
+-	if (CHECK(ret == sizeof(pin_path), "pin_path %s/%s is too long",
++	if (CHECK(ret >= sizeof(pin_path), "pin_path %s/%s is too long",
+ 		  "/sys/fs/bpf", test->map_name)) {
+ 		err = -1;
+ 		goto done;
 -- 
 2.35.1
 
