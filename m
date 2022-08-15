@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EDFC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BBFC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242271AbiHOSja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
+        id S243007AbiHOSaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242071AbiHOSiq (ORCPT
+        with ESMTP id S242509AbiHOS3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:38:46 -0400
+        Mon, 15 Aug 2022 14:29:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAEC2E69C;
-        Mon, 15 Aug 2022 11:23:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011951402C;
+        Mon, 15 Aug 2022 11:20:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CB46B81076;
-        Mon, 15 Aug 2022 18:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFCBC433C1;
-        Mon, 15 Aug 2022 18:23:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77DA9B8105B;
+        Mon, 15 Aug 2022 18:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C661AC433C1;
+        Mon, 15 Aug 2022 18:20:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587824;
-        bh=yDgY5W1PnCPm4orjU4IIcbM58OJihAcMZtViHJqbfQ4=;
+        s=korg; t=1660587627;
+        bh=hwBSpc7erig/674qMUa5THYn7tKXm6QBe24djanajcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0KepEXYhVF+WW3qF0b7Zhcb3NLtr3UP/tgYq+WQKh6KDKgyYwaHFgbRfi4qYfF8PS
-         1SZSDc5wTwuqgbCulPi0gYH6oe92eQB/sAp+z/cLFU+IDZoMWNgEPeceZboTRIZdAH
-         AIuSlRvfCnU7gZK1JytGTa6G4jd8at8h7HWik2DE=
+        b=DMiW5vGi7uxeK5HFFsOQ3JYHTi2Bfy6RANb5qWQ5K6YYo8ohP93TXaytp5YqUR2GS
+         aIiW234WMJXKYer0+RFn8p9IHy8aM6rkeZDa3setAsWGfK0x2gNlW6yeUbqHfpbJXq
+         2ab5XCsDu5+ml0pxl79i+iI4TYFBcj351yc/yHgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 189/779] ARM: dts: qcom-msm8974: fix irq type on blsp2_uart1
-Date:   Mon, 15 Aug 2022 19:57:13 +0200
-Message-Id: <20220815180345.333091971@linuxfoundation.org>
+Subject: [PATCH 5.15 143/779] ARM: shmobile: rcar-gen2: Increase refcount for new reference
+Date:   Mon, 15 Aug 2022 19:56:27 +0200
+Message-Id: <20220815180343.440869413@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,35 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca@z3ntu.xyz>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ab1489017aa7a9f02e24bee73cf9ec8079cd3909 ]
+[ Upstream commit 75a185fb92e58ccd3670258d8d3b826bd2fa6d29 ]
 
-IRQ_TYPE_NONE is invalid, so use the correct interrupt type.
+In rcar_gen2_regulator_quirk(), for_each_matching_node_and_match() will
+automatically increase and decrease the refcount.  However, we should
+call of_node_get() for the new reference created in 'quirk->np'.
+Besides, we also should call of_node_put() before the 'quirk' being
+freed.
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Fixes: b05f82b152c9 ("ARM: dts: qcom: msm8974: Add blsp2_uart7 for bluetooth on sirius")
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220522083618.17894-1-luca@z3ntu.xyz
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220701121804.234223-1-windhl@126.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 2b01bc29ddf2..05d51839d40a 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -718,7 +718,7 @@ blsp1_uart2: serial@f991e000 {
- 		blsp2_uart7: serial@f995d000 {
- 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
- 			reg = <0xf995d000 0x1000>;
--			interrupts = <GIC_SPI 113 IRQ_TYPE_NONE>;
-+			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP2_UART1_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
- 			clock-names = "core", "iface";
- 			status = "disabled";
+diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+index 09ef73b99dd8..ba44cec5e59a 100644
+--- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+@@ -125,6 +125,7 @@ static int regulator_quirk_notify(struct notifier_block *nb,
+ 
+ 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
+ 		list_del(&pos->list);
++		of_node_put(pos->np);
+ 		kfree(pos);
+ 	}
+ 
+@@ -174,11 +175,12 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		memcpy(&quirk->i2c_msg, id->data, sizeof(quirk->i2c_msg));
+ 
+ 		quirk->id = id;
+-		quirk->np = np;
++		quirk->np = of_node_get(np);
+ 		quirk->i2c_msg.addr = addr;
+ 
+ 		ret = of_irq_parse_one(np, 0, argsa);
+ 		if (ret) {	/* Skip invalid entry and continue */
++			of_node_put(np);
+ 			kfree(quirk);
+ 			continue;
+ 		}
+@@ -225,6 +227,7 @@ static int __init rcar_gen2_regulator_quirk(void)
+ err_mem:
+ 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
+ 		list_del(&pos->list);
++		of_node_put(pos->np);
+ 		kfree(pos);
+ 	}
+ 
 -- 
 2.35.1
 
