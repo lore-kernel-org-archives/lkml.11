@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F17FC28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CB6C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353647AbiHOXmq (ORCPT
+        id S1353858AbiHOXmv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
+        Mon, 15 Aug 2022 19:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353659AbiHOXjy (ORCPT
+        with ESMTP id S1353955AbiHOXkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:39:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDC6153D3C;
-        Mon, 15 Aug 2022 13:10:13 -0700 (PDT)
+        Mon, 15 Aug 2022 19:40:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DED263F00;
+        Mon, 15 Aug 2022 13:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B620B80EA9;
-        Mon, 15 Aug 2022 20:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2209C433D6;
-        Mon, 15 Aug 2022 20:10:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD2EDB80EA8;
+        Mon, 15 Aug 2022 20:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBF4C433D6;
+        Mon, 15 Aug 2022 20:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594210;
-        bh=WTlqPFfrZvu1SVl3BDbBSZq5wF8+vw4pET+mwT6EseM=;
+        s=korg; t=1660594213;
+        bh=xjwEAjQmDMvwXBghWtChvjHsn8c+SsVYe94+bRZyOQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbea4ZM61uI7y2Yj0+cHRUu31Uv/GY2J1TC7cELyst94U8WwaPW7NuSy3Oz+BG9eP
-         Yd/TzPj/0mJ/vhUB4HogzqTUmDR2tOB285vUqcPFiIjK/Kj100lf/omxaBalIZnMpl
-         8kQFn7XAC6QbOXqx7if7sS1aaMeOOc3Z2bcuDvc4=
+        b=hIH7gHdRIwguCdIk09jrzJ62inqsVJpWelTwzOdbmY8XzTI0n5WgG1ayjL/1fr3ki
+         KY7h+/xz8MeZjOyTLEUn1xqPYU0Zk83axljLu93b/vbEJf/ToP5m4QV3RL/XVCEnun
+         meiw1mEmeuHl/UT+AWXFcBomzqReW1PuOYJW9smg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0395/1157] media: imx-jpeg: Disable slot interrupt when frame done
-Date:   Mon, 15 Aug 2022 19:55:51 +0200
-Message-Id: <20220815180455.483633379@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 1073/1095] powerpc: Fix eh field when calling lwarx on PPC32
+Date:   Mon, 15 Aug 2022 20:07:52 +0200
+Message-Id: <20220815180513.434410333@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,88 +52,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 22a2bc88c139dc9757bdb1d0a3665ac27edc79a5 ]
+commit 18db466a9a306406dab3b134014d9f6ed642471c upstream.
 
-The interrupt STMBUF_HALF may be triggered after frame done.
-It may led to system hang if driver try to access the register after
-power off.
+Commit 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of
+PPC_LWARX/LDARX macros") properly handled the eh field of lwarx
+in asm/bitops.h but failed to clear it for PPC32 in
+asm/simple_spinlock.h
 
-Disable the slot interrupt when frame done.
+So, do as in arch_atomic_try_cmpxchg_lock(), set it to 1 if PPC64
+but set it to 0 if PPC32. For that use IS_ENABLED(CONFIG_PPC64) which
+returns 1 when CONFIG_PPC64 is set and 0 otherwise.
 
-Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Tested-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of PPC_LWARX/LDARX macros")
+Cc: stable@vger.kernel.org # v5.15+
+Reported-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+[mpe: Use symbolic names, use 'n' constraint per Segher]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c |  5 +++++
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h |  1 +
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 10 ++--------
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ arch/powerpc/include/asm/simple_spinlock.h |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-index 29c604b1b179..718b7b08f93e 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-@@ -79,6 +79,11 @@ void mxc_jpeg_enable_irq(void __iomem *reg, int slot)
- 	writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
- }
- 
-+void mxc_jpeg_disable_irq(void __iomem *reg, int slot)
-+{
-+	writel(0x0, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
-+}
-+
- void mxc_jpeg_sw_reset(void __iomem *reg)
+--- a/arch/powerpc/include/asm/simple_spinlock.h
++++ b/arch/powerpc/include/asm/simple_spinlock.h
+@@ -48,10 +48,11 @@ static inline int arch_spin_is_locked(ar
+ static inline unsigned long __arch_spin_trylock(arch_spinlock_t *lock)
  {
- 	/*
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-index 5f64cbbe0fa9..645a24fe8bc1 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-@@ -125,6 +125,7 @@ u32 mxc_jpeg_get_offset(void __iomem *reg, int slot);
- void mxc_jpeg_enable_slot(void __iomem *reg, int slot);
- void mxc_jpeg_set_l_endian(void __iomem *reg, int le);
- void mxc_jpeg_enable_irq(void __iomem *reg, int slot);
-+void mxc_jpeg_disable_irq(void __iomem *reg, int slot);
- int mxc_jpeg_set_input(void __iomem *reg, u32 in_buf, u32 bufsize);
- int mxc_jpeg_set_output(void __iomem *reg, u16 out_pitch, u32 out_buf,
- 			u16 w, u16 h);
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-index 9a2fb0dc77a4..35a7cb936653 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-@@ -593,15 +593,8 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 	dev_dbg(dev, "Irq %d on slot %d.\n", irq, slot);
+ 	unsigned long tmp, token;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
  
- 	ctx = v4l2_m2m_get_curr_priv(jpeg->m2m_dev);
--	if (!ctx) {
--		dev_err(dev,
--			"Instance released before the end of transaction.\n");
--		/* soft reset only resets internal state, not registers */
--		mxc_jpeg_sw_reset(reg);
--		/* clear all interrupts */
--		writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_STATUS));
-+	if (WARN_ON(!ctx))
- 		goto job_unlock;
--	}
+ 	token = LOCK_TOKEN;
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%2,1\n\
++"1:	lwarx		%0,0,%2,%[eh]\n\
+ 	cmpwi		0,%0,0\n\
+ 	bne-		2f\n\
+ 	stwcx.		%1,0,%2\n\
+@@ -59,7 +60,7 @@ static inline unsigned long __arch_spin_
+ 	PPC_ACQUIRE_BARRIER
+ "2:"
+ 	: "=&r" (tmp)
+-	: "r" (token), "r" (&lock->slock)
++	: "r" (token), "r" (&lock->slock), [eh] "n" (eh)
+ 	: "cr0", "memory");
  
- 	if (slot != ctx->slot) {
- 		/* TODO investigate when adding multi-instance support */
-@@ -673,6 +666,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 	buf_state = VB2_BUF_STATE_DONE;
+ 	return tmp;
+@@ -156,9 +157,10 @@ static inline void arch_spin_unlock(arch
+ static inline long __arch_read_trylock(arch_rwlock_t *rw)
+ {
+ 	long tmp;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
  
- buffers_done:
-+	mxc_jpeg_disable_irq(reg, ctx->slot);
- 	jpeg->slot_data[slot].used = false; /* unused, but don't free */
- 	mxc_jpeg_check_and_set_last_buffer(ctx, src_buf, dst_buf);
- 	v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
--- 
-2.35.1
-
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%1,1\n"
++"1:	lwarx		%0,0,%1,%[eh]\n"
+ 	__DO_SIGN_EXTEND
+ "	addic.		%0,%0,1\n\
+ 	ble-		2f\n"
+@@ -166,7 +168,7 @@ static inline long __arch_read_trylock(a
+ 	bne-		1b\n"
+ 	PPC_ACQUIRE_BARRIER
+ "2:"	: "=&r" (tmp)
+-	: "r" (&rw->lock)
++	: "r" (&rw->lock), [eh] "n" (eh)
+ 	: "cr0", "xer", "memory");
+ 
+ 	return tmp;
+@@ -179,17 +181,18 @@ static inline long __arch_read_trylock(a
+ static inline long __arch_write_trylock(arch_rwlock_t *rw)
+ {
+ 	long tmp, token;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+ 
+ 	token = WRLOCK_TOKEN;
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%2,1\n\
++"1:	lwarx		%0,0,%2,%[eh]\n\
+ 	cmpwi		0,%0,0\n\
+ 	bne-		2f\n"
+ "	stwcx.		%1,0,%2\n\
+ 	bne-		1b\n"
+ 	PPC_ACQUIRE_BARRIER
+ "2:"	: "=&r" (tmp)
+-	: "r" (token), "r" (&rw->lock)
++	: "r" (token), "r" (&rw->lock), [eh] "n" (eh)
+ 	: "cr0", "memory");
+ 
+ 	return tmp;
 
 
