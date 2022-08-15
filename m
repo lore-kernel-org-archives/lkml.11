@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E87C9C2BB47
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 579DAC2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352926AbiHOXB2 (ORCPT
+        id S1353003AbiHOXBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
+        Mon, 15 Aug 2022 19:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352512AbiHOW6f (ORCPT
+        with ESMTP id S1351871AbiHOW7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:58:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E401474E0;
-        Mon, 15 Aug 2022 12:56:52 -0700 (PDT)
+        Mon, 15 Aug 2022 18:59:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2536E76452;
+        Mon, 15 Aug 2022 12:57:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F800B80EAB;
-        Mon, 15 Aug 2022 19:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55B02C433D6;
-        Mon, 15 Aug 2022 19:56:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 885CA60FD8;
+        Mon, 15 Aug 2022 19:57:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E01C433D6;
+        Mon, 15 Aug 2022 19:57:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593409;
-        bh=Jl6YcRGxZmnFIQ7S0vKwAI423njHCiOFiSTN7qLkT9A=;
+        s=korg; t=1660593440;
+        bh=sgYSD0j/s9y/c4VoEzXbjidbj5aLl52XfgJNB+JormI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eO5dRmm3PrY26leKDntummwSKQsNDY2F47jqEkZIYf7Pz6D+dmmtfhfb0Eqy49a6J
-         1uTnHf/WsoiGOdTtYfMsFXCNf5zl4Hfv8dxPwfsTNztnVpKxU3J/inljMjFD2a+odo
-         f/83e0NxQwLXyU44zQeL4MfASJnhkNmhJa+aOVSY=
+        b=FcgfNt1D2iF1kCKY5wfvU2PTJ9TTOtfbwAX1xuty8NsDOf04CViQ5G2Wxx2vZrDx3
+         3JUzhfUqUOr7fvndBdG6mDFJYq0isj3FLCxrYYIvdSfFvojCOEF2QFK8BvHmiMIMTK
+         7F8cIYzI/wuE0eOUIZINmcYXZUDn2u/sBarO4reU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0924/1095] s390/smp: enforce lowcore protection on CPU restart
-Date:   Mon, 15 Aug 2022 20:05:23 +0200
-Message-Id: <20220815180507.484901030@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
+        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0268/1157] blk-mq: dont create hctx debugfs dir until q->debugfs_dir is created
+Date:   Mon, 15 Aug 2022 19:53:44 +0200
+Message-Id: <20220815180450.328660119@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 6f5c672d17f583b081e283927f5040f726c54598 ]
+[ Upstream commit f3ec5d11554778c24ac8915e847223ed71d104fc ]
 
-As result of commit 915fea04f932 ("s390/smp: enable DAT before
-CPU restart callback is called") the low-address protection bit
-gets mistakenly unset in control register 0 save area of the
-absolute zero memory. That area is used when manual PSW restart
-happened to hit an offline CPU. In this case the low-address
-protection for that CPU will be dropped.
+blk_mq_debugfs_register_hctx() can be called by blk_mq_update_nr_hw_queues
+when gendisk isn't added yet, such as nvme tcp.
 
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Fixes: 915fea04f932 ("s390/smp: enable DAT before CPU restart callback is called")
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Fixes the warning of 'debugfs: Directory 'hctx0' with parent '/' already present!'
+which can be observed reliably when running blktests nvme/005.
+
+Fixes: 6cfc0081b046 ("blk-mq: no need to check return value of debugfs_create functions")
+Reported-by: Yi Zhang <yi.zhang@redhat.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Tested-by: Yi Zhang <yi.zhang@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220711090808.259682-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/blk-mq-debugfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 2cef49983e9e..3327412f82a6 100644
---- a/arch/s390/kernel/setup.c
-+++ b/arch/s390/kernel/setup.c
-@@ -508,8 +508,8 @@ static void __init setup_lowcore_dat_on(void)
- 	S390_lowcore.svc_new_psw.mask |= PSW_MASK_DAT;
- 	S390_lowcore.program_new_psw.mask |= PSW_MASK_DAT;
- 	S390_lowcore.io_new_psw.mask |= PSW_MASK_DAT;
--	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
- 	__ctl_set_bit(0, 28);
-+	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
- 	put_abs_lowcore(restart_flags, RESTART_FLAG_CTLREGS);
- 	put_abs_lowcore(program_new_psw, lc->program_new_psw);
- 	for (cr = 0; cr < ARRAY_SIZE(lc->cregs_save_area); cr++)
+diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
+index 4d1ce9ef4318..61f179e5f151 100644
+--- a/block/blk-mq-debugfs.c
++++ b/block/blk-mq-debugfs.c
+@@ -730,6 +730,9 @@ void blk_mq_debugfs_register_hctx(struct request_queue *q,
+ 	char name[20];
+ 	int i;
+ 
++	if (!q->debugfs_dir)
++		return;
++
+ 	snprintf(name, sizeof(name), "hctx%u", hctx->queue_num);
+ 	hctx->debugfs_dir = debugfs_create_dir(name, q->debugfs_dir);
+ 
 -- 
 2.35.1
 
