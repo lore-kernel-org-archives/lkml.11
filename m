@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F6FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311B7C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243681AbiHOSfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
+        id S243404AbiHOSgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243453AbiHOSeq (ORCPT
+        with ESMTP id S243312AbiHOSfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:34:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966CB39BBD;
-        Mon, 15 Aug 2022 11:22:23 -0700 (PDT)
+        Mon, 15 Aug 2022 14:35:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2F03A4A4;
+        Mon, 15 Aug 2022 11:22:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18B86B81062;
-        Mon, 15 Aug 2022 18:22:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65805C433C1;
-        Mon, 15 Aug 2022 18:22:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90E4260EBB;
+        Mon, 15 Aug 2022 18:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8556CC433C1;
+        Mon, 15 Aug 2022 18:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587739;
-        bh=CMovCprZ5em9db8CogLOUydohomPphAegq0bOUxOIkI=;
+        s=korg; t=1660587749;
+        bh=Km8RrzmovlTI3oUchLg5juXi+oKbcPGQGN846oCF/cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytuABXSJ2dSc/85NA/wmh9/ZwvTaiwwCwM9yyovJD/clX+3ysbFq9SK5zx3DF+sWk
-         avmlea/T6Z1vJQcvNbUKkxRTlfANP2mjk9nthxo+MFvKHfN+NL5oAEipO9yCe6p5nV
-         Sj3ie/g4ABe4IQb9o8q1oTGuvD8DQTRCFhJ8gq4Q=
+        b=AWBwndAIkPP5ChyG8rgyWTk+NIKwBktjGSQ+KxjynIMBCNX8zM7cbQ02giiZqOO25
+         TK+FqvWLKIgzOBZhp1aRS5ndaSeDO1cPtIvCUSRIWVRIrIh4fXmQ5qyN/Q8KO+s6+0
+         P4jknauNfIEtm1iibPzGKspZivTQN/am9D4fPA0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 179/779] ARM: dts: qcom: mdm9615: add missing PMIC GPIO reg
-Date:   Mon, 15 Aug 2022 19:57:03 +0200
-Message-Id: <20220815180344.914794691@linuxfoundation.org>
+Subject: [PATCH 5.15 182/779] arm64: dts: qcom: sdm630: disable GPU by default
+Date:   Mon, 15 Aug 2022 19:57:06 +0200
+Message-Id: <20220815180345.029679847@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,34 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit dc590cdc31f636ea15658f1206c3e380a53fb78e ]
+[ Upstream commit 1c047919763b4548381d1ab3320af1df66ab83df ]
 
-'reg' property is required in SSBI children:
-  qcom-mdm9615-wp8548-mangoh-green.dtb: gpio@150: 'reg' is a required property
+The SoC's device tree file disables gpucc and adreno's SMMU by default.
+So let's disable the GPU too. Moreover it looks like SMMU might be not
+usable without additional patches (which means that GPU is unusable
+too). No board uses GPU at this moment.
 
-Fixes: 2c5e596524e7 ("ARM: dts: Add MDM9615 dtsi")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: 5cf69dcbec8b ("arm64: dts: qcom: sdm630: Add Adreno 508 GPU configuration")
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220507194913.261121-11-krzysztof.kozlowski@linaro.org
+Link: https://lore.kernel.org/r/20220521202708.1509308-4-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-mdm9615.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sdm630.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-mdm9615.dtsi b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-index dda2ceec6591..ad9b52d53ef9 100644
---- a/arch/arm/boot/dts/qcom-mdm9615.dtsi
-+++ b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-@@ -324,6 +324,7 @@ rtc@11d {
+diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+index a8724fd60645..18957e452bb7 100644
+--- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+@@ -1046,6 +1046,8 @@ adreno_gpu: gpu@5000000 {
  
- 				pmicgpio: gpio@150 {
- 					compatible = "qcom,pm8018-gpio", "qcom,ssbi-gpio";
-+					reg = <0x150>;
- 					interrupt-controller;
- 					#interrupt-cells = <2>;
- 					gpio-controller;
+ 			operating-points-v2 = <&gpu_sdm630_opp_table>;
+ 
++			status = "disabled";
++
+ 			gpu_sdm630_opp_table: opp-table {
+ 				compatible  = "operating-points-v2";
+ 				opp-775000000 {
 -- 
 2.35.1
 
