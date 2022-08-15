@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFD6C3276A
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3C9C32757
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350998AbiHOW1Z (ORCPT
+        id S1350423AbiHOW0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        Mon, 15 Aug 2022 18:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348670AbiHOWVN (ORCPT
+        with ESMTP id S1350071AbiHOWR2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:21:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3069C1E1;
-        Mon, 15 Aug 2022 12:43:32 -0700 (PDT)
+        Mon, 15 Aug 2022 18:17:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DF56111E;
+        Mon, 15 Aug 2022 12:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C05EB610A3;
-        Mon, 15 Aug 2022 19:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F38C433C1;
-        Mon, 15 Aug 2022 19:43:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A884611DD;
+        Mon, 15 Aug 2022 19:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C60C433D6;
+        Mon, 15 Aug 2022 19:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592611;
-        bh=s+9l6JxnWVUGQGC5nFOt24RzEXuAO/JrTuKd3o9IIAc=;
+        s=korg; t=1660592445;
+        bh=pEg1GtkK46egxGc6yKcxjHl9FylMjMsYz88rOu1nqA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euI3DBJjg0DQO8vRhY9oIgGHzV6Z7md8cqpe6THxTKPE0MPW4yfma3Tk7Ysv/Kivo
-         v6SJcY5BUJ9Uy1jWTPebwRlkCrfeBhUQly+WUp9J4aVB+efVXTlGsYhtpKVMucD4QP
-         zN7OkkF5ydGPLZv/MYM7PjNgNRRbkQmckZhZHO+w=
+        b=z3N4gOamyieIoO3OyUVJCNC0gX5X3xi6737uTRtZPHZyx6x2euhR9l1SCVkN+QPPg
+         5VKcuXAi4Eru3nqUgO2YOszgGhRQKSu4UwMISJdtg3A7Q6xVxMb6G7QE7wJ1lPBm8W
+         bcBC00eYLTnzbK3GvPu2WkA/tX+bOZUpS0wmGcX0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Subject: [PATCH 5.19 0137/1157] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
-Date:   Mon, 15 Aug 2022 19:51:33 +0200
-Message-Id: <20220815180445.110781884@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        zdi-disclosures@trendmicro.com
+Subject: [PATCH 5.19 0111/1157] ksmbd: fix use-after-free bug in smb2_tree_disconect
+Date:   Mon, 15 Aug 2022 19:51:07 +0200
+Message-Id: <20220815180444.071124057@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,72 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
+commit cf6531d98190fa2cf92a6d8bbc8af0a4740a223c upstream.
 
-The syzbot fuzzer found a race between uevent callbacks and gadget
-driver unregistration that can cause a use-after-free bug:
+smb2_tree_disconnect() freed the struct ksmbd_tree_connect,
+but it left the dangling pointer. It can be accessed
+again under compound requests.
 
----------------------------------------------------------------
-BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
-drivers/usb/gadget/udc/core.c:1732
-Read of size 8 at addr ffff888078ce2050 by task udevd/2968
+This bug can lead an oops looking something link:
 
-CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-06/29/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
- usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
- dev_uevent+0x290/0x770 drivers/base/core.c:2424
----------------------------------------------------------------
+[ 1685.468014 ] BUG: KASAN: use-after-free in ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468068 ] Read of size 4 at addr ffff888102172180 by task kworker/1:2/4807
+...
+[ 1685.468130 ] Call Trace:
+[ 1685.468132 ]  <TASK>
+[ 1685.468135 ]  dump_stack_lvl+0x49/0x5f
+[ 1685.468141 ]  print_report.cold+0x5e/0x5cf
+[ 1685.468145 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468157 ]  kasan_report+0xaa/0x120
+[ 1685.468194 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468206 ]  __asan_report_load4_noabort+0x14/0x20
+[ 1685.468210 ]  ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468222 ]  smb2_tree_disconnect+0x175/0x250 [ksmbd]
+[ 1685.468235 ]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
+[ 1685.468247 ]  process_one_work+0x778/0x11c0
+[ 1685.468251 ]  ? _raw_spin_lock_irq+0x8e/0xe0
+[ 1685.468289 ]  worker_thread+0x544/0x1180
+[ 1685.468293 ]  ? __cpuidle_text_end+0x4/0x4
+[ 1685.468297 ]  kthread+0x282/0x320
+[ 1685.468301 ]  ? process_one_work+0x11c0/0x11c0
+[ 1685.468305 ]  ? kthread_complete_and_exit+0x30/0x30
+[ 1685.468309 ]  ret_from_fork+0x1f/0x30
 
-The bug occurs because usb_udc_uevent() dereferences udc->driver but
-does so without acquiring the udc_lock mutex, which protects this
-field.  If the gadget driver is unbound from the udc concurrently with
-uevent processing, the driver structure may be accessed after it has
-been deallocated.
-
-To prevent the race, we make sure that the routine holds the mutex
-around the racing accesses.
-
-Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
-CC: stable@vger.kernel.org # fc274c1e9973
-Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
+Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
+Cc: stable@vger.kernel.org
+Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17816
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/core.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ fs/ksmbd/smb2pdu.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1728,13 +1728,14 @@ static int usb_udc_uevent(struct device
- 		return ret;
- 	}
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -2043,6 +2043,7 @@ int smb2_tree_disconnect(struct ksmbd_wo
  
--	if (udc->driver) {
-+	mutex_lock(&udc_lock);
-+	if (udc->driver)
- 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
- 				udc->driver->function);
--		if (ret) {
--			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
--			return ret;
--		}
-+	mutex_unlock(&udc_lock);
-+	if (ret) {
-+		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
-+		return ret;
- 	}
- 
+ 	ksmbd_close_tree_conn_fds(work);
+ 	ksmbd_tree_conn_disconnect(sess, tcon);
++	work->tcon = NULL;
  	return 0;
+ }
+ 
 
 
