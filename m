@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CECAC2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 679BAC32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354920AbiHOXqt (ORCPT
+        id S1355065AbiHOXrB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
+        Mon, 15 Aug 2022 19:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354330AbiHOXlx (ORCPT
+        with ESMTP id S1354318AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D6C2C670;
-        Mon, 15 Aug 2022 13:12:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D312C652;
+        Mon, 15 Aug 2022 13:12:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B837F6077B;
-        Mon, 15 Aug 2022 20:12:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6078C433C1;
-        Mon, 15 Aug 2022 20:12:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10DFD60B6E;
+        Mon, 15 Aug 2022 20:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 004B1C433C1;
+        Mon, 15 Aug 2022 20:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594366;
-        bh=OzJrhHoWezHSiKoUoOVlcSSDC8fVKfDYPyy4cgaLBnU=;
+        s=korg; t=1660594341;
+        bh=tO76lJ66HsVJV3KXENX1SUk8oeNUKoWrD0rDT+0Y+lI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BupXyloczGEliip6uj4sH/RhTDPYbQHgzTWqiBKPRxCEOkBV2Zvvl6xRpDmOxkUdn
-         riuDL4NVbsr0OMFJOfOnD3eWFfTY988GFRuznx3WGcZRtqd8lQA7e5uHddJdLyQpDY
-         kXhCcUJT5wQMPuqD4+OxcBTlGiZy4GELFdz+KeJ0=
+        b=png/pixYqbv4AWNf90gVIJIwv3RHazrRqi66RMiEWiTHUGfb0pHCrocjMF59yFMQE
+         wjhmlGn8FdsVLAnwt+Ut5AtW2wDtdMPI/IqRq2ZcneUzNoSWOOGsCB5B+qcmTcpNSv
+         leg2t+1NAL425nu4WGzEmuJRqoQIz2acLsltX+Yw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0423/1157] drm/vc4: hdmi: Correct HDMI timing registers for interlaced modes
-Date:   Mon, 15 Aug 2022 19:56:19 +0200
-Message-Id: <20220815180456.592927553@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.18 1095/1095] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Mon, 15 Aug 2022 20:08:14 +0200
+Message-Id: <20220815180514.297750540@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit fb10dc451c0f15e3c19798a2f41d357f3f7576f5 ]
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-For interlaced modes the timings were not being correctly
-programmed into the HDMI block, so correct them.
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-33-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
+
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 3829e13c8627..ad7fcfa5a068 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1040,13 +1040,13 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
- 		     VC4_SET_FIELD(mode->crtc_vsync_start - mode->crtc_vdisplay,
- 				   VC5_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
--	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
--				   interlaced,
-+	u32 vertb = (VC4_SET_FIELD(mode->htotal >> (2 - pixel_rep),
-+				   VC5_HDMI_VERTB_VSPO) |
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end,
-+					mode->crtc_vsync_end - interlaced,
- 					VC4_HDMI_VERTB_VBP));
- 	unsigned long flags;
- 	unsigned char gcp;
--- 
-2.35.1
-
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1969,11 +1969,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
+ {
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
+ 
+ 	read_lock(&chan_list_lock);
+ 
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
+ 
+@@ -1992,11 +1992,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
+ 
+ 			/* Closest match */
 
 
