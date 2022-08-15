@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22237C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC041C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245423AbiHOTFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
+        id S245433AbiHOTFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245360AbiHOTBv (ORCPT
+        with ESMTP id S245375AbiHOTBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDFA4BD1E;
-        Mon, 15 Aug 2022 11:33:10 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10A733A19;
+        Mon, 15 Aug 2022 11:33:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED306B8106C;
-        Mon, 15 Aug 2022 18:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF7DC433C1;
-        Mon, 15 Aug 2022 18:33:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35E47610A4;
+        Mon, 15 Aug 2022 18:33:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFA1C433C1;
+        Mon, 15 Aug 2022 18:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588386;
-        bh=jGYDKm0Tw+bfYKYZH5hqWm2mnwiYORDMGSxt/7Z6A0k=;
+        s=korg; t=1660588389;
+        bh=hG2YwfD3GERqvp7dAQn4lJn8v53PgZPVyBYg36/I2NI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e2itnGBRP/8Ps4gyFvhJHG7K7fesmFCpvnKFk+Ta96Buwox2e9+I4cU2x9WN+fdZ4
-         VNCoS3p2YqKjVX7WULRxpsyfx4CCas5aMe3vdnR9UMUPRIvR5r7/VjS1sgn4cwqanY
-         xov8X/RREU+QZIaHsdjfeXQygfAXmKPjtP9FhVD0=
+        b=ztNv+EugwAXUhOEb+XsnNzJIkoF2htQTJ+KriEuUwNO0rCv2Faeohu1wWmHgYnT6D
+         zfxwG7nEUAEvu31nnK+xM+mCtdNXwta43X7idoLSdKpB6xCn3Gfom5OtrRL+ccSgyn
+         QsIUkcuRkUz/3pz0Eoy5ti9trn0zgBqzbC2bQDzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 359/779] can: error: specify the values of data[5..7] of CAN error frames
-Date:   Mon, 15 Aug 2022 20:00:03 +0200
-Message-Id: <20220815180352.587551937@linuxfoundation.org>
+Subject: [PATCH 5.15 386/779] wireguard: ratelimiter: use hrtimer in selftest
+Date:   Mon, 15 Aug 2022 20:00:30 +0200
+Message-Id: <20220815180353.787691263@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,47 +50,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit e70a3263a7eed768d5f947b8f2aff8d2a79c9d97 ]
+[ Upstream commit 151c8e499f4705010780189377f85b57400ccbf5 ]
 
-Currently, data[5..7] of struct can_frame, when used as a CAN error
-frame, are defined as being "controller specific". Device specific
-behaviours are problematic because it prevents someone from writing
-code which is portable between devices.
+Using msleep() is problematic because it's compared against
+ratelimiter.c's ktime_get_coarse_boottime_ns(), which means on systems
+with slow jiffies (such as UML's forced HZ=100), the result is
+inaccurate. So switch to using schedule_hrtimeout().
 
-As a matter of fact, data[5] is never used, data[6] is always used to
-report TX error counter and data[7] is always used to report RX error
-counter. can-utils also relies on this.
+However, hrtimer gives us access only to the traditional posix timers,
+and none of the _COARSE variants. So now, rather than being too
+imprecise like jiffies, it's too precise.
 
-This patch updates the comment in the uapi header to specify that
-data[5] is reserved (and thus should not be used) and that data[6..7]
-are used for error counters.
+One solution would be to give it a large "range" value, but this will
+still fire early on a loaded system. A better solution is to align the
+timeout to the actual coarse timer, and then round up to the nearest
+tick, plus change.
 
-Fixes: 0d66548a10cb ("[CAN]: Add PF_CAN core module")
-Link: https://lore.kernel.org/all/20220719143550.3681-11-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+So add the timeout to the current coarse time, and then
+schedule_hrtimer() until the absolute computed time.
+
+This should hopefully reduce flakes in CI as well. Note that we keep the
+retry loop in case the entire function is running behind, because the
+test could still be scheduled out, by either the kernel or by the
+hypervisor's kernel, in which case restarting the test and hoping to not
+be scheduled out still helps.
+
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/can/error.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireguard/selftest/ratelimiter.c | 25 +++++++++++---------
+ kernel/time/hrtimer.c                        |  1 +
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/include/uapi/linux/can/error.h b/include/uapi/linux/can/error.h
-index 34633283de64..a1000cb63063 100644
---- a/include/uapi/linux/can/error.h
-+++ b/include/uapi/linux/can/error.h
-@@ -120,6 +120,9 @@
- #define CAN_ERR_TRX_CANL_SHORT_TO_GND  0x70 /* 0111 0000 */
- #define CAN_ERR_TRX_CANL_SHORT_TO_CANH 0x80 /* 1000 0000 */
+diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
+index 007cd4457c5f..ba87d294604f 100644
+--- a/drivers/net/wireguard/selftest/ratelimiter.c
++++ b/drivers/net/wireguard/selftest/ratelimiter.c
+@@ -6,28 +6,29 @@
+ #ifdef DEBUG
  
--/* controller specific additional information / data[5..7] */
-+/* data[5] is reserved (do not use) */
-+
-+/* TX error counter / data[6] */
-+/* RX error counter / data[7] */
+ #include <linux/jiffies.h>
++#include <linux/hrtimer.h>
  
- #endif /* _UAPI_CAN_ERROR_H */
+ static const struct {
+ 	bool result;
+-	unsigned int msec_to_sleep_before;
++	u64 nsec_to_sleep_before;
+ } expected_results[] __initconst = {
+ 	[0 ... PACKETS_BURSTABLE - 1] = { true, 0 },
+ 	[PACKETS_BURSTABLE] = { false, 0 },
+-	[PACKETS_BURSTABLE + 1] = { true, MSEC_PER_SEC / PACKETS_PER_SECOND },
++	[PACKETS_BURSTABLE + 1] = { true, NSEC_PER_SEC / PACKETS_PER_SECOND },
+ 	[PACKETS_BURSTABLE + 2] = { false, 0 },
+-	[PACKETS_BURSTABLE + 3] = { true, (MSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
++	[PACKETS_BURSTABLE + 3] = { true, (NSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
+ 	[PACKETS_BURSTABLE + 4] = { true, 0 },
+ 	[PACKETS_BURSTABLE + 5] = { false, 0 }
+ };
+ 
+ static __init unsigned int maximum_jiffies_at_index(int index)
+ {
+-	unsigned int total_msecs = 2 * MSEC_PER_SEC / PACKETS_PER_SECOND / 3;
++	u64 total_nsecs = 2 * NSEC_PER_SEC / PACKETS_PER_SECOND / 3;
+ 	int i;
+ 
+ 	for (i = 0; i <= index; ++i)
+-		total_msecs += expected_results[i].msec_to_sleep_before;
+-	return msecs_to_jiffies(total_msecs);
++		total_nsecs += expected_results[i].nsec_to_sleep_before;
++	return nsecs_to_jiffies(total_nsecs);
+ }
+ 
+ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+@@ -42,8 +43,12 @@ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+ 	loop_start_time = jiffies;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(expected_results); ++i) {
+-		if (expected_results[i].msec_to_sleep_before)
+-			msleep(expected_results[i].msec_to_sleep_before);
++		if (expected_results[i].nsec_to_sleep_before) {
++			ktime_t timeout = ktime_add(ktime_add_ns(ktime_get_coarse_boottime(), TICK_NSEC * 4 / 3),
++						    ns_to_ktime(expected_results[i].nsec_to_sleep_before));
++			set_current_state(TASK_UNINTERRUPTIBLE);
++			schedule_hrtimeout_range_clock(&timeout, 0, HRTIMER_MODE_ABS, CLOCK_BOOTTIME);
++		}
+ 
+ 		if (time_is_before_jiffies(loop_start_time +
+ 					   maximum_jiffies_at_index(i)))
+@@ -127,7 +132,7 @@ bool __init wg_ratelimiter_selftest(void)
+ 	if (IS_ENABLED(CONFIG_KASAN) || IS_ENABLED(CONFIG_UBSAN))
+ 		return true;
+ 
+-	BUILD_BUG_ON(MSEC_PER_SEC % PACKETS_PER_SECOND != 0);
++	BUILD_BUG_ON(NSEC_PER_SEC % PACKETS_PER_SECOND != 0);
+ 
+ 	if (wg_ratelimiter_init())
+ 		goto out;
+@@ -176,7 +181,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(500);
+ 			continue;
+ 		} else if (ret < 0) {
+ 			test += test_count;
+@@ -195,7 +199,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(50);
+ 			continue;
+ 		}
+ 		test += test_count;
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index 0ea8702eb516..23af5eca11b1 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -2311,6 +2311,7 @@ schedule_hrtimeout_range_clock(ktime_t *expires, u64 delta,
+ 
+ 	return !t.task ? 0 : -EINTR;
+ }
++EXPORT_SYMBOL_GPL(schedule_hrtimeout_range_clock);
+ 
+ /**
+  * schedule_hrtimeout_range - sleep until timeout
 -- 
 2.35.1
 
