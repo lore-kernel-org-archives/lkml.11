@@ -2,210 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DE5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE39C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241085AbiHOGuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
+        id S241132AbiHOGxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241092AbiHOGun (ORCPT
+        with ESMTP id S240393AbiHOGxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:50:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A70A64C2
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660546241;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fH5UwWIX9OQs+lDeT8kxr/N3oertTip+Q2crz6TCHlw=;
-        b=hqZcnnR7VM7YPZPCOlYJ5rQtDE7he27thvCqGzifel0N0C0TXyxXUm/Fum3gKyTO6VPz6F
-        hPdH+NxA6pj4ho50ldRazt3r983Qtqbm6bhHHuaYIS9rTqPvpmESkKVVIfg+UWDxejuTbq
-        BFVitD90GUUKLD4FBQgXrDrVR+APY9E=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-631-wit3zXdiPAKVKHxkLiPzFg-1; Mon, 15 Aug 2022 02:50:40 -0400
-X-MC-Unique: wit3zXdiPAKVKHxkLiPzFg-1
-Received: by mail-pl1-f197.google.com with SMTP id k13-20020a170902c40d00b0016f90eba744so4496090plk.22
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:50:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=fH5UwWIX9OQs+lDeT8kxr/N3oertTip+Q2crz6TCHlw=;
-        b=uFB/TZJBZcdu0nsSr42Typz5O0FKAZKtSu9WlS+had1lGDQkO5nqfIkCEvEwmnyBo2
-         jM2G6pUsL30uZruYIaEgHBNJup1M9aNkFQwjqUIwDGg6v/mLc8ZuKORalEaKMs5r4OIh
-         P/GVa4G2bxoIPGEq/sDW12DutrQNnJ4r1R0rpYSckom+OZAlJfCZQ7t/EHSkmyrN5AkQ
-         W+QGUPLN0/HgX1oEwGiNycgJNU5f4+c7bnv9ErODGj/SjVTUQIOEA3/Vcrymi4RdcRqv
-         RW1oCYsFbyfcGjXGvEagNoodL1jlcdbbAotPaMYsSRPZPCl/7oVPsEGgX8r81FKRm5s2
-         p5Eg==
-X-Gm-Message-State: ACgBeo3pTquQFU13tVLMXykRiO57Kn0+kzYxWRw0yNdYrQEkqGyoZEPZ
-        pqUwJMf3DJRrz6Dx9X8S1WM/5mfOAjljeCEd4KKcYJ9bmxxt/anALU2FMDkT1JORkIbOmVR72OE
-        Oe9TdRY/mSBJY2kMCHMPE4muE
-X-Received: by 2002:a05:6a00:1a49:b0:528:6ea0:14e2 with SMTP id h9-20020a056a001a4900b005286ea014e2mr14839000pfv.22.1660546238691;
-        Sun, 14 Aug 2022 23:50:38 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4PQGZOnNvpKrm4VdqdTXnzXqXIyQPGqkluzieKE/EdGg9J7TGEQ7aCkqPIvuBbI8mBEFkBhw==
-X-Received: by 2002:a05:6a00:1a49:b0:528:6ea0:14e2 with SMTP id h9-20020a056a001a4900b005286ea014e2mr14838964pfv.22.1660546237888;
-        Sun, 14 Aug 2022 23:50:37 -0700 (PDT)
-Received: from localhost ([240e:3a1:2ea:acc0:8cff:e01c:2dbf:2ae8])
-        by smtp.gmail.com with ESMTPSA id d1-20020a623601000000b00534abad34easm2744569pfa.51.2022.08.14.23.50.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:50:37 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 14:48:13 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>
-Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
-        nasastry@in.ibm.com, mpe@ellerman.id.au
-Subject: Re: [PATCH v7 0/6] tpm: Preserve TPM measurement log across kexec
- (ppc64)
-Message-ID: <20220815064813.77g6icbkygrbmapa@Rk>
-References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+        Mon, 15 Aug 2022 02:53:14 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20951BE8F
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:53:12 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27F4j2YX032307;
+        Mon, 15 Aug 2022 06:52:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
+ bh=C60fQDSdRoNBPMUV/wbwDRQncEwAgqWw/H6MqPmq5p0=;
+ b=GjrWuomsHCpTU6PqGbaKah2D7A6Y0LEdGzf0yfWwhFuuhKz2RV3oejhOPc7f3FwHYhqT
+ Wyzdsbmf0dPzql1W0gj1LT4pEs8pdr6sjEoin/d2L4mvjClyz1K9dIw9+qZB2qSn3bp2
+ oXHA7AT/YvWOL1cz+UOCrHh/iNu+/X2jUoQMXfWI+f6KD3P0CGZPFHivc17LEJyrAb9m
+ dN9UIbJ4V04YtR7I6iMSGixs0gcafIkwbZTeaTmDl6hD2DmnYRahhtfJj7R/i3w1rJAi
+ KROb0PCXGAGzOq+6Zy4ZMglqxFoEsBW8o2k0hEWG6JgoTDK89aFCgI3y2kjhatZqwgW7 ww== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hx2ccjas1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 06:52:08 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27F3UIIF034875;
+        Mon, 15 Aug 2022 06:52:08 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hx2d1572e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 06:52:07 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IPF67aoB7bRSv4WqoQP86wUhPeU6h+xzjVUYN5dQSV/DR4jc/I/ONtP2dFxtSut+YXV8Ksao1WdOrPOTGK826n6++oh5us4OkA1dWcM4O8BqLtdlPAuM3eKDit9ceYEppM0k1utBpBReLPbV2YCtIfeOMn+CMyxf5nZ6RqtTnx/27UdC9s1tuNe+fme3aUqeP2GkIVl3JAb3DvjeSkYwLJT6K82xOLFpAO4sSSwuMcm/qaoyHsHAXvhzqp4/3MICAZgcDfqGr/k5te2Kw4/GyBIcfj5mra7RKQ0QpYGbhndzhjIxBD5Z9uCiUJfLQfIXzxPOjG0ZewQA0qfoPAZ2rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C60fQDSdRoNBPMUV/wbwDRQncEwAgqWw/H6MqPmq5p0=;
+ b=dEBtv+g8KzJqlLzTicEYvCPD7X8DYweghwE02CAyrP8Rfhg1t6JWOuiWrbOJCi0rZaZMOuSbVzhH+UIS0zPHk3csxYobE/C0iASW7o3gDS5mhMVCE5z2hVX8fFvbT4A8pbWQXPqq9O+uinnt7eajKKMOHR/iFx8aS1+qUKF4DV313a8yWzeLdof5zPVLmDWefbM0UDa0bDAld7V+IRNRaLi2ewx9dfBsTecnwBdl/uWJxq4145xGo1SKoi/Nff8Hj+QvgvbXI4fVl63YAFX/KFh3WoDRY86A9wQ/7QuYe2ajuxudnTMG9RDp5ZiWQati5YUtQ8qMIISt+Hn09OKVjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C60fQDSdRoNBPMUV/wbwDRQncEwAgqWw/H6MqPmq5p0=;
+ b=Zif63bHA4Jm6dd9FgSbILAV0xGZFKEOvr9yD5UW9fFmYEEILKBIZa/is2DvU9yO4XJoUdHoYgZuq4zeru+1ojvyB9tDHbq6YG6PTsC63KvThBlrHzc6we9BX8JBsCg9qWBzsK5iudQ8U3IbO/gsRVp4o4030MAsMkXZ+IGDhZdE=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BYAPR10MB2488.namprd10.prod.outlook.com
+ (2603:10b6:a02:b9::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Mon, 15 Aug
+ 2022 06:52:05 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5504.028; Mon, 15 Aug 2022
+ 06:52:05 +0000
+Date:   Mon, 15 Aug 2022 09:51:54 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Antonio Borneo <antonio.borneo@foss.st.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>
+Subject: drivers/irqchip/irq-stm32-exti.c:719 stm32_exti_h_domain_alloc()
+ warn: variable dereferenced before check 'host_data->drv_data' (see line
+ 707)
+Message-ID: <202208131739.gJvcs9ls-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220812164305.2056641-1-stefanb@linux.ibm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR1P264CA0214.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:56::12) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1569a902-bd4a-496f-a308-08da7e8aaa0e
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2488:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dp/m7OWnsYkrIaWJxG04APrGRoiy7MamdcLYUPMdYNcxo9ewwZf1rJ+Zr1gHQV/o/F90tnBVfvXI6m6gfqhVY03XRnQneGRblkkXzFfaixQPfwlFYpuA033aSePdHUmcAQ8d3Sd0gClOE2VDbUIWvfS4ungP9WpAIqL0hR6c1CNoadt26W1y8n3qoX6hU936HVr3xeXPvzusNHG/9SkMJx7TnTebE6rlBbpVDhIWcErnGhh+MfwxgTQDrTJv+hR8WnV2GG5hvDBCFQg575geXu72rTZyN5Lte5zblpdHjvi++Pqz7M5geDklsDqVZgM8lWs8vrAKwBpMP61nIjICJLcBlcJyAo3GoJzriu4wbbkvL4SOVdMnbaP2ZexgeZcJ+xStQJoqJfQMaPpzEbAkwXVhpke9sHMp611j3iJ+f7vYPYpzagrZBo0u4lCLWGBXDsOeDZONlNlBo1t7n3rB9crqjMyP04ouHNfsnSeA8ybbKqs3pl6oxWPk9ITU6PtVkBOMeTyKo/X6BwGnWE/fptFUcNOx1FcCPaeiM1DjTmDmcNJFZ6IZXBbeUBj/6RW8hZRMk/fFLYHxFhPBcHL0iuOAofKBKUspdCe1qytCNyMdfkm3to8/AxT6ZDc0PWnqRrhUflNU3hv+rRoSLwC4gOM7OlXnN/eCZV5/th+ozb1AF5/ptnvKyrn2SWeW0DcYvU4yUqFGQyRoaYdrJ0qkhXQFbjrQGzBnIpbqtDTHOUcN5cm3S7w/gtigFu2D5APk1iihrkU6CRnj6xuOfX2dZF7d5Z/fm5cE5gG+SYrDpjBbXWgOY1a5NvtY1o5ppiQHjiJWBPDYjTuMgKAQZ2gGod80Nfw5P4YfAapn7JCGL9eJTp35nkUnpgI13dFL8gyJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(366004)(39860400002)(136003)(396003)(6486002)(38100700002)(66476007)(4326008)(38350700002)(8676002)(2906002)(66556008)(36756003)(1076003)(66946007)(186003)(86362001)(316002)(6916009)(83380400001)(41300700001)(6506007)(966005)(44832011)(478600001)(8936002)(52116002)(9686003)(6512007)(6666004)(5660300002)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EsKugH/sSzN+8/SsTuN6AfWzgNXj6tLDldSKgJEajJ0TbJwuH/l/ur4bNSJ3?=
+ =?us-ascii?Q?yyhfaJB4aX/4daqs1UH917g4wMc1KHx1qZlnoTOjN9hPlKP3YMG92/g+/aeC?=
+ =?us-ascii?Q?ACVeFBzrIHtD3ZhwnHGuxrw8pTto05f1AcqrEVm3xZC22UDoMj34z4I6Rlyu?=
+ =?us-ascii?Q?AWXlMKb/01lbXapKk2gaWF8eALaI0NDTwGkFhbZCYSkBR9oFuxeO55tmH/rx?=
+ =?us-ascii?Q?qk48GnEONvRH8rSCplJgYGqsvoA+H+jtjuUrCdAAjkkY7j6MJ5ABvRJia1Co?=
+ =?us-ascii?Q?UFO2nMr1ZU2uvJ+W1zzyfexEaWLdbQdG7hOEgyVQY0JyB/TnG/0LuXLlwpUK?=
+ =?us-ascii?Q?+kTA+5j0itwhy8cjwIK8rs/m5i2Ez1MxA9gnAquWLjW+QNGS7h58CiumNm1B?=
+ =?us-ascii?Q?diA9YwF5hW4QS+iMYWVijtpvYMbYawsqmAHfzV/C/mccNmcgdeTI8pDWaHK9?=
+ =?us-ascii?Q?3TJiOwH9rVqtgfQdmZH15koHCP2pukX4OaNVviXvYY40R7lUMDSBKqIKr7+k?=
+ =?us-ascii?Q?e2PBWqOajVg5u84OOY6pv4oBTj2mQja8qP1fEjQ3l+GUQXZVgBYRdhi1HKsw?=
+ =?us-ascii?Q?j6oDYzhkKWZNyA1ydvs3CU/b0QoV/cxUbBigoZmIOQAcuj59H6cvoYckm/RL?=
+ =?us-ascii?Q?mH49iIfcdmv1Ti14LHPaTcGPzp2M9eEFb6RMw1PBy4Rpj1eloZbxbDVu5uQV?=
+ =?us-ascii?Q?mQXwOV+pMWrmHwTfkYnEZsaliCQ7z7BeUS+8z3mZGMWlyJwycT126hXaFQK4?=
+ =?us-ascii?Q?j31AQlYR08kE2ggSRov2YmBYa65K8TFE6mb0jkpbVUqH0/l/MxDiMUo6HqUL?=
+ =?us-ascii?Q?Ia6JhWrZdz3osoP3N3l8gFZntSxrM5JABSOUz5QEH3HVD3Wjr8K5c67gK+Ob?=
+ =?us-ascii?Q?2KrSXJhalhoTxrSPUbRguMgDuGZMLh+7SA//DBRbf8BLg7+b4kOmhjEA5qRq?=
+ =?us-ascii?Q?2/vui9W76K+PtTK1mTJMZJ6zcorTpkBbLo4ZjlKw3Av8W2AftjKLOOKo9h7B?=
+ =?us-ascii?Q?A6mnb8lf/M9eguupbO4hFBrEaMgDTn55fGjtHeDc3ScluFhrKCA0DmdJ/jIU?=
+ =?us-ascii?Q?Ec3PI5thvZZH5HzDArnjwVQc00bpIzvbNiauZE/uAWijIgQVxpm6q7NFJltt?=
+ =?us-ascii?Q?JORNofYIeaq0a470D5XPgGqc3cnJxOgq8r6PuuKlmcjlDRxr7m3eY97MPG9T?=
+ =?us-ascii?Q?3+XiH4dQ2KIjiVPX902vvFL+lK+Uwjm7WEal5EDx1oWOFRaiCJhdiUDCYUGJ?=
+ =?us-ascii?Q?s1ZJ/IVlEPOeitMI3oth+zYW2cjqfXWyWJxXjc1KQPhuM/YFa9NMf2MUkQzC?=
+ =?us-ascii?Q?bExJdtsXQ0M8+o1gDx85QGfAhf3mzILrQ6s3HGPfvhwv1uRy9UOHykiAe0P0?=
+ =?us-ascii?Q?KdVcAJWJ2B4GNnJeFZRqHD2M+9piHsA8joW9ZzENXRUCGF4izNyUM8vO6uE6?=
+ =?us-ascii?Q?QUtyjAC3d/iLLYkuPiDD9/XPb6Lb5ocmyd1IadpROaC3acJkjrnDddHizjWI?=
+ =?us-ascii?Q?GWCOIF6l7r9Pc1eo2S45ygdoCxc2H+zN5TJF10JAeSRdCF9i1SHVhhlD8eWU?=
+ =?us-ascii?Q?rxKDLNsZse1/7K6KWx6+2vbvv1uL1YjQD2oLGkiZ?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?qy2XLB48INODdNT6NnF45feuiaXIzWpwCaiSv2YzffNMR4bK2Bx94QOQg0Hj?=
+ =?us-ascii?Q?gR3wF8nFAtaMjur8KAPQ50hypST5Isr4acGrUw4YLqcahiDiUZeADl6O2dsB?=
+ =?us-ascii?Q?Ku/DFMb6sJ2BIGeHTOr1zRhZMAiarZa/Wy52UUdDl5ecybyYSMjCc2zgUyh+?=
+ =?us-ascii?Q?muh9/IZ9od2kmVmlCeOv8cDzif6ck7Hy3H2QfJLFizwR+SKYCo2GOtwTxkyZ?=
+ =?us-ascii?Q?+bbQFY+29SuqlFAlXywBgHvCIGBmXFPPVYfn7XSbqtHYz30yO3bSGDOPPd7s?=
+ =?us-ascii?Q?5DSK/IL6+BBY96qmbupINqDUx2IM5HBUN1znftA3Fgn5WhS2rO8rweunQpU1?=
+ =?us-ascii?Q?UXFs1x0oiqjRMxKOhmShJYqBcS7hpxEPXB9I7IPdLqaktaX5v3srycxZ8Ktq?=
+ =?us-ascii?Q?gE0Kxys8pDsTICtKbzuRmZEnekiUG+2FH+pxXiMXg3K5ofA6PzvthormRf2h?=
+ =?us-ascii?Q?TlmyMJUmkJpe9kFjIEe0ktz6nSL+aVu2v+karpBgajMc2mVgKP2T4wg6GTnC?=
+ =?us-ascii?Q?su9LyeYuMuNbeQTlNZV2aNncUsAT14GajSXPLiB6PTN95SaYihrFc7/L4eTn?=
+ =?us-ascii?Q?DuUvoxlZkuX9/vqh07R0AsS5JAQ0bvRcCW+Ul53h2zd/rqGi27atuo+bH6+d?=
+ =?us-ascii?Q?G3bhzApfLmHUBxtR9jxQYYrY73tF6pYdBK74+9NhBJiNUomI50FSpw4a11nN?=
+ =?us-ascii?Q?RvsEUCB+ja/VL6gokdShwIgjY/A1b2iPX/0O87JkSLrlH7di9RcfMhPt5OGv?=
+ =?us-ascii?Q?OtqNfyjv2eSq9OTI+p+1ik8hCdfwXMHFSO39hajZ/W/7Uwav1o73LfUjvF9k?=
+ =?us-ascii?Q?sY53nNJxT7oemEbEy5U7Ue6j1Lc2sjGJAjhXypNCeR5nK3NWL57HaTCeXw0p?=
+ =?us-ascii?Q?1uxsgI6wAVrUXOFA7Lhiza0RLip4tl8mOztcEAKZjXvXMDae7amHUV3oP2r2?=
+ =?us-ascii?Q?zNf7YrrNMj0twWp6Mil2W2qPvs/lM1e1JIme6ayW2NM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1569a902-bd4a-496f-a308-08da7e8aaa0e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 06:52:05.2050
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AyyAoHWoTkITGpcQv618ow1d+tKPI1IUr06EQnAW2qHFCfo5aUaSXhviO6M37/5He0OAggKLcnuBXkctYJ5n+JrZDyHfFsWrLtwwROgYSVQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2488
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_04,2022-08-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 mlxscore=0
+ adultscore=0 mlxlogscore=999 bulkscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208150024
+X-Proofpoint-GUID: 2Z9PR8uYfb2IQxnlIT1nNkaHYZR5aggQ
+X-Proofpoint-ORIG-GUID: 2Z9PR8uYfb2IQxnlIT1nNkaHYZR5aggQ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I can confirm this patch set fixes an issue that guest kdump kernel
-crashes on POWER9 host by applying it to 5.19.1 (there is a conflict
-when applying this patch set to latest kernel i.e. 6.0.0-rc1).
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
+commit: c297493336b7bc0c12ced484a9e61d04ec2d9403 irqchip/stm32-exti: Simplify irq description table
+config: arm-randconfig-m041-20220812 (https://download.01.org/0day-ci/archive/20220813/202208131739.gJvcs9ls-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
 
-Tested-by: Coiby Xu <coxu@redhat.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Previously, the issue can be reproduced as follows,
+smatch warnings:
+drivers/irqchip/irq-stm32-exti.c:719 stm32_exti_h_domain_alloc() warn: variable dereferenced before check 'host_data->drv_data' (see line 707)
 
-1. revert commit 7c5ed82b800d ("powerpc: Set crashkernel offset to mid
-    of RMA region") which masks the issue
-2. build & boot the kernel with crashkernel=512M 
-3. load kdump kernel and trigger kernel crash,
-[    4.209792] Oops: Kernel access of bad area, sig: 11 [#1]
-[    4.210373] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-[    4.210985] Modules linked in:
-[    4.211570] CPU: 12 PID: 1 Comm: swapper/12 Not tainted 6.0.0-rc1+ #3
-[    4.212204] NIP:  c0000000080a6540 LR: c00000000840c630 CTR: 0000000000000800
-[    4.212871] REGS: c00000000e66b130 TRAP: 0300   Not tainted  (6.0.0-rc1+)
-[    4.213529] MSR:  800000000280b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE>  CR: 24000280  XER: 0000005b
-[    4.214242] CFAR: c0000000080a6528 DAR: c00000002ffb0000 DSISR: 40000000 IRQMASK: 0 
-[    4.214242] GPR00: 000000000e000000 c00000000e66b3d0 c00000000aa69a00 c0000000117c0000 
-[    4.214242] GPR04: c00000002ffb0000 0000000000040000 0000000000000800 03fffffffee84000 
-[    4.214242] GPR08: 0000000080000000 0000000000000010 0000000000000020 0000000000000030 
-[    4.214242] GPR12: 0000000000000040 c00000000ad61000 0000000000000050 0000000000000060 
-[    4.214242] GPR16: 0000000000000070 0000000000000000 0000000000000000 0000000000000000 
-[    4.214242] GPR20: 0000000000000000 0000000000000000 c000000008f7ebd8 c00000000e418420 
-[    4.214242] GPR24: c00000000ad3c389 c000000008f7ed60 c00000000ecc9000 c000000011271848 
-[    4.214242] GPR28: c000000027fcee5c c00000002ffb0000 0000000000040000 c0000000117c0000 
-[    4.220176] NIP [c0000000080a6540] memcpy_power7+0x400/0x7d0
-[    4.220808] LR [c00000000840c630] kmemdup+0x50/0x80
-[    4.221428] Call Trace:
-[    4.222006] [c00000000e66b3d0] [c0000000080a63b4] memcpy_power7+0x274/0x7d0 (unreliable)
-[    4.222662] [c00000000e66b4d0] [c00000000840c630] kmemdup+0x50/0x80
-[    4.223293] [c00000000e66b510] [c000000008973ee0] tpm_read_log_of+0x110/0x1f0
-[    4.223929] [c00000000e66b5a0] [c000000008973020] tpm_bios_log_setup+0x80/0x250
-[    4.224552] [c00000000e66b630] [c00000000896b938] tpm_chip_register.part.0+0x38/0x2a0
-[    4.225170] [c00000000e66b6b0] [c000000008979a80] tpm_ibmvtpm_probe+0x530/0x7d0
-[    4.225777] [c00000000e66b790] [c0000000081055e4] vio_bus_probe+0x94/0x150
-[    4.226366] [c00000000e66b7e0] [c0000000089936d4] really_probe+0x104/0x550
-[    4.226947] [c00000000e66b860] [c000000008993bd4] __driver_probe_device+0xb4/0x240
-[    4.227560] [c00000000e66b8e0] [c000000008993db4] driver_probe_device+0x54/0x130
-[    4.228159] [c00000000e66b920] [c000000008994a88] __driver_attach+0x128/0x2d0
-[    4.228748] [c00000000e66b9a0] [c00000000898fcf8] bus_for_each_dev+0xa8/0x130
-[    4.229325] [c00000000e66ba00] [c000000008992bd4] driver_attach+0x34/0x50
-[    4.229887] [c00000000e66ba20] [c0000000089922d8] bus_add_driver+0x218/0x300
-[    4.230453] [c00000000e66bab0] [c000000008995f94] driver_register+0xb4/0x1c0
-[    4.231012] [c00000000e66bb20] [c000000008103fb0] __vio_register_driver+0x80/0xf0
-[    4.231569] [c00000000e66bba0] [c00000000a06807c] ibmvtpm_module_init+0x34/0x48
-[    4.232119] [c00000000e66bbc0] [c000000008011c14] do_one_initcall+0x64/0x300
-[    4.232664] [c00000000e66bca0] [c00000000a0053f0] do_initcalls+0x13c/0x190
-[    4.233183] [c00000000e66bd50] [c00000000a00570c] kernel_init_freeable+0x22c/0x2a0
-[    4.233706] [c00000000e66bdb0] [c000000008012240] kernel_init+0x30/0x1a0
-[    4.234204] [c00000000e66be10] [c00000000800ca54] ret_from_kernel_thread+0x5c/0x64
-[    4.234721] Instruction dump:
-[    4.235191] fa010080 39800040 39c00050 39e00060 3a000070 7cc903a6 48000018 60000000 
-[    4.235738] 60000000 60000000 60000000 60000000 <7ce020ce> 7cc448ce 7ca450ce 7c8458ce 
-[    4.236302] ---[ end trace 0000000000000000 ]---
+vim +719 drivers/irqchip/irq-stm32-exti.c
 
-On Fri, Aug 12, 2022 at 12:42:59PM -0400, Stefan Berger wrote:
->The of-tree subsystem does not currently preserve the IBM vTPM 1.2 and
->vTPM 2.0 measurement logs across a kexec on PowerVM and PowerKVM. This
->series fixes this for the kexec_file_load() syscall using the flattened
->device tree (fdt) to carry the TPM measurement log's buffer across kexec.
->
->   Stefan
->
->v7:
-> - Added Nageswara's Tested-by tags
-> - Added back original comment to inline function and removed Jarkko's R-b tag
->
->v6:
-> - Add __init to get_kexec_buffer as suggested by Jonathan
-> - Fixed issue detected by kernel test robot
->
->v5:
-> - Rebased on 1 more patch that would otherwise create merge conflicts
->
->v4:
-> - Rebased on 2 patches that would otherwise create merge conflicts;
->   posting these patches in this series with several tags removed so
->   krobot can test the series already
-> - Changes to individual patches documented in patch descripitons
->
->v3:
-> - Moved TPM Open Firmware related function to drivers/char/tpm/eventlog/tpm_of.c
->
->v2:
-> - rearranged patches
-> - fixed compilation issues for x86
->
->
->Jonathan McDowell (1):
->  x86/kexec: Carry forward IMA measurement log on kexec
->
->Palmer Dabbelt (1):
->  drivers: of: kexec ima: Support 32-bit platforms
->
->Stefan Berger (3):
->  tpm: of: Make of-tree specific function commonly available
->  of: kexec: Refactor IMA buffer related functions to make them reusable
->  tpm/kexec: Duplicate TPM measurement log in of-tree for kexec
->
->Vaibhav Jain (1):
->  of: check previous kernel's ima-kexec-buffer against memory bounds
->
-> arch/x86/Kconfig                      |   1 +
-> arch/x86/include/uapi/asm/bootparam.h |   9 +
-> arch/x86/kernel/e820.c                |   6 +-
-> arch/x86/kernel/kexec-bzimage64.c     |  42 +++-
-> arch/x86/kernel/setup.c               |  63 +++++
-> drivers/char/tpm/eventlog/of.c        |  31 +--
-> drivers/of/kexec.c                    | 342 ++++++++++++++++++++++----
-> include/linux/ima.h                   |   5 +
-> include/linux/kexec.h                 |   6 +
-> include/linux/of.h                    |  11 +-
-> include/linux/tpm.h                   |  36 +++
-> kernel/kexec_file.c                   |   6 +
-> security/integrity/ima/ima_kexec.c    |   2 +-
-> 13 files changed, 478 insertions(+), 82 deletions(-)
->
->
->base-commit: 3d7cb6b04c3f3115719235cc6866b10326de34cd
->-- 
->2.35.1
->
->
->_______________________________________________
->kexec mailing list
->kexec@lists.infradead.org
->http://lists.infradead.org/mailman/listinfo/kexec
->
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  692  static int stm32_exti_h_domain_alloc(struct irq_domain *dm,
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  693  				     unsigned int virq,
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  694  				     unsigned int nr_irqs, void *data)
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  695  {
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  696  	struct stm32_exti_host_data *host_data = dm->host_data;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  697  	struct stm32_exti_chip_data *chip_data;
+c297493336b7bc0c Antonio Borneo   2022-06-06  698  	u8 desc_irq;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  699  	struct irq_fwspec *fwspec = data;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  700  	struct irq_fwspec p_fwspec;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  701  	irq_hw_number_t hwirq;
+9d6a5fe1757cbbd9 Alexandre Torgue 2020-07-17  702  	int bank;
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  703  	u32 event_trg;
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  704  	struct irq_chip *chip;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  705  
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  706  	hwirq = fwspec->param[0];
+c16ae609214e8356 Antonio Borneo   2022-06-06 @707  	if (hwirq >= host_data->drv_data->bank_nr * IRQS_PER_BANK)
+                                                                     ^^^^^^^^^^^^^^^^^^^^^
+derefernce
+
+c16ae609214e8356 Antonio Borneo   2022-06-06  708  		return -EINVAL;
+c16ae609214e8356 Antonio Borneo   2022-06-06  709  
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  710  	bank  = hwirq / IRQS_PER_BANK;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  711  	chip_data = &host_data->chips_data[bank];
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  712  
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  713  	event_trg = readl_relaxed(host_data->base + chip_data->reg_bank->trg_ofst);
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  714  	chip = (event_trg & BIT(hwirq % IRQS_PER_BANK)) ?
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  715  	       &stm32_exti_h_chip : &stm32_exti_h_chip_direct;
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  716  
+ce4ef8f9f2abcf10 Antonio Borneo   2022-06-06  717  	irq_domain_set_hwirq_and_chip(dm, virq, hwirq, chip, chip_data);
+c297493336b7bc0c Antonio Borneo   2022-06-06  718  
+c297493336b7bc0c Antonio Borneo   2022-06-06 @719  	if (!host_data->drv_data || !host_data->drv_data->desc_irqs)
+                                                             ^^^^^^^^^^^^^^^^^^^
+checked too late
+
+c297493336b7bc0c Antonio Borneo   2022-06-06  720  		return -EINVAL;
+c297493336b7bc0c Antonio Borneo   2022-06-06  721  
+c297493336b7bc0c Antonio Borneo   2022-06-06  722  	desc_irq = host_data->drv_data->desc_irqs[hwirq];
+c297493336b7bc0c Antonio Borneo   2022-06-06  723  	if (desc_irq != EXTI_INVALID_IRQ) {
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  724  		p_fwspec.fwnode = dm->parent->fwnode;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  725  		p_fwspec.param_count = 3;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  726  		p_fwspec.param[0] = GIC_SPI;
+c297493336b7bc0c Antonio Borneo   2022-06-06  727  		p_fwspec.param[1] = desc_irq;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  728  		p_fwspec.param[2] = IRQ_TYPE_LEVEL_HIGH;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  729  
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  730  		return irq_domain_alloc_irqs_parent(dm, virq, 1, &p_fwspec);
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  731  	}
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  732  
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  733  	return 0;
+927abfc4461e7fd7 Ludovic Barre    2018-04-26  734  }
 
 -- 
-Best regards,
-Coiby
+0-DAY CI Kernel Test Service
+https://01.org/lkp
 
