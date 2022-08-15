@@ -2,132 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5387CC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C362C28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349227AbiHOWZ4 (ORCPT
+        id S1349597AbiHOW0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        Mon, 15 Aug 2022 18:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350834AbiHOWSk (ORCPT
+        with ESMTP id S1350844AbiHOWSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:40 -0400
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADE341D32
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:42:38 -0700 (PDT)
-Received: by mail-vk1-xa35.google.com with SMTP id s194so4181614vka.2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=RGBjkPaE8J9hO2HXiD58roaLLtlMCd9GApWRbn/4InE=;
-        b=FPnuTloO45sF2T+4wEAf823pe7ogF3QnjRaKt7CEVoHfJADFo52qIDJ1ZW2Z4LsAcu
-         H1W2iVmPI4c522AHFCUyx7ONp/gv20XWuh3LLqi1W1gNTA7Go2R4zwn18WsNaore+syl
-         0eYy6eJq/oyYLaYS+z59QmSMvokUC+mywr5AIISm+KTlLsOJU4LPOKV0XxpFu3UwdcS0
-         dYc0WrRklRJfH4uzQCrjttrHj/om6vTyzT/5gmlSslEJoj/j2XoWwJu62hNTThOfBCfK
-         uwOFZ9py99FCDB/TEkuZ2PIS8vruJ36GwJ47bJEEbddUQ86rJ18LozZWAOKcFsQXzuXX
-         elKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=RGBjkPaE8J9hO2HXiD58roaLLtlMCd9GApWRbn/4InE=;
-        b=iV1FoVuCAapvgYQQWnwndDAUu9j8pHU1tqNTPYfKPL6SjCYaNOE9ILs4IYqOK6f+NT
-         1aNAdMPfR5Ru2Eg3qSn5q6aZfnxmbsZiuHwUw35gelUiLpRHruumUk8YPoqX3n4kk8bh
-         WQblVUdXcZfh4+pFA5HkUEZ/HDj9xjN/wKrDVbbELosbnnHB3anLXr6jLL2fPL7umoZR
-         hQXCGrJ+mqufLwfm77qda2Jw1L49V0JCW0iRkuCwQThC+/cZ5OIDfNGG3LP88CDdKvqZ
-         k9H1N2tmIfwSmRt8Wr9sFuKGSES3JHt+AtzSphLV906kOXLOsoGhKdjL0CLfjsMXLblA
-         XrFQ==
-X-Gm-Message-State: ACgBeo38fAdRGQqlnLeKxIxqkWWyV22TGOt3xEW3aOa1FNs1+C8ZXX7d
-        gmetPyX4HVhNA5TdK8kZY9F8ck2U6tZeoQM9Vf6q3KtkDXK/+g==
-X-Google-Smtp-Source: AA6agR7pGITv9xB++a81UrxiizddUCff4tMML/JKgOT3cUKsfaaQ9Khq0zhzod+3R31qgsSrSVaAxFx5/6Bs+6Zfd0E=
-X-Received: by 2002:a1f:2b47:0:b0:380:59c5:8b8f with SMTP id
- r68-20020a1f2b47000000b0038059c58b8fmr1092986vkr.20.1660592557245; Mon, 15
- Aug 2022 12:42:37 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F2D65673;
+        Mon, 15 Aug 2022 12:42:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06D57B80EA7;
+        Mon, 15 Aug 2022 19:42:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E2EC433D6;
+        Mon, 15 Aug 2022 19:42:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660592567;
+        bh=tCgbbTMFE+sb6E+5jCobyDRg7FlTRVX0HYOCBNbP5TI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dA/ldAr9Y3eCiGXFnNsqxQ2chrU270nhHhFZsL6WIEUTzCQzlPxjEbM0taX/dVSky
+         VDf21hVdIppHgyIMRIRMIlx03Um2eYIscou7AkjS58GOEy7uGkTKf4FCyOQZH+6gSE
+         C9MmFNPhNenspMKLHY0hT4iBP8hdW7MqYDDkhP9o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sedat Dilek <sedat.dilek@gmail.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0809/1095] rtla: Fix Makefile when called from -C tools/
+Date:   Mon, 15 Aug 2022 20:03:28 +0200
+Message-Id: <20220815180502.735920369@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <cover.1660211399.git.sandipan.das@amd.com> <172d2b0df39306ed77221c45ee1aa62e8ae0548d.1660211399.git.sandipan.das@amd.com>
- <YvotoHMaLE1XawiO@worktop.programming.kicks-ass.net>
-In-Reply-To: <YvotoHMaLE1XawiO@worktop.programming.kicks-ass.net>
-From:   Stephane Eranian <eranian@google.com>
-Date:   Mon, 15 Aug 2022 12:42:23 -0700
-Message-ID: <CABPqkBQ1YLAu+sJC_U4QsQuo3PuzUwRDrNm9KcrUAEUxeBaYbg@mail.gmail.com>
-Subject: Re: [PATCH 04/13] x86/cpufeatures: Add LbrExtV2 feature bit
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Sandipan Das <sandipan.das@amd.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, x86@kernel.org, bp@alien8.de,
-        acme@kernel.org, namhyung@kernel.org, jolsa@kernel.org,
-        tglx@linutronix.de, mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, dave.hansen@linux.intel.com,
-        like.xu.linux@gmail.com, ananth.narayan@amd.com,
-        ravi.bangoria@amd.com, santosh.shukla@amd.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-On Mon, Aug 15, 2022 at 4:27 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Aug 11, 2022 at 05:59:52PM +0530, Sandipan Das wrote:
-> > CPUID leaf 0x80000022 i.e. ExtPerfMonAndDbg advertises some new performance
-> > monitoring features for AMD processors.
-> >
-> > Bit 1 of EAX indicates support for Last Branch Record Extension Version 2
-> > (LbrExtV2) features. If found to be set during PMU initialization, the EBX
-> > bits of the same leaf can be used to determine the number of available LBR
-> > entries.
-> >
-> > For better utilization of feature words, LbrExtV2 is added as a scattered
-> > feature bit.
-> >
-> > Signed-off-by: Sandipan Das <sandipan.das@amd.com>
-> > ---
-> >  arch/x86/include/asm/cpufeatures.h | 2 +-
-> >  arch/x86/kernel/cpu/scattered.c    | 1 +
-> >  2 files changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-> > index 393f2bbb5e3a..e3fa476a24b0 100644
-> > --- a/arch/x86/include/asm/cpufeatures.h
-> > +++ b/arch/x86/include/asm/cpufeatures.h
-> > @@ -96,7 +96,7 @@
-> >  #define X86_FEATURE_SYSCALL32                ( 3*32+14) /* "" syscall in IA32 userspace */
-> >  #define X86_FEATURE_SYSENTER32               ( 3*32+15) /* "" sysenter in IA32 userspace */
-> >  #define X86_FEATURE_REP_GOOD         ( 3*32+16) /* REP microcode works well */
-> > -/* FREE!                                ( 3*32+17) */
-> > +#define X86_FEATURE_LBREXT_V2                ( 3*32+17) /* AMD Last Branch Record Extension Version 2 */
-> >  #define X86_FEATURE_LFENCE_RDTSC     ( 3*32+18) /* "" LFENCE synchronizes RDTSC */
-> >  #define X86_FEATURE_ACC_POWER                ( 3*32+19) /* AMD Accumulated Power Mechanism */
-> >  #define X86_FEATURE_NOPL             ( 3*32+20) /* The NOPL (0F 1F) instructions */
-> > diff --git a/arch/x86/kernel/cpu/scattered.c b/arch/x86/kernel/cpu/scattered.c
-> > index dbaa8326d6f2..6be46dffddbf 100644
-> > --- a/arch/x86/kernel/cpu/scattered.c
-> > +++ b/arch/x86/kernel/cpu/scattered.c
-> > @@ -44,6 +44,7 @@ static const struct cpuid_bit cpuid_bits[] = {
-> >       { X86_FEATURE_PROC_FEEDBACK,    CPUID_EDX, 11, 0x80000007, 0 },
-> >       { X86_FEATURE_MBA,              CPUID_EBX,  6, 0x80000008, 0 },
-> >       { X86_FEATURE_PERFMON_V2,       CPUID_EAX,  0, 0x80000022, 0 },
-> > +     { X86_FEATURE_LBREXT_V2,        CPUID_EAX,  1, 0x80000022, 0 },
-> >       { 0, 0, 0, 0, 0 }
-> >  };
->
-> Would LBR_V2 work at all? It being a new version already seems to imply
-> extention, no? Then again, I suppose there's an argument to be had for
-> avoiding confusion vs the Intel LBR thing.. Couldn't you have called
-> this BRS_V2 :-)
->
-I believe it is called v2 because there was already a LBR in previous
-generations, however it
-was 1-deep and it was not connected to the PMU like this one. The
-public PPR mentions it
-(MSR 0x1DB/0x1DC, Last Branch From IP, Last Branch To IP). See for
-instance the PPR
-for Fam17h model 71h:
-https://www.amd.com/system/files/TechDocs/56176_ppr_Family_17h_Model_71h_B0_pub_Rev_3.06.zip
+[ Upstream commit c7d8a598c5b1e21a0957f5dec2ef4139d2d1a23a ]
 
-BRS is a model specific feature for Zen3.
+Sedat Dilek reported an error on rtla Makefile when running:
 
-LBRv2 is a great improvement including over Zen3 BRS.
+    $ make -C tools/ clean
+    [...]
+    make[2]: Entering directory
+    '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
+    [...]
+    '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
+    /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
+    rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
+    make[2]: *** [Makefile:120: clean] Error 1
+    make[2]: Leaving directory
+
+This occurred because the rtla calls kernel's Makefile to get the
+version in silence mode, e.g.,
+
+    $ make -sC ../../.. kernelversion
+    5.19.0-rc4
+
+But the -s is being ignored when rtla's makefile is called indirectly,
+so the output looks like this:
+
+    $ make -C ../../.. kernelversion
+    make: Entering directory '/root/linux'
+    5.19.0-rc4
+    make: Leaving directory '/root/linux'
+
+Using 'grep -v make' avoids this problem, e.g.,
+
+    $ make -C ../../.. kernelversion | grep -v make
+    5.19.0-rc4
+
+Thus, add | grep -v make.
+
+Link: https://lkml.kernel.org/r/870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org
+
+Fixes: 8619e32825fd ("rtla: Follow kernel version")
+Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/tracing/rtla/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 3822f4ea5f49..1bea2d16d4c1 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -1,6 +1,6 @@
+ NAME	:=	rtla
+ # Follow the kernel version
+-VERSION :=	$(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
++VERSION :=	$(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
+ 
+ # From libtracefs:
+ # Makefiles suck: This macro sets a default value of $(2) for the
+-- 
+2.35.1
+
+
+
