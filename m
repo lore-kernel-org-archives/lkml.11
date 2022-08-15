@@ -2,81 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AF2C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00395C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241173AbiHOJMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        id S241911AbiHOJMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiHOJMa (ORCPT
+        with ESMTP id S241895AbiHOJMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:12:30 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB5621E2D;
-        Mon, 15 Aug 2022 02:12:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TfpBC458fNMwuJim+LX9wzEgy0r+1CzNINaC0XhHYTY=; b=pv21Q2xcgWo0gE35aU+detWxmJ
-        FohGIgaoPUblYdGr+/ltk9hGqBbCgZYoJbUiUCR3FBIEhFeAIy6+4QAoed9VCpE6AEv6X0UtrNoaM
-        sTi/7pI4z/5bkAHhWl5R4R0Do75U1KZdf8I+ofdx9iDzz4CcTvk8c8k/0FPImew6PYsxqkO44881U
-        lP/Zzzifrad+Hyr8hovemYDrLtlcHv8vR2ag1gC78n6RA63/ICnhgIF3Ng4MHRdVajWOts8v5jiVV
-        3Tyunvs7yY8KRMICOkVJ7Km9HYE5d0WU/RE/euGsWlFpv3q/1uX2+KIUGCACQLObeTIQtv5Dn7CsB
-        ZoaMNKhA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNW8X-005aEr-6K; Mon, 15 Aug 2022 09:11:53 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 55537980153; Mon, 15 Aug 2022 11:11:52 +0200 (CEST)
-Date:   Mon, 15 Aug 2022 11:11:52 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Zhang Rui <rui.zhang@intel.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        corbet@lwn.net, fenghua.yu@intel.com, jdelvare@suse.com,
-        linux@roeck-us.net, len.brown@intel.com
-Subject: Re: [PATCH 7/7] perf/x86/intel/P4: Fix smp_num_siblings usage
-Message-ID: <YvoN2DTABnRZiJhf@worktop.programming.kicks-ass.net>
-References: <20220812164144.30829-1-rui.zhang@intel.com>
- <20220812164144.30829-8-rui.zhang@intel.com>
+        Mon, 15 Aug 2022 05:12:39 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02883220D4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:12:37 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id bv3so8369489wrb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=mZGNEIa1pqWi28sYb3bc4F38nKBbuQz26ll0NQAydIc=;
+        b=VhLb3fH+gl+hRv8bCbnX9IKPW+Z4faV4V6Ta2OZT+8e/NlnviwsfWIcwQaPbz5lldW
+         EcXJyhqjJHrT1YRTYnn6yar+BRSHvON/LyFf4cwvV8skNiKHl8KOq8nAkOofCnUfJtHl
+         fCx3gr52DU8RXMCJX8iEjwDR9jpIMkjqtE+nxm46NCuluM59G1d4UeBQAvYy0c5O9abe
+         r1+CZalq6T3OI67sUotRCxM68nhDxvNMKle/X7APXs+ERgk2NIiK926XrXaG9kL7wpAt
+         p7aTH9lCAekFv7+rcYA0Jalnf3TvwuNXkKVKJV4zj2XpNBqUXZp6c2yyQW6Om2duSXz7
+         3i1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=mZGNEIa1pqWi28sYb3bc4F38nKBbuQz26ll0NQAydIc=;
+        b=JXRLeX8JImoBH1qSKCqPxB9M5W3Owf78Ap8LjseQAGKDVVdxi/41XVMpQyuYkaXRrZ
+         4foPbPM9PO8Ci94JYvIM++7twctWoSzgSePWOLP6cYQWXm3H6B3H1xKpwvjK5coJ+YJL
+         aDDE97fNvxxE3pZCXNEDGvZUO0B3ux4Xlmfl9YvolXRo4/nAwtI4vf7/P/O3EkEBLYxX
+         sKP1LJmTSZqaQ+/VchysjI8z61m7JiZHgle6upU5kZTTeFgbMwmWb9ye/TgcpSVxqXYK
+         QOAvmrKDxsPqpq0vc3gR29u1k4ktFEu+Nzo1FLMdvOJxzPPcWyV9RPFMktF9Yc89cfgk
+         HEsQ==
+X-Gm-Message-State: ACgBeo1qpjtH8f1wZQpKXCuO8Tv0M+7npgV2RbmMymhb+ig3G6Yn/CwN
+        TOspZngJRne4RSFysRVGT6Y8pQ==
+X-Google-Smtp-Source: AA6agR5eXQemuYfviMG9u2GM6Erb8/7KMsoyHCidkfaSXGw3KPxNvEbaJ+VcyGH4MM8tz9h/JWb8VA==
+X-Received: by 2002:adf:fd4f:0:b0:220:60bc:3fc9 with SMTP id h15-20020adffd4f000000b0022060bc3fc9mr8217875wrs.398.1660554755381;
+        Mon, 15 Aug 2022 02:12:35 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id b5-20020adff905000000b002205ffe88edsm6705381wrr.31.2022.08.15.02.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 02:12:34 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 12:12:33 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, abelvesa@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V2 8/8] clk: imx93: add SAI IPG clk
+Message-ID: <YvoOAYvLF9TTfK+w@linaro.org>
+References: <20220815013039.474970-1-peng.fan@oss.nxp.com>
+ <20220815013039.474970-9-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220812164144.30829-8-rui.zhang@intel.com>
+In-Reply-To: <20220815013039.474970-9-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 12:41:44AM +0800, Zhang Rui wrote:
-> smp_num_siblings can be larger than 2.
-
-Not on a P4 it can't ;-)
-
+On 22-08-15 09:30:39, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> Any value larger than 1 suggests HT is supported.
+> The clk topology is as below:
+> bus_aon_root------>\                  /--->SAI IPG
+>                     -->SAI LPCG gate-->
+> sai[x]_clk_root--->/                  \--->SAI MCLK
 > 
-> Reviewed-by: Len Brown <len.brown@intel.com>
-> Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+> So use shared count as i.MX93 MU_B gate.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+
+Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
+
 > ---
->  arch/x86/include/asm/perf_event_p4.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/clk/imx/clk-imx93.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
 > 
-> diff --git a/arch/x86/include/asm/perf_event_p4.h b/arch/x86/include/asm/perf_event_p4.h
-> index 94de1a05aeba..b14e9a20a7c0 100644
-> --- a/arch/x86/include/asm/perf_event_p4.h
-> +++ b/arch/x86/include/asm/perf_event_p4.h
-> @@ -189,7 +189,7 @@ static inline int p4_ht_active(void)
->  static inline int p4_ht_thread(int cpu)
->  {
->  #ifdef CONFIG_SMP
-> -	if (smp_num_siblings == 2)
-> +	if (smp_num_siblings > 1)
->  		return cpu != cpumask_first(this_cpu_cpumask_var_ptr(cpu_sibling_map));
->  #endif
->  	return 0;
-
-Unless Intel plans to respin an P4 with extra siblings on, I don't think
-this qualifies for the word 'fix'.
+> diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
+> index 4008ab075dfe..6a76b9fdf18d 100644
+> --- a/drivers/clk/imx/clk-imx93.c
+> +++ b/drivers/clk/imx/clk-imx93.c
+> @@ -28,6 +28,9 @@ enum clk_sel {
+>  	MAX_SEL
+>  };
+>  
+> +static u32 share_count_sai1;
+> +static u32 share_count_sai2;
+> +static u32 share_count_sai3;
+>  static u32 share_count_mub;
+>  
+>  static const char *parent_names[MAX_SEL][4] = {
+> @@ -215,9 +218,12 @@ static const struct imx93_clk_ccgr {
+>  	{ IMX93_CLK_USDHC1_GATE,	"usdhc1",	"usdhc1_root",		0x9380, },
+>  	{ IMX93_CLK_USDHC2_GATE,	"usdhc2",	"usdhc2_root",		0x93c0, },
+>  	{ IMX93_CLK_USDHC3_GATE,	"usdhc3",	"usdhc3_root",		0x9400, },
+> -	{ IMX93_CLK_SAI1_GATE,		"sai1",		"sai1_root",		0x9440, },
+> -	{ IMX93_CLK_SAI2_GATE,		"sai2",		"sai2_root",		0x9480, },
+> -	{ IMX93_CLK_SAI3_GATE,		"sai3",		"sai3_root",		0x94c0, },
+> +	{ IMX93_CLK_SAI1_GATE,          "sai1",         "sai1_root",            0x9440, 0, &share_count_sai1},
+> +	{ IMX93_CLK_SAI1_IPG,		"sai1_ipg_clk", "bus_aon_root",		0x9440, 0, &share_count_sai1},
+> +	{ IMX93_CLK_SAI2_GATE,          "sai2",         "sai2_root",            0x9480, 0, &share_count_sai2},
+> +	{ IMX93_CLK_SAI2_IPG,		"sai2_ipg_clk", "bus_wakeup_root",	0x9480, 0, &share_count_sai2},
+> +	{ IMX93_CLK_SAI3_GATE,          "sai3",         "sai3_root",            0x94c0, 0, &share_count_sai3},
+> +	{ IMX93_CLK_SAI3_IPG,		"sai3_ipg_clk", "bus_wakeup_root",	0x94c0, 0, &share_count_sai3},
+>  	{ IMX93_CLK_MIPI_CSI_GATE,	"mipi_csi",	"media_apb_root",	0x9580, },
+>  	{ IMX93_CLK_MIPI_DSI_GATE,	"mipi_dsi",	"media_apb_root",	0x95c0, },
+>  	{ IMX93_CLK_LVDS_GATE,		"lvds",		"media_ldb_root",	0x9600, },
+> -- 
+> 2.37.1
+> 
