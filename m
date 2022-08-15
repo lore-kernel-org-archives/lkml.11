@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5B4C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A75C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243770AbiHPAxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        id S239180AbiHPAxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244742AbiHPAol (ORCPT
+        with ESMTP id S1347593AbiHPAp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:44:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706DFAE209;
-        Mon, 15 Aug 2022 13:40:49 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0926FADCC4;
+        Mon, 15 Aug 2022 13:41:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 134DCB80EAD;
-        Mon, 15 Aug 2022 20:40:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4210FC433C1;
-        Mon, 15 Aug 2022 20:40:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C9DA611FA;
+        Mon, 15 Aug 2022 20:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F481C433C1;
+        Mon, 15 Aug 2022 20:41:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596046;
-        bh=hF+MWjz3NwNhxg062slqc22gSVlrgR4oKLCaB8gyQdo=;
+        s=korg; t=1660596111;
+        bh=5UhoXcEIbPk8Dp4swVKTZKdyP4ZLu19tMH5KXU4pwBw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bNOzs+2Ul5mzL2IbCFoOCD2mHBn0UE66SWan4lOXKhGNdbFdi5NtToWBmjBEuKGSm
-         uk817MicYYEeImvb6ay+bEq6tS4V/OsF8hcyEoZonkwPb0z33mjH0qTbDYzD6apZAp
-         4bgGV1MEmMZFwRqvNO9W1Kop3LtCDCGSbKuCtbPw=
+        b=Gm+WxyFou2i7m7pxvfJtQzmu9gv/6wTyRk/CUUMAEPbQmKSNWr8aW6KqpXHNlBBsG
+         V3O3IGJQf0ETxDZ8SV4LBmhG0Krdb91BOw33CZ7IZupbLXltgcoiF4S81VrBekYU4q
+         LsREale882QC4Hqe3ZCG/3bHiMdeFsxyYFeT/oUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0956/1157] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
-Date:   Mon, 15 Aug 2022 20:05:12 +0200
-Message-Id: <20220815180517.873457451@linuxfoundation.org>
+Subject: [PATCH 5.19 0941/1157] ASoC: audio-graph-card2.c: use of_property_read_u32() for rate
+Date:   Mon, 15 Aug 2022 20:04:57 +0200
+Message-Id: <20220815180517.175223922@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,78 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit 3182efd036c1b955403d131258234896cbd9fbeb ]
+[ Upstream commit 817a62108dfacebd548e38451bf0e7eee023e97f ]
 
-Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-from S2") prevented an early enabling of RTS during resume, but it did
-not actively restore the RTS state after resume.
+Audio Graph Card2 is using of_get_property(), but it should use
+of_property_read_u32() to getting rate. Otherwise the setting will be
+strange value. This patch fixup it.
 
-Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220714031316.404918-1-f.fainelli@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c3a15c92a67b701 ("ASoC: audio-graph-card2: add Codec2Codec support")
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/87h741s961.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ sound/soc/generic/audio-graph-card2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 9b878d023dac..8efdc271eb75 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
--
--	serial8250_suspend_port(priv->line);
--	clk_disable_unprepare(priv->baud_mux_clk);
-+	unsigned long flags;
+diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
+index d34b29a49268..8e0628e6f2a0 100644
+--- a/sound/soc/generic/audio-graph-card2.c
++++ b/sound/soc/generic/audio-graph-card2.c
+@@ -856,7 +856,7 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
+ 	struct device_node *port0, *port1, *ports;
+ 	struct device_node *codec0_port, *codec1_port;
+ 	struct device_node *ep0, *ep1;
+-	u32 val;
++	u32 val = 0;
+ 	int ret = -EINVAL;
  
  	/*
- 	 * This will prevent resume from enabling RTS before the
--	 *  baud rate has been resored.
-+	 *  baud rate has been restored.
- 	 */
-+	spin_lock_irqsave(&port->lock, flags);
- 	priv->saved_mctrl = port->mctrl;
--	port->mctrl = 0;
-+	port->mctrl &= ~TIOCM_RTS;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	serial8250_suspend_port(priv->line);
-+	clk_disable_unprepare(priv->baud_mux_clk);
+@@ -880,7 +880,8 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
+ 	ports = of_get_parent(port0);
+ 	port1 = of_get_next_child(ports, lnk);
  
- 	return 0;
- }
-@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
-+	unsigned long flags;
- 	int ret;
+-	if (!of_get_property(ports, "rate", &val)) {
++	of_property_read_u32(ports, "rate", &val);
++	if (!val) {
+ 		struct device *dev = simple_priv_to_dev(priv);
  
- 	ret = clk_prepare_enable(priv->baud_mux_clk);
-@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 		start_rx_dma(serial8250_get_port(priv->line));
- 	}
- 	serial8250_resume_port(priv->line);
--	port->mctrl = priv->saved_mctrl;
-+
-+	if (priv->saved_mctrl & TIOCM_RTS) {
-+		/* Restore RTS */
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl |= TIOCM_RTS;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+
- 	return 0;
- }
- 
+ 		dev_err(dev, "Codec2Codec needs rate settings\n");
 -- 
 2.35.1
 
