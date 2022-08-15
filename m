@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5256C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC9AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347044AbiHOVya (ORCPT
+        id S1343883AbiHOVyg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
+        Mon, 15 Aug 2022 17:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350368AbiHOVvF (ORCPT
+        with ESMTP id S1350530AbiHOVvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39BF104B27;
-        Mon, 15 Aug 2022 12:32:29 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE7C106F9C;
+        Mon, 15 Aug 2022 12:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED6286101B;
-        Mon, 15 Aug 2022 19:32:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F06C433C1;
-        Mon, 15 Aug 2022 19:32:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4D03B80EAD;
+        Mon, 15 Aug 2022 19:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4D8C433D6;
+        Mon, 15 Aug 2022 19:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591948;
-        bh=payAf0HvEewLL/gsAXZ7WoDbcj/dgmnR+M9F73oqHIg=;
+        s=korg; t=1660591976;
+        bh=ydOSK1Hk0GTmHTcy6hWBPyLZP1ki0L2m1F1ee9yKE8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UfLZ3wTtFLXGGQZVcM++zojLPJ/0g/+NoczxkNPhvrsFWqLcfrkDHv0f4n+0GiTro
-         ge+5KhSK2l7SsztYF2BY53dTl/LzGcNrQ2DgktYp3brpYKFJqTFTDhn8WowS5W5EkY
-         t3u3RcIFy7SUKTIPqp7RexVXX0o25isQcAOxA5w4=
+        b=zaS2zQCmBPFsosTLDAYZIvsTO2qG8M91OyshRuDXxyAmKvjjyqlJTtHmYV9tivHCR
+         ZOoY/lbJe2RFxTPqOzmOtyaA+WVyw8ZGGQ7MuNwUXJ/UQIPMgbSJPOC49DKzDYWhEe
+         IiA41ppL3Wae+dD9z/J/EXdCN1ZubEPanA5M147I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0695/1095] driver core: fix potential deadlock in __driver_attach
-Date:   Mon, 15 Aug 2022 20:01:34 +0200
-Message-Id: <20220815180458.124830979@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0039/1157] KVM: SVM: Disable SEV-ES support if MMIO caching is disable
+Date:   Mon, 15 Aug 2022 19:49:55 +0200
+Message-Id: <20220815180440.997426890@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,120 +51,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 70fe758352cafdee72a7b13bf9db065f9613ced8 ]
+commit 0c29397ac1fdd64ae59941a477511a05e61a4754 upstream.
 
-In __driver_attach function, There are also AA deadlock problem,
-like the commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
+Disable SEV-ES if MMIO caching is disabled as SEV-ES relies on MMIO SPTEs
+generating #NPF(RSVD), which are reflected by the CPU into the guest as
+a #VC.  With SEV-ES, the untrusted host, a.k.a. KVM, doesn't have access
+to the guest instruction stream or register state and so can't directly
+emulate in response to a #NPF on an emulated MMIO GPA.  Disabling MMIO
+caching means guest accesses to emulated MMIO ranges cause #NPF(!PRESENT),
+and those flavors of #NPF cause automatic VM-Exits, not #VC.
 
-stack like commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
-list below:
-    In __driver_attach function, The lock holding logic is as follows:
-    ...
-    __driver_attach
-    if (driver_allows_async_probing(drv))
-      device_lock(dev)      // get lock dev
-        async_schedule_dev(__driver_attach_async_helper, dev); // func
-          async_schedule_node
-            async_schedule_node_domain(func)
-              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-              /* when fail or work limit, sync to execute func, but
-                 __driver_attach_async_helper will get lock dev as
-                 will, which will lead to A-A deadlock.  */
-              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-                func;
-              else
-                queue_work_node(node, system_unbound_wq, &entry->work)
-      device_unlock(dev)
+Adjust KVM's MMIO masks to account for the C-bit location prior to doing
+SEV(-ES) setup, and document that dependency between adjusting the MMIO
+SPTE mask and SEV(-ES) setup.
 
-    As above show, when it is allowed to do async probes, because of
-    out of memory or work limit, async work is not be allowed, to do
-    sync execute instead. it will lead to A-A deadlock because of
-    __driver_attach_async_helper getting lock dev.
-
-Reproduce:
-and it can be reproduce by make the condition
-(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
-below:
-
-[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
-this message.
-[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
-0 flags:0x00004000
-[  370.788865] Call Trace:
-[  370.789374]  <TASK>
-[  370.789841]  __schedule+0x482/0x1050
-[  370.790613]  schedule+0x92/0x1a0
-[  370.791290]  schedule_preempt_disabled+0x2c/0x50
-[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
-[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
-[  370.794079]  mutex_lock+0x50/0x60
-[  370.794795]  __device_driver_lock+0x2f/0x70
-[  370.795677]  ? driver_probe_device+0xd0/0xd0
-[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
-[  370.797318]  ? driver_probe_device+0xd0/0xd0
-[  370.797957]  async_schedule_node_domain+0xa5/0xc0
-[  370.798652]  async_schedule_node+0x19/0x30
-[  370.799243]  __driver_attach+0x246/0x290
-[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
-[  370.800548]  bus_for_each_dev+0x9d/0x130
-[  370.801132]  driver_attach+0x22/0x30
-[  370.801666]  bus_add_driver+0x290/0x340
-[  370.802246]  driver_register+0x88/0x140
-[  370.802817]  ? virtio_scsi_init+0x116/0x116
-[  370.803425]  scsi_register_driver+0x1a/0x30
-[  370.804057]  init_sd+0x184/0x226
-[  370.804533]  do_one_initcall+0x71/0x3a0
-[  370.805107]  kernel_init_freeable+0x39a/0x43a
-[  370.805759]  ? rest_init+0x150/0x150
-[  370.806283]  kernel_init+0x26/0x230
-[  370.806799]  ret_from_fork+0x1f/0x30
-
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220622074327.497102-1-zhangwensheng5@huawei.com
+Fixes: b09763da4dd8 ("KVM: x86/mmu: Add module param to disable MMIO caching (for testing)")
+Reported-by: Michael Roth <michael.roth@amd.com>
+Tested-by: Michael Roth <michael.roth@amd.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220803224957.1285926-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu.h      |    2 ++
+ arch/x86/kvm/mmu/spte.c |    1 +
+ arch/x86/kvm/mmu/spte.h |    2 --
+ arch/x86/kvm/svm/sev.c  |   10 ++++++++++
+ arch/x86/kvm/svm/svm.c  |    9 ++++++---
+ 5 files changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index d6980f33afc4..822dfa6561c2 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -1091,6 +1091,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __driver_attach(struct device *dev, void *data)
- {
- 	struct device_driver *drv = data;
-+	bool async = false;
- 	int ret;
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -11,6 +11,8 @@
+ #define PT32_PT_BITS 10
+ #define PT32_ENT_PER_PAGE (1 << PT32_PT_BITS)
  
- 	/*
-@@ -1129,9 +1130,11 @@ static int __driver_attach(struct device *dev, void *data)
- 		if (!dev->driver) {
- 			get_device(dev);
- 			dev->p->async_driver = drv;
--			async_schedule_dev(__driver_attach_async_helper, dev);
-+			async = true;
- 		}
- 		device_unlock(dev);
-+		if (async)
-+			async_schedule_dev(__driver_attach_async_helper, dev);
- 		return 0;
- 	}
++extern bool __read_mostly enable_mmio_caching;
++
+ #define PT_WRITABLE_SHIFT 1
+ #define PT_USER_SHIFT 2
  
--- 
-2.35.1
-
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -21,6 +21,7 @@
+ 
+ bool __read_mostly enable_mmio_caching = true;
+ module_param_named(mmio_caching, enable_mmio_caching, bool, 0444);
++EXPORT_SYMBOL_GPL(enable_mmio_caching);
+ 
+ u64 __read_mostly shadow_host_writable_mask;
+ u64 __read_mostly shadow_mmu_writable_mask;
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -5,8 +5,6 @@
+ 
+ #include "mmu_internal.h"
+ 
+-extern bool __read_mostly enable_mmio_caching;
+-
+ /*
+  * A MMU present SPTE is backed by actual memory and may or may not be present
+  * in hardware.  E.g. MMIO SPTEs are not considered present.  Use bit 11, as it
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -22,6 +22,7 @@
+ #include <asm/trapnr.h>
+ #include <asm/fpu/xcr.h>
+ 
++#include "mmu.h"
+ #include "x86.h"
+ #include "svm.h"
+ #include "svm_ops.h"
+@@ -2221,6 +2222,15 @@ void __init sev_hardware_setup(void)
+ 	if (!sev_es_enabled)
+ 		goto out;
+ 
++	/*
++	 * SEV-ES requires MMIO caching as KVM doesn't have access to the guest
++	 * instruction stream, i.e. can't emulate in response to a #NPF and
++	 * instead relies on #NPF(RSVD) being reflected into the guest as #VC
++	 * (the guest can then do a #VMGEXIT to request MMIO emulation).
++	 */
++	if (!enable_mmio_caching)
++		goto out;
++
+ 	/* Does the CPU support SEV-ES? */
+ 	if (!boot_cpu_has(X86_FEATURE_SEV_ES))
+ 		goto out;
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4897,13 +4897,16 @@ static __init int svm_hardware_setup(voi
+ 	/* Setup shadow_me_value and shadow_me_mask */
+ 	kvm_mmu_set_me_spte_mask(sme_me_mask, sme_me_mask);
+ 
+-	/* Note, SEV setup consumes npt_enabled. */
++	svm_adjust_mmio_mask();
++
++	/*
++	 * Note, SEV setup consumes npt_enabled and enable_mmio_caching (which
++	 * may be modified by svm_adjust_mmio_mask()).
++	 */
+ 	sev_hardware_setup();
+ 
+ 	svm_hv_hardware_setup();
+ 
+-	svm_adjust_mmio_mask();
+-
+ 	for_each_possible_cpu(cpu) {
+ 		r = svm_cpu_init(cpu);
+ 		if (r)
 
 
