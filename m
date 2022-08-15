@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D74C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5140C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347485AbiHOVxn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        id S245474AbiHOVxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350348AbiHOVvC (ORCPT
+        with ESMTP id S1350406AbiHOVvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65959104B24;
-        Mon, 15 Aug 2022 12:32:29 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4927E105206;
+        Mon, 15 Aug 2022 12:32:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 463EECE12DB;
-        Mon, 15 Aug 2022 19:32:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D3EC433C1;
-        Mon, 15 Aug 2022 19:32:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22AA86111E;
+        Mon, 15 Aug 2022 19:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10542C433C1;
+        Mon, 15 Aug 2022 19:32:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591945;
-        bh=exXlSyE6+QPcILp+nxmGivamKTdZ39q0PQQr8Zupu9E=;
+        s=korg; t=1660591951;
+        bh=mySok1vOxZ8AobUEstS65nGK91a8yPiksYjee/UxkvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFZWbY3+/XlNxBUkgyiEpFi3kJuYnh59rhShxtM6vOgqmOL4U8YnAHcFvQ+DbDRe7
-         vPCZ4UbIyPC33UOs73GFWvZcgBOytnB/1HoWa8MObWS38KXolRrCBNj/c8QeLx1yKi
-         kc4DuXasggjHduFAX5VPxb5I+KrIRgTs+YiAMVww=
+        b=WuMKpeeWDUilIaNGALrxiDSYuOmmLK1vR6N9Y7U0Xa4gcghG/lmvRTXu43JqNy40j
+         F6SfgCfn4QkEy6ZrhaAWhj684DqRLT6WG2KJSGfzMWZXseW9bz//6IjXbf7A6u3YYC
+         sN5vUz9zhEF9owkdTdqdubvTYd3hybxdBHM7bIM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0708/1095] clk: qcom: ipq8074: fix NSS port frequency tables
-Date:   Mon, 15 Aug 2022 20:01:47 +0200
-Message-Id: <20220815180458.671139666@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0035/1157] KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
+Date:   Mon, 15 Aug 2022 19:49:51 +0200
+Message-Id: <20220815180440.842609098@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,76 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 0e9e61a2815b5cd34f1b495b2d72e8127ce9b794 ]
+commit c7d855c2aff2d511fd60ee2e356134c4fb394799 upstream.
 
-NSS port 5 and 6 frequency tables are currently broken and are causing a
-wide ranges of issue like 1G not working at all on port 6 or port 5 being
-clocked with 312 instead of 125 MHz as UNIPHY1 gets selected.
+Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
+per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
+on hardware to perform the checks, even for the few checks that have
+higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
+hardware while running the guest, (b) there may incompatible CR0/CR4 bits
+that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
+have further restricted the allowed CR0/CR4 values by manipulating the
+guest's nested VMX MSRs.
 
-So, update the frequency tables with the ones from the downstream QCA 5.4
-based kernel which has already fixed this.
+Note, despite a very strong desire to throw shade at Jim, commit
+70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
+is not to blame for the buggy behavior (though the comment...).  That
+commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
+(though it did erroneously drop the CPL check, but that has already been
+remedied).  KVM may force CR0.PE=1, but will do so only when also
+forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
 
-Fixes: 7117a51ed303 ("clk: qcom: ipq8074: add NSS ethernet port clocks")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-3-robimarko@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
+Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
+Reported-by: Eric Li <ercli@ucdavis.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/kvm/vmx/nested.c |   23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index b4291ba53c78..f1017f2e61bd 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -1788,8 +1788,10 @@ static struct clk_regmap_div nss_port4_tx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_RX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_RX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_RX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_RX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_RX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_RX, 1, 0, 0),
- 	{ }
-@@ -1828,8 +1830,10 @@ static struct clk_regmap_div nss_port5_rx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_TX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_TX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_TX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_TX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_TX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_TX, 1, 0, 0),
- 	{ }
-@@ -1867,8 +1871,10 @@ static struct clk_regmap_div nss_port5_tx_div_clk_src = {
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4968,20 +4968,25 @@ static int handle_vmon(struct kvm_vcpu *
+ 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
  
- static const struct freq_tbl ftbl_nss_port6_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_RX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_RX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_RX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_RX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_RX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_RX, 1, 0, 0),
-@@ -1907,8 +1913,10 @@ static struct clk_regmap_div nss_port6_rx_div_clk_src = {
+ 	/*
+-	 * The Intel VMX Instruction Reference lists a bunch of bits that are
+-	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
+-	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
+-	 * Otherwise, we should fail with #UD.  But most faulting conditions
+-	 * have already been checked by hardware, prior to the VM-exit for
+-	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
+-	 * that bit set to 1 in non-root mode.
++	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
++	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
++	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
++	 * running the guest, i.e. KVM needs to check the _guest_ values.
++	 *
++	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
++	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
++	 * Mode, but KVM will never take the guest out of those modes.
+ 	 */
+-	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
++	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
++	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
+ 		kvm_queue_exception(vcpu, UD_VECTOR);
+ 		return 1;
+ 	}
  
- static const struct freq_tbl ftbl_nss_port6_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_TX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_TX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_TX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_TX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_TX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_TX, 1, 0, 0),
--- 
-2.35.1
-
+-	/* CPL=0 must be checked manually. */
++	/*
++	 * CPL=0 and all other checks that are lower priority than VM-Exit must
++	 * be checked manually.
++	 */
+ 	if (vmx_get_cpl(vcpu)) {
+ 		kvm_inject_gp(vcpu, 0);
+ 		return 1;
 
 
