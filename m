@@ -2,117 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64385C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B35C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349422AbiHOWdD (ORCPT
+        id S1349501AbiHOWdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
+        Mon, 15 Aug 2022 18:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350984AbiHOW1X (ORCPT
+        with ESMTP id S1350983AbiHOW1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:23 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0447C6C755
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:45:59 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id o123so8175260vsc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=SlaiWNqTZoWL+lFJCamcfLR1t+u+g8gF/zBXqP5yDPc=;
-        b=TobsT/D9AeL7kSYxDLQc8dWGrs6dhRGxGd3qfeoVBiFnMLiGP4TJxthchSbOuUE4mO
-         ciq12U98VGy1yn3HhrlJKkkyZR5AViNPjPtC/i+oaXTBKsGT1Z//fflwTW+agfEf6+Mf
-         tFKCy0Uk2HKm013Snihtw1eqLih0ekayliUMdPfmGRUR1LTtQ50/6+a10XYInPDqLLuA
-         PdzMyoco4dkxGORhencXVHU3cclCDq7rA5AyfLsTjG71zpiyvU2Hlq7twfJJWbNlX/nc
-         VL4cGtrRWRxEul0n8MxpAvCOFeZ4ucv6j4IOXqzIeRxtzM0OsP38XSvjqP6hmNZQL3A0
-         vBSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=SlaiWNqTZoWL+lFJCamcfLR1t+u+g8gF/zBXqP5yDPc=;
-        b=oGkqFoD6LbAJtpo/Vp1E/uXo22akfPldxB0AnIHyiC7F36IW+Hv9mu2/GfSbCLxXp7
-         c+vWhLk9v//StL3zqz7gymJQLMIo+1FUeSp8h6thJlpDFHxV8LoAuBSmU0/ridhkhnm8
-         soVg7bwnKKEdVEGqe02pb/wwNeiKw1ruaAZ//tPgdahYZmYtOgi38CkunHxw1swXvDn8
-         obpCDRAmrMbkuDWhALbaA1nNyklR9VJ3p3Dr5grtPVV27gMjHM1voI5foiErTg2pm5pT
-         1DhgXC23JN++wUk4+DyxwD5ZU9EzDeI9Y+fcesYw/cKI9HDdB4vF26ZJr+D2aHb6gjzp
-         dLsQ==
-X-Gm-Message-State: ACgBeo1GR2/SO0s9U9H9ij18pU4Z1wzcTOS93ItZFfpxykdCI768sUI+
-        zv52zZxUPUAC1sawP8s2uodw7J/2h9SZvHj2X3HSuw==
-X-Google-Smtp-Source: AA6agR78kWY9PviK2xZASsF11776y++DUtP+wf55vu15D0fiqTRz3HsRHH5c3NPmSrL/DIrS8hM4uSzr3N+t+JzlgcE=
-X-Received: by 2002:a67:a408:0:b0:38a:dbca:760 with SMTP id
- n8-20020a67a408000000b0038adbca0760mr1557770vse.54.1660592758029; Mon, 15 Aug
- 2022 12:45:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83896C759;
+        Mon, 15 Aug 2022 12:45:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 530706068D;
+        Mon, 15 Aug 2022 19:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 606C3C433C1;
+        Mon, 15 Aug 2022 19:45:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660592758;
+        bh=OoS7fDsTLFt5o448KvE98tJDqMqP3yvI9Hoy2tKilo0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HTkmYxm4RetZyI7Vj8NAjVj5Nf1AudxK4+G43wi1ODMbrJxM/TwRtEXRElcOKgqg0
+         tHZMqN+1ABSpuj0m33KqXlMCzNgD5GMYOEMUoaQOBPj12K2CDKD2qcnnjz7C2pnF9/
+         YmeG9zClmdR9sglIALX6Nj4I6CMlBvdgm5YvoIP4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wyes Karny <wyes.karny@amd.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0147/1157] x86: Handle idle=nomwait cmdline properly for x86_idle
+Date:   Mon, 15 Aug 2022 19:51:43 +0200
+Message-Id: <20220815180445.531664968@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220810210656.2799243-1-eranian@google.com> <0267c94e-7989-ca92-4175-d820d1d63a0c@linux.intel.com>
- <CABPqkBSD5xg=sEkWU01RQ5+aj1X1dtzt2e7FbZBzrcE8dxqM=A@mail.gmail.com>
- <48297c1e-6e44-53f1-da7d-4437ed87cf6f@linux.intel.com> <CABPqkBSUkUTXxS4PwDXYwvTCZ-abY41qyedRGFVoWE9ERtmwsQ@mail.gmail.com>
- <CABPqkBRKpUOEwhbu+YsGTx=bWu6DaeTxcCkcKbx5tkCONnJnRw@mail.gmail.com>
- <2fc8dc1d-6922-e2e0-8b5d-fad25ab12cbd@linux.intel.com> <fa9f74d3-3a5e-9b8c-3142-9377677a6b74@linux.intel.com>
- <6ebd8b96-b589-cded-58f0-76e56a64081c@linux.intel.com>
-In-Reply-To: <6ebd8b96-b589-cded-58f0-76e56a64081c@linux.intel.com>
-From:   Stephane Eranian <eranian@google.com>
-Date:   Mon, 15 Aug 2022 12:45:46 -0700
-Message-ID: <CABPqkBQS+CUB2TJs4xcHPq+ymr3=OCwxa2pamtLR+r5AyBsmKQ@mail.gmail.com>
-Subject: Re: [PATCH] perf/x86/intel/lbr: fix branch type encoding
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, kan.liang@intel.com, acme@redhat.com,
-        namhyung@kernel.org, irogers@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 12:37 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
->
->
->
-> On 2022-08-12 4:16 a.m., Andi Kleen wrote:
-> >
-> >>
-> >> I think the option is to avoid the overhead of disassembling of branch
-> >> instruction. See eb0baf8a0d92 ("perf/core: Define the common branch type
-> >> classification")
-> >> "Since the disassembling of branch instruction needs some overhead,
-> >> a new PERF_SAMPLE_BRANCH_TYPE_SAVE is introduced to indicate if it
-> >> needs to disassemble the branch instruction and record the branch
-> >> type."
-> >
-> >
-> > Thanks for digging it out. So it was only performance.
-> >
-> >>
-> >> I have no idea how big the overhead is. If we can always be benefit from
-> >> the branch type. I guess we can make it default on.
-> >
-> > I thought even arch LBR had one case where it had to disassemble, but
-> > perhaps it's unlikely enough because it's pre filtered. If yes it may be
-> > ok to enable it there unconditionally at the kernel level.
-> >
->
-> Yes, Arch LBR should have much less overhead than the previous
-> platforms. The most common branches, JCC and near JMP/CALL, are from the
-> HW. Only the other branches, e.g., far call, SYS* etc, which still rely
-> on the SW disassemble. The number of the other branches should not be
-> big. I agree that we should enable the branch type for the Arch LBR
-> unconditionally at the kernel level.
->
-> Peter? Stephane? What do you think?
->
-> > Still have to decide if we want older parts to have more overhead by
-> > default. I guess would need some data on that.
->
-I don't think you want that. It is okay to have it when it is free. Otherwise it
-is best if it remains opt-in.
->
-> The previous LBR already has high overhead. The branch type overhead
-> will make it worse. I think it's better keep it default off. I think we
-> can make it clear in the document that the branch type is only default
-> on for the new platforms with Arch LBR support (12th-Gen+ client or
-> 4th-Gen Xeon+ server).
->
-I am okay with that.
+From: Wyes Karny <wyes.karny@amd.com>
+
+[ Upstream commit 8bcedb4ce04750e1ccc9a6b6433387f6a9166a56 ]
+
+When kernel is booted with idle=nomwait do not use MWAIT as the
+default idle state.
+
+If the user boots the kernel with idle=nomwait, it is a clear
+direction to not use mwait as the default idle state.
+However, the current code does not take this into consideration
+while selecting the default idle state on x86.
+
+Fix it by checking for the idle=nomwait boot option in
+prefer_mwait_c1_over_halt().
+
+Also update the documentation around idle=nomwait appropriately.
+
+[ dhansen: tweak commit message ]
+
+Signed-off-by: Wyes Karny <wyes.karny@amd.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Tested-by: Zhang Rui <rui.zhang@intel.com>
+Link: https://lkml.kernel.org/r/fdc2dc2d0a1bc21c2f53d989ea2d2ee3ccbc0dbe.1654538381.git-series.wyes.karny@amd.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ Documentation/admin-guide/pm/cpuidle.rst | 15 +++++++++------
+ arch/x86/kernel/process.c                |  9 ++++++---
+ 2 files changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/admin-guide/pm/cpuidle.rst b/Documentation/admin-guide/pm/cpuidle.rst
+index aec2cd2aaea7..19754beb5a4e 100644
+--- a/Documentation/admin-guide/pm/cpuidle.rst
++++ b/Documentation/admin-guide/pm/cpuidle.rst
+@@ -612,8 +612,8 @@ the ``menu`` governor to be used on the systems that use the ``ladder`` governor
+ by default this way, for example.
+ 
+ The other kernel command line parameters controlling CPU idle time management
+-described below are only relevant for the *x86* architecture and some of
+-them affect Intel processors only.
++described below are only relevant for the *x86* architecture and references
++to ``intel_idle`` affect Intel processors only.
+ 
+ The *x86* architecture support code recognizes three kernel command line
+ options related to CPU idle time management: ``idle=poll``, ``idle=halt``,
+@@ -635,10 +635,13 @@ idle, so it very well may hurt single-thread computations performance as well as
+ energy-efficiency.  Thus using it for performance reasons may not be a good idea
+ at all.]
+ 
+-The ``idle=nomwait`` option disables the ``intel_idle`` driver and causes
+-``acpi_idle`` to be used (as long as all of the information needed by it is
+-there in the system's ACPI tables), but it is not allowed to use the
+-``MWAIT`` instruction of the CPUs to ask the hardware to enter idle states.
++The ``idle=nomwait`` option prevents the use of ``MWAIT`` instruction of
++the CPU to enter idle states. When this option is used, the ``acpi_idle``
++driver will use the ``HLT`` instruction instead of ``MWAIT``. On systems
++running Intel processors, this option disables the ``intel_idle`` driver
++and forces the use of the ``acpi_idle`` driver instead. Note that in either
++case, ``acpi_idle`` driver will function only if all the information needed
++by it is in the system's ACPI tables.
+ 
+ In addition to the architecture-level kernel command line options affecting CPU
+ idle time management, there are parameters affecting individual ``CPUIdle``
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index d456ce21c255..9346c95e8879 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -821,6 +821,10 @@ static void amd_e400_idle(void)
+  */
+ static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
+ {
++	/* User has disallowed the use of MWAIT. Fallback to HALT */
++	if (boot_option_idle_override == IDLE_NOMWAIT)
++		return 0;
++
+ 	if (c->x86_vendor != X86_VENDOR_INTEL)
+ 		return 0;
+ 
+@@ -932,9 +936,8 @@ static int __init idle_setup(char *str)
+ 	} else if (!strcmp(str, "nomwait")) {
+ 		/*
+ 		 * If the boot option of "idle=nomwait" is added,
+-		 * it means that mwait will be disabled for CPU C2/C3
+-		 * states. In such case it won't touch the variable
+-		 * of boot_option_idle_override.
++		 * it means that mwait will be disabled for CPU C1/C2/C3
++		 * states.
+ 		 */
+ 		boot_option_idle_override = IDLE_NOMWAIT;
+ 	} else
+-- 
+2.35.1
+
+
+
