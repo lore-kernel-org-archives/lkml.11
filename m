@@ -2,75 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9A6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B435EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350688AbiHOWkT (ORCPT
+        id S1350711AbiHOWka (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        Mon, 15 Aug 2022 18:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349951AbiHOWek (ORCPT
+        with ESMTP id S1349057AbiHOWfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:34:40 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B7272B4D
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:49:38 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id tl27so15276419ejc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:49:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=m67EJff98GODNT9Ex0/hz32xjPCkaX4RTb2W/H22b6A=;
-        b=vZ3KSlgu2w4W+/oYxGdQqXPiH0C9jBErZhMcjLi3pYC6RObHOgwGPcH8C5rXhea5um
-         84FUWrgGpfHAyKuOe3nLaTV+qpTY1Nlf1dPHwwMJE2JrGO5fyHqTUbUHqS+OdOSIbFOZ
-         T+QhOu2Rj0jYqwo2Mbbj0P3dhwRWETQPJFftMThrpLpAcadF96T2VJFNevi1MpjkZYtl
-         acKXd5wT89G49ASaXEzs33kqxSkURPyGT0wUi48M8vcERJqlOb5hoJ9eoJWMsSmMTxnE
-         9M0Vrq688IdVfZs0gsn/6VBgK+gH9PgqPT5cliJQw2bRZcZhFeclSV3oBdjOaM0zICoS
-         vkYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=m67EJff98GODNT9Ex0/hz32xjPCkaX4RTb2W/H22b6A=;
-        b=2zxWWgHrUJIHr8drt3+JaKwg1kol/hDONczvNeFPHNdGhV6vVJmRPBShOjMLLSZOGe
-         aLesYv8tEDuRZJKd3tdqSdEWJzzDe14/qzlfyEBsZkKsXPfaEu7L6K8ukBJqvQtlFiO+
-         toD5zRdIh9nN8EmDzZ49pN8h3DKAZ72ggYrbZkNXBKFKm4+bCBgL/9razKeS5mfFAuPy
-         K5vsj7qUPngVNgzxCN/n3oc0TQst9glRXvkKZCiMEarhaxBJSnPm8q5t/ZSG1KjdkBvE
-         AgToOuIoPnaUshoXyc4NK8sse4rkMslJOjTiXMnhs+57N7v/Wmk691ZOj/gWSrnkH7iC
-         CLBw==
-X-Gm-Message-State: ACgBeo0JeNYUF9evIG2KOZG7p3lq4HY3m0kImrZAbx76EJ1LXBptgY6s
-        e7vZZvKToquFQ3OWhMHlpmKsTEPRO5SOaP7bxiLEiA==
-X-Google-Smtp-Source: AA6agR6q5mjwo1Y+kcRShH4sdgxadLS7IVIeRxqgxtvrwGWYPB0p9HIKRFxe3O4/pRVTR8kR2RLCstZitIhQR8D+UYA=
-X-Received: by 2002:a17:906:5d0b:b0:731:3310:4188 with SMTP id
- g11-20020a1709065d0b00b0073133104188mr11564211ejt.208.1660592965944; Mon, 15
- Aug 2022 12:49:25 -0700 (PDT)
+        Mon, 15 Aug 2022 18:35:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0219972B73;
+        Mon, 15 Aug 2022 12:49:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6F0CB81151;
+        Mon, 15 Aug 2022 19:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D43C433D6;
+        Mon, 15 Aug 2022 19:49:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660592961;
+        bh=D3RJWswlgttNeCNoxN0JrftIQMlO2blD6GKPcxf8Rqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NjWIL1xtygkICe9IPJuw4HzBR3h8ZiZAXsqz3zTPz0yLb99nEhKq5NhBOdly72CCW
+         OrPwBTZQ5fxD0yJLy6caEZzDvXahbxv8I2k7pIij1r4wlScaQA2cMwJfLR5lwsIrqb
+         fbM/O+/peVSKgpz2rB9k7oP2OjhS23A41RXIRD6U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0193/1157] selinux: fix memleak in security_read_state_kernel()
+Date:   Mon, 15 Aug 2022 19:52:29 +0200
+Message-Id: <20220815180447.464001926@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220810111037.280959-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220810111037.280959-1-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 15 Aug 2022 21:49:14 +0200
-Message-ID: <CACRpkda9_BSV+ZR0nnfv=6hFOacrE5UAtM-V-g_2Y5bWDTSvSQ@mail.gmail.com>
-Subject: Re: [PATCH] ARM: dts: ste: ux500: align SPI node name with dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 1:10 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-> The node names should be generic and DT schema expects certain pattern.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[ Upstream commit 73de1befcc53a7c68b0c5e76b9b5ac41c517760f ]
 
-Patch applied!
+In this function, it directly returns the result of __security_read_policy
+without freeing the allocated memory in *data, cause memory leak issue,
+so free the memory if __security_read_policy failed.
 
-Yours,
-Linus Walleij
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/selinux/ss/services.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+index 69b2734311a6..fe5fcf571c56 100644
+--- a/security/selinux/ss/services.c
++++ b/security/selinux/ss/services.c
+@@ -4048,6 +4048,7 @@ int security_read_policy(struct selinux_state *state,
+ int security_read_state_kernel(struct selinux_state *state,
+ 			       void **data, size_t *len)
+ {
++	int err;
+ 	struct selinux_policy *policy;
+ 
+ 	policy = rcu_dereference_protected(
+@@ -4060,5 +4061,11 @@ int security_read_state_kernel(struct selinux_state *state,
+ 	if (!*data)
+ 		return -ENOMEM;
+ 
+-	return __security_read_policy(policy, *data, len);
++	err = __security_read_policy(policy, *data, len);
++	if (err) {
++		vfree(*data);
++		*data = NULL;
++		*len = 0;
++	}
++	return err;
+ }
+-- 
+2.35.1
+
+
+
