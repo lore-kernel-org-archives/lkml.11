@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C14C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1CAC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244768AbiHOVvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        id S1349848AbiHOVv6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349486AbiHOVoL (ORCPT
+        with ESMTP id S1349810AbiHOVqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:44:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B110228B;
-        Mon, 15 Aug 2022 12:29:49 -0700 (PDT)
+        Mon, 15 Aug 2022 17:46:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE948F1;
+        Mon, 15 Aug 2022 12:30:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 486B8B81062;
-        Mon, 15 Aug 2022 19:29:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0C6C433C1;
-        Mon, 15 Aug 2022 19:29:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F21360FB9;
+        Mon, 15 Aug 2022 19:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F010C433C1;
+        Mon, 15 Aug 2022 19:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591787;
-        bh=tSG5BZiS7wjhmXMXzV5/Gy6ukN5wWDyGwnZ1mUmPQps=;
+        s=korg; t=1660591813;
+        bh=Dods9/N9gaUudH92kC+aHYMD4cxqqiaIWH0rZtPAawc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TF5nKCizpYV1zk7jbvSLc46wrisoQGxdCeHMlHHLl+5j4nklmKNinWyMGqJ+GzdcM
-         nUO5P9k6JDM1fnw8vT3mbfADwrjbTVaqnDq4o229B0MI/clSAwd+Os34Nbf3XqKBoC
-         BTI053I2sPvA+s8yL5Jm5gMxQwW0rltnvCH4krtY=
+        b=F+MbkmzNtKCtw0gork6g7yWhZTtx2qVH96+xmpdYhrYeEGdr7vgcuKIyNo7gg/2rp
+         nmEDOYTLXXUWM5NHG3okac68yIARodKr7fFCJWbZ6g1eL6TV3Lufb7Wax+Q3bqr0Tf
+         6Vk+glFDuHhaSVrhT/InnoLA1iyWHiAuE3d9wy8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0681/1095] RDMA/rxe: fix xa_alloc_cycle() error return value check again
-Date:   Mon, 15 Aug 2022 20:01:20 +0200
-Message-Id: <20220815180457.546859444@linuxfoundation.org>
+        stable@vger.kernel.org, syed sabakareem <Syed.SabaKareem@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        David Korth <gerbilsoft@gerbilsoft.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 0012/1157] ASoC: amd: yc: Update DMI table entries
+Date:   Mon, 15 Aug 2022 19:49:28 +0200
+Message-Id: <20220815180439.955407174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: syed sabakareem <Syed.SabaKareem@amd.com>
 
-[ Upstream commit 1a685940e6200e9def6e34bbaa19dd31dc5aeaf8 ]
+commit be0aa8d4b0fcb4532bf7973141e911998ab39508 upstream.
 
-Currently rxe_alloc checks ret to indicate error, but 1 is also a valid
-return and just indicates that the allocation succeeded with a wrap.
+Removed intel DMI product id's 21AW/21AX/21D8/21D9/21BN/21BQ
+in DMI table and updated DMI entry for AMD platform X13 Gen 3
+platform 21CM/21CN.
 
-Fix this by modifying the check to be < 0.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216267
 
-Link: https://lore.kernel.org/r/20220609070656.1446121-1-dzm91@hust.edu.cn
-Fixes: 3225717f6dfa ("RDMA/rxe: Replace red-black trees by xarrays")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: syed sabakareem <Syed.SabaKareem@amd.com>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+Reported-by: David Korth <gerbilsoft@gerbilsoft.com>
+Fixes: fa991481b8b2 ("ASoC: amd: add YC machine driver using dmic")
+Link: https://lore.kernel.org/r/20220722134603.316668-1-Syed.SabaKareem@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_pool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/amd/yc/acp6x-mach.c |   32 ++------------------------------
+ 1 file changed, 2 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_pool.c b/drivers/infiniband/sw/rxe/rxe_pool.c
-index 87066d04ed18..69db28944567 100644
---- a/drivers/infiniband/sw/rxe/rxe_pool.c
-+++ b/drivers/infiniband/sw/rxe/rxe_pool.c
-@@ -140,7 +140,7 @@ void *rxe_alloc(struct rxe_pool *pool)
+--- a/sound/soc/amd/yc/acp6x-mach.c
++++ b/sound/soc/amd/yc/acp6x-mach.c
+@@ -105,28 +105,14 @@ static const struct dmi_system_id yc_acp
+ 		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "21CM"),
+ 		}
+ 	},
+ 	{
+ 		.driver_data = &acp6x_card,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
+-		}
+-	},
+-	{
+-		.driver_data = &acp6x_card,
+-		.matches = {
+-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
+-		}
+-	},
+-	{
+-		.driver_data = &acp6x_card,
+-		.matches = {
+-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "21CN"),
+ 		}
+ 	},
+ 	{
+@@ -157,20 +143,6 @@ static const struct dmi_system_id yc_acp
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
+ 		}
+ 	},
+-	{
+-		.driver_data = &acp6x_card,
+-		.matches = {
+-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
+-		}
+-	},
+-	{
+-		.driver_data = &acp6x_card,
+-		.matches = {
+-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
+-		}
+-	},
+ 	{}
+ };
  
- 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
- 			      &pool->next, GFP_KERNEL);
--	if (err)
-+	if (err < 0)
- 		goto err_free;
- 
- 	return obj;
-@@ -168,7 +168,7 @@ int __rxe_add_to_pool(struct rxe_pool *pool, struct rxe_pool_elem *elem)
- 
- 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
- 			      &pool->next, GFP_KERNEL);
--	if (err)
-+	if (err < 0)
- 		goto err_cnt;
- 
- 	return 0;
--- 
-2.35.1
-
 
 
