@@ -2,221 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C10EC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305BCC19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbiHPF3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
+        id S231862AbiHPFbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiHPF3C (ORCPT
+        with ESMTP id S231547AbiHPFa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:29:02 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DC32ED5D;
-        Mon, 15 Aug 2022 15:02:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KIQKRwbSnBYj5biZ4gj/FhOnlyVNczVLFKiL/4YEVcEVyBH/BCjEp7msCz784/nr9V+WkRigo39i4cigkYoWfx7zZMjZ+Ue6CkQPawEz0NDa+04eRttvUNeFrnyKw1cY6EuGYCPu769mNrYNZ24d78wupNoWC/8eTwvEO9g6gtQD+HNlG6AoVi4qs+sqZlZUGDES5E119M0O+TbhRzgMfI6FRKAkh2qNLLXB8muxVIQAgfRuT1B/YR725fZdCBCpGY+CdodLpRWlpwqR9lR43f6LyFPgswpdWyHyMsG9USX373dLq1yFf82SBquPgAwsI3QmeMVq+nqJ2PEc+25lKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XJLz8swzKBEfv2hhBxl8KidCJGMyzlvyMsEkVwO45AU=;
- b=I9+wjI3WWo3k0HNns9DKdlxaCIAWhBnuBIZC+/GbVGxtamdChbEPA/QC9kHweHpBrU6dWtZFtid1QTtk4YQjxzHl9Dv+IGQEi6xVVXwqaQRcnFcTYrRMWwcUAwj51TgBc6Y6OL821B1uN5huTJB4++uYoVR0GrrZDd5XFCxdit7ia2EPGTShAw8PI5cpj1bjYzVmzo+OJhicPicwJcZCG3HR2i6AQ59o+cbY1Uj6tDjr9aI84V6+frMbO4ToVoVTa6b4IkUHr0PvzQ9KAFP3LHpc50Ug6QL9uA7cSfiJEcg5f/tluqv70Y5N+Ur7PwD9LHcfR3Lslw16ECIk8tKumQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XJLz8swzKBEfv2hhBxl8KidCJGMyzlvyMsEkVwO45AU=;
- b=y6RSvX9PwSPG+tR/ph5fj/Awp/t2TgYXtvluXMRt0NThHo2zsnCrIp5pDK+m+XnMfR+gea1vaS0GEO5Zjt8zU8tfQWAZc11DRUBenYLMk+3WkD/Mjw66gnOlgyt3DnMWV8DpHUVL29p/pIWMN2NHBCTNeBBA7CTwJoPPOgXgtWo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM5PR12MB1675.namprd12.prod.outlook.com (2603:10b6:4:5::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.15; Mon, 15 Aug 2022 22:02:29 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1dac:1301:78a3:c0d0]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1dac:1301:78a3:c0d0%6]) with mapi id 15.20.5525.011; Mon, 15 Aug 2022
- 22:02:29 +0000
-Message-ID: <2981e25e-9cda-518a-9750-b8694f2356b5@amd.com>
-Date:   Mon, 15 Aug 2022 17:02:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Content-Language: en-US
-To:     Dionna Amalie Glaze <dionnaglaze@google.com>,
-        Mel Gorman <mgorman@techsingularity.net>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marcelo Cerri <marcelo.cerri@canonical.com>,
-        tim.gardner@canonical.com,
-        Khalid ElMously <khalid.elmously@canonical.com>,
-        philip.cox@canonical.com,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
- <8cf143e7-2b62-1a1e-de84-e3dcc6c027a4@suse.cz>
- <20220810141959.ictqchz7josyd7pt@techsingularity.net>
- <CAAH4kHa6s3sBRySNu-TZG_6vOaN4KheVy4kvxG5s=wOTDGy2=Q@mail.gmail.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <CAAH4kHa6s3sBRySNu-TZG_6vOaN4KheVy4kvxG5s=wOTDGy2=Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR01CA0017.prod.exchangelabs.com (2603:10b6:208:71::30)
- To DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+        Tue, 16 Aug 2022 01:30:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106141E0F45;
+        Mon, 15 Aug 2022 15:07:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5837B811C1;
+        Mon, 15 Aug 2022 22:07:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2DE2C433B5;
+        Mon, 15 Aug 2022 22:07:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660601266;
+        bh=7yW4D4Jr+GwP+dL8bSYKzTZ6Vx8kkiE7EcnoGyP8Vh8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uGSvNd4EV/iKCG9xuv/NuL0wUEPyTOXe4dGEfb36EKNtmW7Yrk4D28+3A2W6rz7np
+         vnJ5Bz6il26/cO+xSbchp7Unh3LfVSjGWZIyAOjHJmfKdIu/zIQuUHlOoLaRXNrpLU
+         EvZQ45i6fdrm9fR5izg3RpHaVzHZUhSzHCOijXiwAs3KOuFh0+boQ4TildPz2mAXId
+         MzSfYwK9QO5cWQIuI+W7EcKFgMWzy/7x7xOXSniSYIXaj9fPlSpASJbfwQIpl7oZMl
+         j1tNrmiH89nPEZ2chBnnA78u2OXQEjvr0Wbkb8feNgx0F11Jq7oz6P5tfZaczr5TuE
+         H+1q+hp23/fjg==
+Date:   Mon, 15 Aug 2022 23:07:35 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        dri-devel@lists.freedesktop.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        linux-amlogic@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Michael Turq uette <mturquette@baylibre.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-hwmon@vger.kernel.org, linux-clk@vger.kernel.org,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        David Airlie <airlied@linux.ie>, linux-iio@vger.kernel.org
+Subject: Re: (subset) [PATCH v2 0/7] Devm helpers for regulator get and enable
+Message-ID: <YvrDp32/TknqV05t@sirena.org.uk>
+References: <cover.1660292316.git.mazziesaccount@gmail.com>
+ <166057828406.697572.228317501909350108.b4-ty@kernel.org>
+ <YvpsRbguMXn74GhR@pendragon.ideasonboard.com>
+ <Yvp1Qkuh7xfeb/B2@sirena.org.uk>
+ <YvqV9Mq6I3gXQaf2@pendragon.ideasonboard.com>
+ <20220815205857.308B1C433D6@smtp.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d76036e7-acf5-4f8a-b48c-08da7f09d8b5
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1675:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 12c8J9uHi8sT+0kD1j0sx2xDH2TKSo7gmvRYCYue51mSP82XfGgCg2GjQp5zkyj52Oi4hE/z9SbMmPAhMzz759TKlXAsNRxXEk6aLuHdXGOEALxClaE+MiPm88A9HxA6cykzQ0uGoMI7FK7qqRc5rgWwztkrDSZEEFjbMmKtU/CydcclHJ4yexylc9OMi/jF/Zz/L6Xd9dUlr1pg5pYURxii26aFOKtadXdSwR7qeY6wJICNnmbJjRR6YMLUijGiuQrb0f3hVZKR7vbLLc03UMh6ONOQPNnwrlhw6wYcJoQsabPJdSwBKuA8SH7BwP3FES/GEgss5gRZh+N1Wxm8J0sgj2R2Nn3PhXINLuVBN0IQOkh+pn+aYuUjfTZX5nUhSyh+HLsGhzw+zEa7u7rw4r5Eh1arkGWviwwZzADok72sybNHxvd3XlawxMrDWJVPJDrqz9ppKde6xCaDhBA418duXbH2rOEcuJeYEeS3r4fyK26ahjEFNQlYFhfUfGZpgFNjJnrubzyly1N2DbqK2FJdh0T282cLVyZwdD3NpXEMnrxihz4vF21rHswRuZz71dPnJbia6c4OzZMN6XUWw8mCd55+32gAQTg7qM7rgBauPTF8cG7hrSVpGqi/1UNfdFgHjrSjLExMCp4xaTncPDY638DrUaSwXYc4cMvRufCaMddx6vV6MfmQie1SWY4TZ2cp1cA+maSzB9fyZH2xfTPnaz6FtsnVGEXsk/zYDJrroL/zqTXeZ6WP11yigce2/IXLpfkyh/ph1cpe+WWF3Kh16StWYONVXiXqGt4zVW+yySXMkDPooVORPm5b1l6Murh/Cqsa4NaEttTy184NXl6TbTQsC0Oz10hR09MJaL32ovIgEWNpkNVfIeeiTADwPVrrrI+WDuL0h70ZYrroRA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(376002)(136003)(396003)(6506007)(53546011)(38100700002)(6666004)(41300700001)(7406005)(5660300002)(7416002)(31686004)(2906002)(36756003)(66476007)(66946007)(478600001)(6486002)(966005)(31696002)(66556008)(86362001)(4326008)(8676002)(54906003)(316002)(8936002)(110136005)(2616005)(186003)(83380400001)(6512007)(26005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aVVFejVQVmRRMng3TGwyY0JvZWZ0YmJqODd3bXRQenI0WVZqWGNMcGNHRjFG?=
- =?utf-8?B?aHpWVW9pd0F4VGVHYVRQU21BSG96OTZUNklVRTI4TWVtcUpUTmtLZHdxZE4z?=
- =?utf-8?B?N1V6Z1RLd0JERlhhbnFKVHVqSnFTQVNNaXlBdGc1QndkZVduSHBCR01OTXhr?=
- =?utf-8?B?Wlk1OWFqcnQ2MFQ0TjYxZ1o2RHV2ejVjM2tzTXM1QlBQRU5vQzJsUFNlNXNj?=
- =?utf-8?B?TGJrNlkvbEx6NVU4alhPNjFvV3luMGZPMUxrcldzdXZXSG9INlVVdXdXdlBL?=
- =?utf-8?B?Vllpd0YyS0czd3lCUjlNVElRUmhZaTJoRkRpUVN4MjJPSEZ1QWhOeU5ubjRH?=
- =?utf-8?B?NnM1bUdYZlF1UG1JZTk4MXBPeXpRR0VlVWdpa2wrNERtTkN1bFFjOE1TeFVK?=
- =?utf-8?B?T1RXN2prcTErTjFjN0NIYXJhb2dMT0dOeGJmZHd2Vld6RkZ3NWpMTEtxVGF3?=
- =?utf-8?B?L0VPZldwOXkyNk9HODFFYWhaQ1FaUGlmSTF1WEp2MkF1dGZGbEtmeHRtSmlL?=
- =?utf-8?B?c3hiMmt0VWphS1ZoRyt3N0YxM0NocGk4eDh3c2FvaE5JaFhicGF4em5BS2Fq?=
- =?utf-8?B?bDBvcjA0bnZMRnJPTE10cDcydVg0UC9HRlM1S0ZyM2crbStqcU5LcmgrL3NL?=
- =?utf-8?B?bUx2dlg3L2Z6akU5dkdBeEJ3Yjk4WWlCS1FxRk1SQ1VaNG53V3Fjd010dVFy?=
- =?utf-8?B?T0ZBM0lxNk5wL3lBbS9kRXRnQUpwdmdZUmxqcXdUY0dlTlY1YnVqaisrbDQ3?=
- =?utf-8?B?ejVEczVWN0xLV1Y5ZS9jak1SdkFyTVdxcXRuMVpKQmd4N3BqNk9LZyt5N2F1?=
- =?utf-8?B?SFI0aUNGaEhYN0QvdXcxcGxWWDlMY3QzajVVdFNZS0R5ckNNenJXSVNieGdk?=
- =?utf-8?B?OUpOMS9oeEY3VEppdWdXUFpqcTBrbWVKUk1Bak96THBnKytPUXprclBvYzhD?=
- =?utf-8?B?TGNtcHFjZDRtcE52NktnUXY1S2hySnhuZXdxclliUzFsTXJpOVl2UmsvMW9Y?=
- =?utf-8?B?Skp2amh1RXR5MWdBdjZGeWRmK3Mwd2R0amlDYTR1V0xoUzBGRkoxaENKVDg2?=
- =?utf-8?B?T3VUSTUvSHhRZnBkSE02WEtQRENjMlEyZFFLLzR2TG5yTHVvYThCR1p0WjJ0?=
- =?utf-8?B?L0JWd0NEcnJOUWRERlZleWRZcHo2UkQ0OFJMZlNyK3M0Zm1XdnUrVzBiVWlp?=
- =?utf-8?B?RlZkelRwcWJxL0paOERSWjhGT1ljWUhjTUFleUN6TU8xeTBtWnYyTVFOK0Uz?=
- =?utf-8?B?MGxSckY1eFZUTGJxMUlOMGgvcUdYcWFwR24wNXhNQUFSdDZQdFBUTU0wVHUy?=
- =?utf-8?B?OU14YVI0S3VIMmd1REZISWtIWUtYcW9oY3JJU3Q1SzY3Uk90azliUGFKRDhM?=
- =?utf-8?B?VHpFcU5acFNVNFprK3dZallWS1pWN1RscTRmQStEVHJTN1F4UlkxNU13dWQ3?=
- =?utf-8?B?bGtISTBEZHBZL3NObUV5UVRoNjlxYi9XVG00SUcvR0FrOEZjZGQyTzJrV0lI?=
- =?utf-8?B?NUdHL0x1QnRBbHhxaFJodUswNEFCMldjRVBYdXNnR01jVklwZnI4RUx3MXFY?=
- =?utf-8?B?bTBLbGowYWlHQ0NzdkZuRGI1cU44VFBHbjdORDRmMWFOVTk0OGlGOFgyRW5T?=
- =?utf-8?B?OGd2d29FRjJYNXJhcFVndENReHdkNE5MZGFCOEJDWGtYTUpZSUd1Zko0dHg4?=
- =?utf-8?B?cGVRb2h4YlVTWUlXU1FmVHROMFdtNGtUN3JjRFVWU2oySytBdTVKZDJqaDJa?=
- =?utf-8?B?YmpmaElZRHlPZkhkNXUxeCtDcml5QlZ3N0NOcFRzczJxcW5QUFh0bisrWWMy?=
- =?utf-8?B?cUowWXlmamc0RGFrNzNLTG1Ham80R3BabXdIREdEYVdqNzhBTDl5RGJwZml5?=
- =?utf-8?B?WUFKWlZRVHZxMk4ra0w2cnk0bVZ4WDZRcHFhQlVpNFZLYnlXRGpYWm83UXE0?=
- =?utf-8?B?KzFsTnUwV1ZOZU1GaVRQSGNGc29DQkxxZnVSdXVXSDJCK3JYb29WYWM4eWhJ?=
- =?utf-8?B?ekd4RHJkczlDYWR3Mm1kbExHM3ZhQUxhTnN6cTFBK016K3NZU2w3bEV4SWM2?=
- =?utf-8?B?ZmM5VUVKYUpwYUxNUlpuSlQrM2JWT0NLR1g4VjBIWDg1QWJwRHFqdTlCeEJ0?=
- =?utf-8?Q?2L4VNfMdnmz59NROGXNmGqZXN?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d76036e7-acf5-4f8a-b48c-08da7f09d8b5
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 22:02:29.5128
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tsMbehYSZ0NRLRBJ5kwEiYuE1w8T8vPlv0vi63shzAfO7+PilYEP3AJ0iX49acozOAo+kulj/odiMdEGvy+esQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1675
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VUoPU3p+8USLMiyu"
+Content-Disposition: inline
+In-Reply-To: <20220815205857.308B1C433D6@smtp.kernel.org>
+X-Cookie: We have ears, earther...FOUR OF THEM!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 16:08, Dionna Amalie Glaze wrote:
->>
->>
->> The unpredictable performance of the application early in boot may be
->> unacceptable and unavoidable. It might take a long time but it could
->> eventually generate bug reports about "unpredictable performance early
->> in boot" that will be hard to track down unless accept_memory is observed
->> using perf at the right time. Even when that does happen, there will need
->> to be an option to turn it off if the unpredictable performance cannot
->> be tolerated. Second, any benchmarking done early in boot is likely to
->> be disrupted making the series a potential bisection magnet that masks a
->> performance bug elsewhere in the merge window.
-> 
-> I'm doing some boot performance tests now before I run some workload
-> memory acceptance latency tests.
-> Note that this testing is on AMD SEV-SNP, so this patch series on top
-> of the AMD guest patches v12, plus a
-> patch Brijesh Singh wrote to define __accept_memory for SEV-SNP
-> https://github.com/AMDESE/linux/commit/ecae2582666d50ce1e633975d703d2f904183ece
 
-Note that there is a bug in Brijesh's version of the patch and it will 
-almost exclusively use the MSR protocol. Please try the version of the 
-patch that I recently sent up based on the current unaccepted memory tree 
-from Kirill.
+--VUoPU3p+8USLMiyu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-https://lore.kernel.org/lkml/cover.1660579062.git.thomas.lendacky@amd.com/
+On Mon, Aug 15, 2022 at 01:58:55PM -0700, Stephen Boyd wrote:
+> Quoting Laurent Pinchart (2022-08-15 11:52:36)
+> > On Mon, Aug 15, 2022 at 05:33:06PM +0100, Mark Brown wrote:
+> > > On Mon, Aug 15, 2022 at 06:54:45PM +0300, Laurent Pinchart wrote:
 
-Thanks,
-Tom
+> > > > - With devres, you don't have full control over the order in which
+> > > >   resources will be released, which means that you can't control the
+> > > >   power off sequence, in particular if it needs to be sequenced with
+> > > >   GPIOs and clocks. That's not a concern for all drivers, but this API
+> > > >   will creep in in places where it shouldn't be used, driver authours
+> > > >   should really pay attention to power management and not live with the
+> > > >   false impression that everything will be handled automatically for
+> > > >   them. In the worst cases, an incorrect power off sequence could lead
+> > > >   to hardware damage.
 
-> 
-> I was getting pretty consistent boot times, only going up slightly as
-> the memory size increased, but at 256GB, the VM crashes because it
-> touches some unaccepted memory without first accepting it. 255GB boots
-> fine.
-> 
-> The stack track is in mm/page_alloc.c. I've done a little
-> investigation, but I can't account for why there's a hard cutoff of
-> correctness at 256GB
-> 
-> [    0.065563] RIP: 0010:memmap_init_range+0x108/0x173
-> [    0.066309] Code: 77 16 f6 42 10 02 74 10 48 03 42 08 48 c1 e8 0c
-> 48 89 c3 e9 3a ff ff ff 48 89 df 48 c1 e7 06 48 03 3d d9 a2 66 ff 48
-> 8d 47 08 <c7> 47 34 01 00 00 00 48 c7 47 38 00 00 00 00 c7 47 30 ff ff
-> ff ff
-> [    0.069108] RSP: 0000:ffffffffad603dc8 EFLAGS: 00010082 ORIG_RAX:
-> 0000000000000404
-> [    0.070193] RAX: ffffdba740000048 RBX: 0000000000000001 RCX: 0000000000000000
-> [    0.071170] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffdba740000040
-> [    0.072224] RBP: 0000000000000000 R08: 0000000000001000 R09: 0000000000000000
-> [    0.073283] R10: 0000000000000001 R11: ffffffffad645c60 R12: 0000000000000000
-> [    0.074304] R13: 00000000000000a0 R14: 0000000000000000 R15: 0000000000000000
-> [    0.075285] FS:  0000000000000000(0000) GS:ffffffffadd6c000(0000)
-> knlGS:0000000000000000
-> [    0.076365] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.077194] CR2: ffffdba740000074 CR3: 0008001ee3a0c000 CR4: 00000000000606b0
-> [    0.078209] Call Trace:
-> [    0.078524]  <TASK>
-> [    0.078887]  ? free_area_init+0x5c1/0x66c
-> [    0.079417]  ? zone_sizes_init+0x52/0x6c
-> [    0.079934]  ? setup_arch+0xa55/0xb6d
-> [    0.080417]  ? start_kernel+0x64/0x65a
-> [    0.080897]  ? secondary_startup_64_no_verify+0xd6/0xdb
-> [    0.081620]  </TASK>
-> 
->>
->> --
->> Mel Gorman
->> SUSE Labs
-> 
-> 
-> 
+> I think the main issue is that platform drivers are being asked to do
+> too much. We've put the burden on platform driver authors to intimately
+> understand how their devices are integrated, and as we all know they're
+
+This is for the regulator API, it's mainly for off SoC devices so it's
+not a question of understanding the integration of a device into a piece
+of silicon, it's a question of understanding the integration of a chip
+into a board which seems reasonably in scope for a chip driver and is
+certainly the sort of thing that you'd be talking to your customers
+about as a silicon vendor.
+
+> The basic idea is that drivers should be focused on what they're
+> driving, not navigating the (sometimes) complex integration that's
+> taking place around them. When a device driver probe function is called
+> the device should already be powered on. When the driver is
+> removed/unbound, the power should be removed after the driver's remove
+> function is called. We're only going to be able to solve the power
+> sequencing and ordering problem by taking away power control and
+> sequencing from drivers.
+
+That is a sensible approach for most on SoC things but for something
+shipped as a separate driver there's little point in separating the
+power and clocking domain driver from the device since there's typically
+a 1:1 mapping.  Usually either it's extremely simple (eg, turn
+everything on and remove reset) but some devices really need to manage
+things.  There's obviously some edge cases in SoC integration as well
+(eg, the need to manage card supplies for SD controllers, or knowing
+exact clock rates for things like audio controllers) so you need some
+flex.
+
+--VUoPU3p+8USLMiyu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmL6w6YACgkQJNaLcl1U
+h9Dj/Qf+Irhly4mQ6388aBof87f+fRZyTpfRbk1B1J89HNrKzDUxTc8jId0ibmOh
+XP6CnxFT1ppn79ZTYaYepg5Gj95WFKW5W+ZJHwuG8LXfkbUu4hBYRufm+/CxYoxG
+x4ZwtE3q1fA3zcCiTUsAYldU2zuNucCo+p/GRSHc3khhEEDepTmKF8Ifvt7EjMvx
+YzoIDe3t68bxJ0qO+nlndzie3mI8drGHfU5pr/BZroJY6WMlhG8InmyNpaYb5Wj+
+TzNpM7qWZFvYzEXTe6Dd3lBBcBiWaW3P2KcFKdysY2Kcc0+HTiQVxjgn5pjLQa9R
+3+8IJudr63VwjCEgMbDPRxVG7Ht+9Q==
+=CRju
+-----END PGP SIGNATURE-----
+
+--VUoPU3p+8USLMiyu--
