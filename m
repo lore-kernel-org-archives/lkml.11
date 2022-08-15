@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69441C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97DDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351901AbiHOWto (ORCPT
+        id S1351915AbiHOWtu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        Mon, 15 Aug 2022 18:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352039AbiHOWrl (ORCPT
+        with ESMTP id S1352055AbiHOWrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C26135AC9;
-        Mon, 15 Aug 2022 12:53:17 -0700 (PDT)
+        Mon, 15 Aug 2022 18:47:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC67135AD8;
+        Mon, 15 Aug 2022 12:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA9160FB9;
-        Mon, 15 Aug 2022 19:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2549DC433C1;
-        Mon, 15 Aug 2022 19:53:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBB16122B;
+        Mon, 15 Aug 2022 19:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D82C433D6;
+        Mon, 15 Aug 2022 19:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593196;
-        bh=sZQQJBhKBqZz1oQBCZX4pRulQOQ09eGmJoa2eOxyBZQ=;
+        s=korg; t=1660593199;
+        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WR9/5JmHNqP6g8X17EK5on5n0Gy71Ze8P2Q7hFNicPJLuYHUQImCEJWzYgs5uPHLj
-         pURokytHyBUBMwK74t8XYYmSrMzenzhmOjf1yDk2kKlyH20tgFEoC5ABimzMFp53t7
-         u7r01ve0G9iGQU17hO+dG8zQlJiuYHu6icqGYvRU=
+        b=LjHDDuP+Z2xP2SP4JlUva7mkOsiTZsL/fJ6z0YIYX27c232NAWOFTSiZhzZLe6d6Z
+         7+h4UwafHx2WplsvaPwBqZav0rntjSjkmtcQccjVkYo71aa75HkYX6sZL8roswU+UR
+         ufgeZ367EE/rTaG7zqs9JYVmATbOa19Wi+u+V+Rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Marek Beh=C3=BAn <kabel@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0910/1095] watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
-Date:   Mon, 15 Aug 2022 20:05:09 +0200
-Message-Id: <20220815180506.932605582@linuxfoundation.org>
+Subject: [PATCH 5.19 0229/1157] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
+Date:   Mon, 15 Aug 2022 19:53:05 +0200
+Message-Id: <20220815180448.736280735@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,39 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2d27e52841092e5831dd41f313028c668d816eb0 ]
+[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
 
-The function devm_ioremap() in armada_37xx_wdt_probe() can fail, so
-its return value should be checked.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 54e3d9b518c8a ("watchdog: Add support for Armada 37xx CPU watchdog")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220722030938.2925156-1-williamsukatube@163.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/armada_37xx_wdt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/mach-omap2/prm3xxx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
-index 1635f421ef2c..854b1cc723cb 100644
---- a/drivers/watchdog/armada_37xx_wdt.c
-+++ b/drivers/watchdog/armada_37xx_wdt.c
-@@ -274,6 +274,8 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
- 	if (!res)
- 		return -ENODEV;
- 	dev->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
-+	if (!dev->reg)
-+		return -ENOMEM;
+diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
+index 1b442b128569..63e73e9b82bc 100644
+--- a/arch/arm/mach-omap2/prm3xxx.c
++++ b/arch/arm/mach-omap2/prm3xxx.c
+@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
+ 	}
  
- 	/* init clock */
- 	dev->clk = devm_clk_get(&pdev->dev, NULL);
+ 	irq_num = of_irq_get(np, 0);
++	of_node_put(np);
+ 	if (irq_num == -EPROBE_DEFER)
+ 		return irq_num;
+ 
 -- 
 2.35.1
 
