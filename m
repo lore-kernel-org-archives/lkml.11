@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3DFC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EA4C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiHPEwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S232991AbiHPEw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiHPEs7 (ORCPT
+        with ESMTP id S232615AbiHPEt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:48:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E44D87C4;
-        Mon, 15 Aug 2022 13:44:56 -0700 (PDT)
+        Tue, 16 Aug 2022 00:49:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A384D197057;
+        Mon, 15 Aug 2022 13:45:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0124B80EB1;
-        Mon, 15 Aug 2022 20:44:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69B9C433C1;
-        Mon, 15 Aug 2022 20:44:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85421B811A1;
+        Mon, 15 Aug 2022 20:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BF5C433D7;
+        Mon, 15 Aug 2022 20:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596293;
-        bh=k+r9KM2TpEG+TWWUNiAOaK1PNljnrRxwz7Ux3xf+zYM=;
+        s=korg; t=1660596327;
+        bh=k935GoVJXQbcafwXpDDhnY454TvxIKotimdvrKaiCQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ILtmyyJRklBb198ep4zn2vlRgF0ByXe1rDur4ovPyO+XPQT9YwspohZ426VW87N55
-         jzLB89gjLqh+S17SzWdBbC5gKJ/qHE/dIBpAZktXV7VqIOmFjAURtlkG6OlKsx2wis
-         JWoZMgSxcsRnSAIGwUuCDKMB9sE1ozWt/fbWHAd8=
+        b=TncXf3ksVpTioUsP1uwX4DYE9WI4mU9eNZ32/eiS0eVjr6jpyoQ2lsn5Wh5gi5VeB
+         D6J8HA29fPnL/z+hbNt6ouhEqVM2SQIP9ysweP9QKVOvJOMtbUYPAGqtxOsOtTejCA
+         Y/aFePj+G2tp1bm65Q+s5qn5bhq8eSp34LywKKBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stanley Chu <stanley.chu@mediatek.com>,
-        Peter Wang <peter.wang@mediatek.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1033/1157] scsi: ufs: core: Correct ufshcd_shutdown() flow
-Date:   Mon, 15 Aug 2022 20:06:29 +0200
-Message-Id: <20220815180521.282733054@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1011/1157] powerpc/xive: Fix refcount leak in xive_get_max_prio
+Date:   Mon, 15 Aug 2022 20:06:07 +0200
+Message-Id: <20220815180520.307845151@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,47 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Wang <peter.wang@mediatek.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 00511d2abf5708ad05dd5d1c36adb2468d274698 upstream.
+[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
 
-After ufshcd_wl_shutdown() set device power off and link off,
-ufshcd_shutdown() could turn off clock/power. Also remove
-pm_runtime_get_sync.
+of_find_node_by_path() returns a node pointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-The reason why it is safe to remove pm_runtime_get_sync() is because:
-
- - ufshcd_wl_shutdown() -> pm_runtime_get_sync() will resume hba->dev too.
-
- - device resume(turn on clk/power) is not required, even if device is in
-   RPM_SUSPENDED.
-
-Link: https://lore.kernel.org/r/20220727030526.31022-1-peter.wang@mediatek.com
-Fixes: b294ff3e3449 ("scsi: ufs: core: Enable power management for wlun")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Signed-off-by: Peter Wang <peter.wang@mediatek.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ufs/core/ufshcd.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/powerpc/sysdev/xive/spapr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -9484,12 +9484,8 @@ EXPORT_SYMBOL(ufshcd_runtime_resume);
- int ufshcd_shutdown(struct ufs_hba *hba)
- {
- 	if (ufshcd_is_ufs_dev_poweroff(hba) && ufshcd_is_link_off(hba))
--		goto out;
-+		ufshcd_suspend(hba);
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index d02911e78cfc..e2c8f93b535b 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -718,6 +718,7 @@ static bool __init xive_get_max_prio(u8 *max_prio)
+ 	}
  
--	pm_runtime_get_sync(hba->dev);
--
--	ufshcd_suspend(hba);
--out:
- 	hba->is_powered = false;
- 	/* allow force shutdown even in case of errors */
- 	return 0;
+ 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
++	of_node_put(rootdn);
+ 	if (!reg) {
+ 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
+ 		return false;
+-- 
+2.35.1
+
 
 
