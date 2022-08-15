@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8516C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63852C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353683AbiHOXiC (ORCPT
+        id S1353688AbiHOXiK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        Mon, 15 Aug 2022 19:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346140AbiHOXds (ORCPT
+        with ESMTP id S1345797AbiHOXdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:33:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94003E75D;
-        Mon, 15 Aug 2022 13:08:51 -0700 (PDT)
+        Mon, 15 Aug 2022 19:33:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099B2150BBC;
+        Mon, 15 Aug 2022 13:08:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65CFD6069E;
-        Mon, 15 Aug 2022 20:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560E2C433C1;
-        Mon, 15 Aug 2022 20:08:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CDDB60DE3;
+        Mon, 15 Aug 2022 20:08:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63FE9C433D6;
+        Mon, 15 Aug 2022 20:08:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594130;
-        bh=0le8guGcDs0hkYYHgSH5VlcQ39elFKC8ps3iIHcFQlg=;
+        s=korg; t=1660594111;
+        bh=RmNKvD35h9Y3GLfCIV0/RmfmsLrHutDhGr23sfglY6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s7mkJoocQGVeXwqmK9liq/4QidBHK6m7XIZlVLHjWHFZOFdOggZldibzKQeas1m3C
-         5ThUtwfTHkLDDV00h3vJ9iGcm4SPRfpjlSGCSCDVExjdFM4ZMcDwEIj9hypfEcyk43
-         WcU28K3BKblZ7BjTJxBKRsJl/4OTrMsmfmYVZGF4=
+        b=Uo0ppJNZVdKAcHxEFdJaH4ujDrgTYsh/NRZZ/Aw+OX6YTjj+aKrAYQUVAt4gvfjDy
+         O5YHwxAUnmw1XJK0FrRtEUtElWBuVo+6qdgYlXGGiUa8uzVIOvop+ScEXfIRzB8opN
+         OocK4PnPLi0n1Z006ELKxLGiWdxtskie54ZbRHKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0383/1157] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
-Date:   Mon, 15 Aug 2022 19:55:39 +0200
-Message-Id: <20220815180455.047494324@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1058/1095] ext4: correct max_inline_xattr_value_size computing
+Date:   Mon, 15 Aug 2022 20:07:37 +0200
+Message-Id: <20220815180512.805385354@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,61 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
+[ Upstream commit c9fd167d57133c5b748d16913c4eabc55e531c73 ]
 
-As a result of the execution of the inner while loop, the value
-of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
-is not checked after the loop and 'idx' is used to write the
-LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
-in the outer loop.
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
-The fix is to check the new value of 'idx' inside the nested loop,
-and break both loops if index equals the size. Checking it at the
-start is now pointless, so let's remove it.
-
-Detected using the static analysis tool - Svace.
-
-Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
-Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
+Cc: stable@kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/ext4/inline.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-index 9dd2d890e35f..c62f299b9e0a 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-@@ -2403,7 +2403,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		/* Repeat initial/next rate.
- 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
- 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
--		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
-+		while (repeat_rate > 0) {
- 			if (is_legacy(tbl_type.lq_type)) {
- 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
- 					ant_toggle_cnt++;
-@@ -2422,6 +2422,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 			    cpu_to_le32(new_rate);
- 			repeat_rate--;
- 			idx++;
-+			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
-+				goto out;
- 		}
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index e9ef5cf30969..84fcd06a8e8a 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -35,6 +35,9 @@ static int get_max_inline_xattr_value_size(struct inode *inode,
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
- 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
-@@ -2466,6 +2468,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		repeat_rate--;
- 	}
- 
-+out:
- 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
- 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
- 
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
++
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 -- 
 2.35.1
 
