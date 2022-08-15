@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36697C28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089D1C25B0E
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344769AbiHOX02 (ORCPT
+        id S1344449AbiHOX0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        Mon, 15 Aug 2022 19:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347664AbiHOXVo (ORCPT
+        with ESMTP id S1347057AbiHOXVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:21:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AD87E031;
-        Mon, 15 Aug 2022 13:04:47 -0700 (PDT)
+        Mon, 15 Aug 2022 19:21:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAAF7E31F;
+        Mon, 15 Aug 2022 13:04:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18B3060693;
-        Mon, 15 Aug 2022 20:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED95C433D7;
-        Mon, 15 Aug 2022 20:04:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71DD7B810C5;
+        Mon, 15 Aug 2022 20:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE2AC433D6;
+        Mon, 15 Aug 2022 20:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593886;
-        bh=0FUqD62hQs6exSXDr4fldjl1BY2vI18VB5zREhVNW5g=;
+        s=korg; t=1660593880;
+        bh=Ay0IweHselRBK0obV5DxogBP40yGNMeQhj7FwCdegvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+OqwmB8+sfYC78akMm0Hxu1j0DNIYi1Fw7jXzoDcagXD48oNQqrMeCl6tLDhtCvr
-         1aqsRLhUKurZ7Alw6aKuGFEptFwXrJD4X1NV+rjmZUjX3mNCspM7hF7mPpj7VgZSOT
-         oPJ4wyRA4Xh87NRH1Gv2fdXDhEU0sKHpRIrbNsKs=
+        b=xEsqcAz/tFjPycl1LSlv7AHNIKUtmOLsRxmiD7ZepWwbudiqDZ5eGO64ifQpszWo0
+         2nWTb6Kz1lLj4TdKWn9xL8wXwrGUp6Resok65831a3y046HnVRQQCTnGP1Tg/r9TyB
+         djJraody+t7PwGPJqd1KB3NZATIr/U7sdjB702Ck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0339/1157] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
-Date:   Mon, 15 Aug 2022 19:54:55 +0200
-Message-Id: <20220815180453.227337592@linuxfoundation.org>
+Subject: [PATCH 5.18 0992/1095] intel_th: pci: Add Raptor Lake-S CPU support
+Date:   Mon, 15 Aug 2022 20:06:31 +0200
+Message-Id: <20220815180510.151055064@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
+[ Upstream commit ff46a601afc5a66a81c3945b83d0a2caeb88e8bc ]
 
-In the dsi_enable function, mtk_dsi_rxtx_control is to
-pull up the MIPI signal operation. Before dsi_disable,
-MIPI should also be pulled down by writing a register
-instead of disabling dsi.
+Add support for the Trace Hub in Raptor Lake-S CPU.
 
-If disable dsi without pulling the mipi signal low, the value of
-the register will still maintain the setting of the mipi signal being
-pulled high.
-After resume, even if the mipi signal is not pulled high, it will still
-be in the high state.
-
-Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-7-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hwtracing/intel_th/pci.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 966a4729bb41..e9764c2e0262 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -694,6 +694,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-+	/* set the lane number as 0 to pull down mipi */
-+	writel(0, dsi->regs + DSI_TXRX_CTRL);
- 
- 	mtk_dsi_disable(dsi);
- 
+diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
+index 5b6da26f1b63..147d338c191e 100644
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -294,6 +294,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
++	{
++		/* Raptor Lake-S CPU */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa76f),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
+ 	{
+ 		/* Alder Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
 -- 
 2.35.1
 
