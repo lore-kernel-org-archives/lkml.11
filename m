@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F90C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9424EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347771AbiHOWF2 (ORCPT
+        id S1344708AbiHOWFf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
+        Mon, 15 Aug 2022 18:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345496AbiHOV76 (ORCPT
+        with ESMTP id S1343666AbiHOWAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:59:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693D621F;
-        Mon, 15 Aug 2022 12:35:15 -0700 (PDT)
+        Mon, 15 Aug 2022 18:00:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18E6E21;
+        Mon, 15 Aug 2022 12:35:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F936114B;
-        Mon, 15 Aug 2022 19:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58084C433C1;
-        Mon, 15 Aug 2022 19:34:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A90A6B80EA8;
+        Mon, 15 Aug 2022 19:35:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 039E9C433C1;
+        Mon, 15 Aug 2022 19:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592087;
-        bh=mZgyq4mZcLQWF74aSysmnrWML+QTOy4RTquSjSzQl3s=;
+        s=korg; t=1660592112;
+        bh=pHZiJJno5N6PtNhBHdAXqpWTived2x+RtACMOKKshSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cZE/Y4zwEsh49GlbgalCIRkSYqzttPpq2WbNZ/Ba45w+lzLVcGWZaUkVHogaJBy78
-         Hwuecq0DdYmeqSyDKUXGeWOy0/kPY7dZXZ15gxhnbATZ793MVlDgaTuvsjQOAqyUmD
-         6FGky/UJC6KzfcmPe4uwwVPC0M2a+XnjSwC6pO6Y=
+        b=Gk9Ip5g9saG/Of8/EGps7iD1cprgYnnzeslMETL453vCukMMaUdLyMqVxPyoGNr0Y
+         rehl5iHgYQCNogQPGDajflpTF13hBqvMICO/zIrs4ruYvHpPVAByPkmPGgaqwUuuFW
+         UE2Fl8EPB6OOYkNLkSc/5kDyVV+Z7VAKEJ4KYiAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0732/1095] phy: qcom-qmp: fix the QSERDES_V5_COM_CMN_MODE register
-Date:   Mon, 15 Aug 2022 20:02:11 +0200
-Message-Id: <20220815180459.679762967@linuxfoundation.org>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0736/1095] intel_th: msu: Fix vmalloced buffers
+Date:   Mon, 15 Aug 2022 20:02:15 +0200
+Message-Id: <20220815180459.827651847@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,37 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-[ Upstream commit 488987b2d5cade4e7680f7e81590435a848d1fa9 ]
+[ Upstream commit ac12ad3ccf6d386e64a9d6a890595a2509d24edd ]
 
-Change QSERDES_V5_COM_CMN_MODE to be defined to 0x1a0 rather than 0x1a4.
-The only user of this register name (sm8450_qmp_gen4x2_pcie_serdes_tbl)
-should use the 0x1a0 register, as stated in the downstream dtsi tree.
+After commit f5ff79fddf0e ("dma-mapping: remove CONFIG_DMA_REMAP") there's
+a chance of DMA buffer getting allocated via vmalloc(), which messes up
+the mmapping code:
 
-Fixes: 2c91bf6bf290 ("phy: qcom-qmp: Add SM8450 PCIe1 PHY support")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220705094320.1313312-2-dmitry.baryshkov@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> RIP: msc_mmap_fault [intel_th_msu]
+> Call Trace:
+>  <TASK>
+>  __do_fault
+>  do_fault
+...
+
+Fix this by accounting for vmalloc possibility.
+
+Fixes: ba39bd830605 ("intel_th: msu: Switch over to scatterlist")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-4-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hwtracing/intel_th/msu.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.h b/drivers/phy/qualcomm/phy-qcom-qmp.h
-index 06b2556ed93a..b9a91520439c 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.h
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.h
-@@ -1116,7 +1116,8 @@
- #define QSERDES_V5_COM_CORE_CLK_EN			0x174
- #define QSERDES_V5_COM_CMN_CONFIG			0x17c
- #define QSERDES_V5_COM_CMN_MISC1			0x19c
--#define QSERDES_V5_COM_CMN_MODE				0x1a4
-+#define QSERDES_V5_COM_CMN_MODE				0x1a0
-+#define QSERDES_V5_COM_CMN_MODE_CONTD			0x1a4
- #define QSERDES_V5_COM_VCO_DC_LEVEL_CTRL		0x1a8
- #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE1_MODE0	0x1ac
- #define QSERDES_V5_COM_BIN_VCOCAL_CMP_CODE2_MODE0	0x1b0
+diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
+index 70a07b4e9967..6c8215a47a60 100644
+--- a/drivers/hwtracing/intel_th/msu.c
++++ b/drivers/hwtracing/intel_th/msu.c
+@@ -1067,6 +1067,16 @@ msc_buffer_set_uc(struct msc *msc) {}
+ static inline void msc_buffer_set_wb(struct msc *msc) {}
+ #endif /* CONFIG_X86 */
+ 
++static struct page *msc_sg_page(struct scatterlist *sg)
++{
++	void *addr = sg_virt(sg);
++
++	if (is_vmalloc_addr(addr))
++		return vmalloc_to_page(addr);
++
++	return sg_page(sg);
++}
++
+ /**
+  * msc_buffer_win_alloc() - alloc a window for a multiblock mode
+  * @msc:	MSC device
+@@ -1137,7 +1147,7 @@ static void __msc_buffer_win_free(struct msc *msc, struct msc_window *win)
+ 	int i;
+ 
+ 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, i) {
+-		struct page *page = sg_page(sg);
++		struct page *page = msc_sg_page(sg);
+ 
+ 		page->mapping = NULL;
+ 		dma_free_coherent(msc_dev(win->msc)->parent->parent, PAGE_SIZE,
+@@ -1401,7 +1411,7 @@ static struct page *msc_buffer_get_page(struct msc *msc, unsigned long pgoff)
+ 	pgoff -= win->pgoff;
+ 
+ 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, blk) {
+-		struct page *page = sg_page(sg);
++		struct page *page = msc_sg_page(sg);
+ 		size_t pgsz = PFN_DOWN(sg->length);
+ 
+ 		if (pgoff < pgsz)
 -- 
 2.35.1
 
