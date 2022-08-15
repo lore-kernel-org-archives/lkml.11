@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49369C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE47C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353838AbiHOXil (ORCPT
+        id S1353851AbiHOXir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        Mon, 15 Aug 2022 19:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346117AbiHOXds (ORCPT
+        with ESMTP id S233663AbiHOXeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:33:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29371959C;
-        Mon, 15 Aug 2022 13:08:41 -0700 (PDT)
+        Mon, 15 Aug 2022 19:34:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0D065645;
+        Mon, 15 Aug 2022 13:09:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9314BCE12E7;
-        Mon, 15 Aug 2022 20:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C9D3C433C1;
-        Mon, 15 Aug 2022 20:08:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4876860B6E;
+        Mon, 15 Aug 2022 20:09:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE09C433C1;
+        Mon, 15 Aug 2022 20:08:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594117;
-        bh=ZnymPQFspFL40QedNmT9etLRZlQVld7+zT63dbaFmGY=;
+        s=korg; t=1660594139;
+        bh=QNFvrSfmF8jPkO6xUgA/cBgya04LXm/x8wg9L+Oyn58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YMzUsz9j5m0iYJLWSAcTvkT/q/QWJEfqkMnKunDnDMCaa9+8Mgaq9md6co5dJDGIp
-         zNWJMLZipHn6QDhOnZbmavBz7E43vz4XJ+WQZPt+FNUjaLmXBjvdkwVZaAA06nDvAk
-         anBUxQOrxq8FRgk2qaLfh6ijLq2uWIWlE+Xybo0M=
+        b=Dm/cD26K5fi7Fn3wbY4Y1NOttyccfcVsPa7NW6eND7ySTgyCIS6LpSyLLA1Jdq0Ea
+         1iItk3WeQyyKWxWhB3Eph7D2Dq9K84kZhCaOVkteJLGhbRXyqInlUWbBYdzr5xsPnp
+         rna53rHQlaAnCfa0yl0fHMxX8BNyZ8aGsyHEQc7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1059/1095] ext4: correct the misjudgment in ext4_iget_extra_inode
-Date:   Mon, 15 Aug 2022 20:07:38 +0200
-Message-Id: <20220815180512.842967020@linuxfoundation.org>
+        Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1062/1095] ext4: make sure ext4_append() always allocates new block
+Date:   Mon, 15 Aug 2022 20:07:41 +0200
+Message-Id: <20220815180512.959795540@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,38 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Lukas Czerner <lczerner@redhat.com>
 
-[ Upstream commit fd7e672ea98b95b9d4c9dae316639f03c16a749d ]
+[ Upstream commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b ]
 
-Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
-determine whether the inode have xattr space.
+ext4_append() must always allocate a new block, otherwise we run the
+risk of overwriting existing directory block corrupting the directory
+tree in the process resulting in all manner of problems later on.
+
+Add a sanity check to see if the logical block is already allocated and
+error out if it is.
 
 Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-5-libaokun1@huawei.com
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/inode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/ext4/namei.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 826e2deb10f8..e478cac3b8f2 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4681,8 +4681,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
- 	__le32 *magic = (void *)raw_inode +
- 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index 2bc3e4b27204..13b6265848c2 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(handle_t *handle,
+ 					struct inode *inode,
+ 					ext4_lblk_t *block)
+ {
++	struct ext4_map_blocks map;
+ 	struct buffer_head *bh;
+ 	int err;
  
--	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
--	    EXT4_INODE_SIZE(inode->i_sb) &&
-+	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
- 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
- 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
- 		return ext4_find_inline_data_nolock(inode);
+@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(handle_t *handle,
+ 		return ERR_PTR(-ENOSPC);
+ 
+ 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
++	map.m_lblk = *block;
++	map.m_len = 1;
++
++	/*
++	 * We're appending new directory block. Make sure the block is not
++	 * allocated yet, otherwise we will end up corrupting the
++	 * directory.
++	 */
++	err = ext4_map_blocks(NULL, inode, &map, 0);
++	if (err < 0)
++		return ERR_PTR(err);
++	if (err) {
++		EXT4_ERROR_INODE(inode, "Logical block already allocated");
++		return ERR_PTR(-EFSCORRUPTED);
++	}
+ 
+ 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
+ 	if (IS_ERR(bh))
 -- 
 2.35.1
 
