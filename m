@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D41C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295C0C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351961AbiHPASb (ORCPT
+        id S1352264AbiHPASs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        Mon, 15 Aug 2022 20:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353234AbiHPAKm (ORCPT
+        with ESMTP id S1354116AbiHPALF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:10:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5094DCCE18;
-        Mon, 15 Aug 2022 13:29:29 -0700 (PDT)
+        Mon, 15 Aug 2022 20:11:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA4317546B;
+        Mon, 15 Aug 2022 13:29:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 911E4B80EB1;
-        Mon, 15 Aug 2022 20:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BBEC433D6;
-        Mon, 15 Aug 2022 20:29:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89773B8119D;
+        Mon, 15 Aug 2022 20:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D686DC433D7;
+        Mon, 15 Aug 2022 20:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595365;
-        bh=REkwR5J41q/Hrazw8AkkdOJJpFzFGfPiF5Ij9pcyQ+g=;
+        s=korg; t=1660595377;
+        bh=2wEmTjhGcMoUyc8RMh2YSMUxxlVkaz9yxKNpzM825EQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rFYt1SFst0oribzCjK7N9Fn4ZRrsEs3fogVl6jxvwDxIpTO8BFhZzx1mc7U1KfILg
-         HYY2ShnNq8dxuJmRjWNQjjQRGvWUZjJDJmubndPn7iVAN18d+KfxjBHXKThqJJQP1y
-         xn2vudxCub5TQfuBxNzLIl1Uv1MOKNt+gtaXB0A4=
+        b=fgC21dHWjqnU3DkTJD61a7lnqc6IHZ73JYJ8jpqJ97PK0HK2R9HY+IctMpFDdGShw
+         c74G6nQIfLoBdQkqytR2VJAYmQ1w6nFUgGoBpyLg9kvomvffgwTJOld2zefE++xzrm
+         msJuKIgb55dIhc7XyxbbMHQqyMzYjpRYXjBUlZys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
-        Abel Vesa <abel.vesa@linaro.org>,
+        stable@vger.kernel.org, Suzuki Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0724/1157] clk: imx: clk-fracn-gppll: Return rate in rate table properly in ->recalc_rate()
-Date:   Mon, 15 Aug 2022 20:01:20 +0200
-Message-Id: <20220815180508.438042675@linuxfoundation.org>
+Subject: [PATCH 5.19 0745/1157] coresight: configfs: Fix unload of configurations on module exit
+Date:   Mon, 15 Aug 2022 20:01:41 +0200
+Message-Id: <20220815180509.268230816@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -58,76 +51,203 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Mike Leach <mike.leach@linaro.org>
 
-[ Upstream commit 5ebaf9f7da5bb2dc56d394eabfcbe46dc6b1ea8d ]
+[ Upstream commit 199380decc5f9188a9e65676031950f1734aaffe ]
 
-The PLL parameters in rate table should be directly compared with
-those read from PLL registers instead of the cooked ones.
+Any loaded configurations must be correctly unloaded on coresight module
+exit, or issues can arise with nested locking in the configfs directory
+code if built with CONFIG_LOCKDEP.
 
-Fixes: 1b26cb8a77a4 ("clk: imx: support fracn gppll")
-Cc: Abel Vesa <abel.vesa@nxp.com>
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-6-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+Prior to this patch, the preloaded configuration configfs directory entries
+were being unloaded by the recursive code in
+configfs_unregister_subsystem().
+
+However, when built with CONFIG_LOCKDEP, this caused a nested lock warning,
+which was not mitigated by the LOCKDEP dependent code in fs/configfs/dir.c
+designed to prevent this, due to the different directory levels for the
+root of the directory being removed.
+
+As the preloaded (and all other) configurations are registered after
+configfs_register_subsystem(), we now explicitly unload them before the
+call to configfs_unregister_subsystem().
+
+The new routine cscfg_unload_cfgs_on_exit() iterates through the load
+owner list to unload any remaining configurations that were not unloaded
+by the user before the module exits. This covers both the
+CSCFG_OWNER_PRELOAD and CSCFG_OWNER_MODULE owner types, and will be
+extended to cover future load owner types for CoreSight configurations.
+
+Fixes: eb2ec49606c2 ("coresight: syscfg: Update load API for config loadable modules")
+Reported-by: Suzuki Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+Reviewed-and-tested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20220628173004.30002-2-mike.leach@linaro.org
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-fracn-gppll.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ .../hwtracing/coresight/coresight-syscfg.c    | 104 ++++++++++++++++--
+ 1 file changed, 93 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/clk/imx/clk-fracn-gppll.c b/drivers/clk/imx/clk-fracn-gppll.c
-index 36a53c60e71f..cb06b0045e9e 100644
---- a/drivers/clk/imx/clk-fracn-gppll.c
-+++ b/drivers/clk/imx/clk-fracn-gppll.c
-@@ -131,18 +131,7 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
- 	mfi = FIELD_GET(PLL_MFI_MASK, pll_div);
+diff --git a/drivers/hwtracing/coresight/coresight-syscfg.c b/drivers/hwtracing/coresight/coresight-syscfg.c
+index 11850fd8c3b5..17e728ab5c99 100644
+--- a/drivers/hwtracing/coresight/coresight-syscfg.c
++++ b/drivers/hwtracing/coresight/coresight-syscfg.c
+@@ -414,6 +414,27 @@ static void cscfg_remove_owned_csdev_features(struct coresight_device *csdev, vo
+ 	}
+ }
  
- 	rdiv = FIELD_GET(PLL_RDIV_MASK, pll_div);
--	rdiv = rdiv + 1;
- 	odiv = FIELD_GET(PLL_ODIV_MASK, pll_div);
--	switch (odiv) {
--	case 0:
--		odiv = 2;
--		break;
--	case 1:
--		odiv = 3;
--		break;
--	default:
--		break;
--	}
- 
- 	/*
- 	 * Sometimes, the recalculated rate has deviation due to
-@@ -160,6 +149,19 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
- 	if (rate)
- 		return (unsigned long)rate;
- 
-+	rdiv = rdiv + 1;
++/*
++ * Unregister all configuration and features from configfs owned by load_owner.
++ * Although this is called without the list mutex being held, it is in the
++ * context of an unload operation which are strictly serialised,
++ * so the lists cannot change during this call.
++ */
++static void cscfg_fs_unregister_cfgs_feats(void *load_owner)
++{
++	struct cscfg_config_desc *config_desc;
++	struct cscfg_feature_desc *feat_desc;
 +
-+	switch (odiv) {
-+	case 0:
-+		odiv = 2;
-+		break;
-+	case 1:
-+		odiv = 3;
-+		break;
-+	default:
-+		break;
++	list_for_each_entry(config_desc, &cscfg_mgr->config_desc_list, item) {
++		if (config_desc->load_owner == load_owner)
++			cscfg_configfs_del_config(config_desc);
 +	}
++	list_for_each_entry(feat_desc, &cscfg_mgr->feat_desc_list, item) {
++		if (feat_desc->load_owner == load_owner)
++			cscfg_configfs_del_feature(feat_desc);
++	}
++}
 +
- 	/* Fvco = Fref * (MFI + MFN / MFD) */
- 	fvco = fvco * mfi * mfd + fvco * mfn;
- 	do_div(fvco, mfd * rdiv * odiv);
+ /*
+  * removal is relatively easy - just remove from all lists, anything that
+  * matches the owner. Memory for the descriptors will be managed by the owner,
+@@ -1022,8 +1043,10 @@ struct device *cscfg_device(void)
+ /* Must have a release function or the kernel will complain on module unload */
+ static void cscfg_dev_release(struct device *dev)
+ {
++	mutex_lock(&cscfg_mutex);
+ 	kfree(cscfg_mgr);
+ 	cscfg_mgr = NULL;
++	mutex_unlock(&cscfg_mutex);
+ }
+ 
+ /* a device is needed to "own" some kernel elements such as sysfs entries.  */
+@@ -1042,6 +1065,13 @@ static int cscfg_create_device(void)
+ 	if (!cscfg_mgr)
+ 		goto create_dev_exit_unlock;
+ 
++	/* initialise the cscfg_mgr structure */
++	INIT_LIST_HEAD(&cscfg_mgr->csdev_desc_list);
++	INIT_LIST_HEAD(&cscfg_mgr->feat_desc_list);
++	INIT_LIST_HEAD(&cscfg_mgr->config_desc_list);
++	INIT_LIST_HEAD(&cscfg_mgr->load_order_list);
++	atomic_set(&cscfg_mgr->sys_active_cnt, 0);
++
+ 	/* setup the device */
+ 	dev = cscfg_device();
+ 	dev->release = cscfg_dev_release;
+@@ -1056,17 +1086,73 @@ static int cscfg_create_device(void)
+ 	return err;
+ }
+ 
+-static void cscfg_clear_device(void)
++/*
++ * Loading and unloading is generally on user discretion.
++ * If exiting due to coresight module unload, we need to unload any configurations that remain,
++ * before we unregister the configfs intrastructure.
++ *
++ * Do this by walking the load_owner list and taking appropriate action, depending on the load
++ * owner type.
++ */
++static void cscfg_unload_cfgs_on_exit(void)
+ {
+-	struct cscfg_config_desc *cfg_desc;
++	struct cscfg_load_owner_info *owner_info = NULL;
+ 
++	/*
++	 * grab the mutex - even though we are exiting, some configfs files
++	 * may still be live till we dump them, so ensure list data is
++	 * protected from a race condition.
++	 */
+ 	mutex_lock(&cscfg_mutex);
+-	list_for_each_entry(cfg_desc, &cscfg_mgr->config_desc_list, item) {
+-		etm_perf_del_symlink_cscfg(cfg_desc);
++	while (!list_empty(&cscfg_mgr->load_order_list)) {
++
++		/* remove in reverse order of loading */
++		owner_info = list_last_entry(&cscfg_mgr->load_order_list,
++					     struct cscfg_load_owner_info, item);
++
++		/* action according to type */
++		switch (owner_info->type) {
++		case CSCFG_OWNER_PRELOAD:
++			/*
++			 * preloaded  descriptors are statically allocated in
++			 * this module - just need to unload dynamic items from
++			 * csdev lists, and remove from configfs directories.
++			 */
++			pr_info("cscfg: unloading preloaded configurations\n");
++			break;
++
++		case  CSCFG_OWNER_MODULE:
++			/*
++			 * this is an error - the loadable module must have been unloaded prior
++			 * to the coresight module unload. Therefore that module has not
++			 * correctly unloaded configs in its own exit code.
++			 * Nothing to do other than emit an error string as the static descriptor
++			 * references we need to unload will have disappeared with the module.
++			 */
++			pr_err("cscfg: ERROR: prior module failed to unload configuration\n");
++			goto list_remove;
++		}
++
++		/* remove from configfs - outside the scope of the list mutex */
++		mutex_unlock(&cscfg_mutex);
++		cscfg_fs_unregister_cfgs_feats(owner_info);
++		mutex_lock(&cscfg_mutex);
++
++		/* Next unload from csdev lists. */
++		cscfg_unload_owned_cfgs_feats(owner_info);
++
++list_remove:
++		/* remove from load order list */
++		list_del(&owner_info->item);
+ 	}
++	mutex_unlock(&cscfg_mutex);
++}
++
++static void cscfg_clear_device(void)
++{
++	cscfg_unload_cfgs_on_exit();
+ 	cscfg_configfs_release(cscfg_mgr);
+ 	device_unregister(cscfg_device());
+-	mutex_unlock(&cscfg_mutex);
+ }
+ 
+ /* Initialise system config management API device  */
+@@ -1074,20 +1160,16 @@ int __init cscfg_init(void)
+ {
+ 	int err = 0;
+ 
++	/* create the device and init cscfg_mgr */
+ 	err = cscfg_create_device();
+ 	if (err)
+ 		return err;
+ 
++	/* initialise configfs subsystem */
+ 	err = cscfg_configfs_init(cscfg_mgr);
+ 	if (err)
+ 		goto exit_err;
+ 
+-	INIT_LIST_HEAD(&cscfg_mgr->csdev_desc_list);
+-	INIT_LIST_HEAD(&cscfg_mgr->feat_desc_list);
+-	INIT_LIST_HEAD(&cscfg_mgr->config_desc_list);
+-	INIT_LIST_HEAD(&cscfg_mgr->load_order_list);
+-	atomic_set(&cscfg_mgr->sys_active_cnt, 0);
+-
+ 	/* preload built-in configurations */
+ 	err = cscfg_preload(THIS_MODULE);
+ 	if (err)
 -- 
 2.35.1
 
