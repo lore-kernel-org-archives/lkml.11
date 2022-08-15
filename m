@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D254C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1424C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242709AbiHOUCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        id S243890AbiHOUC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243336AbiHOUAC (ORCPT
+        with ESMTP id S1346138AbiHOUBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:00:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8487A502;
-        Mon, 15 Aug 2022 11:53:21 -0700 (PDT)
+        Mon, 15 Aug 2022 16:01:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAE17CB64;
+        Mon, 15 Aug 2022 11:53:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B235D61019;
-        Mon, 15 Aug 2022 18:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7150C433D7;
-        Mon, 15 Aug 2022 18:53:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1343FB810A0;
+        Mon, 15 Aug 2022 18:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48776C43470;
+        Mon, 15 Aug 2022 18:53:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589598;
-        bh=Ka6V+AblFDor05JzdQLDm0z12H0wakbdE/hDgZPiTH8=;
+        s=korg; t=1660589632;
+        bh=lO4agyz0ZSzI8UkHKUsysasIuHutY5jQ8FqjF1ZH5tE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4rHM8OMnG7dean6qUv29rX7QPI+OR08Dt4U5cBeH4BxZOee8gG4OX9bZA5BB+qvy
-         o3pEU4yOckREeFwPPKPNkCjX0r2/7+rJVunwfBTTMHGQp9VdS+yTBhhsDHnSbivAvn
-         +TvBHWB5CkZvhaPM1AQLeL6KxHa0MZ3Pb4cLo3jA=
+        b=RjKG6pmjqr0gp964v9nJ9byIbVWtcw3OnhNjnBlEXov8+dYxqx6DOBByGP2plGTqv
+         q2FJrDXKun2V9Dt/CsN0/tnlVo95K2RJretPossv8j8meSS3r2UL/680AKbpoqQ7JR
+         /SEt/hI4CalonqCefe3EOS/jffkMR6PFMWcTIA0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 727/779] btrfs: ensure pages are unlocked on cow_file_range() failure
-Date:   Mon, 15 Aug 2022 20:06:11 +0200
-Message-Id: <20220815180408.538286096@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 763/779] tcp: fix over estimation in sk_forced_mem_schedule()
+Date:   Mon, 15 Aug 2022 20:06:47 +0200
+Message-Id: <20220815180410.031894477@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,196 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 9ce7466f372d83054c7494f6b3e4b9abaf3f0355 ]
+commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
 
-There is a hung_task report on zoned btrfs like below.
+sk_forced_mem_schedule() has a bug similar to ones fixed
+in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
+sk_rmem_schedule() errors")
 
-https://github.com/naota/linux/issues/59
+While this bug has little chance to trigger in old kernels,
+we need to fix it before the following patch.
 
-  [726.328648] INFO: task rocksdb:high0:11085 blocked for more than 241 seconds.
-  [726.329839]       Not tainted 5.16.0-rc1+ #1
-  [726.330484] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-  [726.331603] task:rocksdb:high0   state:D stack:    0 pid:11085 ppid: 11082 flags:0x00000000
-  [726.331608] Call Trace:
-  [726.331611]  <TASK>
-  [726.331614]  __schedule+0x2e5/0x9d0
-  [726.331622]  schedule+0x58/0xd0
-  [726.331626]  io_schedule+0x3f/0x70
-  [726.331629]  __folio_lock+0x125/0x200
-  [726.331634]  ? find_get_entries+0x1bc/0x240
-  [726.331638]  ? filemap_invalidate_unlock_two+0x40/0x40
-  [726.331642]  truncate_inode_pages_range+0x5b2/0x770
-  [726.331649]  truncate_inode_pages_final+0x44/0x50
-  [726.331653]  btrfs_evict_inode+0x67/0x480
-  [726.331658]  evict+0xd0/0x180
-  [726.331661]  iput+0x13f/0x200
-  [726.331664]  do_unlinkat+0x1c0/0x2b0
-  [726.331668]  __x64_sys_unlink+0x23/0x30
-  [726.331670]  do_syscall_64+0x3b/0xc0
-  [726.331674]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-  [726.331677] RIP: 0033:0x7fb9490a171b
-  [726.331681] RSP: 002b:00007fb943ffac68 EFLAGS: 00000246 ORIG_RAX: 0000000000000057
-  [726.331684] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fb9490a171b
-  [726.331686] RDX: 00007fb943ffb040 RSI: 000055a6bbe6ec20 RDI: 00007fb94400d300
-  [726.331687] RBP: 00007fb943ffad00 R08: 0000000000000000 R09: 0000000000000000
-  [726.331688] R10: 0000000000000031 R11: 0000000000000246 R12: 00007fb943ffb000
-  [726.331690] R13: 00007fb943ffb040 R14: 0000000000000000 R15: 00007fb943ffd260
-  [726.331693]  </TASK>
-
-While we debug the issue, we found running fstests generic/551 on 5GB
-non-zoned null_blk device in the emulated zoned mode also had a
-similar hung issue.
-
-Also, we can reproduce the same symptom with an error injected
-cow_file_range() setup.
-
-The hang occurs when cow_file_range() fails in the middle of
-allocation. cow_file_range() called from do_allocation_zoned() can
-split the give region ([start, end]) for allocation depending on
-current block group usages. When btrfs can allocate bytes for one part
-of the split regions but fails for the other region (e.g. because of
--ENOSPC), we return the error leaving the pages in the succeeded regions
-locked. Technically, this occurs only when @unlock == 0. Otherwise, we
-unlock the pages in an allocated region after creating an ordered
-extent.
-
-Considering the callers of cow_file_range(unlock=0) won't write out
-the pages, we can unlock the pages on error exit from
-cow_file_range(). So, we can ensure all the pages except @locked_page
-are unlocked on error case.
-
-In summary, cow_file_range now behaves like this:
-
-- page_started == 1 (return value)
-  - All the pages are unlocked. IO is started.
-- unlock == 1
-  - All the pages except @locked_page are unlocked in any case
-- unlock == 0
-  - On success, all the pages are locked for writing out them
-  - On failure, all the pages except @locked_page are unlocked
-
-Fixes: 42c011000963 ("btrfs: zoned: introduce dedicated data write path for zoned filesystems")
-CC: stable@vger.kernel.org # 5.12+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/inode.c | 72 ++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 64 insertions(+), 8 deletions(-)
+ net/ipv4/tcp_output.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 1b4fee8a2f28..20d0dea1d0c4 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -1053,6 +1053,28 @@ static u64 get_extent_allocation_hint(struct btrfs_inode *inode, u64 start,
-  * *page_started is set to one if we unlock locked_page and do everything
-  * required to start IO on it.  It may be clean and already done with
-  * IO when we return.
-+ *
-+ * When unlock == 1, we unlock the pages in successfully allocated regions.
-+ * When unlock == 0, we leave them locked for writing them out.
-+ *
-+ * However, we unlock all the pages except @locked_page in case of failure.
-+ *
-+ * In summary, page locking state will be as follow:
-+ *
-+ * - page_started == 1 (return value)
-+ *     - All the pages are unlocked. IO is started.
-+ *     - Note that this can happen only on success
-+ * - unlock == 1
-+ *     - All the pages except @locked_page are unlocked in any case
-+ * - unlock == 0
-+ *     - On success, all the pages are locked for writing out them
-+ *     - On failure, all the pages except @locked_page are unlocked
-+ *
-+ * When a failure happens in the second or later iteration of the
-+ * while-loop, the ordered extents created in previous iterations are kept
-+ * intact. So, the caller must clean them up by calling
-+ * btrfs_cleanup_ordered_extents(). See btrfs_run_delalloc_range() for
-+ * example.
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3372,11 +3372,12 @@ void tcp_xmit_retransmit_queue(struct so
   */
- static noinline int cow_file_range(struct btrfs_inode *inode,
- 				   struct page *locked_page,
-@@ -1062,6 +1084,7 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 	struct btrfs_root *root = inode->root;
- 	struct btrfs_fs_info *fs_info = root->fs_info;
- 	u64 alloc_hint = 0;
-+	u64 orig_start = start;
- 	u64 num_bytes;
- 	unsigned long ram_size;
- 	u64 cur_alloc_size = 0;
-@@ -1245,18 +1268,44 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
- 	btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, 1);
- out_unlock:
-+	/*
-+	 * Now, we have three regions to clean up:
-+	 *
-+	 * |-------(1)----|---(2)---|-------------(3)----------|
-+	 * `- orig_start  `- start  `- start + cur_alloc_size  `- end
-+	 *
-+	 * We process each region below.
-+	 */
-+
- 	clear_bits = EXTENT_LOCKED | EXTENT_DELALLOC | EXTENT_DELALLOC_NEW |
- 		EXTENT_DEFRAG | EXTENT_CLEAR_META_RESV;
- 	page_ops = PAGE_UNLOCK | PAGE_START_WRITEBACK | PAGE_END_WRITEBACK;
-+
- 	/*
--	 * If we reserved an extent for our delalloc range (or a subrange) and
--	 * failed to create the respective ordered extent, then it means that
--	 * when we reserved the extent we decremented the extent's size from
--	 * the data space_info's bytes_may_use counter and incremented the
--	 * space_info's bytes_reserved counter by the same amount. We must make
--	 * sure extent_clear_unlock_delalloc() does not try to decrement again
--	 * the data space_info's bytes_may_use counter, therefore we do not pass
--	 * it the flag EXTENT_CLEAR_DATA_RESV.
-+	 * For the range (1). We have already instantiated the ordered extents
-+	 * for this region. They are cleaned up by
-+	 * btrfs_cleanup_ordered_extents() in e.g,
-+	 * btrfs_run_delalloc_range(). EXTENT_LOCKED | EXTENT_DELALLOC are
-+	 * already cleared in the above loop. And, EXTENT_DELALLOC_NEW |
-+	 * EXTENT_DEFRAG | EXTENT_CLEAR_META_RESV are handled by the cleanup
-+	 * function.
-+	 *
-+	 * However, in case of unlock == 0, we still need to unlock the pages
-+	 * (except @locked_page) to ensure all the pages are unlocked.
-+	 */
-+	if (!unlock && orig_start < start)
-+		extent_clear_unlock_delalloc(inode, orig_start, start - 1,
-+					     locked_page, 0, page_ops);
-+
-+	/*
-+	 * For the range (2). If we reserved an extent for our delalloc range
-+	 * (or a subrange) and failed to create the respective ordered extent,
-+	 * then it means that when we reserved the extent we decremented the
-+	 * extent's size from the data space_info's bytes_may_use counter and
-+	 * incremented the space_info's bytes_reserved counter by the same
-+	 * amount. We must make sure extent_clear_unlock_delalloc() does not try
-+	 * to decrement again the data space_info's bytes_may_use counter,
-+	 * therefore we do not pass it the flag EXTENT_CLEAR_DATA_RESV.
- 	 */
- 	if (extent_reserved) {
- 		extent_clear_unlock_delalloc(inode, start,
-@@ -1268,6 +1317,13 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 		if (start >= end)
- 			goto out;
- 	}
-+
-+	/*
-+	 * For the range (3). We never touched the region. In addition to the
-+	 * clear_bits above, we add EXTENT_CLEAR_DATA_RESV to release the data
-+	 * space_info's bytes_may_use counter, reserved in
-+	 * btrfs_check_data_free_space().
-+	 */
- 	extent_clear_unlock_delalloc(inode, start, end, locked_page,
- 				     clear_bits | EXTENT_CLEAR_DATA_RESV,
- 				     page_ops);
--- 
-2.35.1
-
+ void sk_forced_mem_schedule(struct sock *sk, int size)
+ {
+-	int amt;
++	int delta, amt;
+ 
+-	if (size <= sk->sk_forward_alloc)
++	delta = size - sk->sk_forward_alloc;
++	if (delta <= 0)
+ 		return;
+-	amt = sk_mem_pages(size);
++	amt = sk_mem_pages(delta);
+ 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
+ 	sk_memory_allocated_add(sk, amt);
+ 
 
 
