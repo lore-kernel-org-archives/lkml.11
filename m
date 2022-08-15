@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73068C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B58E0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245038AbiHOVXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37288 "EHLO
+        id S1343500AbiHOVX3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344789AbiHOVRf (ORCPT
+        with ESMTP id S1343599AbiHOVRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A453E3D59F;
-        Mon, 15 Aug 2022 12:20:49 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2145D6270;
+        Mon, 15 Aug 2022 12:20:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 581EDB810A3;
-        Mon, 15 Aug 2022 19:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D12BC433C1;
-        Mon, 15 Aug 2022 19:20:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AA0C6009B;
+        Mon, 15 Aug 2022 19:20:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F55EC433C1;
+        Mon, 15 Aug 2022 19:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591247;
-        bh=w9DKv41Q3nZHDkkXaYYUdVGq5szEXNwsqk7DaJ1L83s=;
+        s=korg; t=1660591223;
+        bh=WJJZjSRsNAmFjH1N2BZiZSDeHE3N2TcBII3rUzJ6/LA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxCRr7bom+9Ab6s4l7Qq9eb16MqKDGynjYAbRi8vWD4rp7q1fYKU/bL7WfA5eAVTm
-         BlhmiXRv6/UBG4ohOb91cdoxc6nAQ0xVBZq7vmeTvuEPWof8T6LF8RP9iNbSrBNeZ2
-         /Mhhw+hb8Y2k48aYWbRCSd5N56OJayIGi8+z9EW0=
+        b=PxmB5ywAhRSZtWSDU5rkBrZvNi15AY4HzGI9GPXr6OnlKcItFLa9eAoPSK42JSqQn
+         F5E4HcYw4O8U2L2U3/lt12/HOIB6p41Ihw2sxqNE400yNh0bv/ZFlr00MV+tHTRLnT
+         +6w5M/OXcNwkA/gTMMWtPyDGAO9TfWQGytQSMjXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Muhammad Sammar <muhammads@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
+        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0518/1095] net/mlx5: DR, Fix SMFS steering info dump format
-Date:   Mon, 15 Aug 2022 19:58:37 +0200
-Message-Id: <20220815180450.969666189@linuxfoundation.org>
+Subject: [PATCH 5.18 0512/1095] net/mlx5e: TC, Fix post_act to not match on in_port metadata
+Date:   Mon, 15 Aug 2022 19:58:31 +0200
+Message-Id: <20220815180450.703036192@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,67 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-[ Upstream commit 62d2664351ef37da34f6f3a3fd8ab34257d6fe30 ]
+[ Upstream commit 903f2194f74bbd289f3170114035d472a36a8ab4 ]
 
-Fix several issues in SMFS steering info dump:
- - Fix outdated macro value for matcher mask in the SMFS debug dump format.
-   The existing value denotes the old format of the matcher mask, as it was
-   used during the early stages of development, and it results in wrong
-   parsing by the steering dump parser - wrong fields are shown in the
-   parsed output.
- - Add the missing destination table to the dumped action.
-   The missing dest table handle breaks the ability to associate between
-   the "go to table" action and the actual table in the steering info.
+The cited commit changed CT to use multi table actions post act infrastructure instead
+of using it own post act infrastructure, this broke decap during VF tunnel offload
+(Stack devices) with CT due to wrong match on in_port metadata in the post act table.
+This changed only broke VF tunnel offload because it modify the packet in_port metadata
+to be VF metadata and it isn't propagate the post act creation.
 
-Fixes: 9222f0b27da2 ("net/mlx5: DR, Add support for dumping steering info")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
+Fixed by modify post act rules to match only on fte_id and not match on in_port metadata
+which isn't needed.
+
+Fixes: a81283263bb0 ("net/mlx5e: Use multi table support for CT and sample actions")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c   | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-index d5998ef59be4..7adcf0eec13b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-@@ -21,10 +21,11 @@ enum dr_dump_rec_type {
- 	DR_DUMP_REC_TYPE_TABLE_TX = 3102,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+index dea137dd744b..2b64dd557b5d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -128,6 +128,7 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
+ 	post_attr->inner_match_level = MLX5_MATCH_NONE;
+ 	post_attr->outer_match_level = MLX5_MATCH_NONE;
+ 	post_attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_DECAP;
++	post_attr->flags |= MLX5_ATTR_FLAG_NO_IN_PORT;
  
- 	DR_DUMP_REC_TYPE_MATCHER = 3200,
--	DR_DUMP_REC_TYPE_MATCHER_MASK = 3201,
-+	DR_DUMP_REC_TYPE_MATCHER_MASK_DEPRECATED = 3201,
- 	DR_DUMP_REC_TYPE_MATCHER_RX = 3202,
- 	DR_DUMP_REC_TYPE_MATCHER_TX = 3203,
- 	DR_DUMP_REC_TYPE_MATCHER_BUILDER = 3204,
-+	DR_DUMP_REC_TYPE_MATCHER_MASK = 3205,
- 
- 	DR_DUMP_REC_TYPE_RULE = 3300,
- 	DR_DUMP_REC_TYPE_RULE_RX_ENTRY_V0 = 3301,
-@@ -114,13 +115,15 @@ dr_dump_rule_action_mem(struct seq_file *file, const u64 rule_id,
- 		break;
- 	case DR_ACTION_TYP_FT:
- 		if (action->dest_tbl->is_fw_tbl)
--			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
-+			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%x\n",
- 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
--				   rule_id, action->dest_tbl->fw_tbl.id);
-+				   rule_id, action->dest_tbl->fw_tbl.id,
-+				   -1);
- 		else
--			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
-+			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%llx\n",
- 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
--				   rule_id, action->dest_tbl->tbl->table_id);
-+				   rule_id, action->dest_tbl->tbl->table_id,
-+				   DR_DBG_PTR_TO_ID(action->dest_tbl->tbl));
- 
- 		break;
- 	case DR_ACTION_TYP_CTR:
+ 	handle->ns_type = post_act->ns_type;
+ 	/* Splits were handled before post action */
 -- 
 2.35.1
 
