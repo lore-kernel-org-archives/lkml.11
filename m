@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19DCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 547F2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241131AbiHOSYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
+        id S241354AbiHOSY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiHOSXw (ORCPT
+        with ESMTP id S241472AbiHOSX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:23:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12982ED44;
-        Mon, 15 Aug 2022 11:17:53 -0700 (PDT)
+        Mon, 15 Aug 2022 14:23:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AF12A966;
+        Mon, 15 Aug 2022 11:17:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ABC4B81063;
-        Mon, 15 Aug 2022 18:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBB3DC433D6;
-        Mon, 15 Aug 2022 18:17:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1355D60A09;
+        Mon, 15 Aug 2022 18:17:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 058E1C433C1;
+        Mon, 15 Aug 2022 18:17:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587469;
-        bh=k99rQfAN/Lt2RYkkU5H2EoGW+vQy2MUMH4d2va9jXms=;
+        s=korg; t=1660587475;
+        bh=Lqg3nI9/1ih2ZrfoyJ2//n6sYA5V80dfGjDkV4M2hvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=scDyuHF75ou4xVkK7qUF0Bw7GB5ee9AiUHaTEv2NTK8+Hk+Q5h+fY3HeNGjCKRnBW
-         8OOXngS47gaORaR1qKzNV4kXZ53vQMoiJiYfO6XJbUcTe3EvltRQGQBb92Iblchhgl
-         6QFkoTi7h7qN7NgkoCDoDQspiqIH632qzaDmAN8s=
+        b=RWkD7WJ2JtfjqqSSN4/FmW+qv8TKNNdNZ92vwAin7B5N1RLgIVeOvuwGlslyyowfq
+         9p9hELs/OqrfWTzmVh97PBByfm+A09huoZlOgN8ATgvfW8lfByis0HRJZB2X73Qcrl
+         i0cuu3MyzdkLhe42j2ViUftelN0hv4IWuwpI8D9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Guo <yi.guo@cavium.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Narendra Hadke <nhadke@marvell.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.15 087/779] serial: mvebu-uart: uart2 error bits clearing
-Date:   Mon, 15 Aug 2022 19:55:31 +0200
-Message-Id: <20220815180340.999276684@linuxfoundation.org>
+        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.15 097/779] MIPS: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
+Date:   Mon, 15 Aug 2022 19:55:41 +0200
+Message-Id: <20220815180341.453544044@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,50 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Narendra Hadke <nhadke@marvell.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit a7209541239e5dd44d981289e5f9059222d40fd1 upstream.
+commit e1a534f5d074db45ae5cbac41d8912b98e96a006 upstream.
 
-For mvebu uart2, error bits are not cleared on buffer read.
-This causes interrupt loop and system hang.
+When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
+cpu_max_bits_warn() generates a runtime warning similar as below while
+we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
+instead of NR_CPUS to iterate CPUs.
+
+[    3.052463] ------------[ cut here ]------------
+[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
+[    3.070072] Modules linked in: efivarfs autofs4
+[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
+[    3.084034] Hardware name: Loongson Loongson-3A4000-7A1000-1w-V0.1-CRB/Loongson-LS3A4000-7A1000-1w-EVB-V1.21, BIOS Loongson-UDK2018-V2.0.04082-beta7 04/27
+[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
+[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
+[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
+[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
+[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
+[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
+[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
+[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
+[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
+[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
+[    3.195868]         ...
+[    3.199917] Call Trace:
+[    3.203941] [<98000000002086d8>] show_stack+0x38/0x14c
+[    3.210666] [<9800000000cf846c>] dump_stack_lvl+0x60/0x88
+[    3.217625] [<980000000023d268>] __warn+0xd0/0x100
+[    3.223958] [<9800000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
+[    3.231150] [<9800000000210220>] show_cpuinfo+0x5e8/0x5f0
+[    3.238080] [<98000000004f578c>] seq_read_iter+0x354/0x4b4
+[    3.245098] [<98000000004c2e90>] new_sync_read+0x17c/0x1c4
+[    3.252114] [<98000000004c5174>] vfs_read+0x138/0x1d0
+[    3.258694] [<98000000004c55f8>] ksys_read+0x70/0x100
+[    3.265265] [<9800000000cfde9c>] do_syscall+0x7c/0x94
+[    3.271820] [<9800000000202fe4>] handle_syscall+0xc4/0x160
+[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
 
 Cc: stable@vger.kernel.org
-Reviewed-by: Yi Guo <yi.guo@cavium.com>
-Reviewed-by: Nadav Haklai <nadavh@marvell.com>
-Signed-off-by: Narendra Hadke <nhadke@marvell.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220726091221.12358-1-pali@kernel.org
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/mips/kernel/proc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -237,6 +237,7 @@ static void mvebu_uart_rx_chars(struct u
- 	struct tty_port *tport = &port->state->port;
- 	unsigned char ch = 0;
- 	char flag = 0;
-+	int ret;
+--- a/arch/mips/kernel/proc.c
++++ b/arch/mips/kernel/proc.c
+@@ -172,7 +172,7 @@ static void *c_start(struct seq_file *m,
+ {
+ 	unsigned long i = *pos;
  
- 	do {
- 		if (status & STAT_RX_RDY(port)) {
-@@ -249,6 +250,16 @@ static void mvebu_uart_rx_chars(struct u
- 				port->icount.parity++;
- 		}
+-	return i < NR_CPUS ? (void *) (i + 1) : NULL;
++	return i < nr_cpu_ids ? (void *) (i + 1) : NULL;
+ }
  
-+		/*
-+		 * For UART2, error bits are not cleared on buffer read.
-+		 * This causes interrupt loop and system hang.
-+		 */
-+		if (IS_EXTENDED(port) && (status & STAT_BRK_ERR)) {
-+			ret = readl(port->membase + UART_STAT);
-+			ret |= STAT_BRK_ERR;
-+			writel(ret, port->membase + UART_STAT);
-+		}
-+
- 		if (status & STAT_BRK_DET) {
- 			port->icount.brk++;
- 			status &= ~(STAT_FRM_ERR | STAT_PAR_ERR);
+ static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 
 
