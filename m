@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412A5C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F139C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243798AbiHOShN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
+        id S240641AbiHOShW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243692AbiHOSez (ORCPT
+        with ESMTP id S243857AbiHOSf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:34:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2643A491;
-        Mon, 15 Aug 2022 11:22:27 -0700 (PDT)
+        Mon, 15 Aug 2022 14:35:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1D33AE78;
+        Mon, 15 Aug 2022 11:22:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6646D60C07;
-        Mon, 15 Aug 2022 18:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DFB8C433D6;
-        Mon, 15 Aug 2022 18:22:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0E93B81074;
+        Mon, 15 Aug 2022 18:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D09FC433D7;
+        Mon, 15 Aug 2022 18:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587745;
-        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
+        s=korg; t=1660587767;
+        bh=UCWNQNT584JtiLG0+ImmAyVLHfbA2TmlLvAAdCnNLXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAFdRmqWxsiMu9jH4TyOs+HzDd/qfUs7bcKNUGKA/HBv6t7SlBRzXMPdvzaw1FgpA
-         a5pHQ8G6uayYxRAmnTAzBJt+8Q9ysup48PvXGaV4e1u+o6wX8bmIgoS/ODUyDdHmox
-         KcM9za54LdIYaeSwr0Xu9BZfUOQRLIuOZACK8yYE=
+        b=k1iXfEerWJTZhdqVGDnFiSAW954B9NRAdL1Vslu1UgAv6Bm95gJuASE6yQCOGi1Z4
+         vZEKI5kbvxoPdKrcA0WcT/N4G7p3jVPEU7+ANzBQQMEQ3pqw5fEC0Og2CNMfdQsnpt
+         PTvyOVMetV6+ia950IBGNlO4wHCxxeTWe1sRy8Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 181/779] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
-Date:   Mon, 15 Aug 2022 19:57:05 +0200
-Message-Id: <20220815180344.999225266@linuxfoundation.org>
+Subject: [PATCH 5.15 157/779] arm64: dts: renesas: beacon: Fix regulator node names
+Date:   Mon, 15 Aug 2022 19:56:41 +0200
+Message-Id: <20220815180344.052086982@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,35 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
+[ Upstream commit 7512af9f78dedea7e04225f665dad6750df7d095 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Currently there are two nodes named "regulator_camera".  This causes the
+former to be overwritten by the latter.
 
-Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fix this by renaming them to unique names, using the preferred hyphen
+instead of an underscore.
+
+While at it, update the name of the audio regulator (which was added in
+the same commit) to use a hyphen.
+
+Fixes: a1d8a344f1ca0709 ("arm64: dts: renesas: Introduce r8a774a1-beacon-rzg2m-kit")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/a9ac82bdf108162487289d091c53a9b3de393f13.1652263918.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/prm3xxx.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
-index 1b442b128569..63e73e9b82bc 100644
---- a/arch/arm/mach-omap2/prm3xxx.c
-+++ b/arch/arm/mach-omap2/prm3xxx.c
-@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
- 	}
+diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+index 2692cc64bff6..48e0c0494f6a 100644
+--- a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
++++ b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+@@ -146,7 +146,7 @@ rgb_panel: endpoint {
+ 		};
+ 	};
  
- 	irq_num = of_irq_get(np, 0);
-+	of_node_put(np);
- 	if (irq_num == -EPROBE_DEFER)
- 		return irq_num;
+-	reg_audio: regulator_audio {
++	reg_audio: regulator-audio {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "audio-1.8V";
+ 		regulator-min-microvolt = <1800000>;
+@@ -174,7 +174,7 @@ reg_lcd_reset: regulator-lcd-reset {
+ 		vin-supply = <&reg_lcd>;
+ 	};
  
+-	reg_cam0: regulator_camera {
++	reg_cam0: regulator-cam0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam0";
+ 		regulator-min-microvolt = <1800000>;
+@@ -183,7 +183,7 @@ reg_cam0: regulator_camera {
+ 		enable-active-high;
+ 	};
+ 
+-	reg_cam1: regulator_camera {
++	reg_cam1: regulator-cam1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam1";
+ 		regulator-min-microvolt = <1800000>;
 -- 
 2.35.1
 
