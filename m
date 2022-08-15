@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E8DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0F3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244927AbiHOS77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        id S244937AbiHOTAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245042AbiHOS4f (ORCPT
+        with ESMTP id S245070AbiHOS4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:35 -0400
+        Mon, 15 Aug 2022 14:56:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5AA2C67B;
-        Mon, 15 Aug 2022 11:31:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F501326C8;
+        Mon, 15 Aug 2022 11:31:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7104B61043;
-        Mon, 15 Aug 2022 18:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 486C8C433D6;
-        Mon, 15 Aug 2022 18:31:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF0AD61029;
+        Mon, 15 Aug 2022 18:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A430DC433C1;
+        Mon, 15 Aug 2022 18:31:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588274;
-        bh=Am9f5DX2cRApJL2HJEP4OQCjdiP3VXL6uJRI/RttOyI=;
+        s=korg; t=1660588287;
+        bh=SUa8h2m6mypWO7doBPbdoMm7YnhVBnsmn1EZLZBxgRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GYdx9mzHNIAUoDsEWQsOSzUKkY+eoUtqiiAoI5rbg+Z0ycUeWhOAr2cy2KeMmh4cT
-         I25bLQkzQ4BZjSkgbDQvgz4Xbw730FZoEhwYLa/R16ScGb1muJ/bhxtPFOsOp/IsW1
-         rQciFrgNVX/o2KEZAAfIWRSI2dpKyovyy6VJgC/Q=
+        b=I5qyrZFftOzc6uhPh/wTRdMFU7lVeHg9rgn1j6KvzfbY4eOWSciZZQmogc3eBoeRr
+         WKE99Prz9gN0+OFA6gvhXUE8YCKmGFrUxTLdLn15Ud4NRoIAggp54GHEKwme9Oq2De
+         xIOf3QdGOkAckB16JfcxUlFEmssNdcd1deEdU9BI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 350/779] libbpf: fix an snprintf() overflow check
-Date:   Mon, 15 Aug 2022 19:59:54 +0200
-Message-Id: <20220815180352.200320192@linuxfoundation.org>
+Subject: [PATCH 5.15 353/779] can: sja1000: do not report txerr and rxerr during bus-off
+Date:   Mon, 15 Aug 2022 19:59:57 +0200
+Message-Id: <20220815180352.335672612@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,37 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit b77ffb30cfc5f58e957571d8541c6a7e3da19221 ]
+[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
 
-The snprintf() function returns the number of bytes it *would* have
-copied if there were enough space.  So it can return > the
-sizeof(gen->attach_target).
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-Fixes: 67234743736a ("libbpf: Generate loader program out of BPF ELF file.")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/YtZ+oAySqIhFl6/J@kili
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
+Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/gen_loader.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/sja1000/sja1000.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-index 33c19590ee43..4435c09fe132 100644
---- a/tools/lib/bpf/gen_loader.c
-+++ b/tools/lib/bpf/gen_loader.c
-@@ -480,7 +480,7 @@ void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *attach_name,
- 	gen->attach_kind = kind;
- 	ret = snprintf(gen->attach_target, sizeof(gen->attach_target), "%s%s",
- 		       prefix, attach_name);
--	if (ret == sizeof(gen->attach_target))
-+	if (ret >= sizeof(gen->attach_target))
- 		gen->error = -ENOSPC;
- }
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 3fad54646746..aae2677e24f9 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -404,9 +404,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 	txerr = priv->read_reg(priv, SJA1000_TXERR);
+ 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
  
+-	cf->data[6] = txerr;
+-	cf->data[7] = rxerr;
+-
+ 	if (isrc & IRQ_DOI) {
+ 		/* data overrun interrupt */
+ 		netdev_dbg(dev, "data overrun interrupt\n");
+@@ -428,6 +425,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 		else
+ 			state = CAN_STATE_ERROR_ACTIVE;
+ 	}
++	if (state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
++	}
+ 	if (isrc & IRQ_BEI) {
+ 		/* bus error interrupt */
+ 		priv->can.can_stats.bus_error++;
 -- 
 2.35.1
 
