@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66550C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54254C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349602AbiHOVsP (ORCPT
+        id S1349624AbiHOVsU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        Mon, 15 Aug 2022 17:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349496AbiHOVoV (ORCPT
+        with ESMTP id S1346706AbiHOVo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:44:21 -0400
+        Mon, 15 Aug 2022 17:44:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ADB102295;
-        Mon, 15 Aug 2022 12:29:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A871022B1;
+        Mon, 15 Aug 2022 12:29:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E75160FBE;
-        Mon, 15 Aug 2022 19:29:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A0DC433C1;
-        Mon, 15 Aug 2022 19:29:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C693B60EF0;
+        Mon, 15 Aug 2022 19:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97A6C433D6;
+        Mon, 15 Aug 2022 19:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591789;
-        bh=8VlNj6zxSpDnk3ycq08EdKMqa5hsv3oRypfnomeKsko=;
+        s=korg; t=1660591793;
+        bh=bZ788B6z466vmlS6LVITTCvYlqYe/U/IhX4N2/r73Is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=miQ9NeNtltkpHjisp97gxRPj7va0lzizWEydOELhrNRF5gfy17BBGokzBmhEQLU9b
-         HPYER/E2FchDkCL8GffRxoQp3cpiBo5tvAngPJpoeXd2PNDzCoacPAEVpwPEIiAAPy
-         6TID7biw7ooLBPhVDW8mTCWlW6mbPNPU1xLbpOfk=
+        b=JArRvkp0Iarwi1tZkms2ephH3WB5Jef8NshxDiVpWhnoj+Nc3G/mUT3QNJECvpXbp
+         LNJHeEHbyRhPThDrWrylc9gBPuwUn8T/sDbQ8wsYIlBYfBGGI4w0FPsWswS67u/kN5
+         9W3VIXGh7OflOr/duyCRAMSEjIrBI8vUTbS4iMHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 0009/1157] ALSA: hda/realtek: Add quirk for Clevo NV45PZ
-Date:   Mon, 15 Aug 2022 19:49:25 +0200
-Message-Id: <20220815180439.831985351@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0682/1095] lib/test_hmm: avoid accessing uninitialized pages
+Date:   Mon, 15 Aug 2022 20:01:21 +0200
+Message-Id: <20220815180457.586158042@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,30 +54,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit be561ffad708f0cee18aee4231f80ffafaf7a419 upstream.
+[ Upstream commit ed913b055a74b723976f8e885a3395162a0371e6 ]
 
-Fixes headset detection on Clevo NV45PZ.
+If make_device_exclusive_range() fails or returns pages marked for
+exclusive access less than required, remaining fields of pages will left
+uninitialized.  So dmirror_atomic_map() will access those yet
+uninitialized fields of pages.  To fix it, do dmirror_atomic_map() iff all
+pages are marked for exclusive access (we will break if mapped is less
+than required anyway) so we won't access those uninitialized fields of
+pages.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220731032243.4300-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20220609130835.35110-1-linmiaohe@huawei.com
+Fixes: b659baea7546 ("mm: selftests for exclusive device memory")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Jerome Glisse <jglisse@redhat.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ lib/test_hmm.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9203,6 +9203,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x4018, "Clevo NV40M[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x4019, "Clevo NV40MZ", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x4020, "Clevo NV40MB", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x4041, "Clevo NV4[15]PZ", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x40a1, "Clevo NL40GU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x40c1, "Clevo NL40[CZ]U", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x40d1, "Clevo NL41DU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+diff --git a/lib/test_hmm.c b/lib/test_hmm.c
+index cfe632047839..f2c3015c5c82 100644
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -732,7 +732,7 @@ static int dmirror_exclusive(struct dmirror *dmirror,
+ 
+ 	mmap_read_lock(mm);
+ 	for (addr = start; addr < end; addr = next) {
+-		unsigned long mapped;
++		unsigned long mapped = 0;
+ 		int i;
+ 
+ 		if (end < addr + (ARRAY_SIZE(pages) << PAGE_SHIFT))
+@@ -741,7 +741,13 @@ static int dmirror_exclusive(struct dmirror *dmirror,
+ 			next = addr + (ARRAY_SIZE(pages) << PAGE_SHIFT);
+ 
+ 		ret = make_device_exclusive_range(mm, addr, next, pages, NULL);
+-		mapped = dmirror_atomic_map(addr, next, pages, dmirror);
++		/*
++		 * Do dmirror_atomic_map() iff all pages are marked for
++		 * exclusive access to avoid accessing uninitialized
++		 * fields of pages.
++		 */
++		if (ret == (next - addr) >> PAGE_SHIFT)
++			mapped = dmirror_atomic_map(addr, next, pages, dmirror);
+ 		for (i = 0; i < ret; i++) {
+ 			if (pages[i]) {
+ 				unlock_page(pages[i]);
+-- 
+2.35.1
+
 
 
