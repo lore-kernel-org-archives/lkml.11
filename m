@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AE2C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FCFC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349908AbiHOVtF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
+        id S243898AbiHOVtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349828AbiHOVqj (ORCPT
+        with ESMTP id S1349857AbiHOVqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:46:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95E7E68;
-        Mon, 15 Aug 2022 12:30:18 -0700 (PDT)
+        Mon, 15 Aug 2022 17:46:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEFE644E;
+        Mon, 15 Aug 2022 12:30:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1878D610A3;
-        Mon, 15 Aug 2022 19:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BCEC433D6;
-        Mon, 15 Aug 2022 19:30:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE371B810C6;
+        Mon, 15 Aug 2022 19:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DB2C433D6;
+        Mon, 15 Aug 2022 19:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591817;
-        bh=dI8AaoBjOiapI8HBOxTQnpOMEoE2WYNYVO0XPkuWt0M=;
+        s=korg; t=1660591820;
+        bh=U0Fp6bBZo1hCOVqL02YpZuqrGduWivDPT289EDLIBxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jbgote6xcoLWQMCuaC9Gz4lh0cR0lEJy67E569nX/PuWSNfM26FaD1HGyDmhVanNg
-         20cjaxe0zpHSt4NzpP6Ps90n4LXJ+dVlORZYPBtwsgEjwGDfJoquwL8aTqGgD1UiYL
-         qRQhUMA/XPmEnVwvBq2k6PuTHSWWzuDTEW2ALyVs=
+        b=HWmNt/aekYl+c0hJj3yeFWG/tghHKKd5ItCYlipdG5iWPoBWeGjLgQIj4Wz2JFfZl
+         Nv/5twuHvw6RVlJSxw9qi9WX0G3XGS8YPYiMzJdLHVRE8ef5TJ+l/P6uvelx/NUXGq
+         7jKVvIzLHNSI7LS09gBhMUrdwGHqkwrA3ocZZ/IY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0685/1095] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
-Date:   Mon, 15 Aug 2022 20:01:24 +0200
-Message-Id: <20220815180457.711234778@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Zolt=C3=A1n=20K=C5=91v=C3=A1g=C3=B3?= 
+        <dirty.ice.hu@gmail.com>, stable@kernel.org,
+        Zev Weiss <zev@bewilderbeest.net>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.19 0013/1157] hwmon: (nct6775) Fix platform driver suspend regression
+Date:   Mon, 15 Aug 2022 19:49:29 +0200
+Message-Id: <20220815180439.996384192@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,173 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit a52ed4866d2b90dd5e4ae9dabd453f3ed8fa3cbc ]
+commit f4e6960f4f16b1ca5da16cec7612ecc86402ac05 upstream.
 
-There are sleep in atomic context bugs when uploading device dump
-data in mwifiex. The root cause is that dev_coredumpv could not
-be used in atomic contexts, because it calls dev_set_name which
-include operations that may sleep. The call tree shows execution
-paths that could lead to bugs:
+Commit c3963bc0a0cf ("hwmon: (nct6775) Split core and platform
+driver") introduced a slight change in nct6775_suspend() in order to
+avoid an otherwise-needless symbol export for nct6775_update_device(),
+replacing a call to that function with a simple dev_get_drvdata()
+instead.
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+As it turns out, there is no guarantee that nct6775_update_device()
+is ever called prior to suspend. If this happens, the resume function
+ends up writing bad data into the various chip registers, which results
+in a crash shortly after resume.
 
-The corresponding fail log is shown below:
+To fix the problem, just add the symbol export and return to using
+nct6775_update_device() as was employed previously.
 
-[  135.275938] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.281029] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-...
-[  135.293613] Call Trace:
-[  135.293613]  <IRQ>
-[  135.293613]  dump_stack_lvl+0x57/0x7d
-[  135.293613]  __might_resched.cold+0x138/0x173
-[  135.293613]  ? dev_coredumpm+0xca/0x2e0
-[  135.293613]  kmem_cache_alloc_trace+0x189/0x1f0
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  dev_coredumpm+0xca/0x2e0
-[  135.293613]  ? devcd_freev+0x10/0x10
-[  135.293613]  dev_coredumpv+0x1c/0x20
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  mwifiex_upload_device_dump+0x65/0xb0
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  call_timer_fn+0x122/0x3d0
-[  135.293613]  ? msleep_interruptible+0xb0/0xb0
-[  135.293613]  ? lock_downgrade+0x3c0/0x3c0
-[  135.293613]  ? __next_timer_interrupt+0x13c/0x160
-[  135.293613]  ? lockdep_hardirqs_on_prepare+0xe/0x220
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  __run_timers.part.0+0x3f8/0x540
-[  135.293613]  ? call_timer_fn+0x3d0/0x3d0
-[  135.293613]  ? arch_restore_msi_irqs+0x10/0x10
-[  135.293613]  ? lapic_next_event+0x31/0x40
-[  135.293613]  run_timer_softirq+0x4f/0xb0
-[  135.293613]  __do_softirq+0x1c2/0x651
-...
-[  135.293613] RIP: 0010:default_idle+0xb/0x10
-[  135.293613] RSP: 0018:ffff888006317e68 EFLAGS: 00000246
-[  135.293613] RAX: ffffffff82ad8d10 RBX: ffff888006301cc0 RCX: ffffffff82ac90e1
-[  135.293613] RDX: ffffed100d9ff1b4 RSI: ffffffff831ad140 RDI: ffffffff82ad8f20
-[  135.293613] RBP: 0000000000000003 R08: 0000000000000000 R09: ffff88806cff8d9b
-[  135.293613] R10: ffffed100d9ff1b3 R11: 0000000000000001 R12: ffffffff84593410
-[  135.293613] R13: 0000000000000000 R14: 0000000000000000 R15: 1ffff11000c62fd2
-...
-[  135.389205] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-This patch uses delayed work to replace timer and moves the operations
-that may sleep into a delayed work in order to mitigate bugs, it was
-tested on Marvell 88W8801 chip whose port is usb and the firmware is
-usb8801_uapsta.bin. The following is the result after using delayed
-work to replace timer.
-
-[  134.936453] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.043344] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-As we can see, there is no bug now.
-
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/b63b77fc84ed3e8a6bef02378e17c7c71a0bc3be.1654569290.git.duoming@zju.edu.cn
+Reported-by: Zoltán Kővágó <dirty.ice.hu@gmail.com>
+Tested-by: Zoltán Kővágó <dirty.ice.hu@gmail.com>
+Fixes: c3963bc0a0cf ("hwmon: (nct6775) Split core and platform driver")
+Cc: stable@kernel.org
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Link: https://lore.kernel.org/r/20220810052646.13825-1-zev@bewilderbeest.net
+[groeck: Updated description]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/init.c      | 9 +++++----
- drivers/net/wireless/marvell/mwifiex/main.h      | 3 ++-
- drivers/net/wireless/marvell/mwifiex/sta_event.c | 6 +++---
- 3 files changed, 10 insertions(+), 8 deletions(-)
+ drivers/hwmon/nct6775-core.c     | 3 ++-
+ drivers/hwmon/nct6775-platform.c | 2 +-
+ drivers/hwmon/nct6775.h          | 2 ++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a0..fca3ab948f6c 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,9 +63,10 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
+diff --git a/drivers/hwmon/nct6775-core.c b/drivers/hwmon/nct6775-core.c
+index 446964cbae4c..da9ec6983e13 100644
+--- a/drivers/hwmon/nct6775-core.c
++++ b/drivers/hwmon/nct6775-core.c
+@@ -1480,7 +1480,7 @@ static int nct6775_update_pwm_limits(struct device *dev)
+ 	return 0;
  }
  
--static void fw_dump_timer_fn(struct timer_list *t)
-+static void fw_dump_work(struct work_struct *work)
+-static struct nct6775_data *nct6775_update_device(struct device *dev)
++struct nct6775_data *nct6775_update_device(struct device *dev)
  {
--	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
-+	struct mwifiex_adapter *adapter =
-+		container_of(work, struct mwifiex_adapter, devdump_work.work);
- 
- 	mwifiex_upload_device_dump(adapter);
+ 	struct nct6775_data *data = dev_get_drvdata(dev);
+ 	int i, j, err = 0;
+@@ -1615,6 +1615,7 @@ static struct nct6775_data *nct6775_update_device(struct device *dev)
+ 	mutex_unlock(&data->update_lock);
+ 	return err ? ERR_PTR(err) : data;
  }
-@@ -321,7 +322,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
--	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
-+	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
- }
++EXPORT_SYMBOL_GPL(nct6775_update_device);
  
  /*
-@@ -400,7 +401,7 @@ static void
- mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
+  * Sysfs callback functions
+diff --git a/drivers/hwmon/nct6775-platform.c b/drivers/hwmon/nct6775-platform.c
+index ab30437221ce..41c97cfacfb8 100644
+--- a/drivers/hwmon/nct6775-platform.c
++++ b/drivers/hwmon/nct6775-platform.c
+@@ -359,7 +359,7 @@ static int __maybe_unused nct6775_suspend(struct device *dev)
  {
- 	del_timer(&adapter->wakeup_timer);
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db35..5d8646f16162 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -49,6 +49,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/of_irq.h>
-+#include <linux/workqueue.h>
+ 	int err;
+ 	u16 tmp;
+-	struct nct6775_data *data = dev_get_drvdata(dev);
++	struct nct6775_data *data = nct6775_update_device(dev);
  
- #include "decl.h"
- #include "ioctl.h"
-@@ -1055,7 +1056,7 @@ struct mwifiex_adapter {
- 	/* Device dump data/length */
- 	void *devdump_data;
- 	int devdump_len;
--	struct timer_list devdump_timer;
-+	struct delayed_work devdump_work;
- 
- 	bool ignore_btcoex_events;
- };
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf6..4d93386494c5 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -623,8 +623,8 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 		 * transmission event get lost, in this cornel case,
- 		 * user would still get partial of the dump.
- 		 */
--		mod_timer(&adapter->devdump_timer,
--			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
-+		schedule_delayed_work(&adapter->devdump_work,
-+				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
- 	}
- 
- 	/* Overflow check */
-@@ -643,7 +643,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 	return;
- 
- upload_dump:
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
+ 	if (IS_ERR(data))
+ 		return PTR_ERR(data);
+diff --git a/drivers/hwmon/nct6775.h b/drivers/hwmon/nct6775.h
+index 93f708148e65..be41848c3cd2 100644
+--- a/drivers/hwmon/nct6775.h
++++ b/drivers/hwmon/nct6775.h
+@@ -196,6 +196,8 @@ static inline int nct6775_write_value(struct nct6775_data *data, u16 reg, u16 va
+ 	return regmap_write(data->regmap, reg, value);
  }
  
++struct nct6775_data *nct6775_update_device(struct device *dev);
++
+ bool nct6775_reg_is_word_sized(struct nct6775_data *data, u16 reg);
+ int nct6775_probe(struct device *dev, struct nct6775_data *data,
+ 		  const struct regmap_config *regmapcfg);
 -- 
-2.35.1
+2.37.1
 
 
 
