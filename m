@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB5BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96737C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349152AbiHPARw (ORCPT
+        id S1350397AbiHPAR5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        Mon, 15 Aug 2022 20:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245700AbiHPAID (ORCPT
+        with ESMTP id S1351823AbiHPAIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:08:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E91CCD42;
-        Mon, 15 Aug 2022 13:28:51 -0700 (PDT)
+        Mon, 15 Aug 2022 20:08:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D086D173A0A;
+        Mon, 15 Aug 2022 13:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4228660EE9;
-        Mon, 15 Aug 2022 20:28:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E195C433C1;
-        Mon, 15 Aug 2022 20:28:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E72F611A1;
+        Mon, 15 Aug 2022 20:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2ECAC433D6;
+        Mon, 15 Aug 2022 20:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595330;
-        bh=7rSatraBdchFZq9eWy7keGz7HdtwWZBRr7vyDaCiar4=;
+        s=korg; t=1660595352;
+        bh=sxFls+DEIE/5Au1qzQoTG72ZJ/mCtssf17FvHJv4ZJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bm2/Gr2rn3Q4NsoSCi/vN0ULvcyw2OyETUA8lP5Hz3+YssMh72a0LIMVjx/2xGFm0
-         KFtqcr7t4rWRjgoFHBKC48zWlXcbodGC/3uCGliXr7c7Ld85/ELTWpLuaCOwWXM0wp
-         L4LYfjAokU1OMBiDYNpEBBnDlo4EbSe20/4gaooo=
+        b=gFZ99AORf4Xe1Azs0xGK5Z3I80ubAqlQn5iRdFR/QbLs291+RI3cH+voh7T651A1D
+         Cegq6rt3FnysNiNdu0T1Zl6PJbC8xbq8yvrsHSQxawCTBUAT8p6ztuaHwQRByOzJCr
+         JLfATQwebMo7NpNDZZNoMQQDkGXkDWhr2EQgTYbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Jacky Bai <ping.bai@nxp.com>, Abel Vesa <abel.vesa@linaro.org>,
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Peter Xu <peterx@redhat.com>, Ben Gardon <bgardon@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0723/1157] clk: imx: clk-fracn-gppll: fix mfd value
-Date:   Mon, 15 Aug 2022 20:01:19 +0200
-Message-Id: <20220815180508.399522877@linuxfoundation.org>
+Subject: [PATCH 5.19 0738/1157] KVM: x86: Fix errant brace in KVM capability handling
+Date:   Mon, 15 Aug 2022 20:01:34 +0200
+Message-Id: <20220815180509.001857237@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,45 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Ben Gardon <bgardon@google.com>
 
-[ Upstream commit 044034efbeea05f65c09d2ba15ceeab53b60e947 ]
+[ Upstream commit 1c4dc57328bf218e999951824dce75c6125c4f3c ]
 
-According to spec:
-A value of 0 is disallowed and should not be programmed in this register
+The braces around the KVM_CAP_XSAVE2 block also surround the
+KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
+move the curly brace back to where it belongs.
 
-Fix to 1.
+Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
 
-Fixes: 1b26cb8a77a4 ("clk: imx: support fracn gppll")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Jacky Bai <ping.bai@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-5-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+Message-Id: <20220613212523.3436117-8-bgardon@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-fracn-gppll.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/imx/clk-fracn-gppll.c b/drivers/clk/imx/clk-fracn-gppll.c
-index 71c102d950ab..36a53c60e71f 100644
---- a/drivers/clk/imx/clk-fracn-gppll.c
-+++ b/drivers/clk/imx/clk-fracn-gppll.c
-@@ -64,10 +64,10 @@ struct clk_fracn_gppll {
-  * Fout = Fvco / (rdiv * odiv)
-  */
- static const struct imx_fracn_gppll_rate_table fracn_tbl[] = {
--	PLL_FRACN_GP(650000000U, 81, 0, 0, 0, 3),
--	PLL_FRACN_GP(594000000U, 198, 0, 0, 0, 8),
--	PLL_FRACN_GP(560000000U, 70, 0, 0, 0, 3),
--	PLL_FRACN_GP(400000000U, 50, 0, 0, 0, 3),
-+	PLL_FRACN_GP(650000000U, 81, 0, 1, 0, 3),
-+	PLL_FRACN_GP(594000000U, 198, 0, 1, 0, 8),
-+	PLL_FRACN_GP(560000000U, 70, 0, 1, 0, 3),
-+	PLL_FRACN_GP(400000000U, 50, 0, 1, 0, 3),
- 	PLL_FRACN_GP(393216000U, 81, 92, 100, 0, 5)
- };
- 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 583fe0dffcd8..3ed0e86bf305 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4398,10 +4398,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		if (r < sizeof(struct kvm_xsave))
+ 			r = sizeof(struct kvm_xsave);
+ 		break;
++	}
+ 	case KVM_CAP_PMU_CAPABILITY:
+ 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
+ 		break;
+-	}
+ 	case KVM_CAP_DISABLE_QUIRKS2:
+ 		r = KVM_X86_VALID_QUIRKS;
+ 		break;
 -- 
 2.35.1
 
