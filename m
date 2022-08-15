@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A99C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E484C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243992AbiHOSwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
+        id S244063AbiHOSw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244231AbiHOSqt (ORCPT
+        with ESMTP id S244252AbiHOSqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:46:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED7841D01;
-        Mon, 15 Aug 2022 11:28:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F1160FBA;
-        Mon, 15 Aug 2022 18:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D203AC433D7;
-        Mon, 15 Aug 2022 18:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588102;
-        bh=9fFU841hpe5Pyc79KUrqRFYYT/dlO83nB9lU2JYsXWQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yz1HGcAky8HTi81egvG5nfYaXEuU94j7M5D5n3sgBGifs/ksVk8PWo875GZPYWeuY
-         HH3NLl5pl0qUqVio7p90pU/ZSUnfNt+/ybUTYV5yR2yC8ECuNwaeWcqKiafNz+DTCT
-         sZuXDgEKQGigFCHYTNGp/OMizU3+E6bBbCBytj8Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 264/779] i2c: Fix a potential use after free
-Date:   Mon, 15 Aug 2022 19:58:28 +0200
-Message-Id: <20220815180348.650294076@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:46:51 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1523A41D06
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:23 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id q6-20020a05683033c600b0061d2f64df5dso5969534ott.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8qfZVni2XH/RI/iesjrLRRQFFIAGyvbqRIgbTF4s4BE=;
+        b=a5C1taQFB89b3AGnirAiIEdh+mu154yh0pHMjrTR7a/ROQ50/2Lu0mzkBsSm+G3LIt
+         6AXpOP3h0N8XN76HDDoSQi3D7W/hRC+r+O11vnife9kmOk1a1mCQ26T5s85O+dZ7ef1p
+         rrue1CkSdJux/05RskCFW63R8f7ogddm0j4uYa4/90h+8370/txJlqYbuaEPUh4OW+kR
+         mgEN9GfbPGGb3jLAtZGekSZL70Rha+HyiuPtzaTwfLbZX+IqUsAoiE7gZm3iLAC+QpCO
+         98UMtucYlPM70Ennas7ZDE2YcyW3k3dUF2IT7LawoM6p1bEA6Q5Vh//CzZbAWazQzsta
+         5xdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8qfZVni2XH/RI/iesjrLRRQFFIAGyvbqRIgbTF4s4BE=;
+        b=aeRjHCQKk2T4Aro3u9kjwt8SleW5ZgF0w5yE9bTYZfgRTuUf2E9Z97IpQES3AENvFN
+         qgKs+vW9ZemDcZzQodQ4PIEVwdI8rkIfC3dOEPpuTXgz8OUDGNgOCisYUhG4+iG3/Kc9
+         VeSv+CFHVF57i+1PxoExxU123kNcyRC5e+ji6a5hYr7tQGoypu5uMSgDeRzqkh5yOerd
+         sDUlSRXpm/z7qfpdmSQq8xUS7aBwGNYFU0qOPxM2COt927Cx4Q+5o0HqcjX++znJPVD9
+         HNxuYQQc8BQp9OVpDyE2Eq+t13G3IX7J2909D7H8DwMTG3Mpo2aJlOMlTWY6PENxrHJn
+         GshQ==
+X-Gm-Message-State: ACgBeo2tG0eFUipO9wzOrK+wJ5Kilbz7N+GybPgaJMOE7gta3t/sXVDe
+        2mTjkNih7Vd1U2ZEyFjHErHjYHExSAvTS1AInuiGsVy+cRI=
+X-Google-Smtp-Source: AA6agR4WPkhmsptGd1XOB3Vh54cIr8wHdsrg+jtjRu9m6lduQwI838vBMBxq5N7FsgKfD3Gal982Qyqm+XiwE3ef/Io=
+X-Received: by 2002:a05:6830:25c4:b0:637:2a66:1dfd with SMTP id
+ d4-20020a05683025c400b006372a661dfdmr6294714otu.383.1660588103082; Mon, 15
+ Aug 2022 11:28:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 15 Aug 2022 20:27:46 +0200
+Message-ID: <CAPDyKFoZ-kzFPM88TCdgL7LLzB144oiEfCpofafLvTz51y3Hng@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mmc: pxamci: Fix an error handling path in pxamci_probe()
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Daniel Mack <daniel@zonque.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-mmc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Wang <vulab@iscas.ac.cn>
+On Tue, 26 Jul 2022 at 21:15, Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> The commit in Fixes: has moved some code around without updating gotos to
+> the error handling path.
+>
+> Update it now and release some resources if pxamci_of_init() fails.
+>
+> Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e4c72c06c367758a14f227c847f9d623f1994ecf ]
+Applied for fixes and by adding stable tag, thanks!
 
-Free the adap structure only after we are done using it.
-This patch just moves the put_device() down a bit to avoid the
-use after free.
-
-Fixes: 611e12ea0f12 ("i2c: core: manage i2c bus device refcount in i2c_[get|put]_adapter")
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
-[wsa: added comment to the code, added Fixes tag]
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/i2c/i2c-core-base.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index cfbef70e8ba7..8fb065caf30b 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -2464,8 +2464,9 @@ void i2c_put_adapter(struct i2c_adapter *adap)
- 	if (!adap)
- 		return;
- 
--	put_device(&adap->dev);
- 	module_put(adap->owner);
-+	/* Should be last, otherwise we risk use-after-free with 'adap' */
-+	put_device(&adap->dev);
- }
- EXPORT_SYMBOL(i2c_put_adapter);
- 
--- 
-2.35.1
+Kind regards
+Uffe
 
 
-
+> ---
+>  drivers/mmc/host/pxamci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/mmc/host/pxamci.c b/drivers/mmc/host/pxamci.c
+> index 0db9490dc659..37bf362a0ed5 100644
+> --- a/drivers/mmc/host/pxamci.c
+> +++ b/drivers/mmc/host/pxamci.c
+> @@ -648,7 +648,7 @@ static int pxamci_probe(struct platform_device *pdev)
+>
+>         ret = pxamci_of_init(pdev, mmc);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+>
+>         host = mmc_priv(mmc);
+>         host->mmc = mmc;
+> --
+> 2.34.1
+>
