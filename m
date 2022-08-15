@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CEFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CC3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237907AbiHOSPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
+        id S233304AbiHOSQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233564AbiHOSOx (ORCPT
+        with ESMTP id S233419AbiHOSO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:14:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17962AC68;
-        Mon, 15 Aug 2022 11:14:14 -0700 (PDT)
+        Mon, 15 Aug 2022 14:14:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E642A24C;
+        Mon, 15 Aug 2022 11:14:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87D0CB81074;
-        Mon, 15 Aug 2022 18:14:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB2BC433D6;
-        Mon, 15 Aug 2022 18:14:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCAEB6129B;
+        Mon, 15 Aug 2022 18:14:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DE3C433D7;
+        Mon, 15 Aug 2022 18:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587252;
-        bh=llpMxHGJXWP5cf7sbBkd+Qs7oAxQTdYK6TfLN8Q4UGc=;
+        s=korg; t=1660587258;
+        bh=yOLQpb04Z2qZOjNaMXyuNv0mOFhFVD78+CwPstLEaf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y0tZAEUnSCkBrSGyVFJz5KsGds3kox0Ge+U/BY+o/EJHpy7fSQdct8oWbO1xjL/O9
-         67oKGyD7O8nFnByASVT8pqnzsJScpESIIQnlChpuz6EN9TXE5Sf7vDuJhCnnOFD2uW
-         i+Vs4QjJKHV2D4+ufLrlW9QgN+uubsqr2iI5YVxg=
+        b=vY0SdzjnnFdx4wTcpXYfE18ItYMec/YxaSXTX4yhHkyD+7VUlvk9FAWZQOcRuzjUi
+         /niZBfbaf8jbJLJZ0VFHO12W7z47ZUxoV+5mzoBuQIxCi49VS446NuZaXwawbunp5B
+         FV+tsvTO3Ll9wg89lAXXTH6sjKr/TcArrgPkpi9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 018/779] HID: wacom: Only report rotation for art pen
-Date:   Mon, 15 Aug 2022 19:54:22 +0200
-Message-Id: <20220815180337.971403646@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 5.15 028/779] KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
+Date:   Mon, 15 Aug 2022 19:54:32 +0200
+Message-Id: <20220815180338.422616758@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,88 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping Cheng <pinglinux@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 7ccced33a0ba39b0103ae1dfbf7f1dffdc0a1bc2 upstream.
+commit ec6e4d863258d4bfb36d48d5e3ef68140234d688 upstream.
 
-The generic routine, wacom_wac_pen_event, turns rotation value 90
-degree anti-clockwise before posting the events. This non-zero
-event trggers a non-zero ABS_Z event for non art pen tools. However,
-HID_DG_TWIST is only supported by art pen.
+Wait to mark the TSS as busy during LTR emulation until after all fault
+checks for the LTR have passed.  Specifically, don't mark the TSS busy if
+the new TSS base is non-canonical.
 
-[jkosina@suse.cz: fix build: add missing brace]
+Opportunistically drop the one-off !seg_desc.PRESENT check for TR as the
+only reason for the early check was to avoid marking a !PRESENT TSS as
+busy, i.e. the common !PRESENT is now done before setting the busy bit.
+
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Reported-by: syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
-Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-2-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |   29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -638,9 +638,26 @@ static int wacom_intuos_id_mangle(int to
- 	return (tool_id & ~0xFFF) << 4 | (tool_id & 0xFFF);
- }
- 
-+static bool wacom_is_art_pen(int tool_id)
-+{
-+	bool is_art_pen = false;
-+
-+	switch (tool_id) {
-+	case 0x885:	/* Intuos3 Marker Pen */
-+	case 0x804:	/* Intuos4/5 13HD/24HD Marker Pen */
-+	case 0x10804:	/* Intuos4/5 13HD/24HD Art Pen */
-+		is_art_pen = true;
-+		break;
-+	}
-+	return is_art_pen;
-+}
-+
- static int wacom_intuos_get_tool_type(int tool_id)
- {
--	int tool_type;
-+	int tool_type = BTN_TOOL_PEN;
-+
-+	if (wacom_is_art_pen(tool_id))
-+		return tool_type;
- 
- 	switch (tool_id) {
- 	case 0x812: /* Inking pen */
-@@ -655,12 +672,9 @@ static int wacom_intuos_get_tool_type(in
- 	case 0x852:
- 	case 0x823: /* Intuos3 Grip Pen */
- 	case 0x813: /* Intuos3 Classic Pen */
--	case 0x885: /* Intuos3 Marker Pen */
- 	case 0x802: /* Intuos4/5 13HD/24HD General Pen */
--	case 0x804: /* Intuos4/5 13HD/24HD Marker Pen */
- 	case 0x8e2: /* IntuosHT2 pen */
- 	case 0x022:
--	case 0x10804: /* Intuos4/5 13HD/24HD Art Pen */
- 	case 0x10842: /* MobileStudio Pro Pro Pen slim */
- 	case 0x14802: /* Intuos4/5 13HD/24HD Classic Pen */
- 	case 0x16802: /* Cintiq 13HD Pro Pen */
-@@ -718,10 +732,6 @@ static int wacom_intuos_get_tool_type(in
- 	case 0x10902: /* Intuos4/5 13HD/24HD Airbrush */
- 		tool_type = BTN_TOOL_AIRBRUSH;
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1669,16 +1669,6 @@ static int __load_segment_descriptor(str
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
+-		if (!seg_desc.p) {
+-			err_vec = NP_VECTOR;
+-			goto exception;
+-		}
+-		old_desc = seg_desc;
+-		seg_desc.type |= 2; /* busy */
+-		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+-						  sizeof(seg_desc), &ctxt->exception);
+-		if (ret != X86EMUL_CONTINUE)
+-			return ret;
  		break;
--
--	default: /* Unknown tool */
--		tool_type = BTN_TOOL_PEN;
--		break;
+ 	case VCPU_SREG_LDTR:
+ 		if (seg_desc.s || seg_desc.type != 2)
+@@ -1719,6 +1709,15 @@ static int __load_segment_descriptor(str
+ 				((u64)base3 << 32), ctxt))
+ 			return emulate_gp(ctxt, 0);
  	}
- 	return tool_type;
- }
-@@ -2323,6 +2333,9 @@ static void wacom_wac_pen_event(struct h
- 		}
- 		return;
- 	case HID_DG_TWIST:
-+		/* don't modify the value if the pen doesn't support the feature */
-+		if (!wacom_is_art_pen(wacom_wac->id[0])) return;
 +
- 		/*
- 		 * Userspace expects pen twist to have its zero point when
- 		 * the buttons/finger is on the tablet's left. HID values
++	if (seg == VCPU_SREG_TR) {
++		old_desc = seg_desc;
++		seg_desc.type |= 2; /* busy */
++		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
++						  sizeof(seg_desc), &ctxt->exception);
++		if (ret != X86EMUL_CONTINUE)
++			return ret;
++	}
+ load:
+ 	ctxt->ops->set_segment(ctxt, selector, &seg_desc, base3, seg);
+ 	if (desc)
 
 
