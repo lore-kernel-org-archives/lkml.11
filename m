@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12ABC32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D304C32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347150AbiHOUQu (ORCPT
+        id S1347036AbiHOUQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        Mon, 15 Aug 2022 16:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345876AbiHOUJs (ORCPT
+        with ESMTP id S1346112AbiHOUKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964C860D1;
-        Mon, 15 Aug 2022 11:56:16 -0700 (PDT)
+        Mon, 15 Aug 2022 16:10:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692FB64FD;
+        Mon, 15 Aug 2022 11:56:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33AFB6123D;
-        Mon, 15 Aug 2022 18:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DA0C433D7;
-        Mon, 15 Aug 2022 18:56:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12D0EB81082;
+        Mon, 15 Aug 2022 18:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E7FC433D6;
+        Mon, 15 Aug 2022 18:56:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589775;
-        bh=2s6DLnBMZjpDPk2dGSvozIT9Ci6o/Qk7OdSE3YjsmmY=;
+        s=korg; t=1660589804;
+        bh=Wujj5i866p9om6sVU/5OKGHjwQgKQ35nherAfS8OOgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BJdO86NdPkkEcOcVxkUo9AOtbTu/00uhfPWBByrsyhB+10JOOn2hcA9To4YWpeJjh
-         z+ZUGIY8Bk+XoH8Lhev/5qDXgF7oQkksEEfOI3V+XRDp/0Aoxy88j7Rr8DSKLlFiKA
-         Rk3w1LDrKX3VV7oQxcFt+qHWsnwksklW4SJdjcOE=
+        b=1b69kOmwzoLvxg5QBId2FYNh3F2K8WOv2CwxLMH5rW1jGGb7dbQr5jYWrgZgSGJou
+         uT4beftPI9j4XOxXxrr3Qn2UQ07G+sexqf2sxCHXtp9+S4EZJhVbEpsZIHqpZFCLXa
+         7NKgoAK8Cg/q4NGlFW98l1X6Ht4uYqxY1UjHYfK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 0045/1095] ALSA: hda/realtek: Add a quirk for HP OMEN 15 (8786) mute LED
-Date:   Mon, 15 Aug 2022 19:50:44 +0200
-Message-Id: <20220815180431.311522894@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>, stable@kernel.org
+Subject: [PATCH 5.18 0053/1095] fix short copy handling in copy_mc_pipe_to_iter()
+Date:   Mon, 15 Aug 2022 19:50:52 +0200
+Message-Id: <20220815180431.667421965@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,31 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bedant Patnaik <bedant.patnaik@gmail.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 30267718fe2d4dbea49015b022f6f1fe16ca31ab upstream.
+commit c3497fd009ef2c59eea60d21c3ac22de3585ed7d upstream.
 
-Board ID 8786 seems to be another variant of the Omen 15 that needs
-ALC285_FIXUP_HP_MUTE_LED for working mute LED.
+Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
+result in a short copy.  In that case we need to trim the unused
+buffers, as well as the length of partially filled one - it's not
+enough to set ->head, ->iov_offset and ->count to reflect how
+much had we copied.  Not hard to fix, fortunately...
 
-Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220809142455.6473-1-bedant.patnaik@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
+rather than iov_iter.c - it has nothing to do with iov_iter and
+having it will allow us to avoid an ugly kludge in fs/splice.c.
+We could put it into lib/iov_iter.c for now and move it later,
+but I don't see the point going that way...
+
+Cc: stable@kernel.org # 4.19+
+Fixes: ca146f6f091e "lib/iov_iter: Fix pipe handling in _copy_to_iter_mcsafe()"
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/linux/pipe_fs_i.h |    9 +++++++++
+ lib/iov_iter.c            |   15 +++++++++++----
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9230,6 +9230,7 @@ static const struct snd_pci_quirk alc269
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
-+	SND_PCI_QUIRK(0x103c, 0x8786, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -229,6 +229,15 @@ static inline bool pipe_buf_try_steal(st
+ 	return buf->ops->try_steal(pipe, buf);
+ }
+ 
++static inline void pipe_discard_from(struct pipe_inode_info *pipe,
++		unsigned int old_head)
++{
++	unsigned int mask = pipe->ring_size - 1;
++
++	while (pipe->head > old_head)
++		pipe_buf_release(pipe, &pipe->bufs[--pipe->head & mask]);
++}
++
+ /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
+    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
+ #define PIPE_SIZE		PAGE_SIZE
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -689,6 +689,7 @@ static size_t copy_mc_pipe_to_iter(const
+ 	struct pipe_inode_info *pipe = i->pipe;
+ 	unsigned int p_mask = pipe->ring_size - 1;
+ 	unsigned int i_head;
++	unsigned int valid = pipe->head;
+ 	size_t n, off, xfer = 0;
+ 
+ 	if (!sanity(i))
+@@ -702,11 +703,17 @@ static size_t copy_mc_pipe_to_iter(const
+ 		rem = copy_mc_to_kernel(p + off, addr + xfer, chunk);
+ 		chunk -= rem;
+ 		kunmap_local(p);
+-		i->head = i_head;
+-		i->iov_offset = off + chunk;
+-		xfer += chunk;
+-		if (rem)
++		if (chunk) {
++			i->head = i_head;
++			i->iov_offset = off + chunk;
++			xfer += chunk;
++			valid = i_head + 1;
++		}
++		if (rem) {
++			pipe->bufs[i_head & p_mask].len -= rem;
++			pipe_discard_from(pipe, valid);
+ 			break;
++		}
+ 		n -= chunk;
+ 		off = 0;
+ 		i_head++;
 
 
