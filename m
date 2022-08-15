@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E7EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CB7C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbiHPAwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
+        id S239227AbiHPAw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349725AbiHPAqn (ORCPT
+        with ESMTP id S1349786AbiHPAqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CC7D87FD;
-        Mon, 15 Aug 2022 13:45:05 -0700 (PDT)
+        Mon, 15 Aug 2022 20:46:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8033C196868;
+        Mon, 15 Aug 2022 13:45:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F5C3B811A6;
-        Mon, 15 Aug 2022 20:45:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4493C433D6;
-        Mon, 15 Aug 2022 20:45:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C5561241;
+        Mon, 15 Aug 2022 20:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE35CC433C1;
+        Mon, 15 Aug 2022 20:45:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596303;
-        bh=9/s9PwEz8qdZIEIq4LzwD7S4d3nxllJUbhvznSvycco=;
+        s=korg; t=1660596321;
+        bh=Tr2M4nayNpPSq3PjjPGO+MGyVIhL9QGHlDEJcNCeS/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1DI6AUl7mjT3xlANx7sKthfe07bNBeIM7Pc7xww6q6Uzl6tj33pIYI0dr4kBu3MNB
-         /xMQwXnPdK0n/LjdFYYjHIpOk8eI3QMHixRbFF92NcIroEIvc8CROisE3oLK2xrrGT
-         fUIC07M4jQNXw+Z4oiNettGt06YHW7tgLLcmiLNY=
+        b=arMA1MurgJkuSj+4lFAuTFpeerDxOgMbe3uZTC2Hy+nfB3EKTIdfT2h20nWtyqQKH
+         /BVeqPtXcHrYOWHegWIwuNfrHqWgltexJHoOszNWarZZLXe9P0LFXegYbBpk9/2gQ3
+         Mhz9RR6uTXbcvp2w8ClSPYHKT6zkO8dyQZq2xQI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
+        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1036/1157] scsi: qla2xxx: Fix discovery issues in FC-AL topology
-Date:   Mon, 15 Aug 2022 20:06:32 +0200
-Message-Id: <20220815180521.418220972@linuxfoundation.org>
+Subject: [PATCH 5.19 1041/1157] scsi: qla2xxx: Wind down adapter after PCIe error
+Date:   Mon, 15 Aug 2022 20:06:37 +0200
+Message-Id: <20220815180521.643619758@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,107 +49,199 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
+commit d3117c83ba316b3200d9f2fe900f2b9a5525a25c upstream.
 
-A direct attach tape device, when gets swapped with another, was not
-discovered. Fix this by looking at loop map and reinitialize link if there
-are devices present.
+Put adapter into a wind down state if OS does not make any attempt to
+recover the adapter after PCIe error.
 
-Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
-Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
+Link: https://lore.kernel.org/r/20220616053508.27186-4-njavali@marvell.com
 Cc: stable@vger.kernel.org
-Reported-by: Tony Battersby <tonyb@cybernetics.com>
-Tested-by: Tony Battersby <tonyb@cybernetics.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
- drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
- drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
- 3 files changed, 35 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_bsg.c  |   10 +++++++-
+ drivers/scsi/qla2xxx/qla_def.h  |    4 +++
+ drivers/scsi/qla2xxx/qla_init.c |   20 ++++++++++++++++
+ drivers/scsi/qla2xxx/qla_os.c   |   48 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 81 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_gbl.h
-+++ b/drivers/scsi/qla2xxx/qla_gbl.h
-@@ -434,7 +434,8 @@ extern int
- qla2x00_get_resource_cnts(scsi_qla_host_t *);
+--- a/drivers/scsi/qla2xxx/qla_bsg.c
++++ b/drivers/scsi/qla2xxx/qla_bsg.c
+@@ -2975,6 +2975,13 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_
  
- extern int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
-+		u8 *num_entries);
+ 	ql_log(ql_log_info, vha, 0x708b, "%s CMD timeout. bsg ptr %p.\n",
+ 	    __func__, bsg_job);
++
++	if (qla2x00_isp_reg_stat(ha)) {
++		ql_log(ql_log_info, vha, 0x9007,
++		    "PCI/Register disconnect.\n");
++		qla_pci_set_eeh_busy(vha);
++	}
++
+ 	/* find the bsg job from the active list of commands */
+ 	spin_lock_irqsave(&ha->hardware_lock, flags);
+ 	for (que = 0; que < ha->max_req_queues; que++) {
+@@ -2992,7 +2999,8 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_
+ 			    sp->u.bsg_job == bsg_job) {
+ 				req->outstanding_cmds[cnt] = NULL;
+ 				spin_unlock_irqrestore(&ha->hardware_lock, flags);
+-				if (ha->isp_ops->abort_command(sp)) {
++
++				if (!ha->flags.eeh_busy && ha->isp_ops->abort_command(sp)) {
+ 					ql_log(ql_log_warn, vha, 0x7089,
+ 					    "mbx abort_command failed.\n");
+ 					bsg_reply->result = -EIO;
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -4048,6 +4048,9 @@ struct qla_hw_data {
+ 		uint32_t	n2n_fw_acc_sec:1;
+ 		uint32_t	plogi_template_valid:1;
+ 		uint32_t	port_isolated:1;
++		uint32_t	eeh_flush:2;
++#define EEH_FLUSH_RDY  1
++#define EEH_FLUSH_DONE 2
+ 	} flags;
  
- extern int
- qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
+ 	uint16_t max_exchg;
+@@ -4082,6 +4085,7 @@ struct qla_hw_data {
+ 	uint32_t		rsp_que_len;
+ 	uint32_t		req_que_off;
+ 	uint32_t		rsp_que_off;
++	unsigned long		eeh_jif;
+ 
+ 	/* Multi queue data structs */
+ 	device_reg_t *mqiobase;
 --- a/drivers/scsi/qla2xxx/qla_init.c
 +++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -5505,6 +5505,22 @@ static int qla2x00_configure_n2n_loop(sc
- 	return QLA_FUNCTION_FAILED;
+@@ -47,6 +47,7 @@ qla2x00_sp_timeout(struct timer_list *t)
+ {
+ 	srb_t *sp = from_timer(sp, t, u.iocb_cmd.timer);
+ 	struct srb_iocb *iocb;
++	scsi_qla_host_t *vha = sp->vha;
+ 
+ 	WARN_ON(irqs_disabled());
+ 	iocb = &sp->u.iocb_cmd;
+@@ -54,6 +55,12 @@ qla2x00_sp_timeout(struct timer_list *t)
+ 
+ 	/* ref: TMR */
+ 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
++
++	if (vha && qla2x00_isp_reg_stat(vha->hw)) {
++		ql_log(ql_log_info, vha, 0x9008,
++		    "PCI/Register disconnect.\n");
++		qla_pci_set_eeh_busy(vha);
++	}
  }
  
-+static void
-+qla_reinitialize_link(scsi_qla_host_t *vha)
-+{
-+	int rval;
+ void qla2x00_sp_free(srb_t *sp)
+@@ -9702,6 +9709,12 @@ int qla2xxx_disable_port(struct Scsi_Hos
+ 
+ 	vha->hw->flags.port_isolated = 1;
+ 
++	if (qla2x00_isp_reg_stat(vha->hw)) {
++		ql_log(ql_log_info, vha, 0x9006,
++		    "PCI/Register disconnect, exiting.\n");
++		qla_pci_set_eeh_busy(vha);
++		return FAILED;
++	}
+ 	if (qla2x00_chip_is_down(vha))
+ 		return 0;
+ 
+@@ -9717,6 +9730,13 @@ int qla2xxx_enable_port(struct Scsi_Host
+ {
+ 	scsi_qla_host_t *vha = shost_priv(host);
+ 
++	if (qla2x00_isp_reg_stat(vha->hw)) {
++		ql_log(ql_log_info, vha, 0x9001,
++		    "PCI/Register disconnect, exiting.\n");
++		qla_pci_set_eeh_busy(vha);
++		return FAILED;
++	}
 +
-+	atomic_set(&vha->loop_state, LOOP_DOWN);
-+	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-+	rval = qla2x00_full_login_lip(vha);
-+	if (rval == QLA_SUCCESS) {
-+		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
-+	} else {
-+		ql_dbg(ql_dbg_disc, vha, 0xd051,
-+			"Link reinitialization failed (%d)\n", rval);
+ 	vha->hw->flags.port_isolated = 0;
+ 	/* Set the flag to 1, so that isp_abort can proceed */
+ 	vha->flags.online = 1;
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -333,6 +333,11 @@ MODULE_PARM_DESC(ql2xabts_wait_nvme,
+ 		 "To wait for ABTS response on I/O timeouts for NVMe. (default: 1)");
+ 
+ 
++u32 ql2xdelay_before_pci_error_handling = 5;
++module_param(ql2xdelay_before_pci_error_handling, uint, 0644);
++MODULE_PARM_DESC(ql2xdelay_before_pci_error_handling,
++	"Number of seconds delayed before qla begin PCI error self-handling (default: 5).\n");
++
+ static void qla2x00_clear_drv_active(struct qla_hw_data *);
+ static void qla2x00_free_device(scsi_qla_host_t *);
+ static int qla2xxx_map_queues(struct Scsi_Host *shost);
+@@ -7257,6 +7262,44 @@ static void qla_heart_beat(struct scsi_q
+ 	}
+ }
+ 
++static void qla_wind_down_chip(scsi_qla_host_t *vha)
++{
++	struct qla_hw_data *ha = vha->hw;
++
++	if (!ha->flags.eeh_busy)
++		return;
++	if (ha->pci_error_state)
++		/* system is trying to recover */
++		return;
++
++	/*
++	 * Current system is not handling PCIE error.  At this point, this is
++	 * best effort to wind down the adapter.
++	 */
++	if (time_after_eq(jiffies, ha->eeh_jif + ql2xdelay_before_pci_error_handling * HZ) &&
++	    !ha->flags.eeh_flush) {
++		ql_log(ql_log_info, vha, 0x9009,
++		    "PCI Error detected, attempting to reset hardware.\n");
++
++		ha->isp_ops->reset_chip(vha);
++		ha->isp_ops->disable_intrs(ha);
++
++		ha->flags.eeh_flush = EEH_FLUSH_RDY;
++		ha->eeh_jif = jiffies;
++
++	} else if (ha->flags.eeh_flush == EEH_FLUSH_RDY &&
++	    time_after_eq(jiffies, ha->eeh_jif +  5 * HZ)) {
++		pci_clear_master(ha->pdev);
++
++		/* flush all command */
++		qla2x00_abort_isp_cleanup(vha);
++		ha->flags.eeh_flush = EEH_FLUSH_DONE;
++
++		ql_log(ql_log_info, vha, 0x900a,
++		    "PCI Error handling complete, all IOs aborted.\n");
 +	}
 +}
 +
- /*
-  * qla2x00_configure_local_loop
-  *	Updates Fibre Channel Device Database with local loop devices.
-@@ -5556,6 +5572,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
- 		spin_unlock_irqrestore(&vha->work_lock, flags);
+ /**************************************************************************
+ *   qla2x00_timer
+ *
+@@ -7280,6 +7323,8 @@ qla2x00_timer(struct timer_list *t)
+ 	fc_port_t *fcport = NULL;
  
- 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
-+			u8 loop_map_entries = 0;
-+			int rc;
+ 	if (ha->flags.eeh_busy) {
++		qla_wind_down_chip(vha);
 +
-+			rc = qla2x00_get_fcal_position_map(vha, NULL,
-+						&loop_map_entries);
-+			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
-+				/*
-+				 * There are devices that are still not logged
-+				 * in. Reinitialize to give them a chance.
-+				 */
-+				qla_reinitialize_link(vha);
-+				return QLA_FUNCTION_FAILED;
-+			}
- 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
- 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
- 		}
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -3068,7 +3068,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
-  *	Kernel context.
-  */
- int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
-+		u8 *num_entries)
- {
- 	int rval;
- 	mbx_cmd_t mc;
-@@ -3108,6 +3109,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
+ 		ql_dbg(ql_dbg_timer, vha, 0x6000,
+ 		    "EEH = %d, restarting timer.\n",
+ 		    ha->flags.eeh_busy);
+@@ -7860,6 +7905,9 @@ void qla_pci_set_eeh_busy(struct scsi_ql
  
- 		if (pos_map)
- 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
-+		if (num_entries)
-+			*num_entries = pmap[0];
+ 	spin_lock_irqsave(&base_vha->work_lock, flags);
+ 	if (!ha->flags.eeh_busy) {
++		ha->eeh_jif = jiffies;
++		ha->flags.eeh_flush = 0;
++
+ 		ha->flags.eeh_busy = 1;
+ 		do_cleanup = true;
  	}
- 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
- 
 
 
