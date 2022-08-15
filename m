@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E92C8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:54:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D581DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352290AbiHOWyN (ORCPT
+        id S1352295AbiHOWyd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
+        Mon, 15 Aug 2022 18:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352512AbiHOWwD (ORCPT
+        with ESMTP id S1351974AbiHOWw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:52:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDE91394FF;
-        Mon, 15 Aug 2022 12:54:34 -0700 (PDT)
+        Mon, 15 Aug 2022 18:52:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AE6139DB7;
+        Mon, 15 Aug 2022 12:54:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F3AE6113B;
-        Mon, 15 Aug 2022 19:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DCEC433C1;
-        Mon, 15 Aug 2022 19:54:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EED99B80EAD;
+        Mon, 15 Aug 2022 19:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57EBCC433D6;
+        Mon, 15 Aug 2022 19:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593272;
-        bh=9aFWhDb0sLjSYCbmI8Iu1nyBKM24DyHPC+Y0uMpBoEI=;
+        s=korg; t=1660593278;
+        bh=/cGEn+6BCeTjq2+UqwOMiLt2G6tohuKeiGuDl+l7d1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHgz+qkJCKeKJyZygYVayTKf2vekCx4q/8YNdTAqMo61SjtAYkSKCBGwuqCksf8Kh
-         Ufun0Pw+UN/S0+23hEzzznzwT8FEovNkW2wDKmwH4aoRgqkQ/PoxOj3VehS5yQ0Pzm
-         vaMcl7g/7E/3FS8KN/LFkzTvKlUOp61gHg+BCJ1E=
+        b=L8TmRXjBbEfbVoKMG+540Aj7CTKG06hg9RDPtt/zvtjZ6j/1y3zfaReM7fqaT2I3S
+         HfyQN15771iSk8Kn4YCCsynRyrzxClikJRdCCsbkULBUYjLsXTNUvfgZDYJcPRyX+4
+         Bb0KqKvj7pGSLLJrxYyIanviTs5b4Xfg6/NwpGCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0894/1095] mfd: max77620: Fix refcount leak in max77620_initialise_fps
-Date:   Mon, 15 Aug 2022 20:04:53 +0200
-Message-Id: <20220815180506.311693811@linuxfoundation.org>
+Subject: [PATCH 5.19 0240/1157] ARM: dts: qcom-msm8974: fix irq type on blsp2_uart1
+Date:   Mon, 15 Aug 2022 19:53:16 +0200
+Message-Id: <20220815180449.157971905@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Luca Weiss <luca@z3ntu.xyz>
 
-[ Upstream commit 1520669c8255bd637c6b248b2be910e2688d38dd ]
+[ Upstream commit ab1489017aa7a9f02e24bee73cf9ec8079cd3909 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+IRQ_TYPE_NONE is invalid, so use the correct interrupt type.
 
-Fixes: 327156c59360 ("mfd: max77620: Add core driver for MAX77620/MAX20024")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Fixes: b05f82b152c9 ("ARM: dts: qcom: msm8974: Add blsp2_uart7 for bluetooth on sirius")
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220601043222.64441-1-linmq006@gmail.com
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220522083618.17894-1-luca@z3ntu.xyz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/max77620.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/max77620.c b/drivers/mfd/max77620.c
-index fec2096474ad..a6661e07035b 100644
---- a/drivers/mfd/max77620.c
-+++ b/drivers/mfd/max77620.c
-@@ -419,9 +419,11 @@ static int max77620_initialise_fps(struct max77620_chip *chip)
- 		ret = max77620_config_fps(chip, fps_child);
- 		if (ret < 0) {
- 			of_node_put(fps_child);
-+			of_node_put(fps_np);
- 			return ret;
- 		}
- 	}
-+	of_node_put(fps_np);
- 
- 	config = chip->enable_global_lpm ? MAX77620_ONOFFCNFG2_SLP_LPM_MSK : 0;
- 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index c3b8a6d63027..ce9cb5e4e95d 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -580,7 +580,7 @@ blsp2_dma: dma-controller@f9944000 {
+ 		blsp2_uart1: serial@f995d000 {
+ 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+ 			reg = <0xf995d000 0x1000>;
+-			interrupts = <GIC_SPI 113 IRQ_TYPE_NONE>;
++			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&gcc GCC_BLSP2_UART1_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
+ 			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
 -- 
 2.35.1
 
