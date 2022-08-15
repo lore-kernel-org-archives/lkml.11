@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38372C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4481C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354462AbiHOXsR (ORCPT
+        id S1354492AbiHOXsX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
+        Mon, 15 Aug 2022 19:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354428AbiHOXmJ (ORCPT
+        with ESMTP id S1354216AbiHOXlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:42:09 -0400
+        Mon, 15 Aug 2022 19:41:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8BC32EC0;
-        Mon, 15 Aug 2022 13:13:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C6DE81;
+        Mon, 15 Aug 2022 13:11:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5E4B80EA8;
-        Mon, 15 Aug 2022 20:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF14FC433D6;
-        Mon, 15 Aug 2022 20:13:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A484B80EA8;
+        Mon, 15 Aug 2022 20:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A931C433D6;
+        Mon, 15 Aug 2022 20:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594406;
-        bh=ZCTlZ6oiSDxVQ1XvejSCzZ84C+U5CBdJqQG1WcctKyc=;
+        s=korg; t=1660594271;
+        bh=igCe9XD8FLq279pDxbTi5slTHMaSC9V0gxCxATN22HI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvOFvV7ORMeu7XMQpriZhya4GjiKuHWRiQC/ij3Yu2H7vvpnW3gbOCwLthkgohmXQ
-         DRL1sP03V+qs1E4hXXLdGHtynf/P6svT9v72FTy6Vvi5H+SU1CriBUUl7tJXl+BZjK
-         Xv/SwKjbUfgg7POrO7t0ec8ORefXyVPoZd1NI6Ek=
+        b=l3HXW8Bqoa+h/0h7/7Zk2TmODA/AjNNTOfJ6ZZhKpsjbujXUDeO2K9U6t0kxmOvlJ
+         4i0NkPq6D46daBiMc4OhVzqvtSN+yNbQsXhIH6bEYZ/SKkcNvO3/blFmZda2P8cDQP
+         sCWz9zl2qEsjc4P9aRg4bnuCTVeNOnSfPu/Y4MPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0435/1157] drm/mediatek: dpi: Only enable dpi after the bridge is enabled
-Date:   Mon, 15 Aug 2022 19:56:31 +0200
-Message-Id: <20220815180457.049435147@linuxfoundation.org>
+Subject: [PATCH 5.19 0404/1157] media: tw686x: Fix memory leak in tw686x_video_init
+Date:   Mon, 15 Aug 2022 19:56:00 +0200
+Message-Id: <20220815180455.834135546@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,46 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit aed61ef6beb911cc043af0f2f291167663995065 ]
+[ Upstream commit e0b212ec9d8177d6f7c404315293f6a085d6ee42 ]
 
-Enabling the dpi too early causes glitches on screen.
+video_device_alloc() allocates memory for vdev,
+when video_register_device() fails, it doesn't release the memory and
+leads to memory leak, call video_device_release() to fix this.
 
-Move the call to mtk_dpi_enable() at the end of the bridge_enable
-callback to ensure everything is setup properly before enabling dpi.
-
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-16-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: 704a84ccdbf1 ("[media] media: Support Intersil/Techwell TW686x-based video capture cards")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/pci/tw686x/tw686x-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 675e2e4072df..41c783349321 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -417,7 +417,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
- 	if (dpi->pinctrl && dpi->pins_dpi)
- 		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
+diff --git a/drivers/media/pci/tw686x/tw686x-video.c b/drivers/media/pci/tw686x/tw686x-video.c
+index 6344a479119f..3ebf7a2c95f0 100644
+--- a/drivers/media/pci/tw686x/tw686x-video.c
++++ b/drivers/media/pci/tw686x/tw686x-video.c
+@@ -1280,8 +1280,10 @@ int tw686x_video_init(struct tw686x_dev *dev)
+ 		video_set_drvdata(vdev, vc);
  
--	mtk_dpi_enable(dpi);
- 	return 0;
+ 		err = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
+-		if (err < 0)
++		if (err < 0) {
++			video_device_release(vdev);
+ 			goto error;
++		}
+ 		vc->num = vdev->num;
+ 	}
  
- err_pixel:
-@@ -639,6 +638,7 @@ static void mtk_dpi_bridge_enable(struct drm_bridge *bridge)
- 
- 	mtk_dpi_power_on(dpi);
- 	mtk_dpi_set_display_mode(dpi, &dpi->mode);
-+	mtk_dpi_enable(dpi);
- }
- 
- static enum drm_mode_status
 -- 
 2.35.1
 
