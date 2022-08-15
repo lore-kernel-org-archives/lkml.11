@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94B0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FE8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345218AbiHOTs5 (ORCPT
+        id S1345236AbiHOTtD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
+        Mon, 15 Aug 2022 15:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345517AbiHOTrB (ORCPT
+        with ESMTP id S1345530AbiHOTrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:47:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D773C6FA34;
-        Mon, 15 Aug 2022 11:49:24 -0700 (PDT)
+        Mon, 15 Aug 2022 15:47:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA2F70E46;
+        Mon, 15 Aug 2022 11:49:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D80EB81057;
-        Mon, 15 Aug 2022 18:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B58C433C1;
-        Mon, 15 Aug 2022 18:49:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C713661154;
+        Mon, 15 Aug 2022 18:49:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9842EC433D7;
+        Mon, 15 Aug 2022 18:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589361;
-        bh=TRLbzgGhbaLzAl3vigtoJ/UZSgPoInJV6+BZ2ZoZeNM=;
+        s=korg; t=1660589365;
+        bh=ipEuWqVwLQzWBrbxUH2ccIIU5vSZ5RZEqX7SzOLfPMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUpAc7FIxdjLrSVNa1NUjviZQYDrZNF8ELzcoScnWgYZHTsAhjyjd3RtuvFLHJ8ps
-         a/a7/mzSyoeiZsw7+9kdNcEKe8r8JlL+irI5CXrfv+DTiPiNZ8/xBpzPz0EG4/t9Y2
-         6+stHKr8Ga5eCm/e12/Va2utjIXr/KqDSEgST2v8=
+        b=BsjZPgd+me1py/ypzfOqYl8Pf26a9HNWwE60G9Gip8lkeZ/o8Owsw36K7NHv58BSX
+         V1WxRBVDQE87cndJs0ygkPy8ynj4wlfjNFEVmqd0ZCykEZfeYck2yLpxvJ7LtodOgL
+         PTZoxQF07K1p6Q9gQoJjaW2AtidBQ9DMX5DtvI7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        stable@vger.kernel.org, Sungjong Seo <sj1557.seo@samsung.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 693/779] drm/dp/mst: Read the extended DPCD capabilities during system resume
-Date:   Mon, 15 Aug 2022 20:05:37 +0200
-Message-Id: <20220815180406.963345371@linuxfoundation.org>
+Subject: [PATCH 5.15 664/779] f2fs: allow compression for mmap files in compress_mode=user
+Date:   Mon, 15 Aug 2022 20:05:08 +0200
+Message-Id: <20220815180405.736724412@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,55 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Imre Deak <imre.deak@intel.com>
+From: Sungjong Seo <sj1557.seo@samsung.com>
 
-[ Upstream commit 7a710a8bc909313951eb9252d8419924c771d7c2 ]
+[ Upstream commit 66d34fcbbe63ebd8584b792e0d741f6648100894 ]
 
-The WD22TB4 Thunderbolt dock at least will revert its DP_MAX_LINK_RATE
-from HBR3 to HBR2 after system suspend/resume if the DP_DP13_DPCD_REV
-registers are not read subsequently also as required.
+Since commit e3c548323d32 ("f2fs: let's allow compression for mmap files"),
+it has been allowed to compress mmap files. However, in compress_mode=user,
+it is not allowed yet. To keep the same concept in both compress_modes,
+f2fs_ioc_(de)compress_file() should also allow it.
 
-Fix this by reading DP_DP13_DPCD_REV registers as well, matching what is
-done during connector detection. While at it also fix up the same call
-in drm_dp_mst_dump_topology().
+Let's remove checking mmap files in f2fs_ioc_(de)compress_file() so that
+the compression for mmap files is also allowed in compress_mode=user.
 
-Cc: Lyude Paul <lyude@redhat.com>
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5292
-Signed-off-by: Imre Deak <imre.deak@intel.com>
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Cc: <stable@vger.kernel.org> # v5.14+
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220614094537.885472-1-imre.deak@intel.com
+Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_dp_mst_topology.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ fs/f2fs/file.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_dp_mst_topology.c b/drivers/gpu/drm/drm_dp_mst_topology.c
-index b3e3babe18c0..2a586e6489da 100644
---- a/drivers/gpu/drm/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/drm_dp_mst_topology.c
-@@ -3860,9 +3860,7 @@ int drm_dp_mst_topology_mgr_resume(struct drm_dp_mst_topology_mgr *mgr,
- 	if (!mgr->mst_primary)
- 		goto out_fail;
- 
--	ret = drm_dp_dpcd_read(mgr->aux, DP_DPCD_REV, mgr->dpcd,
--			       DP_RECEIVER_CAP_SIZE);
--	if (ret != DP_RECEIVER_CAP_SIZE) {
-+	if (drm_dp_read_dpcd_caps(mgr->aux, mgr->dpcd) < 0) {
- 		drm_dbg_kms(mgr->dev, "dpcd read failed - undocked during suspend?\n");
- 		goto out_fail;
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index eacc80ac160f..0669464a942a 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -4011,11 +4011,6 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
+ 		goto out;
  	}
-@@ -4894,8 +4892,7 @@ void drm_dp_mst_dump_topology(struct seq_file *m,
- 		u8 buf[DP_PAYLOAD_TABLE_SIZE];
- 		int ret;
  
--		ret = drm_dp_dpcd_read(mgr->aux, DP_DPCD_REV, buf, DP_RECEIVER_CAP_SIZE);
--		if (ret) {
-+		if (drm_dp_read_dpcd_caps(mgr->aux, buf) < 0) {
- 			seq_printf(m, "dpcd read failed\n");
- 			goto out;
- 		}
+-	if (f2fs_is_mmap_file(inode)) {
+-		ret = -EBUSY;
+-		goto out;
+-	}
+-
+ 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
+ 	if (ret)
+ 		goto out;
+@@ -4083,11 +4078,6 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
+ 		goto out;
+ 	}
+ 
+-	if (f2fs_is_mmap_file(inode)) {
+-		ret = -EBUSY;
+-		goto out;
+-	}
+-
+ 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
+ 	if (ret)
+ 		goto out;
 -- 
 2.35.1
 
