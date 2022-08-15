@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084E0C2BB47
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D826FC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346675AbiHOUlx (ORCPT
+        id S1344755AbiHOUnZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        Mon, 15 Aug 2022 16:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346687AbiHOUgb (ORCPT
+        with ESMTP id S1345874AbiHOUhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:36:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4F94E843;
-        Mon, 15 Aug 2022 12:06:55 -0700 (PDT)
+        Mon, 15 Aug 2022 16:37:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C5FAE20B;
+        Mon, 15 Aug 2022 12:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BB1CB810A2;
-        Mon, 15 Aug 2022 19:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFF3C433C1;
-        Mon, 15 Aug 2022 19:06:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AE54FCE1087;
+        Mon, 15 Aug 2022 19:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DEBCC433C1;
+        Mon, 15 Aug 2022 19:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590412;
-        bh=lyE0Uoi4jt5cS3p9ntPQyP0WH2gJ35GJtynLlM09Ihs=;
+        s=korg; t=1660590428;
+        bh=O3JKpxMBdBMlzcnXK+pT01181eyK9/vtz6/V4r6tbU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cf0JdUihryG0f5wKx6B/Vqm1vx918XsgVjBtk1pPhBg4tMOBOlHEA4HtedDa8RLYp
-         iV4dMfxJkbjXDmmk2TTyi0FS2S1MO4yRLMDf1npnjyO2tkbXSdGjyz7ClmmG40FlND
-         E7DztCp5TB5XdLWXz2c10/II0/BupBhCz27FpNPI=
+        b=Uj+/OKeWj9JvscvpFcqswh6JmkEWLV0ZJbSaw5mzBOout4d9oScOcX5HNDCMYIU7G
+         Vmm/qIr8P83tBzyfmwybzh18rfe/yJ6LjLDjumSlYhnruwfRLyBKizqf7lYGsGNi5n
+         3Ra7xzkOnB3znDrpv+7MKUduNDxG1WstFHdmfruk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0251/1095] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
-Date:   Mon, 15 Aug 2022 19:54:10 +0200
-Message-Id: <20220815180440.142752756@linuxfoundation.org>
+Subject: [PATCH 5.18 0256/1095] arm64: dts: qcom: sm6125: Append -state suffix to pinctrl nodes
+Date:   Mon, 15 Aug 2022 19:54:15 +0200
+Message-Id: <20220815180440.335917253@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,40 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
+[ Upstream commit cbfb5668aece448877fa7826cde81c9d06f4a4ac ]
 
-The smem-state properties for the pronto node were incorrectly labelled,
-reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-the stop state to be used.
+According to qcom,sm6125-pinctrl.yaml all nodes inside the tlmm must be
+suffixed by -state:
 
-Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+    qcom/sm6125-sony-xperia-seine-pdx201.dtb: pinctrl@500000: 'sdc2-off', 'sdc2-on' do not match any of the regexes: '-state$', 'pinctrl-[0-9]+'
+
+The label names have been updated to match, going from sdc2_state_X to
+sdc2_X_state.
+
+Fixes: cff4bbaf2a2d ("arm64: dts: qcom: Add support for SM6125")
+Fixes: 82e1783890b7 ("arm64: dts: qcom: sm6125: Add support for Sony Xperia 10II")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
+Link: https://lore.kernel.org/r/20220508100336.127176-2-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts     | 4 ++--
+ arch/arm64/boot/dts/qcom/sm6125.dtsi                      | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index e34963505e07..7ecd747dc624 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -1758,8 +1758,8 @@ pronto: remoteproc@a21b000 {
- 					<&rpmpd MSM8916_VDDMX>;
- 			power-domain-names = "cx", "mx";
+diff --git a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
+index 4916e6c8b625..038970c0b68e 100644
+--- a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
++++ b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
+@@ -88,7 +88,7 @@ &hsusb_phy1 {
+ 	status = "okay";
+ };
  
--			qcom,state = <&wcnss_smp2p_out 0>;
--			qcom,state-names = "stop";
-+			qcom,smem-states = <&wcnss_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
+-&sdc2_state_off {
++&sdc2_off_state {
+ 	sd-cd {
+ 		pins = "gpio98";
+ 		drive-strength = <2>;
+@@ -96,7 +96,7 @@ sd-cd {
+ 	};
+ };
  
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&wcnss_pin_a>;
+-&sdc2_state_on {
++&sdc2_on_state {
+ 	sd-cd {
+ 		pins = "gpio98";
+ 		drive-strength = <2>;
+diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+index 3fadf5196c4d..e601b9bfdc04 100644
+--- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+@@ -386,7 +386,7 @@ tlmm: pinctrl@500000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+ 
+-			sdc2_state_off: sdc2-off {
++			sdc2_off_state: sdc2-off-state {
+ 				clk {
+ 					pins = "sdc2_clk";
+ 					drive-strength = <2>;
+@@ -406,7 +406,7 @@ data {
+ 				};
+ 			};
+ 
+-			sdc2_state_on: sdc2-on {
++			sdc2_on_state: sdc2-on-state {
+ 				clk {
+ 					pins = "sdc2_clk";
+ 					drive-strength = <16>;
+@@ -490,8 +490,8 @@ sdhc_2: sdhci@4784000 {
+ 				 <&xo_board>;
+ 			clock-names = "iface", "core", "xo";
+ 
+-			pinctrl-0 = <&sdc2_state_on>;
+-			pinctrl-1 = <&sdc2_state_off>;
++			pinctrl-0 = <&sdc2_on_state>;
++			pinctrl-1 = <&sdc2_off_state>;
+ 			pinctrl-names = "default", "sleep";
+ 
+ 			power-domains = <&rpmpd SM6125_VDDCX>;
 -- 
 2.35.1
 
