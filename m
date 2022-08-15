@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4AAC2BB47
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A91BC2BB9D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244973AbiHOVFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        id S1343741AbiHOVFr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243708AbiHOVDM (ORCPT
+        with ESMTP id S244579AbiHOVDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:03:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AE7D2E87;
-        Mon, 15 Aug 2022 12:14:25 -0700 (PDT)
+        Mon, 15 Aug 2022 17:03:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C656D3446;
+        Mon, 15 Aug 2022 12:14:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A5DA6009B;
-        Mon, 15 Aug 2022 19:14:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD8FC433D6;
-        Mon, 15 Aug 2022 19:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BC59B8110A;
+        Mon, 15 Aug 2022 19:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60C99C433C1;
+        Mon, 15 Aug 2022 19:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590864;
-        bh=iJPDOtGlJElJvvZyDG8X4vC4wyhhFqxMXB3Iss6pbig=;
+        s=korg; t=1660590870;
+        bh=PbzDN8uCwewUCe9w4bc9uBAOhKpKwxgwoFCKQ9tbr1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qREuBFEXWB5zzv58IORpz5FkIrI1dyA/KdUD57Lp41jXn6dOm+T5AEg91twTLs7/9
-         eU56aHM00A3lCJLCl3tUJ/vw0AmdCBtHCCjADgXCBpAkWUqxGqNNV1ERCGdSCoiYNR
-         uLUkIVtbTTtib3WczfVW62+ep2ViwmPGLMNBTcaE=
+        b=uY1ON80ycvGBQAPOqR7Pf5qh/wE8KEklwr+hHvyKp7Kt/oqiZnI9eOROpdyjK+jWw
+         Psi2Jg6kaG4unodD4H7iGablU6l/htBZRoD6uUKoW43s0lnRTcczRPtuU2lX6Wmymt
+         IRWkJlKl1kV8yxoSNZ7tje/AWST+px0KJQahDgAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0394/1095] drm/vc4: hdmi: Avoid full hdmi audio fifo writes
-Date:   Mon, 15 Aug 2022 19:56:33 +0200
-Message-Id: <20220815180445.988914873@linuxfoundation.org>
+Subject: [PATCH 5.18 0366/1095] torture: Adjust to again produce debugging information
+Date:   Mon, 15 Aug 2022 19:56:05 +0200
+Message-Id: <20220815180444.866585300@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,44 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dom Cobley <popcornmix@gmail.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit 1c594eeccf92368177c2e22f1d3ee4933dfb8567 ]
+[ Upstream commit 5c92d7501699a5deb72a579f808500db5bb6f92a ]
 
-We are getting occasional VC4_HD_MAI_CTL_ERRORF in
-HDMI_MAI_CTL which seem to correspond with audio dropouts.
+A recent change to the DEBUG_INFO Kconfig option means that simply adding
+CONFIG_DEBUG_INFO=y to the .config file and running "make oldconfig" no
+longer works.  It is instead necessary to add CONFIG_DEBUG_INFO_NONE=n
+and (for example) CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y.
+This combination will then result in CONFIG_DEBUG_INFO being selected.
 
-Reduce the threshold where we deassert DREQ to avoid the fifo
-overfilling
+This commit therefore updates the Kconfig options produced in response
+to the kvm.sh --gdb, --kasan, and --kcsan Kconfig options.
 
-Fixes: bb7d78568814 ("drm/vc4: Add HDMI audio support")
-Signed-off-by: Dom Cobley <popcornmix@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-21-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable from a choice")
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ tools/testing/selftests/rcutorture/bin/kvm.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 0fe04b1f9782..114b007a1e6e 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1626,10 +1626,10 @@ static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
- 
- 	/* Set the MAI threshold */
- 	HDMI_WRITE(HDMI_MAI_THR,
--		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICHIGH) |
--		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICLOW) |
--		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQHIGH) |
--		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQLOW));
-+		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICHIGH) |
-+		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICLOW) |
-+		   VC4_SET_FIELD(0x06, VC4_HD_MAI_THR_DREQHIGH) |
-+		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_DREQLOW));
- 
- 	HDMI_WRITE(HDMI_MAI_CONFIG,
- 		   VC4_HDMI_MAI_CONFIG_BIT_REVERSE |
+diff --git a/tools/testing/selftests/rcutorture/bin/kvm.sh b/tools/testing/selftests/rcutorture/bin/kvm.sh
+index b9f4d41da30e..f2768994d861 100755
+--- a/tools/testing/selftests/rcutorture/bin/kvm.sh
++++ b/tools/testing/selftests/rcutorture/bin/kvm.sh
+@@ -164,7 +164,7 @@ do
+ 		shift
+ 		;;
+ 	--gdb)
+-		TORTURE_KCONFIG_GDB_ARG="CONFIG_DEBUG_INFO=y"; export TORTURE_KCONFIG_GDB_ARG
++		TORTURE_KCONFIG_GDB_ARG="CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y"; export TORTURE_KCONFIG_GDB_ARG
+ 		TORTURE_BOOT_GDB_ARG="nokaslr"; export TORTURE_BOOT_GDB_ARG
+ 		TORTURE_QEMU_GDB_ARG="-s -S"; export TORTURE_QEMU_GDB_ARG
+ 		;;
+@@ -180,7 +180,7 @@ do
+ 		shift
+ 		;;
+ 	--kasan)
+-		TORTURE_KCONFIG_KASAN_ARG="CONFIG_DEBUG_INFO=y CONFIG_KASAN=y"; export TORTURE_KCONFIG_KASAN_ARG
++		TORTURE_KCONFIG_KASAN_ARG="CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y CONFIG_KASAN=y"; export TORTURE_KCONFIG_KASAN_ARG
+ 		if test -n "$torture_qemu_mem_default"
+ 		then
+ 			TORTURE_QEMU_MEM=2G
+@@ -192,7 +192,7 @@ do
+ 		shift
+ 		;;
+ 	--kcsan)
+-		TORTURE_KCONFIG_KCSAN_ARG="CONFIG_DEBUG_INFO=y CONFIG_KCSAN=y CONFIG_KCSAN_STRICT=y CONFIG_KCSAN_REPORT_ONCE_IN_MS=100000 CONFIG_KCSAN_VERBOSE=y CONFIG_DEBUG_LOCK_ALLOC=y CONFIG_PROVE_LOCKING=y"; export TORTURE_KCONFIG_KCSAN_ARG
++		TORTURE_KCONFIG_KCSAN_ARG="CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y CONFIG_KCSAN=y CONFIG_KCSAN_STRICT=y CONFIG_KCSAN_REPORT_ONCE_IN_MS=100000 CONFIG_KCSAN_VERBOSE=y CONFIG_DEBUG_LOCK_ALLOC=y CONFIG_PROVE_LOCKING=y"; export TORTURE_KCONFIG_KCSAN_ARG
+ 		;;
+ 	--kmake-arg|--kmake-args)
+ 		checkarg --kmake-arg "(kernel make arguments)" $# "$2" '.*' '^error$'
 -- 
 2.35.1
 
