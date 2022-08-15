@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4FFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE88C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiHOUDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
+        id S1345540AbiHOUDJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345765AbiHOT7z (ORCPT
+        with ESMTP id S1346007AbiHOUB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:59:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03B379A5C;
-        Mon, 15 Aug 2022 11:53:13 -0700 (PDT)
+        Mon, 15 Aug 2022 16:01:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2327A530;
+        Mon, 15 Aug 2022 11:53:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 338836122A;
-        Mon, 15 Aug 2022 18:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F84AC433C1;
-        Mon, 15 Aug 2022 18:53:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 897EAB81057;
+        Mon, 15 Aug 2022 18:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F20C433C1;
+        Mon, 15 Aug 2022 18:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589591;
-        bh=9RVo2cv9gTDUf/SygOdjGWEFi20yyH/rO62XiMle2Yg=;
+        s=korg; t=1660589601;
+        bh=6hATWuGjC+v5hX5HKJfRtz4fpdLRzt5zZwyjJviBpEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjra04/jiIL0YyyhWSGe/ef/oa3xAV0wLl3IkcxzHbZmtDxGSV6OUbTwMPQ0lgvXh
-         ZlYzzt1rH+k5Jy1vnWOBjXOoiGt+gpAJN6lXLzcT+/X1PVONdo6cTzmC49WNbg9N4R
-         TuPW39ZBkSALzuS3kWBLrOJVOMKUKtUMGjrqVLJo=
+        b=s9DhqUzSADCnol1VnntN/0tX39ed6qKSrVoyAzZiHoDLD0BxyIF5ILJWY9RfstBUX
+         aw9gGpdwg+9n582zQO6Qib7yohR5uEbKqFyc0f/it2QFPufyHqZYnJ6mF/0to+AM08
+         yospz+FqCNfCqUDqIpmDVtQ+jmdVv22skzaxv3FU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 735/779] KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
-Date:   Mon, 15 Aug 2022 20:06:19 +0200
-Message-Id: <20220815180408.866071215@linuxfoundation.org>
+        stable@vger.kernel.org, Ahmed Zaki <anzaki@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Viacheslav Sablin <sablin@ispras.ru>
+Subject: [PATCH 5.15 762/779] mac80211: fix a memory leak where sta_info is not freed
+Date:   Mon, 15 Aug 2022 20:06:46 +0200
+Message-Id: <20220815180409.996306392@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,73 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Ahmed Zaki <anzaki@gmail.com>
 
-[ Upstream commit b663f0b5f3d665c261256d1f76e98f077c6e56af ]
+commit 8f9dcc29566626f683843ccac6113a12208315ca upstream.
 
-Add a helper to check of the guest PMU has PERF_GLOBAL_CTRL, which is
-unintuitive _and_ diverges from Intel's architecturally defined behavior.
-Even worse, KVM currently implements the check using two different (but
-equivalent) checks, _and_ there has been at least one attempt to add a
-_third_ flavor.
+The following is from a system that went OOM due to a memory leak:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220722224409.1336532-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+wlan0: Allocated STA 74:83:c2:64:0b:87
+wlan0: Allocated STA 74:83:c2:64:0b:87
+wlan0: IBSS finish 74:83:c2:64:0b:87 (---from ieee80211_ibss_add_sta)
+wlan0: Adding new IBSS station 74:83:c2:64:0b:87
+wlan0: moving STA 74:83:c2:64:0b:87 to state 2
+wlan0: moving STA 74:83:c2:64:0b:87 to state 3
+wlan0: Inserted STA 74:83:c2:64:0b:87
+wlan0: IBSS finish 74:83:c2:64:0b:87 (---from ieee80211_ibss_work)
+wlan0: Adding new IBSS station 74:83:c2:64:0b:87
+wlan0: moving STA 74:83:c2:64:0b:87 to state 2
+wlan0: moving STA 74:83:c2:64:0b:87 to state 3
+.
+.
+wlan0: expiring inactive not authorized STA 74:83:c2:64:0b:87
+wlan0: moving STA 74:83:c2:64:0b:87 to state 2
+wlan0: moving STA 74:83:c2:64:0b:87 to state 1
+wlan0: Removed STA 74:83:c2:64:0b:87
+wlan0: Destroyed STA 74:83:c2:64:0b:87
+
+The ieee80211_ibss_finish_sta() is called twice on the same STA from 2
+different locations. On the second attempt, the allocated STA is not
+destroyed creating a kernel memory leak.
+
+This is happening because sta_info_insert_finish() does not call
+sta_info_free() the second time when the STA already exists (returns
+-EEXIST). Note that the caller sta_info_insert_rcu() assumes STA is
+destroyed upon errors.
+
+Same fix is applied to -ENOMEM.
+
+Signed-off-by: Ahmed Zaki <anzaki@gmail.com>
+Link: https://lore.kernel.org/r/20211002145329.3125293-1-anzaki@gmail.com
+[change the error path label to use the existing code]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Viacheslav Sablin <sablin@ispras.ru>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c |  4 ++--
- arch/x86/kvm/vmx/vmx.h       | 12 ++++++++++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ net/mac80211/sta_info.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index f9054e7ec89e..e624a39365ec 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -104,7 +104,7 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -641,13 +641,13 @@ static int sta_info_insert_finish(struct
+ 	/* check if STA exists already */
+ 	if (sta_info_get_bss(sdata, sta->sta.addr)) {
+ 		err = -EEXIST;
+-		goto out_err;
++		goto out_cleanup;
+ 	}
  
--	if (pmu->version < 2)
-+	if (!intel_pmu_has_perf_global_ctrl(pmu))
- 		return true;
+ 	sinfo = kzalloc(sizeof(struct station_info), GFP_KERNEL);
+ 	if (!sinfo) {
+ 		err = -ENOMEM;
+-		goto out_err;
++		goto out_cleanup;
+ 	}
  
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
-@@ -222,7 +222,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
- 	case MSR_CORE_PERF_GLOBAL_STATUS:
- 	case MSR_CORE_PERF_GLOBAL_CTRL:
- 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
--		ret = pmu->version > 1;
-+		return intel_pmu_has_perf_global_ctrl(pmu);
- 		break;
- 	default:
- 		ret = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0) ||
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index a8b8150252bb..20f1213a9368 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -92,6 +92,18 @@ union vmx_exit_reason {
- 	u32 full;
- };
- 
-+static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
-+{
-+	/*
-+	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
-+	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
-+	 * greater than zero.  However, KVM only exposes and emulates the MSR
-+	 * to/for the guest if the guest PMU supports at least "Architectural
-+	 * Performance Monitoring Version 2".
-+	 */
-+	return pmu->version > 1;
-+}
-+
- #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
- #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
- 
--- 
-2.35.1
-
+ 	local->num_sta++;
+@@ -703,8 +703,8 @@ static int sta_info_insert_finish(struct
+  out_drop_sta:
+ 	local->num_sta--;
+ 	synchronize_net();
++ out_cleanup:
+ 	cleanup_single_sta(sta);
+- out_err:
+ 	mutex_unlock(&local->sta_mtx);
+ 	kfree(sinfo);
+ 	rcu_read_lock();
 
 
