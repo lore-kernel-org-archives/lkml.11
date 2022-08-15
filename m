@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BF3C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC2FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244605AbiHOSzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S244332AbiHOSzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244734AbiHOSvs (ORCPT
+        with ESMTP id S244755AbiHOSvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:51:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF125474F1;
-        Mon, 15 Aug 2022 11:29:36 -0700 (PDT)
+        Mon, 15 Aug 2022 14:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651AF474F4;
+        Mon, 15 Aug 2022 11:29:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BD7460F9F;
-        Mon, 15 Aug 2022 18:29:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3FC5C433C1;
-        Mon, 15 Aug 2022 18:29:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE10CB81062;
+        Mon, 15 Aug 2022 18:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1938AC433D6;
+        Mon, 15 Aug 2022 18:29:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588175;
-        bh=F0con2KvPkmIDmWnbct8EVsgTcKg07z9A+fO0VKWGjI=;
+        s=korg; t=1660588178;
+        bh=1epsVxATSZFmvE/+LKcAw9ma1DkPFnaS/bMMkv+nrm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k9/2MfRQv6/iLyycfHvT4G1LZ2+XsnRykT2OUWrckL6T9g2npXv5LJY4mIqUjz3dl
-         OwAEp21iG384THK0toL8JqOAq28S+a66OmEs3zyajKDOb3zJZNAK5+L25cXja1pA1r
-         D0kUdAFUCfI3/dYwY0/J9YTg+ls3ebP2CCmxK9Pg=
+        b=NfCj/U8cOFFungxm+vXnFSAqYvm+mjwKp0tZAS4VUYJzVHK2YlurTltF/EaObT86u
+         Fd8iNGrZWqL8jLJ74oKCaM3iTbenqZCe0tZmzbwsVprR2jMgGHKKKmn83HnbnucnQn
+         4VtvWpWdLv0PHsWefjEyENKpPVTGyy87i7IK73f0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
-        kernel test robot <lkp@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jian Zhang <zhangjian210@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 318/779] net: hinic: fix bug that ethtool get wrong stats
-Date:   Mon, 15 Aug 2022 19:59:22 +0200
-Message-Id: <20220815180350.875859976@linuxfoundation.org>
+Subject: [PATCH 5.15 292/779] media: driver/nxp/imx-jpeg: fix a unexpected return value problem
+Date:   Mon, 15 Aug 2022 19:58:56 +0200
+Message-Id: <20220815180349.760209981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,269 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiao Ma <mqaio@linux.alibaba.com>
+From: Jian Zhang <zhangjian210@huawei.com>
 
-[ Upstream commit 67dffd3db98570af8ff54c934f7d14664c0d182a ]
+[ Upstream commit 5b304046a81eda221b5d06a9c62f7b5e45530fa5 ]
 
-Function hinic_get_stats64() will do two operations:
-1. reads stats from every hinic_rxq/txq and accumulates them
-2. calls hinic_rxq/txq_clean_stats() to clean every rxq/txq's stats
+In function mxc_jpeg_probe(), when devm_clk_get() fail, the return value
+will be unexpected, and it should be the devm_clk_get's error code.
 
-For hinic_get_stats64(), it could get right data, because it sums all
-data to nic_dev->rx_stats/tx_stats.
-But it is wrong for get_drv_queue_stats(), this function will read
-hinic_rxq's stats, which have been cleared to zero by hinic_get_stats64().
-
-I have observed hinic's cleanup operation by using such command:
-> watch -n 1 "cat ethtool -S eth4 | tail -40"
-
-Result before:
-     ...
-     rxq7_pkts: 1
-     rxq7_bytes: 90
-     rxq7_errors: 0
-     rxq7_csum_errors: 0
-     rxq7_other_errors: 0
-     ...
-     rxq9_pkts: 11
-     rxq9_bytes: 726
-     rxq9_errors: 0
-     rxq9_csum_errors: 0
-     rxq9_other_errors: 0
-     ...
-     rxq11_pkts: 0
-     rxq11_bytes: 0
-     rxq11_errors: 0
-     rxq11_csum_errors: 0
-     rxq11_other_errors: 0
-
-Result after a few seconds:
-     ...
-     rxq7_pkts: 0
-     rxq7_bytes: 0
-     rxq7_errors: 0
-     rxq7_csum_errors: 0
-     rxq7_other_errors: 0
-     ...
-     rxq9_pkts: 2
-     rxq9_bytes: 132
-     rxq9_errors: 0
-     rxq9_csum_errors: 0
-     rxq9_other_errors: 0
-     ...
-     rxq11_pkts: 1
-     rxq11_bytes: 170
-     rxq11_errors: 0
-     rxq11_csum_errors: 0
-     rxq11_other_errors: 0
-
-To solve this problem, we just keep every queue's total stats in their own
-queue (aka hinic_{rxq|txq}), and simply sum all per-queue stats every time
-calling hinic_get_stats64().
-With that solution, there is no need to clean per-queue stats now,
-and there is no need to maintain global hinic_dev.{tx|rx}_stats, too.
-
-Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
-Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 4c2e5156d9fa6 ("media: imx-jpeg: Add pm-runtime support for imx-jpeg")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_dev.h |  3 -
- .../net/ethernet/huawei/hinic/hinic_main.c    | 57 ++++++-------------
- drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  2 -
- drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  2 -
- 4 files changed, 16 insertions(+), 48 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-index fb3e89141a0d..a4fbf44f944c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-@@ -95,9 +95,6 @@ struct hinic_dev {
- 	u16				sq_depth;
- 	u16				rq_depth;
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index aeb3704cfff0..984fcdfa0f09 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -2108,12 +2108,14 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
+ 	jpeg->clk_ipg = devm_clk_get(dev, "ipg");
+ 	if (IS_ERR(jpeg->clk_ipg)) {
+ 		dev_err(dev, "failed to get clock: ipg\n");
++		ret = PTR_ERR(jpeg->clk_ipg);
+ 		goto err_clk;
+ 	}
  
--	struct hinic_txq_stats          tx_stats;
--	struct hinic_rxq_stats          rx_stats;
--
- 	u8				rss_tmpl_idx;
- 	u8				rss_hash_engine;
- 	u16				num_rss;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index bece6a12368d..909758367e7c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -80,56 +80,44 @@ static int set_features(struct hinic_dev *nic_dev,
- 			netdev_features_t pre_features,
- 			netdev_features_t features, bool force_change);
+ 	jpeg->clk_per = devm_clk_get(dev, "per");
+ 	if (IS_ERR(jpeg->clk_per)) {
+ 		dev_err(dev, "failed to get clock: per\n");
++		ret = PTR_ERR(jpeg->clk_per);
+ 		goto err_clk;
+ 	}
  
--static void update_rx_stats(struct hinic_dev *nic_dev, struct hinic_rxq *rxq)
-+static void gather_rx_stats(struct hinic_rxq_stats *nic_rx_stats, struct hinic_rxq *rxq)
- {
--	struct hinic_rxq_stats *nic_rx_stats = &nic_dev->rx_stats;
- 	struct hinic_rxq_stats rx_stats;
- 
--	u64_stats_init(&rx_stats.syncp);
--
- 	hinic_rxq_get_stats(rxq, &rx_stats);
- 
--	u64_stats_update_begin(&nic_rx_stats->syncp);
- 	nic_rx_stats->bytes += rx_stats.bytes;
- 	nic_rx_stats->pkts  += rx_stats.pkts;
- 	nic_rx_stats->errors += rx_stats.errors;
- 	nic_rx_stats->csum_errors += rx_stats.csum_errors;
- 	nic_rx_stats->other_errors += rx_stats.other_errors;
--	u64_stats_update_end(&nic_rx_stats->syncp);
--
--	hinic_rxq_clean_stats(rxq);
- }
- 
--static void update_tx_stats(struct hinic_dev *nic_dev, struct hinic_txq *txq)
-+static void gather_tx_stats(struct hinic_txq_stats *nic_tx_stats, struct hinic_txq *txq)
- {
--	struct hinic_txq_stats *nic_tx_stats = &nic_dev->tx_stats;
- 	struct hinic_txq_stats tx_stats;
- 
--	u64_stats_init(&tx_stats.syncp);
--
- 	hinic_txq_get_stats(txq, &tx_stats);
- 
--	u64_stats_update_begin(&nic_tx_stats->syncp);
- 	nic_tx_stats->bytes += tx_stats.bytes;
- 	nic_tx_stats->pkts += tx_stats.pkts;
- 	nic_tx_stats->tx_busy += tx_stats.tx_busy;
- 	nic_tx_stats->tx_wake += tx_stats.tx_wake;
- 	nic_tx_stats->tx_dropped += tx_stats.tx_dropped;
- 	nic_tx_stats->big_frags_pkts += tx_stats.big_frags_pkts;
--	u64_stats_update_end(&nic_tx_stats->syncp);
--
--	hinic_txq_clean_stats(txq);
- }
- 
--static void update_nic_stats(struct hinic_dev *nic_dev)
-+static void gather_nic_stats(struct hinic_dev *nic_dev,
-+			     struct hinic_rxq_stats *nic_rx_stats,
-+			     struct hinic_txq_stats *nic_tx_stats)
- {
- 	int i, num_qps = hinic_hwdev_num_qps(nic_dev->hwdev);
- 
- 	for (i = 0; i < num_qps; i++)
--		update_rx_stats(nic_dev, &nic_dev->rxqs[i]);
-+		gather_rx_stats(nic_rx_stats, &nic_dev->rxqs[i]);
- 
- 	for (i = 0; i < num_qps; i++)
--		update_tx_stats(nic_dev, &nic_dev->txqs[i]);
-+		gather_tx_stats(nic_tx_stats, &nic_dev->txqs[i]);
- }
- 
- /**
-@@ -558,8 +546,6 @@ int hinic_close(struct net_device *netdev)
- 	netif_carrier_off(netdev);
- 	netif_tx_disable(netdev);
- 
--	update_nic_stats(nic_dev);
--
- 	up(&nic_dev->mgmt_lock);
- 
- 	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-@@ -853,26 +839,23 @@ static void hinic_get_stats64(struct net_device *netdev,
- 			      struct rtnl_link_stats64 *stats)
- {
- 	struct hinic_dev *nic_dev = netdev_priv(netdev);
--	struct hinic_rxq_stats *nic_rx_stats;
--	struct hinic_txq_stats *nic_tx_stats;
--
--	nic_rx_stats = &nic_dev->rx_stats;
--	nic_tx_stats = &nic_dev->tx_stats;
-+	struct hinic_rxq_stats nic_rx_stats = {};
-+	struct hinic_txq_stats nic_tx_stats = {};
- 
- 	down(&nic_dev->mgmt_lock);
- 
- 	if (nic_dev->flags & HINIC_INTF_UP)
--		update_nic_stats(nic_dev);
-+		gather_nic_stats(nic_dev, &nic_rx_stats, &nic_tx_stats);
- 
- 	up(&nic_dev->mgmt_lock);
- 
--	stats->rx_bytes   = nic_rx_stats->bytes;
--	stats->rx_packets = nic_rx_stats->pkts;
--	stats->rx_errors  = nic_rx_stats->errors;
-+	stats->rx_bytes   = nic_rx_stats.bytes;
-+	stats->rx_packets = nic_rx_stats.pkts;
-+	stats->rx_errors  = nic_rx_stats.errors;
- 
--	stats->tx_bytes   = nic_tx_stats->bytes;
--	stats->tx_packets = nic_tx_stats->pkts;
--	stats->tx_errors  = nic_tx_stats->tx_dropped;
-+	stats->tx_bytes   = nic_tx_stats.bytes;
-+	stats->tx_packets = nic_tx_stats.pkts;
-+	stats->tx_errors  = nic_tx_stats.tx_dropped;
- }
- 
- static int hinic_set_features(struct net_device *netdev,
-@@ -1171,8 +1154,6 @@ static void hinic_free_intr_coalesce(struct hinic_dev *nic_dev)
- static int nic_dev_init(struct pci_dev *pdev)
- {
- 	struct hinic_rx_mode_work *rx_mode_work;
--	struct hinic_txq_stats *tx_stats;
--	struct hinic_rxq_stats *rx_stats;
- 	struct hinic_dev *nic_dev;
- 	struct net_device *netdev;
- 	struct hinic_hwdev *hwdev;
-@@ -1233,12 +1214,6 @@ static int nic_dev_init(struct pci_dev *pdev)
- 
- 	sema_init(&nic_dev->mgmt_lock, 1);
- 
--	tx_stats = &nic_dev->tx_stats;
--	rx_stats = &nic_dev->rx_stats;
--
--	u64_stats_init(&tx_stats->syncp);
--	u64_stats_init(&rx_stats->syncp);
--
- 	nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
- 						  GFP_KERNEL);
- 	if (!nic_dev->vlan_bitmap) {
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-index fed3b6bc0d76..a102d486c435 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-@@ -73,7 +73,6 @@ void hinic_rxq_get_stats(struct hinic_rxq *rxq, struct hinic_rxq_stats *stats)
- 	struct hinic_rxq_stats *rxq_stats = &rxq->rxq_stats;
- 	unsigned int start;
- 
--	u64_stats_update_begin(&stats->syncp);
- 	do {
- 		start = u64_stats_fetch_begin(&rxq_stats->syncp);
- 		stats->pkts = rxq_stats->pkts;
-@@ -83,7 +82,6 @@ void hinic_rxq_get_stats(struct hinic_rxq *rxq, struct hinic_rxq_stats *stats)
- 		stats->csum_errors = rxq_stats->csum_errors;
- 		stats->other_errors = rxq_stats->other_errors;
- 	} while (u64_stats_fetch_retry(&rxq_stats->syncp, start));
--	u64_stats_update_end(&stats->syncp);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-index a984a7a6dd2e..d1ea358a1fc0 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-@@ -97,7 +97,6 @@ void hinic_txq_get_stats(struct hinic_txq *txq, struct hinic_txq_stats *stats)
- 	struct hinic_txq_stats *txq_stats = &txq->txq_stats;
- 	unsigned int start;
- 
--	u64_stats_update_begin(&stats->syncp);
- 	do {
- 		start = u64_stats_fetch_begin(&txq_stats->syncp);
- 		stats->pkts    = txq_stats->pkts;
-@@ -107,7 +106,6 @@ void hinic_txq_get_stats(struct hinic_txq *txq, struct hinic_txq_stats *stats)
- 		stats->tx_dropped = txq_stats->tx_dropped;
- 		stats->big_frags_pkts = txq_stats->big_frags_pkts;
- 	} while (u64_stats_fetch_retry(&txq_stats->syncp, start));
--	u64_stats_update_end(&stats->syncp);
- }
- 
- /**
 -- 
 2.35.1
 
