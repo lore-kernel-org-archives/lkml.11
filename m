@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1CCC28B2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3A7C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347748AbiHOU0f (ORCPT
+        id S1347811AbiHOU0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        Mon, 15 Aug 2022 16:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346519AbiHOUUU (ORCPT
+        with ESMTP id S1347077AbiHOUV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:20:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E2997D50;
-        Mon, 15 Aug 2022 12:00:54 -0700 (PDT)
+        Mon, 15 Aug 2022 16:21:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE6298D24;
+        Mon, 15 Aug 2022 12:01:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 963136122B;
-        Mon, 15 Aug 2022 19:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E544C433D7;
-        Mon, 15 Aug 2022 19:00:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBC89B810A1;
+        Mon, 15 Aug 2022 19:01:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC971C433C1;
+        Mon, 15 Aug 2022 19:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590053;
-        bh=q6objEWJqQalE6qrNAA/Zzot4pb3FshImXwWMJLY6gM=;
+        s=korg; t=1660590064;
+        bh=xExqZ2cjy5zyFW10bCJOCsLa1DT07p+HNJ7TEKasfsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ze2Y664KhBYGW1JCZoaNYQDpX/SUNK4+1LXNat03vUJvBVtraE/KVJVLbG84YoWc8
-         csSAS/UwZvbXt7vxixYIcLVP7OZq5v7Ps2lh7Iw1CaNqXyoDGl80V276Li9eqBU5zg
-         +NNzCB8JHfhUBK0C0AVyHZ/JR87wSAaJ3W17vE2M=
+        b=Yy2F37Kmgp6gDi/WpMfXTKK9lf2uOUF+4Zq+aZbJ/c/s5SxfcRUvmqqws09+g6Jig
+         zCYb4v6CBHwkNyc3Qgk1RR1UljLpuIdH0bzH4M988Rrm7kA1J5AT1hqEUtsoYPVJ7O
+         1YzHfwxG07g9qKlUXRmJ/l6eFiy+Rxr1+Kp9MLjU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH 5.18 0128/1095] usb: dwc3: gadget: refactor dwc3_repare_one_trb
-Date:   Mon, 15 Aug 2022 19:52:07 +0200
-Message-Id: <20220815180434.882377454@linuxfoundation.org>
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0140/1095] arm64: errata: Remove AES hwcap for COMPAT tasks
+Date:   Mon, 15 Aug 2022 19:52:19 +0200
+Message-Id: <20220815180435.366390465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,145 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: James Morse <james.morse@arm.com>
 
-commit 23385cec5f354794dadced7f28c31da7ae3eb54c upstream.
+[ Upstream commit 44b3834b2eed595af07021b1c64e6f9bc396398b ]
 
-The function __dwc3_prepare_one_trb has many parameters. Since it is
-only used in dwc3_prepare_one_trb there is no point in keeping the
-function. We merge both functions and get rid of the big list of
-parameters.
+Cortex-A57 and Cortex-A72 have an erratum where an interrupt that
+occurs between a pair of AES instructions in aarch32 mode may corrupt
+the ELR. The task will subsequently produce the wrong AES result.
 
-Fixes: 40d829fb2ec6 ("usb: dwc3: gadget: Correct ISOC DATA PIDs for short packets")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220704141812.1532306-2-m.grzeschik@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The AES instructions are part of the cryptographic extensions, which are
+optional. User-space software will detect the support for these
+instructions from the hwcaps. If the platform doesn't support these
+instructions a software implementation should be used.
+
+Remove the hwcap bits on affected parts to indicate user-space should
+not use the AES instructions.
+
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Link: https://lore.kernel.org/r/20220714161523.279570-3-james.morse@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/gadget.c |   92 ++++++++++++++++++++--------------------------
- 1 file changed, 40 insertions(+), 52 deletions(-)
+ Documentation/arm64/silicon-errata.rst |  4 ++++
+ arch/arm64/Kconfig                     | 16 ++++++++++++++++
+ arch/arm64/kernel/cpu_errata.c         | 16 ++++++++++++++++
+ arch/arm64/kernel/cpufeature.c         | 14 +++++++++++++-
+ arch/arm64/tools/cpucaps               |  1 +
+ 5 files changed, 50 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -1181,17 +1181,49 @@ static u32 dwc3_calc_trbs_left(struct dw
- 	return trbs_left;
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index d27db84d585e..0b4235b1f8c4 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -82,10 +82,14 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A57      | #1319537        | ARM64_ERRATUM_1319367       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A57      | #1742098        | ARM64_ERRATUM_1742098       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A72      | #853709         | N/A                         |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A72      | #1319367        | ARM64_ERRATUM_1319367       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A72      | #1655431        | ARM64_ERRATUM_1742098       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A73      | #858921         | ARM64_ERRATUM_858921        |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A76      | #1188873,1418040| ARM64_ERRATUM_1418040       |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 20ea89d9ac2f..b2d5a1e8eda3 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -500,6 +500,22 @@ config ARM64_ERRATUM_834220
+ 
+ 	  If unsure, say Y.
+ 
++config ARM64_ERRATUM_1742098
++	bool "Cortex-A57/A72: 1742098: ELR recorded incorrectly on interrupt taken between cryptographic instructions in a sequence"
++	depends on COMPAT
++	default y
++	help
++	  This option removes the AES hwcap for aarch32 user-space to
++	  workaround erratum 1742098 on Cortex-A57 and Cortex-A72.
++
++	  Affected parts may corrupt the AES state if an interrupt is
++	  taken between a pair of AES instructions. These instructions
++	  are only present if the cryptography extensions are present.
++	  All software should have a fallback implementation for CPUs
++	  that don't implement the cryptography extensions.
++
++	  If unsure, say Y.
++
+ config ARM64_ERRATUM_845719
+ 	bool "Cortex-A53: 845719: a load might read incorrect data"
+ 	depends on COMPAT
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index a0f3d0aaa3c5..27baa41c46ca 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -395,6 +395,14 @@ static struct midr_range trbe_write_out_of_range_cpus[] = {
+ };
+ #endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
+ 
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++static struct midr_range broken_aarch32_aes[] = {
++	MIDR_RANGE(MIDR_CORTEX_A57, 0, 1, 0xf, 0xf),
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
++	{},
++};
++#endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
++
+ const struct arm64_cpu_capabilities arm64_errata[] = {
+ #ifdef CONFIG_ARM64_WORKAROUND_CLEAN_CACHE
+ 	{
+@@ -657,6 +665,14 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+ 		/* Cortex-A510 r0p0 - r0p1 */
+ 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 1)
+ 	},
++#endif
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++	{
++		.desc = "ARM erratum 1742098",
++		.capability = ARM64_WORKAROUND_1742098,
++		CAP_MIDR_RANGE_LIST(broken_aarch32_aes),
++		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
++	},
+ #endif
+ 	{
+ 	}
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 2cb9cc9e0eff..5357ba7ea3c7 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -79,6 +79,7 @@
+ #include <asm/cpufeature.h>
+ #include <asm/cpu_ops.h>
+ #include <asm/fpsimd.h>
++#include <asm/hwcap.h>
+ #include <asm/insn.h>
+ #include <asm/kvm_host.h>
+ #include <asm/mmu_context.h>
+@@ -1921,6 +1922,14 @@ static void cpu_enable_mte(struct arm64_cpu_capabilities const *cap)
  }
+ #endif /* CONFIG_ARM64_MTE */
  
--static void __dwc3_prepare_one_trb(struct dwc3_ep *dep, struct dwc3_trb *trb,
--		dma_addr_t dma, unsigned int length, unsigned int chain,
--		unsigned int node, unsigned int stream_id,
--		unsigned int short_not_ok, unsigned int no_interrupt,
--		unsigned int is_last, bool must_interrupt)
-+/**
-+ * dwc3_prepare_one_trb - setup one TRB from one request
-+ * @dep: endpoint for which this request is prepared
-+ * @req: dwc3_request pointer
-+ * @trb_length: buffer size of the TRB
-+ * @chain: should this TRB be chained to the next?
-+ * @node: only for isochronous endpoints. First TRB needs different type.
-+ * @use_bounce_buffer: set to use bounce buffer
-+ * @must_interrupt: set to interrupt on TRB completion
-+ */
-+static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
-+		struct dwc3_request *req, unsigned int trb_length,
-+		unsigned int chain, unsigned int node, bool use_bounce_buffer,
-+		bool must_interrupt)
++static void elf_hwcap_fixup(void)
++{
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++	if (cpus_have_const_cap(ARM64_WORKAROUND_1742098))
++		compat_elf_hwcap2 &= ~COMPAT_HWCAP2_AES;
++#endif /* ARM64_ERRATUM_1742098 */
++}
++
+ #ifdef CONFIG_KVM
+ static bool is_kvm_protected_mode(const struct arm64_cpu_capabilities *entry, int __unused)
  {
-+	struct dwc3_trb		*trb;
-+	dma_addr_t		dma;
-+	unsigned int		stream_id = req->request.stream_id;
-+	unsigned int		short_not_ok = req->request.short_not_ok;
-+	unsigned int		no_interrupt = req->request.no_interrupt;
-+	unsigned int		is_last = req->request.is_last;
- 	struct dwc3		*dwc = dep->dwc;
- 	struct usb_gadget	*gadget = dwc->gadget;
- 	enum usb_device_speed	speed = gadget->speed;
+@@ -3033,8 +3042,10 @@ void __init setup_cpu_features(void)
+ 	setup_system_capabilities();
+ 	setup_elf_hwcaps(arm64_elf_hwcaps);
  
--	trb->size = DWC3_TRB_SIZE_LENGTH(length);
-+	if (use_bounce_buffer)
-+		dma = dep->dwc->bounce_addr;
-+	else if (req->request.num_sgs > 0)
-+		dma = sg_dma_address(req->start_sg);
-+	else
-+		dma = req->request.dma;
-+
-+	trb = &dep->trb_pool[dep->trb_enqueue];
-+
-+	if (!req->trb) {
-+		dwc3_gadget_move_started_request(req);
-+		req->trb = trb;
-+		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
+-	if (system_supports_32bit_el0())
++	if (system_supports_32bit_el0()) {
+ 		setup_elf_hwcaps(compat_elf_hwcaps);
++		elf_hwcap_fixup();
 +	}
-+
-+	req->num_trbs++;
-+
-+	trb->size = DWC3_TRB_SIZE_LENGTH(trb_length);
- 	trb->bpl = lower_32_bits(dma);
- 	trb->bph = upper_32_bits(dma);
  
-@@ -1231,10 +1263,10 @@ static void __dwc3_prepare_one_trb(struc
- 				unsigned int mult = 2;
- 				unsigned int maxp = usb_endpoint_maxp(ep->desc);
- 
--				if (length <= (2 * maxp))
-+				if (trb_length <= (2 * maxp))
- 					mult--;
- 
--				if (length <= maxp)
-+				if (trb_length <= maxp)
- 					mult--;
- 
- 				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
-@@ -1308,50 +1340,6 @@ static void __dwc3_prepare_one_trb(struc
- 	trace_dwc3_prepare_trb(dep, trb);
- }
- 
--/**
-- * dwc3_prepare_one_trb - setup one TRB from one request
-- * @dep: endpoint for which this request is prepared
-- * @req: dwc3_request pointer
-- * @trb_length: buffer size of the TRB
-- * @chain: should this TRB be chained to the next?
-- * @node: only for isochronous endpoints. First TRB needs different type.
-- * @use_bounce_buffer: set to use bounce buffer
-- * @must_interrupt: set to interrupt on TRB completion
-- */
--static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
--		struct dwc3_request *req, unsigned int trb_length,
--		unsigned int chain, unsigned int node, bool use_bounce_buffer,
--		bool must_interrupt)
--{
--	struct dwc3_trb		*trb;
--	dma_addr_t		dma;
--	unsigned int		stream_id = req->request.stream_id;
--	unsigned int		short_not_ok = req->request.short_not_ok;
--	unsigned int		no_interrupt = req->request.no_interrupt;
--	unsigned int		is_last = req->request.is_last;
--
--	if (use_bounce_buffer)
--		dma = dep->dwc->bounce_addr;
--	else if (req->request.num_sgs > 0)
--		dma = sg_dma_address(req->start_sg);
--	else
--		dma = req->request.dma;
--
--	trb = &dep->trb_pool[dep->trb_enqueue];
--
--	if (!req->trb) {
--		dwc3_gadget_move_started_request(req);
--		req->trb = trb;
--		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
--	}
--
--	req->num_trbs++;
--
--	__dwc3_prepare_one_trb(dep, trb, dma, trb_length, chain, node,
--			stream_id, short_not_ok, no_interrupt, is_last,
--			must_interrupt);
--}
--
- static bool dwc3_needs_extra_trb(struct dwc3_ep *dep, struct dwc3_request *req)
- {
- 	unsigned int maxp = usb_endpoint_maxp(dep->endpoint.desc);
+ 	if (system_uses_ttbr0_pan())
+ 		pr_info("emulated: Privileged Access Never (PAN) using TTBR0_EL1 switching\n");
+@@ -3086,6 +3097,7 @@ static int enable_mismatched_32bit_el0(unsigned int cpu)
+ 							 cpu_active_mask);
+ 	get_cpu_device(lucky_winner)->offline_disabled = true;
+ 	setup_elf_hwcaps(compat_elf_hwcaps);
++	elf_hwcap_fixup();
+ 	pr_info("Asymmetric 32-bit EL0 support detected on CPU %u; CPU hot-unplug disabled on CPU %u\n",
+ 		cpu, lucky_winner);
+ 	return 0;
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 3ed418f70e3b..8cd6088f8875 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -58,6 +58,7 @@ WORKAROUND_1418040
+ WORKAROUND_1463225
+ WORKAROUND_1508412
+ WORKAROUND_1542419
++WORKAROUND_1742098
+ WORKAROUND_1902691
+ WORKAROUND_2038923
+ WORKAROUND_2064142
+-- 
+2.35.1
+
 
 
