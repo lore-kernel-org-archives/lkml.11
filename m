@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D68BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07ADC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347329AbiHOV5r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
+        id S245261AbiHOV5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350115AbiHOVzw (ORCPT
+        with ESMTP id S1350423AbiHOV4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:55:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0227C2A715;
-        Mon, 15 Aug 2022 12:33:57 -0700 (PDT)
+        Mon, 15 Aug 2022 17:56:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458E510A759;
+        Mon, 15 Aug 2022 12:34:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C534610A5;
-        Mon, 15 Aug 2022 19:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266B3C433C1;
-        Mon, 15 Aug 2022 19:33:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24C9DB80EA7;
+        Mon, 15 Aug 2022 19:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50092C433D6;
+        Mon, 15 Aug 2022 19:33:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592036;
-        bh=0wrrhUS/yrhbpDRp/29eoecL0CIsdPgCiNB8JkyesjA=;
+        s=korg; t=1660592039;
+        bh=XNjU9JHzS2g+kvNOHxA8SQJqMMWDyM/oMGSQ56oyzAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s8oVru1Q7pLhWWVpSXLODTOpYk7oWp8f+0ai7CrrE45N60z/GAYqPPCezMFBvRuee
-         6EP0B8k7dKY7trV1piF/f9z0AgVSsjvwYLcpn01fn+fkVLNV5CHTCWAI3A54Vdyzww
-         Y6CqpH1/SPLPwB9KkRnKe7U2whHV+ZQCYE7Sdky4=
+        b=cqyOX/2SPB8cCXUPCZto9rx3660Q+yt1z9C4E9Rcjpdcvql7bI+BPMOGtkR2LgVzx
+         8ECDQGcGRCKwl3dm3YcgnsJ8XFYsn74hmpRIdf9MFk2ellTv+p6+x85fN/B+mmL34T
+         Ih/89y33x+ehiQtVF56g33W4HiCfAjOjpnL6/EkI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0721/1095] PCI: dwc: Stop link on host_init errors and de-initialization
-Date:   Mon, 15 Aug 2022 20:02:00 +0200
-Message-Id: <20220815180459.224705275@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 0048/1157] ALSA: hda/realtek: Add quirk for another Asus K42JZ model
+Date:   Mon, 15 Aug 2022 19:50:04 +0200
+Message-Id: <20220815180441.376686683@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,68 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Meng Tang <tangmeng@uniontech.com>
 
-[ Upstream commit 113fa857b74c947137d845e7e635afcf6a59c43a ]
+commit f882c4bef9cb914d9f7be171afb10ed26536bfa7 upstream.
 
-It's logically correct to undo everything that was done when an error is
-discovered or in the corresponding cleanup counterpart. Otherwise the host
-controller will be left in an undetermined state. Since the link is set up
-in the host_init method, deactivate it there in the cleanup-on-error block
-and stop the link in the antagonistic routine - dw_pcie_host_deinit(). Link
-deactivation is platform-specific and should be implemented in
-dw_pcie_ops.stop_link().
+There is another Asus K42JZ model with the PCI SSID 1043:1313
+that requires the quirk ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE.
+Add the corresponding entry to the quirk table.
 
-Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
-Link: https://lore.kernel.org/r/20220624143428.8334-2-Sergey.Semin@baikalelectronics.ru
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220805074534.20003-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 9979302532b7..bc9a7df130ef 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -421,8 +421,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 	bridge->sysdata = pp;
- 
- 	ret = pci_host_probe(bridge);
--	if (!ret)
--		return 0;
-+	if (ret)
-+		goto err_stop_link;
-+
-+	return 0;
-+
-+err_stop_link:
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
- 
- err_free_msi:
- 	if (pp->has_msi_ctrl)
-@@ -433,8 +439,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
- 
- void dw_pcie_host_deinit(struct pcie_port *pp)
- {
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+
- 	pci_stop_root_bus(pp->bridge->bus);
- 	pci_remove_root_bus(pp->bridge->bus);
-+
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
-+
- 	if (pp->has_msi_ctrl)
- 		dw_pcie_free_msi(pp);
- }
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6879,6 +6879,7 @@ enum {
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
++	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
+ 	ALC269VB_FIXUP_ORDISSIMO_EVE2,
+ 	ALC283_FIXUP_CHROME_BOOK,
+@@ -7466,6 +7467,15 @@ static const struct hda_fixup alc269_fix
+ 		.chained = true,
+ 		.chain_id = ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	},
++	[ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, 0x01a110f0 },  /* use as headset mic */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MIC
++	},
+ 	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc269_fixup_limit_int_mic_boost,
+@@ -9237,6 +9247,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
+ 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
 
 
