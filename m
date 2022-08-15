@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91643C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E20DC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234185AbiHPBEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S1344615AbiHPBEO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348688AbiHPA5r (ORCPT
+        with ESMTP id S1348822AbiHPA5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:57:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B0ADB05B;
-        Mon, 15 Aug 2022 13:49:08 -0700 (PDT)
+        Mon, 15 Aug 2022 20:57:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252431A151B;
+        Mon, 15 Aug 2022 13:49:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1FD6B811A6;
-        Mon, 15 Aug 2022 20:49:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7E8C433C1;
-        Mon, 15 Aug 2022 20:49:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31C426103F;
+        Mon, 15 Aug 2022 20:49:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7B7C433C1;
+        Mon, 15 Aug 2022 20:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596544;
-        bh=w43Nn+CdXHZ0uAurAwKFhgQo8GpfGScQCXNh5qjlBX4=;
+        s=korg; t=1660596556;
+        bh=5XP+JktCdcOd3796REmaResK4m1N1n+ORXrfOpTHcCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuiOuTb3ZXWi88VF/YKT0XARd7yWJa7ec3KJ3PtWknjZeNqvIk/4YSlFzl/905qE2
-         PlIfML5cAdi5HaUWrUcnCfkKXI0jT0TteXdU68Il47xds78x+2kyLDbUrFcJMMkPzK
-         sPB9pkHF7GMuMUEapdU2WwaeZ5IIEDMjdWv3Th5A=
+        b=nZfHlNi3gxWnq+8fzzm9YynEkbF1IWFW71bYMGZkQxyZFaeLQr4CJ4CPToXbk4OO/
+         dqvkB6Wi0xZRzW+pgK3hiy7Jba4zvZaVdnaH9+TsZEFLZQ6Adx9Xq+VXgM2DIpCay3
+         lx/ZpWsaqDr3nzKws57cBF6+z74Ap1I23F3jiFqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        SeongJae Park <sj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1112/1157] mm/damon/reclaim: fix potential memory leak in damon_reclaim_init()
-Date:   Mon, 15 Aug 2022 20:07:48 +0200
-Message-Id: <20220815180524.793320919@linuxfoundation.org>
+Subject: [PATCH 5.19 1084/1157] block: add bdev_max_segments() helper
+Date:   Mon, 15 Aug 2022 20:07:20 +0200
+Message-Id: <20220815180523.534315939@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,44 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 188043c7f4f2bd662f2a55957d684fffa543e600 ]
+[ Upstream commit 65ea1b66482f415d51cd46515b02477257330339 ]
 
-damon_reclaim_init() allocates a memory chunk for ctx with
-damon_new_ctx().  When damon_select_ops() fails, ctx is not released,
-which will lead to a memory leak.
+Add bdev_max_segments() like other queue parameters.
 
-We should release the ctx with damon_destroy_ctx() when damon_select_ops()
-fails to fix the memory leak.
-
-Link: https://lkml.kernel.org/r/20220714063746.2343549-1-niejianglei2021@163.com
-Fixes: 4d69c3457821 ("mm/damon/reclaim: use damon_select_ops() instead of damon_{v,p}a_set_operations()")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/damon/reclaim.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/blkdev.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index 4b07c29effe9..0b3c7396cb90 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -441,8 +441,10 @@ static int __init damon_reclaim_init(void)
- 	if (!ctx)
- 		return -ENOMEM;
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 2f7b43444c5f..62e3ff52ab03 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1206,6 +1206,11 @@ bdev_max_zone_append_sectors(struct block_device *bdev)
+ 	return queue_max_zone_append_sectors(bdev_get_queue(bdev));
+ }
  
--	if (damon_select_ops(ctx, DAMON_OPS_PADDR))
-+	if (damon_select_ops(ctx, DAMON_OPS_PADDR)) {
-+		damon_destroy_ctx(ctx);
- 		return -EINVAL;
-+	}
- 
- 	ctx->callback.after_wmarks_check = damon_reclaim_after_wmarks_check;
- 	ctx->callback.after_aggregation = damon_reclaim_after_aggregation;
++static inline unsigned int bdev_max_segments(struct block_device *bdev)
++{
++	return queue_max_segments(bdev_get_queue(bdev));
++}
++
+ static inline unsigned queue_logical_block_size(const struct request_queue *q)
+ {
+ 	int retval = 512;
 -- 
 2.35.1
 
