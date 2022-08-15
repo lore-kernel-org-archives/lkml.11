@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409C5C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408B3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240992AbiHPAnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        id S243482AbiHPAnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349079AbiHPAlV (ORCPT
+        with ESMTP id S1349062AbiHPAlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:41:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B201518EC25;
-        Mon, 15 Aug 2022 13:39:14 -0700 (PDT)
+        Mon, 15 Aug 2022 20:41:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496E1ABF24;
+        Mon, 15 Aug 2022 13:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF992B80EA9;
-        Mon, 15 Aug 2022 20:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27E26C433C1;
-        Mon, 15 Aug 2022 20:39:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 88760CE12DE;
+        Mon, 15 Aug 2022 20:39:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AD0C433C1;
+        Mon, 15 Aug 2022 20:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595951;
-        bh=ZqnfYDGRdxhnsuWlBwqWsl53LM0H85pNz2+6oKLxjxg=;
+        s=korg; t=1660595964;
+        bh=wdi5Bgss8kVg7uwHJ68Z8WtvgLGIwAw9a72ENcuiO88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JYfMqlzKyPo+deIv76b0P/MuzoDverWRTkrwOLbwTMWdBKlHSJgQHZ/R8Y5V2Gzow
-         6a8N+XUNF2fJ+ASRzuhEJU1YaPRS33HMVmm/W3km1e4sTNMS2G5PpKgD5H9WsPWlG6
-         cLc53QS4pa2UDj9ufYrBe2zWrnCqJNz6NXpedlDY=
+        b=L7YK62iqBHI4kr0INQJOIQCkLY5cpqkGOn15juQkykdLOTChOUAupyLF9MTSl0KaY
+         KMQx9mzybOmRoqW2XAUBmBX1/1TSZ5pz2HOuIWW2JOHHTz9VjAmoCKCD2gd+HfKp3y
+         yLr7m6XNMM5+jPx2s5IW+Zf1VFZZg53G1e2F3+ME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0926/1157] tty: n_gsm: fix tty registration before control channel open
-Date:   Mon, 15 Aug 2022 20:04:42 +0200
-Message-Id: <20220815180516.508479429@linuxfoundation.org>
+Subject: [PATCH 5.19 0929/1157] tty: n_gsm: fix non flow control frames during mux flow off
+Date:   Mon, 15 Aug 2022 20:04:45 +0200
+Message-Id: <20220815180516.633895160@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,227 +50,112 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 01aecd917114577c423f07cec0d186ad007d76fc ]
+[ Upstream commit bec0224816d19abe4fe503586d16d51890540615 ]
 
-The current implementation registers/deregisters the user ttys at mux
-attach/detach. That means that the user devices are available before any
-control channel is open. However, user channel initialization requires an
-open control channel. Furthermore, the user is not informed if the mux
-restarts due to configuration changes.
-Put the registration/deregistration procedure into separate function to
-improve readability.
-Move registration to mux activation and deregistration to mux cleanup to
-keep the user devices only open as long as a control channel exists. The
-user will be informed via the device driver if the mux was reconfigured in
-a way that required a mux re-activation.
-This makes it necessary to add T2 initialization to gsmld_open() for the
-ldisc open code path (not the reconfiguration code path) to avoid deletion
-of an uninitialized T2 at mux cleanup.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.6 states that FCoff stops the
+transmission on all channels except the control channel. This is already
+implemented in gsm_data_kick(). However, chapter 5.4.8.1 explains that this
+shall result in the same behavior as software flow control on the ldisc in
+advanced option mode. That means only flow control frames shall be sent
+during flow off. The current implementation does not consider this case.
 
-Fixes: d50f6dcaf22a ("tty: n_gsm: expose gsmtty device nodes at ldisc open time")
+Change gsm_data_kick() to send only flow control frames if constipated to
+abide the standard. gsm_read_ea_val() and gsm_is_flow_ctrl_msg() are
+introduced as helper functions for this.
+It is planned to use gsm_read_ea_val() in later code cleanups for other
+functions, too.
+
+Fixes: c01af4fec2c8 ("n_gsm : Flow control handling in Mux driver")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701061652.39604-2-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220701061652.39604-5-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 117 ++++++++++++++++++++++++++++++--------------
- 1 file changed, 79 insertions(+), 38 deletions(-)
+ drivers/tty/n_gsm.c | 54 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 5a0fd35ce1f9..e8c0ce114c07 100644
+index a01225819b92..3f415b2fa199 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -235,6 +235,7 @@ struct gsm_mux {
- 	struct gsm_dlci *dlci[NUM_DLCI];
- 	int old_c_iflag;		/* termios c_iflag value before attach */
- 	bool constipated;		/* Asked by remote to shut up */
-+	bool has_devices;		/* Devices were registered */
- 
- 	spinlock_t tx_lock;
- 	unsigned int tx_bytes;		/* TX data outstanding */
-@@ -463,6 +464,68 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
- 	kfree(prefix);
+@@ -421,6 +421,27 @@ static int gsm_read_ea(unsigned int *val, u8 c)
+ 	return c & EA;
  }
  
 +/**
-+ *	gsm_register_devices	-	register all tty devices for a given mux index
++ *	gsm_read_ea_val	-	read a value until EA
++ *	@val: variable holding value
++ *	@data: buffer of data
++ *	@dlen: length of data
 + *
-+ *	@driver: the tty driver that describes the tty devices
-+ *	@index:  the mux number is used to calculate the minor numbers of the
-+ *	         ttys for this mux and may differ from the position in the
-+ *	         mux array.
++ *	Processes an EA value. Updates the passed variable and
++ *	returns the processed data length.
 + */
-+static int gsm_register_devices(struct tty_driver *driver, unsigned int index)
++static unsigned int gsm_read_ea_val(unsigned int *val, const u8 *data, int dlen)
 +{
-+	struct device *dev;
-+	int i;
-+	unsigned int base;
++	unsigned int len = 0;
 +
-+	if (!driver || index >= MAX_MUX)
-+		return -EINVAL;
++	for (; dlen > 0; dlen--) {
++		len++;
++		if (gsm_read_ea(val, *data++))
++			break;
++	}
++	return len;
++}
 +
-+	base = index * NUM_DLCI; /* first minor for this index */
-+	for (i = 1; i < NUM_DLCI; i++) {
-+		/* Don't register device 0 - this is the control channel
-+		 * and not a usable tty interface
-+		 */
-+		dev = tty_register_device(gsm_tty_driver, base + i, NULL);
-+		if (IS_ERR(dev)) {
-+			if (debug & 8)
-+				pr_info("%s failed to register device minor %u",
-+					__func__, base + i);
-+			for (i--; i >= 1; i--)
-+				tty_unregister_device(gsm_tty_driver, base + i);
-+			return PTR_ERR(dev);
+ /**
+  *	gsm_encode_modem	-	encode modem data bits
+  *	@dlci: DLCI to encode from
+@@ -746,6 +767,37 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+ 	return m;
+ }
+ 
++/**
++ *	gsm_is_flow_ctrl_msg	-	checks if flow control message
++ *	@msg: message to check
++ *
++ *	Returns true if the given message is a flow control command of the
++ *	control channel. False is returned in any other case.
++ */
++static bool gsm_is_flow_ctrl_msg(struct gsm_msg *msg)
++{
++	unsigned int cmd;
++
++	if (msg->addr > 0)
++		return false;
++
++	switch (msg->ctrl & ~PF) {
++	case UI:
++	case UIH:
++		cmd = 0;
++		if (gsm_read_ea_val(&cmd, msg->data + 2, msg->len - 2) < 1)
++			break;
++		switch (cmd & ~PF) {
++		case CMD_FCOFF:
++		case CMD_FCON:
++			return true;
 +		}
++		break;
 +	}
 +
-+	return 0;
-+}
-+
-+/**
-+ *	gsm_unregister_devices	-	unregister all tty devices for a given mux index
-+ *
-+ *	@driver: the tty driver that describes the tty devices
-+ *	@index:  the mux number is used to calculate the minor numbers of the
-+ *	         ttys for this mux and may differ from the position in the
-+ *	         mux array.
-+ */
-+static void gsm_unregister_devices(struct tty_driver *driver,
-+				   unsigned int index)
-+{
-+	int i;
-+	unsigned int base;
-+
-+	if (!driver || index >= MAX_MUX)
-+		return;
-+
-+	base = index * NUM_DLCI; /* first minor for this index */
-+	for (i = 1; i < NUM_DLCI; i++) {
-+		/* Don't unregister device 0 - this is the control
-+		 * channel and not a usable tty interface
-+		 */
-+		tty_unregister_device(gsm_tty_driver, base + i);
-+	}
++	return false;
 +}
 +
  /**
-  *	gsm_print_packet	-	display a frame for debug
-  *	@hdr: header to print before decode
-@@ -2204,6 +2267,10 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	del_timer_sync(&gsm->t2_timer);
+  *	gsm_data_kick		-	poke the queue
+  *	@gsm: GSM Mux
+@@ -765,7 +817,7 @@ static void gsm_data_kick(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 	int len;
  
- 	/* Free up any link layer users and finally the control channel */
-+	if (gsm->has_devices) {
-+		gsm_unregister_devices(gsm_tty_driver, gsm->num);
-+		gsm->has_devices = false;
-+	}
- 	for (i = NUM_DLCI - 1; i >= 0; i--)
- 		if (gsm->dlci[i])
- 			gsm_dlci_release(gsm->dlci[i]);
-@@ -2227,6 +2294,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- static int gsm_activate_mux(struct gsm_mux *gsm)
- {
- 	struct gsm_dlci *dlci;
-+	int ret;
- 
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
-@@ -2238,9 +2306,14 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	else
- 		gsm->receive = gsm1_receive;
- 
-+	ret = gsm_register_devices(gsm_tty_driver, gsm->num);
-+	if (ret)
-+		return ret;
-+
- 	dlci = gsm_dlci_alloc(gsm, 0);
- 	if (dlci == NULL)
- 		return -ENOMEM;
-+	gsm->has_devices = true;
- 	gsm->dead = false;		/* Tty opens are now permissible */
- 	return 0;
- }
-@@ -2500,39 +2573,14 @@ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
-  *	will need moving to an ioctl path.
-  */
- 
--static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
-+static void gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- {
--	unsigned int base;
--	int ret, i;
--
- 	gsm->tty = tty_kref_get(tty);
- 	/* Turn off tty XON/XOFF handling to handle it explicitly. */
- 	gsm->old_c_iflag = tty->termios.c_iflag;
- 	tty->termios.c_iflag &= (IXON | IXOFF);
--	ret =  gsm_activate_mux(gsm);
--	if (ret != 0)
--		tty_kref_put(gsm->tty);
--	else {
--		/* Don't register device 0 - this is the control channel and not
--		   a usable tty interface */
--		base = mux_num_to_base(gsm); /* Base for this MUX */
--		for (i = 1; i < NUM_DLCI; i++) {
--			struct device *dev;
--
--			dev = tty_register_device(gsm_tty_driver,
--							base + i, NULL);
--			if (IS_ERR(dev)) {
--				for (i--; i >= 1; i--)
--					tty_unregister_device(gsm_tty_driver,
--								base + i);
--				return PTR_ERR(dev);
--			}
--		}
--	}
--	return ret;
- }
- 
--
- /**
-  *	gsmld_detach_gsm	-	stop doing 0710 mux
-  *	@tty: tty attached to the mux
-@@ -2543,12 +2591,7 @@ static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- 
- static void gsmld_detach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- {
--	unsigned int base = mux_num_to_base(gsm); /* Base for this MUX */
--	int i;
--
- 	WARN_ON(tty != gsm->tty);
--	for (i = 1; i < NUM_DLCI; i++)
--		tty_unregister_device(gsm_tty_driver, base + i);
- 	/* Restore tty XON/XOFF handling. */
- 	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
- 	tty_kref_put(gsm->tty);
-@@ -2640,7 +2683,6 @@ static void gsmld_close(struct tty_struct *tty)
- static int gsmld_open(struct tty_struct *tty)
- {
- 	struct gsm_mux *gsm;
--	int ret;
- 
- 	if (tty->ops->write == NULL)
- 		return -EINVAL;
-@@ -2656,12 +2698,11 @@ static int gsmld_open(struct tty_struct *tty)
- 	/* Attach the initial passive connection */
- 	gsm->encoding = 1;
- 
--	ret = gsmld_attach_gsm(tty, gsm);
--	if (ret != 0) {
--		gsm_cleanup_mux(gsm, false);
--		mux_put(gsm);
--	}
--	return ret;
-+	gsmld_attach_gsm(tty, gsm);
-+
-+	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
-+
-+	return 0;
- }
- 
- /**
+ 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_list, list) {
+-		if (gsm->constipated && msg->addr)
++		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
+ 			continue;
+ 		if (gsm->encoding != 0) {
+ 			gsm->txframe[0] = GSM1_SOF;
 -- 
 2.35.1
 
