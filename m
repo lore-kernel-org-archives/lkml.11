@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDE4C2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E870C2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354497AbiHOXpr (ORCPT
+        id S1355120AbiHOXrH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
+        Mon, 15 Aug 2022 19:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354300AbiHOXlt (ORCPT
+        with ESMTP id S1354341AbiHOXlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:49 -0400
+        Mon, 15 Aug 2022 19:41:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BDD2A954;
-        Mon, 15 Aug 2022 13:11:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134032CC81;
+        Mon, 15 Aug 2022 13:13:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FEEBB80EAD;
-        Mon, 15 Aug 2022 20:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A092C433C1;
-        Mon, 15 Aug 2022 20:11:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9997B80EA8;
+        Mon, 15 Aug 2022 20:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA18C433D6;
+        Mon, 15 Aug 2022 20:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594309;
-        bh=KcEV8SKvsjL468XkPQvCHNAT9nTCGEg25sQJaScv6vE=;
+        s=korg; t=1660594378;
+        bh=YcUUB4RedbZ+lubJgf+hTcDCMOcGMS1Aj3kO+WeMkUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZKGzdOFGSrVb+3zARUOaLbGjxnSJfQoemiGxeBAdPzBhCO4NkDKkhugm65OlHk1SZ
-         pRJCizB/kFqCpR5NF39xKfmbXHH+jCaYR7/lw4RrkgZ7F3ClAAkvW4ZEO4ujZcXP4B
-         30AR2C4pDT9vVdANoZUWkKs69FSqQwHxa/AooAXA=
+        b=qC8NMKNDCdfDzOX7eT97IqQs7gckwxOHXo/H+m1puFaRKUOyuiEIKX5Z4OBdY/tVj
+         KDMQ3spl2+f8qhdQ1i9520rRUPfdL9gT8SdSG4RGq3sgb2FrCsO00qUa1rBzBn1Oom
+         BSf0ryBpJAIwdxzaHTXcolSw6Znf2wRk/sk6oJF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0412/1157] drm/vc4: dsi: Register dsi0 as the correct vc4 encoder type
-Date:   Mon, 15 Aug 2022 19:56:08 +0200
-Message-Id: <20220815180456.117894646@linuxfoundation.org>
+Subject: [PATCH 5.19 0427/1157] selftests/xsk: Destroy BPF resources only when ctx refcount drops to 0
+Date:   Mon, 15 Aug 2022 19:56:23 +0200
+Message-Id: <20220815180456.742270917@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,39 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 4d9273c978d4c1af15d7874c10c732ec83d444d0 ]
+[ Upstream commit 39e940d4abfabb08b6937a315546b24d10be67e3 ]
 
-vc4_dsi was registering both dsi0 and dsi1 as VC4_ENCODER_TYPE_DSI1
-which seemed to work OK for a single DSI display, but fails
-if there are two DSI displays connected.
+Currently, xsk_socket__delete frees BPF resources regardless of ctx
+refcount. Xdpxceiver has a test to verify whether underlying BPF
+resources would not be wiped out after closing XSK socket that was
+bound to interface with other active sockets. From library's xsk part
+perspective it also means that the internal xsk context is shared and
+its refcount is bumped accordingly.
 
-Update to register the correct type.
+After a switch to loading XDP prog based on previously opened XSK
+socket, mentioned xdpxceiver test fails with:
 
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-15-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+  not ok 16 [xdpxceiver.c:swap_xsk_resources:1334]: ERROR: 9/"Bad file descriptor
+
+which means that in swap_xsk_resources(), xsk_socket__delete() released
+xskmap which in turn caused a failure of xsk_socket__update_xskmap().
+
+To fix this, when deleting socket, decrement ctx refcount before
+releasing BPF resources and do so only when refcount dropped to 0 which
+means there are no more active sockets for this ctx so BPF resources can
+be freed safely.
+
+Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Link: https://lore.kernel.org/bpf/20220629143458.934337-5-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/lib/bpf/xsk.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 81a6c4e9576d..97a258c934af 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1518,7 +1518,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 		return -ENOMEM;
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index af136f73b09d..67dc010e9fe3 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -1147,8 +1147,6 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 		goto out_mmap_tx;
+ 	}
  
- 	INIT_LIST_HEAD(&dsi->bridge_chain);
--	vc4_dsi_encoder->base.type = VC4_ENCODER_TYPE_DSI1;
-+	vc4_dsi_encoder->base.type = dsi->variant->port ?
-+			VC4_ENCODER_TYPE_DSI1 : VC4_ENCODER_TYPE_DSI0;
- 	vc4_dsi_encoder->dsi = dsi;
- 	dsi->encoder = &vc4_dsi_encoder->base.base;
+-	ctx->prog_fd = -1;
+-
+ 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+ 		err = __xsk_setup_xdp_prog(xsk, NULL);
+ 		if (err)
+@@ -1229,7 +1227,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
  
+ 	ctx = xsk->ctx;
+ 	umem = ctx->umem;
+-	if (ctx->prog_fd != -1) {
++
++	xsk_put_ctx(ctx, true);
++
++	if (!ctx->refcount) {
+ 		xsk_delete_bpf_maps(xsk);
+ 		close(ctx->prog_fd);
+ 		if (ctx->has_bpf_link)
+@@ -1248,8 +1249,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ 		}
+ 	}
+ 
+-	xsk_put_ctx(ctx, true);
+-
+ 	umem->refcount--;
+ 	/* Do not close an fd that also has an associated umem connected
+ 	 * to it.
 -- 
 2.35.1
 
