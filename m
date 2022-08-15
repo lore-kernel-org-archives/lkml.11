@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A15CEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBF4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349643AbiHOVpq (ORCPT
+        id S1349665AbiHOVp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
+        Mon, 15 Aug 2022 17:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349702AbiHOVlp (ORCPT
+        with ESMTP id S1349726AbiHOVlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:41:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D085C9E8;
-        Mon, 15 Aug 2022 12:29:28 -0700 (PDT)
+        Mon, 15 Aug 2022 17:41:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DD55C97C;
+        Mon, 15 Aug 2022 12:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD27EB810C6;
-        Mon, 15 Aug 2022 19:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18090C43147;
-        Mon, 15 Aug 2022 19:29:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 379B560EF0;
+        Mon, 15 Aug 2022 19:29:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429C8C433D7;
+        Mon, 15 Aug 2022 19:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591765;
-        bh=7rSatraBdchFZq9eWy7keGz7HdtwWZBRr7vyDaCiar4=;
+        s=korg; t=1660591768;
+        bh=uHGQOZ8Jt+Uw4YGxwDSoD+KHX62l14xtDPFuerpoiho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sI1m33gwo8o0Mw0YvhKPNMWRUFvOF//N4LxZO6rTi569mlp/fN/L8BW7/3SzUIBCe
-         nt7e2X0DV2McyHBFP8TxffApaT3ahkOWbsBVEXh6G/arTX4kZK77l0aeIlZeQQhYYO
-         p4c2OMCW6WUBp0X4EhPuTJjaNr4CZSLFDyb1Z6vk=
+        b=z+xYKqGBv7Lw0R35+nLWFOCuZX/XEWNEnWqeBZtjm1/VdbZ4IhQRP8jwRKgc5jx7z
+         c1j1DMlagOeMOs+RgaMnzu/Aog87np2AOKJfFd6wbQ024zr0blZzIdvswkuk9c/qQZ
+         0aCbDoL8StcSWJJQJxUSNvjoLqFLIFuJq9pWWHcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Jacky Bai <ping.bai@nxp.com>, Abel Vesa <abel.vesa@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0678/1095] clk: imx: clk-fracn-gppll: fix mfd value
-Date:   Mon, 15 Aug 2022 20:01:17 +0200
-Message-Id: <20220815180457.419164984@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornieskaia <kolga@netapp.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.19 0006/1157] nfsd: eliminate the NFSD_FILE_BREAK_* flags
+Date:   Mon, 15 Aug 2022 19:49:22 +0200
+Message-Id: <20220815180439.734698710@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit 044034efbeea05f65c09d2ba15ceeab53b60e947 ]
+commit 23ba98de6dcec665e15c0ca19244379bb0d30932 upstream.
 
-According to spec:
-A value of 0 is disallowed and should not be programmed in this register
+We had a report from the spring Bake-a-thon of data corruption in some
+nfstest_interop tests. Looking at the traces showed the NFS server
+allowing a v3 WRITE to proceed while a read delegation was still
+outstanding.
 
-Fix to 1.
+Currently, we only set NFSD_FILE_BREAK_* flags if
+NFSD_MAY_NOT_BREAK_LEASE was set when we call nfsd_file_alloc.
+NFSD_MAY_NOT_BREAK_LEASE was intended to be set when finding files for
+COMMIT ops, where we need a writeable filehandle but don't need to
+break read leases.
 
-Fixes: 1b26cb8a77a4 ("clk: imx: support fracn gppll")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Jacky Bai <ping.bai@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-5-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It doesn't make any sense to consult that flag when allocating a file
+since the file may be used on subsequent calls where we do want to break
+the lease (and the usage of it here seems to be reverse from what it
+should be anyway).
+
+Also, after calling nfsd_open_break_lease, we don't want to clear the
+BREAK_* bits. A lease could end up being set on it later (more than
+once) and we need to be able to break those leases as well.
+
+This means that the NFSD_FILE_BREAK_* flags now just mirror
+NFSD_MAY_{READ,WRITE} flags, so there's no need for them at all. Just
+drop those flags and unconditionally call nfsd_open_break_lease every
+time.
+
+Reported-by: Olga Kornieskaia <kolga@netapp.com>
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2107360
+Fixes: 65294c1f2c5e (nfsd: add a new struct file caching facility to nfsd)
+Cc: <stable@vger.kernel.org> # 5.4.x : bb283ca18d1e NFSD: Clean up the show_nf_flags() macro
+Cc: <stable@vger.kernel.org> # 5.4.x
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/imx/clk-fracn-gppll.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/nfsd/filecache.c |   22 +---------------------
+ fs/nfsd/filecache.h |    4 +---
+ fs/nfsd/trace.h     |    2 --
+ 3 files changed, 2 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/clk/imx/clk-fracn-gppll.c b/drivers/clk/imx/clk-fracn-gppll.c
-index 71c102d950ab..36a53c60e71f 100644
---- a/drivers/clk/imx/clk-fracn-gppll.c
-+++ b/drivers/clk/imx/clk-fracn-gppll.c
-@@ -64,10 +64,10 @@ struct clk_fracn_gppll {
-  * Fout = Fvco / (rdiv * odiv)
-  */
- static const struct imx_fracn_gppll_rate_table fracn_tbl[] = {
--	PLL_FRACN_GP(650000000U, 81, 0, 0, 0, 3),
--	PLL_FRACN_GP(594000000U, 198, 0, 0, 0, 8),
--	PLL_FRACN_GP(560000000U, 70, 0, 0, 0, 3),
--	PLL_FRACN_GP(400000000U, 50, 0, 0, 0, 3),
-+	PLL_FRACN_GP(650000000U, 81, 0, 1, 0, 3),
-+	PLL_FRACN_GP(594000000U, 198, 0, 1, 0, 8),
-+	PLL_FRACN_GP(560000000U, 70, 0, 1, 0, 3),
-+	PLL_FRACN_GP(400000000U, 50, 0, 1, 0, 3),
- 	PLL_FRACN_GP(393216000U, 81, 92, 100, 0, 5)
- };
+--- a/fs/nfsd/filecache.c
++++ b/fs/nfsd/filecache.c
+@@ -184,12 +184,6 @@ nfsd_file_alloc(struct inode *inode, uns
+ 		nf->nf_hashval = hashval;
+ 		refcount_set(&nf->nf_ref, 1);
+ 		nf->nf_may = may & NFSD_FILE_MAY_MASK;
+-		if (may & NFSD_MAY_NOT_BREAK_LEASE) {
+-			if (may & NFSD_MAY_WRITE)
+-				__set_bit(NFSD_FILE_BREAK_WRITE, &nf->nf_flags);
+-			if (may & NFSD_MAY_READ)
+-				__set_bit(NFSD_FILE_BREAK_READ, &nf->nf_flags);
+-		}
+ 		nf->nf_mark = NULL;
+ 		trace_nfsd_file_alloc(nf);
+ 	}
+@@ -958,21 +952,7 @@ wait_for_construction:
  
--- 
-2.35.1
-
+ 	this_cpu_inc(nfsd_file_cache_hits);
+ 
+-	if (!(may_flags & NFSD_MAY_NOT_BREAK_LEASE)) {
+-		bool write = (may_flags & NFSD_MAY_WRITE);
+-
+-		if (test_bit(NFSD_FILE_BREAK_READ, &nf->nf_flags) ||
+-		    (test_bit(NFSD_FILE_BREAK_WRITE, &nf->nf_flags) && write)) {
+-			status = nfserrno(nfsd_open_break_lease(
+-					file_inode(nf->nf_file), may_flags));
+-			if (status == nfs_ok) {
+-				clear_bit(NFSD_FILE_BREAK_READ, &nf->nf_flags);
+-				if (write)
+-					clear_bit(NFSD_FILE_BREAK_WRITE,
+-						  &nf->nf_flags);
+-			}
+-		}
+-	}
++	status = nfserrno(nfsd_open_break_lease(file_inode(nf->nf_file), may_flags));
+ out:
+ 	if (status == nfs_ok) {
+ 		*pnf = nf;
+--- a/fs/nfsd/filecache.h
++++ b/fs/nfsd/filecache.h
+@@ -37,9 +37,7 @@ struct nfsd_file {
+ 	struct net		*nf_net;
+ #define NFSD_FILE_HASHED	(0)
+ #define NFSD_FILE_PENDING	(1)
+-#define NFSD_FILE_BREAK_READ	(2)
+-#define NFSD_FILE_BREAK_WRITE	(3)
+-#define NFSD_FILE_REFERENCED	(4)
++#define NFSD_FILE_REFERENCED	(2)
+ 	unsigned long		nf_flags;
+ 	struct inode		*nf_inode;
+ 	unsigned int		nf_hashval;
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -696,8 +696,6 @@ DEFINE_CLID_EVENT(confirmed_r);
+ 	__print_flags(val, "|",						\
+ 		{ 1 << NFSD_FILE_HASHED,	"HASHED" },		\
+ 		{ 1 << NFSD_FILE_PENDING,	"PENDING" },		\
+-		{ 1 << NFSD_FILE_BREAK_READ,	"BREAK_READ" },		\
+-		{ 1 << NFSD_FILE_BREAK_WRITE,	"BREAK_WRITE" },	\
+ 		{ 1 << NFSD_FILE_REFERENCED,	"REFERENCED"})
+ 
+ DECLARE_EVENT_CLASS(nfsd_file_class,
 
 
