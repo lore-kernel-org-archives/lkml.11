@@ -2,93 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C4FC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03915C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241128AbiHOG4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
+        id S241168AbiHOG5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241151AbiHOGzp (ORCPT
+        with ESMTP id S233308AbiHOG5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:55:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D47EBF585
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:55:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660546542;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s27ZkPXAKFlLDtakqNA0q70iNz46u3nf8VUdJxUpsDw=;
-        b=VhjS4CpeN6WyYaPRcHJN0mp8iX1yicytUmXfMQSFGqL4jIkMihYafsxh9G6tHdBS8AEdL6
-        jLxW2fczbLbMKa0uPbAjZAMrnwQoK33biBRFsxkC8WAZ4lZE4mOg/8nF/V6dcbnRGSQvs3
-        YuQHFchaStUntbocT/Su4UA5CLsNk7w=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-623-xVT9LJSFPv6z_FqcyxtiwA-1; Mon, 15 Aug 2022 02:55:39 -0400
-X-MC-Unique: xVT9LJSFPv6z_FqcyxtiwA-1
-Received: by mail-pj1-f71.google.com with SMTP id a17-20020a17090abe1100b001f320df2e97so7853800pjs.0
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:55:39 -0700 (PDT)
+        Mon, 15 Aug 2022 02:57:50 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5DC10552;
+        Sun, 14 Aug 2022 23:57:49 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id f65so5821370pgc.12;
+        Sun, 14 Aug 2022 23:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=gMw/e7nL3q8loyP6pDu1lcY4dhvsIg+AhMS6bilhZas=;
+        b=SIQSKrhy7gSmBOGc2IwKJZ2KWeUd3CxvB6oVpapceFGs7jdaDf2mvBy2KNPEYXeA67
+         oRtotJEWrCBkFc984f9vjq77D1b+ZSxmMaot5fqUAWhq3s3xwiX6v+Da1A17HfIH/P3c
+         3vVa02JZO1ainbWvo1sTC6F5v9iSJMmqEuPdwIG0RulYObUbghvid9GOgBLRwWXyXiKw
+         PqFhTTnjPeWTK5TZvrvDHNPIdIeXQKOH5HzEL/zp47iY+d6pGOFQ4PMqJ5N0KEscZmeZ
+         qTJlixioi05WPAGs/gt82s4MIxqv1lOMI79IADTY9Y8+GNDD134BV6XaG5u3ryahqBdS
+         V00w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=s27ZkPXAKFlLDtakqNA0q70iNz46u3nf8VUdJxUpsDw=;
-        b=KB23GBdMvvlyujvFguZp8NPGV9CzVLx/9QMwFksvlGdiwH4iGzXiFBzMXMH3bQ0aMl
-         Vb8jygepm7FmtxeMw2IKgZ2veE++jSXSZXi5d3F5mVBitqMRMiW2oYeMGUjZJ9mZ4+jo
-         nwtIFQGBO9YgY34VO9ymSaPKsFR3QOTqQFh2VbX6qppE3ZBv5mOZbmzfwsCwLsRV8bs4
-         VEZey9EdvxVLo5k55l2iDeRTJ+PuJYSW1Pes27yOS5fyQ+cUW/tjhrT3kpTIR2i4jeWX
-         zwJzI8ugT52iE2D0TO5T/mhldKeejnUraJB/6OTJwFn+nm5U66rEClYMu1l0gHMVcoGA
-         GJAQ==
-X-Gm-Message-State: ACgBeo1bFW6pZZ4cjkJH2iMSbrf6xyOK+8C398CwrnbqqCRg671bk0eM
-        0kLHjvTPOHWMpLk9FiULwLivZFymVE/4b6P8MTuRUo6bvdl1lTMndUI+BumhRpKNWe/zuSkF7X9
-        FbbOR3b9gEdwKRUI4OPxVeRT4
-X-Received: by 2002:a17:90a:5888:b0:1f5:f1d2:54bb with SMTP id j8-20020a17090a588800b001f5f1d254bbmr25854879pji.178.1660546538536;
-        Sun, 14 Aug 2022 23:55:38 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5gSneUL2Qdvf4jY+Km6lnQKEAMNgjtedDGxytTE89P2b0LLUeE3NqKVwS7DQzMiYmV23B6Fg==
-X-Received: by 2002:a17:90a:5888:b0:1f5:f1d2:54bb with SMTP id j8-20020a17090a588800b001f5f1d254bbmr25854861pji.178.1660546538288;
-        Sun, 14 Aug 2022 23:55:38 -0700 (PDT)
-Received: from localhost ([240e:3a1:2ea:acc0:8cff:e01c:2dbf:2ae8])
-        by smtp.gmail.com with ESMTPSA id l20-20020a17090b079400b001f89383d587sm4015601pjz.56.2022.08.14.23.55.37
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=gMw/e7nL3q8loyP6pDu1lcY4dhvsIg+AhMS6bilhZas=;
+        b=JbFGqNwy0CPF8YwgOK6n5f3xurYa82Te77HjLGO8WpPZFlqpbb2Yhmb4zg/9mS9QYd
+         ZL2PTgTiXG0mxffhpymtqS43iMsgap4zUTGmco97TnDwfEA39IBKLQnlaWSjWJjbv4yG
+         VMPWTMrYbaa9mv6SwX3i2h496F9zEFqGmJXx1kh66Co26fmVexO2GMbxhHKzL41vkU5F
+         cb5Pb30OAS1RKUIXfg8Nkr4eZqWYVStF6wHWGHyBSAl1Npl7Jr949TqyrEoE8J3FZY+R
+         C3nnif98bG8UyH4N4Q6O0T496Ze3sijYRtdSpIkJT3dIdFaHPrqTKZAXPS92QznhFLp0
+         El9Q==
+X-Gm-Message-State: ACgBeo3wZ1b481GxTQXtV4GEN/XBugzDZFddHvzklxAb/aR4hES7IrCP
+        YoPU9gUtSb01/OOKrOotHWI=
+X-Google-Smtp-Source: AA6agR4Gj5H2V5smEr+ke8WMabYxe5zWD4CPihq3mkCVEAsQNXUIBdgL3M9RloEgbv8qau4PKcy9/Q==
+X-Received: by 2002:a63:88c8:0:b0:41d:260c:ea29 with SMTP id l191-20020a6388c8000000b0041d260cea29mr12644539pgd.284.1660546669131;
+        Sun, 14 Aug 2022 23:57:49 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id dw3-20020a17090b094300b001f312e7665asm3981501pjb.47.2022.08.14.23.57.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:55:37 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 14:53:25 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>
-Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
-        nasastry@in.ibm.com, mpe@ellerman.id.au
-Subject: Re: [PATCH v7 0/6] tpm: Preserve TPM measurement log across kexec
- (ppc64)
-Message-ID: <20220815065325.h3t3igr6nogf7h23@Rk>
-References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
- <20220815064813.77g6icbkygrbmapa@Rk>
+        Sun, 14 Aug 2022 23:57:48 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.panda@zte.com.cn
+To:     hannes@cmpxchg.org
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, xupanda <xu.panda@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
+Subject: [PATCH v2 linux-next] mm: memcontrol: Fix a typo in comment
+Date:   Mon, 15 Aug 2022 06:51:04 +0000
+Message-Id: <20220815065102.74347-1-xu.panda@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220815064813.77g6icbkygrbmapa@Rk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 02:48:13PM +0800, Coiby Xu wrote:
->I can confirm this patch set fixes an issue that guest kdump kernel
->crashes on POWER9 host by applying it to 5.19.1 (there is a conflict
->when applying this patch set to latest kernel i.e. 6.0.0-rc1).
+From: xupanda <xu.panda@zte.com.cn>
 
-FYI, here's the error of applying it to 6.0.0-rc1,
+Fix a spelling mistake in comment.
 
-[root@localhost linux]# git am ../v7_tpm_log.mbox 
-Applying: of: check previous kernel's ima-kexec-buffer against memory bounds
-error: patch failed: drivers/of/kexec.c:126
-error: drivers/of/kexec.c: patch does not apply
-Patch failed at 0001 of: check previous kernel's ima-kexec-buffer against memory bounds
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xupanda <xu.panda@zte.com.cn>
+Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
 
+---
+Change for v2:
+ - fix wrong title
+---
+
+ mm/memcontrol.c     |  2 +-
+ 1 files changed, 1 insertions(+), 1 deletion(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index b69979c9ced5..4dddd8be320a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -1143,7 +1143,7 @@ static void invalidate_reclaim_iterators(struct mem_cgroup *dead_memcg)
+ 	} while ((memcg = parent_mem_cgroup(memcg)));
+ 
+ 	/*
+-	 * When cgruop1 non-hierarchy mode is used,
++	 * When cgroup1 non-hierarchy mode is used,
+ 	 * parent_mem_cgroup() does not walk all the way up to the
+ 	 * cgroup root (root_mem_cgroup). So we have to handle
+ 	 * dead_memcg from cgroup root separately.
 -- 
-Best regards,
-Coiby
+2.25.1
 
