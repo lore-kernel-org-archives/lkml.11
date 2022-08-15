@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EAFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC61C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345526AbiHOXfb (ORCPT
+        id S1353601AbiHOXfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        Mon, 15 Aug 2022 19:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245013AbiHOX3H (ORCPT
+        with ESMTP id S1346106AbiHOXaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:29:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A60BB908;
-        Mon, 15 Aug 2022 13:07:57 -0700 (PDT)
+        Mon, 15 Aug 2022 19:30:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3365FBB939;
+        Mon, 15 Aug 2022 13:08:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD16AB81142;
-        Mon, 15 Aug 2022 20:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A91FC433D6;
-        Mon, 15 Aug 2022 20:07:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 125B5B80EA8;
+        Mon, 15 Aug 2022 20:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44273C433D7;
+        Mon, 15 Aug 2022 20:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594074;
-        bh=PubY1hmrGCf0b7CV+WmrD1xQ9cFgoAo/s7Yj5UkVxNE=;
+        s=korg; t=1660594080;
+        bh=5n/75u9yLbFTG8wLPL2EQWKA9GGqPhXQKNdg9xemZ4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=margB09aOgF1l4NRzrTpPWFqnGcSUaJDufbfn1A4/D1sfuLIPj6TMC1C79tC4pFBD
-         7IIsWXCzYyZ2Z24tDmy6SZ5bs6fTbTI78ev8XWMR0sIpGkfZ0BRIMlj0cVkTYmfjCi
-         uAEltIyYGt1mh+ndTu+L3cvc7wK2FqodP/GXiC00=
+        b=BXnOuT5KFe0eONja7kHiiV0eSjnpUJjAIK1p3HXtFWi4dt0cWsGn5WnEqSPhjKT3z
+         AlgEUcNhaDKm/jZME0tb4j4FlJUaAAS1T8ZIdSXNcvKK8G4HrJa/azTxeoxaJFkVc1
+         jadc/TbQn385Xggq8fOqiCVbjn/WHbTCihT/SJdk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1051/1095] ksmbd: add smbd max io size parameter
-Date:   Mon, 15 Aug 2022 20:07:30 +0200
-Message-Id: <20220815180512.555659116@linuxfoundation.org>
+Subject: [PATCH 5.18 1023/1095] btrfs: zoned: disable metadata overcommit for zoned
+Date:   Mon, 15 Aug 2022 20:07:02 +0200
+Message-Id: <20220815180511.403729523@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,113 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 65bb45b97b578c8eed1ffa80caec84708df49729 ]
+[ Upstream commit 79417d040f4f77b19c701bccc23013b9cdac358d ]
 
-Add 'smbd max io size' parameter to adjust smbd-direct max read/write
-size.
+The metadata overcommit makes the space reservation flexible but it is also
+harmful to active zone tracking. Since we cannot finish a block group from
+the metadata allocation context, we might not activate a new block group
+and might not be able to actually write out the overcommit reservations.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+So, disable metadata overcommit for zoned filesystems. We will ensure
+the reservations are under active_total_bytes in the following patches.
+
+CC: stable@vger.kernel.org # 5.16+
+Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/ksmbd_netlink.h  | 3 ++-
- fs/ksmbd/transport_ipc.c  | 3 +++
- fs/ksmbd/transport_rdma.c | 8 +++++++-
- fs/ksmbd/transport_rdma.h | 6 ++++++
- 4 files changed, 18 insertions(+), 2 deletions(-)
+ fs/btrfs/space-info.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ksmbd/ksmbd_netlink.h b/fs/ksmbd/ksmbd_netlink.h
-index ebe6ca08467a..52aa0adeb951 100644
---- a/fs/ksmbd/ksmbd_netlink.h
-+++ b/fs/ksmbd/ksmbd_netlink.h
-@@ -104,7 +104,8 @@ struct ksmbd_startup_request {
- 					 */
- 	__u32	sub_auth[3];		/* Subauth value for Security ID */
- 	__u32	smb2_max_credits;	/* MAX credits */
--	__u32	reserved[128];		/* Reserved room */
-+	__u32	smbd_max_io_size;	/* smbd read write size */
-+	__u32	reserved[127];		/* Reserved room */
- 	__u32	ifc_list_sz;		/* interfaces list size */
- 	__s8	____payload[];
- };
-diff --git a/fs/ksmbd/transport_ipc.c b/fs/ksmbd/transport_ipc.c
-index 3ad6881e0f7e..7cb0eeb07c80 100644
---- a/fs/ksmbd/transport_ipc.c
-+++ b/fs/ksmbd/transport_ipc.c
-@@ -26,6 +26,7 @@
- #include "mgmt/ksmbd_ida.h"
- #include "connection.h"
- #include "transport_tcp.h"
-+#include "transport_rdma.h"
+diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
+index b87931a458eb..56a7c99fc03e 100644
+--- a/fs/btrfs/space-info.c
++++ b/fs/btrfs/space-info.c
+@@ -340,7 +340,10 @@ int btrfs_can_overcommit(struct btrfs_fs_info *fs_info,
+ 		return 0;
  
- #define IPC_WAIT_TIMEOUT	(2 * HZ)
+ 	used = btrfs_space_info_used(space_info, true);
+-	avail = calc_available_free_space(fs_info, space_info, flush);
++	if (btrfs_is_zoned(fs_info) && (space_info->flags & BTRFS_BLOCK_GROUP_METADATA))
++		avail = 0;
++	else
++		avail = calc_available_free_space(fs_info, space_info, flush);
  
-@@ -303,6 +304,8 @@ static int ipc_server_config_on_startup(struct ksmbd_startup_request *req)
- 		init_smb2_max_trans_size(req->smb2_max_trans);
- 	if (req->smb2_max_credits)
- 		init_smb2_max_credits(req->smb2_max_credits);
-+	if (req->smbd_max_io_size)
-+		init_smbd_max_io_size(req->smbd_max_io_size);
- 
- 	ret = ksmbd_set_netbios_name(req->netbios_name);
- 	ret |= ksmbd_set_server_string(req->server_string);
-diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
-index b44a5e584bac..afc66b9765e7 100644
---- a/fs/ksmbd/transport_rdma.c
-+++ b/fs/ksmbd/transport_rdma.c
-@@ -80,7 +80,7 @@ static int smb_direct_max_fragmented_recv_size = 1024 * 1024;
- /*  The maximum single-message size which can be received */
- static int smb_direct_max_receive_size = 8192;
- 
--static int smb_direct_max_read_write_size = 8 * 1024 * 1024;
-+static int smb_direct_max_read_write_size = SMBD_DEFAULT_IOSIZE;
- 
- static LIST_HEAD(smb_direct_device_list);
- static DEFINE_RWLOCK(smb_direct_device_lock);
-@@ -214,6 +214,12 @@ struct smb_direct_rdma_rw_msg {
- 	struct scatterlist	sg_list[];
- };
- 
-+void init_smbd_max_io_size(unsigned int sz)
-+{
-+	sz = clamp_val(sz, SMBD_MIN_IOSIZE, SMBD_MAX_IOSIZE);
-+	smb_direct_max_read_write_size = sz;
-+}
-+
- static inline int get_buf_page_count(void *buf, int size)
- {
- 	return DIV_ROUND_UP((uintptr_t)buf + size, PAGE_SIZE) -
-diff --git a/fs/ksmbd/transport_rdma.h b/fs/ksmbd/transport_rdma.h
-index 5567d93a6f96..e7b4e6790fab 100644
---- a/fs/ksmbd/transport_rdma.h
-+++ b/fs/ksmbd/transport_rdma.h
-@@ -7,6 +7,10 @@
- #ifndef __KSMBD_TRANSPORT_RDMA_H__
- #define __KSMBD_TRANSPORT_RDMA_H__
- 
-+#define SMBD_DEFAULT_IOSIZE (8 * 1024 * 1024)
-+#define SMBD_MIN_IOSIZE (512 * 1024)
-+#define SMBD_MAX_IOSIZE (16 * 1024 * 1024)
-+
- /* SMB DIRECT negotiation request packet [MS-SMBD] 2.2.1 */
- struct smb_direct_negotiate_req {
- 	__le16 min_version;
-@@ -52,10 +56,12 @@ struct smb_direct_data_transfer {
- int ksmbd_rdma_init(void);
- void ksmbd_rdma_destroy(void);
- bool ksmbd_rdma_capable_netdev(struct net_device *netdev);
-+void init_smbd_max_io_size(unsigned int sz);
- #else
- static inline int ksmbd_rdma_init(void) { return 0; }
- static inline int ksmbd_rdma_destroy(void) { return 0; }
- static inline bool ksmbd_rdma_capable_netdev(struct net_device *netdev) { return false; }
-+static inline void init_smbd_max_io_size(unsigned int sz) { }
- #endif
- 
- #endif /* __KSMBD_TRANSPORT_RDMA_H__ */
+ 	if (used + bytes < space_info->total_bytes + avail)
+ 		return 1;
 -- 
 2.35.1
 
