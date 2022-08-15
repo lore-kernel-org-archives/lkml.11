@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 798E7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC464C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbiHOXeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
+        id S243805AbiHOXeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346406AbiHOX1S (ORCPT
+        with ESMTP id S1346702AbiHOX1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF843BA17C;
-        Mon, 15 Aug 2022 13:07:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:27:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770A182847;
+        Mon, 15 Aug 2022 13:07:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAED16068D;
-        Mon, 15 Aug 2022 20:07:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D33C433C1;
-        Mon, 15 Aug 2022 20:07:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFCEEB810C5;
+        Mon, 15 Aug 2022 20:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19FA8C433D6;
+        Mon, 15 Aug 2022 20:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594027;
-        bh=RDj5KPfi2DGB835dglTgPaPt8BgMLgpCXvMGM1nKy5o=;
+        s=korg; t=1660594030;
+        bh=bNA+L8ZtPWK90hlTA0ywsViACbAwVY8ybVjhT9qqLuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EJj2YeTiohuzD8LhKevfl7RSSX63LGzqIW0kX/CuUxJJP6CkY/1f/Q4pauFl9/0qz
-         INYouWvdPhKkB7rM0f5DKBFT3h84IvvGgWPIN9PjIegrApHGTSEZz3wcv0ExG1UiUN
-         o8yDVNYWV+NZEAikYNVKigPNpIn1nafocKdr0gTw=
+        b=I94Oj4O5KQfKgfg20bAzWefJgwiammlyoeucnC0MI9a8TQN4X7QGVpPRYov7FxeCB
+         LvPy5Ro2vHzMhOwnIEmdCxGzJuirpnSOwo+bOodr1vorFGfV1UsU31X53haWksdltV
+         4kHSXiMY/EDlEfMnaah0eQRdmeLwvdYZfbvYxMoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        SeongJae Park <sj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1044/1095] mm/damon/reclaim: fix potential memory leak in damon_reclaim_init()
-Date:   Mon, 15 Aug 2022 20:07:23 +0200
-Message-Id: <20220815180512.274821489@linuxfoundation.org>
+Subject: [PATCH 5.19 0364/1157] tcp: fix possible freeze in tx path under memory pressure
+Date:   Mon, 15 Aug 2022 19:55:20 +0200
+Message-Id: <20220815180454.279576717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +52,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 188043c7f4f2bd662f2a55957d684fffa543e600 ]
+[ Upstream commit 849b425cd091e1804af964b771761cfbefbafb43 ]
 
-damon_reclaim_init() allocates a memory chunk for ctx with
-damon_new_ctx().  When damon_select_ops() fails, ctx is not released,
-which will lead to a memory leak.
+Blamed commit only dealt with applications issuing small writes.
 
-We should release the ctx with damon_destroy_ctx() when damon_select_ops()
-fails to fix the memory leak.
+Issue here is that we allow to force memory schedule for the sk_buff
+allocation, but we have no guarantee that sendmsg() is able to
+copy some payload in it.
 
-Link: https://lkml.kernel.org/r/20220714063746.2343549-1-niejianglei2021@163.com
-Fixes: 4d69c3457821 ("mm/damon/reclaim: use damon_select_ops() instead of damon_{v,p}a_set_operations()")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
+
+For example, if we consider tcp_wmem[0] = 4096 (default on x86),
+and initial skb->truesize being 1280, tcp_sendmsg() is able to
+copy up to 2816 bytes under memory pressure.
+
+Before this patch a sendmsg() sending more than 2816 bytes
+would either block forever (if persistent memory pressure),
+or return -EAGAIN.
+
+For bigger MTU networks, it is advised to increase tcp_wmem[0]
+to avoid sending too small packets.
+
+v2: deal with zero copy paths.
+
+Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/damon/reclaim.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv4/tcp.c | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
 
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index e34c4d0c4d93..11982685508e 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -384,8 +384,10 @@ static int __init damon_reclaim_init(void)
- 	if (!ctx)
- 		return -ENOMEM;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 766881775abb..3ae2ea048883 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -952,6 +952,23 @@ static int tcp_downgrade_zcopy_pure(struct sock *sk, struct sk_buff *skb)
+ 	return 0;
+ }
  
--	if (damon_select_ops(ctx, DAMON_OPS_PADDR))
-+	if (damon_select_ops(ctx, DAMON_OPS_PADDR)) {
-+		damon_destroy_ctx(ctx);
- 		return -EINVAL;
-+	}
++static int tcp_wmem_schedule(struct sock *sk, int copy)
++{
++	int left;
++
++	if (likely(sk_wmem_schedule(sk, copy)))
++		return copy;
++
++	/* We could be in trouble if we have nothing queued.
++	 * Use whatever is left in sk->sk_forward_alloc and tcp_wmem[0]
++	 * to guarantee some progress.
++	 */
++	left = sock_net(sk)->ipv4.sysctl_tcp_wmem[0] - sk->sk_wmem_queued;
++	if (left > 0)
++		sk_forced_mem_schedule(sk, min(left, copy));
++	return min(copy, sk->sk_forward_alloc);
++}
++
+ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 				      struct page *page, int offset, size_t *size)
+ {
+@@ -987,7 +1004,11 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 		tcp_mark_push(tp, skb);
+ 		goto new_segment;
+ 	}
+-	if (tcp_downgrade_zcopy_pure(sk, skb) || !sk_wmem_schedule(sk, copy))
++	if (tcp_downgrade_zcopy_pure(sk, skb))
++		return NULL;
++
++	copy = tcp_wmem_schedule(sk, copy);
++	if (!copy)
+ 		return NULL;
  
- 	ctx->callback.after_aggregation = damon_reclaim_after_aggregation;
+ 	if (can_coalesce) {
+@@ -1336,8 +1357,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
+ 
+-			if (tcp_downgrade_zcopy_pure(sk, skb) ||
+-			    !sk_wmem_schedule(sk, copy))
++			if (tcp_downgrade_zcopy_pure(sk, skb))
++				goto wait_for_space;
++
++			copy = tcp_wmem_schedule(sk, copy);
++			if (!copy)
+ 				goto wait_for_space;
+ 
+ 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
+@@ -1364,7 +1388,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
+ 
+ 			if (!skb_zcopy_pure(skb)) {
+-				if (!sk_wmem_schedule(sk, copy))
++				copy = tcp_wmem_schedule(sk, copy);
++				if (!copy)
+ 					goto wait_for_space;
+ 			}
  
 -- 
 2.35.1
