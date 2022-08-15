@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF762C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7B2C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245341AbiHPAuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
+        id S233461AbiHPAuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347484AbiHPAp5 (ORCPT
+        with ESMTP id S1347445AbiHPAp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:57 -0400
+        Mon, 15 Aug 2022 20:45:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D997CE5;
-        Mon, 15 Aug 2022 13:41:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A7F193549;
+        Mon, 15 Aug 2022 13:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75E036122B;
-        Mon, 15 Aug 2022 20:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C0CC433D6;
-        Mon, 15 Aug 2022 20:41:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B8C361233;
+        Mon, 15 Aug 2022 20:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79282C433C1;
+        Mon, 15 Aug 2022 20:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596107;
-        bh=md8+GWYFPKGVi2/kX05FH0NsAZLOJVJM6bdiWhxwVXU=;
+        s=korg; t=1660596069;
+        bh=hoC3688rHs7GdImLyycObxElTTb+PGyVRE6FR7k3NtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=msK4nbt2NNezL5ZZjgVFVkfsAnNxIFMgqOzhTWBkfn40Pdr3wxgI0btYeK9B9L4Eb
-         nmLa2nYx9THrgLulL4Awl6pbgbHViBpT7UhCTt3lIl5RJjUMXp+k8oY6Jvs+AMp7ij
-         GNa1pKJe01XEpbxk1s5UttcNy0awDcFIm0wcCb7A=
+        b=G73DuTdL4r1IJMaQdbN2vq1IsgnLIIKri42BT+VYG5/FbY84QBDXnClw5JgHFfqLu
+         +/sW3Y3dV6yT1CjL9+nh4c7xO37IGWHEcklvnuYt9fGgda702S35TXKpxx3K10QTiM
+         ynmuzL6VJXTsYcP/suO+IgqCgIz4xZagDYWaYn54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0940/1157] vfio/ccw: Do not change FSM state in subchannel event
-Date:   Mon, 15 Aug 2022 20:04:56 +0200
-Message-Id: <20220815180517.126538019@linuxfoundation.org>
+Subject: [PATCH 5.19 0936/1157] ASoC: imx-card: Fix DSD/PDM mclk frequency
+Date:   Mon, 15 Aug 2022 20:04:52 +0200
+Message-Id: <20220815180516.950369785@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,59 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
+[ Upstream commit c0fabd12a8570cb932f13d9388f3d887ad44369b ]
 
-The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
-specifically machine checks, on behalf of vfio-ccw. It correctly calls
-cio_update_schib(), and if that fails (meaning the subchannel is gone)
-it makes an FSM event call to mark the subchannel Not Operational.
+The DSD/PDM rate not only DSD64/128/256/512, which are the
+multiple rate of 44.1kHz,  but also support the multiple
+rate of 8kHz, so can't force all mclk frequency to be
+22579200Hz, need to assign the frequency according to
+rate.
 
-If that worked, however, then it decides that if the FSM state was already
-Not Operational (implying the subchannel just came back), then it should
-simply change the FSM to partially- or fully-open.
-
-Remove this trickery, since a subchannel returning will require more
-probing than simply "oh all is well again" to ensure it works correctly.
-
-Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1657100575-8261-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ sound/soc/fsl/imx-card.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
-index 179eb614fa5b..279ad2161f17 100644
---- a/drivers/s390/cio/vfio_ccw_drv.c
-+++ b/drivers/s390/cio/vfio_ccw_drv.c
-@@ -301,19 +301,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
- 	if (work_pending(&sch->todo_work))
- 		goto out_unlock;
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index 6f8efd838fcc..c0eb218a254b 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -17,6 +17,9 @@
  
--	if (cio_update_schib(sch)) {
--		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
--		rc = 0;
--		goto out_unlock;
--	}
--
--	private = dev_get_drvdata(&sch->dev);
--	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
--		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
--				 VFIO_CCW_STATE_STANDBY;
--	}
- 	rc = 0;
+ #include "fsl_sai.h"
  
-+	if (cio_update_schib(sch))
-+		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
++#define IMX_CARD_MCLK_22P5792MHZ  22579200
++#define IMX_CARD_MCLK_24P576MHZ   24576000
 +
- out_unlock:
- 	spin_unlock_irqrestore(sch->lock, flags);
+ enum codec_type {
+ 	CODEC_DUMMY = 0,
+ 	CODEC_AK5558 = 1,
+@@ -353,9 +356,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
+ 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
+ 	else
+ 		mclk_freq = params_rate(params) * slots * slot_width;
+-	/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
+-	if (format_is_dsd(params))
+-		mclk_freq = 22579200;
++
++	if (format_is_dsd(params)) {
++		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
++		if (!(params_rate(params) % 11025))
++			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
++		else
++			mclk_freq = IMX_CARD_MCLK_24P576MHZ;
++	}
  
+ 	ret = snd_soc_dai_set_sysclk(cpu_dai, link_data->cpu_sysclk_id, mclk_freq,
+ 				     SND_SOC_CLOCK_OUT);
 -- 
 2.35.1
 
