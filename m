@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2BDC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08883C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240224AbiHPAfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:35:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        id S1344515AbiHPAfS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354298AbiHPAbf (ORCPT
+        with ESMTP id S1354437AbiHPAbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D921D31ED3;
-        Mon, 15 Aug 2022 13:36:36 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204711863DF;
+        Mon, 15 Aug 2022 13:36:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26CAB611FC;
-        Mon, 15 Aug 2022 20:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14268C433C1;
-        Mon, 15 Aug 2022 20:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02B05611FC;
+        Mon, 15 Aug 2022 20:36:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82B3C433C1;
+        Mon, 15 Aug 2022 20:36:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595795;
-        bh=gMt0TTa4Z8LWwPz7TuWcnuLI0xUXnFXP9Jz18Ps5+Jw=;
+        s=korg; t=1660595785;
+        bh=O4VsfSvrkHLPukgOIZyFQnOLBzYYT1KIKkld0aEIQnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eDJZIvhkLygLNLLFTgETO271nLId/hG0HS98rLCxJGbMVZKHpn34LZd3xxPGAvNC4
-         sB6pDHcj8Th1Peu2ZOgIOuY5dh5ZgQ7WJRYAoc91/cZwcCGK9HCLCwbKVPevwZKFXu
-         lnuOkWmMKZd92n/5vt/yRyU8Gww+6CYKzdrJcU9k=
+        b=ELSqczw7XgTp12+gjCqvFzHxfOf/det56RUjwlmZlHpIlVJK1B9h8ZNbEC+I7+vWM
+         Dtxwjog1In/iHTQ6GX7eM5l6h+/bqwPkD3+6Oxvj/9QJYVGUmFnk18/oohHIyBhDKm
+         ngC8RUqPJvjcFNAT9fOVc0NFCHRjrc6jbG/pZ9R0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0878/1157] nbd: add missing definition of pr_fmt
-Date:   Mon, 15 Aug 2022 20:03:54 +0200
-Message-Id: <20220815180514.562444108@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com,
+        Zhu Yanjun <yanjun.zhu@linux.dev>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0875/1157] RDMA/rxe: Fix error unwind in rxe_create_qp()
+Date:   Mon, 15 Aug 2022 20:03:51 +0200
+Message-Id: <20220815180514.457627236@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,57 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
 
-[ Upstream commit bc9da6dd0630efd81b5c72ff6fa0169aa029a73f ]
+[ Upstream commit fd5382c5805c4bcb50fd25b7246247d3f7114733 ]
 
-commit 1243172d5894 ("nbd: use pr_err to output error message") tries
-to define pr_fmt and use short pr_err() to output error message,
-however, the definition is missed.
+In the function rxe_create_qp(), rxe_qp_from_init() is called to
+initialize qp, internally things like the spin locks are not setup until
+rxe_qp_init_req().
 
-This patch also remove existing "nbd:" inside pr_err().
+If an error occures before this point then the unwind will call
+rxe_cleanup() and eventually to rxe_qp_do_cleanup()/rxe_cleanup_task()
+which will oops when trying to access the uninitialized spinlock.
 
-Fixes: 1243172d5894 ("nbd: use pr_err to output error message")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220723082427.3890655-1-yukuai1@huaweicloud.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Move the spinlock initializations earlier before any failures.
+
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220731063621.298405-1-yanjun.zhu@linux.dev
+Reported-by: syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_qp.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 07f3c139a3d7..20e9c53eec53 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -11,6 +11,8 @@
-  * (part of code stolen from loop.c)
-  */
+diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
+index 834f40ad00af..fd706dc3009d 100644
+--- a/drivers/infiniband/sw/rxe/rxe_qp.c
++++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+@@ -174,6 +174,14 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe, struct rxe_qp *qp,
  
-+#define pr_fmt(fmt) "nbd: " fmt
+ 	spin_lock_init(&qp->state_lock);
+ 
++	spin_lock_init(&qp->req.task.state_lock);
++	spin_lock_init(&qp->resp.task.state_lock);
++	spin_lock_init(&qp->comp.task.state_lock);
 +
- #include <linux/major.h>
++	spin_lock_init(&qp->sq.sq_lock);
++	spin_lock_init(&qp->rq.producer_lock);
++	spin_lock_init(&qp->rq.consumer_lock);
++
+ 	atomic_set(&qp->ssn, 0);
+ 	atomic_set(&qp->skb_out, 0);
+ }
+@@ -233,7 +241,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 	qp->req.opcode		= -1;
+ 	qp->comp.opcode		= -1;
  
- #include <linux/blkdev.h>
-@@ -1951,7 +1953,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 			     test_bit(NBD_DISCONNECT_REQUESTED, &nbd->flags)) ||
- 			    !refcount_inc_not_zero(&nbd->refs)) {
- 				mutex_unlock(&nbd_index_mutex);
--				pr_err("nbd: device at index %d is going down\n",
-+				pr_err("device at index %d is going down\n",
- 					index);
- 				return -EINVAL;
- 			}
-@@ -1962,7 +1964,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 	if (!nbd) {
- 		nbd = nbd_dev_add(index, 2);
- 		if (IS_ERR(nbd)) {
--			pr_err("nbd: failed to add new device\n");
-+			pr_err("failed to add new device\n");
- 			return PTR_ERR(nbd);
+-	spin_lock_init(&qp->sq.sq_lock);
+ 	skb_queue_head_init(&qp->req_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->req.task, qp,
+@@ -284,9 +291,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
  		}
  	}
+ 
+-	spin_lock_init(&qp->rq.producer_lock);
+-	spin_lock_init(&qp->rq.consumer_lock);
+-
+ 	skb_queue_head_init(&qp->resp_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->resp.task, qp,
 -- 
 2.35.1
 
