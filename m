@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB58C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2C8C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241223AbiHOXTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S244324AbiHOXTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353050AbiHOXPt (ORCPT
+        with ESMTP id S1353063AbiHOXPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F003146CC2;
-        Mon, 15 Aug 2022 13:02:49 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB857CB69;
+        Mon, 15 Aug 2022 13:02:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0F48B80EA8;
-        Mon, 15 Aug 2022 20:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42218C433C1;
-        Mon, 15 Aug 2022 20:02:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 547DD612D7;
+        Mon, 15 Aug 2022 20:02:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464B7C433C1;
+        Mon, 15 Aug 2022 20:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593766;
-        bh=xUM//LR8mCZ5HV/uPUUTtp7F7cgtfU222nJBmpBQiGQ=;
+        s=korg; t=1660593769;
+        bh=TbANiIQd+FPDA4iJn6Ixa9itBumf/koL+SuMqUIt8yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRHIALxyoXAT2GfCKBfX74zu5m1ipsaRedMaBUuxYzou32Kb8Aa1WAG0o2lxb1NVI
-         ie/as9OHqOcQ8PulC/nvbnPEnJSLFLErBWQ8eIqnCu6uVKCIDOoNiGAbzIrdDULocT
-         376TJqkMA5LN2DIBiU2D5jEXwzB3jJdIpP2txWxI=
+        b=T1ByAi9uw/oYAMI5X3qTyx2VstCKenTdy6G502GePe8K8rQXHSe9M2OTHk6GoOhnR
+         bzr0VPSP4lTV7ULvmI9D1P0UC2JUTnAD5mhlN5Zh0FV4foNjOBa/eSGCmnlfdfj+70
+         ebR/CMWHKZcygvu/uwAn8yn0I/PWcGLHPqTpWBPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Baoquan He <bhe@redhat.com>, Coiby Xu <coxu@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0322/1157] drm: bridge: adv7511: Move CEC definitions to adv7511_cec.c
-Date:   Mon, 15 Aug 2022 19:54:38 +0200
-Message-Id: <20220815180452.535207812@linuxfoundation.org>
+Subject: [PATCH 5.18 1003/1095] kexec: clean up arch_kexec_kernel_verify_sig
+Date:   Mon, 15 Aug 2022 20:06:42 +0200
+Message-Id: <20220815180510.604450713@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,77 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Coiby Xu <coxu@redhat.com>
 
-[ Upstream commit 91776af1d8deb8f36cbec6bf2bf24b661b2b5cbb ]
+[ Upstream commit 689a71493bd2f31c024f8c0395f85a1fd4b2138e ]
 
-ADV7511_REG_CEC_RX_FRAME_HDR[] and ADV7511_REG_CEC_RX_FRAME_LEN[]
-are only used inside adv7511_cec.c.
+Before commit 105e10e2cf1c ("kexec_file: drop weak attribute from
+functions"), there was already no arch-specific implementation
+of arch_kexec_kernel_verify_sig. With weak attribute dropped by that
+commit, arch_kexec_kernel_verify_sig is completely useless. So clean it
+up.
 
-Move their definitions to this file to avoid the following build
-warnings when CONFIG_DRM_I2C_ADV7511_CEC is not selected:
+Note later patches are dependent on this patch so it should be backported
+to the stable tree as well.
 
-drivers/gpu/drm/bridge/adv7511/adv7511.h:229:17: warning: 'ADV7511_REG_CEC_RX_FRAME_HDR' defined but not used [-Wunused-const-variable=]
-drivers/gpu/drm/bridge/adv7511/adv7511.h:235:17: warning: 'ADV7511_REG_CEC_RX_FRAME_LEN' defined but not used [-Wunused-const-variable=]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: ab0af093bf90 ("drm: bridge: adv7511: use non-legacy mode for CEC RX")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220525215316.1133057-1-festevam@gmail.com
+Cc: stable@vger.kernel.org
+Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
+Reviewed-by: Michal Suchanek <msuchanek@suse.de>
+Acked-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+[zohar@linux.ibm.com: reworded patch description "Note"]
+Link: https://lore.kernel.org/linux-integrity/20220714134027.394370-1-coxu@redhat.com/
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511.h     | 12 ------------
- drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 12 ++++++++++++
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ include/linux/kexec.h |  5 -----
+ kernel/kexec_file.c   | 33 +++++++++++++--------------------
+ 2 files changed, 13 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
-index 9e3bb8a8ee40..a031a0cd1f18 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
-@@ -226,18 +226,6 @@
- #define ADV7511_REG_CEC_CLK_DIV		0x4e
- #define ADV7511_REG_CEC_SOFT_RESET	0x50
+diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+index 87c1795297b0..f3e7680befcc 100644
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -212,11 +212,6 @@ static inline void *arch_kexec_kernel_image_load(struct kimage *image)
+ }
+ #endif
  
--static const u8 ADV7511_REG_CEC_RX_FRAME_HDR[] = {
--	ADV7511_REG_CEC_RX1_FRAME_HDR,
--	ADV7511_REG_CEC_RX2_FRAME_HDR,
--	ADV7511_REG_CEC_RX3_FRAME_HDR,
--};
+-#ifdef CONFIG_KEXEC_SIG
+-int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
+-				 unsigned long buf_len);
+-#endif
 -
--static const u8 ADV7511_REG_CEC_RX_FRAME_LEN[] = {
--	ADV7511_REG_CEC_RX1_FRAME_LEN,
--	ADV7511_REG_CEC_RX2_FRAME_LEN,
--	ADV7511_REG_CEC_RX3_FRAME_LEN,
--};
+ extern int kexec_add_buffer(struct kexec_buf *kbuf);
+ int kexec_locate_mem_hole(struct kexec_buf *kbuf);
+ 
+diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+index 925953dfef05..ad005cd184a4 100644
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -81,24 +81,6 @@ int kexec_image_post_load_cleanup_default(struct kimage *image)
+ 	return image->fops->cleanup(image->image_loader_data);
+ }
+ 
+-#ifdef CONFIG_KEXEC_SIG
+-static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
+-					  unsigned long buf_len)
+-{
+-	if (!image->fops || !image->fops->verify_sig) {
+-		pr_debug("kernel loader does not support signature verification.\n");
+-		return -EKEYREJECTED;
+-	}
 -
- #define ADV7533_REG_CEC_OFFSET		0x70
+-	return image->fops->verify_sig(buf, buf_len);
+-}
+-
+-int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf, unsigned long buf_len)
+-{
+-	return kexec_image_verify_sig_default(image, buf, buf_len);
+-}
+-#endif
+-
+ /*
+  * Free up memory used by kernel, initrd, and command line. This is temporary
+  * memory allocation which is not needed any more after these buffers have
+@@ -141,13 +123,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
+ }
  
- enum adv7511_input_clock {
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
-index 399f625a50c8..0b266f28f150 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
-@@ -15,6 +15,18 @@
- 
- #include "adv7511.h"
- 
-+static const u8 ADV7511_REG_CEC_RX_FRAME_HDR[] = {
-+	ADV7511_REG_CEC_RX1_FRAME_HDR,
-+	ADV7511_REG_CEC_RX2_FRAME_HDR,
-+	ADV7511_REG_CEC_RX3_FRAME_HDR,
-+};
+ #ifdef CONFIG_KEXEC_SIG
++static int kexec_image_verify_sig(struct kimage *image, void *buf,
++				  unsigned long buf_len)
++{
++	if (!image->fops || !image->fops->verify_sig) {
++		pr_debug("kernel loader does not support signature verification.\n");
++		return -EKEYREJECTED;
++	}
 +
-+static const u8 ADV7511_REG_CEC_RX_FRAME_LEN[] = {
-+	ADV7511_REG_CEC_RX1_FRAME_LEN,
-+	ADV7511_REG_CEC_RX2_FRAME_LEN,
-+	ADV7511_REG_CEC_RX3_FRAME_LEN,
-+};
++	return image->fops->verify_sig(buf, buf_len);
++}
 +
- #define ADV7511_INT1_CEC_MASK \
- 	(ADV7511_INT1_CEC_TX_READY | ADV7511_INT1_CEC_TX_ARBIT_LOST | \
- 	 ADV7511_INT1_CEC_TX_RETRY_TIMEOUT | ADV7511_INT1_CEC_RX_READY1 | \
+ static int
+ kimage_validate_signature(struct kimage *image)
+ {
+ 	int ret;
+ 
+-	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
+-					   image->kernel_buf_len);
++	ret = kexec_image_verify_sig(image, image->kernel_buf,
++				     image->kernel_buf_len);
+ 	if (ret) {
+ 
+ 		if (sig_enforce) {
 -- 
 2.35.1
 
