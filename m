@@ -2,93 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC2FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACF8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244332AbiHOSzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
+        id S244624AbiHOSzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244755AbiHOSvv (ORCPT
+        with ESMTP id S244760AbiHOSvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:51:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651AF474F4;
-        Mon, 15 Aug 2022 11:29:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE10CB81062;
-        Mon, 15 Aug 2022 18:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1938AC433D6;
-        Mon, 15 Aug 2022 18:29:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588178;
-        bh=1epsVxATSZFmvE/+LKcAw9ma1DkPFnaS/bMMkv+nrm0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfCj/U8cOFFungxm+vXnFSAqYvm+mjwKp0tZAS4VUYJzVHK2YlurTltF/EaObT86u
-         Fd8iNGrZWqL8jLJ74oKCaM3iTbenqZCe0tZmzbwsVprR2jMgGHKKKmn83HnbnucnQn
-         4VtvWpWdLv0PHsWefjEyENKpPVTGyy87i7IK73f0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Jian Zhang <zhangjian210@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 292/779] media: driver/nxp/imx-jpeg: fix a unexpected return value problem
-Date:   Mon, 15 Aug 2022 19:58:56 +0200
-Message-Id: <20220815180349.760209981@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:51:54 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16222474DA;
+        Mon, 15 Aug 2022 11:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660588182; x=1692124182;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hq1BhouQn5UWqtGwWSmXW22KHhi6WXee5+A1Sn+nnIA=;
+  b=VaCPA5x5mwGXE29AQz49xLzzhiYsrOYEJG6Y2JopNgiJMPygRJD3mDf5
+   ZrKd8iJwRNMh3Ls2sC5HIKsjm9qKsZGXdTZYqkIOwdseVyVqxGlVB0jFG
+   1+D6O3icNaRdNbtzE+PHKLPMvVcj/fbLWy//8uKMePI30Eop3hcTHRxKQ
+   6vfelmzwV173q1CVFnHQt4g0Nu/DXre+SJIUIo4WdFyCgq14BAZNAsSrf
+   +WrBj21jraJID0AZkxgSs3DplpxXcCVX+a0LnzfyPDHtL51AQ0741ish6
+   g+xIcMcp3ALyaVtHadznIwooGOKIKTF9QRm2aSBoP0E3Y2gLz0euB5HTy
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292028786"
+X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
+   d="scan'208";a="292028786"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 11:29:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
+   d="scan'208";a="674923069"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Aug 2022 11:29:38 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNeqH-0001AD-39;
+        Mon, 15 Aug 2022 18:29:37 +0000
+Date:   Tue, 16 Aug 2022 02:29:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     kbuild-all@lists.01.org, loongarch@lists.linux.dev,
+        linux-arch@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] LoongArch: Use TLB for ioremap()
+Message-ID: <202208160237.kJBIqapz-lkp@intel.com>
+References: <20220815124612.3328670-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815124612.3328670-1-chenhuacai@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Zhang <zhangjian210@huawei.com>
+Hi Huacai,
 
-[ Upstream commit 5b304046a81eda221b5d06a9c62f7b5e45530fa5 ]
+I love your patch! Perhaps something to improve:
 
-In function mxc_jpeg_probe(), when devm_clk_get() fail, the return value
-will be unexpected, and it should be the devm_clk_get's error code.
+[auto build test WARNING on linus/master]
+[also build test WARNING on v6.0-rc1 next-20220815]
+[cannot apply to soc/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Fixes: 4c2e5156d9fa6 ("media: imx-jpeg: Add pm-runtime support for imx-jpeg")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 2 ++
- 1 file changed, 2 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/Huacai-Chen/LoongArch-Use-TLB-for-ioremap/20220815-204842
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+config: loongarch-buildonly-randconfig-r003-20220815 (https://download.01.org/0day-ci/archive/20220816/202208160237.kJBIqapz-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0cdab71896d6b3b3b3f540f80d6f041a0c592e7a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Huacai-Chen/LoongArch-Use-TLB-for-ioremap/20220815-204842
+        git checkout 0cdab71896d6b3b3b3f540f80d6f041a0c592e7a
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 ARCH=loongarch 
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index aeb3704cfff0..984fcdfa0f09 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -2108,12 +2108,14 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
- 	jpeg->clk_ipg = devm_clk_get(dev, "ipg");
- 	if (IS_ERR(jpeg->clk_ipg)) {
- 		dev_err(dev, "failed to get clock: ipg\n");
-+		ret = PTR_ERR(jpeg->clk_ipg);
- 		goto err_clk;
- 	}
- 
- 	jpeg->clk_per = devm_clk_get(dev, "per");
- 	if (IS_ERR(jpeg->clk_per)) {
- 		dev_err(dev, "failed to get clock: per\n");
-+		ret = PTR_ERR(jpeg->clk_per);
- 		goto err_clk;
- 	}
- 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   arch/loongarch/mm/init.c:47:6: warning: no previous prototype for 'setup_zero_pages' [-Wmissing-prototypes]
+      47 | void setup_zero_pages(void)
+         |      ^~~~~~~~~~~~~~~~
+   arch/loongarch/mm/init.c: In function 'fixmap_pte':
+>> arch/loongarch/mm/init.c:171:24: warning: variable 'new' set but not used [-Wunused-but-set-variable]
+     171 |                 pud_t *new;
+         |                        ^~~
+   arch/loongarch/mm/init.c:182:24: warning: variable 'new' set but not used [-Wunused-but-set-variable]
+     182 |                 pmd_t *new;
+         |                        ^~~
+--
+>> arch/loongarch/pci/acpi.c:91:27: warning: no previous prototype for 'arch_pci_ecam_create' [-Wmissing-prototypes]
+      91 | struct pci_config_window *arch_pci_ecam_create(struct device *dev,
+         |                           ^~~~~~~~~~~~~~~~~~~~
+   arch/loongarch/pci/acpi.c: In function 'pci_acpi_setup_ecam_mapping':
+   arch/loongarch/pci/acpi.c:166:29: error: 'loongson_pci_ecam_ops' undeclared (first use in this function)
+     166 |                 ecam_ops = &loongson_pci_ecam_ops;
+         |                             ^~~~~~~~~~~~~~~~~~~~~
+   arch/loongarch/pci/acpi.c:166:29: note: each undeclared identifier is reported only once for each function it appears in
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for PCI_LOONGSON
+   Depends on [n]: PCI [=y] && (MACH_LOONGSON64 [=y] || COMPILE_TEST [=y]) && (OF [=y] || ACPI [=y]) && PCI_QUIRKS [=n]
+   Selected by [y]:
+   - LOONGARCH [=y]
+
+
+vim +/new +171 arch/loongarch/mm/init.c
+
+   159	
+   160	static pte_t *fixmap_pte(unsigned long addr)
+   161	{
+   162		pgd_t *pgd;
+   163		p4d_t *p4d;
+   164		pud_t *pud;
+   165		pmd_t *pmd;
+   166	
+   167		pgd = pgd_offset_k(addr);
+   168		p4d = p4d_offset(pgd, addr);
+   169	
+   170		if (pgd_none(*pgd)) {
+ > 171			pud_t *new;
+   172	
+   173			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
+   174			pgd_populate(&init_mm, pgd, new);
+   175	#ifndef __PAGETABLE_PUD_FOLDED
+   176			pud_init(new);
+   177	#endif
+   178		}
+   179	
+   180		pud = pud_offset(p4d, addr);
+   181		if (pud_none(*pud)) {
+   182			pmd_t *new;
+   183	
+   184			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
+   185			pud_populate(&init_mm, pud, new);
+   186	#ifndef __PAGETABLE_PMD_FOLDED
+   187			pmd_init(new);
+   188	#endif
+   189		}
+   190	
+   191		pmd = pmd_offset(pud, addr);
+   192		if (pmd_none(*pmd)) {
+   193			pte_t *new;
+   194	
+   195			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
+   196			pmd_populate_kernel(&init_mm, pmd, new);
+   197		}
+   198	
+   199		return pte_offset_kernel(pmd, addr);
+   200	}
+   201	
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
