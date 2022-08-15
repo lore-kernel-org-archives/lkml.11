@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C12C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B71C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348842AbiHPBFu (ORCPT
+        id S1349037AbiHPBGD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        Mon, 15 Aug 2022 21:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349697AbiHPA6j (ORCPT
+        with ESMTP id S1343840AbiHPBAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:58:39 -0400
+        Mon, 15 Aug 2022 21:00:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBDA1A2E8D;
-        Mon, 15 Aug 2022 13:49:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF38DC5CE;
+        Mon, 15 Aug 2022 13:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2B2260FC4;
-        Mon, 15 Aug 2022 20:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE76C433D6;
-        Mon, 15 Aug 2022 20:49:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7068761239;
+        Mon, 15 Aug 2022 20:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC96C433C1;
+        Mon, 15 Aug 2022 20:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596591;
-        bh=v79BDIz+bJxNdmMCpKkjIK9UA5+kvyKRUyd0IFt9G2Y=;
+        s=korg; t=1660596606;
+        bh=9A2XWCyoyd5osQJFkDNBNk37/0qaeKVUswL7IL5Xfdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1suUbMdixr4c5Ii6pJahhM3yfV3t5myadvvKwyKor18f9GZotq8LDYk85ICwPzhb
-         FjmWv66ZuBh3OZlcvZu+H9PgkzKFxKRW8RBJnR7nhORRsN2H22H4rv4l37/LBsN3Uc
-         9abYb4bJvMaquf9/fLq98ELBpgROuwR1n875AWCA=
+        b=YyNh0mH3jrrI/qgxi2veBxN0Yl3i5g62XQ0iVSM2L3rhZEQmeisAvqzcdswxSWG5s
+         cMXw03Mjf49xkGUX3kOBbtPkMqUUSN6nFBl25+s0AmO3BMrzPCvLQJa0UL9oc1cr3z
+         gdbITgOW5IAF3S1L1F5pjHY2rEeCQsDuI9Hv29E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        Ritesh Harjani <ritesh.list@gmail.com>
-Subject: [PATCH 5.19 1129/1157] ext4: fix race when reusing xattr blocks
-Date:   Mon, 15 Aug 2022 20:08:05 +0200
-Message-Id: <20220815180525.547543475@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>,
+        Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.19 1134/1157] xen-blkback: Apply feature_persistent parameter when connect
+Date:   Mon, 15 Aug 2022 20:08:10 +0200
+Message-Id: <20220815180525.786014982@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,179 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Maximilian Heyne <mheyne@amazon.de>
 
-[ Upstream commit 65f8b80053a1b2fd602daa6814e62d6fa90e5e9b ]
+commit e94c6101e151b019b8babc518ac2a6ada644a5a1 upstream.
 
-When ext4_xattr_block_set() decides to remove xattr block the following
-race can happen:
+In some use cases[1], the backend is created while the frontend doesn't
+support the persistent grants feature, but later the frontend can be
+changed to support the feature and reconnect.  In the past, 'blkback'
+enabled the persistent grants feature since it unconditionally checked
+if frontend supports the persistent grants feature for every connect
+('connect_ring()') and decided whether it should use persistent grans or
+not.
 
-CPU1                                    CPU2
-ext4_xattr_block_set()                  ext4_xattr_release_block()
-  new_bh = ext4_xattr_block_cache_find()
+However, commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has mistakenly changed the behavior.
+It made the frontend feature support check to not be repeated once it
+shown the 'feature_persistent' as 'false', or the frontend doesn't
+support persistent grants.
 
-                                          lock_buffer(bh);
-                                          ref = le32_to_cpu(BHDR(bh)->h_refcount);
-                                          if (ref == 1) {
-                                            ...
-                                            mb_cache_entry_delete();
-                                            unlock_buffer(bh);
-                                            ext4_free_blocks();
-                                              ...
-                                              ext4_forget(..., bh, ...);
-                                                jbd2_journal_revoke(..., bh);
+This commit changes the behavior of the parameter to make effect for
+every connect, so that the previous workflow can work again as expected.
 
-  ext4_journal_get_write_access(..., new_bh, ...)
-    do_get_write_access()
-      jbd2_journal_cancel_revoke(..., new_bh);
+[1] https://lore.kernel.org/xen-devel/CAJwUmVB6H3iTs-C+U=v-pwJB7-_ZRHPxHzKRJZ22xEPW7z8a=g@mail.gmail.com/
 
-Later the code in ext4_xattr_block_set() finds out the block got freed
-and cancels reusal of the block but the revoke stays canceled and so in
-case of block reuse and journal replay the filesystem can get corrupted.
-If the race works out slightly differently, we can also hit assertions
-in the jbd2 code.
-
-Fix the problem by making sure that once matching mbcache entry is
-found, code dropping the last xattr block reference (or trying to modify
-xattr block in place) waits until the mbcache entry reference is
-dropped. This way code trying to reuse xattr block is protected from
-someone trying to drop the last reference to xattr block.
-
-Reported-and-tested-by: Ritesh Harjani <ritesh.list@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 82939d7999df ("ext4: convert to mbcache2")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220712105436.32204-5-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-3-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/xattr.c | 67 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 45 insertions(+), 22 deletions(-)
+ Documentation/ABI/testing/sysfs-driver-xen-blkback |    2 +-
+ drivers/block/xen-blkback/xenbus.c                 |    9 +++------
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
-index a25942a74929..533216e80fa2 100644
---- a/fs/ext4/xattr.c
-+++ b/fs/ext4/xattr.c
-@@ -439,9 +439,16 @@ static int ext4_xattr_inode_iget(struct inode *parent, unsigned long ea_ino,
- /* Remove entry from mbcache when EA inode is getting evicted */
- void ext4_evict_ea_inode(struct inode *inode)
- {
--	if (EA_INODE_CACHE(inode))
--		mb_cache_entry_delete(EA_INODE_CACHE(inode),
--			ext4_xattr_inode_get_hash(inode), inode->i_ino);
-+	struct mb_cache_entry *oe;
-+
-+	if (!EA_INODE_CACHE(inode))
-+		return;
-+	/* Wait for entry to get unused so that we can remove it */
-+	while ((oe = mb_cache_entry_delete_or_get(EA_INODE_CACHE(inode),
-+			ext4_xattr_inode_get_hash(inode), inode->i_ino))) {
-+		mb_cache_entry_wait_unused(oe);
-+		mb_cache_entry_put(EA_INODE_CACHE(inode), oe);
-+	}
+--- a/Documentation/ABI/testing/sysfs-driver-xen-blkback
++++ b/Documentation/ABI/testing/sysfs-driver-xen-blkback
+@@ -42,5 +42,5 @@ KernelVersion:  5.10
+ Contact:        Maximilian Heyne <mheyne@amazon.de>
+ Description:
+                 Whether to enable the persistent grants feature or not.  Note
+-                that this option only takes effect on newly created backends.
++                that this option only takes effect on newly connected backends.
+                 The default is Y (enable).
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -186,8 +186,6 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
+ 
+-	blkif->vbd.feature_gnt_persistent = feature_persistent;
+-
+ 	return blkif;
  }
  
- static int
-@@ -1229,6 +1236,7 @@ ext4_xattr_release_block(handle_t *handle, struct inode *inode,
- 	if (error)
- 		goto out;
- 
-+retry_ref:
- 	lock_buffer(bh);
- 	hash = le32_to_cpu(BHDR(bh)->h_hash);
- 	ref = le32_to_cpu(BHDR(bh)->h_refcount);
-@@ -1238,9 +1246,18 @@ ext4_xattr_release_block(handle_t *handle, struct inode *inode,
- 		 * This must happen under buffer lock for
- 		 * ext4_xattr_block_set() to reliably detect freed block
- 		 */
--		if (ea_block_cache)
--			mb_cache_entry_delete(ea_block_cache, hash,
--					      bh->b_blocknr);
-+		if (ea_block_cache) {
-+			struct mb_cache_entry *oe;
+@@ -1086,10 +1084,9 @@ static int connect_ring(struct backend_i
+ 		xenbus_dev_fatal(dev, err, "unknown fe protocol %s", protocol);
+ 		return -ENOSYS;
+ 	}
+-	if (blkif->vbd.feature_gnt_persistent)
+-		blkif->vbd.feature_gnt_persistent =
+-			xenbus_read_unsigned(dev->otherend,
+-					"feature-persistent", 0);
 +
-+			oe = mb_cache_entry_delete_or_get(ea_block_cache, hash,
-+							  bh->b_blocknr);
-+			if (oe) {
-+				unlock_buffer(bh);
-+				mb_cache_entry_wait_unused(oe);
-+				mb_cache_entry_put(ea_block_cache, oe);
-+				goto retry_ref;
-+			}
-+		}
- 		get_bh(bh);
- 		unlock_buffer(bh);
++	blkif->vbd.feature_gnt_persistent = feature_persistent &&
++		xenbus_read_unsigned(dev->otherend, "feature-persistent", 0);
  
-@@ -1867,9 +1884,20 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 			 * ext4_xattr_block_set() to reliably detect modified
- 			 * block
- 			 */
--			if (ea_block_cache)
--				mb_cache_entry_delete(ea_block_cache, hash,
--						      bs->bh->b_blocknr);
-+			if (ea_block_cache) {
-+				struct mb_cache_entry *oe;
-+
-+				oe = mb_cache_entry_delete_or_get(ea_block_cache,
-+					hash, bs->bh->b_blocknr);
-+				if (oe) {
-+					/*
-+					 * Xattr block is getting reused. Leave
-+					 * it alone.
-+					 */
-+					mb_cache_entry_put(ea_block_cache, oe);
-+					goto clone_block;
-+				}
-+			}
- 			ea_bdebug(bs->bh, "modifying in-place");
- 			error = ext4_xattr_set_entry(i, s, handle, inode,
- 						     true /* is_block */);
-@@ -1885,6 +1913,7 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 				goto cleanup;
- 			goto inserted;
- 		}
-+clone_block:
- 		unlock_buffer(bs->bh);
- 		ea_bdebug(bs->bh, "cloning");
- 		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
-@@ -1990,18 +2019,13 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 				lock_buffer(new_bh);
- 				/*
- 				 * We have to be careful about races with
--				 * freeing, rehashing or adding references to
--				 * xattr block. Once we hold buffer lock xattr
--				 * block's state is stable so we can check
--				 * whether the block got freed / rehashed or
--				 * not.  Since we unhash mbcache entry under
--				 * buffer lock when freeing / rehashing xattr
--				 * block, checking whether entry is still
--				 * hashed is reliable. Same rules hold for
--				 * e_reusable handling.
-+				 * adding references to xattr block. Once we
-+				 * hold buffer lock xattr block's state is
-+				 * stable so we can check the additional
-+				 * reference fits.
- 				 */
--				if (hlist_bl_unhashed(&ce->e_hash_list) ||
--				    !ce->e_reusable) {
-+				ref = le32_to_cpu(BHDR(new_bh)->h_refcount) + 1;
-+				if (ref > EXT4_XATTR_REFCOUNT_MAX) {
- 					/*
- 					 * Undo everything and check mbcache
- 					 * again.
-@@ -2016,9 +2040,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 					new_bh = NULL;
- 					goto inserted;
- 				}
--				ref = le32_to_cpu(BHDR(new_bh)->h_refcount) + 1;
- 				BHDR(new_bh)->h_refcount = cpu_to_le32(ref);
--				if (ref >= EXT4_XATTR_REFCOUNT_MAX)
-+				if (ref == EXT4_XATTR_REFCOUNT_MAX)
- 					ce->e_reusable = 0;
- 				ea_bdebug(new_bh, "reusing; refcount now=%d",
- 					  ref);
--- 
-2.35.1
-
+ 	blkif->vbd.overflow_max_grants = 0;
+ 
 
 
