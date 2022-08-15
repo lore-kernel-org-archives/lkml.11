@@ -2,155 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C718EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6DFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiHORur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        id S231330AbiHORv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbiHORuS (ORCPT
+        with ESMTP id S229785AbiHORvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:50:18 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EDAE39B;
-        Mon, 15 Aug 2022 10:50:17 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id c20so6001645qtw.8;
-        Mon, 15 Aug 2022 10:50:17 -0700 (PDT)
+        Mon, 15 Aug 2022 13:51:22 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE71D137;
+        Mon, 15 Aug 2022 10:51:21 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id 17so6958306plj.10;
+        Mon, 15 Aug 2022 10:51:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=qW/It6c6ryu2QgDKcjreDIFG3bmqLDIYxkxCKtddTZ8=;
-        b=DtuP9JRLXskLjOdrd/JY58SNHaK+A30zL0GcB/RDjN7X7iT2hbIZzg/6M+O2Jr+Y6T
-         trc2XEsJaW+CfBHO3bgLaTxFwFiqjFvGBCRviQyzxA86jZxl0oo4Mg+No+1UqMSW711h
-         vuQzK07AVPq2zTYYbVFJ9LB4Deq5D590hYsN2zy81w8zRepy1vkmSinTRUOKQFhg4Z4J
-         GIG3Fy0X3yzBy/mY24mO/nFLl20tzJZITyH/nFezVbS08NA6I32OqLFZfD5Bw3GgBtHD
-         aDR7zFOA5gwi6YDSDGeQ7WILZ9r7EwyR+9EJnfKVm/yCERDOBHf35HfRcv7c+JymSEbI
-         /o7w==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=yFM5NAH4FbqVZAUN+RpSLe1Fb5MJe458XF5fgVWxzb8=;
+        b=CK0iyepL58aRSd9LzU3quaQk58TnfOXRzthLNyTjGfWMiRTJsrmdiF/ja9RaaNW2c7
+         +fHU/9iCI9PjCnXTg49kGl/pME6keQJQVdyeA1Q/TAR30FKQYG7X4gWMyXdlUKQE+T5x
+         gi6wRafz2djcfvrN/EgRyKfGR06izb63WYF/zQa1pSgccwk9SttjFfIC7Y7uvne6ytQj
+         BedEFLdHTBW+qMFCmXwtM53T6JqvB0nkw/iCOf5vgRRaZ6SgXdh63pIWmq/cBvj+7X6f
+         jkKx7Qd02UV422TUXwxuJeFA4edIw4BqNEbUHPSGU5tfExwX8XRDDauCo7t5KsYuEPGU
+         IeCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=qW/It6c6ryu2QgDKcjreDIFG3bmqLDIYxkxCKtddTZ8=;
-        b=5rEcJrOXIOkLmTqSeEH4vejbGj4pO+WfVm5IDHuOOXbVubpmtqoPwuIsh0/xZbqyJd
-         sYWkKn9eXNN2vUWFOY3iEcL/zTSseP7Xk1Bp0v9+bQeysXY0YW8BlQY6hF7x6EckZgN8
-         w15Afpb1aYQ4ZXr1sI8qU+qsXL0jmfZeOum1CR6tnzOw6uW6jcOavR+yb+2ngUcRIJcP
-         lP9YXaQ5ITWaVwyUS6VmcF/RC0Vw1dw1LlOgdNSTMFCk7L9DaoIW4OkhCra2IdOI7Jh/
-         6eUPeeMxmDMBbacZRRKqW90j7xD3FvwIDGwDRfiaxbx72NVavhXWQHaAIqxpqsdddk9y
-         5oow==
-X-Gm-Message-State: ACgBeo0CoMoGlgUpTZicOV0NgmyLQF6YzifpGuqVRdmcCZYzaeI3K7T5
-        bxhb36V1TDqQY/XRttdEoDsgb7dUBl8=
-X-Google-Smtp-Source: AA6agR7WSyiGvFQRYH1R5KTEJvXZnNckQCCvEHGBTJ8QNdDc7nDqFa7hmPW83RxyDtJyGDM4b4Sqbw==
-X-Received: by 2002:a05:622a:449:b0:343:6353:8f94 with SMTP id o9-20020a05622a044900b0034363538f94mr15475892qtx.154.1660585816006;
-        Mon, 15 Aug 2022 10:50:16 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id ez12-20020a05622a4c8c00b00339163a06fcsm8741524qtb.6.2022.08.15.10.50.14
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=yFM5NAH4FbqVZAUN+RpSLe1Fb5MJe458XF5fgVWxzb8=;
+        b=2CO5Kx+M2JzG9aDv2Ad3MJRgX808JXGI6gavrCvpokhl/w7CbIFABDmRucJG+s6g/t
+         tWFsxqXS2vfaC/MmKR/gx5XZiMDd0LZ737KRa6dLoFKtD0Dm8hI2DbVpLSj+EbTw72H1
+         omCBg4m2b2dhS1ZvzU1MYUf8YURC18q2nQ/sDRp12/JxKE/Sh2xAnzIhN9NqZ31G847d
+         5xi8/nTfm8wYOpZ51t2F9/jIaQfJ0cy/Qh2lGAuOYWFooDP0bF3Ge1w7yhZr5xL81jhQ
+         gxRuty1HoJliv2GRW0rKr/PULjndKgpZhyyGrbHmMDDZdjrl8p8nwHsNJHlkHrr2D4Al
+         kSEw==
+X-Gm-Message-State: ACgBeo1urG5m6kWstVjzoV4qv0JEN8s4wuib0LvzdDhSQsl4Ia4n7OvX
+        WV+6nWMqerN10tnLxJehF7o=
+X-Google-Smtp-Source: AA6agR7zPE2a0Hljj/eaQbuo1x5tVTpRF8Pxvb0Jz+Uz7gjjbwLldkebWpZ1+R22rpvpXNAIYkJFPw==
+X-Received: by 2002:a17:902:dac2:b0:172:5f2a:f30 with SMTP id q2-20020a170902dac200b001725f2a0f30mr10831822plx.167.1660585880460;
+        Mon, 15 Aug 2022 10:51:20 -0700 (PDT)
+Received: from carrot.. (i114-190-253-100.s42.a014.ap.plala.or.jp. [114.190.253.100])
+        by smtp.gmail.com with ESMTPSA id i8-20020a1709026ac800b0016c5306917fsm7259729plt.53.2022.08.15.10.51.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 10:50:15 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 1/2] net: dsa: bcm_sf2: Introduce helper for port override offset
-Date:   Mon, 15 Aug 2022 10:50:08 -0700
-Message-Id: <20220815175009.2681932-2-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220815175009.2681932-1-f.fainelli@gmail.com>
-References: <20220815175009.2681932-1-f.fainelli@gmail.com>
+        Mon, 15 Aug 2022 10:51:18 -0700 (PDT)
+From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiacheng Xu <stitch@zju.edu.cn>,
+        Mudong Liang <mudongliangabcd@gmail.com>
+Subject: [PATCH] nilfs2: fix use-after-free bug in nilfs_mdt_destroy()
+Date:   Tue, 16 Aug 2022 02:51:14 +0900
+Message-Id: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Depending upon the generation of switches, we have different offsets for
-configuring a given port's status override where link parameters are
-applied. Introduce a helper function that we re-use throughout the code
-in order to let phylink callbacks configure the IMP/CPU port(s) in
-subsequent changes.
+In alloc_inode(), inode_init_always() could return -ENOMEM if
+security_inode_alloc() fails.  If this happens for nilfs2,
+nilfs_free_inode() is called without initializing inode->i_private and
+nilfs_free_inode() wrongly calls nilfs_mdt_destroy(), which frees
+uninitialized inode->i_private and can trigger a crash.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fix this bug by initializing inode->i_private in nilfs_alloc_inode().
+
+Link: https://lkml.kernel.org/r/CAFcO6XOcf1Jj2SeGt=jJV59wmhESeSKpfR0omdFRq+J9nD1vfQ@mail.gmail.com
+Link: https://lkml.kernel.org/r/20211011030956.2459172-1-mudongliangabcd@gmail.com
+Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Reported-by: Hao Sun <sunhao.th@gmail.com>
+Reported-by: Jiacheng Xu <stitch@zju.edu.cn>
+Reported-by: Mudong Liang <mudongliangabcd@gmail.com>
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
 ---
- drivers/net/dsa/bcm_sf2.c | 37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ fs/nilfs2/super.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index be0edfa093d0..10de0cffa047 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -94,6 +94,24 @@ static u16 bcm_sf2_reg_led_base(struct bcm_sf2_priv *priv, int port)
- 	return REG_SWITCH_STATUS;
+diff --git a/fs/nilfs2/super.c b/fs/nilfs2/super.c
+index ba108f915391..aca5614f1b44 100644
+--- a/fs/nilfs2/super.c
++++ b/fs/nilfs2/super.c
+@@ -159,6 +159,7 @@ struct inode *nilfs_alloc_inode(struct super_block *sb)
+ 	ii->i_cno = 0;
+ 	ii->i_assoc_inode = NULL;
+ 	ii->i_bmap = &ii->i_bmap_data;
++	ii->vfs_inode.i_private = NULL;
+ 	return &ii->vfs_inode;
  }
  
-+static u32 bcm_sf2_port_override_offset(struct bcm_sf2_priv *priv, int port)
-+{
-+	switch (priv->type) {
-+	case BCM4908_DEVICE_ID:
-+	case BCM7445_DEVICE_ID:
-+		return port == 8 ? CORE_STS_OVERRIDE_IMP :
-+				   CORE_STS_OVERRIDE_GMIIP_PORT(port);
-+	case BCM7278_DEVICE_ID:
-+		return port == 8 ? CORE_STS_OVERRIDE_IMP2 :
-+				   CORE_STS_OVERRIDE_GMIIP2_PORT(port);
-+	default:
-+		WARN_ONCE(1, "Unsupported device: %d\n", priv->type);
-+	}
-+
-+	/* RO fallback register */
-+	return REG_SWITCH_STATUS;
-+}
-+
- /* Return the number of active ports, not counting the IMP (CPU) port */
- static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
- {
-@@ -167,11 +185,7 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
- 	b53_brcm_hdr_setup(ds, port);
- 
- 	if (port == 8) {
--		if (priv->type == BCM4908_DEVICE_ID ||
--		    priv->type == BCM7445_DEVICE_ID)
--			offset = CORE_STS_OVERRIDE_IMP;
--		else
--			offset = CORE_STS_OVERRIDE_IMP2;
-+		offset = bcm_sf2_port_override_offset(priv, port);
- 
- 		/* Force link status for IMP port */
- 		reg = core_readl(priv, offset);
-@@ -813,12 +827,7 @@ static void bcm_sf2_sw_mac_link_down(struct dsa_switch *ds, int port,
- 		return;
- 
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
--		if (priv->type == BCM4908_DEVICE_ID ||
--		    priv->type == BCM7445_DEVICE_ID)
--			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
--		else
--			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
--
-+		offset = bcm_sf2_port_override_offset(priv, port);
- 		reg = core_readl(priv, offset);
- 		reg &= ~LINK_STS;
- 		core_writel(priv, reg, offset);
-@@ -843,11 +852,7 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 		u32 reg_rgmii_ctrl = 0;
- 		u32 reg, offset;
- 
--		if (priv->type == BCM4908_DEVICE_ID ||
--		    priv->type == BCM7445_DEVICE_ID)
--			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
--		else
--			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
-+		offset = bcm_sf2_port_override_offset(priv, port);
- 
- 		if (interface == PHY_INTERFACE_MODE_RGMII ||
- 		    interface == PHY_INTERFACE_MODE_RGMII_TXID ||
 -- 
-2.25.1
+2.34.1
 
