@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB0AC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A2AC28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243310AbiHOXHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
+        id S242972AbiHOXH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231646AbiHOXDn (ORCPT
+        with ESMTP id S241419AbiHOXD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:03:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D0E140387;
-        Mon, 15 Aug 2022 12:58:26 -0700 (PDT)
+        Mon, 15 Aug 2022 19:03:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B28C86065;
+        Mon, 15 Aug 2022 12:58:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE0961299;
-        Mon, 15 Aug 2022 19:58:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BA6EC433C1;
-        Mon, 15 Aug 2022 19:58:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0828B612AC;
+        Mon, 15 Aug 2022 19:58:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB0FEC433D6;
+        Mon, 15 Aug 2022 19:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593504;
-        bh=v6rhzKfkgAizoOjuCss4MtEIm16S+hpSuSNYbD1EtjM=;
+        s=korg; t=1660593508;
+        bh=rO6j8LMjktGpC8KRSmNNYA45x/kxmmEIE5Y/UjH+cug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVXYvYuuxQqBTeZI/9ep/xmlcBFbH24Ju4zLw5rn0DwUjPobLmNuZTd6YbvcB9Fs5
-         OUG1difKCHMzMfNfzzxvb1g1uPlioRPsmeD/pAa05Xti80g2FhZzkKTsjuUr9w/sFq
-         JgPMBy9HGSuKzyF4CobtaRInuGMR/X9i+jdsyRxU=
+        b=CvUQPq233F+z6aGmtcp4PapZngqQdikSOvAgkAtKvPyoIcIgWIyJRbvXHPX9iP8sK
+         awzOkQVG9L7iwx7Ha+oMGi+7Hsjmp1augc40jMxOxKQ/JN/8f/ycGvwYJ6cdw41gHi
+         Uvb3a8u8G5am0yTTeqY+0crgXPgDAvP584JXwoSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junbeom Yeom <junbeom.yeom@samsung.com>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Youngjin Gil <youngjin.gil@samsung.com>,
-        Jaewook Kim <jw5454.kim@samsung.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0955/1095] f2fs: do not allow to decompress files have FI_COMPRESS_RELEASED
-Date:   Mon, 15 Aug 2022 20:05:54 +0200
-Message-Id: <20220815180508.602611543@linuxfoundation.org>
+Subject: [PATCH 5.19 0280/1157] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
+Date:   Mon, 15 Aug 2022 19:53:56 +0200
+Message-Id: <20220815180450.809683939@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,73 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaewook Kim <jw5454.kim@samsung.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 90be48bd9d29ece3965e5e8b21499b6db166e57b ]
+[ Upstream commit 66efb665cd5ad69b27dca8571bf89fc6b9c628a4 ]
 
-If a file has FI_COMPRESS_RELEASED, all writes for it should not be
-allowed. However, as of now, in case of compress_mode=user, writes
-triggered by IOCTLs like F2FS_IOC_DE/COMPRESS_FILE are allowed unexpectly,
-which could crash that file.
-To fix it, let's do not allow F2FS_IOC_DE/COMPRESS_IOCTL if a file already
-has FI_COMPRESS_RELEASED flag.
+We should call the of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-This is the reproduction process:
-1.  $ touch ./file
-2.  $ chattr +c ./file
-3.  $ dd if=/dev/random of=./file bs=4096 count=30 conv=notrunc
-4.  $ dd if=/dev/zero of=./file bs=4096 count=34 seek=30 conv=notrunc
-5.  $ sync
-6.  $ do_compress ./file      ; call F2FS_IOC_COMPRESS_FILE
-7.  $ get_compr_blocks ./file ; call F2FS_IOC_GET_COMPRESS_BLOCKS
-8.  $ release ./file          ; call F2FS_IOC_RELEASE_COMPRESS_BLOCKS
-9.  $ do_compress ./file      ; call F2FS_IOC_COMPRESS_FILE again
-10. $ get_compr_blocks ./file ; call F2FS_IOC_GET_COMPRESS_BLOCKS again
-
-This reproduction process is tested in 128kb cluster size.
-You can find compr_blocks has a negative value.
-
-Fixes: 5fdb322ff2c2b ("f2fs: add F2FS_IOC_DECOMPRESS_FILE and F2FS_IOC_COMPRESS_FILE")
-
-Signed-off-by: Junbeom Yeom <junbeom.yeom@samsung.com>
-Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Youngjin Gil <youngjin.gil@samsung.com>
-Signed-off-by: Jaewook Kim <jw5454.kim@samsung.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220715111027.391032-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/regulator/of_regulator.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 9a676ea080e4..c2644a085876 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -3914,6 +3914,11 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
- 		goto out;
- 	}
+diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
+index f54d4f176882..e12b681c72e5 100644
+--- a/drivers/regulator/of_regulator.c
++++ b/drivers/regulator/of_regulator.c
+@@ -264,8 +264,12 @@ static int of_get_regulation_constraints(struct device *dev,
+ 		}
  
-+	if (is_inode_flag_set(inode, FI_COMPRESS_RELEASED)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
- 	if (ret)
- 		goto out;
-@@ -3981,6 +3986,11 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
- 		goto out;
- 	}
+ 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
+-		if (!suspend_np || !suspend_state)
++		if (!suspend_np)
+ 			continue;
++		if (!suspend_state) {
++			of_node_put(suspend_np);
++			continue;
++		}
  
-+	if (is_inode_flag_set(inode, FI_COMPRESS_RELEASED)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
- 	if (ret)
- 		goto out;
+ 		if (!of_property_read_u32(suspend_np, "regulator-mode",
+ 					  &pval)) {
 -- 
 2.35.1
 
