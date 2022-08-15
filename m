@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0ACC3276E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E107EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351123AbiHPAIQ (ORCPT
+        id S1351323AbiHPAI2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
+        Mon, 15 Aug 2022 20:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352446AbiHPAAZ (ORCPT
+        with ESMTP id S1346731AbiHPAA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79BBC7433;
-        Mon, 15 Aug 2022 13:20:34 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA2396FDC;
+        Mon, 15 Aug 2022 13:21:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 752BE6104A;
-        Mon, 15 Aug 2022 20:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDF7C433D7;
-        Mon, 15 Aug 2022 20:20:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCAED61007;
+        Mon, 15 Aug 2022 20:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF441C433C1;
+        Mon, 15 Aug 2022 20:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594833;
-        bh=u0HsNN8rMYruFAvZHEvP0r2fe53rUhzO3lCv1NuR+A8=;
+        s=korg; t=1660594900;
+        bh=JAMfREOs/4J2zJNaA1OfXY1zsRJpJRl3sXHTYuiV81Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbhYs7zQwps/77L4XPLC+E30k1lm6iwGSP4U7qVBgd5JQLQCnTvapm980Sz1KYmiE
-         m72geeB1v3G9qgx9STls//aD+lv9xqLDSlebHL1lhcvnRjycBNtqr8ykaufC7ADJZ1
-         jd7Mv99YBe12XG6Ay0dQOpp5ymuEG6rz/Kk/TtFc=
+        b=n3uPvfiWHcUP7R08oxF0gEKKB9B4Cp7T3VURYqtYpVnLfmn2snygSZpOxBx83Bsqt
+         AM7LN3vru3wnJggnP3otEI2VEZ/bTvjpusvCwSjf5zeVPmRhb164YVa93Xmhm6Q047
+         p9DvAxnH2f8aXte91pZTDBWmr1W5Gfku81Vn1Ps8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vidya Sagar <vidyas@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0573/1157] wireguard: allowedips: dont corrupt stack when detecting overflow
-Date:   Mon, 15 Aug 2022 19:58:49 +0200
-Message-Id: <20220815180502.556642003@linuxfoundation.org>
+Subject: [PATCH 5.19 0595/1157] PCI: tegra194: Fix PM error handling in tegra_pcie_config_ep()
+Date:   Mon, 15 Aug 2022 19:59:11 +0200
+Message-Id: <20220815180503.455600296@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,93 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit c31b14d86dfe7174361e8c6e5df6c2c3a4d5918c ]
+[ Upstream commit e8fbd344a5ea62663554b8546b6bf9f88b93785a ]
 
-In case push_rcu() and related functions are buggy, there's a
-WARN_ON(len >= 128), which the selftest tries to hit by being tricky. In
-case it is hit, we shouldn't corrupt the kernel's stack, though;
-otherwise it may be hard to even receive the report that it's buggy. So
-conditionalize the stack write based on that WARN_ON()'s return value.
+pm_runtime_enable() will increase power disable depth.  If
+dw_pcie_ep_init() fails, we should use pm_runtime_disable() to balance it
+with pm_runtime_enable().
 
-Note that this never *actually* happens anyway. The WARN_ON() in the
-first place is bounded by IS_ENABLED(DEBUG), and isn't expected to ever
-actually hit. This is just a debugging sanity check.
+Add missing pm_runtime_disable() for tegra_pcie_config_ep().
 
-Additionally, hoist the constant 128 into a named enum,
-MAX_ALLOWEDIPS_BITS, so that it's clear why this value is chosen.
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Link: https://lore.kernel.org/all/CAHk-=wjJZGA6w_DxA+k7Ejbqsq+uGK==koPai3sqdsfJqemvag@mail.gmail.com/
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c57247f940e8 ("PCI: tegra: Add support for PCIe endpoint mode in Tegra194")
+Link: https://lore.kernel.org/r/20220602031910.55859-1-linmq006@gmail.com
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireguard/allowedips.c          | 9 ++++++---
- drivers/net/wireguard/selftest/allowedips.c | 6 +++---
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
-index 9a4c8ff32d9d..5bf7822c53f1 100644
---- a/drivers/net/wireguard/allowedips.c
-+++ b/drivers/net/wireguard/allowedips.c
-@@ -6,6 +6,8 @@
- #include "allowedips.h"
- #include "peer.h"
- 
-+enum { MAX_ALLOWEDIPS_BITS = 128 };
-+
- static struct kmem_cache *node_cache;
- 
- static void swap_endian(u8 *dst, const u8 *src, u8 bits)
-@@ -40,7 +42,8 @@ static void push_rcu(struct allowedips_node **stack,
- 		     struct allowedips_node __rcu *p, unsigned int *len)
- {
- 	if (rcu_access_pointer(p)) {
--		WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
-+		if (WARN_ON(IS_ENABLED(DEBUG) && *len >= MAX_ALLOWEDIPS_BITS))
-+			return;
- 		stack[(*len)++] = rcu_dereference_raw(p);
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index cc2678490162..d992371a36e6 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -1949,6 +1949,7 @@ static int tegra_pcie_config_ep(struct tegra194_pcie *pcie,
+ 	if (ret) {
+ 		dev_err(dev, "Failed to initialize DWC Endpoint subsystem: %d\n",
+ 			ret);
++		pm_runtime_disable(dev);
+ 		return ret;
  	}
- }
-@@ -52,7 +55,7 @@ static void node_free_rcu(struct rcu_head *rcu)
  
- static void root_free_rcu(struct rcu_head *rcu)
- {
--	struct allowedips_node *node, *stack[128] = {
-+	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
- 		container_of(rcu, struct allowedips_node, rcu) };
- 	unsigned int len = 1;
- 
-@@ -65,7 +68,7 @@ static void root_free_rcu(struct rcu_head *rcu)
- 
- static void root_remove_peer_lists(struct allowedips_node *root)
- {
--	struct allowedips_node *node, *stack[128] = { root };
-+	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
- 	unsigned int len = 1;
- 
- 	while (len > 0 && (node = stack[--len])) {
-diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
-index e173204ae7d7..41db10f9be49 100644
---- a/drivers/net/wireguard/selftest/allowedips.c
-+++ b/drivers/net/wireguard/selftest/allowedips.c
-@@ -593,10 +593,10 @@ bool __init wg_allowedips_selftest(void)
- 	wg_allowedips_remove_by_peer(&t, a, &mutex);
- 	test_negative(4, a, 192, 168, 0, 1);
- 
--	/* These will hit the WARN_ON(len >= 128) in free_node if something
--	 * goes wrong.
-+	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_BITS) in free_node
-+	 * if something goes wrong.
- 	 */
--	for (i = 0; i < 128; ++i) {
-+	for (i = 0; i < MAX_ALLOWEDIPS_BITS; ++i) {
- 		part = cpu_to_be64(~(1LLU << (i % 64)));
- 		memset(&ip, 0xff, 16);
- 		memcpy((u8 *)&ip + (i < 64) * 8, &part, 8);
 -- 
 2.35.1
 
