@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD00FC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1949C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352690AbiHPAPh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
+        id S243989AbiHPARi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353599AbiHPAGK (ORCPT
+        with ESMTP id S1356788AbiHPAH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:06:10 -0400
+        Mon, 15 Aug 2022 20:07:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D660A1705F0;
-        Mon, 15 Aug 2022 13:28:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D3D1714F4;
+        Mon, 15 Aug 2022 13:28:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6E5EB8119E;
-        Mon, 15 Aug 2022 20:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33020C433C1;
-        Mon, 15 Aug 2022 20:28:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 986E9B80EA8;
+        Mon, 15 Aug 2022 20:28:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2AAC433D6;
+        Mon, 15 Aug 2022 20:28:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595301;
-        bh=DzPOh5HBa5hS4q8TybX16QGzzaKpFJOkCzER+G1iOI8=;
+        s=korg; t=1660595327;
+        bh=+qyw4jGk46jfvur7aLa6FVdQzcNeHXw56HaNyPAqrbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dW/RJrT6a5RzjiyMDU3cqI6RFBnA6gDSG0cSOhyYEE/CvpxCettGDcTIXeV1sMNor
-         ojfH9VhhzJyorY1gaEe06ElXipwAJfyVYs55fIaVCUoFEu0Awuts4+mnLfDM0NBOkn
-         +Ht3u9oLcrpJIys2hqasyl7kgcAz1bnmilyquu6A=
+        b=g4+yUmiBPhT8hutQIVH2hy/rWJSZwOZR0WUTrQcgO5QF8sr/EQjDqAzBQ5ANJqtHb
+         K5gS9IgKc6UhKE76Lcy0LhNNGBUphaGMXNvREiAMivAwYLBgXMSK0RrLZ8JUaHT9v+
+         l5MA9nv9SlCJv55Yo8DC7BQGPagyFiUgL3yd60/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0720/1157] clk: mediatek: reset: Fix written reset bit offset
-Date:   Mon, 15 Aug 2022 20:01:16 +0200
-Message-Id: <20220815180508.291158851@linuxfoundation.org>
+Subject: [PATCH 5.19 0686/1157] iio: dac: ad7303: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:42 +0200
+Message-Id: <20220815180507.073174515@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,51 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rex-BC Chen <rex-bc.chen@mediatek.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
+[ Upstream commit 69e51448ddfb9062efdf83e2d3179498e0aeb293 ]
 
-Original assert/deassert bit is BIT(0), but it's more resonable to modify
-them to BIT(id % 32) which is based on id.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-This patch will not influence any previous driver because the reset is
-only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+Update the comment to include 'may'.
 
-Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: f83478240e74 ("iio:dac: Add support for the AD7303")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-58-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/mediatek/reset.c | 4 ++--
+ drivers/iio/dac/ad7303.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index bcec4b89f449..834d26e9bdfd 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4);
+diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
+index 03edf046dec6..bff6bf697d9c 100644
+--- a/drivers/iio/dac/ad7303.c
++++ b/drivers/iio/dac/ad7303.c
+@@ -44,10 +44,10 @@ struct ad7303_state {
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
+ 	struct mutex lock;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	__be16 data ____cacheline_aligned;
++	__be16 data __aligned(IIO_DMA_MINALIGN);
+ };
  
- static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
-@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
- 
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
- 
- static int mtk_reset_assert(struct reset_controller_dev *rcdev,
+ static int ad7303_write(struct ad7303_state *st, unsigned int chan,
 -- 
 2.35.1
 
