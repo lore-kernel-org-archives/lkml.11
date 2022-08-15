@@ -2,176 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30004C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B513BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243799AbiHOWV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
+        id S1343730AbiHOWWE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350345AbiHOWRp (ORCPT
+        with ESMTP id S1350365AbiHOWRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:17:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7925440BC6;
-        Mon, 15 Aug 2022 12:41:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB6DFB80EB2;
-        Mon, 15 Aug 2022 19:40:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FEAAC433D6;
-        Mon, 15 Aug 2022 19:40:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592454;
-        bh=Jb5GjFZLTcVeXQn+3A9lDRbfEAoGBt20h7nDXicjZJA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qGHYfF0t6Jv1XGnDygHEnQYcJTyGZPPSjm8nbXrs00Eqx7CPy1EgkWqVi9pAa06ns
-         1UYaqw0TkfsXsC3xsQCx6IsV/PA/XaG4P05l+/dVQy4vd5j8CY3Bvus/7xyIuKWEZq
-         C5PbXx3J0lnIHPqm6y3XoIOAt3As8XOtrYSA0XE4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0789/1095] RDMA/rxe: Fix rnr retry behavior
-Date:   Mon, 15 Aug 2022 20:03:08 +0200
-Message-Id: <20220815180501.875863590@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:17:47 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065E8108964;
+        Mon, 15 Aug 2022 12:40:59 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-32868f43dd6so98317207b3.8;
+        Mon, 15 Aug 2022 12:40:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=kQ/IhR019ljA3X63/yMrUHDq4kWcLp+Cdb8xnxJdIe8=;
+        b=JmDiztWPbZq81Psi3DSOmbF4xFuYHM/kwMW4YslCcRI7hsgm2Wu1dLgQfGdUe73420
+         DrKRbbc7yoFQUhjiGBB3iKgOrMXp3DYGfdpfWnYmtQOYWru3ni92DgQWwNGtQQoFxkbx
+         YXHwjctCq9bAaVbgcy+JMwLfms1rxJbT2ok2IdPBoZl5zlrNoypIv5IoIuuzLzhEUhXR
+         LCYt8K9fCi/uyBtdi+kjQxmTzXHL80QtcAkg6pU9wYA7QL8Xq8dmV1MbVT1qLbQrgINb
+         CQEuZxTSkgRyMiSKr+FVr0AEG2AD7JPkrmXIMOkaN48EO0xv5Evw0UHp46ZhZtWBRoqG
+         HfNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=kQ/IhR019ljA3X63/yMrUHDq4kWcLp+Cdb8xnxJdIe8=;
+        b=EnrzwZNSvtMg/KDmQGjrXEgVk+OMC2DeWO4Qg1JkFrr7awwXfswpDLMVUpDOKxhW92
+         5ERHxuh+A27cpNiWIHEIlq93uBqEvcP66YYlmTg1+yXJ2+F9zRhDiywAI7uyvu3gsz+T
+         3H0++ng6jgzkb2LN+zbHZoHw7tjm3Ky2kyz1VFMiu2L26LVYMard/5CKGlPBe1t1f+Ks
+         UCanEy0s1jVCknDkKw287Fg8/1RmvRk2J7aDlAYq5CEzsL1mlWtoGyw95zkF6PmKsgcF
+         ljU2k1rFVZ1cZfnZdaWV0Esl0GNXP2XN8LdqGm5iDW6OZbeXAFYnAVpJDfUXNt/htoTN
+         ocsA==
+X-Gm-Message-State: ACgBeo0jW5U/8679lYeqt3Os25P+MJxT12PcNRENclkLBCMdlOrINjpS
+        XrHLlZ4zqim8TWDBcIns/xgKoIfoW2fzM3KkFSsPk8HWA/0=
+X-Google-Smtp-Source: AA6agR4uS+P3maNGKYHw+fLkUXC5gJLnyocxV5/qKNpiP36yndjwPPhByTnKKGwIMes2mnwF9ZlvObWDTZg1BbkpLd4=
+X-Received: by 2002:a0d:d60f:0:b0:325:1853:2b with SMTP id y15-20020a0dd60f000000b003251853002bmr14178469ywd.24.1660592457358;
+ Mon, 15 Aug 2022 12:40:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <57e17d1e-e809-065e-831f-cdd3a8602e0a@microchip.com>
+In-Reply-To: <57e17d1e-e809-065e-831f-cdd3a8602e0a@microchip.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 15 Aug 2022 20:40:30 +0100
+Message-ID: <CA+V-a8vDP8k9c8VM++68uKjQLGURC=pe571+QrmPb+tBo0j7Jw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/8] dt-bindings: soc: renesas: renesas.yaml: Document
+ Renesas RZ/Five SoC
+To:     Conor.Dooley@microchip.com
+Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+Hi Conor,
 
-[ Upstream commit 445fd4f4fb76d513de6b05b08b3a4d0bb980fc80 ]
+Thank you for the review.
 
-Currently the completer tasklet when retransmit timer or the rnr timer
-fires the same flag (qp->req.need_retry) is set so that if either timer
-fires it will attempt to perform a retry flow on the send queue.  This has
-the effect of responding to an RNR NAK at the first retransmit timer event
-which might not allow the requested rnr timeout.
+On Mon, Aug 15, 2022 at 8:14 PM <Conor.Dooley@microchip.com> wrote:
+>
+> On 15/08/2022 16:14, Lad Prabhakar wrote:
+> > dt-bindings: soc: renesas: renesas.yaml: Document Renesas RZ/Five SoC
+>
+> Hey Lad,
+>
+> Maybe I am missing something on the arm side, but "soc"?
+> Was the intent to move this to Documentation/devicetree/bindings/soc
+> but you moved it back to arm by accident?
+>
+Ouch I sent out the older version of my patch for this. I did actually
+send out a patch which moves arm renesas.yaml to the soc folder.
 
-This patch adds a new flag (qp->req.wait_for_rnr_timer) which, if set,
-prevents a retry flow until the rnr nak timer fires.
+Cheers,
+Prabhakar
 
-This patch fixes rnr retry errors which can be observed by running the
-pyverbs test_rdmacm_async_traffic_external_qp multiple times. With this
-patch applied they do not occur.
-
-Link: https://lore.kernel.org/linux-rdma/a8287823-1408-4273-bc22-99a0678db640@gmail.com/
-Link: https://lore.kernel.org/linux-rdma/2bafda9e-2bb6-186d-12a1-179e8f6a2678@talpey.com/
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220630190425.2251-6-rpearsonhpe@gmail.com
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/sw/rxe/rxe_comp.c  |  8 +++++++-
- drivers/infiniband/sw/rxe/rxe_qp.c    |  1 +
- drivers/infiniband/sw/rxe/rxe_req.c   | 15 +++++++++++++--
- drivers/infiniband/sw/rxe/rxe_verbs.h |  1 +
- 4 files changed, 22 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/infiniband/sw/rxe/rxe_comp.c b/drivers/infiniband/sw/rxe/rxe_comp.c
-index 138b3e7d3a5f..ec671e171f13 100644
---- a/drivers/infiniband/sw/rxe/rxe_comp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_comp.c
-@@ -114,6 +114,8 @@ void retransmit_timer(struct timer_list *t)
- {
- 	struct rxe_qp *qp = from_timer(qp, t, retrans_timer);
- 
-+	pr_debug("%s: fired for qp#%d\n", __func__, qp->elem.index);
-+
- 	if (qp->valid) {
- 		qp->comp.timeout = 1;
- 		rxe_run_task(&qp->comp.task, 1);
-@@ -729,11 +731,15 @@ int rxe_completer(void *arg)
- 			break;
- 
- 		case COMPST_RNR_RETRY:
-+			/* we come here if we received an RNR NAK */
- 			if (qp->comp.rnr_retry > 0) {
- 				if (qp->comp.rnr_retry != 7)
- 					qp->comp.rnr_retry--;
- 
--				qp->req.need_retry = 1;
-+				/* don't start a retry flow until the
-+				 * rnr timer has fired
-+				 */
-+				qp->req.wait_for_rnr_timer = 1;
- 				pr_debug("qp#%d set rnr nak timer\n",
- 					 qp_num(qp));
- 				mod_timer(&qp->rnr_nak_timer,
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
-index 62acf890af6c..7d0c4432d3fd 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -513,6 +513,7 @@ static void rxe_qp_reset(struct rxe_qp *qp)
- 	atomic_set(&qp->ssn, 0);
- 	qp->req.opcode = -1;
- 	qp->req.need_retry = 0;
-+	qp->req.wait_for_rnr_timer = 0;
- 	qp->req.noack_pkts = 0;
- 	qp->resp.msn = 0;
- 	qp->resp.opcode = -1;
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index d574c47099b8..90669b3c56af 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -103,7 +103,11 @@ void rnr_nak_timer(struct timer_list *t)
- {
- 	struct rxe_qp *qp = from_timer(qp, t, rnr_nak_timer);
- 
--	pr_debug("qp#%d rnr nak timer fired\n", qp_num(qp));
-+	pr_debug("%s: fired for qp#%d\n", __func__, qp_num(qp));
-+
-+	/* request a send queue retry */
-+	qp->req.need_retry = 1;
-+	qp->req.wait_for_rnr_timer = 0;
- 	rxe_run_task(&qp->req.task, 1);
- }
- 
-@@ -626,10 +630,17 @@ int rxe_requester(void *arg)
- 		qp->req.need_rd_atomic = 0;
- 		qp->req.wait_psn = 0;
- 		qp->req.need_retry = 0;
-+		qp->req.wait_for_rnr_timer = 0;
- 		goto exit;
- 	}
- 
--	if (unlikely(qp->req.need_retry)) {
-+	/* we come here if the retransmot timer has fired
-+	 * or if the rnr timer has fired. If the retransmit
-+	 * timer fires while we are processing an RNR NAK wait
-+	 * until the rnr timer has fired before starting the
-+	 * retry flow
-+	 */
-+	if (unlikely(qp->req.need_retry && !qp->req.wait_for_rnr_timer)) {
- 		req_retry(qp);
- 		qp->req.need_retry = 0;
- 	}
-diff --git a/drivers/infiniband/sw/rxe/rxe_verbs.h b/drivers/infiniband/sw/rxe/rxe_verbs.h
-index e7eff1ca75e9..33e8d0547553 100644
---- a/drivers/infiniband/sw/rxe/rxe_verbs.h
-+++ b/drivers/infiniband/sw/rxe/rxe_verbs.h
-@@ -123,6 +123,7 @@ struct rxe_req_info {
- 	int			need_rd_atomic;
- 	int			wait_psn;
- 	int			need_retry;
-+	int			wait_for_rnr_timer;
- 	int			noack_pkts;
- 	struct rxe_task		task;
- };
--- 
-2.35.1
-
-
-
+> Thanks,
+> Conor.
+>
+>
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >
+> > Document Renesas RZ/Five (R9A07G043) SoC.
+> >
+> > More info about RZ/Five SoC:
+> > https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rz-mpus/rzfive-risc-v-general-purpose-microprocessors-risc-v-cpu-core-andes-ax45mp-single-10-ghz-2ch-gigabit-ethernet
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> > v1->v2
+> > * New patch
+> > ---
+> >  Documentation/devicetree/bindings/arm/renesas.yaml | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/renesas.yaml b/Documentation/devicetree/bindings/arm/renesas.yaml
+> > index ff80152f092f..233847eb23fd 100644
+> > --- a/Documentation/devicetree/bindings/arm/renesas.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
+> > @@ -415,11 +415,12 @@ properties:
+> >                - renesas,rzn1d400-db # RZN1D-DB (RZ/N1D Demo Board for the RZ/N1D 400 pins package)
+> >            - const: renesas,r9a06g032
+> >
+> > -      - description: RZ/G2UL (R9A07G043)
+> > +      - description: RZ/Five and RZ/G2UL (R9A07G043)
+> >          items:
+> >            - enum:
+> >                - renesas,smarc-evk # SMARC EVK
+> >            - enum:
+> > +              - renesas,r9a07g043f01 # RZ/Five (RISC-V core)
+> >                - renesas,r9a07g043u11 # RZ/G2UL Type-1
+> >                - renesas,r9a07g043u12 # RZ/G2UL Type-2
+> >            - const: renesas,r9a07g043
+> > --
+> > 2.25.1
+> >
+>
