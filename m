@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F0EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BB2C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239776AbiHOTMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        id S1343533AbiHOTMT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245713AbiHOTID (ORCPT
+        with ESMTP id S1343526AbiHOTIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:08:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851ED101EF;
-        Mon, 15 Aug 2022 11:35:36 -0700 (PDT)
+        Mon, 15 Aug 2022 15:08:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65A32CE1E;
+        Mon, 15 Aug 2022 11:35:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1B9360FFD;
-        Mon, 15 Aug 2022 18:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB0A4C433C1;
-        Mon, 15 Aug 2022 18:35:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 845C7B8106E;
+        Mon, 15 Aug 2022 18:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7C1C433D6;
+        Mon, 15 Aug 2022 18:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588535;
-        bh=F95PSIpBk6avvNgsm9Kq89di+aGOxNqnEsA06KSo27c=;
+        s=korg; t=1660588544;
+        bh=qRTREeEHk8pjX8nfKjCM7hmtg0ZqboyJcs0/DE6qmb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IVUlc8fl8YoVehIDzBW58z3wE2Xxj9NY3UkC/OyLFdP19xsTy8m7GMNx16HVkyB29
-         EPwulJz6jxqaSQ2eJInWcLx9EOhq93Wb9HVsmxKhBHZ351Zhy7eA+OZyOzBx6BAO7E
-         s5JpnoisnOkUG5mDjurHSRxOkFAMPgj5k6vdA10Y=
+        b=deL8kb7H5xHkTTg+sHd48nbAvRdyO3py3OkpC17e3uimaIgigdivsxNJWIqAkYeEX
+         stMCiF5IrIAqwBD39sCqaAbRf72rpYtAB50Zyip6d4swBxfwoyJ3y6508GMF+y1Xx5
+         aWaIHVLiLGI5I/fzVmV64XQotQsMGg+yfKpDoFLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nilesh Javali <njavali@marvell.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 435/779] scsi: iscsi: Allow iscsi_if_stop_conn() to be called from kernel
-Date:   Mon, 15 Aug 2022 20:01:19 +0200
-Message-Id: <20220815180355.880296578@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 438/779] dmaengine: dw-edma: Fix eDMA Rd/Wr-channels and DMA-direction semantics
+Date:   Mon, 15 Aug 2022 20:01:22 +0200
+Message-Id: <20220815180355.998630436@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,62 +53,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 3328333b47f4163504267440ec0a36087a407a5f ]
+[ Upstream commit c1e33979171da63cf47e56243ccb8ba82363c7d3 ]
 
-iscsi_if_stop_conn() is only called from the userspace interface but in a
-subsequent commit we will want to call it from the kernel interface to
-allow drivers like qedi to remove sessions from inside the kernel during
-shutdown. This removes the iscsi_uevent code from iscsi_if_stop_conn() so we
-can call it in a new helper.
+In accordance with [1, 2] the DW eDMA controller has been created to be
+part of the DW PCIe Root Port and DW PCIe End-point controllers and to
+offload the transferring of large blocks of data between application and
+remote PCIe domains leaving the system CPU free for other tasks. In the
+first case (eDMA being part of DW PCIe Root Port) the eDMA controller is
+always accessible via the CPU DBI interface and never over the PCIe wire.
 
-Link: https://lore.kernel.org/r/20220616222738.5722-3-michael.christie@oracle.com
-Tested-by: Nilesh Javali <njavali@marvell.com>
-Reviewed-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+The latter case is more complex. Depending on the DW PCIe End-Point IP-core
+synthesize parameters it's possible to have the eDMA registers accessible
+not only from the application CPU side, but also via mapping the eDMA CSRs
+over a dedicated endpoint BAR. So based on the specifics denoted above the
+eDMA driver is supposed to support two types of the DMA controller setups:
+
+  1) eDMA embedded into the DW PCIe Root Port/End-point and accessible over
+     the local CPU from the application side.
+
+  2) eDMA embedded into the DW PCIe End-point and accessible via the PCIe
+     wire with MWr/MRd TLPs generated by the CPU PCIe host controller.
+
+Since the CPU memory resides different sides in these cases the semantics
+of the MEM_TO_DEV and DEV_TO_MEM operations is flipped with respect to the
+Tx and Rx DMA channels. So MEM_TO_DEV/DEV_TO_MEM corresponds to the Tx/Rx
+channels in setup 1) and to the Rx/Tx channels in case of setup 2).
+
+The DW eDMA driver has supported the case 2) since e63d79d1ffcd
+("dmaengine: Add Synopsys eDMA IP core driver") in the framework of the
+drivers/dma/dw-edma/dw-edma-pcie.c driver.
+
+The case 1) support was added later by bd96f1b2f43a ("dmaengine: dw-edma:
+support local dma device transfer semantics").  Afterwards the driver was
+supposed to cover the both possible eDMA setups, but the latter commit
+turned out to be not fully correct.
+
+The problem was that the commit together with the new functionality support
+also changed the channel direction semantics so the eDMA Read-channel
+(corresponding to the DMA_DEV_TO_MEM direction for case 1) now uses the
+sgl/cyclic base addresses as the Source addresses of the DMA transfers and
+dma_slave_config.dst_addr as the Destination address of the DMA transfers.
+
+Similarly the eDMA Write-channel (corresponding to the DMA_MEM_TO_DEV
+direction for case 1) now uses dma_slave_config.src_addr as a source
+address of the DMA transfers and sgl/cyclic base address as the Destination
+address of the DMA transfers. This contradicts the logic of the
+DMA-interface, which implies that DEV side is supposed to belong to the
+PCIe device memory and MEM - to the CPU/Application memory. Indeed it seems
+irrational to have the SG-list defined in the PCIe bus space, while
+expecting a contiguous buffer allocated in the CPU memory. Moreover the
+passed SG-list and cyclic DMA buffers are supposed to be mapped in a way so
+to be seen by the DW eDMA Application (CPU) interface.
+
+So in order to have the correct DW eDMA interface we need to invert the
+eDMA Rd/Wr-channels and DMA-slave directions semantics by selecting the
+src/dst addresses based on the DMA transfer direction instead of using the
+channel direction capability.
+
+[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v.5.40a, March 2019, p.1092
+[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Endpoint,
+    v.5.40a, March 2019, p.1189
+
+Co-developed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Fixes: bd96f1b2f43a ("dmaengine: dw-edma: support local dma device transfer semantics")
+Link: https://lore.kernel.org/r/20220524152159.2370739-7-Frank.Li@nxp.com
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-By: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/dma/dw-edma/dw-edma-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 5947b9d5746e..671a03b80c30 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2283,16 +2283,8 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
- 	}
- }
+diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+index 53289927dd0d..36b3fe1b6b0f 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.c
++++ b/drivers/dma/dw-edma/dw-edma-core.c
+@@ -424,7 +424,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		chunk->ll_region.sz += burst->sz;
+ 		desc->alloc_sz += burst->sz;
  
--static int iscsi_if_stop_conn(struct iscsi_transport *transport,
--			      struct iscsi_uevent *ev)
-+static int iscsi_if_stop_conn(struct iscsi_cls_conn *conn, int flag)
- {
--	int flag = ev->u.stop_conn.flag;
--	struct iscsi_cls_conn *conn;
--
--	conn = iscsi_conn_lookup(ev->u.stop_conn.sid, ev->u.stop_conn.cid);
--	if (!conn)
--		return -EINVAL;
--
- 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop.\n");
- 	/*
- 	 * If this is a termination we have to call stop_conn with that flag
-@@ -3739,7 +3731,12 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
- 	case ISCSI_UEVENT_DESTROY_CONN:
- 		return iscsi_if_destroy_conn(transport, ev);
- 	case ISCSI_UEVENT_STOP_CONN:
--		return iscsi_if_stop_conn(transport, ev);
-+		conn = iscsi_conn_lookup(ev->u.stop_conn.sid,
-+					 ev->u.stop_conn.cid);
-+		if (!conn)
-+			return -EINVAL;
-+
-+		return iscsi_if_stop_conn(conn, ev->u.stop_conn.flag);
- 	}
- 
- 	/*
+-		if (chan->dir == EDMA_DIR_WRITE) {
++		if (dir == DMA_DEV_TO_MEM) {
+ 			burst->sar = src_addr;
+ 			if (xfer->type == EDMA_XFER_CYCLIC) {
+ 				burst->dar = xfer->xfer.cyclic.paddr;
 -- 
 2.35.1
 
