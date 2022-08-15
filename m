@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6215C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5D3C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348729AbiHPBIS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
+        id S232634AbiHPBI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245543AbiHPBDx (ORCPT
+        with ESMTP id S245635AbiHPBD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:03:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC49B9FA6;
-        Mon, 15 Aug 2022 13:50:47 -0700 (PDT)
+        Mon, 15 Aug 2022 21:03:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A8BA9FC;
+        Mon, 15 Aug 2022 13:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6FD560FC4;
-        Mon, 15 Aug 2022 20:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96CFFC433C1;
-        Mon, 15 Aug 2022 20:50:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 838FFB8114A;
+        Mon, 15 Aug 2022 20:50:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB62C43470;
+        Mon, 15 Aug 2022 20:50:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596620;
-        bh=7IaIZ4zaLvoKeOMBxaLtJMWadgo5fogwtZKLGA8pVfE=;
+        s=korg; t=1660596629;
+        bh=arXwBhpQI6OPqNlxGbSUSOG5lO22yRh40HpnT+j/kRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B/ASc+n22QEf0YSW1m+dlI93UWDkEIjoxqpc6CJia19y4db1gWpbAd39FvaK4Qu08
-         Qm1cBH/DgRuMb6A0O2jBxZU9QywrLRlzkj47xMXOEuxmC1OLroOC7eynLz0AxXlWyy
-         HjGBhcFnu2+0G06VVcF5axLOJRRfjbBxO9FInik0=
+        b=TVXWajmEfBRANoGdQNIxLLT/yDui0vtHg8tAQfCqJMO6r4fjCa3hhZncqseIQ9nIz
+         /1mMXeqb/vi8svaIho0Gilz9ioESVnjHzEnOhJ1aRmHaaXzPZd354rP2QENsWEkE+Q
+         4eiZrZtWRF+UhtiI0aeAkQ8y+593XcffATkJ0yOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Ondrej Mosnacek <omosnacek@gmail.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.19 1137/1157] powerpc64/ftrace: Fix ftrace for clang builds
-Date:   Mon, 15 Aug 2022 20:08:13 +0200
-Message-Id: <20220815180525.929733456@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 1140/1157] tcp: fix over estimation in sk_forced_mem_schedule()
+Date:   Mon, 15 Aug 2022 20:08:16 +0200
+Message-Id: <20220815180526.069222680@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,54 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit cb928ac192128c842f4c1cfc8b6780b95719d65f upstream.
+commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
 
-Clang doesn't support -mprofile-kernel ABI, so guard the checks against
-CONFIG_DYNAMIC_FTRACE_WITH_REGS, rather than the elf ABI version.
+sk_forced_mem_schedule() has a bug similar to ones fixed
+in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
+sk_rmem_schedule() errors")
 
-Fixes: 23b44fc248f4 ("powerpc/ftrace: Make __ftrace_make_{nop/call}() common to PPC32 and PPC64")
-Cc: stable@vger.kernel.org # v5.19+
-Reported-by: Nick Desaulniers <ndesaulniers@google.com>
-Reported-by: Ondrej Mosnacek <omosnacek@gmail.com>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Tested-by: Ondrej Mosnacek <omosnacek@gmail.com>
-Acked-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://github.com/llvm/llvm-project/issues/57031
-Link: https://github.com/ClangBuiltLinux/linux/issues/1682
-Link: https://lore.kernel.org/r/20220809095907.418764-1-naveen.n.rao@linux.vnet.ibm.com
+While this bug has little chance to trigger in old kernels,
+we need to fix it before the following patch.
+
+Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/trace/ftrace.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/ipv4/tcp_output.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -392,11 +392,11 @@ int ftrace_make_nop(struct module *mod,
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3369,11 +3369,12 @@ void tcp_xmit_retransmit_queue(struct so
   */
- static bool expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
+ void sk_forced_mem_schedule(struct sock *sk, int size)
  {
--	if (IS_ENABLED(CONFIG_PPC64_ELF_ABI_V1))
-+	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
-+		return ppc_inst_equal(op0, ppc_inst(PPC_RAW_NOP()));
-+	else
- 		return ppc_inst_equal(op0, ppc_inst(PPC_RAW_BRANCH(8))) &&
- 		       ppc_inst_equal(op1, ppc_inst(PPC_INST_LD_TOC));
--	else
--		return ppc_inst_equal(op0, ppc_inst(PPC_RAW_NOP()));
- }
+-	int amt;
++	int delta, amt;
  
- static int
-@@ -411,7 +411,7 @@ __ftrace_make_call(struct dyn_ftrace *re
- 	if (copy_inst_from_kernel_nofault(op, ip))
- 		return -EFAULT;
- 
--	if (IS_ENABLED(CONFIG_PPC64_ELF_ABI_V1) &&
-+	if (!IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS) &&
- 	    copy_inst_from_kernel_nofault(op + 1, ip + 4))
- 		return -EFAULT;
+-	if (size <= sk->sk_forward_alloc)
++	delta = size - sk->sk_forward_alloc;
++	if (delta <= 0)
+ 		return;
+-	amt = sk_mem_pages(size);
++	amt = sk_mem_pages(delta);
+ 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
+ 	sk_memory_allocated_add(sk, amt);
  
 
 
