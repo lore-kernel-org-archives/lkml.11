@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E06C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC708C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346428AbiHOUzT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
+        id S240629AbiHOUzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346761AbiHOUyM (ORCPT
+        with ESMTP id S1346668AbiHOUyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:54:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45197BE4DF;
+        Mon, 15 Aug 2022 16:54:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABF82B194;
         Mon, 15 Aug 2022 12:11:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AC32B8110A;
-        Mon, 15 Aug 2022 19:10:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A61C433D7;
-        Mon, 15 Aug 2022 19:10:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 493AC6069E;
+        Mon, 15 Aug 2022 19:11:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7CFC433C1;
+        Mon, 15 Aug 2022 19:11:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590651;
-        bh=QZhC4OWnf79y4pgVUj71VLW5Nv7lL1FdigrexeGZP/o=;
+        s=korg; t=1660590663;
+        bh=phN+qSxQHO3xHdsp0Cmw0hMbLrUCSsjAQLXTncAvUFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JD4PwPNfldsNFxi18K02zzL/mjWHfCegrHmavUCrujpGOcgTrZkrbyzeBK36Wh8+/
-         BYjlQc1isGDTbw+GPN85QNxNve+KhpouR1ALh1dvpvQFjMiP+Rgv9uXD3V2TonzMzI
-         7nLBrk/Eu9Oh/FlqCJJMFA40SKdCe6PwSl+WuGwM=
+        b=qnQAPmum1MN7kLtjOPgzsN5NYJwPtu+1nO5uS850+Ghtgfp372YCd0wqg3tPZgFs4
+         UPUVpZmCPEHPDanDHTeDURtHlJL7Ac13jIau/bzbgfZaCiEyFJ1AecHdrnAIK7aRaL
+         03RrVzlATk6rhFq54fvpFgjCyRSJeDoWDZowxq4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0326/1095] drm/bridge: lt9611uxc: Cancel only drivers work
-Date:   Mon, 15 Aug 2022 19:55:25 +0200
-Message-Id: <20220815180443.275948975@linuxfoundation.org>
+Subject: [PATCH 5.18 0300/1095] pwm: sifive: Shut down hardware only after pwmchip_remove() completed
+Date:   Mon, 15 Aug 2022 19:54:59 +0200
+Message-Id: <20220815180442.192147527@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,38 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit dfa687bffc8a4a21ed929c7dececf01b8f1f52ee ]
+[ Upstream commit 2375e964d541bb09158cd2dff67b5d74e8de61cd ]
 
-During device remove care needs to be taken that no work is pending
-before it removes the underlying DRM bridge etc, but this can be done on
-the specific work rather than waiting for the flush of the system-wide
-workqueue.
+The PWMs are expected to be functional until pwmchip_remove() is called.
+So disable the clks only afterwards.
 
-Fixes: bc6fa8676ebb ("drm/bridge/lontium-lt9611uxc: move HPD notification out of IRQ handler")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220601233818.1877963-1-bjorn.andersson@linaro.org
+Fixes: 9e37a53eb051 ("pwm: sifive: Add a driver for SiFive SoC PWM")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/lontium-lt9611uxc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-sifive.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
-index 3d62e6bf6892..310b3b194491 100644
---- a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
-+++ b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
-@@ -982,7 +982,7 @@ static int lt9611uxc_remove(struct i2c_client *client)
- 	struct lt9611uxc *lt9611uxc = i2c_get_clientdata(client);
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index 3936fda53366..58347fcd4812 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -321,6 +321,9 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	struct pwm_device *pwm;
+ 	int ch;
  
- 	disable_irq(client->irq);
--	flush_scheduled_work();
-+	cancel_work_sync(&lt9611uxc->work);
- 	lt9611uxc_audio_exit(lt9611uxc);
- 	drm_bridge_remove(&lt9611uxc->bridge);
++	pwmchip_remove(&ddata->chip);
++	clk_notifier_unregister(ddata->clk, &ddata->notifier);
++
+ 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+ 		pwm = &ddata->chip.pwms[ch];
+ 		if (pwm->state.enabled)
+@@ -328,8 +331,6 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	}
  
+ 	clk_unprepare(ddata->clk);
+-	pwmchip_remove(&ddata->chip);
+-	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
