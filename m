@@ -2,148 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D007DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18ADAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiHPBsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S233009AbiHPBt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231190AbiHPBrm (ORCPT
+        with ESMTP id S233512AbiHPBs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:47:42 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10089.outbound.protection.outlook.com [40.107.1.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1453520263B;
-        Mon, 15 Aug 2022 14:40:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mE9MZJgE7bET3oMsKj/jWnmVFaGf4oyj8HQkWrTE3fvhjRba3vwvlNjd1WZyas+CDtVvmTW6fhzwM3Ju+QaQRpj112Uui9KNph1bw3dTlmZ4tlUwZ0w6P5W6xL6/fxeDsAhl5vSiZWCuKmkpG7B86QlzSmz1Rz5mmgQ5y2IRJ9OAC8O7rJkQjHf2bZdc/J5oGZRaBO+F8i+hgrgCCH2VxM6DpHuKkHXRmkGtZJjBnahMMrZX9bX9JvUxp0M3DWIZsKc0C5HeKWCfsdmHk7BojcKdGnwYQ7zY7nDzSoBuF5G0JT6rBLtfU1yRV4SlMSNlHlGu+nx9eaAzCPD8CjnIrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PxyZmoQ4HPxt9JAZN3QVzBllZWpIazPpqniEWrzTllw=;
- b=lxewPW8SK910D67lWGNBEcbKhq4EvkfSnuoGwHeo5QbxNtlMeJGaeCHXUGTAR9YbRDw6u7P2T4vSU9BOWOUwXYqTGyxBkOMrPfda+f8VgcnmH+cd1yeHWUMatEcxTgacSAMbtvmQnmuHR/DKDm+KbxFvBaWhgPvYEh64DBLpbyq/HsD/mxDMhsDlEKKuvoy9RWBAGQjV7dX5LaP1P6z7tENrXbewtnDYGo9kZxGtizM1J1BRmZdRPzVL8buC2xjmMT93tetj+5Hvem6xTgYLjZE3gr01KmYIZMUo6W48seftJpqoOSzIKNKwN7EEY+ygMUWr4rL7uGmwwbw5CKAdmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PxyZmoQ4HPxt9JAZN3QVzBllZWpIazPpqniEWrzTllw=;
- b=HOMMuUB6+q+zQQk/9c/fU70wCj6c54dhkZj0gOI24AfonDQ8llo0z7Txp79fhyn2pA3j15Xav46FBjm3ZGutQ5PrYyfrjljnkGC8g/vn+VGGkNUcf245qnKsIpdTt1Cr0P10cieyQKa2klSg2B2UxjkTS7TKLAOI009AD2111+k=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com (2603:10a6:102:232::18)
- by AM5PR0401MB2580.eurprd04.prod.outlook.com (2603:10a6:203:38::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Mon, 15 Aug
- 2022 21:40:04 +0000
-Received: from PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::c5f1:b708:61db:a004]) by PAXPR04MB9186.eurprd04.prod.outlook.com
- ([fe80::c5f1:b708:61db:a004%5]) with mapi id 15.20.5504.028; Mon, 15 Aug 2022
- 21:40:04 +0000
-From:   Frank Li <Frank.Li@nxp.com>
-To:     maz@kernel.org, tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kw@linux.com, bhelgaas@google.com
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
-        peng.fan@nxp.com, aisheng.dong@nxp.com, jdmason@kudzu.us,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        kishon@ti.com, lorenzo.pieralisi@arm.com, ntb@lists.linux.dev,
-        lznuaa@gmail.com
-Subject: [PATCH v5 1/4] irqchip: allow pass down .pm field at IRQCHIP_PLATFORM_DRIVER_END
-Date:   Mon, 15 Aug 2022 16:39:33 -0500
-Message-Id: <20220815213936.2380439-2-Frank.Li@nxp.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220815213936.2380439-1-Frank.Li@nxp.com>
-References: <20220815213936.2380439-1-Frank.Li@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CY5PR15CA0006.namprd15.prod.outlook.com
- (2603:10b6:930:14::9) To PAXPR04MB9186.eurprd04.prod.outlook.com
- (2603:10a6:102:232::18)
+        Mon, 15 Aug 2022 21:48:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD992036B9;
+        Mon, 15 Aug 2022 14:40:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22186B811FE;
+        Mon, 15 Aug 2022 21:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA9DC433D7;
+        Mon, 15 Aug 2022 21:40:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660599644;
+        bh=s1ysBUarhjxYEJL4ryDgOKJSJUjnZCoo74clBKJ7yNs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W9PFrRzkfJnI6SrnWoCVG5SqJNhu1B5NEPoyhp8D91e3ogQKqwHXEqkt90ffhnXlf
+         qJMqJ+FDHdOWOYTENMc3DRbWLuMOa2ngAdL1NIss/wvQvBG8G6ua1oWpSM+/vq7tj2
+         81JiienoY6xTd5A2JSjUpSu4Zn1YPyP94sam4qHJ7H98nGEu0iYXhRfFuN0pAYq/Vd
+         42j2Q5hlQ6I0r9jpzaXgaETDQ1riXTBdlNKl/oO2wSa+CXNNcLiPnpe/V4oyVF8HpQ
+         1NfBSGb2nz1mGZ7hiVdDiZBB32PIYjax4U3xXdATGhdHbN7FdEc4PWHO4Gwq1ZmhJu
+         rMCdU5/i2ZUNA==
+Date:   Mon, 15 Aug 2022 16:40:35 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v3 1/6] scsi: megaraid_sas: Replace one-element array with
+ flexible-array member in MR_FW_RAID_MAP
+Message-ID: <4495ce170c8ef088a10f1abe0e7c227368f43242.1660592640.git.gustavoars@kernel.org>
+References: <cover.1660592640.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6b51522d-36c5-4335-c199-08da7f06b6b2
-X-MS-TrafficTypeDiagnostic: AM5PR0401MB2580:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 24BcVxD3rPca4ujQiOFrqm+BC9kVnmII35aEoRLBKEZ8bTP18Vc5lzqYq+axJvz14JH2a5LrBbdnQ/4pMi7/1hxtu3/eQU7xOwaw3vUZ/cjNSTr3OFoUZxsJw/fJOer9D3P/1U/LxO881PuWRhK3cgxaMpYSRonkIeCfHJbWRNW8okaoVfaHbph+g69aYg7E1w0PlmbURbge0w3IsWNfRJoj2YiStQmS1GF9jhxuXvMW6MbUyUkCnO8FdY/JOciL7G0yNWJHlrWqzEyWGy7abrmp6l0bPw3/lZYzYkrnEXdjIGiKw2PfFSlJTGdDRUJk0EhEMQAT7WbHagP3j2EIYG2OyHryGXvwQn0cRmn3Ua1tLsQeUEl9NuyDxnZU23y/P7EL+93bxyCzckjhWhhKsCm5vW1ITgtse9/JFZCMi/9/hb1LMGz+vp0+fLujoMApioEhjT1EoU8lNqvBPOBw3S//AyWhdH+zZ9vTGfIRal2Ea4Q7AOMKi21+mquWTVUHnTf/tYew6lWrWzEP/uPLbuBRml4ud/OoQs0D9/cOhJqL+WH23tGBPYPhCaXWNlsd7uf3vkSCUIe9AgWC0cy107g6UfU7srNn7Vu06dNyJczNjTnebd34Ma2ZLjEo0uu879xH98zsu1fhDpSZ+FinqUgXAGryIjsNmdo6CW6mOI3CI8nRmfoENdzfFElPPqSznnGD6MEflSlSk2vj1sQDhzruthSYfGr8rs/b+9P7T6lsevfb0BSGbbWHwlwJC8zNm9ig/CnE3BdhEpBzo1V1sU3cTPqmyzFVZTVvrcyUNP77h/34cd+BiJWPcibWOHOj
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9186.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(39860400002)(396003)(346002)(83380400001)(478600001)(5660300002)(1076003)(36756003)(186003)(6486002)(2616005)(38350700002)(8936002)(86362001)(41300700001)(316002)(7416002)(6666004)(4326008)(8676002)(66476007)(38100700002)(66556008)(6506007)(6512007)(52116002)(2906002)(66946007)(26005)(142923001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BjGVUjbg4q43hlsInv9oap3uRh1LN1PGvxKwZPfhjWvvV04y7+jW3/dpXS8s?=
- =?us-ascii?Q?DtynCstZfEYl8mplyeGcTtrjD1sp5eYGme8bWmwYTbs8Ab53NVlnspfXchIy?=
- =?us-ascii?Q?a4awwPmvGwb4+clHh0yfPOsOiRbgFXg7aaBmO/ZDcqaNbUzacadIfc5MHflD?=
- =?us-ascii?Q?aGWK+MS0KucAbOgKX/pKrEzIxXpm0IDWJrPYwTymvn7shkYMJ4ur/0ps19DY?=
- =?us-ascii?Q?OvePx1LPGqHz/zPh7t1JcjlfIQqjquYojLm0wh/wshA7KSKUwo/56o7n+cy2?=
- =?us-ascii?Q?bxspcj22+dcT3N1krc2ZuV+uY+bTWY3rGGRffAkjvjAyXNBpVI5lZ3lDRc9j?=
- =?us-ascii?Q?DuBB9cIYXbojr0ifYv5kCto44dpkATicB0zX/mUuMGpK4GExxtKhoXrcnscL?=
- =?us-ascii?Q?rA3x0tyWK37VehukhwVoLlp9KwEFnhCjW3qI7gHQuF6IlHNdtZJEFXTOfcbi?=
- =?us-ascii?Q?kkoQ8Bbagh3N+7IaKxvUXXqiQ9nffaB7TEX89aU83RvzDRMk2CsPkoPlzBrN?=
- =?us-ascii?Q?qvy5VB8hocY/fqXeXOYHOGrsxPXAa2h+jwlEKuk3xPDkCj239julSgTanTsd?=
- =?us-ascii?Q?DHqrNtODAxpSbptsvmmj3JkCo7ldYgepi2CugCmp9ywuXjQl8hEmbt3iRNTv?=
- =?us-ascii?Q?zjJmxrsDVS0rNWbLRCoMKx9AZriefHXwJejIfpifMJ0Oybyh/dnjPuLSmqWT?=
- =?us-ascii?Q?eFosyp0xv0ezXB3gOZq6Heg6BAzeVxyecIBifLFQJw3IqBckHzkd+86FHm0i?=
- =?us-ascii?Q?Upc9K8W7IRN8FzNKcGreb0nNDb3ER6sTPJm2LNGPxnDyCXBRJ6P9+gr9woc8?=
- =?us-ascii?Q?DhCaoKqEStnUFjkLUOiNgrsxM5mr07GkFeXagkCo7+Nmp6UAZBWcVfh1E3S9?=
- =?us-ascii?Q?N3rRhcR2PSeAmUQuyIM8AMUd8I11tW9yfGlYeC6caDj4ruOIXInutJ9B9D28?=
- =?us-ascii?Q?Wla47fLh05o46AAoQNzpWezx87gmlnKvcKifL2bg7/cthS3LWzczuUuSyEfN?=
- =?us-ascii?Q?lx+EiAoMx6cTKRm/i6xc4W0Wf80Hy4sy2pxoWGoyciHhqIzypnWp6g9EiqW/?=
- =?us-ascii?Q?6YFAyOJXlz1w9Ms+jnWIa+u02Vs9y38E3CmxWISjmPUyELjsceZ0q2wO+fsa?=
- =?us-ascii?Q?l8r9vzc1yEQ2FCQDrdc4bQE0tn+++AbM15KtpS2DOomvEY4fcQPPuPJKnHtZ?=
- =?us-ascii?Q?T8qAmNtvRYg6QUgivqsX8DJStFyzb6/ACC+tPvD3wYtgtN9Ff/m9Be9ofb3w?=
- =?us-ascii?Q?7hN9VZXbXozdSpLShmGGP+i/itQjCWwk3pZEIQsP4X4YpKcIdKuvR58PcU31?=
- =?us-ascii?Q?g4PeWjvo4Mwvw0GjiSnMYz76PvDX5riOkCQMlWcq7PUyjG59rJz6CoSg4jcf?=
- =?us-ascii?Q?uGB9lsmi87MHEZJ5+8joh2YQiRUOFMJYFHiFU/NlANdcnZjZQdNR7eG3Va/F?=
- =?us-ascii?Q?GA599QZZ5zrKMqAnr6wkDYzDA2kgQjTR9/UIzG3xqN659AXb3aGw1dVZA/q+?=
- =?us-ascii?Q?BMUiA795zbcdq5QssVayF/w9oWAYHyvjiKMTV5mbAv3P2IeUnrmV1V8XTNED?=
- =?us-ascii?Q?lmC5NT7po/CBZ6ZGDopYwLOMxF1rsn4BDTAQXciU?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b51522d-36c5-4335-c199-08da7f06b6b2
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9186.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 21:40:04.1639
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7kGclmAP5Sr8eJ9rvC8D04qDFVtdSJ0FQzvsSyB02+9dWQXv/8GSPbtAlKAnRlGlwvtypV5iX/d1pJdEvdz2vw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0401MB2580
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1660592640.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IRQCHIP_PLATFORM_DRIVER_* compilation define platform_driver
-for irqchip. But can't set .pm field of platform_driver.
-Added variadic macros to set .pm field or other field if need.
+One-element arrays are deprecated, and we are replacing them with
+flexible array members, instead. So, replace one-element array with
+flexible-array member in struct MR_DRV_RAID_MAP and refactor the
+the rest of the code accordingly.
 
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
+This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
+routines on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/79
+Link: https://github.com/KSPP/linux/issues/109
+Enhanced-by: Kees Cook <keescook@chromium.org> # Change in struct MR_FW_RAID_MAP_ALL
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- include/linux/irqchip.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes in v3:
+ - Modify MR_FW_RAID_MAP_ALL structures.
+ - Revert use of struct_size() helper.
 
-diff --git a/include/linux/irqchip.h b/include/linux/irqchip.h
-index 3a091d0710ae1..d5e6024cb2a8c 100644
---- a/include/linux/irqchip.h
-+++ b/include/linux/irqchip.h
-@@ -44,7 +44,8 @@ static const struct of_device_id drv_name##_irqchip_match_table[] = {
- #define IRQCHIP_MATCH(compat, fn) { .compatible = compat,		\
- 				    .data = typecheck_irq_init_cb(fn), },
+Changes in v2:
+ - Update Subject line and changelog text.
+
+ drivers/scsi/megaraid/megaraid_sas_base.c   | 2 +-
+ drivers/scsi/megaraid/megaraid_sas_fp.c     | 2 +-
+ drivers/scsi/megaraid/megaraid_sas_fusion.h | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index a3e117a4b8e7..c06a346a3eaf 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -5159,7 +5159,7 @@ static void megasas_update_ext_vd_details(struct megasas_instance *instance)
+ 	} else {
+ 		fusion->old_map_sz =  sizeof(struct MR_FW_RAID_MAP) +
+ 					(sizeof(struct MR_LD_SPAN_MAP) *
+-					(instance->fw_supported_vd_count - 1));
++					instance->fw_supported_vd_count);
+ 		fusion->new_map_sz =  sizeof(struct MR_FW_RAID_MAP_EXT);
  
--#define IRQCHIP_PLATFORM_DRIVER_END(drv_name)				\
-+
-+#define IRQCHIP_PLATFORM_DRIVER_END(drv_name, ...)			\
- 	{},								\
- };									\
- MODULE_DEVICE_TABLE(of, drv_name##_irqchip_match_table);		\
-@@ -56,6 +57,7 @@ static struct platform_driver drv_name##_driver = {			\
- 		.owner = THIS_MODULE,					\
- 		.of_match_table = drv_name##_irqchip_match_table,	\
- 		.suppress_bind_attrs = true,				\
-+		__VA_ARGS__						\
- 	},								\
- };									\
- builtin_platform_driver(drv_name##_driver)
+ 		fusion->max_map_sz =
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fp.c b/drivers/scsi/megaraid/megaraid_sas_fp.c
+index 83f69c33b01a..b2ec7a3f7650 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fp.c
++++ b/drivers/scsi/megaraid/megaraid_sas_fp.c
+@@ -327,7 +327,7 @@ u8 MR_ValidateMapInfo(struct megasas_instance *instance, u64 map_id)
+ 		expected_size = sizeof(struct MR_FW_RAID_MAP_EXT);
+ 	else
+ 		expected_size =
+-			(sizeof(struct MR_FW_RAID_MAP) - sizeof(struct MR_LD_SPAN_MAP) +
++			(sizeof(struct MR_FW_RAID_MAP) +
+ 			(sizeof(struct MR_LD_SPAN_MAP) * le16_to_cpu(pDrvRaidMap->ldCount)));
+ 
+ 	if (le32_to_cpu(pDrvRaidMap->totalSize) != expected_size) {
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.h b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+index ce84f811e5e1..5530c233fccb 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fusion.h
++++ b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+@@ -942,7 +942,7 @@ struct MR_FW_RAID_MAP {
+ 	u8                  reserved2[7];
+ 	struct MR_ARRAY_INFO       arMapInfo[MAX_RAIDMAP_ARRAYS];
+ 	struct MR_DEV_HANDLE_INFO  devHndlInfo[MAX_RAIDMAP_PHYSICAL_DEVICES];
+-	struct MR_LD_SPAN_MAP      ldSpanMap[1];
++	struct MR_LD_SPAN_MAP      ldSpanMap[];
+ };
+ 
+ struct IO_REQUEST_INFO {
+@@ -1148,7 +1148,7 @@ typedef struct LOG_BLOCK_SPAN_INFO {
+ 
+ struct MR_FW_RAID_MAP_ALL {
+ 	struct MR_FW_RAID_MAP raidMap;
+-	struct MR_LD_SPAN_MAP ldSpanMap[MAX_LOGICAL_DRIVES - 1];
++	struct MR_LD_SPAN_MAP ldSpanMap[MAX_LOGICAL_DRIVES];
+ } __attribute__ ((packed));
+ 
+ struct MR_DRV_RAID_MAP {
 -- 
-2.35.1
+2.34.1
 
