@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A573C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14C3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352353AbiHOW5g (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        id S245442AbiHOW5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352359AbiHOWzi (ORCPT
+        with ESMTP id S1352386AbiHOWzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:55:38 -0400
+        Mon, 15 Aug 2022 18:55:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8CC261E;
-        Mon, 15 Aug 2022 12:55:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE4D19C18;
+        Mon, 15 Aug 2022 12:55:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C337561178;
-        Mon, 15 Aug 2022 19:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE486C433D6;
-        Mon, 15 Aug 2022 19:55:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68DDE612A5;
+        Mon, 15 Aug 2022 19:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7357AC433C1;
+        Mon, 15 Aug 2022 19:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593315;
-        bh=P5OullaDC/JY0jpGOHyzfuITkSwrD2srDkMM99RXN/E=;
+        s=korg; t=1660593318;
+        bh=8daQY9s/vWSmAie4RqQTTBmJUKRxgtrJFQ3RCgk4Q6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vk0A/CwQ3/LOJ73fqyR/tRZv1ZveqgATrJ2218l3LdQ7JGZnfZMb+PbVTDzw01U76
-         JMpgJdeKLVHN4IdKB6IXv8SZtyXuEIqL7FGnGKUnEdgt/wwQOErqK0B3Kn/2Kit8pJ
-         ZZrr+C9OzYEVBsLh1JG5REEz2cu0wG7i1lXkw3VE=
+        b=1aqngxnQNyvT1LbysU8dbBL+isGR1vbV5/3Z0vDzKJR+31Rdrjx8oSzBX11+tnRUS
+         lzA0XiVSsluz9UPGd1mO/HDL46X0rZEdXGwsGCJZnthnQUFiz1KIrO7WiaOMJ1925l
+         j92j5UtcXEMp9smCkREen6A51gkiuvsSBAt/s9/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0928/1095] f2fs: dont set GC_FAILURE_PIN for background GC
-Date:   Mon, 15 Aug 2022 20:05:27 +0200
-Message-Id: <20220815180507.633833003@linuxfoundation.org>
+Subject: [PATCH 5.19 0250/1157] arm64: dts: qcom: msm8994: add required ranges to OCMEM
+Date:   Mon, 15 Aug 2022 19:53:26 +0200
+Message-Id: <20220815180449.588683622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,34 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 642c0969916eaa4878cb74f36752108e590b0389 ]
+[ Upstream commit 07f3c7a11dadbead580b6d6e7d86bcc87119fe74 ]
 
-So that it can reduce the possibility that file be unpinned forcely by
-foreground GC due to .i_gc_failures[GC_FAILURE_PIN] exceeds threshold.
+The OCMEM bindings require ranges property.
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 9d511d0a7926 ("arm64: dts: qcom: msm8994: Add OCMEM node")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220607171848.535128-14-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/gc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index e83c07144d8f..6a7e4148ff9d 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1202,7 +1202,8 @@ static int move_data_block(struct inode *inode, block_t bidx,
- 	}
- 
- 	if (f2fs_is_pinned_file(inode)) {
--		f2fs_pin_file_control(inode, true);
-+		if (gc_type == FG_GC)
-+			f2fs_pin_file_control(inode, true);
- 		err = -EAGAIN;
- 		goto out;
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 1ac2913b182c..8cc3cb79ed05 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -1074,6 +1074,7 @@ ocmem: ocmem@fdd00000 {
+ 			reg = <0xfdd00000 0x2000>,
+ 			      <0xfec00000 0x200000>;
+ 			reg-names = "ctrl", "mem";
++			ranges = <0 0xfec00000 0x200000>;
+ 			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>,
+ 				 <&mmcc OCMEMCX_OCMEMNOC_CLK>;
+ 			clock-names = "core", "iface";
 -- 
 2.35.1
 
