@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654CEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE481C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244573AbiHOXpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
+        id S245558AbiHOXpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354286AbiHOXls (ORCPT
+        with ESMTP id S1354283AbiHOXlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC37DF92;
-        Mon, 15 Aug 2022 13:11:37 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244CAB86B;
+        Mon, 15 Aug 2022 13:11:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD3B26077B;
-        Mon, 15 Aug 2022 20:11:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC606C433C1;
-        Mon, 15 Aug 2022 20:11:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4ED06077B;
+        Mon, 15 Aug 2022 20:11:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA20AC433C1;
+        Mon, 15 Aug 2022 20:11:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594296;
-        bh=zJh7aVjy83OVBviyzmE9wu2gQP51nHf6qxEIm9t2EEo=;
+        s=korg; t=1660594293;
+        bh=m6tmQ3fcvqEazC3ml2tP0P8yC/apYVAOn4jfufH1sJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KxZIXbBfoLzPTQAdQ79ET1V6o7OScZyp54lr45B6umd1DoN6AIUWWGXIP3jACSFwq
-         VgRg9Mqt++gICxEdv6sqLndn3jFwTB+E5lINtrjyoRbmua3+pn4KoUPzDvKWx3WXlj
-         rkQKg2PII+pIyalAKAru8U04Nd4FZF/xrukqkFL8=
+        b=Tjp8GdQThCTq0OsWotrGBEoZ04KsIiLE2Ewu0rqN3H/W8P5QyUnvAEuRnCm6IrYMe
+         3gRCJ/sg+ox56h2cT3F96k2BowJMq83KkGn+GSck2+5lnVL9bLspwswb2VNA/lyCrU
+         bL4Wm/s1IKa05iU3GlVAJQqxmQdRDVExW4vYPcAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0410/1157] drm/vc4: dsi: Correct DSI divider calculations
-Date:   Mon, 15 Aug 2022 19:56:06 +0200
-Message-Id: <20220815180456.055982552@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.18 1088/1095] bpf: Fix sparse warning for bpf_kptr_xchg_proto
+Date:   Mon, 15 Aug 2022 20:08:07 +0200
+Message-Id: <20220815180514.042329632@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-[ Upstream commit 3b45eee87da171caa28f61240ddb5c21170cda53 ]
+commit 5b74c690e1c55953ec99fd9dab74f72dbee4fe95 upstream.
 
-The divider calculations tried to find the divider just faster than the
-clock requested. However if it required a divider of 7 then the for loop
-aborted without handling the "error" case, and could end up with a clock
-lower than requested.
+Kernel Test Robot complained about missing static storage class
+annotation for bpf_kptr_xchg_proto variable.
 
-The integer divider from parent PLL to DSI clock is also capable of
-going up to /255, not just /7 that the driver was trying.  This allows
-for slower link frequencies on the DSI bus where the resolution permits.
+sparse: symbol 'bpf_kptr_xchg_proto' was not declared. Should it be static?
 
-Correct the loop so that we always have a clock greater than requested,
-and covering the whole range of dividers.
+This caused by missing extern definition in the header. Add it to
+suppress the sparse warning.
 
-Fixes: 86c1b9eff3f2 ("drm/vc4: Adjust modes in DSI to work around the integer PLL divider.")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-13-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c0a5a21c25f3 ("bpf: Allow storing referenced kptr in map")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20220511194654.765705-2-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/linux/bpf.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index e82ee94cafc7..81a6c4e9576d 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -805,11 +805,9 @@ static bool vc4_dsi_encoder_mode_fixup(struct drm_encoder *encoder,
- 	/* Find what divider gets us a faster clock than the requested
- 	 * pixel clock.
- 	 */
--	for (divider = 1; divider < 8; divider++) {
--		if (parent_rate / divider < pll_clock) {
--			divider--;
-+	for (divider = 1; divider < 255; divider++) {
-+		if (parent_rate / (divider + 1) < pll_clock)
- 			break;
--		}
- 	}
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2228,6 +2228,7 @@ extern const struct bpf_func_proto bpf_f
+ extern const struct bpf_func_proto bpf_loop_proto;
+ extern const struct bpf_func_proto bpf_strncmp_proto;
+ extern const struct bpf_func_proto bpf_copy_from_user_task_proto;
++extern const struct bpf_func_proto bpf_kptr_xchg_proto;
  
- 	/* Now that we've picked a PLL divider, calculate back to its
--- 
-2.35.1
-
+ const struct bpf_func_proto *tracing_prog_func_proto(
+   enum bpf_func_id func_id, const struct bpf_prog *prog);
 
 
