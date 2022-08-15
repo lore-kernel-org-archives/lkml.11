@@ -2,53 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C973C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 634A2C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347889AbiHPAeZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S232819AbiHPAeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354005AbiHPAbb (ORCPT
+        with ESMTP id S1354147AbiHPAbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:31 -0400
+        Mon, 15 Aug 2022 20:31:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB0185CB7;
-        Mon, 15 Aug 2022 13:36:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D470831ECA;
+        Mon, 15 Aug 2022 13:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94471B80EAD;
-        Mon, 15 Aug 2022 20:36:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B59EEC433D6;
-        Mon, 15 Aug 2022 20:36:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E58CB80EA8;
+        Mon, 15 Aug 2022 20:36:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57AFC433C1;
+        Mon, 15 Aug 2022 20:36:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595772;
-        bh=DJFWMlBN41TrmgBEeTaUFRxA969MeiE4CTlQp262RZc=;
+        s=korg; t=1660595792;
+        bh=g53U7Pc7vbbQYGqZ6XvGCvWrGBN/w1B36+hSTLtR6IM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GI4EwViuM53/93Y6DxP5gBNCicWgv5yOSDowfOSXXY/Yg3a84fxE0l7424ioKyjxj
-         iMH537bgueAIlfC2xyTG1uJrv+EEF6vI2WhEQeWRFjQhdGi5emynOYf2Yiy7eXxeuo
-         yZkUAWSdAHx767K0NOgjYxv6QXgUbvXucpAgu2UI=
+        b=rMoVZRJ7a8QA9wrM6dwDZkVbJ+R1r0DVwIm/N55GjOkmADXnSlJd6Ckzo/cB1yMpY
+         xfhFsWvanst2GFMusl7P+dICIy9pNpnMVEjNfT8YxnKCXtxyYAN+7vYBAeMVsY/EEE
+         LVWGVmnW5YM9oQ61Gen1o6bnlrnxGdzzbUfFmerI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Minchan Kim <minchan@kernel.org>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Martijn Coenen <maco@android.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Todd Kjos <tkjos@android.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0863/1157] android: binder: stop saving a pointer to the VMA
-Date:   Mon, 15 Aug 2022 20:03:39 +0200
-Message-Id: <20220815180513.992475492@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0877/1157] null_blk: fix ida error handling in null_add_dev()
+Date:   Mon, 15 Aug 2022 20:03:53 +0200
+Message-Id: <20220815180514.530110453@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -60,135 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam R. Howlett <Liam.Howlett@oracle.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit a43cfc87caaf46710c8027a8c23b8a55f1078f19 ]
+[ Upstream commit ee452a8d984f94fa8e894f003a52e776e4572881 ]
 
-Do not record a pointer to a VMA outside of the mmap_lock for later use.
-This is unsafe and there are a number of failure paths *after* the
-recorded VMA pointer may be freed during setup.  There is no callback to
-the driver to clear the saved pointer from generic mm code.  Furthermore,
-the VMA pointer may become stale if any number of VMA operations end up
-freeing the VMA so saving it was fragile to being with.
+There needs to be some error checking if ida_simple_get() fails.
+Also call ida_free() if there are errors later.
 
-Instead, change the binder_alloc struct to record the start address of the
-VMA and use vma_lookup() to get the vma when needed.  Add lockdep
-mmap_lock checks on updates to the vma pointer to ensure the lock is held
-and depend on that lock for synchronization of readers and writers - which
-was already the case anyways, so the smp_wmb()/smp_rmb() was not
-necessary.
-
-[akpm@linux-foundation.org: fix drivers/android/binder_alloc_selftest.c]
-Link: https://lkml.kernel.org/r/20220621140212.vpkio64idahetbyf@revolver
-Fixes: da1b9564e85b ("android: binder: fix the race mmap and alloc_new_buf_locked")
-Reported-by: syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com
-Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Hridya Valsaraju <hridya@google.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Martijn Coenen <maco@android.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Todd Kjos <tkjos@android.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 94bc02e30fb8 ("nullb: use ida to manage index")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YtEhXsr6vJeoiYhd@kili
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/android/binder_alloc.c          | 30 ++++++++++++-------------
- drivers/android/binder_alloc.h          |  2 +-
- drivers/android/binder_alloc_selftest.c |  2 +-
- 3 files changed, 16 insertions(+), 18 deletions(-)
+ drivers/block/null_blk/main.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
-index 5649a0371a1f..d044418294f9 100644
---- a/drivers/android/binder_alloc.c
-+++ b/drivers/android/binder_alloc.c
-@@ -213,7 +213,7 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
+diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
+index 6b67088f4ea7..c0a0474be574 100644
+--- a/drivers/block/null_blk/main.c
++++ b/drivers/block/null_blk/main.c
+@@ -2043,8 +2043,13 @@ static int null_add_dev(struct nullb_device *dev)
+ 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, nullb->q);
  
- 	if (mm) {
- 		mmap_read_lock(mm);
--		vma = alloc->vma;
-+		vma = vma_lookup(mm, alloc->vma_addr);
- 	}
- 
- 	if (!vma && need_mm) {
-@@ -313,16 +313,15 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
- static inline void binder_alloc_set_vma(struct binder_alloc *alloc,
- 		struct vm_area_struct *vma)
- {
--	if (vma)
-+	unsigned long vm_start = 0;
-+
-+	if (vma) {
-+		vm_start = vma->vm_start;
- 		alloc->vma_vm_mm = vma->vm_mm;
--	/*
--	 * If we see alloc->vma is not NULL, buffer data structures set up
--	 * completely. Look at smp_rmb side binder_alloc_get_vma.
--	 * We also want to guarantee new alloc->vma_vm_mm is always visible
--	 * if alloc->vma is set.
--	 */
--	smp_wmb();
--	alloc->vma = vma;
+ 	mutex_lock(&lock);
+-	nullb->index = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
+-	dev->index = nullb->index;
++	rv = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
++	if (rv < 0) {
++		mutex_unlock(&lock);
++		goto out_cleanup_zone;
 +	}
++	nullb->index = rv;
++	dev->index = rv;
+ 	mutex_unlock(&lock);
+ 
+ 	blk_queue_logical_block_size(nullb->q, dev->blocksize);
+@@ -2070,7 +2075,7 @@ static int null_add_dev(struct nullb_device *dev)
+ 
+ 	rv = null_gendisk_register(nullb);
+ 	if (rv)
+-		goto out_cleanup_zone;
++		goto out_ida_free;
+ 
+ 	mutex_lock(&lock);
+ 	list_add_tail(&nullb->list, &nullb_list);
+@@ -2079,6 +2084,9 @@ static int null_add_dev(struct nullb_device *dev)
+ 	pr_info("disk %s created\n", nullb->disk_name);
+ 
+ 	return 0;
 +
-+	mmap_assert_write_locked(alloc->vma_vm_mm);
-+	alloc->vma_addr = vm_start;
- }
- 
- static inline struct vm_area_struct *binder_alloc_get_vma(
-@@ -330,11 +329,9 @@ static inline struct vm_area_struct *binder_alloc_get_vma(
- {
- 	struct vm_area_struct *vma = NULL;
- 
--	if (alloc->vma) {
--		/* Look at description in binder_alloc_set_vma */
--		smp_rmb();
--		vma = alloc->vma;
--	}
-+	if (alloc->vma_addr)
-+		vma = vma_lookup(alloc->vma_vm_mm, alloc->vma_addr);
-+
- 	return vma;
- }
- 
-@@ -817,7 +814,8 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
- 
- 	buffers = 0;
- 	mutex_lock(&alloc->mutex);
--	BUG_ON(alloc->vma);
-+	BUG_ON(alloc->vma_addr &&
-+	       vma_lookup(alloc->vma_vm_mm, alloc->vma_addr));
- 
- 	while ((n = rb_first(&alloc->allocated_buffers))) {
- 		buffer = rb_entry(n, struct binder_buffer, rb_node);
-diff --git a/drivers/android/binder_alloc.h b/drivers/android/binder_alloc.h
-index 7dea57a84c79..1e4fd37af5e0 100644
---- a/drivers/android/binder_alloc.h
-+++ b/drivers/android/binder_alloc.h
-@@ -100,7 +100,7 @@ struct binder_lru_page {
-  */
- struct binder_alloc {
- 	struct mutex mutex;
--	struct vm_area_struct *vma;
-+	unsigned long vma_addr;
- 	struct mm_struct *vma_vm_mm;
- 	void __user *buffer;
- 	struct list_head buffers;
-diff --git a/drivers/android/binder_alloc_selftest.c b/drivers/android/binder_alloc_selftest.c
-index c2b323bc3b3a..43a881073a42 100644
---- a/drivers/android/binder_alloc_selftest.c
-+++ b/drivers/android/binder_alloc_selftest.c
-@@ -287,7 +287,7 @@ void binder_selftest_alloc(struct binder_alloc *alloc)
- 	if (!binder_selftest_run)
- 		return;
- 	mutex_lock(&binder_selftest_lock);
--	if (!binder_selftest_run || !alloc->vma)
-+	if (!binder_selftest_run || !alloc->vma_addr)
- 		goto done;
- 	pr_info("STARTED\n");
- 	binder_selftest_alloc_offset(alloc, end_offset, 0);
++out_ida_free:
++	ida_free(&nullb_indexes, nullb->index);
+ out_cleanup_zone:
+ 	null_free_zoned_dev(dev);
+ out_cleanup_disk:
 -- 
 2.35.1
 
