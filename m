@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E88D9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8392EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243605AbiHOSsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        id S244016AbiHOSsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243273AbiHOSnj (ORCPT
+        with ESMTP id S243284AbiHOSnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:43:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4FA2F664;
-        Mon, 15 Aug 2022 11:26:54 -0700 (PDT)
+        Mon, 15 Aug 2022 14:43:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F652F666;
+        Mon, 15 Aug 2022 11:26:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F8D1B8107A;
-        Mon, 15 Aug 2022 18:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E7CC433D6;
-        Mon, 15 Aug 2022 18:26:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39E3260FCC;
+        Mon, 15 Aug 2022 18:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26410C433D7;
+        Mon, 15 Aug 2022 18:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588012;
-        bh=bULFZigN71IgZSrJ/Hx87DvZyhXZUau5RsagxCuLl7c=;
+        s=korg; t=1660588018;
+        bh=bY9QZ16eAawxiTewKuMnGgnKDZ3/A95yXiW9idzT2OM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RzIVuX7qK8Ad7xbG6LEXCfrdQp1A6B7b3prt72H9QEiFrFGomK2Nrh58lwjb8UR4v
-         EZ/ZwMsdm65ulXH+S6e59FVwIzdeJB8DAo1K//LVKiYwz9EUqvASYvVPcAsilMprUF
-         nvz0I9fpiSUy6e9A6YA8tbqefH1l1Wu/VLM4pbTA=
+        b=kp2Fn/zBWnbfbnkiphcDzhnR6K0aYXlBfsgaZZXLMzrMhzFDwOAqBFjicoHR7ZByr
+         jUXaqgQVMfEwrE+zoF6CFkDX3CMzkl2/+L10PKFlKXiePjxjLVpxI0+vcaVgAaMmKy
+         EgyFRs1ymKf3e3u4Gz16LjVzTSrgNSInQJCd5+HQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        stable@vger.kernel.org,
+        Mirela Rabulea <mirela.rabulea@oss.nxp.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 268/779] media: imx-jpeg: Correct some definition according specification
-Date:   Mon, 15 Aug 2022 19:58:32 +0200
-Message-Id: <20220815180348.801515500@linuxfoundation.org>
+Subject: [PATCH 5.15 270/779] media: imx-jpeg: Add pm-runtime support for imx-jpeg
+Date:   Mon, 15 Aug 2022 19:58:34 +0200
+Message-Id: <20220815180348.871974141@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,44 +51,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
 
-[ Upstream commit 5a601f89e846c1b6005ab274d039e5036fc22015 ]
+[ Upstream commit 4c2e5156d9fa63a3f41c2bf56b694ad42df825d7 ]
 
-the register CAST_NOMFRSIZE_LO should be equal to CAST_STATUS16
-the register CAST_NOMFRSIZE_HI should be equal to CAST_STATUS17
-the register CAST_OFBSIZE_LO should be equal to CAST_STATUS18
-the register CAST_OFBSIZE_HI should be equal to CAST_STATUS19
+Save some power by disabling/enabling the jpeg clocks with
+every stream stop/start.
+Do not use DL_FLAG_RPM_ACTIVE in mxc_jpeg_attach_pm_domains,
+to ensure power domains are off after probe.
 
-Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Signed-off-by: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg-hw.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 73 +++++++++++++++++++++-
+ drivers/media/platform/imx-jpeg/mxc-jpeg.h |  2 +
+ 2 files changed, 72 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/imx-jpeg/mxc-jpeg-hw.h
-index ae70d3a0dc24..12f132a83a23 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg-hw.h
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg-hw.h
-@@ -53,10 +53,10 @@
- #define CAST_REC_REGS_SEL		CAST_STATUS4
- #define CAST_LUMTH			CAST_STATUS5
- #define CAST_CHRTH			CAST_STATUS6
--#define CAST_NOMFRSIZE_LO		CAST_STATUS7
--#define CAST_NOMFRSIZE_HI		CAST_STATUS8
--#define CAST_OFBSIZE_LO			CAST_STATUS9
--#define CAST_OFBSIZE_HI			CAST_STATUS10
-+#define CAST_NOMFRSIZE_LO		CAST_STATUS16
-+#define CAST_NOMFRSIZE_HI		CAST_STATUS17
-+#define CAST_OFBSIZE_LO			CAST_STATUS18
-+#define CAST_OFBSIZE_HI			CAST_STATUS19
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 5289a822bcb1..bc66c09b807a 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -49,6 +49,7 @@
+ #include <linux/slab.h>
+ #include <linux/irqreturn.h>
+ #include <linux/interrupt.h>
++#include <linux/pm_runtime.h>
+ #include <linux/pm_domain.h>
+ #include <linux/string.h>
  
- #define MXC_MAX_SLOTS	1 /* TODO use all 4 slots*/
- /* JPEG-Decoder Wrapper Slot Registers 0..3 */
+@@ -1074,10 +1075,17 @@ static int mxc_jpeg_start_streaming(struct vb2_queue *q, unsigned int count)
+ {
+ 	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(q);
+ 	struct mxc_jpeg_q_data *q_data = mxc_jpeg_get_q_data(ctx, q->type);
++	int ret;
+ 
+ 	dev_dbg(ctx->mxc_jpeg->dev, "Start streaming ctx=%p", ctx);
+ 	q_data->sequence = 0;
+ 
++	ret = pm_runtime_resume_and_get(ctx->mxc_jpeg->dev);
++	if (ret < 0) {
++		dev_err(ctx->mxc_jpeg->dev, "Failed to power up jpeg\n");
++		return ret;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -1095,9 +1103,10 @@ static void mxc_jpeg_stop_streaming(struct vb2_queue *q)
+ 		else
+ 			vbuf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+ 		if (!vbuf)
+-			return;
++			break;
+ 		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
+ 	}
++	pm_runtime_put_sync(&ctx->mxc_jpeg->pdev->dev);
+ }
+ 
+ static int mxc_jpeg_valid_comp_id(struct device *dev,
+@@ -1957,8 +1966,7 @@ static int mxc_jpeg_attach_pm_domains(struct mxc_jpeg_dev *jpeg)
+ 
+ 		jpeg->pd_link[i] = device_link_add(dev, jpeg->pd_dev[i],
+ 						   DL_FLAG_STATELESS |
+-						   DL_FLAG_PM_RUNTIME |
+-						   DL_FLAG_RPM_ACTIVE);
++						   DL_FLAG_PM_RUNTIME);
+ 		if (!jpeg->pd_link[i]) {
+ 			ret = -EINVAL;
+ 			goto fail;
+@@ -2023,6 +2031,19 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
+ 	jpeg->dev = dev;
+ 	jpeg->mode = mode;
+ 
++	/* Get clocks */
++	jpeg->clk_ipg = devm_clk_get(dev, "ipg");
++	if (IS_ERR(jpeg->clk_ipg)) {
++		dev_err(dev, "failed to get clock: ipg\n");
++		goto err_clk;
++	}
++
++	jpeg->clk_per = devm_clk_get(dev, "per");
++	if (IS_ERR(jpeg->clk_per)) {
++		dev_err(dev, "failed to get clock: per\n");
++		goto err_clk;
++	}
++
+ 	ret = mxc_jpeg_attach_pm_domains(jpeg);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to attach power domains %d\n", ret);
+@@ -2091,6 +2112,7 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
+ 			  jpeg->dec_vdev->minor);
+ 
+ 	platform_set_drvdata(pdev, jpeg);
++	pm_runtime_enable(dev);
+ 
+ 	return 0;
+ 
+@@ -2107,9 +2129,52 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
+ 	mxc_jpeg_detach_pm_domains(jpeg);
+ 
+ err_irq:
++err_clk:
++	return ret;
++}
++
++#ifdef CONFIG_PM
++static int mxc_jpeg_runtime_resume(struct device *dev)
++{
++	struct mxc_jpeg_dev *jpeg = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_prepare_enable(jpeg->clk_ipg);
++	if (ret < 0) {
++		dev_err(dev, "failed to enable clock: ipg\n");
++		goto err_ipg;
++	}
++
++	ret = clk_prepare_enable(jpeg->clk_per);
++	if (ret < 0) {
++		dev_err(dev, "failed to enable clock: per\n");
++		goto err_per;
++	}
++
++	return 0;
++
++err_per:
++	clk_disable_unprepare(jpeg->clk_ipg);
++err_ipg:
+ 	return ret;
+ }
+ 
++static int mxc_jpeg_runtime_suspend(struct device *dev)
++{
++	struct mxc_jpeg_dev *jpeg = dev_get_drvdata(dev);
++
++	clk_disable_unprepare(jpeg->clk_ipg);
++	clk_disable_unprepare(jpeg->clk_per);
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops	mxc_jpeg_pm_ops = {
++	SET_RUNTIME_PM_OPS(mxc_jpeg_runtime_suspend,
++			   mxc_jpeg_runtime_resume, NULL)
++};
++
+ static int mxc_jpeg_remove(struct platform_device *pdev)
+ {
+ 	unsigned int slot;
+@@ -2118,6 +2183,7 @@ static int mxc_jpeg_remove(struct platform_device *pdev)
+ 	for (slot = 0; slot < MXC_MAX_SLOTS; slot++)
+ 		mxc_jpeg_free_slot_data(jpeg, slot);
+ 
++	pm_runtime_disable(&pdev->dev);
+ 	video_unregister_device(jpeg->dec_vdev);
+ 	v4l2_m2m_release(jpeg->m2m_dev);
+ 	v4l2_device_unregister(&jpeg->v4l2_dev);
+@@ -2134,6 +2200,7 @@ static struct platform_driver mxc_jpeg_driver = {
+ 	.driver = {
+ 		.name = "mxc-jpeg",
+ 		.of_match_table = mxc_jpeg_match,
++		.pm = &mxc_jpeg_pm_ops,
+ 	},
+ };
+ module_platform_driver(mxc_jpeg_driver);
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+index 4c210852e876..9fb2a5aaa941 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.h
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+@@ -109,6 +109,8 @@ struct mxc_jpeg_dev {
+ 	spinlock_t			hw_lock; /* hardware access lock */
+ 	unsigned int			mode;
+ 	struct mutex			lock; /* v4l2 ioctls serialization */
++	struct clk			*clk_ipg;
++	struct clk			*clk_per;
+ 	struct platform_device		*pdev;
+ 	struct device			*dev;
+ 	void __iomem			*base_reg;
 -- 
 2.35.1
 
