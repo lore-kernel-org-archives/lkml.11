@@ -2,116 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFBCC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6CFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343978AbiHOTiS (ORCPT
+        id S1344041AbiHOTiY convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
+        Mon, 15 Aug 2022 15:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245295AbiHOTdi (ORCPT
+        with ESMTP id S245365AbiHOTdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:33:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB552F66D;
-        Mon, 15 Aug 2022 11:45:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0E652CE1268;
-        Mon, 15 Aug 2022 18:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE9FC433C1;
-        Mon, 15 Aug 2022 18:45:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589108;
-        bh=hyTcSWCJpM8XrR++nPsIwaPrLzF9BBedKqDgX0Srn/w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gL7gjqLxHpY35BkAoIfDf1azK9BeArQPr6Fw1GzPzfxb6TlA1jYt1Mse3VdT6LW1r
-         /0OvxofTjJKEbAtKltJIARn4fkGfQZNGDoaPrLS9lXdFk2J6qzj6g3ppLh6lU6a2WW
-         esxBHOnqGGOT6Ha5k+oG6lFaQ5guYlntPJ1LD3yM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 615/779] mfd: t7l66xb: Drop platform disable callback
-Date:   Mon, 15 Aug 2022 20:04:19 +0200
-Message-Id: <20220815180403.651006449@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 15:33:42 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0200D61D89
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:45:13 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id f17-20020a6bdd11000000b00684f4e874b5so4611674ioc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:45:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:from:subject:message-id:in-reply-to
+         :date:mime-version:x-gm-message-state:from:to:cc;
+        bh=9oPYzoxTUmPE70g6i2LYiBhNZyppzQqx183QoEcMCCQ=;
+        b=crgTs2+XhbCDaUtHSyNYyCr9LJ2fl+74LamgxxtvbaWf/GPx7wAU9yoABvbiYgEhxF
+         Uv5io0moxEayHV8kcxMi9WX4/lBe4Xq2yIeT7OO8oHTpln8fpGky6u2BEGQUX3/L83bW
+         EtMPUc1m7wM8aelXtWlUb84k8j1qtbSSN5E1vHQJ/QUOT9SpUYUKKGmewVg/fYn3FISd
+         +amE7oQZrrB08IG5UOMTUs+Rj+FMvZ69swjO4ht/Lwnn3fr1USlt0xHxPHMX6CEv64Ka
+         ur6mSsNZ5Hw2NyrR2TVc4SXEWix+1Ax9GkIb5PPyx9tNw84mhqZUXGcfIcQKpVPltK9h
+         y+mA==
+X-Gm-Message-State: ACgBeo0G1NruzpM86N0FxyiAodeGU3UOTT4udVsMuoPu25vmI010mOw3
+        qPrnBQr08/Got4wxQ+NL0c2MMrZMg18TWGR3tWyatIQch04b
+X-Google-Smtp-Source: AA6agR5uwUM2YxE7qsFO9F/OS51SEy8+o9l2L7bCdL4FpylSAXW8bydIQo9YuxPxxdy1gsoTioStxxnoCsHry141DPvHOhuwHMbl
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1bce:b0:2e4:745b:d902 with SMTP id
+ x14-20020a056e021bce00b002e4745bd902mr6367592ilv.265.1660589112295; Mon, 15
+ Aug 2022 11:45:12 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:45:12 -0700
+In-Reply-To: <20220815180715.GA3106610@roeck-us.net>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000028084805e64c0839@google.com>
+Subject: Re: [syzbot] upstream boot error: BUG: corrupted list in new_inode
+From:   syzbot <syzbot+24df94a8d05d5a3e68f0@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@roeck-us.net, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Hello,
 
-[ Upstream commit 128ac294e1b437cb8a7f2ff8ede1cde9082bddbe ]
+syzbot tried to test the proposed patch but the build/boot failed:
 
-None of the in-tree instantiations of struct t7l66xb_platform_data
-provides a disable callback. So better don't dereference this function
-pointer unconditionally. As there is no user, drop it completely instead
-of calling it conditional.
+failed to create VM pool: failed to create GCE image: create image operation failed: &{Code:PERMISSIONS_ERROR Location: Message:Required 'read' permission for 'disks/ci-upstream-kasan-gce-root-test-job-test-job-image.tar.gz' ForceSendFields:[] NullFields:[]}.
 
-This is a preparation for making platform remove callbacks return void.
+syzkaller build log:
+go env (err=<nil>)
+GO111MODULE="auto"
+GOARCH="amd64"
+GOBIN=""
+GOCACHE="/syzkaller/.cache/go-build"
+GOENV="/syzkaller/.config/go/env"
+GOEXE=""
+GOEXPERIMENT=""
+GOFLAGS=""
+GOHOSTARCH="amd64"
+GOHOSTOS="linux"
+GOINSECURE=""
+GOMODCACHE="/syzkaller/jobs/linux/gopath/pkg/mod"
+GONOPROXY=""
+GONOSUMDB=""
+GOOS="linux"
+GOPATH="/syzkaller/jobs/linux/gopath"
+GOPRIVATE=""
+GOPROXY="https://proxy.golang.org,direct"
+GOROOT="/usr/local/go"
+GOSUMDB="sum.golang.org"
+GOTMPDIR=""
+GOTOOLDIR="/usr/local/go/pkg/tool/linux_amd64"
+GOVCS=""
+GOVERSION="go1.17"
+GCCGO="gccgo"
+AR="ar"
+CC="gcc"
+CXX="g++"
+CGO_ENABLED="1"
+GOMOD="/syzkaller/jobs/linux/gopath/src/github.com/google/syzkaller/go.mod"
+CGO_CFLAGS="-g -O2"
+CGO_CPPFLAGS=""
+CGO_CXXFLAGS="-g -O2"
+CGO_FFLAGS="-g -O2"
+CGO_LDFLAGS="-g -O2"
+PKG_CONFIG="pkg-config"
+GOGCCFLAGS="-fPIC -m64 -pthread -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build2326737377=/tmp/go-build -gno-record-gcc-switches"
 
-Fixes: 1f192015ca5b ("mfd: driver for the T7L66XB TMIO SoC")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220530192430.2108217-3-u.kleine-koenig@pengutronix.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mfd/t7l66xb.c       | 6 +-----
- include/linux/mfd/t7l66xb.h | 1 -
- 2 files changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
-index 5369c67e3280..663ffd4b8570 100644
---- a/drivers/mfd/t7l66xb.c
-+++ b/drivers/mfd/t7l66xb.c
-@@ -397,11 +397,8 @@ static int t7l66xb_probe(struct platform_device *dev)
- 
- static int t7l66xb_remove(struct platform_device *dev)
- {
--	struct t7l66xb_platform_data *pdata = dev_get_platdata(&dev->dev);
- 	struct t7l66xb *t7l66xb = platform_get_drvdata(dev);
--	int ret;
- 
--	ret = pdata->disable(dev);
- 	clk_disable_unprepare(t7l66xb->clk48m);
- 	clk_put(t7l66xb->clk48m);
- 	clk_disable_unprepare(t7l66xb->clk32k);
-@@ -412,8 +409,7 @@ static int t7l66xb_remove(struct platform_device *dev)
- 	mfd_remove_devices(&dev->dev);
- 	kfree(t7l66xb);
- 
--	return ret;
--
-+	return 0;
- }
- 
- static struct platform_driver t7l66xb_platform_driver = {
-diff --git a/include/linux/mfd/t7l66xb.h b/include/linux/mfd/t7l66xb.h
-index 69632c1b07bd..ae3e7a5c5219 100644
---- a/include/linux/mfd/t7l66xb.h
-+++ b/include/linux/mfd/t7l66xb.h
-@@ -12,7 +12,6 @@
- 
- struct t7l66xb_platform_data {
- 	int (*enable)(struct platform_device *dev);
--	int (*disable)(struct platform_device *dev);
- 	int (*suspend)(struct platform_device *dev);
- 	int (*resume)(struct platform_device *dev);
- 
--- 
-2.35.1
+git status (err=<nil>)
+HEAD detached at 8dfcaa3d2
+nothing to commit, working tree clean
 
 
+go list -f '{{.Stale}}' ./sys/syz-sysgen | grep -q false || go install ./sys/syz-sysgen
+make .descriptions
+bin/syz-sysgen
+touch .descriptions
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=8dfcaa3d2828a113ae780da01f5f73ad64710e31 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220812-115356'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-fuzzer github.com/google/syzkaller/syz-fuzzer
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=8dfcaa3d2828a113ae780da01f5f73ad64710e31 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220812-115356'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-execprog github.com/google/syzkaller/tools/syz-execprog
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=8dfcaa3d2828a113ae780da01f5f73ad64710e31 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220812-115356'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-stress github.com/google/syzkaller/tools/syz-stress
+mkdir -p ./bin/linux_amd64
+gcc -o ./bin/linux_amd64/syz-executor executor/executor.cc \
+	-m64 -O2 -pthread -Wall -Werror -Wparentheses -Wunused-const-variable -Wframe-larger-than=16384 -Wno-stringop-overflow -Wno-array-bounds -Wno-format-overflow -static-pie -fpermissive -w -DGOOS_linux=1 -DGOARCH_amd64=1 \
+	-DHOSTGOOS_linux=1 -DGIT_REVISION=\"8dfcaa3d2828a113ae780da01f5f73ad64710e31\"
 
+
+
+Tested on:
+
+commit:         fc4d146e virtio_net: Revert "virtio_net: set the defau..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
+dashboard link: https://syzkaller.appspot.com/bug?extid=24df94a8d05d5a3e68f0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
