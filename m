@@ -2,161 +2,412 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146B4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B201C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242465AbiHONXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
+        id S233780AbiHONXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241526AbiHONXA (ORCPT
+        with ESMTP id S242923AbiHONXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:23:00 -0400
-Received: from forward105j.mail.yandex.net (forward105j.mail.yandex.net [5.45.198.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B5818B0E;
-        Mon, 15 Aug 2022 06:22:58 -0700 (PDT)
-Received: from iva1-dcde80888020.qloud-c.yandex.net (iva1-dcde80888020.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7695:0:640:dcde:8088])
-        by forward105j.mail.yandex.net (Yandex) with ESMTP id DE9444EC8F72;
-        Mon, 15 Aug 2022 16:22:54 +0300 (MSK)
-Received: by iva1-dcde80888020.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id BL0XdiM9S6-Mpi4xxLF;
-        Mon, 15 Aug 2022 16:22:53 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1660569773;
-        bh=nIVrrngh255xQlyPNLMT0qsuvgBZKO7rCfvaAHKtXx0=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=c4RdYZOP23tRHPJkalribKDnE7knA0o8myJU9Heo9WbK55Q0IiPlvF4QVPkXlYTi+
-         AOo/KMX5aOKQxXUn8hztaBWOP6bTGhW1eMn3+6dmJnM0l3ZMYDac1fQKGSSHpZp0xl
-         cNyIsiBpsRdkojnXyj7yxukIpsGu0hGkU0bIjmYE=
-Authentication-Results: iva1-dcde80888020.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     linux@yadro.com, Anup Patel <anup@brainfault.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v6 0/3] RISC-V: Create unique identification for SoC PMU
-Date:   Mon, 15 Aug 2022 16:22:37 +0300
-Message-Id: <20220815132251.25702-1-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.35.1
+        Mon, 15 Aug 2022 09:23:10 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B56192A5;
+        Mon, 15 Aug 2022 06:23:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=+ul1YQ+XMbPonyUc9+1NdL5O7eaki8LDzYTaq6WFV5M=;
+        b=Vw/JB4YgqKbnN/j/5vmgndqcbIJJ2JaI0j/etcFShtbX7KQqcFiqn6cKJxNU2P618Zp+GJJu2WobU
+         MzGtPUf094YgoVQxpe861V4I9pzgZY/2tAX3Fjcy5cft0AMdxkE9dh7QnJhSM/KZNeC2xgeEB+b1Wb
+         j6XfsOwk7IPRv6Gt1cCh8N75RL0A1puCPIvdMaE0iy6RIu2KBRM82qzoKWBzsOy+nlqt2X+ycXvT/J
+         IvjQB23LpJsc2GCYzWMPWRE4u4UfPmSl5yROM/mVqx+IduTPLIwolGjEVdn3qTbxGPENw+G/et8u9T
+         FdthwXBhBDpmBhBsxpUzZqDTrDF3aqQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000011,0.030169)], BW: [Enabled, t: (0.000019,0.000001)], RTDA: [Enabled, t: (0.074576), Hit: No, Details: v2.41.0; Id: 15.52ka1c.1gagqnpp6.5tqf; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Mon, 15 Aug 2022 16:22:52 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, dg@emlix.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v6 1/2] fpga: ecp5-spi: add Lattice ECP5 FPGA manager
+Date:   Mon, 15 Aug 2022 16:21:56 +0300
+Message-Id: <20220815132157.8083-2-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
+References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+Add support to the FPGA manager for programming Lattice ECP5 FPGA over
+slave SPI interface with .bit formatted uncompressed bitstream image.
 
-This series aims to provide matching vendor SoC with corresponded JSON bindings.
-
-The ID string is proposed to be in form of MVENDORID-MARCHID-MIMPID, for example
-for Sifive Unmatched the corresponding string will be:
-
-0x489-0x8000000000000007-0x[[:xdigit:]]+,v1,sifive/u74,core
-
-Where MIMPID can vary as all impl supported the same number of events, this might not
-be true for all future SoC however.
-
-Also added SBI firmware events pretty names, as any firmware that supports SBI PMU
-should also support firmare events [1].
-
-Series depends on patch by Anup Patel, exposing mvendor, marchid and mimpid
-to "/proc/cpuinfo" [2].
-
-[1] https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc
-[2] https://lkml.org/lkml/2022/7/27/23
-
-Link to previous version:
-https://patchwork.kernel.org/project/linux-riscv/list/?series=653649
-
-See original cover letter by João Mário Domingos:
-https://patchwork.kernel.org/project/linux-riscv/cover/20211116154812.17008-1-joao.mario@tecnico.ulisboa.pt/
-
-Tested with the following OpenSBI device tree bindings:
-
-```
-pmu {
-        compatible = "riscv,pmu";
-        riscv,event-to-mhpmcounters =
-                <0x03 0x06 0x18
-                0x10001 0x10002 0x18
-                0x10009 0x10009 0x18
-                0x10011 0x10011 0x18
-                0x10019 0x10019 0x18
-                0x10021 0x10021 0x18>;
-        riscv,event-to-mhpmevent =
-                <0x03 0x00000000 0x1801
-                0x04 0x00000000 0x0302
-                0x05 0x00000000 0x4000
-                0x06 0x00000000 0x6001
-                0x10001 0x00000000 0x0202
-                0x10002 0x00000000 0x0402
-                0x10009 0x00000000 0x0102
-                0x10011 0x00000000 0x2002
-                0x10019 0x00000000 0x1002
-                0x10021 0x00000000 0x0802>;
-        riscv,raw-event-to-mhpmcounters =
-                <0x00000000 0x03ffff00 0x0 0x0 0x18
-                0x00000000 0x0007ff01 0x0 0x1 0x18
-                0x00000000 0x00003f02 0x0 0x2 0x18>;
-};
-```
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
 ---
-v5->v6:
-Will Deacon:
-	- dropped first patch from v5 series it has been merged into master
-Mayuresh Chitale:
-	- fixed FW_SFENCE_VMA_SENT event code
+ drivers/fpga/Kconfig    |   7 +
+ drivers/fpga/Makefile   |   1 +
+ drivers/fpga/ecp5-spi.c | 311 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 319 insertions(+)
+ create mode 100644 drivers/fpga/ecp5-spi.c
 
-- added Tested-by tags
----
-
-Nikita Shubin (3):
-  perf arch events: riscv sbi firmware std event files
-  perf vendor events riscv: add Sifive U74 JSON file
-  RISC-V: Added Syntacore SCR7 PMU events
-
- tools/perf/pmu-events/arch/riscv/mapfile.csv  |  18 +++
- .../arch/riscv/riscv-sbi-firmware.json        | 134 ++++++++++++++++++
- .../arch/riscv/sifive/u74/firmware.json       |  68 +++++++++
- .../arch/riscv/sifive/u74/instructions.json   |  92 ++++++++++++
- .../arch/riscv/sifive/u74/memory.json         |  32 +++++
- .../arch/riscv/sifive/u74/microarch.json      |  57 ++++++++
- .../arch/riscv/syntacore/scr7/L1D_cache.json  | 102 +++++++++++++
- .../arch/riscv/syntacore/scr7/L1I_cache.json  |  67 +++++++++
- .../arch/riscv/syntacore/scr7/exceptions.json |  67 +++++++++
- .../arch/riscv/syntacore/scr7/execution.json  |  97 +++++++++++++
- .../arch/riscv/syntacore/scr7/firmware.json   |  68 +++++++++
- .../arch/riscv/syntacore/scr7/general.json    |  47 ++++++
- .../arch/riscv/syntacore/scr7/interrupts.json |  32 +++++
- .../arch/riscv/syntacore/scr7/prediction.json |  52 +++++++
- 14 files changed, 933 insertions(+)
- create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
- create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/L1D_cache.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/L1I_cache.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/exceptions.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/execution.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/firmware.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/general.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/interrupts.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/syntacore/scr7/prediction.json
-
+diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+index 6c416955da53..920277a08ed9 100644
+--- a/drivers/fpga/Kconfig
++++ b/drivers/fpga/Kconfig
+@@ -263,4 +263,11 @@ config FPGA_MGR_MICROCHIP_SPI
+ 	  programming over slave SPI interface with .dat formatted
+ 	  bitstream image.
+ 
++config FPGA_MGR_ECP5_SPI
++	tristate "Lattice ECP5 SPI FPGA manager"
++	depends on SPI
++	help
++	  FPGA manager driver support for Lattice ECP5 programming over slave
++	  SPI interface with .bit formatted uncompressed bitstream image.
++
+ endif # FPGA
+diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
+index 42ae8b58abce..17c7a3c4b385 100644
+--- a/drivers/fpga/Makefile
++++ b/drivers/fpga/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
+ obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
+ obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
+ obj-$(CONFIG_FPGA_MGR_MICROCHIP_SPI)	+= microchip-spi.o
++obj-$(CONFIG_FPGA_MGR_ECP5_SPI)		+= ecp5-spi.o
+ obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
+ obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
+ 
+diff --git a/drivers/fpga/ecp5-spi.c b/drivers/fpga/ecp5-spi.c
+new file mode 100644
+index 000000000000..aa0dd10823a3
+--- /dev/null
++++ b/drivers/fpga/ecp5-spi.c
+@@ -0,0 +1,311 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Lattice ECP5 FPGA programming over slave SPI interface.
++ */
++
++#include <linux/delay.h>
++#include <linux/fpga/fpga-mgr.h>
++#include <linux/spi/spi.h>
++
++#define	ECP5_SPI_MAX_SPEED_HZ		60000000
++
++#define	ECP5_SPI_ISC_ENABLE		{0xC6, 0x00, 0x00, 0x00}
++#define	ECP5_SPI_ISC_DISABLE		{0x26, 0x00, 0x00, 0x00}
++#define	ECP5_SPI_ISC_ERASE		{0x0E, 0x01, 0x00, 0x00}
++#define	ECP5_SPI_LSC_INIT_ADDR		{0x46, 0x00, 0x00, 0x00}
++#define	ECP5_SPI_LSC_BITSTREAM_BURST	{0x7a, 0x00, 0x00, 0x00}
++#define	ECP5_SPI_LSC_CHECK_BUSY		{0xF0, 0x00, 0x00, 0x00}
++
++#define ECP5_POLL_RETRIES		100000
++
++struct ecp5_priv {
++	struct gpio_desc *program;
++	struct gpio_desc *init;
++	struct gpio_desc *done;
++	struct spi_device *spi;
++};
++
++static enum fpga_mgr_states ecp5_ops_state(struct fpga_manager *mgr)
++{
++	struct ecp5_priv *priv = mgr->priv;
++
++	return gpiod_get_value(priv->done) ? FPGA_MGR_STATE_OPERATING :
++					     FPGA_MGR_STATE_UNKNOWN;
++}
++
++static int ecp5_poll_busy(struct spi_device *spi)
++{
++	const u8 lsc_check_busy[] = ECP5_SPI_LSC_CHECK_BUSY;
++	int ret, retries = ECP5_POLL_RETRIES;
++	struct spi_transfer xfers[2] = { 0 };
++	struct spi_message msg;
++	u8 busy;
++
++	xfers[0].tx_buf = lsc_check_busy;
++	xfers[0].len = sizeof(lsc_check_busy);
++	xfers[1].rx_buf = &busy;
++	xfers[1].len = sizeof(busy);
++
++	while (retries--) {
++		spi_message_init_with_transfers(&msg, xfers, ARRAY_SIZE(xfers));
++		ret = spi_sync_locked(spi, &msg);
++		if (ret)
++			return ret;
++
++		if (!busy)
++			return 0;
++
++		usleep_range(50, 100);
++	}
++
++	return -EBUSY;
++}
++
++static int ecp5_poll_gpio(struct gpio_desc *gpio, bool is_active)
++{
++	int value, retries = ECP5_POLL_RETRIES;
++
++	while (retries--) {
++		value = gpiod_get_value(gpio);
++		if (value < 0)
++			return value;
++
++		if ((!is_active && !value) || (is_active && value))
++			return 0;
++
++		ndelay(10);
++	}
++
++	return -EFAULT;
++}
++
++static int ecp5_ops_write_init(struct fpga_manager *mgr,
++			       struct fpga_image_info *info,
++			       const char *buf, size_t count)
++{
++	const u8 lsc_bitstream_burst[] = ECP5_SPI_LSC_BITSTREAM_BURST;
++	const u8 lsc_init_addr[] = ECP5_SPI_LSC_INIT_ADDR;
++	const u8 isc_enable[] = ECP5_SPI_ISC_ENABLE;
++	const u8 isc_erase[] = ECP5_SPI_ISC_ERASE;
++	struct ecp5_priv *priv = mgr->priv;
++	struct spi_device *spi = priv->spi;
++	struct device *dev = &mgr->dev;
++	struct spi_transfer isc_xfers[] = {
++		{
++			.tx_buf = isc_enable,
++			.len = sizeof(isc_enable),
++			.cs_change = 1,
++		}, {
++			.tx_buf = isc_erase,
++			.len = sizeof(isc_erase),
++		},
++	};
++	struct spi_transfer lsc_xfers[] = {
++		{
++			.tx_buf = lsc_init_addr,
++			.len = sizeof(lsc_init_addr),
++			.cs_change = 1,
++		}, {
++			.tx_buf = lsc_bitstream_burst,
++			.len = sizeof(lsc_bitstream_burst),
++			.cs_change = 1,
++		},
++	};
++	struct spi_message msg;
++	int ret;
++
++	if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
++		dev_err(dev, "Partial reconfiguration is not supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	/* Enter init mode */
++	gpiod_set_value(priv->program, 1);
++
++	ret = ecp5_poll_gpio(priv->init, true);
++	if (!ret)
++		ret = ecp5_poll_gpio(priv->done, false);
++
++	if (ret) {
++		dev_err(dev, "Failed to go to initialization mode\n");
++		return ret;
++	}
++
++	/* Enter program mode */
++	gpiod_set_value(priv->program, 0);
++
++	ret = ecp5_poll_gpio(priv->init, false);
++	if (ret) {
++		dev_err(dev, "Failed to go to program mode\n");
++		return ret;
++	}
++
++	/*
++	 * Lock SPI bus for exclusive usage until FPGA programming is done.
++	 * SPI bus will be released in ecp5_ops_write_complete() or on error.
++	 */
++	spi_bus_lock(spi->controller);
++
++	/* Enter ISC mode */
++	spi_message_init_with_transfers(&msg, isc_xfers, ARRAY_SIZE(isc_xfers));
++	ret = spi_sync_locked(spi, &msg);
++	if (!ret)
++		ret = ecp5_poll_busy(spi);
++
++	if (ret) {
++		dev_err(dev, "Failed to go to ISC mode\n");
++		goto out;
++	}
++
++	/* Prepare for bitstream burst write */
++	spi_message_init_with_transfers(&msg, lsc_xfers, ARRAY_SIZE(lsc_xfers));
++	ret = spi_sync_locked(spi, &msg);
++	if (ret)
++		dev_err(dev, "Failed to prepare for bitstream burst write\n");
++
++out:
++	if (ret)
++		spi_bus_unlock(spi->controller);
++
++	return ret;
++}
++
++static int ecp5_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
++{
++	struct ecp5_priv *priv = mgr->priv;
++	struct spi_device *spi = priv->spi;
++	struct spi_transfer xfer = {
++		.tx_buf = buf,
++		.len = count,
++		.cs_change = 1,
++	};
++	struct spi_message msg;
++	int ret;
++
++	spi_message_init_with_transfers(&msg, &xfer, 1);
++	ret = spi_sync_locked(spi, &msg);
++	if (ret)
++		spi_bus_unlock(spi->controller);
++
++	return ret;
++}
++
++static int ecp5_ops_write_complete(struct fpga_manager *mgr,
++				   struct fpga_image_info *info)
++{
++	const u8 isc_disable[] = ECP5_SPI_ISC_DISABLE;
++	struct ecp5_priv *priv = mgr->priv;
++	struct spi_device *spi = priv->spi;
++	struct spi_transfer xfer = { 0 };
++	struct device *dev = &mgr->dev;
++	struct spi_message msg;
++	int ret;
++
++	/* Toggle CS and wait for bitstream write to finish */
++	spi_message_init_with_transfers(&msg, &xfer, 1);
++	ret = spi_sync_locked(spi, &msg);
++	if (!ret)
++		ret = ecp5_poll_busy(spi);
++
++	if (ret) {
++		dev_err(dev, "Error while waiting bitstream write to finish\n");
++		goto out;
++	}
++
++	/* Exit ISC mode */
++	xfer.tx_buf = isc_disable;
++	xfer.len = sizeof(isc_disable);
++	spi_message_init_with_transfers(&msg, &xfer, 1);
++	ret = spi_sync_locked(spi, &msg);
++	if (!ret)
++		ret = ecp5_poll_gpio(priv->done, true);
++
++	if (ret)
++		dev_err(dev, "Failed to finish ISC\n");
++
++out:
++	spi_bus_unlock(spi->controller);
++
++	return ret;
++}
++
++static const struct fpga_manager_ops ecp5_fpga_ops = {
++	.state = ecp5_ops_state,
++	.write_init = ecp5_ops_write_init,
++	.write = ecp5_ops_write,
++	.write_complete = ecp5_ops_write_complete,
++};
++
++static int ecp5_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	struct fpga_manager *mgr;
++	struct ecp5_priv *priv;
++	int ret;
++
++	if (spi->max_speed_hz > ECP5_SPI_MAX_SPEED_HZ) {
++		dev_err(dev, "SPI speed %u is too high, maximum speed is %u\n",
++			spi->max_speed_hz, ECP5_SPI_MAX_SPEED_HZ);
++		return -EINVAL;
++	}
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->spi = spi;
++
++	priv->done = devm_gpiod_get(dev, "done", GPIOD_IN);
++	if (IS_ERR(priv->done)) {
++		ret = PTR_ERR(priv->done);
++		dev_err(dev, "Failed to get DONE GPIO: %d\n", ret);
++		return ret;
++	}
++
++	priv->init = devm_gpiod_get(dev, "init", GPIOD_IN);
++	if (IS_ERR(priv->init)) {
++		ret = PTR_ERR(priv->init);
++		dev_err(dev, "Failed to get INIT GPIO: %d\n", ret);
++		return ret;
++	}
++
++	priv->program = devm_gpiod_get(dev, "program", GPIOD_OUT_LOW);
++	if (IS_ERR(priv->program)) {
++		ret = PTR_ERR(priv->program);
++		dev_err(dev, "Failed to get PROGRAM GPIO: %d\n", ret);
++		return ret;
++	}
++
++	mgr = devm_fpga_mgr_register(dev, "Lattice ECP5 SPI FPGA Manager",
++				     &ecp5_fpga_ops, priv);
++
++	return PTR_ERR_OR_ZERO(mgr);
++}
++
++static const struct spi_device_id ecp5_spi_ids[] = {
++	{ .name = "ecp5-fpga-mgr" },
++	{},
++};
++MODULE_DEVICE_TABLE(spi, ecp5_spi_ids);
++
++#if IS_ENABLED(CONFIG_OF)
++static const struct of_device_id ecp5_of_ids[] = {
++	{ .compatible = "lattice,ecp5-fpga-mgr" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, ecp5_of_ids);
++#endif /* IS_ENABLED(CONFIG_OF) */
++
++static struct spi_driver ecp5_driver = {
++	.probe = ecp5_probe,
++	.id_table = ecp5_spi_ids,
++	.driver = {
++		.name = "lattice_ecp5_spi_fpga_mgr",
++		.of_match_table = of_match_ptr(ecp5_of_ids),
++	},
++};
++
++module_spi_driver(ecp5_driver);
++
++MODULE_DESCRIPTION("Lattice ECP5 SPI FPGA Manager");
++MODULE_LICENSE("GPL");
 -- 
-2.35.1
+2.37.1
+
 
