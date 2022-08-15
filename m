@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98F7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83135C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241636AbiHOVTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        id S1347714AbiHOVSn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343972AbiHOVLe (ORCPT
+        with ESMTP id S244573AbiHOVK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:11:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF142564CB;
-        Mon, 15 Aug 2022 12:19:18 -0700 (PDT)
+        Mon, 15 Aug 2022 17:10:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A575C558C9;
+        Mon, 15 Aug 2022 12:19:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C8A2B81123;
-        Mon, 15 Aug 2022 19:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAA7C433C1;
-        Mon, 15 Aug 2022 19:19:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 957AACE12C4;
+        Mon, 15 Aug 2022 19:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A3A9C433C1;
+        Mon, 15 Aug 2022 19:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591155;
-        bh=mOJiTfYXXghttqqDx/jhCa0gwW/IhXfWePwJX7Lm2Ik=;
+        s=korg; t=1660591139;
+        bh=JYVX+japmWo6QkvwKxE7PofA1DxPVMaWjvU8+Bwxme0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ryusZDU+c6p2Qksc5GqJSBJyNva3+podBcUZi15esiWD3uKNTOdN8LfxlirrDzN55
-         hbJUt/+mDp5NwVBe/G8gPMxfhpKMpdUJdLnk+5kEjMwxRyG83Yz5Pc5ljpezETqJYk
-         iNtOq+o627YSVELPY+xQyROtsYsPEwAK1gs2aiWw=
+        b=UJSuEFBTdB5P5usijTlDveuaO+xuFxqfYKp7MpPwT3u9ZUxi2OmKApn5WOwgF66Fr
+         RtvE47vLF+Ojr5i/lqq6TrJjQB2sWyPJJT0rG9HXdBEiIL3lbR2Rh4tLllkDeijGKP
+         c7Qr/YRs/O5khJ1vtYri6NmnN9gW6lhAs3d/7Qqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0489/1095] can: sun4i_can: do not report txerr and rxerr during bus-off
-Date:   Mon, 15 Aug 2022 19:58:08 +0200
-Message-Id: <20220815180449.768645301@linuxfoundation.org>
+Subject: [PATCH 5.18 0484/1095] libbpf: fix an snprintf() overflow check
+Date:   Mon, 15 Aug 2022 19:58:03 +0200
+Message-Id: <20220815180449.583538580@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,50 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 0ac15a8f661b941519379831d09bfb12271b23ee ]
+[ Upstream commit b77ffb30cfc5f58e957571d8541c6a7e3da19221 ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+The snprintf() function returns the number of bytes it *would* have
+copied if there were enough space.  So it can return > the
+sizeof(gen->attach_target).
 
-Fixes: 0738eff14d81 ("can: Allwinner A10/A20 CAN Controller support - Kernel module")
-Link: https://lore.kernel.org/all/20220719143550.3681-7-mailhol.vincent@wanadoo.fr
-CC: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 67234743736a ("libbpf: Generate loader program out of BPF ELF file.")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/YtZ+oAySqIhFl6/J@kili
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sun4i_can.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ tools/lib/bpf/gen_loader.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/sun4i_can.c b/drivers/net/can/sun4i_can.c
-index 25d6d81ab4f4..f3ad585e766f 100644
---- a/drivers/net/can/sun4i_can.c
-+++ b/drivers/net/can/sun4i_can.c
-@@ -538,11 +538,6 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
- 	rxerr = (errc >> 16) & 0xFF;
- 	txerr = errc & 0xFF;
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+index 927745b08014..23f5c46708f8 100644
+--- a/tools/lib/bpf/gen_loader.c
++++ b/tools/lib/bpf/gen_loader.c
+@@ -533,7 +533,7 @@ void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *attach_name,
+ 	gen->attach_kind = kind;
+ 	ret = snprintf(gen->attach_target, sizeof(gen->attach_target), "%s%s",
+ 		       prefix, attach_name);
+-	if (ret == sizeof(gen->attach_target))
++	if (ret >= sizeof(gen->attach_target))
+ 		gen->error = -ENOSPC;
+ }
  
--	if (skb) {
--		cf->data[6] = txerr;
--		cf->data[7] = rxerr;
--	}
--
- 	if (isrc & SUN4I_INT_DATA_OR) {
- 		/* data overrun interrupt */
- 		netdev_dbg(dev, "data overrun interrupt\n");
-@@ -573,6 +568,10 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
- 		else
- 			state = CAN_STATE_ERROR_ACTIVE;
- 	}
-+	if (skb && state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
-+	}
- 	if (isrc & SUN4I_INT_BUS_ERR) {
- 		/* bus error interrupt */
- 		netdev_dbg(dev, "bus error interrupt\n");
 -- 
 2.35.1
 
