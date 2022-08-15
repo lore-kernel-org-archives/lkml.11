@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4780C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4002C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbiHPEsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
+        id S232791AbiHPEsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232461AbiHPEpd (ORCPT
+        with ESMTP id S232503AbiHPEpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:45:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52823F1DA;
-        Mon, 15 Aug 2022 13:44:08 -0700 (PDT)
+        Tue, 16 Aug 2022 00:45:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5917DD8069;
+        Mon, 15 Aug 2022 13:44:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D6D5B811A1;
-        Mon, 15 Aug 2022 20:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85415C433D6;
-        Mon, 15 Aug 2022 20:44:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C39D5611E2;
+        Mon, 15 Aug 2022 20:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B17E6C433C1;
+        Mon, 15 Aug 2022 20:44:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596246;
-        bh=+axC2UCXXYpHbsM2UCfs8sZhbdEsDfVjDNihD+9RBik=;
+        s=korg; t=1660596262;
+        bh=xIKOzEbAHX9r+GH4VZhr1OOjANvkwjV7THn/VhsTL20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vsca4kCRu6HoTiclY2OjnRWR2/9fudoaok9i/8I98Y1aY+S6SqXp2pA2R95AOoDu7
-         odc/q6tp3YSUGSzdhquAiaS8xsHFz6p7eplGrmCc2cyhwekTyckiRYx4BTOAyLPqq5
-         jJmh0Ad+XepHZzn4mX+tQkESpjWQMIbzov4AD3JI=
+        b=e7eD2EYCWw6qE46Sr2DEOFaAmnQjJDcUTpgxvyTStxCJk+9gWZGqPVu9DvaqTkl0a
+         a9eIA+x2/tYjwd0fVYwvD93HDr6aRNFFqsel/VCWDMwSYeD4VhfCZoSLtjJsp7ZDDH
+         u/Q2L3q0952qUP/tGbfEpF/DDyQTTNSIWkZXfW0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1019/1157] tty: serial: qcom-geni-serial: Fix %lu -> %u in print statements
-Date:   Mon, 15 Aug 2022 20:06:15 +0200
-Message-Id: <20220815180520.663487574@linuxfoundation.org>
+Subject: [PATCH 5.19 1024/1157] tools/thermal: Fix possible path truncations
+Date:   Mon, 15 Aug 2022 20:06:20 +0200
+Message-Id: <20220815180520.882657027@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,48 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Anderson <dianders@chromium.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 0fec518018cc5ceffa706370b6e3acbbb1e3c798 ]
+[ Upstream commit 6c58cf40e3a1d2f47c09d3489857e9476316788a ]
 
-When we multiply an unsigned int by a u32 we still end up with an
-unsigned int. That means we should specify "%u" not "%lu" in the
-format code.
+A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
 
-NOTE: this fix was chosen instead of somehow promoting the value to
-"unsigned long" since the max baud rate from the earlier call to
-uart_get_baud_rate() is 4000000 and the max sampling rate is 32.
-4000000 * 32 = 0x07a12000, not even close to overflowing 32-bits.
+sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
+  snprintf(filepath, 256, "%s/%s", path, filename);
+                              ^~
+Bump up the buffer to PATH_MAX which is the limit and account for all of
+the possible NUL and separators that could lead to exceeding the
+allocated buffer sizes.
 
-Fixes: c474c775716e ("tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.")
-Reported-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20220802132250.1.Iea061e14157a17e114dbe2eca764568a02d6b889@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/thermal/tmon/sysfs.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index f754619451dc..f7c1f1807040 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1033,12 +1033,12 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		sampling_rate, &clk_div);
- 	if (!clk_rate) {
- 		dev_err(port->se.dev,
--			"Couldn't find suitable clock rate for %lu\n",
-+			"Couldn't find suitable clock rate for %u\n",
- 			baud * sampling_rate);
- 		goto out_restart_rx;
- 	}
+diff --git a/tools/thermal/tmon/sysfs.c b/tools/thermal/tmon/sysfs.c
+index b00b1bfd9d8e..cb1108bc9249 100644
+--- a/tools/thermal/tmon/sysfs.c
++++ b/tools/thermal/tmon/sysfs.c
+@@ -13,6 +13,7 @@
+ #include <stdint.h>
+ #include <dirent.h>
+ #include <libintl.h>
++#include <limits.h>
+ #include <ctype.h>
+ #include <time.h>
+ #include <syslog.h>
+@@ -33,9 +34,9 @@ int sysfs_set_ulong(char *path, char *filename, unsigned long val)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
  
--	dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
-+	dev_dbg(port->se.dev, "desired_rate-%u, clk_rate-%lu, clk_div-%u\n",
- 			baud * sampling_rate, clk_rate, clk_div);
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
  
- 	uport->uartclk = clk_rate;
+ 	fd = fopen(filepath, "w");
+ 	if (!fd) {
+@@ -57,9 +58,9 @@ static int sysfs_get_ulong(char *path, char *filename, unsigned long *p_ulong)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -76,9 +77,9 @@ static int sysfs_get_string(char *path, char *filename, char *str)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -199,8 +200,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ {
+ 	unsigned long trip_instance = 0;
+ 	char cdev_name_linked[256];
+-	char cdev_name[256];
+-	char cdev_trip_name[256];
++	char cdev_name[PATH_MAX];
++	char cdev_trip_name[PATH_MAX];
+ 	int cdev_id;
+ 
+ 	if (nl->d_type == DT_LNK) {
+@@ -213,7 +214,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			return -EINVAL;
+ 		}
+ 		/* find the link to real cooling device record binding */
+-		snprintf(cdev_name, 256, "%s/%s", tz_name, nl->d_name);
++		snprintf(cdev_name, sizeof(cdev_name) - 2, "%s/%s",
++			 tz_name, nl->d_name);
+ 		memset(cdev_name_linked, 0, sizeof(cdev_name_linked));
+ 		if (readlink(cdev_name, cdev_name_linked,
+ 				sizeof(cdev_name_linked) - 1) != -1) {
+@@ -226,8 +228,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			/* find the trip point in which the cdev is binded to
+ 			 * in this tzone
+ 			 */
+-			snprintf(cdev_trip_name, 256, "%s%s", nl->d_name,
+-				"_trip_point");
++			snprintf(cdev_trip_name, sizeof(cdev_trip_name) - 1,
++				"%s%s", nl->d_name, "_trip_point");
+ 			sysfs_get_ulong(tz_name, cdev_trip_name,
+ 					&trip_instance);
+ 			/* validate trip point range, e.g. trip could return -1
 -- 
 2.35.1
 
