@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C933EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B688C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232000AbiHOWIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
+        id S1347605AbiHOWIe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347517AbiHOWDh (ORCPT
+        with ESMTP id S1347480AbiHOWDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:03:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E7182D3A;
-        Mon, 15 Aug 2022 12:37:14 -0700 (PDT)
+        Mon, 15 Aug 2022 18:03:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE03F1156C9;
+        Mon, 15 Aug 2022 12:37:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 965DEB80EA9;
-        Mon, 15 Aug 2022 19:37:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C89CDC433D6;
-        Mon, 15 Aug 2022 19:37:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7087610A5;
+        Mon, 15 Aug 2022 19:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E254FC433C1;
+        Mon, 15 Aug 2022 19:37:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592231;
-        bh=PCAo73Hw2NLQ3lErF5pXmj2+7jaMLRIg15cWMfprYbg=;
+        s=korg; t=1660592234;
+        bh=ym45XOUbfUhjuPKdowugKqXwVFv3rbZiB+V2T/TItmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dm6eXAUMgUuq3O5ru9q2+dVZqxPwUSCSVhsMcjlPKLefYPmQzwJxOtqTAsGmkbmdP
-         qanXvlorMGMmQLSixwblL202PZEmkYmhzX2cT7GN0RRKMUMP2DeCa0xIJgoP7AzGH+
-         0de3nE18C1cjPD+T/tOF+SSZou4ArTJlmeUQhmmU=
+        b=f3+yhsaVkRmyelhkKM4vkqV6LjoBZ27rPx4O/1gUnxfskPgn1HoTjwV4ZlnVKVxNS
+         k8TnqMDQdM8ZBFSoc1znz0ta+lR+iMfUqhq8JsNVOsu3YLltXpPsWEDOuOauAlXqrF
+         TGzDBMLbROQyq09YcIrfiOwhewlAVKBTRXrxB9hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0753/1095] xtensa: iss: fix handling error cases in iss_net_configure()
-Date:   Mon, 15 Aug 2022 20:02:32 +0200
-Message-Id: <20220815180500.490663374@linuxfoundation.org>
+        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.19 0078/1157] RISC-V: Fix SBI PMU calls for RV32
+Date:   Mon, 15 Aug 2022 19:50:34 +0200
+Message-Id: <20220815180442.646510945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,111 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Atish Patra <atishp@rivosinc.com>
 
-[ Upstream commit 628ccfc8f5f79dd548319408fcc53949fe97b258 ]
+commit 0209b5830bea42dd3ce33ab0397231e67ec3b751 upstream.
 
-The 'pdev' and 'netdev' need to be released in error cases of
-iss_net_configure().
+Some of the SBI PMU calls does not pass 64bit arguments
+correctly and not under RV32 compile time flags. Currently,
+this doesn't create any incorrect results as RV64 ignores
+any value in the additional register and qemu doesn't support
+raw events.
 
-Change the return type of iss_net_configure() to void, because it's
-not used.
+Fix those SBI calls in order to set correct values for RV32.
 
-Fixes: 7282bee78798 ("[PATCH] xtensa: Architecture support for Tensilica Xtensa Part 8")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e9991434596f ("RISC-V: Add perf platform driver based on SBI PMU extension")
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220711174632.4186047-4-atishp@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/platforms/iss/network.c | 32 ++++++++++++++---------------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+ drivers/perf/riscv_pmu_sbi.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
-index 24f162bd5874..eee389187807 100644
---- a/arch/xtensa/platforms/iss/network.c
-+++ b/arch/xtensa/platforms/iss/network.c
-@@ -512,16 +512,15 @@ static void iss_net_pdev_release(struct device *dev)
- 	free_netdev(lp->dev);
- }
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -274,8 +274,13 @@ static int pmu_sbi_ctr_get_idx(struct pe
+ 		cflags |= SBI_PMU_CFG_FLAG_SET_UINH;
  
--static int iss_net_configure(int index, char *init)
-+static void iss_net_configure(int index, char *init)
- {
- 	struct net_device *dev;
- 	struct iss_net_private *lp;
--	int err;
+ 	/* retrieve the available counter index */
++#if defined(CONFIG_32BIT)
++	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
++			cflags, hwc->event_base, hwc->config, hwc->config >> 32);
++#else
+ 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
+ 			cflags, hwc->event_base, hwc->config, 0);
++#endif
+ 	if (ret.error) {
+ 		pr_debug("Not able to find a counter for event %lx config %llx\n",
+ 			hwc->event_base, hwc->config);
+@@ -417,8 +422,13 @@ static void pmu_sbi_ctr_start(struct per
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	unsigned long flag = SBI_PMU_START_FLAG_SET_INIT_VALUE;
  
- 	dev = alloc_etherdev(sizeof(*lp));
- 	if (dev == NULL) {
- 		pr_err("eth_configure: failed to allocate device\n");
--		return 1;
-+		return;
- 	}
- 
- 	/* Initialize private element. */
-@@ -550,7 +549,7 @@ static int iss_net_configure(int index, char *init)
- 	if (!tuntap_probe(lp, index, init)) {
- 		pr_err("%s: invalid arguments. Skipping device!\n",
- 		       dev->name);
--		goto errout;
-+		goto err_free_netdev;
- 	}
- 
- 	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
-@@ -558,7 +557,8 @@ static int iss_net_configure(int index, char *init)
- 	/* sysfs register */
- 
- 	if (!driver_registered) {
--		platform_driver_register(&iss_net_driver);
-+		if (platform_driver_register(&iss_net_driver))
-+			goto err_free_netdev;
- 		driver_registered = 1;
- 	}
- 
-@@ -569,7 +569,8 @@ static int iss_net_configure(int index, char *init)
- 	lp->pdev.id = index;
- 	lp->pdev.name = DRIVER_NAME;
- 	lp->pdev.dev.release = iss_net_pdev_release;
--	platform_device_register(&lp->pdev);
-+	if (platform_device_register(&lp->pdev))
-+		goto err_free_netdev;
- 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
- 
- 	dev->netdev_ops = &iss_netdev_ops;
-@@ -578,23 +579,20 @@ static int iss_net_configure(int index, char *init)
- 	dev->irq = -1;
- 
- 	rtnl_lock();
--	err = register_netdevice(dev);
--	rtnl_unlock();
--
--	if (err) {
-+	if (register_netdevice(dev)) {
-+		rtnl_unlock();
- 		pr_err("%s: error registering net device!\n", dev->name);
--		/* XXX: should we call ->remove() here? */
--		free_netdev(dev);
--		return 1;
-+		platform_device_unregister(&lp->pdev);
-+		return;
- 	}
-+	rtnl_unlock();
- 
- 	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
- 
--	return 0;
-+	return;
- 
--errout:
--	/* FIXME: unregister; free, etc.. */
--	return -EIO;
-+err_free_netdev:
-+	free_netdev(dev);
- }
- 
- /* ------------------------------------------------------------------------- */
--- 
-2.35.1
-
++#if defined(CONFIG_32BIT)
+ 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
+ 			1, flag, ival, ival >> 32, 0);
++#else
++	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
++			1, flag, ival, 0, 0);
++#endif
+ 	if (ret.error && (ret.error != SBI_ERR_ALREADY_STARTED))
+ 		pr_err("Starting counter idx %d failed with error %d\n",
+ 			hwc->idx, sbi_err_map_linux_errno(ret.error));
 
 
