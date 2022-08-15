@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30441C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D9CC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352521AbiHOW6m (ORCPT
+        id S1352528AbiHOW6u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:58:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
+        Mon, 15 Aug 2022 18:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352708AbiHOW4i (ORCPT
+        with ESMTP id S1352718AbiHOW4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:56:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121DE46DBE;
-        Mon, 15 Aug 2022 12:55:59 -0700 (PDT)
+        Mon, 15 Aug 2022 18:56:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194A346DB8;
+        Mon, 15 Aug 2022 12:55:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51D64B81142;
-        Mon, 15 Aug 2022 19:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A9CC433C1;
-        Mon, 15 Aug 2022 19:55:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83E926113B;
+        Mon, 15 Aug 2022 19:55:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F40DC433D6;
+        Mon, 15 Aug 2022 19:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593357;
-        bh=f0q2yyCScM3El/XPzBMiJUBWiLD23cRMwvIJWRDaL5I=;
+        s=korg; t=1660593353;
+        bh=XaWrafOU5DIdzkvtKxrTyXkKxC1Ft11aAwTJwMtn/v8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K+R0BFplVVMUQ3GJzuSEvbPrDWfw4RTDYdC6a0NbhioZeEmwW23XiRKRDriJHuVm2
-         bWmlh7PF+FfVJUeN3dqkJvJrVS45whY1xccLkANzLGkc6FSFb9oa4RAfkuLD54P7Jl
-         +lc3tKYqb1tZYFVn75gQC/o+T7+gGvAdQkksBYOg=
+        b=Qmse1TJtl15Sl48/B7Ruc8nDDX8sM7gx6oEw1Xv1YJmgn0SAjV9QuA6R273CZphdZ
+         wcAIoC87C0zpg1UzgXgKAdsxYl2Iqd17JSCumnGLZpZBPVqM/oBtHTN/Wm/OT1NBMV
+         2CESmkGPMRPLLr1hfNAP0vcoqgKMuVtKJcx7Jqu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Chao Liu <liuchao@coolpad.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Laurent Vivier <laurent@vivier.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0934/1095] f2fs: fix to remove F2FS_COMPR_FL and tag F2FS_NOCOMP_FL at the same time
-Date:   Mon, 15 Aug 2022 20:05:33 +0200
-Message-Id: <20220815180507.853329901@linuxfoundation.org>
+Subject: [PATCH 5.19 0255/1157] m68k: virt: Fix missing platform_device_unregister() on error in virt_platform_init()
+Date:   Mon, 15 Aug 2022 19:53:31 +0200
+Message-Id: <20220815180449.795267297@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,80 +52,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Liu <liuchao@coolpad.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 8ee236dcaa690d09ca612622e8bc8d09c302021d ]
+[ Upstream commit 566a2d6d8e429727832c7e347cbe736b12ad7297 ]
 
-If the inode has the compress flag, it will fail to use
-'chattr -c +m' to remove its compress flag and tag no compress flag.
-However, the same command will be successful when executed again,
-as shown below:
+Add the missing platform_device_unregister() before return
+from virt_platform_init() in the error handling case.
 
-  $ touch foo.txt
-  $ chattr +c foo.txt
-  $ chattr -c +m foo.txt
-  chattr: Invalid argument while setting flags on foo.txt
-  $ chattr -c +m foo.txt
-  $ f2fs_io getflags foo.txt
-  get a flag on foo.txt ret=0, flags=nocompression,inline_data
-
-Fix this by removing some checks in f2fs_setflags_common()
-that do not affect the original logic. I go through all the
-possible scenarios, and the results are as follows. Bold is
-the only thing that has changed.
-
-+---------------+-----------+-----------+----------+
-|               |            file flags            |
-+ command       +-----------+-----------+----------+
-|               | no flag   | compr     | nocompr  |
-+---------------+-----------+-----------+----------+
-| chattr +c     | compr     | compr     | -EINVAL  |
-| chattr -c     | no flag   | no flag   | nocompr  |
-| chattr +m     | nocompr   | -EINVAL   | nocompr  |
-| chattr -m     | no flag   | compr     | no flag  |
-| chattr +c +m  | -EINVAL   | -EINVAL   | -EINVAL  |
-| chattr +c -m  | compr     | compr     | compr    |
-| chattr -c +m  | nocompr   | *nocompr* | nocompr  |
-| chattr -c -m  | no flag   | no flag   | no flag  |
-+---------------+-----------+-----------+----------+
-
-Link: https://lore.kernel.org/linux-f2fs-devel/20220621064833.1079383-1-chaoliu719@gmail.com/
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Chao Liu <liuchao@coolpad.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 05d51e42df06 ("m68k: Introduce a virtual m68k machine")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Laurent Vivier <laurent@vivier.eu>
+Link: https://lore.kernel.org/r/20220628084903.3147123-1-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ arch/m68k/virt/platform.c | 58 ++++++++++++++++++++++-----------------
+ 1 file changed, 33 insertions(+), 25 deletions(-)
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index ab344d5f9b82..863518695ea6 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1867,10 +1867,7 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
- 		if (masked_flags & F2FS_COMPR_FL) {
- 			if (!f2fs_disable_compressed_file(inode))
- 				return -EINVAL;
--		}
--		if (iflags & F2FS_NOCOMP_FL)
--			return -EINVAL;
--		if (iflags & F2FS_COMPR_FL) {
-+		} else {
- 			if (!f2fs_may_compress(inode))
- 				return -EINVAL;
- 			if (S_ISREG(inode->i_mode) && inode->i_size)
-@@ -1879,10 +1876,6 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
- 			set_compress_context(inode);
- 		}
- 	}
--	if ((iflags ^ masked_flags) & F2FS_NOCOMP_FL) {
--		if (masked_flags & F2FS_COMPR_FL)
--			return -EINVAL;
--	}
+diff --git a/arch/m68k/virt/platform.c b/arch/m68k/virt/platform.c
+index cb820f19a221..1560c4140ab9 100644
+--- a/arch/m68k/virt/platform.c
++++ b/arch/m68k/virt/platform.c
+@@ -8,20 +8,15 @@
  
- 	fi->i_flags = iflags | (fi->i_flags & ~mask);
- 	f2fs_bug_on(F2FS_I_SB(inode), (fi->i_flags & F2FS_COMPR_FL) &&
+ #define VIRTIO_BUS_NB	128
+ 
+-static int __init virt_virtio_init(unsigned int id)
++static struct platform_device * __init virt_virtio_init(unsigned int id)
+ {
+ 	const struct resource res[] = {
+ 		DEFINE_RES_MEM(virt_bi_data.virtio.mmio + id * 0x200, 0x200),
+ 		DEFINE_RES_IRQ(virt_bi_data.virtio.irq + id),
+ 	};
+-	struct platform_device *pdev;
+ 
+-	pdev = platform_device_register_simple("virtio-mmio", id,
++	return platform_device_register_simple("virtio-mmio", id,
+ 					       res, ARRAY_SIZE(res));
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
+-
+-	return 0;
+ }
+ 
+ static int __init virt_platform_init(void)
+@@ -35,8 +30,10 @@ static int __init virt_platform_init(void)
+ 		DEFINE_RES_MEM(virt_bi_data.rtc.mmio + 0x1000, 0x1000),
+ 		DEFINE_RES_IRQ(virt_bi_data.rtc.irq + 1),
+ 	};
+-	struct platform_device *pdev;
++	struct platform_device *pdev1, *pdev2;
++	struct platform_device *pdevs[VIRTIO_BUS_NB];
+ 	unsigned int i;
++	int ret = 0;
+ 
+ 	if (!MACH_IS_VIRT)
+ 		return -ENODEV;
+@@ -44,29 +41,40 @@ static int __init virt_platform_init(void)
+ 	/* We need this to have DMA'able memory provided to goldfish-tty */
+ 	min_low_pfn = 0;
+ 
+-	pdev = platform_device_register_simple("goldfish_tty",
+-					       PLATFORM_DEVID_NONE,
+-					       goldfish_tty_res,
+-					       ARRAY_SIZE(goldfish_tty_res));
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
++	pdev1 = platform_device_register_simple("goldfish_tty",
++						PLATFORM_DEVID_NONE,
++						goldfish_tty_res,
++						ARRAY_SIZE(goldfish_tty_res));
++	if (IS_ERR(pdev1))
++		return PTR_ERR(pdev1);
+ 
+-	pdev = platform_device_register_simple("goldfish_rtc",
+-					       PLATFORM_DEVID_NONE,
+-					       goldfish_rtc_res,
+-					       ARRAY_SIZE(goldfish_rtc_res));
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
++	pdev2 = platform_device_register_simple("goldfish_rtc",
++						PLATFORM_DEVID_NONE,
++						goldfish_rtc_res,
++						ARRAY_SIZE(goldfish_rtc_res));
++	if (IS_ERR(pdev2)) {
++		ret = PTR_ERR(pdev2);
++		goto err_unregister_tty;
++	}
+ 
+ 	for (i = 0; i < VIRTIO_BUS_NB; i++) {
+-		int err;
+-
+-		err = virt_virtio_init(i);
+-		if (err)
+-			return err;
++		pdevs[i] = virt_virtio_init(i);
++		if (IS_ERR(pdevs[i])) {
++			ret = PTR_ERR(pdevs[i]);
++			goto err_unregister_rtc_virtio;
++		}
+ 	}
+ 
+ 	return 0;
++
++err_unregister_rtc_virtio:
++	while (i > 0)
++		platform_device_unregister(pdevs[--i]);
++	platform_device_unregister(pdev2);
++err_unregister_tty:
++	platform_device_unregister(pdev1);
++
++	return ret;
+ }
+ 
+ arch_initcall(virt_platform_init);
 -- 
 2.35.1
 
