@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98842C2BB47
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE95C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347133AbiHPAvg (ORCPT
+        id S1347706AbiHPAvy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
+        Mon, 15 Aug 2022 20:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348779AbiHPAqZ (ORCPT
+        with ESMTP id S1349037AbiHPAqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7A219582E;
-        Mon, 15 Aug 2022 13:44:51 -0700 (PDT)
+        Mon, 15 Aug 2022 20:46:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B303179E2F;
+        Mon, 15 Aug 2022 13:45:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF7B36123A;
-        Mon, 15 Aug 2022 20:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE7F6C433C1;
-        Mon, 15 Aug 2022 20:44:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A73A061255;
+        Mon, 15 Aug 2022 20:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0513C433D6;
+        Mon, 15 Aug 2022 20:45:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596290;
-        bh=pNYcoTpG4Vva9kv7QzWq1FSRNEWbBS/YySs1ndBRAAg=;
+        s=korg; t=1660596315;
+        bh=9xf/wJIL8Fjz7AVda5uQ/KOzGGQUM6Oll1SGbX8WFT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAET0vsGCKOIsLA2V6uIgpmvPu9tl+aIGF29z6QJucm2FkwxH/jarl7/pFMMwyGur
-         ymu8c0ujWpPZtOyPY1d0o5oa+d9tbT+TfWdEnr7kpbbX4et04Oaf/tX9d8VYZJBe//
-         juoCah5StB+qNpZrxXdCNeykfjhlX0stXHRiVybA=
+        b=DWma6PGTeN2k4lnWe18mYUUc8E/FwaEoBP33QqlIAmqbbbOwK9OH9EhYJyAR45aNe
+         8h2YDdHvn/DkADV2ZLM7W1MJZue/YzLn96yLKFxDFBoM86MhD4ID2f6R7behFdVSJi
+         0mLgHM1QWreZyxwDEKWNJqhNg7BQx7XSUzN/JlJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1032/1157] video: fbdev: s3fb: Check the size of screen before memset_io()
-Date:   Mon, 15 Aug 2022 20:06:28 +0200
-Message-Id: <20220815180521.241436981@linuxfoundation.org>
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 1039/1157] scsi: qla2xxx: Fix excessive I/O error messages by default
+Date:   Mon, 15 Aug 2022 20:06:35 +0200
+Message-Id: <20220815180521.549662149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,49 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
+commit bff4873c709085e09d0ffae0c25b8e65256e3205 upstream.
 
-In the function s3fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+Disable printing I/O error messages by default.  The messages will be
+printed only when logging was enabled.
 
-[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
-[   54.083742] #PF: supervisor write access in kernel mode
-[   54.083744] #PF: error_code(0x0002) - not-present page
-[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
-[   54.083782] Call Trace:
-[   54.083788]  s3fb_set_par+0x1ec6/0x4040
-[   54.083806]  fb_set_var+0x604/0xeb0
-[   54.083836]  do_fb_ioctl+0x234/0x670
-
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-2-njavali@marvell.com
+Fixes: 8e2d81c6b5be ("scsi: qla2xxx: Fix excessive messages during device logout")
+Cc: stable@vger.kernel.org
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/s3fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/qla2xxx/qla_isr.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
-index b93c8eb02336..5069f6f67923 100644
---- a/drivers/video/fbdev/s3fb.c
-+++ b/drivers/video/fbdev/s3fb.c
-@@ -905,6 +905,8 @@ static int s3fb_set_par(struct fb_info *info)
- 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
- 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -2637,7 +2637,7 @@ static void qla24xx_nvme_iocb_entry(scsi
+ 	}
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
--- 
-2.35.1
-
+ 	if (unlikely(logit))
+-		ql_log(ql_dbg_io, fcport->vha, 0x5060,
++		ql_dbg(ql_dbg_io, fcport->vha, 0x5060,
+ 		   "NVME-%s ERR Handling - hdl=%x status(%x) tr_len:%x resid=%x  ox_id=%x\n",
+ 		   sp->name, sp->handle, comp_status,
+ 		   fd->transferred_length, le32_to_cpu(sts->residual_len),
+@@ -3495,7 +3495,7 @@ check_scsi_status:
+ 
+ out:
+ 	if (logit)
+-		ql_log(ql_dbg_io, fcport->vha, 0x3022,
++		ql_dbg(ql_dbg_io, fcport->vha, 0x3022,
+ 		       "FCP command status: 0x%x-0x%x (0x%x) nexus=%ld:%d:%llu portid=%02x%02x%02x oxid=0x%x cdb=%10phN len=0x%x rsp_info=0x%x resid=0x%x fw_resid=0x%x sp=%p cp=%p.\n",
+ 		       comp_status, scsi_status, res, vha->host_no,
+ 		       cp->device->id, cp->device->lun, fcport->d_id.b.domain,
 
 
