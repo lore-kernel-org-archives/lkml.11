@@ -2,43 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB3DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C973C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344391AbiHPAeU (ORCPT
+        id S1347889AbiHPAeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        Mon, 15 Aug 2022 20:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353691AbiHPAb2 (ORCPT
+        with ESMTP id S1354005AbiHPAbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FC518599D;
-        Mon, 15 Aug 2022 13:36:04 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB0185CB7;
+        Mon, 15 Aug 2022 13:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65CB0B8114A;
-        Mon, 15 Aug 2022 20:36:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F21AC433C1;
-        Mon, 15 Aug 2022 20:36:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94471B80EAD;
+        Mon, 15 Aug 2022 20:36:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B59EEC433D6;
+        Mon, 15 Aug 2022 20:36:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595763;
-        bh=MCXpGzAljQyU9//it1iIzxOk/vrAdFjns2DFn7aJgXU=;
+        s=korg; t=1660595772;
+        bh=DJFWMlBN41TrmgBEeTaUFRxA969MeiE4CTlQp262RZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AufXQEy/FWDTiE5tL0AlsrrPyp7zeLrnDALIBJlxTqItkcj5uZBc+2wu5E2osNHnV
-         pl7ZpYU/E1jVmVAVx4D5/6J53w/Eys3rsWAswlVFEkUiRKau7G682WP+ggQ3xdgpx3
-         2Qy6Bg2l0r0Xxxf8mgUJBC7krwr0OIh/a6qUX3NU=
+        b=GI4EwViuM53/93Y6DxP5gBNCicWgv5yOSDowfOSXXY/Yg3a84fxE0l7424ioKyjxj
+         iMH537bgueAIlfC2xyTG1uJrv+EEF6vI2WhEQeWRFjQhdGi5emynOYf2Yiy7eXxeuo
+         yZkUAWSdAHx767K0NOgjYxv6QXgUbvXucpAgu2UI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org,
+        syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Minchan Kim <minchan@kernel.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Todd Kjos <tkjos@android.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0834/1157] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
-Date:   Mon, 15 Aug 2022 20:03:10 +0200
-Message-Id: <20220815180512.846477387@linuxfoundation.org>
+Subject: [PATCH 5.19 0863/1157] android: binder: stop saving a pointer to the VMA
+Date:   Mon, 15 Aug 2022 20:03:39 +0200
+Message-Id: <20220815180513.992475492@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,51 +60,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Liam R. Howlett <Liam.Howlett@oracle.com>
 
-[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
+[ Upstream commit a43cfc87caaf46710c8027a8c23b8a55f1078f19 ]
 
-We should use of_node_get() when a new reference of device_node
-is created. It is noted that the old reference stored in
-'mm_gc->gc.of_node' should also be decreased.
+Do not record a pointer to a VMA outside of the mmap_lock for later use.
+This is unsafe and there are a number of failure paths *after* the
+recorded VMA pointer may be freed during setup.  There is no callback to
+the driver to clear the saved pointer from generic mm code.  Furthermore,
+the VMA pointer may become stale if any number of VMA operations end up
+freeing the VMA so saving it was fragile to being with.
 
-This patch is based on the fact that there is a call site in function
-'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
-function, of_mm_gpiochip_add_data() is contained in an iteration of
-for_each_compatible_node() which will automatically increase and
-decrease the refcount. So we need additional of_node_get() for the
-reference escape in of_mm_gpiochip_add_data().
+Instead, change the binder_alloc struct to record the start address of the
+VMA and use vma_lookup() to get the vma when needed.  Add lockdep
+mmap_lock checks on updates to the vma pointer to ensure the lock is held
+and depend on that lock for synchronization of readers and writers - which
+was already the case anyways, so the smp_wmb()/smp_rmb() was not
+necessary.
 
-Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+[akpm@linux-foundation.org: fix drivers/android/binder_alloc_selftest.c]
+Link: https://lkml.kernel.org/r/20220621140212.vpkio64idahetbyf@revolver
+Fixes: da1b9564e85b ("android: binder: fix the race mmap and alloc_new_buf_locked")
+Reported-by: syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com
+Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hridya Valsaraju <hridya@google.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Martijn Coenen <maco@android.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Todd Kjos <tkjos@android.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-of.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/android/binder_alloc.c          | 30 ++++++++++++-------------
+ drivers/android/binder_alloc.h          |  2 +-
+ drivers/android/binder_alloc_selftest.c |  2 +-
+ 3 files changed, 16 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 3d6c3ffd5576..de100b0217da 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -860,7 +860,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
- 	if (mm_gc->save_regs)
- 		mm_gc->save_regs(mm_gc);
+diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+index 5649a0371a1f..d044418294f9 100644
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -213,7 +213,7 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
  
--	mm_gc->gc.of_node = np;
-+	of_node_put(mm_gc->gc.of_node);
-+	mm_gc->gc.of_node = of_node_get(np);
+ 	if (mm) {
+ 		mmap_read_lock(mm);
+-		vma = alloc->vma;
++		vma = vma_lookup(mm, alloc->vma_addr);
+ 	}
  
- 	ret = gpiochip_add_data(gc, data);
- 	if (ret)
-@@ -868,6 +869,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 	if (!vma && need_mm) {
+@@ -313,16 +313,15 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
+ static inline void binder_alloc_set_vma(struct binder_alloc *alloc,
+ 		struct vm_area_struct *vma)
+ {
+-	if (vma)
++	unsigned long vm_start = 0;
++
++	if (vma) {
++		vm_start = vma->vm_start;
+ 		alloc->vma_vm_mm = vma->vm_mm;
+-	/*
+-	 * If we see alloc->vma is not NULL, buffer data structures set up
+-	 * completely. Look at smp_rmb side binder_alloc_get_vma.
+-	 * We also want to guarantee new alloc->vma_vm_mm is always visible
+-	 * if alloc->vma is set.
+-	 */
+-	smp_wmb();
+-	alloc->vma = vma;
++	}
++
++	mmap_assert_write_locked(alloc->vma_vm_mm);
++	alloc->vma_addr = vm_start;
+ }
  
- 	return 0;
- err2:
-+	of_node_put(np);
- 	iounmap(mm_gc->regs);
- err1:
- 	kfree(gc->label);
+ static inline struct vm_area_struct *binder_alloc_get_vma(
+@@ -330,11 +329,9 @@ static inline struct vm_area_struct *binder_alloc_get_vma(
+ {
+ 	struct vm_area_struct *vma = NULL;
+ 
+-	if (alloc->vma) {
+-		/* Look at description in binder_alloc_set_vma */
+-		smp_rmb();
+-		vma = alloc->vma;
+-	}
++	if (alloc->vma_addr)
++		vma = vma_lookup(alloc->vma_vm_mm, alloc->vma_addr);
++
+ 	return vma;
+ }
+ 
+@@ -817,7 +814,8 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
+ 
+ 	buffers = 0;
+ 	mutex_lock(&alloc->mutex);
+-	BUG_ON(alloc->vma);
++	BUG_ON(alloc->vma_addr &&
++	       vma_lookup(alloc->vma_vm_mm, alloc->vma_addr));
+ 
+ 	while ((n = rb_first(&alloc->allocated_buffers))) {
+ 		buffer = rb_entry(n, struct binder_buffer, rb_node);
+diff --git a/drivers/android/binder_alloc.h b/drivers/android/binder_alloc.h
+index 7dea57a84c79..1e4fd37af5e0 100644
+--- a/drivers/android/binder_alloc.h
++++ b/drivers/android/binder_alloc.h
+@@ -100,7 +100,7 @@ struct binder_lru_page {
+  */
+ struct binder_alloc {
+ 	struct mutex mutex;
+-	struct vm_area_struct *vma;
++	unsigned long vma_addr;
+ 	struct mm_struct *vma_vm_mm;
+ 	void __user *buffer;
+ 	struct list_head buffers;
+diff --git a/drivers/android/binder_alloc_selftest.c b/drivers/android/binder_alloc_selftest.c
+index c2b323bc3b3a..43a881073a42 100644
+--- a/drivers/android/binder_alloc_selftest.c
++++ b/drivers/android/binder_alloc_selftest.c
+@@ -287,7 +287,7 @@ void binder_selftest_alloc(struct binder_alloc *alloc)
+ 	if (!binder_selftest_run)
+ 		return;
+ 	mutex_lock(&binder_selftest_lock);
+-	if (!binder_selftest_run || !alloc->vma)
++	if (!binder_selftest_run || !alloc->vma_addr)
+ 		goto done;
+ 	pr_info("STARTED\n");
+ 	binder_selftest_alloc_offset(alloc, end_offset, 0);
 -- 
 2.35.1
 
