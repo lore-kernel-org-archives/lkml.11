@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9424EC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A06C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344708AbiHOWFf (ORCPT
+        id S1348046AbiHOWFl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
+        Mon, 15 Aug 2022 18:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343666AbiHOWAA (ORCPT
+        with ESMTP id S1350234AbiHOWB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:00:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18E6E21;
-        Mon, 15 Aug 2022 12:35:16 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38C0111C1E;
+        Mon, 15 Aug 2022 12:36:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A90A6B80EA8;
-        Mon, 15 Aug 2022 19:35:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 039E9C433C1;
-        Mon, 15 Aug 2022 19:35:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BD46610A5;
+        Mon, 15 Aug 2022 19:36:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41435C433C1;
+        Mon, 15 Aug 2022 19:36:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592112;
-        bh=pHZiJJno5N6PtNhBHdAXqpWTived2x+RtACMOKKshSQ=;
+        s=korg; t=1660592174;
+        bh=AQlbLQG1Rst+iVGp1L5JuWGaw0Df5Bq56jooUFeZpOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gk9Ip5g9saG/Of8/EGps7iD1cprgYnnzeslMETL453vCukMMaUdLyMqVxPyoGNr0Y
-         rehl5iHgYQCNogQPGDajflpTF13hBqvMICO/zIrs4ruYvHpPVAByPkmPGgaqwUuuFW
-         UE2Fl8EPB6OOYkNLkSc/5kDyVV+Z7VAKEJ4KYiAI=
+        b=FnYH57SDXD6OX+zGWmpF5wD+SHGX2byXXjMtUSKXU2vddlBx8d9VyxS1RwiTM/tO9
+         +3B7t4M6/a+/U/VjaPmG50i2iwdY5Bpn4o5E52LP5dXdihFlDifJ6p9r0Lim2U73lW
+         Ip0INdv1VpsFcGyz3bnMiA/OReDuUK+4vzetZAyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Karl Olsen <karl@micro-technic.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0736/1095] intel_th: msu: Fix vmalloced buffers
-Date:   Mon, 15 Aug 2022 20:02:15 +0200
-Message-Id: <20220815180459.827651847@linuxfoundation.org>
+Subject: [PATCH 5.18 0745/1095] mmc: sdhci-of-at91: fix set_uhs_signaling rewriting of MC1R
+Date:   Mon, 15 Aug 2022 20:02:24 +0200
+Message-Id: <20220815180500.177864163@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,72 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit ac12ad3ccf6d386e64a9d6a890595a2509d24edd ]
+[ Upstream commit 5987e6ded29d52e42fc7b06aa575c60a25eee38e ]
 
-After commit f5ff79fddf0e ("dma-mapping: remove CONFIG_DMA_REMAP") there's
-a chance of DMA buffer getting allocated via vmalloc(), which messes up
-the mmapping code:
+In set_uhs_signaling, the DDR bit is being set by fully writing the MC1R
+register.
+This can lead to accidental erase of certain bits in this register.
+Avoid this by doing a read-modify-write operation.
 
-> RIP: msc_mmap_fault [intel_th_msu]
-> Call Trace:
->  <TASK>
->  __do_fault
->  do_fault
-...
-
-Fix this by accounting for vmalloc possibility.
-
-Fixes: ba39bd830605 ("intel_th: msu: Switch over to scatterlist")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-4-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d0918764c17b ("mmc: sdhci-of-at91: fix MMC_DDR_52 timing selection")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Tested-by: Karl Olsen <karl@micro-technic.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20220630090926.15061-1-eugen.hristev@microchip.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/msu.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/mmc/host/sdhci-of-at91.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
-index 70a07b4e9967..6c8215a47a60 100644
---- a/drivers/hwtracing/intel_th/msu.c
-+++ b/drivers/hwtracing/intel_th/msu.c
-@@ -1067,6 +1067,16 @@ msc_buffer_set_uc(struct msc *msc) {}
- static inline void msc_buffer_set_wb(struct msc *msc) {}
- #endif /* CONFIG_X86 */
- 
-+static struct page *msc_sg_page(struct scatterlist *sg)
-+{
-+	void *addr = sg_virt(sg);
+diff --git a/drivers/mmc/host/sdhci-of-at91.c b/drivers/mmc/host/sdhci-of-at91.c
+index 10fb4cb2c731..cd0134580a90 100644
+--- a/drivers/mmc/host/sdhci-of-at91.c
++++ b/drivers/mmc/host/sdhci-of-at91.c
+@@ -100,8 +100,13 @@ static void sdhci_at91_set_clock(struct sdhci_host *host, unsigned int clock)
+ static void sdhci_at91_set_uhs_signaling(struct sdhci_host *host,
+ 					 unsigned int timing)
+ {
+-	if (timing == MMC_TIMING_MMC_DDR52)
+-		sdhci_writeb(host, SDMMC_MC1R_DDR, SDMMC_MC1R);
++	u8 mc1r;
 +
-+	if (is_vmalloc_addr(addr))
-+		return vmalloc_to_page(addr);
-+
-+	return sg_page(sg);
-+}
-+
- /**
-  * msc_buffer_win_alloc() - alloc a window for a multiblock mode
-  * @msc:	MSC device
-@@ -1137,7 +1147,7 @@ static void __msc_buffer_win_free(struct msc *msc, struct msc_window *win)
- 	int i;
++	if (timing == MMC_TIMING_MMC_DDR52) {
++		mc1r = sdhci_readb(host, SDMMC_MC1R);
++		mc1r |= SDMMC_MC1R_DDR;
++		sdhci_writeb(host, mc1r, SDMMC_MC1R);
++	}
+ 	sdhci_set_uhs_signaling(host, timing);
+ }
  
- 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, i) {
--		struct page *page = sg_page(sg);
-+		struct page *page = msc_sg_page(sg);
- 
- 		page->mapping = NULL;
- 		dma_free_coherent(msc_dev(win->msc)->parent->parent, PAGE_SIZE,
-@@ -1401,7 +1411,7 @@ static struct page *msc_buffer_get_page(struct msc *msc, unsigned long pgoff)
- 	pgoff -= win->pgoff;
- 
- 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, blk) {
--		struct page *page = sg_page(sg);
-+		struct page *page = msc_sg_page(sg);
- 		size_t pgsz = PFN_DOWN(sg->length);
- 
- 		if (pgoff < pgsz)
 -- 
 2.35.1
 
