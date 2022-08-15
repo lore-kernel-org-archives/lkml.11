@@ -2,99 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E72C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C30C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243171AbiHOPQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59102 "EHLO
+        id S242328AbiHOPQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242990AbiHOPQS (ORCPT
+        with ESMTP id S243063AbiHOPQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:16:18 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FE0240B2;
-        Mon, 15 Aug 2022 08:16:17 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id d20so6855137pfq.5;
-        Mon, 15 Aug 2022 08:16:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=3ZKThVe84WRyb15COD1liCnaOHlKv40e1Vz93ePbJ88=;
-        b=DUlP7ypHH/2UZOVrviR/78RpqjcWeW2uX6hlsAW4uJ0+cEBsCV0Hv3qhU9W4JHs6ex
-         dmAZ2lDmfu1TKSuPgzlDVl4UwFPYfq72td4xzy03tVPFqEgpFGr7tE2zctBxTffRo0Cf
-         0Uv5vlka6zew6UVCS7VtZEBYgr+u3u4H7iZTETfABsYPboewo/oWpBlJjF5cNH/U27TA
-         N0zvTPorVAH5DWrk3nciL/46w/lxvLPs7b6cwzegpQnehrNKNcM6qL8sAQjkitWVBJmj
-         qdM8/XFbOlB6ICNm6n1qbK6MEylKl580NQNI9oLVpHq86VIC09tSnrhnJ9UWGrU9Fo0i
-         H0Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=3ZKThVe84WRyb15COD1liCnaOHlKv40e1Vz93ePbJ88=;
-        b=Z5Z9QixfP10Gw7WnI2U/S6CCWi5GP8Vwqq9qfCQyOvhC2aLmU7Hph3S0r761k+0ukq
-         KcazXtSZGXEIsQ0qMY+Ms6DMD1GeJCyqv2iAIdTdL/1aEn2JcIbaZvQG3T7sOYgYydWJ
-         J9vbYsKPurM4v38GgJJwVJp0Q/eiV5TzwOlg1/R1L0xu0u7D53lRoBOtjc0jHV51EEy8
-         h4NJw3jXIrLgD9yA+9g6lJwsjl6xDAT3D80LNhebNH5lqJvEUkZrMOUii4PycboIDfUn
-         OGaTe2Y0Of4M2ZC+3TAVTkVG0Q1ZLoh8YUcktBKcZTPNa3hd4EzDMOak70bXk+wR8zks
-         gDlQ==
-X-Gm-Message-State: ACgBeo39A4roDVtowQboa2M7CxKo53/co4qomb9vGva0vgaLbHdGU4SN
-        mVdxCZSxauwsXKLVZNbYdNTglZcr4dhNeg==
-X-Google-Smtp-Source: AA6agR4A3V4wAgNelNe4hjuW1BEQB4BZ8TVkLfe5hRKj5f2Nfy9XtwqBu3doGzBrCCGLx/n7p1TzNA==
-X-Received: by 2002:a63:4b49:0:b0:427:e7f2:c04 with SMTP id k9-20020a634b49000000b00427e7f20c04mr6967008pgl.262.1660576576358;
-        Mon, 15 Aug 2022 08:16:16 -0700 (PDT)
-Received: from localhost ([166.111.139.139])
-        by smtp.gmail.com with ESMTPSA id t4-20020a170902e84400b0016dbe37cebdsm7121060plg.246.2022.08.15.08.16.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 08:16:16 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] fs: btrfs: fix possible memory leaks in btrfs_get_dev_args_from_path()
-Date:   Mon, 15 Aug 2022 23:16:06 +0800
-Message-Id: <20220815151606.3479183-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 15 Aug 2022 11:16:21 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79FEF255B8;
+        Mon, 15 Aug 2022 08:16:19 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.93,238,1654527600"; 
+   d="scan'208";a="129579724"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 16 Aug 2022 00:16:19 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0AF96400197E;
+        Tue, 16 Aug 2022 00:16:14 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 5/8] riscv: dts: renesas: Add initial devicetree for Renesas RZ/Five SoC
+Date:   Mon, 15 Aug 2022 16:14:48 +0100
+Message-Id: <20220815151451.23293-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In btrfs_get_dev_args_from_path(), btrfs_get_bdev_and_sb() can fail if the
-path is invalid. In this case, btrfs_get_dev_args_from_path() returns
-directly without freeing args->uuid and args->fsid allocated before, which
-causes memory leaks.
+Add initial device tree for Renesas RZ/Five RISC-V CPU Core (AX45MP
+Single).
 
-To fix these possible leaks, when btrfs_get_bdev_and_sb() fails, 
-btrfs_put_dev_args_from_path() is called to clean up the memory.
+Below is the list of IP blocks added in the initial SoC DTSI which can be
+used to boot via initramfs on RZ/Five SMARC EVK:
+- AX45MP CPU
+- CPG
+- PINCTRL
+- PLIC
+- SCIF0
+- SYSC
 
-Fixes: faa775c41d655 ("btrfs: add a btrfs_get_dev_args_from_path helper")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- fs/btrfs/volumes.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+v1->v2
+* Dropped including makefile change
+* Updated ndev count
+---
+ arch/riscv/boot/dts/renesas/r9a07g043.dtsi | 121 +++++++++++++++++++++
+ 1 file changed, 121 insertions(+)
+ create mode 100644 arch/riscv/boot/dts/renesas/r9a07g043.dtsi
 
-diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 272901514b0c..064ab2a79c80 100644
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -2345,8 +2345,11 @@ int btrfs_get_dev_args_from_path(struct btrfs_fs_info *fs_info,
- 
- 	ret = btrfs_get_bdev_and_sb(path, FMODE_READ, fs_info->bdev_holder, 0,
- 				    &bdev, &disk_super);
--	if (ret)
-+	if (ret) {
-+		btrfs_put_dev_args_from_path(args);
- 		return ret;
-+	}
+diff --git a/arch/riscv/boot/dts/renesas/r9a07g043.dtsi b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
+new file mode 100644
+index 000000000000..b288d2607796
+--- /dev/null
++++ b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
+@@ -0,0 +1,121 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Device Tree Source for the RZ/Five SoC
++ *
++ * Copyright (C) 2022 Renesas Electronics Corp.
++ */
 +
- 	args->devid = btrfs_stack_device_id(&disk_super->dev_item);
- 	memcpy(args->uuid, disk_super->dev_item.uuid, BTRFS_UUID_SIZE);
- 	if (btrfs_fs_incompat(fs_info, METADATA_UUID))
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/clock/r9a07g043-cpg.h>
++
++/ {
++	compatible = "renesas,r9a07g043";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	/* clock can be either from exclk or crystal oscillator (XIN/XOUT) */
++	extal_clk: extal-clk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		/* This value must be overridden by the board */
++		clock-frequency = <0>;
++	};
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		timebase-frequency = <24000000>;
++
++		ax45mp: cpu@0 {
++			compatible = "andestech,ax45mp", "riscv";
++			device_type = "cpu";
++			reg = <0x0>;
++			status = "okay";
++			riscv,isa = "rv64imafdc";
++			mmu-type = "riscv,sv39";
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <0x40>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <0x40>;
++			clocks = <&cpg CPG_CORE R9A07G043_AX45MP_CORE0_CLK>,
++				 <&cpg CPG_CORE R9A07G043_AX45MP_ACLK>;
++
++			cpu0_intc: interrupt-controller {
++				#interrupt-cells = <1>;
++				compatible = "riscv,cpu-intc";
++				interrupt-controller;
++			};
++		};
++	};
++
++	soc: soc {
++		compatible = "simple-bus";
++		interrupt-parent = <&plic>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		scif0: serial@1004b800 {
++			compatible = "renesas,scif-r9a07g043",
++				     "renesas,scif-r9a07g044";
++			reg = <0 0x1004b800 0 0x400>;
++			interrupts = <412 IRQ_TYPE_LEVEL_HIGH>,
++				     <414 IRQ_TYPE_LEVEL_HIGH>,
++				     <415 IRQ_TYPE_LEVEL_HIGH>,
++				     <413 IRQ_TYPE_LEVEL_HIGH>,
++				     <416 IRQ_TYPE_LEVEL_HIGH>,
++				     <416 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "eri", "rxi", "txi",
++					  "bri", "dri", "tei";
++			clocks = <&cpg CPG_MOD R9A07G043_SCIF0_CLK_PCK>;
++			clock-names = "fck";
++			power-domains = <&cpg>;
++			resets = <&cpg R9A07G043_SCIF0_RST_SYSTEM_N>;
++			status = "disabled";
++		};
++
++		cpg: clock-controller@11010000 {
++			compatible = "renesas,r9a07g043-cpg";
++			reg = <0 0x11010000 0 0x10000>;
++			clocks = <&extal_clk>;
++			clock-names = "extal";
++			#clock-cells = <2>;
++			#reset-cells = <1>;
++			#power-domain-cells = <0>;
++		};
++
++		sysc: system-controller@11020000 {
++			compatible = "renesas,r9a07g043-sysc";
++			reg = <0 0x11020000 0 0x10000>;
++			status = "disabled";
++		};
++
++		pinctrl: pinctrl@11030000 {
++			compatible = "renesas,r9a07g043-pinctrl";
++			reg = <0 0x11030000 0 0x10000>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			#interrupt-cells = <2>;
++			interrupt-controller;
++			gpio-ranges = <&pinctrl 0 0 152>;
++			clocks = <&cpg CPG_MOD R9A07G043_GPIO_HCLK>;
++			power-domains = <&cpg>;
++			resets = <&cpg R9A07G043_GPIO_RSTN>,
++				 <&cpg R9A07G043_GPIO_PORT_RESETN>,
++				 <&cpg R9A07G043_GPIO_SPARE_RESETN>;
++		};
++
++		plic: interrupt-controller@12c00000 {
++			compatible = "renesas,r9a07g043-plic", "andestech,nceplic100";
++			#interrupt-cells = <2>;
++			#address-cells = <0>;
++			riscv,ndev = <512>;
++			interrupt-controller;
++			reg = <0x0 0x12c00000 0 0x400000>;
++			clocks = <&cpg CPG_MOD R9A07G043_NCEPLIC_ACLK>;
++			power-domains = <&cpg>;
++			resets = <&cpg R9A07G043_NCEPLIC_ARESETN>;
++			interrupts-extended = <&cpu0_intc 11 &cpu0_intc 9>;
++		};
++	};
++};
 -- 
 2.25.1
 
