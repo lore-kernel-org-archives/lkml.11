@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B82C5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7CACC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243626AbiHOSbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42180 "EHLO
+        id S242239AbiHOSbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242447AbiHOSa3 (ORCPT
+        with ESMTP id S242848AbiHOSaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:30:29 -0400
+        Mon, 15 Aug 2022 14:30:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65DD32076;
-        Mon, 15 Aug 2022 11:20:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8FA2A728;
+        Mon, 15 Aug 2022 11:20:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B522460EBB;
-        Mon, 15 Aug 2022 18:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924E6C433D6;
-        Mon, 15 Aug 2022 18:20:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 312126068D;
+        Mon, 15 Aug 2022 18:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37601C433C1;
+        Mon, 15 Aug 2022 18:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587608;
-        bh=K5ZHDwywZf6sEzoMUCgypmRbTxPVUltpevV5pX0h7J4=;
+        s=korg; t=1660587642;
+        bh=6CRLhn7oCpLe3R4QHpr0/0MYXVi1LdC9PER/71MjKW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2FIJkFjsddiKY5U+cBMrhoWp4zXic/841t7MHu0jfOG8s3+rrp189tz/5uO66i3C
-         nmT6xuBEn+VPt5aknYGu/whZWpRtK+TP+OD/MbLJ1KZo4Sega/1bYtoYurbNYKigbn
-         H7M4tQn3uNJANUjyDVq9bMhjaJedqLZFZA88Wkk0=
+        b=y9GUuTrgkjDlfmiU1v8il9U2Yppm/voxFmAX+KXH6NcRCvOV7a6lPAwTzf0Z3cGYc
+         myT0qdAIqnFObbXz/iZCwLe2duvMe2nZaYU5XaKTAhHHFu2umNf47dS3cW6s2wPy3i
+         eQRQHJPX8M98yoWDAE0mszv0Xye5NV7m9dW/BzzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manyi Li <limanyi@uniontech.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 138/779] ACPI: PM: save NVS memory for Lenovo G40-45
-Date:   Mon, 15 Aug 2022 19:56:22 +0200
-Message-Id: <20220815180343.201002882@linuxfoundation.org>
+Subject: [PATCH 5.15 148/779] selinux: fix memleak in security_read_state_kernel()
+Date:   Mon, 15 Aug 2022 19:56:32 +0200
+Message-Id: <20220815180343.640854417@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,42 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manyi Li <limanyi@uniontech.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
+[ Upstream commit 73de1befcc53a7c68b0c5e76b9b5ac41c517760f ]
 
-[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
-produced from 2012 to now not saving NVS region to accelerate S3.
+In this function, it directly returns the result of __security_read_policy
+without freeing the allocated memory in *data, cause memory leak issue,
+so free the memory if __security_read_policy failed.
 
-But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
-saving during S3. A quirk is introduced for this platform.
-
-Signed-off-by: Manyi Li <limanyi@uniontech.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sleep.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ security/selinux/ss/services.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 07515139141e..d7194047d256 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -361,6 +361,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
- 		},
- 	},
-+	{
-+	.callback = init_nvs_save_s3,
-+	.ident = "Lenovo G40-45",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
-+		},
-+	},
- 	/*
- 	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
- 	 * the Low Power S0 Idle firmware interface (see
+diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+index c4931bf6f92a..e8035e4876df 100644
+--- a/security/selinux/ss/services.c
++++ b/security/selinux/ss/services.c
+@@ -4045,6 +4045,7 @@ int security_read_policy(struct selinux_state *state,
+ int security_read_state_kernel(struct selinux_state *state,
+ 			       void **data, size_t *len)
+ {
++	int err;
+ 	struct selinux_policy *policy;
+ 
+ 	policy = rcu_dereference_protected(
+@@ -4057,5 +4058,11 @@ int security_read_state_kernel(struct selinux_state *state,
+ 	if (!*data)
+ 		return -ENOMEM;
+ 
+-	return __security_read_policy(policy, *data, len);
++	err = __security_read_policy(policy, *data, len);
++	if (err) {
++		vfree(*data);
++		*data = NULL;
++		*len = 0;
++	}
++	return err;
+ }
 -- 
 2.35.1
 
