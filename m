@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B96CEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB54C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbiHOScR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S232171AbiHOSc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243573AbiHOSbX (ORCPT
+        with ESMTP id S243607AbiHOSb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:31:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBB332ED5;
-        Mon, 15 Aug 2022 11:21:16 -0700 (PDT)
+        Mon, 15 Aug 2022 14:31:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0965932EE5;
+        Mon, 15 Aug 2022 11:21:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 466EE6068D;
-        Mon, 15 Aug 2022 18:20:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47543C433C1;
-        Mon, 15 Aug 2022 18:20:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05C82B81071;
+        Mon, 15 Aug 2022 18:21:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34819C433C1;
+        Mon, 15 Aug 2022 18:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587654;
-        bh=YtcresAn+qp2Ji3gQYzaNCoxUrbqceUer7l0kgvznWs=;
+        s=korg; t=1660587675;
+        bh=kOSR+0U1mUJKjfVnIM3iHP1kjHk8W/lX2Xo52qIYRy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nGKMMeaY4FsOTfOg7ewxLex7NmwiLwdN7VGgXBx2t8K9w2oEdkiEfArgfFU1IumHR
-         +rJZ2AL4648RvtTK7mnyXyWugFt+OGLdVh4o1RMAISCwJPepAiFIw/7sAiYljp1RSa
-         UnLsHWEG4NtPd76nSL1IE+oWfc3w2c5iquA5VaCE=
+        b=ezCuUfnGSdUZPkxDyOTN02I4HRHIUyJRYmn8PXnvSNX6jq8GYszY/lGdWnCpSFy8Z
+         N3gJ7041Q7cApUVVNp6WGjbYXrGPXVP4o2JIqlaWPDd0+jpKs697nkkm1MoyHex+ll
+         gVs0PrJHxGNvjdtrPEZqg+iwbOC3IojyTJ94hN7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, xinhui pan <xinhui.pan@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 151/779] drm/amdgpu: Remove one duplicated ef removal
-Date:   Mon, 15 Aug 2022 19:56:35 +0200
-Message-Id: <20220815180343.768993912@linuxfoundation.org>
+Subject: [PATCH 5.15 128/779] ARM: dts: imx6ul: fix lcdif node compatible
+Date:   Mon, 15 Aug 2022 19:56:12 +0200
+Message-Id: <20220815180342.764311906@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,43 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xinhui pan <xinhui.pan@amd.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit e1aadbab445b06e072013a1365fd0cf2aa25e843 ]
+[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
 
-That has been done in BO release notify.
+In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
+but not imx28-lcdif. Change the list accordingly. Fixes the
+dt_binding_check warning:
+lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
+Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
+'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
+'fsl,imx6sx-lcdif']
+'fsl,imx6sx-lcdif' was expected
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2074
-Signed-off-by: xinhui pan <xinhui.pan@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 6 ------
- 1 file changed, 6 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-index 21c02f817a84..c904269b3e14 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -1318,16 +1318,10 @@ void amdgpu_amdkfd_gpuvm_destroy_cb(struct amdgpu_device *adev,
- 				    struct amdgpu_vm *vm)
- {
- 	struct amdkfd_process_info *process_info = vm->process_info;
--	struct amdgpu_bo *pd = vm->root.bo;
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 367657a9a99f..bc6548058d8c 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -1008,7 +1008,7 @@ csi: csi@21c4000 {
+ 			};
  
- 	if (!process_info)
- 		return;
- 
--	/* Release eviction fence from PD */
--	amdgpu_bo_reserve(pd, false);
--	amdgpu_bo_fence(pd, NULL, false);
--	amdgpu_bo_unreserve(pd);
--
- 	/* Update process info */
- 	mutex_lock(&process_info->lock);
- 	process_info->n_vms--;
+ 			lcdif: lcdif@21c8000 {
+-				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
++				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
+ 				reg = <0x021c8000 0x4000>;
+ 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
 -- 
 2.35.1
 
