@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CFAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9819C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240485AbiHOXT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
+        id S245037AbiHOXUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353099AbiHOXPz (ORCPT
+        with ESMTP id S1353125AbiHOXP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E96146CCC;
-        Mon, 15 Aug 2022 13:02:55 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C344146CED;
+        Mon, 15 Aug 2022 13:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC851B80EA8;
-        Mon, 15 Aug 2022 20:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F52C433D6;
-        Mon, 15 Aug 2022 20:02:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1449F612E4;
+        Mon, 15 Aug 2022 20:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0708C433C1;
+        Mon, 15 Aug 2022 20:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593772;
-        bh=LMkp6NyyuV2Ez/uJw716SkPh5MsLtM2lf94sqx8wvtc=;
+        s=korg; t=1660593775;
+        bh=VHaLffJQoHaI+IOtGGNDfDZgg2sKNs5qPuw8gRU1Og8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XkjqOiDuOgvAxZYh1Rx5zVQ+UiHf2OtF+jf527GKmlR8EKjHz0UPN/MGOZnk+0/dl
-         b3iQz+4giD3LV/901RaVWNilviA6Z1KDPD/KT1FkUoDKN3nTVmg6hjgG2N4W3Hmlyg
-         724w7RVTOwl4CIFlM0b1GmaMxgFTBe1pAuLSjdzQ=
+        b=J1JwuGdCa+ibvAmw02UbD58s1FCY22nDrZzh7I5wQi8wFYXc1m5JFaRz9oPXnZyEX
+         TVKTKq1lgQpUlspYS/D73eAzzPQam7Qo2hcW0BQHJvZ3q1wAFCeHqbol0O7h+aW24/
+         T/Qn3S8puWLcB4x+nGA4jCW1vx+SD4jeGMUpcDkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0323/1157] wifi: rtlwifi: fix error codes in rtl_debugfs_set_write_h2c()
-Date:   Mon, 15 Aug 2022 19:54:39 +0200
-Message-Id: <20220815180452.578637490@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Rudo <prudo@linux.ibm.com>,
+        kexec@lists.infradead.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        "Lee, Chun-Yi" <jlee@suse.com>, Baoquan He <bhe@redhat.com>,
+        Coiby Xu <coxu@redhat.com>, Heiko Carstens <hca@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1004/1095] kexec, KEYS, s390: Make use of built-in and secondary keyring for signature verification
+Date:   Mon, 15 Aug 2022 20:06:43 +0200
+Message-Id: <20220815180510.636878336@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +54,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-[ Upstream commit b88d28146c30a8e14f0f012d56ebf19b68a348f4 ]
+[ Upstream commit 0828c4a39be57768b8788e8cbd0d84683ea757e5 ]
 
-If the copy_from_user() fails or the user gives invalid date then the
-correct thing to do is to return a negative error code.  (Currently it
-returns success).
+commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+adds support for KEXEC_SIG verification with keys from platform keyring
+but the built-in keys and secondary keyring are not used.
 
-I made a copy additional related cleanups:
-1) There is no need to check "buffer" for NULL.  That's handled by
-copy_from_user().
-2) The "h2c_len" variable cannot be negative because it is unsigned
-and because sscanf() does not return negative error codes.
+Add support for the built-in keys and secondary keyring as x86 does.
 
-Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/YoOLnDkHgVltyXK7@kili
+Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+Cc: stable@vger.kernel.org
+Cc: Philipp Rudo <prudo@linux.ibm.com>
+Cc: kexec@lists.infradead.org
+Cc: keyrings@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+Acked-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/debug.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
-index 901cdfe3723c..0b1bc04cb6ad 100644
---- a/drivers/net/wireless/realtek/rtlwifi/debug.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
-@@ -329,8 +329,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
+diff --git a/arch/s390/kernel/machine_kexec_file.c b/arch/s390/kernel/machine_kexec_file.c
+index 8f43575a4dd3..fc6d5f58debe 100644
+--- a/arch/s390/kernel/machine_kexec_file.c
++++ b/arch/s390/kernel/machine_kexec_file.c
+@@ -31,6 +31,7 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
+ 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
+ 	struct module_signature *ms;
+ 	unsigned long sig_len;
++	int ret;
  
- 	tmp_len = (count > sizeof(tmp) - 1 ? sizeof(tmp) - 1 : count);
+ 	/* Skip signature verification when not secure IPLed. */
+ 	if (!ipl_secure_flag)
+@@ -65,11 +66,18 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
+ 		return -EBADMSG;
+ 	}
  
--	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
--		return count;
-+	if (copy_from_user(tmp, buffer, tmp_len))
-+		return -EFAULT;
+-	return verify_pkcs7_signature(kernel, kernel_len,
+-				      kernel + kernel_len, sig_len,
+-				      VERIFY_USE_PLATFORM_KEYRING,
+-				      VERIFYING_MODULE_SIGNATURE,
+-				      NULL, NULL);
++	ret = verify_pkcs7_signature(kernel, kernel_len,
++				     kernel + kernel_len, sig_len,
++				     VERIFY_USE_SECONDARY_KEYRING,
++				     VERIFYING_MODULE_SIGNATURE,
++				     NULL, NULL);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
++		ret = verify_pkcs7_signature(kernel, kernel_len,
++					     kernel + kernel_len, sig_len,
++					     VERIFY_USE_PLATFORM_KEYRING,
++					     VERIFYING_MODULE_SIGNATURE,
++					     NULL, NULL);
++	return ret;
+ }
+ #endif /* CONFIG_KEXEC_SIG */
  
- 	tmp[tmp_len] = '\0';
- 
-@@ -340,8 +340,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
- 			 &h2c_data[4], &h2c_data[5],
- 			 &h2c_data[6], &h2c_data[7]);
- 
--	if (h2c_len <= 0)
--		return count;
-+	if (h2c_len == 0)
-+		return -EINVAL;
- 
- 	for (i = 0; i < h2c_len; i++)
- 		h2c_data_packed[i] = (u8)h2c_data[i];
 -- 
 2.35.1
 
