@@ -2,236 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8602C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8112C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346944AbiHOUa4 (ORCPT
+        id S1347478AbiHOUbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        Mon, 15 Aug 2022 16:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiHOUWT (ORCPT
+        with ESMTP id S244614AbiHOUWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:22:19 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FC3357C7;
-        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 202so7241484pgc.8;
-        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=T1urwYp+ngUfbtL/zRS1WH8Fw+1Y+MfmKi5JR02MB5Y=;
-        b=aZUuvkegx2ruNP8I4pY27Gd7ajx8X7gfwOxSAZ3xO1ObIxlYQCyO+KsPGzDJdleVTv
-         hGYNLNcK1bd4lx7e5tOpFAVQQat1kKKrbOnhbZVf/vzXlCVLycrJBvSo6GZqBb6xhon5
-         w64+6nGYOe1CU8KjLKooaF5XJnYY8fFQJIANLHPyxTrE+i+T6NqwBCvLV8/DRuCUYsVA
-         cbR9a22h60S3UnNmRA4/ngshmTMqszxt1Y/9kGjBtpqXsMHLcCKLBOs0rr1NgThW2cy9
-         LhoEHznxETNRdAg9+KRCxsNXk5Ty5LZSCMAlrb7JiEuMhWSsGVgcw33aSwNl8id53TRG
-         zFgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc;
-        bh=T1urwYp+ngUfbtL/zRS1WH8Fw+1Y+MfmKi5JR02MB5Y=;
-        b=ugGFFmcTUOaFdGFh2TRcZ/ZM6P5MTbzHZfBD886PY0uaoDJl/R1B8+8mSMtQFu4f5q
-         uiDvSp80rxDrtqFRVJxOl5b6HZoJOg6pyKbxdfvfB7un76+Xlwm1/a4e1pX6eye1v7kr
-         CpHMdrWIrp8ZJIDcWXK5YWfCQuOkjdCkXYpNcH7yPWIkswLCAvfFZL/NVPKetHAnHKn7
-         wPMUKFvQrAI9JkXQsz+Hg7dcvU/cCFP5nQNWhv+nF3l57Mt/7G6oanAq2MxXJk5YmOZW
-         884JzrUkXgjKWHAABLIQpSQMV9FT3cpi61P6aBNQBgRaGY1nOrYEM8+UuTIn5UQQAyRk
-         ajCg==
-X-Gm-Message-State: ACgBeo2tjXUSsEOHe3oUC6b/Gyz+wN4qxJ/ELJw/li2Y34lg9vKFDddi
-        HSXmkd5NPxg7IRsQDp77CaA=
-X-Google-Smtp-Source: AA6agR4b/ybl6R8xhfXlQvXXGF/WKD/S1mp5KP2qIF0fDxTUUsj1b0ep3zp3dknndIRIq/PtXohsXA==
-X-Received: by 2002:a63:db06:0:b0:41d:f6f6:49d0 with SMTP id e6-20020a63db06000000b0041df6f649d0mr14624683pgg.83.1660590163000;
-        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
-Received: from youngsil.svl.corp.google.com ([2620:15c:2d4:203:df3e:22e0:b905:822b])
-        by smtp.gmail.com with ESMTPSA id q13-20020a170902a3cd00b0016a4db13429sm7266926plb.192.2022.08.15.12.02.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 12:02:42 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH 2/4] tools lib perf: Handle read format in perf_evsel__read()
-Date:   Mon, 15 Aug 2022 12:01:04 -0700
-Message-Id: <20220815190106.1293082-3-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-In-Reply-To: <20220815190106.1293082-1-namhyung@kernel.org>
-References: <20220815190106.1293082-1-namhyung@kernel.org>
+        Mon, 15 Aug 2022 16:22:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A812033E34;
+        Mon, 15 Aug 2022 12:02:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 83612CE129B;
+        Mon, 15 Aug 2022 19:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE10C43142;
+        Mon, 15 Aug 2022 19:02:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590164;
+        bh=698Flm7SpQJiRiiikVpbc456D/RJv3Ovb7vU4f/tM+Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fnYB8+38G4WwMHUZpims+Asa6uQKyfNvT+zTSWoCY7N0L7Lspp64pxWBLAR0tfsxC
+         cAy7MurHrTv20t6YyTVZY0bq0/EQxSDaeyCa1NNMj+GXi3LeP/vWjARsZApQcMuOF7
+         /IaNaHnvXy8ABBl9Cx6cEh8XTh2DtbK2srv+soRU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0173/1095] firmware: tegra: Fix error check return value of debugfs_create_file()
+Date:   Mon, 15 Aug 2022 19:52:52 +0200
+Message-Id: <20220815180436.793193204@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The perf_counts_values should be increased to read the new lost data.
-Also adjust values after read according the read format.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-This supports PERF_FORMAT_GROUP which has a different data format but
-it's only available for leader events.  Currently it doesn't have an API
-to read sibling (member) events in the group.  But users may read the
-sibling event directly.
+[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
 
-Also reading from mmap would be disabled when the read format has ID or
-LOST bit as it's not exposed via mmap.
+If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
+so use IS_ERR() to check it.
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/perf/evsel.c              | 72 +++++++++++++++++++++++++++++
- tools/lib/perf/include/perf/event.h |  3 +-
- tools/lib/perf/include/perf/evsel.h |  4 +-
- 3 files changed, 77 insertions(+), 2 deletions(-)
+ drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
-index 952f3520d5c2..fc23670231cb 100644
---- a/tools/lib/perf/evsel.c
-+++ b/tools/lib/perf/evsel.c
-@@ -305,6 +305,9 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
- 	if (read_format & PERF_FORMAT_ID)
- 		entry += sizeof(u64);
+diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
+index fd89899aeeed..0c440afd5224 100644
+--- a/drivers/firmware/tegra/bpmp-debugfs.c
++++ b/drivers/firmware/tegra/bpmp-debugfs.c
+@@ -474,7 +474,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
+ 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
+ 			dentry = debugfs_create_file(name, mode, parent, bpmp,
+ 						     &bpmp_debug_fops);
+-			if (!dentry) {
++			if (IS_ERR(dentry)) {
+ 				err = -ENOMEM;
+ 				goto out;
+ 			}
+@@ -725,7 +725,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
  
-+	if (read_format & PERF_FORMAT_LOST)
-+		entry += sizeof(u64);
-+
- 	if (read_format & PERF_FORMAT_GROUP) {
- 		nr = evsel->nr_members;
- 		size += sizeof(u64);
-@@ -314,24 +317,93 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
- 	return size;
- }
- 
-+/* This only reads values for the leader */
-+static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
-+				  int thread, struct perf_counts_values *count)
-+{
-+	size_t size = perf_evsel__read_size(evsel);
-+	int *fd = FD(evsel, cpu_map_idx, thread);
-+	u64 read_format = evsel->attr.read_format;
-+	u64 *data;
-+	int idx = 1;
-+
-+	if (fd == NULL || *fd < 0)
-+		return -EINVAL;
-+
-+	data = calloc(1, size);
-+	if (data == NULL)
-+		return -ENOMEM;
-+
-+	if (readn(*fd, data, size) <= 0) {
-+		free(data);
-+		return -errno;
-+	}
-+
-+	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)
-+		count->ena = data[idx++];
-+	if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
-+		count->run = data[idx++];
-+
-+	/* value is always available */
-+	count->val = data[idx++];
-+	if (read_format & PERF_FORMAT_ID)
-+		count->id = data[idx++];
-+	if (read_format & PERF_FORMAT_LOST)
-+		count->lost = data[idx++];
-+
-+	free(data);
-+	return 0;
-+}
-+
-+/*
-+ * The perf read format is very flexible.  It needs to set the proper
-+ * values according to the read format.
-+ */
-+static void perf_evsel__adjust_values(struct perf_evsel *evsel,
-+				      struct perf_counts_values *count)
-+{
-+	u64 read_format = evsel->attr.read_format;
-+
-+	if (!(read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)) {
-+		memmove(&count->values[2], &count->values[1], 24);
-+		count->ena = 0;
-+	}
-+
-+	if (!(read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)) {
-+		memmove(&count->values[3], &count->values[2], 16);
-+		count->run = 0;
-+	}
-+
-+	if (!(read_format & PERF_FORMAT_ID)) {
-+		memmove(&count->values[4], &count->values[3], 8);
-+		count->id = 0;
-+	}
-+}
-+
- int perf_evsel__read(struct perf_evsel *evsel, int cpu_map_idx, int thread,
- 		     struct perf_counts_values *count)
- {
- 	size_t size = perf_evsel__read_size(evsel);
- 	int *fd = FD(evsel, cpu_map_idx, thread);
-+	u64 read_format = evsel->attr.read_format;
- 
- 	memset(count, 0, sizeof(*count));
- 
- 	if (fd == NULL || *fd < 0)
- 		return -EINVAL;
- 
-+	if (read_format & PERF_FORMAT_GROUP)
-+		return perf_evsel__read_group(evsel, cpu_map_idx, thread, count);
-+
- 	if (MMAP(evsel, cpu_map_idx, thread) &&
-+	    !(read_format & (PERF_FORMAT_ID | PERF_FORMAT_LOST)) &&
- 	    !perf_mmap__read_self(MMAP(evsel, cpu_map_idx, thread), count))
+ 		if (t & DEBUGFS_S_ISDIR) {
+ 			dentry = debugfs_create_dir(name, parent);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
+ 			if (err < 0)
+@@ -738,7 +738,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+ 			dentry = debugfs_create_file(name, mode,
+ 						     parent, bpmp,
+ 						     &debugfs_fops);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 		}
+ 	}
+@@ -788,11 +788,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
  		return 0;
  
- 	if (readn(*fd, count->values, size) <= 0)
- 		return -errno;
+ 	root = debugfs_create_dir("bpmp", NULL);
+-	if (!root)
++	if (IS_ERR(root))
+ 		return -ENOMEM;
  
-+	perf_evsel__adjust_values(evsel, count);
- 	return 0;
- }
- 
-diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
-index 556bb06798f2..38dd35cbca71 100644
---- a/tools/lib/perf/include/perf/event.h
-+++ b/tools/lib/perf/include/perf/event.h
-@@ -76,7 +76,7 @@ struct perf_record_lost_samples {
- };
- 
- /*
-- * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID
-+ * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID | PERF_FORMAT_LOST
-  */
- struct perf_record_read {
- 	struct perf_event_header header;
-@@ -85,6 +85,7 @@ struct perf_record_read {
- 	__u64			 time_enabled;
- 	__u64			 time_running;
- 	__u64			 id;
-+	__u64			 lost;
- };
- 
- struct perf_record_throttle {
-diff --git a/tools/lib/perf/include/perf/evsel.h b/tools/lib/perf/include/perf/evsel.h
-index 699c0ed97d34..6f92204075c2 100644
---- a/tools/lib/perf/include/perf/evsel.h
-+++ b/tools/lib/perf/include/perf/evsel.h
-@@ -18,8 +18,10 @@ struct perf_counts_values {
- 			uint64_t val;
- 			uint64_t ena;
- 			uint64_t run;
-+			uint64_t id;
-+			uint64_t lost;
- 		};
--		uint64_t values[3];
-+		uint64_t values[5];
- 	};
- };
- 
+ 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
+-	if (!bpmp->debugfs_mirror) {
++	if (IS_ERR(bpmp->debugfs_mirror)) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.35.1
+
+
 
