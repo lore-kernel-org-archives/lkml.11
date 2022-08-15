@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C6BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EE2C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349002AbiHOWew (ORCPT
+        id S1349999AbiHOWfB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
+        Mon, 15 Aug 2022 18:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351055AbiHOW1b (ORCPT
+        with ESMTP id S1351059AbiHOW1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD2E6D56E;
-        Mon, 15 Aug 2022 12:46:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99193422DE;
+        Mon, 15 Aug 2022 12:46:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAE856122E;
-        Mon, 15 Aug 2022 19:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8139C433C1;
-        Mon, 15 Aug 2022 19:46:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DAD26122B;
+        Mon, 15 Aug 2022 19:46:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 184BAC433C1;
+        Mon, 15 Aug 2022 19:46:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592794;
-        bh=pqbpWM0ovuucZKEV5C40+B3/2rDpOTNZlRfpRdD2Tu0=;
+        s=korg; t=1660592797;
+        bh=WX3GrhU3cMELvExJ8uFidpuIGUve/uH3dcx+G+aVKes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E4KjQHmfE/LN1mUkgOjvvnPrzPfx9nduQJG8RD9RsBZooxC3bsrzxHGZYxSb0MDQF
-         lYfj8hy1yFtS4jv5fpfxG4Hu/eDnYi4PPRUqXRSdADHgEWGPPPciALUnW/ojoauKBx
-         cTcthegTaUdxpzYEY+JnxiuOT3O64sH0zxdszQ6I=
+        b=FRtp7jtRvoW2BHyq+Izq8SNzbEdfQvN+fUx1PxxOIQUIh+p2naNpDX52zJzSaHlHv
+         L/ImMU+7aUoGfvKKAwGZ+fwrjW1ZJuGylY8cLysZ8TRyXjj3zlEOjLVr/Yviz0iurR
+         E0BPuwMj1CIJATAJBrIAglTOrk9MWaC/E3NLXy+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0828/1095] ASoC: samsung: Fix error handling in aries_audio_probe
-Date:   Mon, 15 Aug 2022 20:03:47 +0200
-Message-Id: <20220815180503.568896056@linuxfoundation.org>
+Subject: [PATCH 5.18 0846/1095] selftests/powerpc: Skip energy_scale_info test on older firmware
+Date:   Mon, 15 Aug 2022 20:04:05 +0200
+Message-Id: <20220815180504.336731512@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,42 +49,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 3e2649c5e8643bea0867bb1dd970fedadb0eb7f3 ]
+[ Upstream commit 4228a996b072d36f3baafb4afdc2d2d66d2cbadf ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-This function is missing of_node_put(cpu) in the error path.
-Fix this by goto out label. of_node_put() will check NULL pointer.
+Older machines don't have the firmware feature that enables the code
+this test is testing. Skip the test if the sysfs directory doesn't
+exist. Also use the FAIL_IF() macro to provide more verbose error
+reporting if an error is encountered.
 
-Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220603130640.37624-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 57201d657eb7 ("selftest/powerpc: Add PAPR sysfs attributes sniff test")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220619233103.2666171-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/aries_wm8994.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../powerpc/papr_attributes/attr_test.c       | 30 +++++++++++--------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
-index 83acbe57b248..a0825da9fff9 100644
---- a/sound/soc/samsung/aries_wm8994.c
-+++ b/sound/soc/samsung/aries_wm8994.c
-@@ -628,8 +628,10 @@ static int aries_audio_probe(struct platform_device *pdev)
- 		return -EINVAL;
+diff --git a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
+index bab0dc06e90b..9b655be641c9 100644
+--- a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
++++ b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
+@@ -7,6 +7,7 @@
+  * Copyright 2022, Pratik Rajesh Sampat, IBM Corp.
+  */
  
- 	codec = of_get_child_by_name(dev->of_node, "codec");
--	if (!codec)
--		return -EINVAL;
-+	if (!codec) {
-+		ret = -EINVAL;
-+		goto out;
++#include <errno.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <dirent.h>
+@@ -32,7 +33,7 @@ enum type {
+ 	NUM_VAL
+ };
+ 
+-int value_type(int id)
++static int value_type(int id)
+ {
+ 	int val_type;
+ 
+@@ -54,15 +55,21 @@ int value_type(int id)
+ 	return val_type;
+ }
+ 
+-int verify_energy_info(void)
++static int verify_energy_info(void)
+ {
+ 	const char *path = "/sys/firmware/papr/energy_scale_info";
+ 	struct dirent *entry;
+ 	struct stat s;
+ 	DIR *dirp;
+ 
+-	if (stat(path, &s) || !S_ISDIR(s.st_mode))
+-		return -1;
++	errno = 0;
++	if (stat(path, &s)) {
++		SKIP_IF(errno == ENOENT);
++		FAIL_IF(errno);
 +	}
++
++	FAIL_IF(!S_ISDIR(s.st_mode));
++
+ 	dirp = opendir(path);
  
- 	for_each_card_prelinks(card, i, dai_link) {
- 		dai_link->codecs->of_node = of_parse_phandle(codec,
+ 	while ((entry = readdir(dirp)) != NULL) {
+@@ -76,25 +83,24 @@ int verify_energy_info(void)
+ 
+ 		id = atoi(entry->d_name);
+ 		attr_type = value_type(id);
+-		if (attr_type == INVALID)
+-			return -1;
++		FAIL_IF(attr_type == INVALID);
+ 
+ 		/* Check if the files exist and have data in them */
+ 		sprintf(file_name, "%s/%d/desc", path, id);
+ 		f = fopen(file_name, "r");
+-		if (!f || fgetc(f) == EOF)
+-			return -1;
++		FAIL_IF(!f);
++		FAIL_IF(fgetc(f) == EOF);
+ 
+ 		sprintf(file_name, "%s/%d/value", path, id);
+ 		f = fopen(file_name, "r");
+-		if (!f || fgetc(f) == EOF)
+-			return -1;
++		FAIL_IF(!f);
++		FAIL_IF(fgetc(f) == EOF);
+ 
+ 		if (attr_type == STR_VAL) {
+ 			sprintf(file_name, "%s/%d/value_desc", path, id);
+ 			f = fopen(file_name, "r");
+-			if (!f || fgetc(f) == EOF)
+-				return -1;
++			FAIL_IF(!f);
++			FAIL_IF(fgetc(f) == EOF);
+ 		}
+ 	}
+ 
 -- 
 2.35.1
 
