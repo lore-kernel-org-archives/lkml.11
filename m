@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6D4C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A209CC28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344196AbiHOTbM (ORCPT
+        id S1344255AbiHOTbT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
+        Mon, 15 Aug 2022 15:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344099AbiHOT0W (ORCPT
+        with ESMTP id S1344118AbiHOT0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:26:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8CF2634;
-        Mon, 15 Aug 2022 11:42:12 -0700 (PDT)
+        Mon, 15 Aug 2022 15:26:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245D42BC0;
+        Mon, 15 Aug 2022 11:42:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AF11B8105D;
-        Mon, 15 Aug 2022 18:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AB3C433D6;
-        Mon, 15 Aug 2022 18:42:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B55A361052;
+        Mon, 15 Aug 2022 18:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A18CFC433C1;
+        Mon, 15 Aug 2022 18:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588930;
-        bh=KS2OCnk0y2REtlr7azy2kucg/UNHjlyWK1tajYCZUTo=;
+        s=korg; t=1660588936;
+        bh=kz99HwGTJI+6tm6sIsL+QeIuEmX7pI2rcDo8gyOHOpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKyA6ZwJB0gmJXNFNM8iWvgtguUuRYaULfBY3qBPJrUOPGQ90z5KYZpQY/U+Bkm2M
-         nnVr+S8qmSX17yFphvzwOXbEEQ9+TdB+r7yrl0n5IHS1YmKQVBlY1yvKYV6mWCDCvd
-         GKk9q+sqcjx62fGE2t84dMZUb5lo3dGzPyJkSpBo=
+        b=x4SPMM5vPhr4u/FtKwtBle++l1TB/rKN4Yi2on7wgFZLyEScayeXsZhsFesMSNZuv
+         vBdtgdCRpZlPb/hTlBd3AmWbtOODYDZIZ/WVZDLyutZrBdDaCIDh+rxdUcvghSicRV
+         KqmsWLAVRx3PiIbM5nec40xPeTqm38hWXluRbBjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Md Haris Iqbal <haris.phnx@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 527/779] RDMA/rxe: For invalidate compare according to set keys in mr
-Date:   Mon, 15 Aug 2022 20:02:51 +0200
-Message-Id: <20220815180359.799695080@linuxfoundation.org>
+Subject: [PATCH 5.15 529/779] PCI: tegra194: Fix link up retry sequence
+Date:   Mon, 15 Aug 2022 20:02:53 +0200
+Message-Id: <20220815180359.888134590@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,77 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.phnx@gmail.com>
+From: Vidya Sagar <vidyas@nvidia.com>
 
-[ Upstream commit 174e7b137042f19b5ce88beb4fc0ff4ec6b0c72a ]
+[ Upstream commit e05fd6ae77c3e2cc0dba283005d24b6d56d2b1fa ]
 
-The 'rkey' input can be an lkey or rkey, and in rxe the lkey or rkey have
-the same value, including the variant bits.
+Add the missing DLF capability offset while clearing DL_FEATURE_EXCHANGE_EN
+bit during link up retry.
 
-So, if mr->rkey is set, compare the invalidate key with it, otherwise
-compare with the mr->lkey.
-
-Since we already did a lookup on the non-varient bits to get this far, the
-check's only purpose is to confirm that the wqe has the correct variant
-bits.
-
-Fixes: 001345339f4c ("RDMA/rxe: Separate HW and SW l/rkeys")
-Link: https://lore.kernel.org/r/20220707073006.328737-1-haris.phnx@gmail.com
-Signed-off-by: Md Haris Iqbal <haris.phnx@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20220721142052.25971-15-vidyas@nvidia.com
+Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_loc.h |  2 +-
- drivers/infiniband/sw/rxe/rxe_mr.c  | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_loc.h b/drivers/infiniband/sw/rxe/rxe_loc.h
-index 4fd73b51fabf..21bd969718bd 100644
---- a/drivers/infiniband/sw/rxe/rxe_loc.h
-+++ b/drivers/infiniband/sw/rxe/rxe_loc.h
-@@ -85,7 +85,7 @@ struct rxe_mr *lookup_mr(struct rxe_pd *pd, int access, u32 key,
- 			 enum rxe_mr_lookup_type type);
- int mr_check_range(struct rxe_mr *mr, u64 iova, size_t length);
- int advance_dma_data(struct rxe_dma_info *dma, unsigned int length);
--int rxe_invalidate_mr(struct rxe_qp *qp, u32 rkey);
-+int rxe_invalidate_mr(struct rxe_qp *qp, u32 key);
- int rxe_reg_fast_mr(struct rxe_qp *qp, struct rxe_send_wqe *wqe);
- int rxe_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata);
- void rxe_mr_cleanup(struct rxe_pool_entry *arg);
-diff --git a/drivers/infiniband/sw/rxe/rxe_mr.c b/drivers/infiniband/sw/rxe/rxe_mr.c
-index bedcf15aaea7..7c2e7b291b65 100644
---- a/drivers/infiniband/sw/rxe/rxe_mr.c
-+++ b/drivers/infiniband/sw/rxe/rxe_mr.c
-@@ -522,22 +522,22 @@ struct rxe_mr *lookup_mr(struct rxe_pd *pd, int access, u32 key,
- 	return mr;
- }
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index ba9f29d6bca1..bdd84765e646 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -978,7 +978,7 @@ static int tegra_pcie_dw_start_link(struct dw_pcie *pci)
+ 		offset = dw_pcie_find_ext_capability(pci, PCI_EXT_CAP_ID_DLF);
+ 		val = dw_pcie_readl_dbi(pci, offset + PCI_DLF_CAP);
+ 		val &= ~PCI_DLF_EXCHANGE_ENABLE;
+-		dw_pcie_writel_dbi(pci, offset, val);
++		dw_pcie_writel_dbi(pci, offset + PCI_DLF_CAP, val);
  
--int rxe_invalidate_mr(struct rxe_qp *qp, u32 rkey)
-+int rxe_invalidate_mr(struct rxe_qp *qp, u32 key)
- {
- 	struct rxe_dev *rxe = to_rdev(qp->ibqp.device);
- 	struct rxe_mr *mr;
- 	int ret;
- 
--	mr = rxe_pool_get_index(&rxe->mr_pool, rkey >> 8);
-+	mr = rxe_pool_get_index(&rxe->mr_pool, key >> 8);
- 	if (!mr) {
--		pr_err("%s: No MR for rkey %#x\n", __func__, rkey);
-+		pr_err("%s: No MR for key %#x\n", __func__, key);
- 		ret = -EINVAL;
- 		goto err;
- 	}
- 
--	if (rkey != mr->rkey) {
--		pr_err("%s: rkey (%#x) doesn't match mr->rkey (%#x)\n",
--			__func__, rkey, mr->rkey);
-+	if (mr->rkey ? (key != mr->rkey) : (key != mr->lkey)) {
-+		pr_err("%s: wr key (%#x) doesn't match mr key (%#x)\n",
-+			__func__, key, (mr->rkey ? mr->rkey : mr->lkey));
- 		ret = -EINVAL;
- 		goto err_drop_ref;
- 	}
+ 		tegra_pcie_dw_host_init(pp);
+ 		dw_pcie_setup_rc(pp);
 -- 
 2.35.1
 
