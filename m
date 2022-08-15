@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1424C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4FFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243890AbiHOUC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S242545AbiHOUDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346138AbiHOUBp (ORCPT
+        with ESMTP id S1345765AbiHOT7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:01:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAE17CB64;
-        Mon, 15 Aug 2022 11:53:55 -0700 (PDT)
+        Mon, 15 Aug 2022 15:59:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03B379A5C;
+        Mon, 15 Aug 2022 11:53:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1343FB810A0;
-        Mon, 15 Aug 2022 18:53:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48776C43470;
-        Mon, 15 Aug 2022 18:53:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 338836122A;
+        Mon, 15 Aug 2022 18:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F84AC433C1;
+        Mon, 15 Aug 2022 18:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589632;
-        bh=lO4agyz0ZSzI8UkHKUsysasIuHutY5jQ8FqjF1ZH5tE=;
+        s=korg; t=1660589591;
+        bh=9RVo2cv9gTDUf/SygOdjGWEFi20yyH/rO62XiMle2Yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RjKG6pmjqr0gp964v9nJ9byIbVWtcw3OnhNjnBlEXov8+dYxqx6DOBByGP2plGTqv
-         q2FJrDXKun2V9Dt/CsN0/tnlVo95K2RJretPossv8j8meSS3r2UL/680AKbpoqQ7JR
-         /SEt/hI4CalonqCefe3EOS/jffkMR6PFMWcTIA0M=
+        b=mjra04/jiIL0YyyhWSGe/ef/oa3xAV0wLl3IkcxzHbZmtDxGSV6OUbTwMPQ0lgvXh
+         ZlYzzt1rH+k5Jy1vnWOBjXOoiGt+gpAJN6lXLzcT+/X1PVONdo6cTzmC49WNbg9N4R
+         TuPW39ZBkSALzuS3kWBLrOJVOMKUKtUMGjrqVLJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 763/779] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Mon, 15 Aug 2022 20:06:47 +0200
-Message-Id: <20220815180410.031894477@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 735/779] KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
+Date:   Mon, 15 Aug 2022 20:06:19 +0200
+Message-Id: <20220815180408.866071215@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,45 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
+[ Upstream commit b663f0b5f3d665c261256d1f76e98f077c6e56af ]
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+Add a helper to check of the guest PMU has PERF_GLOBAL_CTRL, which is
+unintuitive _and_ diverges from Intel's architecturally defined behavior.
+Even worse, KVM currently implements the check using two different (but
+equivalent) checks, _and_ there has been at least one attempt to add a
+_third_ flavor.
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
-
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220722224409.1336532-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/pmu_intel.c |  4 ++--
+ arch/x86/kvm/vmx/vmx.h       | 12 ++++++++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3372,11 +3372,12 @@ void tcp_xmit_retransmit_queue(struct so
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index f9054e7ec89e..e624a39365ec 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -104,7 +104,7 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
  {
--	int amt;
-+	int delta, amt;
+ 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
  
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
- 	sk_memory_allocated_add(sk, amt);
+-	if (pmu->version < 2)
++	if (!intel_pmu_has_perf_global_ctrl(pmu))
+ 		return true;
  
+ 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
+@@ -222,7 +222,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
+ 	case MSR_CORE_PERF_GLOBAL_STATUS:
+ 	case MSR_CORE_PERF_GLOBAL_CTRL:
+ 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
+-		ret = pmu->version > 1;
++		return intel_pmu_has_perf_global_ctrl(pmu);
+ 		break;
+ 	default:
+ 		ret = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0) ||
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index a8b8150252bb..20f1213a9368 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -92,6 +92,18 @@ union vmx_exit_reason {
+ 	u32 full;
+ };
+ 
++static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
++{
++	/*
++	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
++	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
++	 * greater than zero.  However, KVM only exposes and emulates the MSR
++	 * to/for the guest if the guest PMU supports at least "Architectural
++	 * Performance Monitoring Version 2".
++	 */
++	return pmu->version > 1;
++}
++
+ #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
+ #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
+ 
+-- 
+2.35.1
+
 
 
