@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B941C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEA4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352249AbiHOWzU (ORCPT
+        id S1346074AbiHOWzY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        Mon, 15 Aug 2022 18:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352242AbiHOWxe (ORCPT
+        with ESMTP id S242683AbiHOWyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:53:34 -0400
+        Mon, 15 Aug 2022 18:54:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66DD45076;
-        Mon, 15 Aug 2022 12:54:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E3E7F11F;
+        Mon, 15 Aug 2022 12:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC25A6125B;
-        Mon, 15 Aug 2022 19:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB419C433D6;
-        Mon, 15 Aug 2022 19:54:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0FBC6113B;
+        Mon, 15 Aug 2022 19:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3EE8C433D6;
+        Mon, 15 Aug 2022 19:54:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593285;
-        bh=j55TNd95ho6ZbsHNHDPW0cph+TjLYNpouX6nY95nTmk=;
+        s=korg; t=1660593288;
+        bh=Zs8uX0XxC7l9T7Gv2eAAYMFzEiCbxZ8p6gV3+tEkSGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uSkipxBjJx9dfeW52fXuy7MlMnNhwbWDgj4IqXf3RfVhXouPmBYu663JQejwJat5y
-         BFkPZwCYSC6Uu/L2bUie6ajoCpKCxgCbD4CRson/Z43FJ/Vnqvqod7BrftUG2D/iJo
-         V4MN1DRuFGM7NUwUrq/r8YMeecjQ05kEuAzKkEpE=
+        b=iKALp9hg5EVCoM2ZcAv95swNMolNPw5TWVFQtVNSrT+kkK33kSYM+XzdJgyv80mpp
+         5rMkZ9qjBzXjJoBY3dzgQv9TeRM9tm60p8hillKeaAxpHJnKK4XjeVAAR9HywQ8Ev+
+         t+O+a/3QCFhmn6dQyYLfKo41Eij2Gnmj1CmZr/aI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Brian Masney <masneyb@onstation.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Sherry Sun <sherry.sun@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0241/1157] soc: qcom: ocmem: Fix refcount leak in of_get_ocmem
-Date:   Mon, 15 Aug 2022 19:53:17 +0200
-Message-Id: <20220815180449.198484131@linuxfoundation.org>
+Subject: [PATCH 5.18 0923/1095] tty: serial: fsl_lpuart: correct the count of break characters
+Date:   Mon, 15 Aug 2022 20:05:22 +0200
+Message-Id: <20220815180507.445957567@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sherry Sun <sherry.sun@nxp.com>
 
-[ Upstream commit 92a563fcf14b3093226fb36f12e9b5cf630c5a5d ]
+[ Upstream commit 707f816f25590c20e056b3bd4a17ce69b03fe856 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+The LPUART can't distinguish between a break signal and a framing error,
+so need to count the break characters if there is a framing error and
+received data is zero instead of the parity error.
 
-Fixes: 88c1e9404f1d ("soc: qcom: add OCMEM driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220602042430.1114-1-linmq006@gmail.com
+Fixes: 5541a9bacfe5 ("serial: fsl_lpuart: handle break and make sysrq work")
+Reviewed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20220725050115.12396-1-sherry.sun@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/ocmem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
-index 97fd24c178f8..c92d26b73e6f 100644
---- a/drivers/soc/qcom/ocmem.c
-+++ b/drivers/soc/qcom/ocmem.c
-@@ -194,14 +194,17 @@ struct ocmem *of_get_ocmem(struct device *dev)
- 	devnode = of_parse_phandle(dev->of_node, "sram", 0);
- 	if (!devnode || !devnode->parent) {
- 		dev_err(dev, "Cannot look up sram phandle\n");
-+		of_node_put(devnode);
- 		return ERR_PTR(-ENODEV);
- 	}
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 2cb89491dd09..65b76adf107c 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -990,12 +990,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
  
- 	pdev = of_find_device_by_node(devnode->parent);
- 	if (!pdev) {
- 		dev_err(dev, "Cannot find device node %s\n", devnode->name);
-+		of_node_put(devnode);
- 		return ERR_PTR(-EPROBE_DEFER);
- 	}
-+	of_node_put(devnode);
+ 		if (sr & (UARTSTAT_PE | UARTSTAT_OR | UARTSTAT_FE)) {
+ 			if (sr & UARTSTAT_PE) {
++				sport->port.icount.parity++;
++			} else if (sr & UARTSTAT_FE) {
+ 				if (is_break)
+ 					sport->port.icount.brk++;
+ 				else
+-					sport->port.icount.parity++;
+-			} else if (sr & UARTSTAT_FE) {
+-				sport->port.icount.frame++;
++					sport->port.icount.frame++;
+ 			}
  
- 	ocmem = platform_get_drvdata(pdev);
- 	if (!ocmem) {
+ 			if (sr & UARTSTAT_OR)
+@@ -1010,12 +1010,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 			sr &= sport->port.read_status_mask;
+ 
+ 			if (sr & UARTSTAT_PE) {
++				flg = TTY_PARITY;
++			} else if (sr & UARTSTAT_FE) {
+ 				if (is_break)
+ 					flg = TTY_BREAK;
+ 				else
+-					flg = TTY_PARITY;
+-			} else if (sr & UARTSTAT_FE) {
+-				flg = TTY_FRAME;
++					flg = TTY_FRAME;
+ 			}
+ 
+ 			if (sr & UARTSTAT_OR)
 -- 
 2.35.1
 
