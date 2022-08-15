@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841F3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BB2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349678AbiHOVy4 (ORCPT
+        id S1343651AbiHOVzC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43770 "EHLO
+        Mon, 15 Aug 2022 17:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350586AbiHOVvm (ORCPT
+        with ESMTP id S1350608AbiHOVvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:42 -0400
+        Mon, 15 Aug 2022 17:51:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53FD106FB3;
-        Mon, 15 Aug 2022 12:33:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C5E10777C;
+        Mon, 15 Aug 2022 12:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E14C960FB9;
-        Mon, 15 Aug 2022 19:33:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B440C433D6;
-        Mon, 15 Aug 2022 19:33:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F11AE60EF0;
+        Mon, 15 Aug 2022 19:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003C6C433D6;
+        Mon, 15 Aug 2022 19:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591989;
-        bh=8O+aw44hiz3gQ+R3zmwagrKbzLPzdYibj+A58m4ChMI=;
+        s=korg; t=1660591992;
+        bh=UDIfRdCg/9MJ7PfRFF1L942/9m5Ku730mwHGprEd1s8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qupxr4FQ59hXqUMVt4lNhtKeBGAVS8TtDm3MFPKVeNOrD7muqwhvjGVXe+how6/vT
-         EPYf1N2mvc+d2bw/xCzVX16mpFZNFIuZ2Nl0mXLE4wOszALX7BnuCjl99NCSOWzu16
-         lNVAy3pbfw7uioespEoAaY5z1hKaZC6Y/XTaLkmA=
+        b=yF7ps9dAScO/QVqkTWHp4NauZV3vwtgogWPK+FjzBwUM4Ez3jpCXcY3OSu5S+Abdl
+         4Oj0/jcYS5NjeFB1v5PfHr0OZHKPk2AERQupMi/bf81T6+GrV547yk1F0KKqAMMjnh
+         UhiFdnbluCpvD5ZpgD6WzKubhV3xZtUxAyDhLxW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yushan Zhou <katrinzhou@tencent.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0714/1095] kernfs: fix potential NULL dereference in __kernfs_remove
-Date:   Mon, 15 Aug 2022 20:01:53 +0200
-Message-Id: <20220815180458.935428494@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0041/1157] KVM: x86/mmu: Fully re-evaluate MMIO caching when SPTE masks change
+Date:   Mon, 15 Aug 2022 19:49:57 +0200
+Message-Id: <20220815180441.084124063@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,52 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yushan Zhou <katrinzhou@tencent.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 72b5d5aef246a0387cefa23121dd90901c7a691a ]
+commit c3e0c8c2e8b17bae30d5978bc2decdd4098f0f99 upstream.
 
-When lockdep is enabled, lockdep_assert_held_write would
-cause potential NULL pointer dereference.
+Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
+masks change; simply clearing enable_mmio_caching when a configuration
+isn't compatible with caching fails to handle the scenario where the
+masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
+location, and toggle compatibility from false=>true.
 
-Fix the following smatch warnings:
+Snapshot the original module param so that re-evaluating MMIO caching
+preserves userspace's desire to allow caching.  Use a snapshot approach
+so that enable_mmio_caching still reflects KVM's actual behavior.
 
-fs/kernfs/dir.c:1353 __kernfs_remove() warn: variable dereferenced before check 'kn' (see line 1346)
-
-Fixes: 393c3714081a ("kernfs: switch global kernfs_rwsem lock to per-fs lock")
-Signed-off-by: Yushan Zhou <katrinzhou@tencent.com>
-Link: https://lore.kernel.org/r/20220630082512.3482581-1-zys.zljxml@gmail.com
+Fixes: 8b9e74bfbf8c ("KVM: x86/mmu: Use enable_mmio_caching to track if MMIO caching is enabled")
+Reported-by: Michael Roth <michael.roth@amd.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: stable@vger.kernel.org
+Tested-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Kai Huang <kai.huang@intel.com>
+Message-Id: <20220803224957.1285926-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/kernfs/dir.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/kvm/mmu/mmu.c  |    4 ++++
+ arch/x86/kvm/mmu/spte.c |   19 +++++++++++++++++++
+ arch/x86/kvm/mmu/spte.h |    1 +
+ 3 files changed, 24 insertions(+)
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index 6eca72cfa1f2..1cc88ba6de90 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -1343,14 +1343,17 @@ static void __kernfs_remove(struct kernfs_node *kn)
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6274,11 +6274,15 @@ static int set_nx_huge_pages(const char
+ /*
+  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
+  * its default value of -1 is technically undefined behavior for a boolean.
++ * Forward the module init call to SPTE code so that it too can handle module
++ * params that need to be resolved/snapshot.
+  */
+ void __init kvm_mmu_x86_module_init(void)
  {
- 	struct kernfs_node *pos;
- 
-+	/* Short-circuit if non-root @kn has already finished removal. */
-+	if (!kn)
-+		return;
+ 	if (nx_huge_pages == -1)
+ 		__set_nx_huge_pages(get_nx_auto_mode());
 +
- 	lockdep_assert_held_write(&kernfs_root(kn)->kernfs_rwsem);
++	kvm_mmu_spte_module_init();
+ }
  
- 	/*
--	 * Short-circuit if non-root @kn has already finished removal.
- 	 * This is for kernfs_remove_self() which plays with active ref
- 	 * after removal.
- 	 */
--	if (!kn || (kn->parent && RB_EMPTY_NODE(&kn->rb)))
-+	if (kn->parent && RB_EMPTY_NODE(&kn->rb))
- 		return;
+ /*
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -20,6 +20,7 @@
+ #include <asm/vmx.h>
  
- 	pr_debug("kernfs %s: removing\n", kn->name);
--- 
-2.35.1
-
+ bool __read_mostly enable_mmio_caching = true;
++static bool __ro_after_init allow_mmio_caching;
+ module_param_named(mmio_caching, enable_mmio_caching, bool, 0444);
+ EXPORT_SYMBOL_GPL(enable_mmio_caching);
+ 
+@@ -43,6 +44,18 @@ u64 __read_mostly shadow_nonpresent_or_r
+ 
+ u8 __read_mostly shadow_phys_bits;
+ 
++void __init kvm_mmu_spte_module_init(void)
++{
++	/*
++	 * Snapshot userspace's desire to allow MMIO caching.  Whether or not
++	 * KVM can actually enable MMIO caching depends on vendor-specific
++	 * hardware capabilities and other module params that can't be resolved
++	 * until the vendor module is loaded, i.e. enable_mmio_caching can and
++	 * will change when the vendor module is (re)loaded.
++	 */
++	allow_mmio_caching = enable_mmio_caching;
++}
++
+ static u64 generation_mmio_spte_mask(u64 gen)
+ {
+ 	u64 mask;
+@@ -338,6 +351,12 @@ void kvm_mmu_set_mmio_spte_mask(u64 mmio
+ 	BUG_ON((u64)(unsigned)access_mask != access_mask);
+ 	WARN_ON(mmio_value & shadow_nonpresent_or_rsvd_lower_gfn_mask);
+ 
++	/*
++	 * Reset to the original module param value to honor userspace's desire
++	 * to (dis)allow MMIO caching.  Update the param itself so that
++	 * userspace can see whether or not KVM is actually using MMIO caching.
++	 */
++	enable_mmio_caching = allow_mmio_caching;
+ 	if (!enable_mmio_caching)
+ 		mmio_value = 0;
+ 
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -444,6 +444,7 @@ static inline u64 restore_acc_track_spte
+ 
+ u64 kvm_mmu_changed_pte_notifier_make_spte(u64 old_spte, kvm_pfn_t new_pfn);
+ 
++void __init kvm_mmu_spte_module_init(void);
+ void kvm_mmu_reset_all_pte_masks(void);
+ 
+ #endif
 
 
