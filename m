@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 103B8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799C6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244007AbiHOWJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S1346331AbiHOWJm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349782AbiHOWG1 (ORCPT
+        with ESMTP id S1347139AbiHOWHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:06:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBE54BA52;
-        Mon, 15 Aug 2022 12:37:52 -0700 (PDT)
+        Mon, 15 Aug 2022 18:07:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985C5118444;
+        Mon, 15 Aug 2022 12:37:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08EA761089;
-        Mon, 15 Aug 2022 19:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09B65C433D6;
-        Mon, 15 Aug 2022 19:37:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1EF9B80EAD;
+        Mon, 15 Aug 2022 19:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FB1C433C1;
+        Mon, 15 Aug 2022 19:37:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592271;
-        bh=aEfeu9f1lMXq8ZH7oRYczw5jkBVwbMgOJJdgiuGDQx4=;
+        s=korg; t=1660592274;
+        bh=sT5pL6cUl6cZxcolgG5Lty5iulljWSDOK+DQZab1v8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0IOdcFrQR3iofIMmZ+dUgbs7eLmQo0ziSxDDw8vheKFDihURXG6adHdNuOzoEX3W
-         TVmqEZwqj42lonVDl/F612kXK/KMEoyjNMsml6ZnUBx48fAwqcaDwiR8oiSu+i9EgN
-         OIuiIVr0kgvzaEJPM+0w1ZO5coeSHQIKi/rV8TJ8=
+        b=ujC2tnn4EFftDYUZ/kbyBXcb5z8SSPOlHDbdCn2ahJQCmgAt12Z31zg3Osu+itXIK
+         UEgDwdYmGiO4EsuESkSfVgqSKO0BuF52kSSAAZEN6d0+R+oy8Dpmb3D+eon5yfautK
+         5UjjDaBT7g3qPg+45grm1GSNI2yG42L6FZIZSqvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Di Shen <di.shen@unisoc.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.19 0055/1157] thermal: sysfs: Fix cooling_device_stats_setup() error code path
-Date:   Mon, 15 Aug 2022 19:50:11 +0200
-Message-Id: <20220815180441.655370035@linuxfoundation.org>
+        stable@vger.kernel.org, Shunsuke Mie <mie@igel.co.jp>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0731/1095] PCI: endpoint: Dont stop controller when unbinding endpoint function
+Date:   Mon, 15 Aug 2022 20:02:10 +0200
+Message-Id: <20220815180459.630969270@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,69 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Shunsuke Mie <mie@igel.co.jp>
 
-commit d5a8aa5d7d80d21ab6b266f1bed4194b61746199 upstream.
+[ Upstream commit 1bc2b7bfba6e2f64edf5e246f3af2967261f6c3d ]
 
-If cooling_device_stats_setup() fails to create the stats object, it
-must clear the last slot in cooling_device_attr_groups that was
-initially empty (so as to make it possible to add stats attributes to
-the cooling device attribute groups).
+Unbinding an endpoint function from the endpoint controller shouldn't stop
+the controller.  This is especially a problem for multi-function endpoints
+where other endpoints may still be active.
 
-Failing to do so may cause the stats attributes to be created by
-mistake for a device that doesn't have a stats object, because the
-slot in question might be populated previously during the registration
-of another cooling device.
+Don't stop the controller when unbinding one of its endpoints.  Normally
+the controller is stopped via configfs.
 
-Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
-Reported-by: Di Shen <di.shen@unisoc.com>
-Tested-by: Di Shen <di.shen@unisoc.com>
-Cc: 4.17+ <stable@vger.kernel.org> # 4.17+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
+Link: https://lore.kernel.org/r/20220622040924.113279-1-mie@igel.co.jp
+Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/thermal_sysfs.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -813,12 +813,13 @@ static const struct attribute_group cool
+diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+index 5b833f00e980..a5ed779b0a51 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-test.c
++++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+@@ -627,7 +627,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
  
- static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- {
-+	const struct attribute_group *stats_attr_group = NULL;
- 	struct cooling_dev_stats *stats;
- 	unsigned long states;
- 	int var;
+ 	cancel_delayed_work(&epf_test->cmd_handler);
+ 	pci_epf_test_clean_dma_chan(epf_test);
+-	pci_epc_stop(epc);
+ 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
+ 		epf_bar = &epf->bar[bar];
  
- 	if (cdev->ops->get_max_state(cdev, &states))
--		return;
-+		goto out;
- 
- 	states++; /* Total number of states is highest state + 1 */
- 
-@@ -828,7 +829,7 @@ static void cooling_device_stats_setup(s
- 
- 	stats = kzalloc(var, GFP_KERNEL);
- 	if (!stats)
--		return;
-+		goto out;
- 
- 	stats->time_in_state = (ktime_t *)(stats + 1);
- 	stats->trans_table = (unsigned int *)(stats->time_in_state + states);
-@@ -838,9 +839,12 @@ static void cooling_device_stats_setup(s
- 
- 	spin_lock_init(&stats->lock);
- 
-+	stats_attr_group = &cooling_device_stats_attr_group;
-+
-+out:
- 	/* Fill the empty slot left in cooling_device_attr_groups */
- 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
--	cooling_device_attr_groups[var] = &cooling_device_stats_attr_group;
-+	cooling_device_attr_groups[var] = stats_attr_group;
- }
- 
- static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
+-- 
+2.35.1
+
 
 
