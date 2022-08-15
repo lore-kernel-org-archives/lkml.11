@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44865C25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 656F1C25B08
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355133AbiHPAAl (ORCPT
+        id S1355566AbiHPAAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
+        Mon, 15 Aug 2022 20:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355931AbiHOXxV (ORCPT
+        with ESMTP id S1355972AbiHOXx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:53:21 -0400
+        Mon, 15 Aug 2022 19:53:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC847C694E;
-        Mon, 15 Aug 2022 13:17:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4906D15BBB7;
+        Mon, 15 Aug 2022 13:18:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E1F9B81180;
-        Mon, 15 Aug 2022 20:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71315C433C1;
-        Mon, 15 Aug 2022 20:17:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9768BB80EA8;
+        Mon, 15 Aug 2022 20:18:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB55C433C1;
+        Mon, 15 Aug 2022 20:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594660;
-        bh=AdxVgbtTJsF2IQ+9ibzYx6Y6HoJF5R+Vmz7gu23cD4c=;
+        s=korg; t=1660594680;
+        bh=twaGXF0MvgZEXkpoKJrkeQCigkqeCs2jGuviee0Fe20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1wTJL//cRbnAISOk6P6LyfjMtlYKsmIr+sOFREp/vT9uZaHDZIaJ4f7AanMxkClI+
-         4blXENUvXj2lijXWjk1sO29PBK06FjOinF/a8UcoNkfw7VgCDRhxbc4z+Bd9Gc57FQ
-         yk88q8cvpLz51w+NkhRHCmpnH5cNMSigEunqLJXI=
+        b=KlBFdAEmb/KviagQE9qBjAub9kaY6CPDpQsQyY21Aw4/x7cS5VLOAyAc5Pf0mpLI+
+         fiD15xv4ER77M65Nc3ynEfEnEkFWelJ0kFEJYM/2LjDMWvMh5caTcqg4VVuyM3nKhJ
+         X4eio71mKfQOa3sYivzg/5XsLye0szzLS+Gv+Wfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shayne Chen <shayne.chen@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0485/1157] mt76: mt7915: fix incorrect testmode ipg on band 1 caused by wmm_idx
-Date:   Mon, 15 Aug 2022 19:57:21 +0200
-Message-Id: <20220815180459.017553126@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0525/1157] libbpf: Fix str_has_sfx()s return value
+Date:   Mon, 15 Aug 2022 19:58:01 +0200
+Message-Id: <20220815180500.671777579@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,60 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shayne Chen <shayne.chen@mediatek.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 6e744cfeee02c2d8676eb55d5b3720808812f41f ]
+[ Upstream commit 14229b8153a3ca51d97a22a18c68deeae64afce0 ]
 
-Fix the issue that the measured inter packet gap didn't fit its
-setting value.
+The return from strcmp() is inverted so it wrongly returns true instead
+of false and vice versa.
 
-Fixes: c2d3b1926f30 ("mt76: mt7915: add support for ipg in testmode")
-Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: a1c9d61b19cb ("libbpf: Improve library identification for uprobe binary path resolution")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Cc: Alan Maguire <alan.maguire@oracle.com>
+Link: https://lore.kernel.org/bpf/YtZ+/dAA195d99ak@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/testmode.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ tools/lib/bpf/libbpf_internal.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/testmode.c b/drivers/net/wireless/mediatek/mt76/mt7915/testmode.c
-index 20f63644e929..0f5c1e5bffe1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/testmode.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/testmode.c
-@@ -168,13 +168,14 @@ mt7915_tm_set_tam_arb(struct mt7915_phy *phy, bool enable, bool mu)
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index ef5d975078e5..230ac5699c3d 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -109,9 +109,9 @@ static inline bool str_has_sfx(const char *str, const char *sfx)
+ 	size_t str_len = strlen(str);
+ 	size_t sfx_len = strlen(sfx);
+ 
+-	if (sfx_len <= str_len)
+-		return strcmp(str + str_len - sfx_len, sfx);
+-	return false;
++	if (sfx_len > str_len)
++		return false;
++	return strcmp(str + str_len - sfx_len, sfx) == 0;
  }
  
- static int
--mt7915_tm_set_wmm_qid(struct mt7915_dev *dev, u8 qid, u8 aifs, u8 cw_min,
-+mt7915_tm_set_wmm_qid(struct mt7915_phy *phy, u8 qid, u8 aifs, u8 cw_min,
- 		      u16 cw_max, u16 txop)
- {
-+	struct mt7915_vif *mvif = (struct mt7915_vif *)phy->monitor_vif->drv_priv;
- 	struct mt7915_mcu_tx req = { .total = 1 };
- 	struct edca *e = &req.edca[0];
- 
--	e->queue = qid;
-+	e->queue = qid + mvif->mt76.wmm_idx * MT76_CONNAC_MAX_WMM_SETS;
- 	e->set = WMM_PARAM_SET;
- 
- 	e->aifs = aifs;
-@@ -182,7 +183,7 @@ mt7915_tm_set_wmm_qid(struct mt7915_dev *dev, u8 qid, u8 aifs, u8 cw_min,
- 	e->cw_max = cpu_to_le16(cw_max);
- 	e->txop = cpu_to_le16(txop);
- 
--	return mt7915_mcu_update_edca(dev, &req);
-+	return mt7915_mcu_update_edca(phy->dev, &req);
- }
- 
- static int
-@@ -244,7 +245,7 @@ mt7915_tm_set_ipg_params(struct mt7915_phy *phy, u32 ipg, u8 mode)
- 
- 	mt7915_tm_set_slot_time(phy, slot_time, sifs);
- 
--	return mt7915_tm_set_wmm_qid(dev,
-+	return mt7915_tm_set_wmm_qid(phy,
- 				     mt76_connac_lmac_mapping(IEEE80211_AC_BE),
- 				     aifsn, cw, cw, 0);
- }
+ /* Symbol versioning is different between static and shared library.
 -- 
 2.35.1
 
