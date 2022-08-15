@@ -2,53 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B569C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75710C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353378AbiHOXe0 (ORCPT
+        id S1353398AbiHOXeh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        Mon, 15 Aug 2022 19:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352832AbiHOX1h (ORCPT
+        with ESMTP id S1345722AbiHOX0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BFC14D722;
-        Mon, 15 Aug 2022 13:07:22 -0700 (PDT)
+        Mon, 15 Aug 2022 19:26:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1E580F5F;
+        Mon, 15 Aug 2022 13:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2366FB80EAD;
-        Mon, 15 Aug 2022 20:07:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECA9C433D6;
-        Mon, 15 Aug 2022 20:07:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42581B80EA8;
+        Mon, 15 Aug 2022 20:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CFC4C433D7;
+        Mon, 15 Aug 2022 20:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594039;
-        bh=ZVE2RNHPOttuDHZ2xX2gbbcEhpFNhv9Nt5X6GeRZKSY=;
+        s=korg; t=1660594018;
+        bh=rX//Aoamy1LKUauQAarWRD1cEgjxTas3z55cPZZLqUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VkWP08ORQ9PtPN7Mzdle9M/hAVKlXcelGbkgd0qOqBUhS/EKcrgG5f3IWAfpXKAGY
-         pih3xQvWhJm3AYZWXY/s5d3qU2h8eROXz505NQ878M4N4Hq04+8PbSuCpalfnC1Z0T
-         mJkappOehipy8pTdlE63bt+8qC3lCLRgTij/AmDY=
+        b=U8F1LDmvBq0NLpXLWbXd+bh9WfQkrpRcN6thyfnrpdCO8T8zWlmb4/EjSlPvKyBXW
+         wmK7WEp8Iyc3pRaZTKEgsORJpEAZAUg12yi0F5dM0sdwX5dYoXi8rMUnuibyG24G51
+         w0W+DO5qirrih3oeicx07jyvfi5Xuk//qqM8oMsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Lindner <mareklindner@neomailbox.ch>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        Sven Eckelmann <sven@narfation.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1046/1095] batman-adv: tracing: Use the new __vstring() helper
-Date:   Mon, 15 Aug 2022 20:07:25 +0200
-Message-Id: <20220815180512.360819821@linuxfoundation.org>
+Subject: [PATCH 5.18 1043/1095] dm raid: fix address sanitizer warning in raid_resume
+Date:   Mon, 15 Aug 2022 20:07:22 +0200
+Message-Id: <20220815180512.226178217@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -60,67 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 9abc291812d784bd4a26c01af4ebdbf9f2dbf0bb ]
+[ Upstream commit 7dad24db59d2d2803576f2e3645728866a056dab ]
 
-Instead of open coding a __dynamic_array() with a fixed length (which
-defeats the purpose of the dynamic array in the first place). Use the new
-__vstring() helper that will use a va_list and only write enough of the
-string into the ring buffer that is needed.
+There is a KASAN warning in raid_resume when running the lvm test
+lvconvert-raid.sh. The reason for the warning is that mddev->raid_disks
+is greater than rs->raid_disks, so the loop touches one entry beyond
+the allocated length.
 
-Link: https://lkml.kernel.org/r/20220724191650.236b1355@rorschach.local.home
-
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: b.a.t.m.a.n@lists.open-mesh.org
-Cc: netdev@vger.kernel.org
-Acked-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/trace.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/md/dm-raid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/batman-adv/trace.h b/net/batman-adv/trace.h
-index d673ebdd0426..31c8f922651d 100644
---- a/net/batman-adv/trace.h
-+++ b/net/batman-adv/trace.h
-@@ -28,8 +28,6 @@
+diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
+index 92e6b731f9d6..a55d6f6f294b 100644
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3824,7 +3824,7 @@ static void attempt_restore_of_faulty_devices(struct raid_set *rs)
  
- #endif /* CONFIG_BATMAN_ADV_TRACING */
+ 	memset(cleared_failed_devices, 0, sizeof(cleared_failed_devices));
  
--#define BATADV_MAX_MSG_LEN	256
--
- TRACE_EVENT(batadv_dbg,
- 
- 	    TP_PROTO(struct batadv_priv *bat_priv,
-@@ -40,16 +38,13 @@ TRACE_EVENT(batadv_dbg,
- 	    TP_STRUCT__entry(
- 		    __string(device, bat_priv->soft_iface->name)
- 		    __string(driver, KBUILD_MODNAME)
--		    __dynamic_array(char, msg, BATADV_MAX_MSG_LEN)
-+		    __vstring(msg, vaf->fmt, vaf->va)
- 	    ),
- 
- 	    TP_fast_assign(
- 		    __assign_str(device, bat_priv->soft_iface->name);
- 		    __assign_str(driver, KBUILD_MODNAME);
--		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
--					   BATADV_MAX_MSG_LEN,
--					   vaf->fmt,
--					   *vaf->va) >= BATADV_MAX_MSG_LEN);
-+		    __assign_vstr(msg, vaf->fmt, vaf->va);
- 	    ),
- 
- 	    TP_printk(
+-	for (i = 0; i < mddev->raid_disks; i++) {
++	for (i = 0; i < rs->raid_disks; i++) {
+ 		r = &rs->dev[i].rdev;
+ 		/* HM FIXME: enhance journal device recovery processing */
+ 		if (test_bit(Journal, &r->flags))
 -- 
 2.35.1
 
