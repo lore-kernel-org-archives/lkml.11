@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26980C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037F8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348528AbiHOWci (ORCPT
+        id S1348786AbiHOWcm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        Mon, 15 Aug 2022 18:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350860AbiHOW1P (ORCPT
+        with ESMTP id S1350741AbiHOW1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1704BB2496;
-        Mon, 15 Aug 2022 12:45:45 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A4A4198F;
+        Mon, 15 Aug 2022 12:45:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F19D3CE12E0;
-        Mon, 15 Aug 2022 19:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3487C433C1;
-        Mon, 15 Aug 2022 19:45:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63375B81136;
+        Mon, 15 Aug 2022 19:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB13DC433C1;
+        Mon, 15 Aug 2022 19:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592742;
-        bh=/UkRyhxTYH7lks3ikX7uMYzaZR0jh9oqDYyycU5+Ims=;
+        s=korg; t=1660592733;
+        bh=GQzVVrODmWCT239cap0EveCqiYT9gKfYsgEnP5+XKRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2au58QWkfysEavs/Dc+TuuuK4Vw0brdR0ipyRhci0S7nDbF2Zu5xx7qff2brihXD1
-         D68MYSUsjgUrdwJpZXMMOOvSHD8Yd99FJVC6Vf1VCNrMGIVr3AGmsu10Vs9Gc8yt3h
-         h2O6HFN6gQGtH81po8McqHqeHaSxu2b9gOx0W+iM=
+        b=VTSNDZEdi/cBywZKYptSxsJ2GiWXT/3yL3v1Go8Qx+4AtjAxJdddOkQfM0F/hEwqE
+         JQlPzWpSxLrHnoN9FM7PbfUOmnW1fsYCDSZ42MlBC20s6qx40zflEPdIYiDHE/iFIz
+         xEXlv97ScDQRJhbdjMMfYbemyb1Vu1D5l78J8axs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0158/1157] irqchip/mips-gic: Only register IPI domain when SMP is enabled
-Date:   Mon, 15 Aug 2022 19:51:54 +0200
-Message-Id: <20220815180446.003637333@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0837/1095] ASoC: SOF: make ctx_store and ctx_restore as optional
+Date:   Mon, 15 Aug 2022 20:03:56 +0200
+Message-Id: <20220815180503.967711887@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,179 +54,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit 8190cc572981f2f13b6ffc26c7cfa7899e5d3ccc ]
+[ Upstream commit 03f69725749f453b9a4d454a92805f8eb5f095c2 ]
 
-The MIPS GIC irqchip driver may be selected in a uniprocessor
-configuration, but it unconditionally registers an IPI domain.
+Commit 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
+did not marked ctx_store and ctx_restore as Optional.
 
-Limit the part of the driver dealing with IPIs to only be compiled when
-GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220701200056.46555-2-samuel@sholland.org
+Fixes: 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220610083549.16773-2-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/Kconfig        |  3 +-
- drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
- 2 files changed, 56 insertions(+), 27 deletions(-)
+ sound/soc/sof/sof-priv.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index bbb11cb8b0f7..12664ac6ac2d 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -322,7 +322,8 @@ config KEYSTONE_IRQ
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index c856f0d84e49..f369242dd975 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -364,8 +364,8 @@ struct snd_sof_ipc_msg {
  
- config MIPS_GIC
- 	bool
--	select GENERIC_IRQ_IPI
-+	select GENERIC_IRQ_IPI if SMP
-+	select IRQ_DOMAIN_HIERARCHY
- 	select MIPS_CM
- 
- config INGENIC_IRQ
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index ff89b36267dd..8a9efb6ae587 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -52,13 +52,15 @@ static DEFINE_PER_CPU_READ_MOSTLY(unsigned long[GIC_MAX_LONGS], pcpu_masks);
- 
- static DEFINE_SPINLOCK(gic_lock);
- static struct irq_domain *gic_irq_domain;
--static struct irq_domain *gic_ipi_domain;
- static int gic_shared_intrs;
- static unsigned int gic_cpu_pin;
- static unsigned int timer_cpu_pin;
- static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
-+
-+#ifdef CONFIG_GENERIC_IRQ_IPI
- static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
- static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
-+#endif /* CONFIG_GENERIC_IRQ_IPI */
- 
- static struct gic_all_vpes_chip_data {
- 	u32	map;
-@@ -472,9 +474,11 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
- 	u32 map;
- 
- 	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
-+#ifdef CONFIG_GENERIC_IRQ_IPI
- 		/* verify that shared irqs don't conflict with an IPI irq */
- 		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
- 			return -EBUSY;
-+#endif /* CONFIG_GENERIC_IRQ_IPI */
- 
- 		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
- 						    &gic_level_irq_controller,
-@@ -567,6 +571,8 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
- 	.map = gic_irq_domain_map,
- };
- 
-+#ifdef CONFIG_GENERIC_IRQ_IPI
-+
- static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
- 				const u32 *intspec, unsigned int intsize,
- 				irq_hw_number_t *out_hwirq,
-@@ -670,6 +676,48 @@ static const struct irq_domain_ops gic_ipi_domain_ops = {
- 	.match = gic_ipi_domain_match,
- };
- 
-+static int gic_register_ipi_domain(struct device_node *node)
-+{
-+	struct irq_domain *gic_ipi_domain;
-+	unsigned int v[2], num_ipis;
-+
-+	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
-+						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
-+						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
-+						  node, &gic_ipi_domain_ops, NULL);
-+	if (!gic_ipi_domain) {
-+		pr_err("Failed to add IPI domain");
-+		return -ENXIO;
-+	}
-+
-+	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
-+
-+	if (node &&
-+	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
-+		bitmap_set(ipi_resrv, v[0], v[1]);
-+	} else {
-+		/*
-+		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
-+		 * meeting the requirements of arch/mips SMP.
-+		 */
-+		num_ipis = 2 * num_possible_cpus();
-+		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
-+	}
-+
-+	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
-+
-+	return 0;
-+}
-+
-+#else /* !CONFIG_GENERIC_IRQ_IPI */
-+
-+static inline int gic_register_ipi_domain(struct device_node *node)
-+{
-+	return 0;
-+}
-+
-+#endif /* !CONFIG_GENERIC_IRQ_IPI */
-+
- static int gic_cpu_startup(unsigned int cpu)
- {
- 	/* Enable or disable EIC */
-@@ -688,11 +736,12 @@ static int gic_cpu_startup(unsigned int cpu)
- static int __init gic_of_init(struct device_node *node,
- 			      struct device_node *parent)
- {
--	unsigned int cpu_vec, i, gicconfig, v[2], num_ipis;
-+	unsigned int cpu_vec, i, gicconfig;
- 	unsigned long reserved;
- 	phys_addr_t gic_base;
- 	struct resource res;
- 	size_t gic_len;
-+	int ret;
- 
- 	/* Find the first available CPU vector. */
- 	i = 0;
-@@ -780,30 +829,9 @@ static int __init gic_of_init(struct device_node *node,
- 		return -ENXIO;
- 	}
- 
--	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
--						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
--						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
--						  node, &gic_ipi_domain_ops, NULL);
--	if (!gic_ipi_domain) {
--		pr_err("Failed to add IPI domain");
--		return -ENXIO;
--	}
--
--	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
--
--	if (node &&
--	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
--		bitmap_set(ipi_resrv, v[0], v[1]);
--	} else {
--		/*
--		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
--		 * meeting the requirements of arch/mips SMP.
--		 */
--		num_ipis = 2 * num_possible_cpus();
--		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
--	}
--
--	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
-+	ret = gic_register_ipi_domain(node);
-+	if (ret)
-+		return ret;
- 
- 	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
- 
+ /**
+  * struct sof_ipc_pm_ops - IPC-specific PM ops
+- * @ctx_save:		Function pointer for context save
+- * @ctx_restore:	Function pointer for context restore
++ * @ctx_save:		Optional function pointer for context save
++ * @ctx_restore:	Optional function pointer for context restore
+  */
+ struct sof_ipc_pm_ops {
+ 	int (*ctx_save)(struct snd_sof_dev *sdev);
 -- 
 2.35.1
 
