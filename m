@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3241C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841F3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346254AbiHOVyx (ORCPT
+        id S1349678AbiHOVy4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        Mon, 15 Aug 2022 17:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350565AbiHOVvi (ORCPT
+        with ESMTP id S1350586AbiHOVvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8408510774F;
-        Mon, 15 Aug 2022 12:33:08 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53FD106FB3;
+        Mon, 15 Aug 2022 12:33:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21AFAB80EAD;
-        Mon, 15 Aug 2022 19:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 587B0C433D6;
-        Mon, 15 Aug 2022 19:33:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E14C960FB9;
+        Mon, 15 Aug 2022 19:33:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B440C433D6;
+        Mon, 15 Aug 2022 19:33:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591985;
-        bh=B9x94GFAJ58C5q5QEsDUkX1JGRSes5Nt9uSoHJvL1ec=;
+        s=korg; t=1660591989;
+        bh=8O+aw44hiz3gQ+R3zmwagrKbzLPzdYibj+A58m4ChMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/9wcbI1PnQsM98rZn9xqlYW6SXANnPUFUD3W2RhKr3iEyMRy8CCLO9mwcUPJdrF5
-         XMM0Vq7N9h+n3GRHRK3aCtz144zeHtQESr4dlnPxPrTZSlU9+xOG9GtSwgI1zfWdGj
-         30jiKgwSmMy0p6zAY2eKOxL//mBNUyPXyI7PCaBg=
+        b=Qupxr4FQ59hXqUMVt4lNhtKeBGAVS8TtDm3MFPKVeNOrD7muqwhvjGVXe+how6/vT
+         EPYf1N2mvc+d2bw/xCzVX16mpFZNFIuZ2Nl0mXLE4wOszALX7BnuCjl99NCSOWzu16
+         lNVAy3pbfw7uioespEoAaY5z1hKaZC6Y/XTaLkmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kai Huang <kai.huang@intel.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0040/1157] KVM: x86: Tag kvm_mmu_x86_module_init() with __init
-Date:   Mon, 15 Aug 2022 19:49:56 +0200
-Message-Id: <20220815180441.036484267@linuxfoundation.org>
+        stable@vger.kernel.org, Yushan Zhou <katrinzhou@tencent.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0714/1095] kernfs: fix potential NULL dereference in __kernfs_remove
+Date:   Mon, 15 Aug 2022 20:01:53 +0200
+Message-Id: <20220815180458.935428494@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,48 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Yushan Zhou <katrinzhou@tencent.com>
 
-commit 982bae43f11c37b51d2f1961bb25ef7cac3746fa upstream.
+[ Upstream commit 72b5d5aef246a0387cefa23121dd90901c7a691a ]
 
-Mark kvm_mmu_x86_module_init() with __init, the entire reason it exists
-is to initialize variables when kvm.ko is loaded, i.e. it must never be
-called after module initialization.
+When lockdep is enabled, lockdep_assert_held_write would
+cause potential NULL pointer dereference.
 
-Fixes: 1d0e84806047 ("KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded")
-Cc: stable@vger.kernel.org
-Reviewed-by: Kai Huang <kai.huang@intel.com>
-Tested-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220803224957.1285926-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fix the following smatch warnings:
+
+fs/kernfs/dir.c:1353 __kernfs_remove() warn: variable dereferenced before check 'kn' (see line 1346)
+
+Fixes: 393c3714081a ("kernfs: switch global kernfs_rwsem lock to per-fs lock")
+Signed-off-by: Yushan Zhou <katrinzhou@tencent.com>
+Link: https://lore.kernel.org/r/20220630082512.3482581-1-zys.zljxml@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/kvm_host.h |    2 +-
- arch/x86/kvm/mmu/mmu.c          |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/kernfs/dir.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1654,7 +1654,7 @@ static inline int kvm_arch_flush_remote_
- #define kvm_arch_pmi_in_guest(vcpu) \
- 	((vcpu) && (vcpu)->arch.handling_intr_from_guest)
- 
--void kvm_mmu_x86_module_init(void);
-+void __init kvm_mmu_x86_module_init(void);
- int kvm_mmu_vendor_module_init(void);
- void kvm_mmu_vendor_module_exit(void);
- 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6275,7 +6275,7 @@ static int set_nx_huge_pages(const char
-  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
-  * its default value of -1 is technically undefined behavior for a boolean.
-  */
--void kvm_mmu_x86_module_init(void)
-+void __init kvm_mmu_x86_module_init(void)
+diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
+index 6eca72cfa1f2..1cc88ba6de90 100644
+--- a/fs/kernfs/dir.c
++++ b/fs/kernfs/dir.c
+@@ -1343,14 +1343,17 @@ static void __kernfs_remove(struct kernfs_node *kn)
  {
- 	if (nx_huge_pages == -1)
- 		__set_nx_huge_pages(get_nx_auto_mode());
+ 	struct kernfs_node *pos;
+ 
++	/* Short-circuit if non-root @kn has already finished removal. */
++	if (!kn)
++		return;
++
+ 	lockdep_assert_held_write(&kernfs_root(kn)->kernfs_rwsem);
+ 
+ 	/*
+-	 * Short-circuit if non-root @kn has already finished removal.
+ 	 * This is for kernfs_remove_self() which plays with active ref
+ 	 * after removal.
+ 	 */
+-	if (!kn || (kn->parent && RB_EMPTY_NODE(&kn->rb)))
++	if (kn->parent && RB_EMPTY_NODE(&kn->rb))
+ 		return;
+ 
+ 	pr_debug("kernfs %s: removing\n", kn->name);
+-- 
+2.35.1
+
 
 
