@@ -2,103 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE886C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A70AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242489AbiHOOBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S242599AbiHOOCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231584AbiHOOBw (ORCPT
+        with ESMTP id S231584AbiHOOCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:01:52 -0400
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDA6220C6;
-        Mon, 15 Aug 2022 07:01:51 -0700 (PDT)
-Received: by mail-qv1-f50.google.com with SMTP id mk9so5383918qvb.11;
-        Mon, 15 Aug 2022 07:01:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=dKfzpcSJcyLaUeyLXairrh0uvdiYsvVZa/B4hAX3xzE=;
-        b=ruJny7kPNGTZt2cVQJSFUU66WH7m0vXI1oBJEJwoBHPht/RLmwD7kNRYxlGldODBJh
-         GL1aH7qwIcZbQlNgpQTRHYbiKFSeK3AOA2UbL879cxznR0gI7fHXl0FeIyOywNj+jxjI
-         S5TYYXdM5d6tbfMjKkt6/sxIVivRZUtIqyRMUWmqf9B++NfJ6ml71Qh1b66WeTq+4shX
-         xaIDtcCZIX9BHTtCOR3WmZrr8K6I8Hsi/TPvFhCEwTndC82iwpXO/Vd7XbkBXYAB9ZjB
-         6Zyc1XRB/nhT+p/JSFRmyBTJU3d7A9pw+X0c5Bu6baIvYdiw7uiChnaolV3CLji0oEjx
-         e00w==
-X-Gm-Message-State: ACgBeo3MCST4Sl92Dhawe6wEKsQvH6npAyyFJwZgTYWEtm6IkI+obzOq
-        zs8i2GImHoV3gf6+BzK/1g==
-X-Google-Smtp-Source: AA6agR5+zNDBXvl94ryaYajiHWUcq2LRnBtS5fKnVsr31dTCfohTIhxzYK5K4DDtpF/JFQwd4bjNPA==
-X-Received: by 2002:a05:6214:5099:b0:477:4ed2:633d with SMTP id kk25-20020a056214509900b004774ed2633dmr13604542qvb.16.1660572109711;
-        Mon, 15 Aug 2022 07:01:49 -0700 (PDT)
-Received: from robh.at.kernel.org ([50.206.145.23])
-        by smtp.gmail.com with ESMTPSA id x2-20020ac87302000000b00342b7e4241fsm8057678qto.77.2022.08.15.07.01.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 07:01:49 -0700 (PDT)
-Received: (nullmailer pid 1103614 invoked by uid 1000);
-        Mon, 15 Aug 2022 14:01:47 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Chen-Yu Tsai <wens@csie.org>, devicetree@vger.kernel.org,
-        Maxime Ripard <mripard@kernel.org>
-In-Reply-To: <20220815043436.20170-4-samuel@sholland.org>
-References: <20220815043436.20170-1-samuel@sholland.org> <20220815043436.20170-4-samuel@sholland.org>
-Subject: Re: [PATCH v3 3/4] dt-bindings: sram: sunxi-sram: Add optional regulators child
-Date:   Mon, 15 Aug 2022 08:01:47 -0600
-Message-Id: <1660572107.469120.1103613.nullmailer@robh.at.kernel.org>
+        Mon, 15 Aug 2022 10:02:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E36222BCE
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 07:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660572134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lXDAAl+x9MWatG+p/VTcB+8mkDyPasS5scLcX2zyIyQ=;
+        b=TvzVGGxy6wBroF3HDpgZMez/tbQQQZTYsEag4ryuBK25x3MLKX7AlAoHWZZWvDap1ezigE
+        ZRBuMRqG+2fwVxzBQWR99AX+1EbZKHSO+Qn0H5IZI5bitw2aN+dAAD2HNA64zjdmA7wIOE
+        1rL9w2mJZEiHB4qXRUWqWJVYPKC1/Zo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-665-uMEmCIL0Nzqvc952K71zXw-1; Mon, 15 Aug 2022 10:02:11 -0400
+X-MC-Unique: uMEmCIL0Nzqvc952K71zXw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 663A880600D;
+        Mon, 15 Aug 2022 14:01:51 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 14A94140EBE3;
+        Mon, 15 Aug 2022 14:01:51 +0000 (UTC)
+Message-ID: <ccdc5718-a66c-da5a-4b0b-360f9d18f13f@redhat.com>
+Date:   Mon, 15 Aug 2022 10:01:50 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3] mm/slab_common: Deleting kobject in
+ kmem_cache_destroy() without holding slab_mutex/cpu_hotplug_lock
+Content-Language: en-US
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220812183033.346425-1-longman@redhat.com>
+ <YvfsmNxDYp9Pz/+P@P9FQF9L96D.corp.robot.car>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YvfsmNxDYp9Pz/+P@P9FQF9L96D.corp.robot.car>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 14 Aug 2022 23:34:34 -0500, Samuel Holland wrote:
-> Some sunxi SoCs have in-package regulators controlled by a register in
-> the system control MMIO block. Allow a child node for these regulators
-> in addition to SRAM child nodes.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> 
-> Changes in v3:
->  - Require the regulators node to have a unit address
->  - Reference the regulator schema from the SRAM controller schema
->  - Move the system LDOs example to the SRAM controller schema
->  - Reorder the patches so the example passes validation
-> 
-> Changes in v2:
->  - New patch for v2
-> 
->  .../allwinner,sun4i-a10-system-control.yaml   | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
+On 8/13/22 14:25, Roman Gushchin wrote:
+> On Fri, Aug 12, 2022 at 02:30:33PM -0400, Waiman Long wrote:
+>> A circular locking problem is reported by lockdep due to the following
+>> circular locking dependency.
+>>
+>>    +--> cpu_hotplug_lock --> slab_mutex --> kn->active --+
+>>    |                                                     |
+>>    +-----------------------------------------------------+
+>>
+>> The forward cpu_hotplug_lock ==> slab_mutex ==> kn->active dependency
+>> happens in
+>>
+>>    kmem_cache_destroy():	cpus_read_lock(); mutex_lock(&slab_mutex);
+>>    ==> sysfs_slab_unlink()
+>>        ==> kobject_del()
+>>            ==> kernfs_remove()
+>> 	      ==> __kernfs_remove()
+>> 	          ==> kernfs_drain(): rwsem_acquire(&kn->dep_map, ...);
+>>
+>> The backward kn->active ==> cpu_hotplug_lock dependency happens in
+>>
+>>    kernfs_fop_write_iter(): kernfs_get_active();
+>>    ==> slab_attr_store()
+>>        ==> cpu_partial_store()
+>>            ==> flush_all(): cpus_read_lock()
+>>
+>> One way to break this circular locking chain is to avoid holding
+>> cpu_hotplug_lock and slab_mutex while deleting the kobject in
+>> sysfs_slab_unlink() which should be equivalent to doing a write_lock
+>> and write_unlock pair of the kn->active virtual lock.
+>>
+>> Since the kobject structures are not protected by slab_mutex or the
+>> cpu_hotplug_lock, we can certainly release those locks before doing
+>> the delete operation.
+>>
+>> Move sysfs_slab_unlink() and sysfs_slab_release() to the newly
+>> created kmem_cache_release() and call it outside the slab_mutex &
+>> cpu_hotplug_lock critical sections. There will be a slight delay
+>> in the deletion of sysfs files if kmem_cache_release() is called
+>> indirectly from a work function.
+>>
+>> Signed-off-by: Waiman Long <longman@redhat.com>
+> Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
+>
+> Thank you, Waiman!
+>
+Thanks for your suggestions that make this patch better.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.example.dtb:0:0: /example-1/syscon@3000000: failed to match any schema with compatible: ['allwinner,sun20i-d1-system-control']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+Cheers,
+Longman
 
