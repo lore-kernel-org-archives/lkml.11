@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C420DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B66AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244151AbiHOUyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
+        id S1344716AbiHOUy1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346569AbiHOUw7 (ORCPT
+        with ESMTP id S1346562AbiHOUw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:52:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0402F4B0E8;
-        Mon, 15 Aug 2022 12:10:32 -0700 (PDT)
+        Mon, 15 Aug 2022 16:52:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8674F6443;
+        Mon, 15 Aug 2022 12:10:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40C866009B;
-        Mon, 15 Aug 2022 19:10:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A91EC433D6;
-        Mon, 15 Aug 2022 19:10:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2A14B81109;
+        Mon, 15 Aug 2022 19:10:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C0EC433C1;
+        Mon, 15 Aug 2022 19:10:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590626;
-        bh=I+I2wzV0Z+MxOytYnSFYZBmG2OVavB/tYy6DM0PO2BQ=;
+        s=korg; t=1660590638;
+        bh=VTOtyVBISkeg2LXdvA8xIlbkH26cTOLWS3LXku/n0/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cDkPbZgyaTElTHmR4cDusjzci2npgby3UmINYeZ04GKYYk/dMMw7DY1xoFzOeYuKh
-         3QY+JkdbmmHa06xKevHGeWG7NlCoq8Elfortc47a76cf6gAbk49fzpNsIS2wgEGiV7
-         +WCqhpIWchVpHIERYsoqMF+Ic5aJH9Z3CM8RAUc0=
+        b=YT9bGNZPjFfY6mKC5DpC6BcU2lsM9F/K+6tW9f7wbK2yOp+t4TjhRXq1WOltX3dFD
+         VpeBeovovTMFBPelWkQR2Ly9YkRcNHKMEWvJLVFlwCIcMjthhYecj4to4RZwAa6XGE
+         f9mZnVlIVY4eYGLBtOJx8NY6al2fCV3QwjGk8dPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0319/1095] ath11k: Avoid REO CMD failed prints during firmware recovery
-Date:   Mon, 15 Aug 2022 19:55:18 +0200
-Message-Id: <20220815180442.983210975@linuxfoundation.org>
+Subject: [PATCH 5.18 0323/1095] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
+Date:   Mon, 15 Aug 2022 19:55:22 +0200
+Message-Id: <20220815180443.146895295@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,47 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-[ Upstream commit 0ab52b2bd7be8fd49c8ade7703c1faa15359c6c5 ]
+[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
 
-Currently when firmware recovery is in progress, we do not queue REO
-commands to the firmware, instead -ESHUTDOWN will be returned to the
-caller leading to a failure print on the console. The REO command in
-the problem scenario is sent for all tids of a peer in which case we
-will have 16 failure prints on the console for a single peer. For an
-AP usecase, this count would be even higher in a worst case scenario.
-Since these commands are bound to fail during firmware recovery, it
-is better to avoid printing these failures and thereby avoid message
-flooding on the console.
+In the dsi_enable function, mtk_dsi_rxtx_control is to
+pull up the MIPI signal operation. Before dsi_disable,
+MIPI should also be pulled down by writing a register
+instead of disabling dsi.
 
-Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+If disable dsi without pulling the mipi signal low, the value of
+the register will still maintain the setting of the mipi signal being
+pulled high.
+After resume, even if the mipi signal is not pulled high, it will still
+be in the high state.
 
-Fixes: 8ee8d38ca472 ("ath11k: Fix crash during firmware recovery on reo cmd ring access")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220602122929.18896-1-quic_mpubbise@quicinc.com
+Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
+
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 049774cc158c..b3e133add1ce 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -835,8 +835,9 @@ void ath11k_peer_rx_tid_delete(struct ath11k *ar,
- 					HAL_REO_CMD_UPDATE_RX_QUEUE, &cmd,
- 					ath11k_dp_rx_tid_del_func);
- 	if (ret) {
--		ath11k_err(ar->ab, "failed to send HAL_REO_CMD_UPDATE_RX_QUEUE cmd, tid %d (%d)\n",
--			   tid, ret);
-+		if (ret != -ESHUTDOWN)
-+			ath11k_err(ar->ab, "failed to send HAL_REO_CMD_UPDATE_RX_QUEUE cmd, tid %d (%d)\n",
-+				   tid, ret);
- 		dma_unmap_single(ar->ab->dev, rx_tid->paddr, rx_tid->size,
- 				 DMA_BIDIRECTIONAL);
- 		kfree(rx_tid->vaddr);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 3a6ee6e9ad2c..f0f523bdafb8 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -682,6 +682,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
++	/* set the lane number as 0 to pull down mipi */
++	writel(0, dsi->regs + DSI_TXRX_CTRL);
+ 
+ 	mtk_dsi_disable(dsi);
+ 
 -- 
 2.35.1
 
