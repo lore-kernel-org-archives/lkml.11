@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8FBC25B0F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD10C282E7
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbiHPEuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56128 "EHLO
+        id S233052AbiHPEug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233145AbiHPEq2 (ORCPT
+        with ESMTP id S232278AbiHPEo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F451B1B85;
-        Mon, 15 Aug 2022 13:43:26 -0700 (PDT)
+        Tue, 16 Aug 2022 00:44:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18964E857;
+        Mon, 15 Aug 2022 13:42:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0938460F60;
-        Mon, 15 Aug 2022 20:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE22C433D6;
-        Mon, 15 Aug 2022 20:43:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72BE66122B;
+        Mon, 15 Aug 2022 20:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77E65C433C1;
+        Mon, 15 Aug 2022 20:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596204;
-        bh=Tdf9diKd0OE9ak2v8QKqoD6yOoCtqCB/V/b54A8Szlc=;
+        s=korg; t=1660596136;
+        bh=nmjEp/2hKjCOI/DtssWsDSrg02t993fQ91et2D8Amhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IclC098BHhSOVZOoXxltUIIalETS9eMYiKu4WiWPdYjn3XAvCt8f2sTH4MxeqkF/B
-         6tMeIjwmmu/thvviyTUGBa59Z2oW2eAlijq+PAdz15ht1Ik5ElvuNxSbP7YxRBCJ3T
-         dfwueZ0IoEsRNcXLO8kD+AlseA9N2SQD4hE8Y2Ro=
+        b=2bScRhKjXgJaZmBqrzZDS2xf23SPQu0p3wAvbRWSrxdlmyi1qj47b850Zhbxk3ZDv
+         b3kjcvuHha/+QMaG02DNpdJ9PQU6WVVCzcHd0vcQC+gp+fc83Nwjh1q2whwY9cKMcC
+         AV+oNWFEdAAb/sGjc1qJec7LlY3YHMRt428ewxYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1004/1157] s390/smp: enforce lowcore protection on CPU restart
-Date:   Mon, 15 Aug 2022 20:06:00 +0200
-Message-Id: <20220815180519.959548741@linuxfoundation.org>
+Subject: [PATCH 5.19 0985/1157] ASoC: audio-graph-card2: Add of_node_put() in fail path
+Date:   Mon, 15 Aug 2022 20:05:41 +0200
+Message-Id: <20220815180519.136137982@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,39 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 6f5c672d17f583b081e283927f5040f726c54598 ]
+[ Upstream commit 8ebc4dd8250fd1cb5da2869c0fe6ae3686fe41e9 ]
 
-As result of commit 915fea04f932 ("s390/smp: enable DAT before
-CPU restart callback is called") the low-address protection bit
-gets mistakenly unset in control register 0 save area of the
-absolute zero memory. That area is used when manual PSW restart
-happened to hit an offline CPU. In this case the low-address
-protection for that CPU will be dropped.
+In asoc_simple_parse_dai(), we should call of_node_put() for the
+reference returned by of_graph_get_port_parent() in fail path.
 
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Fixes: 915fea04f932 ("s390/smp: enable DAT before CPU restart callback is called")
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Fixes: 6e5f68fe3f2d ("ASoC: add Audio Graph Card2 driver")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220722141801.1304854-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/generic/audio-graph-card2.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 0a37f5de2863..1ead1293ba17 100644
---- a/arch/s390/kernel/setup.c
-+++ b/arch/s390/kernel/setup.c
-@@ -508,8 +508,8 @@ static void __init setup_lowcore_dat_on(void)
- 	S390_lowcore.svc_new_psw.mask |= PSW_MASK_DAT;
- 	S390_lowcore.program_new_psw.mask |= PSW_MASK_DAT;
- 	S390_lowcore.io_new_psw.mask |= PSW_MASK_DAT;
--	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
- 	__ctl_set_bit(0, 28);
-+	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
- 	put_abs_lowcore(restart_flags, RESTART_FLAG_CTLREGS);
- 	put_abs_lowcore(program_new_psw, lc->program_new_psw);
- 	for (cr = 0; cr < ARRAY_SIZE(lc->cregs_save_area); cr++)
+diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
+index 5dba7c89007d..a7144defb8fb 100644
+--- a/sound/soc/generic/audio-graph-card2.c
++++ b/sound/soc/generic/audio-graph-card2.c
+@@ -445,8 +445,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
+ 	 *    if he unbinded CPU or Codec.
+ 	 */
+ 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
+-	if (ret < 0)
++	if (ret < 0) {
++		of_node_put(node);
+ 		return ret;
++	}
+ 
+ 	dlc->of_node = node;
+ 
 -- 
 2.35.1
 
