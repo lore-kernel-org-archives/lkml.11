@@ -2,179 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A30DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0F1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240926AbiHOGqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
+        id S240944AbiHOGqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240921AbiHOGp5 (ORCPT
+        with ESMTP id S240923AbiHOGp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:45:57 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0560312744
+        Mon, 15 Aug 2022 02:45:58 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B43186ED
         for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:45:56 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id q16so5831490pgq.6
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=gDBcg0wiSt3vt58MkrYOdJVnzrhs/iuSr5KaWkfmmJs=;
-        b=Rpg2cHfn9geuKVw2PWXcGPrGGPdoOcCuc2mzQtFYXHUc1NFqJoHD+Q65LeIDlTAkZh
-         Ho+BCTnrV1FW7s+DXLxQ86XaSgG7uTc0Kbtduz27bdUQ1Z+6tQ/JEgkYxGBgyePQESfo
-         VyQ4VUkp78/Jr5UqUfUJ2o7oIlrxzC6oSoZeY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=gDBcg0wiSt3vt58MkrYOdJVnzrhs/iuSr5KaWkfmmJs=;
-        b=QULnA6iIKe7z1lBB7ONReVn/0QbaS4lNrKrH1dSIKnwV/Z8+8/qlOw+CxOOuG6bU4C
-         lLR76E2bQ7k6Phdd3uYL+buCI1lWM2eu+MC7Y5BOrpVTLBFDZMuihcVIr5q5N/4pYJfh
-         4zEHd+8tNekbLyPoktTeCWVY7RH1gl5Gu6iQ3Muo4lKAYCjKPg056LtY3c+TPMa7M/5s
-         +AUmzYQTBDzWj2DDT+y/KpshVX5OHL6AoLU0LQu0cLya3OtWjJnBGJ+yV7ckhcEzgPKY
-         MkKcV7U/MKRco3eIcObVUYaOt1H1xdrNDih7RqhapbgmJevPPfWnVuAPMErO9M2GcBvU
-         uvnQ==
-X-Gm-Message-State: ACgBeo2vVtTBdk7SvqOFgvtgy6K4xZ8YCAio1RSfP9aMw6UO1yeWVFgU
-        dWmLynaSAgD2DEQQj7Ynr7DsXvu78EgP5g==
-X-Google-Smtp-Source: AA6agR6+QNzJvVOPc6SO6E5AvT3N2Uy4ByBUAkDC38sn+9xFIB7EdYtQAcgRJhYAz/madR1QwA0M7w==
-X-Received: by 2002:a65:57c8:0:b0:41c:fa29:ae1d with SMTP id q8-20020a6557c8000000b0041cfa29ae1dmr13125889pgr.136.1660545955347;
-        Sun, 14 Aug 2022 23:45:55 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
-        by smtp.gmail.com with ESMTPSA id 200-20020a6214d1000000b0052db82ad8b2sm5988233pfu.123.2022.08.14.23.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:45:54 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v5 5/7] platform/chrome: cros_typec_switch: Register mode switches
-Date:   Mon, 15 Aug 2022 06:34:26 +0000
-Message-Id: <20220815063555.1384505-6-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-In-Reply-To: <20220815063555.1384505-1-pmalani@chromium.org>
-References: <20220815063555.1384505-1-pmalani@chromium.org>
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 164125C00B3;
+        Mon, 15 Aug 2022 02:45:56 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 15 Aug 2022 02:45:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660545956; x=1660632356; bh=I3bsKRHOO5
+        koHFElg4jKWV2Q90G+oaIQtRvqhr/uf04=; b=gDAxKUVv6i5RB5gU86Ll/XVZue
+        vjmi42p4oxpPBNTfsMwwz8Wv9MQMck8oodNTJkEEy2w0UQa1bM6+frhPB/plYcEE
+        lWti3Jbki7ZYiuBUqEnE7H3e70R3+aoJfYut/vcZeyPi9UitrgFOc0QJVHIwG+lh
+        v+Nx2B30KeSQjnlqlKRStvc5F7ednw6AwhhKS8YBHlta2DW67Jzf9dUC36tYB0mi
+        IVEgpZ5j8SkkZx5IoGnwNl169CpKfyo7unYgNT5a2R4dloLSTF7lrkcQcpQedM1k
+        Km2NgzcDzQyJh4Ywgfw6jX2l2tpHUYnHxVwkniSA/IoBTaifQFVfXiXU7CsQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660545956; x=1660632356; bh=I3bsKRHOO5koHFElg4jKWV2Q90G+
+        oaIQtRvqhr/uf04=; b=ft8+hWHQY5h1d6kkB46ajlmU2N9in58/qztOoIPxozYW
+        YE/gJt/l1W3TztoEFzKZKCSNiJPoACr9caYQ94Fk3ERxFHu2R42k88CLODr6LaJD
+        0BYf5fLslIYeBvAEV5d159grNKawDhc7aSq4t0CwORi/GIQZR6qAHICtgfLNWVq1
+        6qalW7VAuCUuRtFTDKU83c7Rqh4iq4boW5THl3WRmirOju+12ZNyfs8a9c60QdEH
+        zVHXhlUvuQJ1KOqslSuBjtrqEKB1S01T1lW8ejZSIoNtI5D3O75m1Srf5rhYX3L+
+        w2WvWOIFhzLNDvHEnW787PlELXjjt8j3U1ZTgGZLKA==
+X-ME-Sender: <xms:o-v5YnK_VezOItFUChzkhBMbOxRJ2FKu3YwGs7MhoF-jVEm13zDtKg>
+    <xme:o-v5YrILkUsWULOtnglpcCeFBM2E0cjQdmFZcVzi_cE90NweEo0HNacSNeGpB3Urt
+    BSCNsVs_he6A1WfbZw>
+X-ME-Received: <xmr:o-v5Yvs-vJj5Hsgr0-6GBAg2rQI9FSbSkbjy_swky3qdt3Nu4AxFkE2ySEWb>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehuddgudduhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnhepteefffefgfektdefgfeludfgtdejfeejvddttdekteeiffejvdfgheeh
+    fffhvedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:o-v5Yga_Ayc0undwdem13qvtm6ibFZg7PGEwWKpxewXB4-ynHo3E7g>
+    <xmx:o-v5YuZ9A4R9p15Ox9Fxiq3oPv1V7L8T_UBrgUHOkcFmPEBUqUJpDQ>
+    <xmx:o-v5YkDbh126zUKAI01Ch4zAUszrMXupkhSjRA0XgYMs1HkNV2XSuQ>
+    <xmx:pOv5YkmtPtsl4t-pfVFh5h41-eRribxPJonAXTqUfvdUNkPGqY8BqQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 02:45:55 -0400 (EDT)
+Date:   Mon, 15 Aug 2022 08:45:43 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Subject: Re: [RFC PATCH] drm/edid: Make 144 Hz not preferred on Sharp
+ LQ140M1JW46
+Message-ID: <20220815064543.g7loqfb6rtwkookl@houat>
+References: <20220721152314.RFC.1.Ie333b3e4aff6e4a5b58c4aa805e030e561be8773@changeid>
+ <269f2610-425b-f296-dcfc-89bdc2e1d587@quicinc.com>
+ <CAD=FV=XSVXasU5PMR2kL0WQjQ458xDePuTGd1m14_v9JO5B6oA@mail.gmail.com>
+ <CAF6AEGv_Vikf80v-7ccz90fvGPrk5pV1tOxRoWKxKHYuEW8=aA@mail.gmail.com>
+ <5c8ca71c-5f0b-d5f5-9f16-e312dec0d01b@quicinc.com>
+ <CAD=FV=UGYV1mZenDCRrbpC+gpE12-Uis7fm_=H3PeEjK=t36yA@mail.gmail.com>
+ <20220729075118.ofnpk52tk4usm3n3@penduick>
+ <CAD=FV=WUB68-DQ-pAFjGaG-kid33ve4Qc3iqb8OUh61xTBohmg@mail.gmail.com>
+ <20220729164136.opucqg64qz4ypmvo@penduick>
+ <CAD=FV=UKYksHjuVR27DPdUFFtJrQKB2KbT08qjeYLNW_3y_Mfg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wzbntj3bd7k5xk65"
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=UKYksHjuVR27DPdUFFtJrQKB2KbT08qjeYLNW_3y_Mfg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register mode switch devices for Type C connectors, when they are
-specified by firmware. These control Type C configuration for any USB
-Type-C mode switches (sometimes known as "muxes") which are controlled
-by the Chrome EC.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+--wzbntj3bd7k5xk65
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes since v4:
-- No changes.
+On Fri, Jul 29, 2022 at 12:57:40PM -0700, Doug Anderson wrote:
+> Hi,
+>=20
+> On Fri, Jul 29, 2022 at 9:41 AM Maxime Ripard <maxime@cerno.tech> wrote:
+> >
+> > On Fri, Jul 29, 2022 at 07:50:20AM -0700, Doug Anderson wrote:
+> > > On Fri, Jul 29, 2022 at 12:51 AM Maxime Ripard <maxime@cerno.tech> wr=
+ote:
+> > > >
+> > > > On Thu, Jul 28, 2022 at 02:18:38PM -0700, Doug Anderson wrote:
+> > > > > Hi,
+> > > > >
+> > > > > On Thu, Jul 28, 2022 at 10:34 AM Abhinav Kumar
+> > > > > <quic_abhinavk@quicinc.com> wrote:
+> > > > > >
+> > > > > > Hi Rob and Doug
+> > > > > >
+> > > > > > On 7/22/2022 10:36 AM, Rob Clark wrote:
+> > > > > > > On Fri, Jul 22, 2022 at 9:48 AM Doug Anderson <dianders@chrom=
+ium.org> wrote:
+> > > > > > >>
+> > > > > > >> Hi,
+> > > > > > >>
+> > > > > > >> On Fri, Jul 22, 2022 at 9:37 AM Abhinav Kumar <quic_abhinavk=
+@quicinc.com> wrote:
+> > > > > > >>>
+> > > > > > >>> + sankeerth
+> > > > > > >>>
+> > > > > > >>> Hi Doug
+> > > > > > >>>
+> > > > > > >>> On 7/21/2022 3:23 PM, Douglas Anderson wrote:
+> > > > > > >>>> The Sharp LQ140M1JW46 panel is on the Qualcomm sc7280 CRD =
+reference
+> > > > > > >>>> board. This panel supports 144 Hz and 60 Hz. In the EDID, =
+the 144 Hz
+> > > > > > >>>> mode is listed first and thus is marked preferred. The EDI=
+D decode I
+> > > > > > >>>> ran says:
+> > > > > > >>>>
+> > > > > > >>>>     First detailed timing includes the native pixel format=
+ and preferred
+> > > > > > >>>>     refresh rate.
+> > > > > > >>>>
+> > > > > > >>>>     ...
+> > > > > > >>>>
+> > > > > > >>>>     Detailed Timing Descriptors:
+> > > > > > >>>>       DTD 1:  1920x1080  143.981 Hz  16:9   166.587 kHz  3=
+46.500 MHz
+> > > > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+> > > > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+> > > > > > >>>>       DTD 2:  1920x1080   59.990 Hz  16:9    69.409 kHz  1=
+44.370 MHz
+> > > > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+> > > > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+> > > > > > >>>>
+> > > > > > >>>> I'm proposing here that the above is actually a bug and th=
+at the 60 Hz
+> > > > > > >>>> mode really should be considered preferred by Linux.
+> > > > > >
+> > > > > > Its a bit tricky to say that this is a bug but I think we can c=
+ertainly
+> > > > > > add here that for an internal display we would have ideally had=
+ the
+> > > > > > lower resolution first to indicate it as default.
+> > > > >
+> > > > > Yeah, it gets into the vagueness of the EDID spec in general. As =
+far
+> > > > > as I can find it's really up to the monitor to decide by what mea=
+ns it
+> > > > > chooses the "preferred" refresh rate if the monitor can support m=
+any.
+> > > > > Some displays may decide that the normal rate is "preferred" and =
+some
+> > > > > may decide that the high refresh rate is "preferred". Neither dis=
+play
+> > > > > is "wrong" per say, but it's nice to have some consistency here a=
+nd to
+> > > > > make it so that otherwise "dumb" userspace will get something
+> > > > > reasonable by default. I'll change it to say:
+> > > > >
+> > > > > While the EDID spec appears to allow a display to use any criteri=
+a for
+> > > > > picking which refresh mode is "preferred" or "optimal", that vagu=
+eness
+> > > > > is a bit annoying. From Linux's point of view let's choose the 60=
+ Hz
+> > > > > one as the default.
+> > > >
+> > > > And if we start making that decision, it should be for all panels w=
+ith a
+> > > > similar constraint, so most likely handled by the core, and the new
+> > > > policy properly documented.
+> > > >
+> > > > Doing that just for a single panel is weird.
+> > >
+> > > Yeah, though having a "general policy" in the core can be problematic.
+> > >
+> > > In general I think panel EDIDs are only trustworthy as far as you can
+> > > throw them. They are notorious for having wrong and incorrect
+> > > information, which is why the EDID quirk list exists to begin with.
+> > > Trying to change how we're going to interpret all EDIDs, even all
+> > > EDIDs for eDP panels, seems like it will break someone somewhere.
+> > > Maybe there are EDIDs out there that were only ever validated at the
+> > > higher refresh rate and they don't work / flicker / cause digitizer
+> > > noise at the lower refresh rate. Heck, we've seen eDP panel vendors
+> > > that can't even get their checksum correct, so I'm not sure I want to
+> > > make a global assertion that all panels validated their "secondary"
+> > > display mode.
+> > >
+> > > In this particular case, we have validated that this particular Sharp
+> > > panel works fine at the lower refresh rate.
+> > >
+> > > I would also note that, as far as I understand it, ODMs actually can
+> > > request different EDIDs from the panel vendors. In the past we have
+> > > been able to get panel vendors to change EDIDs. Thus for most panels
+> > > I'd expect that we would discover this early, change the EDID default,
+> > > and be done with it. The case here is a little unusual in that by the
+> > > time we got involved and started digging into this panel too many were
+> > > created and nobody wants to throw away those old panels. This is why
+> > > I'm treating it as a quirk/bug. Really: we should have updated the
+> > > EDID of the panel but we're unable to in this case.
+> >
+> > You raise some good points, but most of the discussion around that patch
+> > were mostly around performances, power consumption and so on.
+> >
+> > This is very much a policy decision, and if there is some panel where
+> > the EDID reports 60Hz but is broken, then that panel should be the
+> > exception to the policy
+> >
+> > But doing it for a single panel is just odd
+>=20
+> OK, fair enough. I'll abandon this patch at least as far as mainline
+> is concerned, then.
 
-Changes since v3:
-- No changes.
+That wasn't really my point though :)
 
-Changes since v2:
-- Fixed missing "static" identifier.
+If you think that this change is needed, then we should totally discuss
+it and I'm not opposed to it.
 
-Changes since v1:
-- No changes.
+What I don't really like about this patch is that it's about a single
+panel: if we're doing it we should do it for all the panels.
 
- drivers/platform/chrome/cros_typec_switch.c | 40 +++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+Where we do it can also be discussed, but we should remain consistent
+there.
 
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-index a9e114391321..9eb37b3b754f 100644
---- a/drivers/platform/chrome/cros_typec_switch.c
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -15,6 +15,7 @@
- #include <linux/platform_device.h>
- #include <linux/usb/typec_altmode.h>
- #include <linux/usb/typec_dp.h>
-+#include <linux/usb/typec_mux.h>
- #include <linux/usb/typec_retimer.h>
- 
- #define DRV_NAME "cros-typec-switch"
-@@ -22,6 +23,7 @@
- /* Handles and other relevant data required for each port's switches. */
- struct cros_typec_port {
- 	int port_num;
-+	struct typec_mux_dev *mode_switch;
- 	struct typec_retimer *retimer;
- 	struct cros_typec_switch_data *sdata;
- };
-@@ -147,6 +149,15 @@ static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int po
- 	return -ETIMEDOUT;
- }
- 
-+static int cros_typec_mode_switch_set(struct typec_mux_dev *mode_switch,
-+				      struct typec_mux_state *state)
-+{
-+	struct cros_typec_port *port = typec_mux_get_drvdata(mode_switch);
-+
-+	/* Mode switches have index 0. */
-+	return cros_typec_configure_mux(port->sdata, port->port_num, 0, state->mode, state->alt);
-+}
-+
- static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
- {
- 	struct cros_typec_port *port = typec_retimer_get_drvdata(retimer);
-@@ -163,9 +174,27 @@ static void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
- 		if (!sdata->ports[i])
- 			continue;
- 		typec_retimer_unregister(sdata->ports[i]->retimer);
-+		typec_mux_unregister(sdata->ports[i]->mode_switch);
- 	}
- }
- 
-+static int cros_typec_register_mode_switch(struct cros_typec_port *port,
-+					   struct fwnode_handle *fwnode)
-+{
-+	struct typec_mux_desc mode_switch_desc = {
-+		.fwnode = fwnode,
-+		.drvdata = port,
-+		.name = fwnode_get_name(fwnode),
-+		.set = cros_typec_mode_switch_set,
-+	};
-+
-+	port->mode_switch = typec_mux_register(port->sdata->dev, &mode_switch_desc);
-+	if (IS_ERR(port->mode_switch))
-+		return PTR_ERR(port->mode_switch);
-+
-+	return 0;
-+}
-+
- static int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
- {
- 	struct typec_retimer_desc retimer_desc = {
-@@ -235,6 +264,17 @@ static int cros_typec_register_switches(struct cros_typec_switch_data *sdata)
- 		}
- 
- 		dev_dbg(dev, "Retimer switch registered for index %llu\n", index);
-+
-+		if (!fwnode_property_read_bool(fwnode, "mode-switch"))
-+			continue;
-+
-+		ret = cros_typec_register_mode_switch(port, fwnode);
-+		if (ret) {
-+			dev_err(dev, "Mode switch register failed\n");
-+			goto err_switch;
-+		}
-+
-+		dev_dbg(dev, "Mode switch registered for index %llu\n", index);
- 	}
- 
- 	return 0;
--- 
-2.37.1.595.g718a3a8f04-goog
+Maxime
 
+--wzbntj3bd7k5xk65
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYvnrlwAKCRDj7w1vZxhR
+xaVpAQCkpLNIcSznLiwriHSHcXQmxwAgbpV0rZ1L2Xvo43kqVQD/RVC2++yCix/1
+0Wq6Wm6rhIe0Cq+R41OyyQASUA2w4gM=
+=Qk4w
+-----END PGP SIGNATURE-----
+
+--wzbntj3bd7k5xk65--
