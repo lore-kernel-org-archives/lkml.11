@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 176FEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBAFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239740AbiHOXJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
+        id S243555AbiHOXJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353188AbiHOXHZ (ORCPT
+        with ESMTP id S1353231AbiHOXHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:07:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA09C86B44;
-        Mon, 15 Aug 2022 12:59:26 -0700 (PDT)
+        Mon, 15 Aug 2022 19:07:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C82250;
+        Mon, 15 Aug 2022 12:59:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC695612D4;
-        Mon, 15 Aug 2022 19:59:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D2FC433C1;
-        Mon, 15 Aug 2022 19:59:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 600A7B80EB1;
+        Mon, 15 Aug 2022 19:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA4DC433C1;
+        Mon, 15 Aug 2022 19:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593565;
-        bh=7h/EVfhDHNVyb0WT8LXnzE4Htgad/jrFK7I5Sm9ux8Y=;
+        s=korg; t=1660593568;
+        bh=/SbU5TgNUUjW574cJkQIC7C8/S1kgwxyehokC/ht1GA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FIc5z2XcX7Bgxj3Rjr7mSRmaSCZkOFq4ZDeB0JJY81Uw6zFWoH5VEGOHeUVWGDHZ2
-         L7kLEjAjqRMFNXsA4Vnn7w0Q3VrcGXIkCzztPI2dBMaLVPxjpgF7MeBlHy63NCwx3W
-         Nw5wHb+L085fRNXgKtVgMNiGbgKrxJ9xZ6PGQHno=
+        b=Xd6mCglr8NfET1J3hauQ7mqfVUpQpCvKScElygYo7xqFpBKqFlIUrJzKaMMy0Ou6c
+         7YTGXshh1Cc0qDPGeHHSQ7G7QxZZTct4BF5WwM8L/lgsmWkFzqHkC9Du00lyR6pjjq
+         3Aa7YAw9Lrn+ArBMyaO/rkgyFpmRm7bkvoYzrT14=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Phil Auld <pauld@redhat.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0289/1157] nohz/full, sched/rt: Fix missed tick-reenabling bug in dequeue_task_rt()
-Date:   Mon, 15 Aug 2022 19:54:05 +0200
-Message-Id: <20220815180451.176344046@linuxfoundation.org>
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 0969/1095] scsi: qla2xxx: Fix losing target when it reappears during delete
+Date:   Mon, 15 Aug 2022 20:06:08 +0200
+Message-Id: <20220815180509.144944018@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,117 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit 5c66d1b9b30f737fcef85a0b75bfe0590e16b62a ]
+commit 118b0c863c8f5629cc5271fc24d72d926e0715d9 upstream.
 
-dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
-called sched_update_tick_dependency() preventing it from re-enabling the
-tick on systems that no longer have pending SCHED_RT tasks but have
-multiple runnable SCHED_OTHER tasks:
+FC target disappeared during port perturbation tests due to a race that
+tramples target state.  Fix the issue by adding state checks before
+proceeding.
 
-  dequeue_task_rt()
-    dequeue_rt_entity()
-      dequeue_rt_stack()
-        dequeue_top_rt_rq()
-	  sub_nr_running()	// decrements rq->nr_running
-	    sched_update_tick_dependency()
-	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
-	      ...
-        __dequeue_rt_entity()
-          dec_rt_tasks()	// decrements rq->rt.rt_nr_running
-	  ...
-
-Every other scheduler class performs the operation in the opposite
-order, and sched_update_tick_dependency() expects the values to be
-updated as such. So avoid the misbehaviour by inverting the order in
-which the above operations are performed in the RT scheduler.
-
-Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
-Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Link: https://lore.kernel.org/r/20220628092259.330171-1-nsaenzju@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-8-njavali@marvell.com
+Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/rt.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/scsi/qla2xxx/qla_attr.c |   24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 8c9ed9664840..55f39c8f4203 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -480,7 +480,7 @@ static inline void rt_queue_push_tasks(struct rq *rq)
- #endif /* CONFIG_SMP */
+--- a/drivers/scsi/qla2xxx/qla_attr.c
++++ b/drivers/scsi/qla2xxx/qla_attr.c
+@@ -2716,17 +2716,24 @@ qla2x00_dev_loss_tmo_callbk(struct fc_rp
+ 	if (!fcport)
+ 		return;
  
- static void enqueue_top_rt_rq(struct rt_rq *rt_rq);
--static void dequeue_top_rt_rq(struct rt_rq *rt_rq);
-+static void dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count);
- 
- static inline int on_rt_rq(struct sched_rt_entity *rt_se)
- {
-@@ -601,7 +601,7 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- 	rt_se = rt_rq->tg->rt_se[cpu];
- 
- 	if (!rt_se) {
--		dequeue_top_rt_rq(rt_rq);
-+		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
- 		cpufreq_update_util(rq_of_rt_rq(rt_rq), 0);
- 	}
-@@ -687,7 +687,7 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
- 
- static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
- {
--	dequeue_top_rt_rq(rt_rq);
-+	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
- }
- 
- static inline int rt_rq_throttled(struct rt_rq *rt_rq)
-@@ -1089,7 +1089,7 @@ static void update_curr_rt(struct rq *rq)
- }
- 
- static void
--dequeue_top_rt_rq(struct rt_rq *rt_rq)
-+dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
- {
- 	struct rq *rq = rq_of_rt_rq(rt_rq);
- 
-@@ -1100,7 +1100,7 @@ dequeue_top_rt_rq(struct rt_rq *rt_rq)
- 
- 	BUG_ON(!rq->nr_running);
- 
--	sub_nr_running(rq, rt_rq->rt_nr_running);
-+	sub_nr_running(rq, count);
- 	rt_rq->rt_queued = 0;
- 
- }
-@@ -1486,18 +1486,21 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
- static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
- {
- 	struct sched_rt_entity *back = NULL;
-+	unsigned int rt_nr_running;
- 
- 	for_each_sched_rt_entity(rt_se) {
- 		rt_se->back = back;
- 		back = rt_se;
- 	}
- 
--	dequeue_top_rt_rq(rt_rq_of_se(back));
-+	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
- 
- 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
- 		if (on_rt_rq(rt_se))
- 			__dequeue_rt_entity(rt_se, flags);
- 	}
+-	/* Now that the rport has been deleted, set the fcport state to
+-	   FCS_DEVICE_DEAD */
+-	qla2x00_set_fcport_state(fcport, FCS_DEVICE_DEAD);
 +
-+	dequeue_top_rt_rq(rt_rq_of_se(back), rt_nr_running);
- }
++	/*
++	 * Now that the rport has been deleted, set the fcport state to
++	 * FCS_DEVICE_DEAD, if the fcport is still lost.
++	 */
++	if (fcport->scan_state != QLA_FCPORT_FOUND)
++		qla2x00_set_fcport_state(fcport, FCS_DEVICE_DEAD);
  
- static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
--- 
-2.35.1
-
+ 	/*
+ 	 * Transport has effectively 'deleted' the rport, clear
+ 	 * all local references.
+ 	 */
+ 	spin_lock_irqsave(host->host_lock, flags);
+-	fcport->rport = fcport->drport = NULL;
+-	*((fc_port_t **)rport->dd_data) = NULL;
++	/* Confirm port has not reappeared before clearing pointers. */
++	if (rport->port_state != FC_PORTSTATE_ONLINE) {
++		fcport->rport = fcport->drport = NULL;
++		*((fc_port_t **)rport->dd_data) = NULL;
++	}
+ 	spin_unlock_irqrestore(host->host_lock, flags);
+ 
+ 	if (test_bit(ABORT_ISP_ACTIVE, &fcport->vha->dpc_flags))
+@@ -2759,9 +2766,12 @@ qla2x00_terminate_rport_io(struct fc_rpo
+ 	/*
+ 	 * At this point all fcport's software-states are cleared.  Perform any
+ 	 * final cleanup of firmware resources (PCBs and XCBs).
++	 *
++	 * Attempt to cleanup only lost devices.
+ 	 */
+ 	if (fcport->loop_id != FC_NO_LOOP_ID) {
+-		if (IS_FWI2_CAPABLE(fcport->vha->hw)) {
++		if (IS_FWI2_CAPABLE(fcport->vha->hw) &&
++		    fcport->scan_state != QLA_FCPORT_FOUND) {
+ 			if (fcport->loop_id != FC_NO_LOOP_ID)
+ 				fcport->logout_on_delete = 1;
+ 
+@@ -2771,7 +2781,7 @@ qla2x00_terminate_rport_io(struct fc_rpo
+ 				       __LINE__);
+ 				qlt_schedule_sess_for_deletion(fcport);
+ 			}
+-		} else {
++		} else if (!IS_FWI2_CAPABLE(fcport->vha->hw)) {
+ 			qla2x00_port_logout(fcport->vha, fcport);
+ 		}
+ 	}
 
 
