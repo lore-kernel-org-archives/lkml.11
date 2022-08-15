@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75132C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B8FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242886AbiHOVJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
+        id S243922AbiHOVJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344841AbiHOVDy (ORCPT
+        with ESMTP id S241522AbiHOVEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:03:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF71D3EE1;
-        Mon, 15 Aug 2022 12:14:47 -0700 (PDT)
+        Mon, 15 Aug 2022 17:04:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEC1D5710;
+        Mon, 15 Aug 2022 12:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B267F60F68;
-        Mon, 15 Aug 2022 19:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E12C4314B;
-        Mon, 15 Aug 2022 19:14:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E4E14CE1262;
+        Mon, 15 Aug 2022 19:14:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D091EC433D6;
+        Mon, 15 Aug 2022 19:14:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590886;
-        bh=BokTBTMkZ4346PaQMeY33bF5LXXEd68/+dwp0v89MXc=;
+        s=korg; t=1660590889;
+        bh=qLnXxGHuebqquUUuCDId5Q1nQL5MJHCqyFlJRxfHHtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T21ynF5gE8yks6j6TP1DHXg/TgHh/iL+EE/+Ou2dxhJ2Zi7t55HlHtKQF9kPY56a4
-         ukhrsO7aA8FGc7rayMzqUGoOh2lLY/dwwrq5ynmhm9UcEXkvzHLz7yEk4L663mYD+r
-         4zgzC0ivNPsCDXyCvtcv/fZj+SIGFNrvfdz6QMCE=
+        b=TSOKaNJqK0o6vUnInbs50pslSLCy8Zjfn4ltMRRp5FSNiLfpYflLGQgDDcF2Dr/F2
+         qfY7r7oZzWNprygfw6CqHIIqtmc9T5owTTuYgbkrh/shf6B0VX7BsEi9eymq2/HgX6
+         LJLGTZynz4RrecoDjD2aVAExv5tXv9o1+ioBCeG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: [PATCH 5.18 0361/1095] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Mon, 15 Aug 2022 19:56:00 +0200
-Message-Id: <20220815180444.675958576@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0396/1095] drm/vc4: hdmi: Switch to pm_runtime_status_suspended
+Date:   Mon, 15 Aug 2022 19:56:35 +0200
+Message-Id: <20220815180446.070314409@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,89 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 ]
+[ Upstream commit fcef97e70094a33ded73b3eb9bef06698c6e9c12 ]
 
-Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-problem was in incorrect htc_handle->drv_priv initialization.
+If the controller isn't clocked or its domain powered up, the register
+accesses will either stall the CPU or return garbage, respectively.
 
-Probable call trace which can trigger use-after-free:
+Thus, we had a warning in our register access function to complain when
+that kind of risky accesses were performed.
 
-ath9k_htc_probe_device()
-  /* htc_handle->drv_priv = priv; */
-  ath9k_htc_wait_for_target()      <--- Failed
-  ieee80211_free_hw()		   <--- priv pointer is freed
+In order to check the runtime_pm power state, we were using
+pm_runtime_active(), but it turns out that it will become active only
+once the runtime_resume hook has been executed.
 
-<IRQ>
-...
-ath9k_hif_usb_rx_cb()
-  ath9k_hif_usb_rx_stream()
-   RX_STAT_INC()		<--- htc_handle->drv_priv access
+This prevents us from doing any WARN-free register access in our
+runtime_resume() implementation, while this is valid.
 
-In order to not add fancy protection for drv_priv we can move
-htc_handle->drv_priv initialization at the end of the
-ath9k_htc_probe_device() and add helper macro to make
-all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-deref in that macros [1]
+Let's switch to pm_runtime_status_suspended() instead.
 
-Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
+Fixes: 14e193b95604 ("drm/vc4: hdmi: Warn if we access the controller while disabled")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-23-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi_regs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 6b45e63fae4b..e3d546ef71dd 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
+index 24056441a4bb..72b769412482 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
++++ b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
+@@ -417,7 +417,7 @@ static inline u32 vc4_hdmi_read(struct vc4_hdmi *hdmi,
+ 	const struct vc4_hdmi_variant *variant = hdmi->variant;
+ 	void __iomem *base;
  
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--
--#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
- #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+-	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
++	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
  
- #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index ff61ae34ecdf..07ac88fb1c57 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	priv->hw = hw;
- 	priv->htc = htc_handle;
- 	priv->dev = dev;
--	htc_handle->drv_priv = priv;
- 	SET_IEEE80211_DEV(hw, priv->dev);
+ 	if (reg >= variant->num_registers) {
+ 		dev_warn(&hdmi->pdev->dev,
+@@ -447,7 +447,7 @@ static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
  
- 	ret = ath9k_htc_wait_for_target(priv);
-@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	if (ret)
- 		goto err_init;
+ 	lockdep_assert_held(&hdmi->hw_lock);
  
-+	htc_handle->drv_priv = priv;
-+
- 	return 0;
+-	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
++	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
  
- err_init:
+ 	if (reg >= variant->num_registers) {
+ 		dev_warn(&hdmi->pdev->dev,
 -- 
 2.35.1
 
