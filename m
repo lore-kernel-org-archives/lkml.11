@@ -2,152 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFCDC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C053FC25B0D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346651AbiHOXVk (ORCPT
+        id S1347943AbiHOXVr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        Mon, 15 Aug 2022 19:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343585AbiHOXO2 (ORCPT
+        with ESMTP id S1343725AbiHOXO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:14:28 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C487AC3D;
-        Mon, 15 Aug 2022 13:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660593705; x=1692129705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=f9d9eqiD8o/ztmd1nw5JG1/VrtylCPBmHS3YYXPs1Dg=;
-  b=l1vd7czmxZtStYji/cOGqlpq0P/bIdQp6RlgL0dr5ZrkIlCvm5XLAPcH
-   Q0e6Styh/kqOGIlqcH+yyYN3Mg6qESP2tUE8qL8SIv47QdCipNOKKgnIr
-   ECG83/lSdgvBQH9iBU0aiBqDNe0NMDaAfbI6qsL3ZMqLqj8H1WFlYSys7
-   bdhoScklrK56to2/AAa/Dkhc8nYwvVXB0nTG78s9umjO1g9KTn0IQwd/0
-   Pcg8kXZi9LkdVpuKWZ2epYy4bH69W7w1kke3+RmYAWMY0hRBmVrAOLZoZ
-   sMGeP2SSGtcVcVrEeDa/UdJ5XE1mkGzfZZnVbFwu+B445cDvvToVuiOVc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="318036701"
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="318036701"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 13:01:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="606768941"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 15 Aug 2022 13:01:39 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNgHL-0001Cj-06;
-        Mon, 15 Aug 2022 20:01:39 +0000
-Date:   Tue, 16 Aug 2022 04:01:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc:     kbuild-all@lists.01.org, Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 2/6] vsock: return errors other than -ENOMEM to socket
-Message-ID: <202208160300.HYFUSTbF-lkp@intel.com>
-References: <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8591895FD;
+        Mon, 15 Aug 2022 13:01:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BA47B80EAD;
+        Mon, 15 Aug 2022 20:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1393C433D7;
+        Mon, 15 Aug 2022 20:01:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660593704;
+        bh=8JZ/Ppu8+/LJWNS3QNboIv0bypIL+9qabo0OOgziros=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uj+pWQZkhcqtVSxZiltBW9ExxMXH/3CRmisrtcfQs+k4FDhM54WVfHEO0MLeVeIWb
+         bOBm3D3ML7cZWe1UKXA3x7ggwOGcESuh1GxKAow3sG57sYlSoaoj57RCy+7TpthHB2
+         ZohQJzBXJpVeqcOSgFDDN8O7XthXSfvZl3ylM/Ko=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lev Kujawski <lkujaw@member.fsf.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0993/1095] KVM: set_msr_mce: Permit guests to ignore single-bit ECC errors
+Date:   Mon, 15 Aug 2022 20:06:32 +0200
+Message-Id: <20220815180510.188201325@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bobby,
+From: Lev Kujawski <lkujaw@member.fsf.org>
 
-Thank you for the patch! Perhaps something to improve:
+[ Upstream commit 0471a7bd1bca2a47a5f378f2222c5cf39ce94152 ]
 
-[auto build test WARNING on mst-vhost/linux-next]
-[also build test WARNING on linus/master v6.0-rc1 next-20220815]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Certain guest operating systems (e.g., UNIXWARE) clear bit 0 of
+MC1_CTL to ignore single-bit ECC data errors.  Single-bit ECC data
+errors are always correctable and thus are safe to ignore because they
+are informational in nature rather than signaling a loss of data
+integrity.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Bobby-Eshleman/virtio-vsock-introduce-dgrams-sk_buff-and-qdisc/20220816-015812
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220816/202208160300.HYFUSTbF-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/68c9c8216a573cdfe2170cad677854e2f4a34634
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Bobby-Eshleman/virtio-vsock-introduce-dgrams-sk_buff-and-qdisc/20220816-015812
-        git checkout 68c9c8216a573cdfe2170cad677854e2f4a34634
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash net/vmw_vsock/
+Prior to this patch, these guests would crash upon writing MC1_CTL,
+with resultant error messages like the following:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+error: kvm run failed Operation not permitted
+EAX=fffffffe EBX=fffffffe ECX=00000404 EDX=ffffffff
+ESI=ffffffff EDI=00000001 EBP=fffdaba4 ESP=fffdab20
+EIP=c01333a5 EFL=00000246 [---Z-P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
+ES =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+CS =0100 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]
+SS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+DS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
+FS =0000 00000000 ffffffff 00c00000
+GS =0000 00000000 ffffffff 00c00000
+LDT=0118 c1026390 00000047 00008200 DPL=0 LDT
+TR =0110 ffff5af0 00000067 00008b00 DPL=0 TSS32-busy
+GDT=     ffff5020 000002cf
+IDT=     ffff52f0 000007ff
+CR0=8001003b CR2=00000000 CR3=0100a000 CR4=00000230
+DR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000
+DR6=ffff0ff0 DR7=00000400
+EFER=0000000000000000
+Code=08 89 01 89 51 04 c3 8b 4c 24 08 8b 01 8b 51 04 8b 4c 24 04 <0f>
+30 c3 f7 05 a4 6d ff ff 10 00 00 00 74 03 0f 31 c3 33 c0 33 d2 c3 8d
+74 26 00 0f 31 c3
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Lev Kujawski <lkujaw@member.fsf.org>
+Message-Id: <20220521081511.187388-1-lkujaw@member.fsf.org>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/x86.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
->> net/vmw_vsock/virtio_transport.c:178: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Merge the two most recent skbs together if possible.
-
-
-vim +178 net/vmw_vsock/virtio_transport.c
-
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  176  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  177  /**
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15 @178   * Merge the two most recent skbs together if possible.
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  179   *
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  180   * Caller must hold the queue lock.
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  181   */
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  182  static void
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  183  virtio_transport_add_to_queue(struct sk_buff_head *queue, struct sk_buff *new)
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  184  {
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  185  	struct sk_buff *old;
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  186  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  187  	spin_lock_bh(&queue->lock);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  188  	/* In order to reduce skb memory overhead, we merge new packets with
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  189  	 * older packets if they pass virtio_transport_skbs_can_merge().
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  190  	 */
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  191  	if (skb_queue_empty_lockless(queue)) {
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  192  		__skb_queue_tail(queue, new);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  193  		goto out;
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  194  	}
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  195  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  196  	old = skb_peek_tail(queue);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  197  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  198  	if (!virtio_transport_skbs_can_merge(old, new)) {
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  199  		__skb_queue_tail(queue, new);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  200  		goto out;
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  201  	}
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  202  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  203  	memcpy(skb_put(old, new->len), new->data, new->len);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  204  	vsock_hdr(old)->len = cpu_to_le32(old->len);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  205  	vsock_hdr(old)->buf_alloc = vsock_hdr(new)->buf_alloc;
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  206  	vsock_hdr(old)->fwd_cnt = vsock_hdr(new)->fwd_cnt;
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  207  	dev_kfree_skb_any(new);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  208  
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  209  out:
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  210  	spin_unlock_bh(&queue->lock);
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  211  }
-93afaf2cdefaa9 Bobby Eshleman 2022-08-15  212  
-
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 767a61e29f51..2316c978b598 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3226,10 +3226,13 @@ static int set_msr_mce(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 			/* only 0 or all 1s can be written to IA32_MCi_CTL
+ 			 * some Linux kernels though clear bit 10 in bank 4 to
+ 			 * workaround a BIOS/GART TBL issue on AMD K8s, ignore
+-			 * this to avoid an uncatched #GP in the guest
++			 * this to avoid an uncatched #GP in the guest.
++			 *
++			 * UNIXWARE clears bit 0 of MC1_CTL to ignore
++			 * correctable, single-bit ECC data errors.
+ 			 */
+ 			if ((offset & 0x3) == 0 &&
+-			    data != 0 && (data | (1 << 10)) != ~(u64)0)
++			    data != 0 && (data | (1 << 10) | 1) != ~(u64)0)
+ 				return -1;
+ 
+ 			/* MCi_STATUS */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
