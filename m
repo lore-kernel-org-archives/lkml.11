@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E61C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA6CC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbiHPEeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52098 "EHLO
+        id S230325AbiHPEeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiHPEdS (ORCPT
+        with ESMTP id S230018AbiHPEdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:33:18 -0400
+        Tue, 16 Aug 2022 00:33:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0911C16ADD0;
-        Mon, 15 Aug 2022 13:24:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7055D16C139;
+        Mon, 15 Aug 2022 13:25:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E773261089;
-        Mon, 15 Aug 2022 20:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49E4C433C1;
-        Mon, 15 Aug 2022 20:24:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E086960EE9;
+        Mon, 15 Aug 2022 20:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC2FFC433C1;
+        Mon, 15 Aug 2022 20:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595061;
-        bh=Y2GwHYK57VPhob4MMTy54v3pRXav3yAzyrwJQXChdOM=;
+        s=korg; t=1660595099;
+        bh=tFkkwFdno4ZcUY/URwDOd5A/e9+/y3VV30bBCrtFwAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o9yyKLg1wbOPOi1kpYUsCJJupEJgpYpe4XanLFo8zJaONb502XMW6W4WQUnFKkorw
-         AGEh+fIMoTzl9/eJlgUBbwvakihcuUdN1Yf8an251a98H5n978bAUWlR2RFHYD83UO
-         mUuEPVoem/07MmvKPg+bK4eph18AF51UfCcifYvk=
+        b=xfOFKRPdkfjnIWSY1Qudh1CMrkUzLQ+NbNZcMNEpKldrH5fY9TO18l7G4VSPJNxHd
+         Lvu77P9kE/WCiKETJur4203p8K+JXiMf79g/FznDDYr5IYKgKQ2U3Mkfdh1whtslmU
+         DT09fbDE0xQzOqJeMGCFPejNKfirnxfM+k8uCyYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0644/1157] iio: adc: ad7766: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:00 +0200
-Message-Id: <20220815180505.486480702@linuxfoundation.org>
+Subject: [PATCH 5.19 0624/1157] scsi: qla2xxx: edif: Reduce N2N thrashing at app_start time
+Date:   Mon, 15 Aug 2022 19:59:40 +0200
+Message-Id: <20220815180504.624882999@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,47 +52,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 009ae227a1dace2d4d27c804e5bd65907e1d0557 ]
+[ Upstream commit 37be3f9d6993a721bc019f03c97ea0fe66319997 ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+For N2N + remote WWPN is bigger than local adapter, remote adapter will
+login to local adapter while authentication application is not running.
+When authentication application starts, the current session in FW needs to
+to be invalidated.
 
-Update the comment to reflect the fact DMA safety 'may' require
-separate cachelines.
+Make sure the old session is torn down before triggering a relogin.
 
-Fixes: aa16c6bd0e09 ("iio:adc: Add support for AD7766/AD7767")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-16-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220608115849.16693-9-njavali@marvell.com
+Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ad7766.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/scsi/qla2xxx/qla_edif.c | 47 ++++++++++++++++++++++++---------
+ 1 file changed, 34 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index 51ee9482e0df..3079a0872947 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -45,13 +45,12 @@ struct ad7766 {
- 	struct spi_message msg;
+diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
+index 7239439120c0..ee8931392ce2 100644
+--- a/drivers/scsi/qla2xxx/qla_edif.c
++++ b/drivers/scsi/qla2xxx/qla_edif.c
+@@ -517,11 +517,28 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 		list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list)
+ 			fcport->n2n_link_reset_cnt = 0;
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 * Make the buffer large enough for one 24 bit sample and one 64 bit
- 	 * aligned 64 bit timestamp.
- 	 */
--	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]
--			____cacheline_aligned;
-+	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]	__aligned(IIO_DMA_MINALIGN);
- };
+-		if (vha->hw->flags.n2n_fw_acc_sec)
+-			set_bit(N2N_LINK_RESET, &vha->dpc_flags);
+-		else
++		if (vha->hw->flags.n2n_fw_acc_sec) {
++			list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list)
++				qla_edif_sa_ctl_init(vha, fcport);
++
++			/*
++			 * While authentication app was not running, remote device
++			 * could still try to login with this local port.  Let's
++			 * clear the state and try again.
++			 */
++			qla2x00_wait_for_sess_deletion(vha);
++
++			/* bounce the link to get the other guy to relogin */
++			if (!vha->hw->flags.n2n_bigger) {
++				set_bit(N2N_LINK_RESET, &vha->dpc_flags);
++				qla2xxx_wake_dpc(vha);
++			}
++		} else {
++			qla2x00_wait_for_hba_online(vha);
+ 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
+-		qla2xxx_wake_dpc(vha);
++			qla2xxx_wake_dpc(vha);
++			qla2x00_wait_for_hba_online(vha);
++		}
+ 	} else {
+ 		list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list) {
+ 			ql_dbg(ql_dbg_edif, vha, 0x2058,
+@@ -920,17 +937,21 @@ qla_edif_app_getfcinfo(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 			if (tdid.b24 != 0 && tdid.b24 != fcport->d_id.b24)
+ 				continue;
  
- /*
+-			if (fcport->scan_state != QLA_FCPORT_FOUND)
+-				continue;
++			if (!N2N_TOPO(vha->hw)) {
++				if (fcport->scan_state != QLA_FCPORT_FOUND)
++					continue;
+ 
+-			if (fcport->port_type == FCT_UNKNOWN && !fcport->fc4_features)
+-				rval = qla24xx_async_gffid(vha, fcport, true);
++				if (fcport->port_type == FCT_UNKNOWN &&
++				    !fcport->fc4_features)
++					rval = qla24xx_async_gffid(vha, fcport,
++								   true);
+ 
+-			if (!rval &&
+-			    !(fcport->fc4_features & FC4_FF_TARGET ||
+-			      fcport->port_type &
+-			      (FCT_TARGET | FCT_NVME_TARGET)))
+-				continue;
++				if (!rval &&
++				    !(fcport->fc4_features & FC4_FF_TARGET ||
++				      fcport->port_type &
++				      (FCT_TARGET | FCT_NVME_TARGET)))
++					continue;
++			}
+ 
+ 			rval = 0;
+ 
 -- 
 2.35.1
 
