@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96051C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E51C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347570AbiHOVcU (ORCPT
+        id S1347849AbiHOVc2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56062 "EHLO
+        Mon, 15 Aug 2022 17:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348463AbiHOV1n (ORCPT
+        with ESMTP id S1348485AbiHOV1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:27:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AF2EC4C0;
-        Mon, 15 Aug 2022 12:23:29 -0700 (PDT)
+        Mon, 15 Aug 2022 17:27:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A97EC4C4;
+        Mon, 15 Aug 2022 12:23:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C710A60EF0;
-        Mon, 15 Aug 2022 19:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD87C433C1;
-        Mon, 15 Aug 2022 19:23:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89A2CB81062;
+        Mon, 15 Aug 2022 19:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3957C433D7;
+        Mon, 15 Aug 2022 19:23:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591408;
-        bh=0e2tt6DrrV1ZWC1oY7l9p4t3b8AMy0FXCj2qQ2cAlz0=;
+        s=korg; t=1660591414;
+        bh=KrALzRffdPJpjtELaG5nbdJTzrNEz8nRkpzXogTmmmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ii5G+EpaBg00VE53QV1OwmgC3qGddOo+wQQOofz11SOn6Gf1DPeSdlhipYMG+kg/V
-         NNVCZsdwrtd/ajte/wSF2T687j/TtAcC0iNnaANZHMnIChETpzQJSOiVU8GUFHsPEY
-         TNI+WYTLL+n21i5vqDvrlRxuvBXQCHt2Pf8coyV8=
+        b=q0j2qFL9WYEfRo/iuotjzKPbl9VeQiKHGjODvER6dmveHTJfM126mPna3LZB44/FN
+         ByeXFLEmcIKZhAmnNh8v2CGf3N7VTVmVG856plhBCPvJt3polrdV9tSxuKVCrfp6FM
+         2afI47ubFmEWQWFCiihRh1KvqNW41nGRvjKM4Cic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0569/1095] usb: host: Fix refcount leak in ehci_hcd_ppc_of_probe
-Date:   Mon, 15 Aug 2022 19:59:28 +0200
-Message-Id: <20220815180453.109474821@linuxfoundation.org>
+Subject: [PATCH 5.18 0571/1095] usb: gadget: tegra-xudc: Fix error check in tegra_xudc_powerdomain_init()
+Date:   Mon, 15 Aug 2022 19:59:30 +0200
+Message-Id: <20220815180453.188394102@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,36 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tang Bin <tangbin@cmss.chinamobile.com>
 
-[ Upstream commit b5c5b13cb45e2c88181308186b0001992cb41954 ]
+[ Upstream commit f08aa7c80dac27ee00fa6827f447597d2fba5465 ]
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+dev_pm_domain_attach_by_name() may return NULL in some cases,
+so IS_ERR() doesn't meet the requirements. Thus fix it.
 
-Fixes: 796bcae7361c ("USB: powerpc: Workaround for the PPC440EPX USBH_23 errata [take 3]")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220602110849.58549-1-linmq006@gmail.com
+Fixes: 49db427232fe ("usb: gadget: Add UDC driver for tegra XUSB device mode controller")
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+Link: https://lore.kernel.org/r/20220525135332.23144-1-tangbin@cmss.chinamobile.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-ppc-of.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/host/ehci-ppc-of.c b/drivers/usb/host/ehci-ppc-of.c
-index 6bbaee74f7e7..28a19693c19f 100644
---- a/drivers/usb/host/ehci-ppc-of.c
-+++ b/drivers/usb/host/ehci-ppc-of.c
-@@ -148,6 +148,7 @@ static int ehci_hcd_ppc_of_probe(struct platform_device *op)
- 		} else {
- 			ehci->has_amcc_usb23 = 1;
- 		}
-+		of_node_put(np);
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index d9c406bdb680..c25765628625 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -3691,15 +3691,15 @@ static int tegra_xudc_powerdomain_init(struct tegra_xudc *xudc)
+ 	int err;
+ 
+ 	xudc->genpd_dev_device = dev_pm_domain_attach_by_name(dev, "dev");
+-	if (IS_ERR(xudc->genpd_dev_device)) {
+-		err = PTR_ERR(xudc->genpd_dev_device);
++	if (IS_ERR_OR_NULL(xudc->genpd_dev_device)) {
++		err = PTR_ERR(xudc->genpd_dev_device) ? : -ENODATA;
+ 		dev_err(dev, "failed to get device power domain: %d\n", err);
+ 		return err;
  	}
  
- 	if (of_get_property(dn, "big-endian", NULL)) {
+ 	xudc->genpd_dev_ss = dev_pm_domain_attach_by_name(dev, "ss");
+-	if (IS_ERR(xudc->genpd_dev_ss)) {
+-		err = PTR_ERR(xudc->genpd_dev_ss);
++	if (IS_ERR_OR_NULL(xudc->genpd_dev_ss)) {
++		err = PTR_ERR(xudc->genpd_dev_ss) ? : -ENODATA;
+ 		dev_err(dev, "failed to get SuperSpeed power domain: %d\n", err);
+ 		return err;
+ 	}
 -- 
 2.35.1
 
