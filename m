@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB5CC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE3BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343754AbiHOXLm (ORCPT
+        id S1344361AbiHOXLr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        Mon, 15 Aug 2022 19:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353018AbiHOXJh (ORCPT
+        with ESMTP id S1345864AbiHOXKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:09:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2187B8709C;
-        Mon, 15 Aug 2022 12:59:55 -0700 (PDT)
+        Mon, 15 Aug 2022 19:10:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F74870AE;
+        Mon, 15 Aug 2022 12:59:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8956AB8106C;
-        Mon, 15 Aug 2022 19:59:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE574C433C1;
-        Mon, 15 Aug 2022 19:59:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF93061299;
+        Mon, 15 Aug 2022 19:59:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E9EC433D7;
+        Mon, 15 Aug 2022 19:59:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593592;
-        bh=PStUmSJuDh/2XlYej5na14v1ex14KuMW3PONNUSXsr0=;
+        s=korg; t=1660593595;
+        bh=ufwO8vqLDDu71bVtWRi8o3m8JUyw8NsgBLtUn+/druI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OedSWArpZg4DrAe6VsSlJu1h8pu5UFwMCWzx10OTIu8fljKDtzWu3U4te+IRxfgmI
-         I/Bys0o8b6FDSvcki7rnwm12jROcawxbhL8in67W7FDmX8n2IF9yLf0+4W3/zxC9lF
-         qYP40mfgB5qlC0GG6GgaCSUQrqyAwEiZNtwtQ/BY=
+        b=hUpRlrWAHORJJNauTBMIcUWzRhARgnSNnLWSXgveEaBzH6FyffpcI2WS4BE/c7qRL
+         NiuuqN0H9Z1MJOFeUjgw2Re73ktcMt3fhbp/dfg3JnKBV3Z8t+eModbidrXMJ/5zeF
+         8MpPT+WSLu3SAslPmWziQdQkH6K2JdhrvB6S/K8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0293/1157] io_uring: move to separate directory
-Date:   Mon, 15 Aug 2022 19:54:09 +0200
-Message-Id: <20220815180451.345977044@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: [PATCH 5.18 0973/1095] x86/kprobes: Update kcb status flag after singlestepping
+Date:   Mon, 15 Aug 2022 20:06:12 +0200
+Message-Id: <20220815180509.331090424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,135 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-[ Upstream commit ed29b0b4fd835b058ddd151c49d021e28d631ee6 ]
+commit dec8784c9088b131a1523f582c2194cfc8107dc0 upstream.
 
-In preparation for splitting io_uring up a bit, move it into its own
-top level directory. It didn't really belong in fs/ anyway, as it's
-not a file system only API.
+Fix kprobes to update kcb (kprobes control block) status flag to
+KPROBE_HIT_SSDONE even if the kp->post_handler is not set.
 
-This adds io_uring/ and moves the core files in there, and updates the
-MAINTAINERS file for the new location.
+This bug may cause a kernel panic if another INT3 user runs right
+after kprobes because kprobe_int3_handler() misunderstands the
+INT3 is kprobe's single stepping INT3.
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6256e668b7af ("x86/kprobes: Use int3 instead of debug trap for single-step")
+Reported-by: Daniel Müller <deso@posteo.net>
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Tested-by: Daniel Müller <deso@posteo.net>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/20220727210136.jjgc3lpqeq42yr3m@muellerd-fedora-PC2BDTX9
+Link: https://lore.kernel.org/r/165942025658.342061.12452378391879093249.stgit@devnote2
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- MAINTAINERS                 | 7 +------
- Makefile                    | 1 +
- fs/Makefile                 | 2 --
- io_uring/Makefile           | 6 ++++++
- {fs => io_uring}/io-wq.c    | 0
- {fs => io_uring}/io-wq.h    | 0
- {fs => io_uring}/io_uring.c | 2 +-
- kernel/sched/core.c         | 2 +-
- 8 files changed, 10 insertions(+), 10 deletions(-)
- create mode 100644 io_uring/Makefile
- rename {fs => io_uring}/io-wq.c (100%)
- rename {fs => io_uring}/io-wq.h (100%)
- rename {fs => io_uring}/io_uring.c (99%)
+ arch/x86/kernel/kprobes/core.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 64379c699903..08620b9a44fc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7773,9 +7773,6 @@ F:	include/linux/fs.h
- F:	include/linux/fs_types.h
- F:	include/uapi/linux/fs.h
- F:	include/uapi/linux/openat2.h
--X:	fs/io-wq.c
--X:	fs/io-wq.h
--X:	fs/io_uring.c
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -814,16 +814,20 @@ set_current_kprobe(struct kprobe *p, str
+ static void kprobe_post_process(struct kprobe *cur, struct pt_regs *regs,
+ 			       struct kprobe_ctlblk *kcb)
+ {
+-	if ((kcb->kprobe_status != KPROBE_REENTER) && cur->post_handler) {
+-		kcb->kprobe_status = KPROBE_HIT_SSDONE;
+-		cur->post_handler(cur, regs, 0);
+-	}
+-
+ 	/* Restore back the original saved kprobes variables and continue. */
+-	if (kcb->kprobe_status == KPROBE_REENTER)
++	if (kcb->kprobe_status == KPROBE_REENTER) {
++		/* This will restore both kcb and current_kprobe */
+ 		restore_previous_kprobe(kcb);
+-	else
++	} else {
++		/*
++		 * Always update the kcb status because
++		 * reset_curent_kprobe() doesn't update kcb.
++		 */
++		kcb->kprobe_status = KPROBE_HIT_SSDONE;
++		if (cur->post_handler)
++			cur->post_handler(cur, regs, 0);
+ 		reset_current_kprobe();
++	}
+ }
+ NOKPROBE_SYMBOL(kprobe_post_process);
  
- FINTEK F75375S HARDWARE MONITOR AND FAN CONTROLLER DRIVER
- M:	Riku Voipio <riku.voipio@iki.fi>
-@@ -10476,9 +10473,7 @@ L:	io-uring@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.dk/linux-block
- T:	git git://git.kernel.dk/liburing
--F:	fs/io-wq.c
--F:	fs/io-wq.h
--F:	fs/io_uring.c
-+F:	io_uring/
- F:	include/linux/io_uring.h
- F:	include/uapi/linux/io_uring.h
- F:	tools/io_uring/
-diff --git a/Makefile b/Makefile
-index cef467fc574e..68b3da2babd5 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1102,6 +1102,7 @@ export MODULES_NSDEPS := $(extmod_prefix)modules.nsdeps
- ifeq ($(KBUILD_EXTMOD),)
- core-y			+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/
- core-$(CONFIG_BLOCK)	+= block/
-+core-$(CONFIG_IO_URING)	+= io_uring/
- 
- vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, \
- 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
-diff --git a/fs/Makefile b/fs/Makefile
-index 208a74e0b00e..93b80529f8e8 100644
---- a/fs/Makefile
-+++ b/fs/Makefile
-@@ -34,8 +34,6 @@ obj-$(CONFIG_TIMERFD)		+= timerfd.o
- obj-$(CONFIG_EVENTFD)		+= eventfd.o
- obj-$(CONFIG_USERFAULTFD)	+= userfaultfd.o
- obj-$(CONFIG_AIO)               += aio.o
--obj-$(CONFIG_IO_URING)		+= io_uring.o
--obj-$(CONFIG_IO_WQ)		+= io-wq.o
- obj-$(CONFIG_FS_DAX)		+= dax.o
- obj-$(CONFIG_FS_ENCRYPTION)	+= crypto/
- obj-$(CONFIG_FS_VERITY)		+= verity/
-diff --git a/io_uring/Makefile b/io_uring/Makefile
-new file mode 100644
-index 000000000000..3680425df947
---- /dev/null
-+++ b/io_uring/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for io_uring
-+
-+obj-$(CONFIG_IO_URING)		+= io_uring.o
-+obj-$(CONFIG_IO_WQ)		+= io-wq.o
-diff --git a/fs/io-wq.c b/io_uring/io-wq.c
-similarity index 100%
-rename from fs/io-wq.c
-rename to io_uring/io-wq.c
-diff --git a/fs/io-wq.h b/io_uring/io-wq.h
-similarity index 100%
-rename from fs/io-wq.h
-rename to io_uring/io-wq.h
-diff --git a/fs/io_uring.c b/io_uring/io_uring.c
-similarity index 99%
-rename from fs/io_uring.c
-rename to io_uring/io_uring.c
-index e8e769be9ed0..b63956975109 100644
---- a/fs/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -87,7 +87,7 @@
- 
- #include <uapi/linux/io_uring.h>
- 
--#include "internal.h"
-+#include "../fs/internal.h"
- #include "io-wq.h"
- 
- #define IORING_MAX_ENTRIES	32768
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index f1e070551aa9..91471ba8dbd2 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -91,7 +91,7 @@
- #include "stats.h"
- 
- #include "../workqueue_internal.h"
--#include "../../fs/io-wq.h"
-+#include "../../io_uring/io-wq.h"
- #include "../smpboot.h"
- 
- /*
--- 
-2.35.1
-
 
 
