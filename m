@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA86C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5795C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345996AbiHOUta (ORCPT
+        id S1346107AbiHOUth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
+        Mon, 15 Aug 2022 16:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346584AbiHOUs1 (ORCPT
+        with ESMTP id S1346596AbiHOUs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:48:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70CCB8F0D;
-        Mon, 15 Aug 2022 12:09:02 -0700 (PDT)
+        Mon, 15 Aug 2022 16:48:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80365DFFE;
+        Mon, 15 Aug 2022 12:09:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE41BB81106;
-        Mon, 15 Aug 2022 19:09:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2469DC433C1;
-        Mon, 15 Aug 2022 19:08:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DCF60693;
+        Mon, 15 Aug 2022 19:09:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49252C433C1;
+        Mon, 15 Aug 2022 19:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590539;
-        bh=dC3DNuwK+mEw99lMl/mt9cbWGoqxAMyTQd+LbtZwKyg=;
+        s=korg; t=1660590545;
+        bh=xMtcPeQKe46Skuop9aELY3NS1lc3uk2hAW+vMw8BryU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/xJm9MxQVD4dr/fQBCzIJL3zGriHhm7NaCGlvRRoXvYE7sB9yozci2vrK1jQISnj
-         U9ijWmr2sDD5Ilf1yEDwRp8SiO7DVArW/TdS7ldYy2kFsaBP93M9+TZcdCcDWEvKEL
-         2H5A17xZZlxL+7gIn+cnGNyFIPOkdNYcxK4vRR30=
+        b=YV5sYK657DkVWGY0/yZFGn9sFyrBRuuonuWW22IQjXrRXXqAOw+dC1FGg2XpAYkUN
+         gkP801xGnwMtLDE8Ymb9+PkJH+qaO5TclpXSHhBRs2OASey3eVJbr0XM6VeNWXtE/T
+         pXNP0rEJ51puE75dLbMc4ktb/SsHQ1Fo1YNs8qFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuwen Chen <chenyuwen1@meizu.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Muneendra Kumar <muneendra.kumar@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0264/1095] erofs: wake up all waiters after z_erofs_lzma_head ready
-Date:   Mon, 15 Aug 2022 19:54:23 +0200
-Message-Id: <20220815180440.666998143@linuxfoundation.org>
+Subject: [PATCH 5.18 0292/1095] scsi: nvme-fc: Add new routine nvme_fc_io_getuuid()
+Date:   Mon, 15 Aug 2022 19:54:51 +0200
+Message-Id: <20220815180441.871915550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,72 +54,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuwen Chen <chenyuwen1@meizu.com>
+From: Muneendra Kumar <muneendra.kumar@broadcom.com>
 
-[ Upstream commit 2df7c4bd7c1d2bc5ece5e9ed19dbd386810c2a65 ]
+[ Upstream commit 827fc630e4c8087df5a8e8ee013b686bd6f13736 ]
 
-When the user mounts the erofs second times, the decompression thread
-may hung. The problem happens due to a sequence of steps like the
-following:
+Add nvme_fc_io_getuuid() to the nvme-fc transport. The routine is invoked
+by the FC LLDD on a per-I/O request basis.  The routine translates from the
+FC-specific request structure to the bio and the cgroup structure in order
+to obtain the FC appid stored in the cgroup structure. If a value is not
+set or a bio is not found, a NULL appid (aka uuid) will be returned to the
+LLDD.
 
-1) Task A called z_erofs_load_lzma_config which obtain all of the node
-   from the z_erofs_lzma_head.
-
-2) At this time, task B called the z_erofs_lzma_decompress and wanted to
-   get a node. But the z_erofs_lzma_head was empty, the Task B had to
-   sleep.
-
-3) Task A release nodes and push nodes into the z_erofs_lzma_head. But
-   task B was still sleeping.
-
-One example report when the hung happens:
-task:kworker/u3:1 state:D stack:14384 pid: 86 ppid: 2 flags:0x00004000
-Workqueue: erofs_unzipd z_erofs_decompressqueue_work
-Call Trace:
- <TASK>
- __schedule+0x281/0x760
- schedule+0x49/0xb0
- z_erofs_lzma_decompress+0x4bc/0x580
- ? cpu_core_flags+0x10/0x10
- z_erofs_decompress_pcluster+0x49b/0xba0
- ? __update_load_avg_se+0x2b0/0x330
- ? __update_load_avg_se+0x2b0/0x330
- ? update_load_avg+0x5f/0x690
- ? update_load_avg+0x5f/0x690
- ? set_next_entity+0xbd/0x110
- ? _raw_spin_unlock+0xd/0x20
- z_erofs_decompress_queue.isra.0+0x2e/0x50
- z_erofs_decompressqueue_work+0x30/0x60
- process_one_work+0x1d3/0x3a0
- worker_thread+0x45/0x3a0
- ? process_one_work+0x3a0/0x3a0
- kthread+0xe2/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Signed-off-by: Yuwen Chen <chenyuwen1@meizu.com>
-Fixes: 622ceaddb764 ("erofs: lzma compression support")
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220626224041.4288-1-chenyuwen1@meizu.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220519123110.17361-2-jsmart2021@gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Acked-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Muneendra Kumar <muneendra.kumar@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/decompressor_lzma.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvme/host/fc.c         | 18 ++++++++++++++++++
+ include/linux/nvme-fc-driver.h | 14 ++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/fs/erofs/decompressor_lzma.c b/fs/erofs/decompressor_lzma.c
-index 05a3063cf2bc..5e59b3f523eb 100644
---- a/fs/erofs/decompressor_lzma.c
-+++ b/fs/erofs/decompressor_lzma.c
-@@ -143,6 +143,7 @@ int z_erofs_load_lzma_config(struct super_block *sb,
- 	DBG_BUGON(z_erofs_lzma_head);
- 	z_erofs_lzma_head = head;
- 	spin_unlock(&z_erofs_lzma_lock);
-+	wake_up_all(&z_erofs_lzma_wq);
+diff --git a/drivers/nvme/host/fc.c b/drivers/nvme/host/fc.c
+index 080f85f4105f..05f9da251758 100644
+--- a/drivers/nvme/host/fc.c
++++ b/drivers/nvme/host/fc.c
+@@ -1899,6 +1899,24 @@ nvme_fc_ctrl_ioerr_work(struct work_struct *work)
+ 	nvme_fc_error_recovery(ctrl, "transport detected io error");
+ }
  
- 	z_erofs_lzma_max_dictsize = dict_size;
- 	mutex_unlock(&lzma_resize_mutex);
++/*
++ * nvme_fc_io_getuuid - Routine called to get the appid field
++ * associated with request by the lldd
++ * @req:IO request from nvme fc to driver
++ * Returns: UUID if there is an appid associated with VM or
++ * NULL if the user/libvirt has not set the appid to VM
++ */
++char *nvme_fc_io_getuuid(struct nvmefc_fcp_req *req)
++{
++	struct nvme_fc_fcp_op *op = fcp_req_to_fcp_op(req);
++	struct request *rq = op->rq;
++
++	if (!IS_ENABLED(CONFIG_BLK_CGROUP_FC_APPID) || !rq->bio)
++		return NULL;
++	return blkcg_get_fc_appid(rq->bio);
++}
++EXPORT_SYMBOL_GPL(nvme_fc_io_getuuid);
++
+ static void
+ nvme_fc_fcpio_done(struct nvmefc_fcp_req *req)
+ {
+diff --git a/include/linux/nvme-fc-driver.h b/include/linux/nvme-fc-driver.h
+index 5358a5facdee..fa092b9be2fd 100644
+--- a/include/linux/nvme-fc-driver.h
++++ b/include/linux/nvme-fc-driver.h
+@@ -564,6 +564,15 @@ int nvme_fc_rcv_ls_req(struct nvme_fc_remote_port *remoteport,
+ 			void *lsreqbuf, u32 lsreqbuf_len);
+ 
+ 
++/*
++ * Routine called to get the appid field associated with request by the lldd
++ *
++ * If the return value is NULL : the user/libvirt has not set the appid to VM
++ * If the return value is non-zero: Returns the appid associated with VM
++ *
++ * @req: IO request from nvme fc to driver
++ */
++char *nvme_fc_io_getuuid(struct nvmefc_fcp_req *req);
+ 
+ /*
+  * ***************  LLDD FC-NVME Target/Subsystem API ***************
+@@ -1048,5 +1057,10 @@ int nvmet_fc_rcv_fcp_req(struct nvmet_fc_target_port *tgtport,
+ 
+ void nvmet_fc_rcv_fcp_abort(struct nvmet_fc_target_port *tgtport,
+ 			struct nvmefc_tgt_fcp_req *fcpreq);
++/*
++ * add a define, visible to the compiler, that indicates support
++ * for feature. Allows for conditional compilation in LLDDs.
++ */
++#define NVME_FC_FEAT_UUID	0x0001
+ 
+ #endif /* _NVME_FC_DRIVER_H */
 -- 
 2.35.1
 
