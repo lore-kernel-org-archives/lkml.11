@@ -2,93 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F50C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52663C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344289AbiHOTji (ORCPT
+        id S1344295AbiHOTjl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        Mon, 15 Aug 2022 15:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344344AbiHOTgf (ORCPT
+        with ESMTP id S1344348AbiHOTgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:36:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811CC642E3;
-        Mon, 15 Aug 2022 11:45:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806E030F58;
+        Mon, 15 Aug 2022 11:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73100611EF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E606761200;
         Mon, 15 Aug 2022 18:45:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60131C433C1;
-        Mon, 15 Aug 2022 18:45:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589154;
-        bh=qV18CXrqDsPNUqyyYXpbc7vK2XRoYEx8HCVgIpmxHzs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iyiik0wiZaOIDPtmZkWwzVDpiwkhY0nTpdFg+peaLCiO76vNhCnVW84ipjP9fd7Oq
-         gtSTiF4/78P3ETVJVGmWNoSgMTvuFW0MhbguI4iNZ6eG5ZzhGQrOzf/I2AwMPrSfkf
-         j7cT0q8/7516NjxAlMXmS0ERotObBEcvueEuVPmQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 599/779] MIPS: vdso: Utilize __pa() for gic_pfn
-Date:   Mon, 15 Aug 2022 20:04:03 +0200
-Message-Id: <20220815180402.958097458@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4210EC43470;
+        Mon, 15 Aug 2022 18:45:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660589155;
+        bh=UIRaZA/DpTd04gsmK1eWGhx14sd8ik48o9o03i9sgek=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=V8+PW0FogmjITLRkekPhsAo5MnW06luA/9yClkrXgsO35ZuMSzs4MwsWq8l3sxxR+
+         OF9vWhT71PG1XhQDejrVY4IXIyNlTTPGtH54sk+wjIPX+4sMWaULxqs6Y+i2LpBSpi
+         1IKUxoKSlXyD9QoRy+IMnjmATwUVMey/GJ5j9Xeh0S+QDIjX68PWb19Y3mC8dhLEN8
+         DVMVbZ+ELv7Zo3XzxxO4nimBoFgO+Cy2jNEe392nhtNm4afdt+/KCnjOIoiMDPIQLT
+         t0Tq+DfJNG13Cy8FxtCl3t1pXY/Itjx8KBIRK4A3nbT4JkJMDdFz9IMRuZ+sNVWu55
+         fuLNNXPKqlVNg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220811042855.3867774-3-bjorn.andersson@linaro.org>
+References: <20220811042855.3867774-1-bjorn.andersson@linaro.org> <20220811042855.3867774-3-bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 2/2] clk: qcom: Add SC8280XP GPU clock controller
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Taniya Das <tdas@codeaurora.org>
+Date:   Mon, 15 Aug 2022 11:45:53 -0700
+User-Agent: alot/0.10
+Message-Id: <20220815184555.4210EC43470@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+Quoting Bjorn Andersson (2022-08-10 21:28:55)
+> diff --git a/drivers/clk/qcom/gpucc-sc8280xp.c b/drivers/clk/qcom/gpucc-s=
+c8280xp.c
+> new file mode 100644
+> index 000000000000..555fd4ff58ab
+> --- /dev/null
+> +++ b/drivers/clk/qcom/gpucc-sc8280xp.c
+> @@ -0,0 +1,460 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> + */
+> +
+> +#include <linux/clk-provider.h>
 
-[ Upstream commit 8baa65126e19af5ee9f3c07e7bb53da41c39e4b1 ]
+include kernel.h for ARRAY_SIZE please.
 
-The GIC user offset is mapped into every process' virtual address and is
-therefore part of the hot-path of arch_setup_additional_pages(). Utilize
-__pa() such that we are more optimal even when CONFIG_DEBUG_VIRTUAL is
-enabled, and while at it utilize PFN_DOWN() instead of open-coding the
-right shift by PAGE_SHIFT.
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <dt-bindings/clock/qcom,gpucc-sc8280xp.h>
+> +
+> +#include "clk-alpha-pll.h"
+> +#include "clk-branch.h"
+> +#include "clk-rcg.h"
+> +#include "clk-regmap-divider.h"
+> +#include "common.h"
+> +#include "reset.h"
+> +#include "gdsc.h"
+> +
+> +/* Need to match the order of clocks in DT binding */
+> +enum {
+> +       DT_BI_TCXO,
+> +       DT_GCC_GPU_GPLL0_CLK_SRC,
+> +       DT_GCC_GPU_GPLL0_DIV_CLK_SRC,
+> +};
+> +
+> +enum {
+> +       P_BI_TCXO,
+> +       P_GCC_GPU_GPLL0_CLK_SRC,
+> +       P_GCC_GPU_GPLL0_DIV_CLK_SRC,
+> +       P_GPU_CC_PLL0_OUT_MAIN,
+> +       P_GPU_CC_PLL1_OUT_MAIN,
+> +};
+> +
+> +static const struct clk_parent_data parent_data_tcxo =3D { .index =3D DT=
+_BI_TCXO };
+> +
+> +static const struct pll_vco lucid_5lpe_vco[] =3D {
+> +       { 249600000, 1800000000, 0 },
+> +};
+> +
+> +static struct alpha_pll_config gpu_cc_pll0_config =3D {
+> +       .l =3D 0x1c,
+> +       .alpha =3D 0xa555,
+> +       .config_ctl_val =3D 0x20485699,
+> +       .config_ctl_hi_val =3D 0x00002261,
+> +       .config_ctl_hi1_val =3D 0x2a9a699c,
+> +       .test_ctl_val =3D 0x00000000,
+> +       .test_ctl_hi_val =3D 0x00000000,
+> +       .test_ctl_hi1_val =3D 0x01800000,
+> +       .user_ctl_val =3D 0x00000000,
+> +       .user_ctl_hi_val =3D 0x00000805,
+> +       .user_ctl_hi1_val =3D 0x00000000,
+> +};
+> +
+> +static struct clk_alpha_pll gpu_cc_pll0 =3D {
+> +       .offset =3D 0x0,
+> +       .vco_table =3D lucid_5lpe_vco,
+> +       .num_vco =3D ARRAY_SIZE(lucid_5lpe_vco),
+> +       .regs =3D clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID],
+> +       .clkr =3D {
+> +               .hw.init =3D &(struct clk_init_data){
 
-Reported-by: Greg Ungerer <gerg@kernel.org>
-Suggested-by: Serge Semin <fancer.lancer@gmail.com>
-Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Greg Ungerer <gerg@kernel.org>
-Tested-by: Greg Ungerer <gerg@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/kernel/vdso.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+const?
 
-diff --git a/arch/mips/kernel/vdso.c b/arch/mips/kernel/vdso.c
-index 3d0cf471f2fe..b2cc2c2dd4bf 100644
---- a/arch/mips/kernel/vdso.c
-+++ b/arch/mips/kernel/vdso.c
-@@ -159,7 +159,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
- 	/* Map GIC user page. */
- 	if (gic_size) {
- 		gic_base = (unsigned long)mips_gic_base + MIPS_GIC_USER_OFS;
--		gic_pfn = virt_to_phys((void *)gic_base) >> PAGE_SHIFT;
-+		gic_pfn = PFN_DOWN(__pa(gic_base));
- 
- 		ret = io_remap_pfn_range(vma, base, gic_pfn, gic_size,
- 					 pgprot_noncached(vma->vm_page_prot));
--- 
-2.35.1
-
-
-
+> +                       .name =3D "gpu_cc_pll0",
+> +                       .parent_data =3D &parent_data_tcxo,
+> +                       .num_parents =3D 1,
+> +                       .ops =3D &clk_alpha_pll_lucid_5lpe_ops,
+> +               },
+> +       },
+> +};
