@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A748DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EF8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232002AbiHOSni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S243294AbiHOSnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243519AbiHOSlN (ORCPT
+        with ESMTP id S243575AbiHOSlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:41:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF573ED71;
-        Mon, 15 Aug 2022 11:24:44 -0700 (PDT)
+        Mon, 15 Aug 2022 14:41:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58302ED5C;
+        Mon, 15 Aug 2022 11:24:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 652A3B81071;
-        Mon, 15 Aug 2022 18:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1865C433C1;
-        Mon, 15 Aug 2022 18:24:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09EBA60FB8;
+        Mon, 15 Aug 2022 18:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09CFFC433D6;
+        Mon, 15 Aug 2022 18:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587881;
-        bh=mxljtDHMst5iwqEorc0AT/oDFsf1xLqdqqSlxIcDaPk=;
+        s=korg; t=1660587887;
+        bh=lJ6yWdOYTSwDorEM6lVgpgfm9KNuX8QvSpIRLKKt5tI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tsXzkP+2Xf587toiRb5IavBEVUKIslYFv7K7gUyxbgeqSO0pXunAdMCZ9hgH65SLb
-         YhAqRnPGRqrYg7AXtXe88j6+9opUlpKG2YUhJtwaAaZ5+G4D8R96H6jg8vp+ki1+Ra
-         X6JVYAAIoUxX8Ol57Kn57SM7w5goxAo8wy8j9lY4=
+        b=HID9Pvp994UzCkEQyZkTmj20pouSUqs3KQkmm9piE8Q5SztsC49sZG6OsqZzVf82S
+         7uk2jMXKtx91LD7cv2iWJ7izYSpPbgldA44cNhvl9KdkVeApn4AQQzNSv74Gna2rPk
+         QX28wsrLixlLUAwcA31qGr2j82WJMoHos6rzPLyk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 193/779] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
-Date:   Mon, 15 Aug 2022 19:57:17 +0200
-Message-Id: <20220815180345.516784895@linuxfoundation.org>
+Subject: [PATCH 5.15 195/779] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
+Date:   Mon, 15 Aug 2022 19:57:19 +0200
+Message-Id: <20220815180345.614725077@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,72 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-[ Upstream commit 54872fea6a5ac967ec2272aea525d1438ac6735a ]
+[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
 
-In error case in hisi_lpc_acpi_probe() after calling platform_device_add(),
-hisi_lpc_acpi_remove() can't release the failed 'pdev', so it will be leak,
-call platform_device_put() to fix this problem.
-I'v constructed this error case and tested this patch on D05 board.
+The smem-state properties for the pronto node were incorrectly labelled,
+reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
+the stop state to be used.
 
-Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/hisi_lpc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 378f5d62a991..e7eaa8784fee 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -503,13 +503,13 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- {
- 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
- 	struct acpi_device *child;
-+	struct platform_device *pdev;
- 	int ret;
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 8b2724272464..19e201f52b16 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -1747,8 +1747,8 @@ pronto: remoteproc@a21b000 {
+ 					<&rpmpd MSM8916_VDDMX>;
+ 			power-domain-names = "cx", "mx";
  
- 	/* Only consider the children of the host */
- 	list_for_each_entry(child, &adev->children, node) {
- 		const char *hid = acpi_device_hid(child);
- 		const struct hisi_lpc_acpi_cell *cell;
--		struct platform_device *pdev;
- 		const struct resource *res;
- 		bool found = false;
- 		int num_res;
-@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
+-			qcom,state = <&wcnss_smp2p_out 0>;
+-			qcom,state-names = "stop";
++			qcom,smem-states = <&wcnss_smp2p_out 0>;
++			qcom,smem-state-names = "stop";
  
- 		ret = platform_device_add_resources(pdev, res, num_res);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add_data(pdev, cell->pdata,
- 					       cell->pdata_size);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add(pdev);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		acpi_device_set_enumerated(child);
- 	}
- 
- 	return 0;
- 
-+fail_put_device:
-+	platform_device_put(pdev);
- fail:
- 	hisi_lpc_acpi_remove(hostdev);
- 	return ret;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&wcnss_pin_a>;
 -- 
 2.35.1
 
