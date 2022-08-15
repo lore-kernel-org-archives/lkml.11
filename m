@@ -2,63 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2ACC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAB2C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242482AbiHOTke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        id S241134AbiHOTmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245740AbiHOThs (ORCPT
+        with ESMTP id S1343953AbiHOTiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057D731368;
-        Mon, 15 Aug 2022 11:46:25 -0700 (PDT)
+        Mon, 15 Aug 2022 15:38:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1587331357;
+        Mon, 15 Aug 2022 11:46:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 955BB61124;
-        Mon, 15 Aug 2022 18:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC9B2C433D6;
-        Mon, 15 Aug 2022 18:46:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660589184;
-        bh=xd05IOvXbZkYJrbK//9m4SCmIjrh7J1pnQoHMdMOv2E=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=oqY3F37rs1pwHEALe6zFf8ndvDZABmILsEEYN2S5kzrM06BlrHZBoDErpJdKg52cr
-         OtyJ8kKFRxoI2wk8XAY0Mq215EX0PjwE8A0dNsOoBhuowEHhfjvmJyGB2fMOEKCP+a
-         hx3yaAl9peS/f9SJF3QOcmYl1ROjwSQ/EyXRbckwPQU8uvq2G13qKvgfrlbRdNlPVU
-         TI+pEeJ3aLieY7o5gXG66CRwqV9jYISDZC1vKS6qhRnfLLKMFyEXmACUCgoemTu6Bc
-         pWl85vTuSeQ1RXE7iYNh2GpoIXccvymhqle/4G3OcQTErqHzU9PFpS0tuu+UBvgu1V
-         Puz20GODxIGrQ==
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BEBCB8105D;
+        Mon, 15 Aug 2022 18:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1DACC433D6;
+        Mon, 15 Aug 2022 18:46:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589186;
+        bh=OiLI/r7+B3K8dB10cvzdDcNRahAya9DTiPCTuRpfaaw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uNgTd/CtRuDd0G+HVBLBSuyFObninhKDZhnwtP/5pqaT8tl358Uvyzi4wlL6qkl6W
+         /otFFrek0FXReD2z+QNHSMIkQKnGYI0aIOwlM/70y+wVUNxkG+1AjXcYwUmQcl58+S
+         LwcMHnlk2JUMBC+y0bGInNecQbBfzJ8beNsKSs5k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 640/779] s390/dump: fix os_info virtual vs physical address confusion
+Date:   Mon, 15 Aug 2022 20:04:44 +0200
+Message-Id: <20220815180404.705724643@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220811042855.3867774-2-bjorn.andersson@linaro.org>
-References: <20220811042855.3867774-1-bjorn.andersson@linaro.org> <20220811042855.3867774-2-bjorn.andersson@linaro.org>
-Subject: Re: [PATCH 1/2] dt-bindings: clock: Add Qualcomm SC8280XP GPU binding
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>
-Date:   Mon, 15 Aug 2022 11:46:22 -0700
-User-Agent: alot/0.10
-Message-Id: <20220815184623.EC9B2C433D6@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Bjorn Andersson (2022-08-10 21:28:54)
-> Add compatible for the Qualcomm SC8280XP GPU.
->=20
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+[ Upstream commit 9de209c7d584d6e06ad92f120d83d4f27c200497 ]
+
+Due to historical reasons os_info handling functions misuse
+the notion of physical vs virtual addresses difference.
+
+Note: this does not fix a bug currently, since virtual
+and physical addresses are identical.
+
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/s390/kernel/os_info.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/s390/kernel/os_info.c b/arch/s390/kernel/os_info.c
+index e548844dde28..6b5b64e67eee 100644
+--- a/arch/s390/kernel/os_info.c
++++ b/arch/s390/kernel/os_info.c
+@@ -46,7 +46,7 @@ void os_info_crashkernel_add(unsigned long base, unsigned long size)
+  */
+ void os_info_entry_add(int nr, void *ptr, u64 size)
+ {
+-	os_info.entry[nr].addr = (u64)(unsigned long)ptr;
++	os_info.entry[nr].addr = __pa(ptr);
+ 	os_info.entry[nr].size = size;
+ 	os_info.entry[nr].csum = (__force u32)csum_partial(ptr, size, 0);
+ 	os_info.csum = os_info_csum(&os_info);
+@@ -63,7 +63,7 @@ void __init os_info_init(void)
+ 	os_info.version_minor = OS_INFO_VERSION_MINOR;
+ 	os_info.magic = OS_INFO_MAGIC;
+ 	os_info.csum = os_info_csum(&os_info);
+-	mem_assign_absolute(S390_lowcore.os_info, (unsigned long) ptr);
++	mem_assign_absolute(S390_lowcore.os_info, __pa(ptr));
+ }
+ 
+ #ifdef CONFIG_CRASH_DUMP
+-- 
+2.35.1
+
+
+
