@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB921C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D16C2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344427AbiHOTb1 (ORCPT
+        id S1344718AbiHOTbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        Mon, 15 Aug 2022 15:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344211AbiHOT0a (ORCPT
+        with ESMTP id S1344344AbiHOT0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:26:30 -0400
+        Mon, 15 Aug 2022 15:26:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876D2167FA;
-        Mon, 15 Aug 2022 11:42:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CAD2F025;
+        Mon, 15 Aug 2022 11:42:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D43E661052;
-        Mon, 15 Aug 2022 18:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD67C433C1;
-        Mon, 15 Aug 2022 18:42:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A74161120;
+        Mon, 15 Aug 2022 18:42:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE78C433C1;
+        Mon, 15 Aug 2022 18:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588945;
-        bh=tcRxpjtw1HiPUhUHNS8nboJEdUsZZ/FIKajP6IXJOMo=;
+        s=korg; t=1660588955;
+        bh=FpJB5bvoHtxoOMqSH9y0L+Uu18qnX9Iul8pE4PGs3mA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KxYWviZtolpHxGscsfgdJe0QzD89ucKpyOUkml0Y9hamqZARHWv2ttkPr4lo745AR
-         IqgKpsS0PlNUeT99zQprhViVD7TnMUciBMliUTXHxtkEhnmqO47GcnnQs86nQT/NLP
-         z57LJZWtq6S65mr9twpg90mCwMBAp89nBmWzA950=
+        b=ZuA5Y0/N9rXxyGKIVSMwsLk/tQUA7oy+DbimA+0eGD3a761bqlfrQ9jLs7GNA10Aw
+         yeSISY2ecr/NwHq3QVezL2SEYsn9Nod+uMehF1/A6I2GnE9/qxaT5eYVFGhSVA50+/
+         vRFnroH4mapjs4bUSaJRykAh4PY2aDGO8HGtHZ7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Antonio Borneo <antonio.borneo@foss.st.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 522/779] scripts/gdb: fix lx-dmesg on 32 bits arch
-Date:   Mon, 15 Aug 2022 20:02:46 +0200
-Message-Id: <20220815180359.562393875@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 568/779] serial: 8250: Export ICR access helpers for internal use
+Date:   Mon, 15 Aug 2022 20:03:32 +0200
+Message-Id: <20220815180401.606383226@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,123 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antonio Borneo <antonio.borneo@foss.st.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit e3c8d33e0d62175c31ca7ab7ab01b18f0b6318d3 ]
+[ Upstream commit cb5a40e3143bc64437858b337273fd63cc42e9c2 ]
 
-The type atomic_long_t can have size 4 or 8 bytes, depending on
-CONFIG_64BIT; it's only content, the field 'counter', is either an
-int or a s64 value.
+Make ICR access helpers available outside 8250_port.c, however retain
+them as ordinary static functions so as not to regress code generation.
 
-Current code incorrectly uses the fixed size utils.read_u64() to
-read the field 'counter' inside atomic_long_t.
+This is because `serial_icr_write' is currently automatically inlined by
+GCC, however `serial_icr_read' is not.  Making them both static inline
+would grow code produced, e.g.:
 
-On 32 bits architectures reading the last element 'tail_id' of the
-struct prb_desc_ring:
-	struct prb_desc_ring {
-		...
-		atomic_long_t tail_id;
-	};
-causes the utils.read_u64() to access outside the boundary of the
-struct and the gdb command 'lx-dmesg' exits with error:
-	Python Exception <class 'IndexError'>: index out of range
-	Error occurred in Python: index out of range
+$ i386-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     15065       3378          0      18443 8250_port-old.o
+     15289       3378          0      18667 8250_port-new.o
 
-Query the really used atomic_long_t counter type size.
+and:
 
-Link: https://lore.kernel.org/r/20220617143758.137307-1-antonio.borneo@foss.st.com
-Fixes: e60768311af8 ("scripts/gdb: update for lockless printk ringbuffer")
-Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-[pmladek@suse.com: Query the really used atomic_long_t counter type size]
-Tested-by: Antonio Borneo <antonio.borneo@foss.st.com>
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220719122831.19890-1-pmladek@suse.com
+$ riscv64-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     16980       5306          0      22286 8250_port-old.o
+     17124       5306          0      22430 8250_port-new.o
+
+while making them external would needlessly add a new module interface
+and lose the benefit from `serial_icr_write' getting inlined outside
+8250_port.o.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181517500.9383@angie.orcam.me.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/gdb/linux/dmesg.py |  9 +++------
- scripts/gdb/linux/utils.py | 14 ++++++++++++--
- 2 files changed, 15 insertions(+), 8 deletions(-)
+ drivers/tty/serial/8250/8250.h      | 22 ++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 21 ---------------------
+ 2 files changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/scripts/gdb/linux/dmesg.py b/scripts/gdb/linux/dmesg.py
-index d5983cf3db7d..c771831eb077 100644
---- a/scripts/gdb/linux/dmesg.py
-+++ b/scripts/gdb/linux/dmesg.py
-@@ -22,7 +22,6 @@ prb_desc_type = utils.CachedType("struct prb_desc")
- prb_desc_ring_type = utils.CachedType("struct prb_desc_ring")
- prb_data_ring_type = utils.CachedType("struct prb_data_ring")
- printk_ringbuffer_type = utils.CachedType("struct printk_ringbuffer")
--atomic_long_type = utils.CachedType("atomic_long_t")
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 6473361525d1..0efe4df24622 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -120,6 +120,28 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
+ 	up->port.serial_out(&up->port, offset, value);
+ }
  
- class LxDmesg(gdb.Command):
-     """Print Linux kernel log buffer."""
-@@ -68,8 +67,6 @@ class LxDmesg(gdb.Command):
-         off = prb_data_ring_type.get_type()['data'].bitpos // 8
-         text_data_addr = utils.read_ulong(text_data_ring, off)
- 
--        counter_off = atomic_long_type.get_type()['counter'].bitpos // 8
--
-         sv_off = prb_desc_type.get_type()['state_var'].bitpos // 8
- 
-         off = prb_desc_type.get_type()['text_blk_lpos'].bitpos // 8
-@@ -89,9 +86,9 @@ class LxDmesg(gdb.Command):
- 
-         # read in tail and head descriptor ids
-         off = prb_desc_ring_type.get_type()['tail_id'].bitpos // 8
--        tail_id = utils.read_u64(desc_ring, off + counter_off)
-+        tail_id = utils.read_atomic_long(desc_ring, off)
-         off = prb_desc_ring_type.get_type()['head_id'].bitpos // 8
--        head_id = utils.read_u64(desc_ring, off + counter_off)
-+        head_id = utils.read_atomic_long(desc_ring, off)
- 
-         did = tail_id
-         while True:
-@@ -102,7 +99,7 @@ class LxDmesg(gdb.Command):
-             desc = utils.read_memoryview(inf, desc_addr + desc_off, desc_sz).tobytes()
- 
-             # skip non-committed record
--            state = 3 & (utils.read_u64(desc, sv_off + counter_off) >> desc_flags_shift)
-+            state = 3 & (utils.read_atomic_long(desc, sv_off) >> desc_flags_shift)
-             if state != desc_committed and state != desc_finalized:
-                 if did == head_id:
-                     break
-diff --git a/scripts/gdb/linux/utils.py b/scripts/gdb/linux/utils.py
-index ff7c1799d588..1553f68716cc 100644
---- a/scripts/gdb/linux/utils.py
-+++ b/scripts/gdb/linux/utils.py
-@@ -35,13 +35,12 @@ class CachedType:
- 
- 
- long_type = CachedType("long")
--
-+atomic_long_type = CachedType("atomic_long_t")
- 
- def get_long_type():
-     global long_type
-     return long_type.get_type()
- 
--
- def offset_of(typeobj, field):
-     element = gdb.Value(0).cast(typeobj)
-     return int(str(element[field].address).split()[0], 16)
-@@ -129,6 +128,17 @@ def read_ulong(buffer, offset):
-     else:
-         return read_u32(buffer, offset)
- 
-+atomic_long_counter_offset = atomic_long_type.get_type()['counter'].bitpos
-+atomic_long_counter_sizeof = atomic_long_type.get_type()['counter'].type.sizeof
++/*
++ * For the 16C950
++ */
++static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
++{
++	serial_out(up, UART_SCR, offset);
++	serial_out(up, UART_ICR, value);
++}
 +
-+def read_atomic_long(buffer, offset):
-+    global atomic_long_counter_offset
-+    global atomic_long_counter_sizeof
++static unsigned int __maybe_unused serial_icr_read(struct uart_8250_port *up,
++						   int offset)
++{
++	unsigned int value;
 +
-+    if atomic_long_counter_sizeof == 8:
-+        return read_u64(buffer, offset + atomic_long_counter_offset)
-+    else:
-+        return read_u32(buffer, offset + atomic_long_counter_offset)
++	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
++	serial_out(up, UART_SCR, offset);
++	value = serial_in(up, UART_ICR);
++	serial_icr_write(up, UART_ACR, up->acr);
++
++	return value;
++}
++
+ void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
  
- target_arch = None
+ static inline int serial_dl_read(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 4f66825abe67..a5496bd1b650 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -537,27 +537,6 @@ serial_port_out_sync(struct uart_port *p, int offset, int value)
+ 	}
+ }
  
+-/*
+- * For the 16C950
+- */
+-static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
+-{
+-	serial_out(up, UART_SCR, offset);
+-	serial_out(up, UART_ICR, value);
+-}
+-
+-static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
+-{
+-	unsigned int value;
+-
+-	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
+-	serial_out(up, UART_SCR, offset);
+-	value = serial_in(up, UART_ICR);
+-	serial_icr_write(up, UART_ACR, up->acr);
+-
+-	return value;
+-}
+-
+ /*
+  * FIFO support.
+  */
 -- 
 2.35.1
 
