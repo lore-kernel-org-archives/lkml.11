@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC3BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FF2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348830AbiHOVho (ORCPT
+        id S1348868AbiHOVhs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        Mon, 15 Aug 2022 17:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348889AbiHOVgC (ORCPT
+        with ESMTP id S1348909AbiHOVgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:36:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EAAE0F3;
-        Mon, 15 Aug 2022 12:25:23 -0700 (PDT)
+        Mon, 15 Aug 2022 17:36:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2B92AE07;
+        Mon, 15 Aug 2022 12:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2ECCB810C6;
-        Mon, 15 Aug 2022 19:25:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E1D1C433D6;
-        Mon, 15 Aug 2022 19:25:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AB6460693;
+        Mon, 15 Aug 2022 19:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D2F6C433D6;
+        Mon, 15 Aug 2022 19:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591520;
-        bh=hTRS1tqejUoIqcG1ti54Lman6PjQTp4st0trKhr/PfE=;
+        s=korg; t=1660591526;
+        bh=b6g+upfMBir4x9nL9lFu0jJvrq9WrlcAMfMMZBcT7hY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L1kQjW6Oi/3zaPzFBQs1OUiia+mY3ZEsyFIrWOEKDw7HB2oyggFG/ba27s1edUcqT
-         AdWuG0Duo0N0chpxhg9Sc/pnirTPcKIrlumA00ildbB+lvKKxJIzrsd40fMxeDkv50
-         kI4BUC8iZQe4EjicfjUwHLECUVC39gvOudFrx8RE=
+        b=XVJiPiFh6mJV4WQeO0FCTlnSI6dTx0TM8SL0wNbe1GN6MMkuw6Ua7tWZGsZJ+xA3w
+         IXfVhsFyY5Of1aBIrww/mv9HsyoQmRwOObCXm1/hJ9RlBU8V8fobV0rQO6i//2WrYt
+         U3fw5/U49XRC83b8a8a8i4A4pbsqdnf4V+Otc9sE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0579/1095] scsi: qla2xxx: edif: Fix no logout on delete for N2N
-Date:   Mon, 15 Aug 2022 19:59:38 +0200
-Message-Id: <20220815180453.530247827@linuxfoundation.org>
+Subject: [PATCH 5.18 0607/1095] iio: adc: max1027: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:06 +0200
+Message-Id: <20220815180454.636359074@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,41 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit ec538eb838f334453b10e7e9b260f0c358018a37 ]
+[ Upstream commit e754fb7e7a05e3838c9aa044b4114869dd0d1e17 ]
 
-The driver failed to send implicit logout on session delete. For edif, this
-failed to flush any lingering SA index in FW.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-Set a flag to turn on implicit logout early in the session recovery to make
-sure the logout will go out in case of error.
-
-Link: https://lore.kernel.org/r/20220608115849.16693-8-njavali@marvell.com
-Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: fc167f624833 ("iio: add support of the max1027")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-24-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_iocb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/max1027.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_iocb.c b/drivers/scsi/qla2xxx/qla_iocb.c
-index 46c879923da1..42ce4e1fe744 100644
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2882,6 +2882,9 @@ static void qla2x00_els_dcmd2_sp_done(srb_t *sp, int res)
- 	    sp->name, res, sp->handle, fcport->d_id.b24, fcport->port_name);
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index 4daf1d576c4e..b725d012625c 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -272,7 +272,7 @@ struct max1027_state {
+ 	struct mutex			lock;
+ 	struct completion		complete;
  
- 	fcport->flags &= ~(FCF_ASYNC_SENT|FCF_ASYNC_ACTIVE);
-+	/* For edif, set logout on delete to ensure any residual key from FW is flushed.*/
-+	fcport->logout_on_delete = 1;
-+	fcport->chip_reset = vha->hw->base_qpair->chip_reset;
+-	u8				reg ____cacheline_aligned;
++	u8				reg __aligned(IIO_DMA_MINALIGN);
+ };
  
- 	if (sp->flags & SRB_WAKEUP_ON_COMP)
- 		complete(&lio->u.els_plogi.comp);
+ static int max1027_wait_eoc(struct iio_dev *indio_dev)
 -- 
 2.35.1
 
