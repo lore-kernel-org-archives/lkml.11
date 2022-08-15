@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34144C25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC21C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241570AbiHOXai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
+        id S1353656AbiHOXcL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244651AbiHOXYP (ORCPT
+        with ESMTP id S1343945AbiHOX0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:24:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A5E83BC2;
-        Mon, 15 Aug 2022 13:05:40 -0700 (PDT)
+        Mon, 15 Aug 2022 19:26:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFD8474EF;
+        Mon, 15 Aug 2022 13:06:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 295F1B80EAB;
-        Mon, 15 Aug 2022 20:05:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B50C433D6;
-        Mon, 15 Aug 2022 20:05:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E406069E;
+        Mon, 15 Aug 2022 20:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E4CBC433C1;
+        Mon, 15 Aug 2022 20:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593937;
-        bh=WrzGLFApLoZLo4blFQINQGoARKbOWdrNQe3OZezCUik=;
+        s=korg; t=1660593983;
+        bh=kHv0r+d23SoO64trFnjf9d24zrqlp/NQZLqRYFXhOkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bFUgOM2TV8oXsaWxBuWIrxqGN0SecwgTgzHYx9p4YPLrRU3OyFSq/fb7UK8IPh5vB
-         cK7J2SrsMHNAxZqoZfDSHEo1e1gMvu2EONz9QeidT/Yho5KBu7UWjyWh5XMwQjbvNl
-         77Je67IYyy4yLrywJYmWDCDhhGMzkmSV4iFgGXfI=
+        b=dBrpIkvF+ertWXwm//w4waRgLMbddceBeQJgIKz0qhCBYUGmVMzB735QX4jujJ5FI
+         pPFHPazyrl2j5+pzXFDO58FCt6QMGoBntUvOo+EGjU70f57FYmJMBvyqSGLLaRXjp5
+         wHVWDDWkcjG7dKEHN6eRLeasM/QCiJwjQTfYChs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Antonio Borneo <antonio.borneo@foss.st.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0351/1157] drm: adv7511: override i2c address of cec before accessing it
-Date:   Mon, 15 Aug 2022 19:55:07 +0200
-Message-Id: <20220815180453.758035376@linuxfoundation.org>
+Subject: [PATCH 5.18 1038/1095] KVM: VMX: Mark all PERF_GLOBAL_(OVF)_CTRL bits reserved if theres no vPMU
+Date:   Mon, 15 Aug 2022 20:07:17 +0200
+Message-Id: <20220815180512.038537874@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antonio Borneo <antonio.borneo@foss.st.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 9cc4853e4781bf0dd0f35355dc92d97c9da02f5d ]
+[ Upstream commit 93255bf92939d948bc86d81c6bb70bb0fecc5db1 ]
 
-Commit 680532c50bca ("drm: adv7511: Add support for
-i2c_new_secondary_device") allows a device tree node to override
-the default addresses of the secondary i2c devices. This is useful
-for solving address conflicts on the i2c bus.
+Mark all MSR_CORE_PERF_GLOBAL_CTRL and MSR_CORE_PERF_GLOBAL_OVF_CTRL bits
+as reserved if there is no guest vPMU.  The nVMX VM-Entry consistency
+checks do not check for a valid vPMU prior to consuming the masks via
+kvm_valid_perf_global_ctrl(), i.e. may incorrectly allow a non-zero mask
+to be loaded via VM-Enter or VM-Exit (well, attempted to be loaded, the
+actual MSR load will be rejected by intel_is_valid_msr()).
 
-In adv7511_init_cec_regmap() the new i2c address of cec device is
-read from device tree and immediately accessed, well before it is
-written in the proper register to override the default address.
-This can cause an i2c error during probe and a consequent probe
-failure.
-
-Once the new i2c address is read from the device tree, override
-the default address before any attempt to access the cec.
-
-Tested with adv7533 and stm32mp157f.
-
-Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-Fixes: 680532c50bca ("drm: adv7511: Add support for i2c_new_secondary_device")
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220607213144.427177-1-antonio.borneo@foss.st.com
+Fixes: f5132b01386b ("KVM: Expose a version 2 architectural PMU to a guests")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220722224409.1336532-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/pmu_intel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 5bb9300040dd..074c2e650cae 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1065,6 +1065,10 @@ static int adv7511_init_cec_regmap(struct adv7511 *adv)
- 						ADV7511_CEC_I2C_ADDR_DEFAULT);
- 	if (IS_ERR(adv->i2c_cec))
- 		return PTR_ERR(adv->i2c_cec);
-+
-+	regmap_write(adv->regmap, ADV7511_REG_CEC_I2C_ADDR,
-+		     adv->i2c_cec->addr << 1);
-+
- 	i2c_set_clientdata(adv->i2c_cec, adv);
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 040d598622e3..cd2d0454f8b0 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -488,6 +488,8 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	pmu->version = 0;
+ 	pmu->reserved_bits = 0xffffffff00200000ull;
+ 	pmu->raw_event_mask = X86_RAW_EVENT_MASK;
++	pmu->global_ctrl_mask = ~0ull;
++	pmu->global_ovf_ctrl_mask = ~0ull;
+ 	pmu->fixed_ctr_ctrl_mask = ~0ull;
  
- 	adv->regmap_cec = devm_regmap_init_i2c(adv->i2c_cec,
-@@ -1271,9 +1275,6 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
- 	if (ret)
- 		goto err_i2c_unregister_packet;
- 
--	regmap_write(adv7511->regmap, ADV7511_REG_CEC_I2C_ADDR,
--		     adv7511->i2c_cec->addr << 1);
--
- 	INIT_WORK(&adv7511->hpd_work, adv7511_hpd_work);
- 
- 	if (i2c->irq) {
+ 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
 -- 
 2.35.1
 
