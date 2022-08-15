@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 880B5C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98842C2BB47
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347003AbiHPAvX (ORCPT
+        id S1347133AbiHPAvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        Mon, 15 Aug 2022 20:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348756AbiHPAqZ (ORCPT
+        with ESMTP id S1348779AbiHPAqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:46:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3C2B3B0F;
-        Mon, 15 Aug 2022 13:44:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7A219582E;
+        Mon, 15 Aug 2022 13:44:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C0CAB80EB1;
-        Mon, 15 Aug 2022 20:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2BBFC433D6;
-        Mon, 15 Aug 2022 20:44:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF7B36123A;
+        Mon, 15 Aug 2022 20:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE7F6C433C1;
+        Mon, 15 Aug 2022 20:44:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596278;
-        bh=mPAZIivBhuehrA9rWZjos+F/5rsjO/MsLGLXHKosBsM=;
+        s=korg; t=1660596290;
+        bh=pNYcoTpG4Vva9kv7QzWq1FSRNEWbBS/YySs1ndBRAAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T4b0LBhEg9hKKvrLNoWHxQ8IvFX8YwUmN88SRZQu16Y54tGZ3ep+YDdEkm/lx5Ate
-         OVt57mJX8YXPwKT257wmipMZic0x67a2kqUu9Gx0xQ/GGg1DjpJpuo5ZLu78BArKOK
-         tJvG/MGdzBiluB07ufAdb/vj5nbBkMDZsGRTaueE=
+        b=NAET0vsGCKOIsLA2V6uIgpmvPu9tl+aIGF29z6QJucm2FkwxH/jarl7/pFMMwyGur
+         ymu8c0ujWpPZtOyPY1d0o5oa+d9tbT+TfWdEnr7kpbbX4et04Oaf/tX9d8VYZJBe//
+         juoCah5StB+qNpZrxXdCNeykfjhlX0stXHRiVybA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrea Righi <andrea.righi@canonical.com>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1028/1157] x86/entry: Build thunk_$(BITS) only if CONFIG_PREEMPTION=y
-Date:   Mon, 15 Aug 2022 20:06:24 +0200
-Message-Id: <20220815180521.063709898@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1032/1157] video: fbdev: s3fb: Check the size of screen before memset_io()
+Date:   Mon, 15 Aug 2022 20:06:28 +0200
+Message-Id: <20220815180521.241436981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,109 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Righi <andrea.righi@canonical.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit de979c83574abf6e78f3fa65b716515c91b2613d ]
+[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
 
-With CONFIG_PREEMPTION disabled, arch/x86/entry/thunk_$(BITS).o becomes
-an empty object file.
+In the function s3fb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-With some old versions of binutils (i.e., 2.35.90.20210113-1ubuntu1) the
-GNU assembler doesn't generate a symbol table for empty object files and
-objtool fails with the following error when a valid symbol table cannot
-be found:
+[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
+[   54.083742] #PF: supervisor write access in kernel mode
+[   54.083744] #PF: error_code(0x0002) - not-present page
+[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
+[   54.083782] Call Trace:
+[   54.083788]  s3fb_set_par+0x1ec6/0x4040
+[   54.083806]  fb_set_var+0x604/0xeb0
+[   54.083836]  do_fb_ioctl+0x234/0x670
 
-  arch/x86/entry/thunk_64.o: warning: objtool: missing symbol table
+Fix the this by checking the value of 'screen_size' before memset_io().
 
-To prevent this from happening, build thunk_$(BITS).o only if
-CONFIG_PREEMPTION is enabled.
-
-BugLink: https://bugs.launchpad.net/bugs/1911359
-
-Fixes: 320100a5ffe5 ("x86/entry: Remove the TRACE_IRQS cruft")
-Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/Ys/Ke7EWjcX+ZlXO@arighi-desktop
+Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/entry/Makefile   | 3 ++-
- arch/x86/entry/thunk_32.S | 2 --
- arch/x86/entry/thunk_64.S | 4 ----
- arch/x86/um/Makefile      | 3 ++-
- 4 files changed, 4 insertions(+), 8 deletions(-)
+ drivers/video/fbdev/s3fb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
-index eeadbd7d92cc..ca2fe186994b 100644
---- a/arch/x86/entry/Makefile
-+++ b/arch/x86/entry/Makefile
-@@ -11,12 +11,13 @@ CFLAGS_REMOVE_common.o		= $(CC_FLAGS_FTRACE)
+diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
+index b93c8eb02336..5069f6f67923 100644
+--- a/drivers/video/fbdev/s3fb.c
++++ b/drivers/video/fbdev/s3fb.c
+@@ -905,6 +905,8 @@ static int s3fb_set_par(struct fb_info *info)
+ 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
+ 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
  
- CFLAGS_common.o			+= -fno-stack-protector
- 
--obj-y				:= entry.o entry_$(BITS).o thunk_$(BITS).o syscall_$(BITS).o
-+obj-y				:= entry.o entry_$(BITS).o syscall_$(BITS).o
- obj-y				+= common.o
- 
- obj-y				+= vdso/
- obj-y				+= vsyscall/
- 
-+obj-$(CONFIG_PREEMPTION)	+= thunk_$(BITS).o
- obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
- obj-$(CONFIG_X86_X32_ABI)	+= syscall_x32.o
- 
-diff --git a/arch/x86/entry/thunk_32.S b/arch/x86/entry/thunk_32.S
-index 7591bab060f7..ff6e7003da97 100644
---- a/arch/x86/entry/thunk_32.S
-+++ b/arch/x86/entry/thunk_32.S
-@@ -29,10 +29,8 @@ SYM_CODE_START_NOALIGN(\name)
- SYM_CODE_END(\name)
- 	.endm
- 
--#ifdef CONFIG_PREEMPTION
- 	THUNK preempt_schedule_thunk, preempt_schedule
- 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
- 	EXPORT_SYMBOL(preempt_schedule_thunk)
- 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
--#endif
- 
-diff --git a/arch/x86/entry/thunk_64.S b/arch/x86/entry/thunk_64.S
-index 505b488fcc65..f38b07d2768b 100644
---- a/arch/x86/entry/thunk_64.S
-+++ b/arch/x86/entry/thunk_64.S
-@@ -31,14 +31,11 @@ SYM_FUNC_END(\name)
- 	_ASM_NOKPROBE(\name)
- 	.endm
- 
--#ifdef CONFIG_PREEMPTION
- 	THUNK preempt_schedule_thunk, preempt_schedule
- 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
- 	EXPORT_SYMBOL(preempt_schedule_thunk)
- 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
--#endif
- 
--#ifdef CONFIG_PREEMPTION
- SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
- 	popq %r11
- 	popq %r10
-@@ -53,4 +50,3 @@ SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
- 	RET
- 	_ASM_NOKPROBE(__thunk_restore)
- SYM_CODE_END(__thunk_restore)
--#endif
-diff --git a/arch/x86/um/Makefile b/arch/x86/um/Makefile
-index ba5789c35809..a8cde4e8ab11 100644
---- a/arch/x86/um/Makefile
-+++ b/arch/x86/um/Makefile
-@@ -28,7 +28,8 @@ else
- 
- obj-y += syscalls_64.o vdso/
- 
--subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o ../entry/thunk_64.o
-+subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o
-+subarch-$(CONFIG_PREEMPTION) += ../entry/thunk_64.o
- 
- endif
- 
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 	/* Device and screen back on */
+ 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
 -- 
 2.35.1
 
