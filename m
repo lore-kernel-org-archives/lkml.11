@@ -2,252 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EC3C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3A8C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348616AbiHPAE3 (ORCPT
+        id S1351762AbiHPAEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        Mon, 15 Aug 2022 20:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354320AbiHOXyq (ORCPT
+        with ESMTP id S1354632AbiHOXzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:54:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C749C6CE5;
-        Mon, 15 Aug 2022 13:19:39 -0700 (PDT)
+        Mon, 15 Aug 2022 19:55:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70A8162C7F;
+        Mon, 15 Aug 2022 13:19:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9957CB80EAD;
-        Mon, 15 Aug 2022 20:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF4CC433D6;
-        Mon, 15 Aug 2022 20:19:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F726069F;
+        Mon, 15 Aug 2022 20:19:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A19C433D7;
+        Mon, 15 Aug 2022 20:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594777;
-        bh=alkqNoVEuZH4FmZPEVVM7SNB9OYHmAev1RY7fyrIPCQ=;
+        s=korg; t=1660594790;
+        bh=r3G8/3p1eFirWwmLYKMYbRpBTw9Ek3gXCzt42vDMaCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6+KA0+xaYdHF9yYsqpNp2aIgAI7eix/2VXR7cAexaR0q5ipIHYOunrbJ0ZEzKlXP
-         IjTJVG1FqtZoNPsLwdX6VfHxUoU5MGbq+9I5cE3bZbT8r2F4hAjazJXhEzQ6Y6T/Sq
-         EHbsdjDqnW6u7pJJQLCa8IYRydEXYaiwnWZxgl08=
+        b=G9s75+Xr5I6ISxwLodZbHUiMYkFL2LP8KofcVO9tii1tjtPLh7s2hK6V5UJ/zboxd
+         uB9u6OW5hLKx31/rAX+VgwP+M4IKevKYr9Oi23oS1979A9uIFnp1rVg+BRRsgMwKOB
+         UPrYTTyjK5dXhkGNYmhBeyAMhNmGqhLL48o9clTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard F6BVP <f6bvp@free.fr>,
-        Eric Dumazet <edumazet@google.com>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Mike Manning <mvrmanning@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0556/1157] ax25: fix incorrect dev_tracker usage
-Date:   Mon, 15 Aug 2022 19:58:32 +0200
-Message-Id: <20220815180501.862000652@linuxfoundation.org>
+Subject: [PATCH 5.19 0560/1157] net: allow unbound socket for packets in VRF when tcp_l3mdev_accept set
+Date:   Mon, 15 Aug 2022 19:58:36 +0200
+Message-Id: <20220815180502.015383421@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Mike Manning <mvrmanning@gmail.com>
 
-[ Upstream commit d7c4c9e075f8cc6d88d277bc24e5d99297f03c06 ]
+[ Upstream commit 944fd1aeacb627fa617f85f8e5a34f7ae8ea4d8e ]
 
-While investigating a separate rose issue [1], and enabling
-CONFIG_NET_DEV_REFCNT_TRACKER=3Dy, Bernard reported an orthogonal ax25 issu=
-e [2]
+The commit 3c82a21f4320 ("net: allow binding socket in a VRF when
+there's an unbound socket") changed the inet socket lookup to avoid
+packets in a VRF from matching an unbound socket. This is to ensure the
+necessary isolation between the default and other VRFs for routing and
+forwarding. VRF-unaware processes running in the default VRF cannot
+access another VRF and have to be run with 'ip vrf exec <vrf>'. This is
+to be expected with tcp_l3mdev_accept disabled, but could be reallowed
+when this sysctl option is enabled. So instead of directly checking dif
+and sdif in inet[6]_match, here call inet_sk_bound_dev_eq(). This
+allows a match on unbound socket for non-zero sdif i.e. for packets in
+a VRF, if tcp_l3mdev_accept is enabled.
 
-An ax25_dev can be used by one (or many) struct ax25_cb.
-We thus need different dev_tracker, one per struct ax25_cb.
-
-After this patch is applied, we are able to focus on rose.
-
-[1] https://lore.kernel.org/netdev/fb7544a1-f42e-9254-18cc-c9b071f4ca70@fre=
-e.fr/
-
-[2]
-[  205.798723] reference already released.
-[  205.798732] allocated in:
-[  205.798734]  ax25_bind+0x1a2/0x230 [ax25]
-[  205.798747]  __sys_bind+0xea/0x110
-[  205.798753]  __x64_sys_bind+0x18/0x20
-[  205.798758]  do_syscall_64+0x5c/0x80
-[  205.798763]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.798768] freed in:
-[  205.798770]  ax25_release+0x115/0x370 [ax25]
-[  205.798778]  __sock_release+0x42/0xb0
-[  205.798782]  sock_close+0x15/0x20
-[  205.798785]  __fput+0x9f/0x260
-[  205.798789]  ____fput+0xe/0x10
-[  205.798792]  task_work_run+0x64/0xa0
-[  205.798798]  exit_to_user_mode_prepare+0x18b/0x190
-[  205.798804]  syscall_exit_to_user_mode+0x26/0x40
-[  205.798808]  do_syscall_64+0x69/0x80
-[  205.798812]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.798827] ------------[ cut here ]------------
-[  205.798829] WARNING: CPU: 2 PID: 2605 at lib/ref_tracker.c:136 ref_track=
-er_free.cold+0x60/0x81
-[  205.798837] Modules linked in: rose netrom mkiss ax25 rfcomm cmac algif_=
-hash algif_skcipher af_alg bnep snd_hda_codec_hdmi nls_iso8859_1 i915 rtw88=
-_8821ce rtw88_8821c x86_pkg_temp_thermal rtw88_pci intel_powerclamp rtw88_c=
-ore snd_hda_codec_realtek snd_hda_codec_generic ledtrig_audio coretemp snd_=
-hda_intel kvm_intel snd_intel_dspcfg mac80211 snd_hda_codec kvm i2c_algo_bi=
-t drm_buddy drm_dp_helper btusb drm_kms_helper snd_hwdep btrtl snd_hda_core=
- btbcm joydev crct10dif_pclmul btintel crc32_pclmul ghash_clmulni_intel mei=
-_hdcp btmtk intel_rapl_msr aesni_intel bluetooth input_leds snd_pcm crypto_=
-simd syscopyarea processor_thermal_device_pci_legacy sysfillrect cryptd int=
-el_soc_dts_iosf snd_seq sysimgblt ecdh_generic fb_sys_fops rapl libarc4 pro=
-cessor_thermal_device intel_cstate processor_thermal_rfim cec snd_timer ecc=
- snd_seq_device cfg80211 processor_thermal_mbox mei_me processor_thermal_ra=
-pl mei rc_core at24 snd intel_pch_thermal intel_rapl_common ttm soundcore i=
-nt340x_thermal_zone video
-[  205.798948]  mac_hid acpi_pad sch_fq_codel ipmi_devintf ipmi_msghandler =
-drm msr parport_pc ppdev lp parport ramoops pstore_blk reed_solomon pstore_=
-zone efi_pstore ip_tables x_tables autofs4 hid_generic usbhid hid i2c_i801 =
-i2c_smbus r8169 xhci_pci ahci libahci realtek lpc_ich xhci_pci_renesas [las=
-t unloaded: ax25]
-[  205.798992] CPU: 2 PID: 2605 Comm: ax25ipd Not tainted 5.18.11-F6BVP #3
-[  205.798996] Hardware name: To be filled by O.E.M. To be filled by O.E.M.=
-/CK3, BIOS 5.011 09/16/2020
-[  205.798999] RIP: 0010:ref_tracker_free.cold+0x60/0x81
-[  205.799005] Code: e8 d2 01 9b ff 83 7b 18 00 74 14 48 c7 c7 2f d7 ff 98 =
-e8 10 6e fc ff 8b 7b 18 e8 b8 01 9b ff 4c 89 ee 4c 89 e7 e8 5d fd 07 00 <0f=
-> 0b b8 ea ff ff ff e9 30 05 9b ff 41 0f b6 f7 48 c7 c7 a0 fa 4e
-[  205.799008] RSP: 0018:ffffaf5281073958 EFLAGS: 00010286
-[  205.799011] RAX: 0000000080000000 RBX: ffff9a0bd687ebe0 RCX: 00000000000=
-00000
-[  205.799014] RDX: 0000000000000001 RSI: 0000000000000282 RDI: 00000000fff=
-fffff
-[  205.799016] RBP: ffffaf5281073a10 R08: 0000000000000003 R09: fffffffffff=
-d5618
-[  205.799019] R10: 0000000000ffff10 R11: 000000000000000f R12: ffff9a0bc53=
-384d0
-[  205.799022] R13: 0000000000000282 R14: 00000000ae000001 R15: 00000000000=
-00001
-[  205.799024] FS:  0000000000000000(0000) GS:ffff9a0d0f300000(0000) knlGS:=
-0000000000000000
-[  205.799028] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  205.799031] CR2: 00007ff6b8311554 CR3: 000000001ac10004 CR4: 00000000001=
-706e0
-[  205.799033] Call Trace:
-[  205.799035]  <TASK>
-[  205.799038]  ? ax25_dev_device_down+0xd9/0x1b0 [ax25]
-[  205.799047]  ? ax25_device_event+0x9f/0x270 [ax25]
-[  205.799055]  ? raw_notifier_call_chain+0x49/0x60
-[  205.799060]  ? call_netdevice_notifiers_info+0x52/0xa0
-[  205.799065]  ? dev_close_many+0xc8/0x120
-[  205.799070]  ? unregister_netdevice_many+0x13d/0x890
-[  205.799073]  ? unregister_netdevice_queue+0x90/0xe0
-[  205.799076]  ? unregister_netdev+0x1d/0x30
-[  205.799080]  ? mkiss_close+0x7c/0xc0 [mkiss]
-[  205.799084]  ? tty_ldisc_close+0x2e/0x40
-[  205.799089]  ? tty_ldisc_hangup+0x137/0x210
-[  205.799092]  ? __tty_hangup.part.0+0x208/0x350
-[  205.799098]  ? tty_vhangup+0x15/0x20
-[  205.799103]  ? pty_close+0x127/0x160
-[  205.799108]  ? tty_release+0x139/0x5e0
-[  205.799112]  ? __fput+0x9f/0x260
-[  205.799118]  ax25_dev_device_down+0xd9/0x1b0 [ax25]
-[  205.799126]  ax25_device_event+0x9f/0x270 [ax25]
-[  205.799135]  raw_notifier_call_chain+0x49/0x60
-[  205.799140]  call_netdevice_notifiers_info+0x52/0xa0
-[  205.799146]  dev_close_many+0xc8/0x120
-[  205.799152]  unregister_netdevice_many+0x13d/0x890
-[  205.799157]  unregister_netdevice_queue+0x90/0xe0
-[  205.799161]  unregister_netdev+0x1d/0x30
-[  205.799165]  mkiss_close+0x7c/0xc0 [mkiss]
-[  205.799170]  tty_ldisc_close+0x2e/0x40
-[  205.799173]  tty_ldisc_hangup+0x137/0x210
-[  205.799178]  __tty_hangup.part.0+0x208/0x350
-[  205.799184]  tty_vhangup+0x15/0x20
-[  205.799188]  pty_close+0x127/0x160
-[  205.799193]  tty_release+0x139/0x5e0
-[  205.799199]  __fput+0x9f/0x260
-[  205.799203]  ____fput+0xe/0x10
-[  205.799208]  task_work_run+0x64/0xa0
-[  205.799213]  do_exit+0x33b/0xab0
-[  205.799217]  ? __handle_mm_fault+0xc4f/0x15f0
-[  205.799224]  do_group_exit+0x35/0xa0
-[  205.799228]  __x64_sys_exit_group+0x18/0x20
-[  205.799232]  do_syscall_64+0x5c/0x80
-[  205.799238]  ? handle_mm_fault+0xba/0x290
-[  205.799242]  ? debug_smp_processor_id+0x17/0x20
-[  205.799246]  ? fpregs_assert_state_consistent+0x26/0x50
-[  205.799251]  ? exit_to_user_mode_prepare+0x49/0x190
-[  205.799256]  ? irqentry_exit_to_user_mode+0x9/0x20
-[  205.799260]  ? irqentry_exit+0x33/0x40
-[  205.799263]  ? exc_page_fault+0x87/0x170
-[  205.799268]  ? asm_exc_page_fault+0x8/0x30
-[  205.799273]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.799277] RIP: 0033:0x7ff6b80eaca1
-[  205.799281] Code: Unable to access opcode bytes at RIP 0x7ff6b80eac77.
-[  205.799283] RSP: 002b:00007fff6dfd4738 EFLAGS: 00000246 ORIG_RAX: 000000=
-00000000e7
-[  205.799287] RAX: ffffffffffffffda RBX: 00007ff6b8215a00 RCX: 00007ff6b80=
-eaca1
-[  205.799290] RDX: 000000000000003c RSI: 00000000000000e7 RDI: 00000000000=
-00001
-[  205.799293] RBP: 0000000000000001 R08: ffffffffffffff80 R09: 00000000000=
-00028
-[  205.799295] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff6b82=
-15a00
-[  205.799298] R13: 0000000000000000 R14: 00007ff6b821aee8 R15: 00007ff6b82=
-1af00
-[  205.799304]  </TASK>
-
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding =
-operation")
-Reported-by: Bernard F6BVP <f6bvp@free.fr>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220728051821.3160118-1-eric.dumazet@gmail=
-.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 3c82a21f4320 ("net: allow binding socket in a VRF when there's an unbound socket")
+Signed-off-by: Mike Manning <mvrmanning@gmail.com>
+Link: https://lore.kernel.org/netdev/a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de/
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ax25.h | 1 +
- net/ax25/af_ax25.c | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ include/net/inet6_hashtables.h |  7 +++----
+ include/net/inet_hashtables.h  | 19 +++----------------
+ include/net/inet_sock.h        | 11 +++++++++++
+ 3 files changed, 17 insertions(+), 20 deletions(-)
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index a427a05672e2..f8cf3629a419 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -236,6 +236,7 @@ typedef struct ax25_cb {
- 	ax25_address		source_addr, dest_addr;
- 	ax25_digi		*digipeat;
- 	ax25_dev		*ax25_dev;
-+	netdevice_tracker	dev_tracker;
- 	unsigned char		iamdigi;
- 	unsigned char		state, modulus, pidincl;
- 	unsigned short		vs, vr, va;
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 4c7030ed8d33..5b5363c99ed5 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1065,7 +1065,7 @@ static int ax25_release(struct socket *sock)
- 			del_timer_sync(&ax25->t3timer);
- 			del_timer_sync(&ax25->idletimer);
- 		}
--		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		dev_put_track(ax25_dev->dev, &ax25->dev_tracker);
- 		ax25_dev_put(ax25_dev);
- 	}
-=20
-@@ -1146,7 +1146,7 @@ static int ax25_bind(struct socket *sock, struct sock=
-addr *uaddr, int addr_len)
-=20
- 	if (ax25_dev) {
- 		ax25_fillin_cb(ax25, ax25_dev);
--		dev_hold_track(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
-+		dev_hold_track(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
- 	}
-=20
- done:
---=20
+diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
+index f259e1ae14ba..56f1286583d3 100644
+--- a/include/net/inet6_hashtables.h
++++ b/include/net/inet6_hashtables.h
+@@ -110,8 +110,6 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
+ 			       const __portpair ports,
+ 			       const int dif, const int sdif)
+ {
+-	int bound_dev_if;
+-
+ 	if (!net_eq(sock_net(sk), net) ||
+ 	    sk->sk_family != AF_INET6 ||
+ 	    sk->sk_portpair != ports ||
+@@ -119,8 +117,9 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
+ 	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
+ 		return false;
+ 
+-	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
+-	return bound_dev_if == dif || bound_dev_if == sdif;
++	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
++	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
++				    sdif);
+ }
+ #endif /* IS_ENABLED(CONFIG_IPV6) */
+ 
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index fd6b510d114b..e9cf2157ed8a 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -175,17 +175,6 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
+ 	hashinfo->ehash_locks = NULL;
+ }
+ 
+-static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
+-					int dif, int sdif)
+-{
+-#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+-	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
+-				 bound_dev_if, dif, sdif);
+-#else
+-	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
+-#endif
+-}
+-
+ struct inet_bind_bucket *
+ inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
+ 			struct inet_bind_hashbucket *head,
+@@ -271,16 +260,14 @@ static inline bool inet_match(struct net *net, const struct sock *sk,
+ 			      const __addrpair cookie, const __portpair ports,
+ 			      int dif, int sdif)
+ {
+-	int bound_dev_if;
+-
+ 	if (!net_eq(sock_net(sk), net) ||
+ 	    sk->sk_portpair != ports ||
+ 	    sk->sk_addrpair != cookie)
+ 	        return false;
+ 
+-	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
+-	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
+-	return bound_dev_if == dif || bound_dev_if == sdif;
++	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
++	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
++				    sdif);
+ }
+ 
+ /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 6395f6b9a5d2..bf5654ce711e 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -149,6 +149,17 @@ static inline bool inet_bound_dev_eq(bool l3mdev_accept, int bound_dev_if,
+ 	return bound_dev_if == dif || bound_dev_if == sdif;
+ }
+ 
++static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
++					int dif, int sdif)
++{
++#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
++	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
++				 bound_dev_if, dif, sdif);
++#else
++	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
++#endif
++}
++
+ struct inet_cork {
+ 	unsigned int		flags;
+ 	__be32			addr;
+-- 
 2.35.1
 
 
