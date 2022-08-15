@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03D2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2785AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346177AbiHOWKS (ORCPT
+        id S1347403AbiHOWK2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        Mon, 15 Aug 2022 18:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345798AbiHOWIt (ORCPT
+        with ESMTP id S1347979AbiHOWJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:08:49 -0400
+        Mon, 15 Aug 2022 18:09:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCA430F66;
-        Mon, 15 Aug 2022 12:38:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664D34BA5F;
+        Mon, 15 Aug 2022 12:38:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B72BB81136;
-        Mon, 15 Aug 2022 19:38:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DB49C433C1;
-        Mon, 15 Aug 2022 19:38:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79A4DB80EA9;
+        Mon, 15 Aug 2022 19:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF5C5C433D6;
+        Mon, 15 Aug 2022 19:37:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592281;
-        bh=Eu2Too71nkRvOCWXDlOSR3/DmXmFVsTh3FCCzEj3Lqo=;
+        s=korg; t=1660592278;
+        bh=r30e+sMP6An9UM77h4Ctf06Aj0GohmynoqA4U+Q+tvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpAfMpjXOcEOryS5oSqyddKpa2DMx+6RUEBoMUa5XDNB3flVbIriK8batxx/kC7Q5
-         GRnyggE0txKIZuiiqdAy4EBHHUp8fmvOq63G7TePuNP+oRplUWIy8VB+XomX+5Qfgi
-         DpT9GO1GM6pN4YKcM12XRnTNuscMCTArk2BjfvjM=
+        b=x7ROkbjFkyU/80zmAcKeXUgaJEmRIGcGT56dwXxRoHVvkuyPCOOVteTHx98SokYU5
+         dAFEfM6/EGITyywO7JjsS4Ol51ldMcYDdJnI0NsXg+8FGF+PW7VbUT67JDLPfiqGdw
+         +dhjTEIQTBf5Q8N3uH/qnw6LR9pnxmlwTtddmvTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0726/1095] PCI: dwc: Always enable CDM check if "snps,enable-cdm-check" exists
-Date:   Mon, 15 Aug 2022 20:02:05 +0200
-Message-Id: <20220815180459.405688322@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.19 0056/1157] fbcon: Fix boundary checks for fbcon=vc:n1-n2 parameters
+Date:   Mon, 15 Aug 2022 19:50:12 +0200
+Message-Id: <20220815180441.708447948@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,62 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit ec7b952f453ce7eabe7e1bea584626934d44f668 ]
+commit cad564ca557f8d3bb3b1fa965d9a2b3f6490ec69 upstream.
 
-If the "snps,enable-cdm-check" property exists, we should enable the CDM
-check.  But previously dw_pcie_setup() could exit before doing so if the
-"num-lanes" property was absent or invalid.
+The user may use the fbcon=vc:<n1>-<n2> option to tell fbcon to take
+over the given range (n1...n2) of consoles. The value for n1 and n2
+needs to be a positive number and up to (MAX_NR_CONSOLES - 1).
+The given values were not fully checked against those boundaries yet.
 
-Move the CDM enable earlier so we do it regardless of whether "num-lanes"
-is present.
+To fix the issue, convert first_fb_vc and last_fb_vc to unsigned
+integers and check them against the upper boundary, and make sure that
+first_fb_vc is smaller than last_fb_vc.
 
-[bhelgaas: commit log]
-Fixes: 07f123def73e ("PCI: dwc: Add support to enable CDM register check")
-Link: https://lore.kernel.org/r/20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # v4.19+
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/YpkYRMojilrtZIgM@p100
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/video/fbdev/core/fbcon.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 347251bf87d0..5848cc520b52 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -740,6 +740,13 @@ void dw_pcie_setup(struct dw_pcie *pci)
- 	val |= PORT_LINK_DLL_LINK_EN;
- 	dw_pcie_writel_dbi(pci, PCIE_PORT_LINK_CONTROL, val);
- 
-+	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
-+		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
-+		       PCIE_PL_CHK_REG_CHK_REG_START;
-+		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
-+	}
-+
- 	of_property_read_u32(np, "num-lanes", &pci->num_lanes);
- 	if (!pci->num_lanes) {
- 		dev_dbg(pci->dev, "Using h/w default number of lanes\n");
-@@ -786,11 +793,4 @@ void dw_pcie_setup(struct dw_pcie *pci)
- 		break;
- 	}
- 	dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, val);
--
--	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
--		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
--		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
--		       PCIE_PL_CHK_REG_CHK_REG_START;
--		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
--	}
- }
--- 
-2.35.1
-
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -125,8 +125,8 @@ static int logo_lines;
+    enums.  */
+ static int logo_shown = FBCON_LOGO_CANSHOW;
+ /* console mappings */
+-static int first_fb_vc;
+-static int last_fb_vc = MAX_NR_CONSOLES - 1;
++static unsigned int first_fb_vc;
++static unsigned int last_fb_vc = MAX_NR_CONSOLES - 1;
+ static int fbcon_is_default = 1; 
+ static int primary_device = -1;
+ static int fbcon_has_console_bind;
+@@ -440,10 +440,12 @@ static int __init fb_console_setup(char
+ 			options += 3;
+ 			if (*options)
+ 				first_fb_vc = simple_strtoul(options, &options, 10) - 1;
+-			if (first_fb_vc < 0)
++			if (first_fb_vc >= MAX_NR_CONSOLES)
+ 				first_fb_vc = 0;
+ 			if (*options++ == '-')
+ 				last_fb_vc = simple_strtoul(options, &options, 10) - 1;
++			if (last_fb_vc < first_fb_vc || last_fb_vc >= MAX_NR_CONSOLES)
++				last_fb_vc = MAX_NR_CONSOLES - 1;
+ 			fbcon_is_default = 0; 
+ 			continue;
+ 		}
 
 
