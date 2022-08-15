@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A724C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED186C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239980AbiHOVpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S1349339AbiHOVpR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349519AbiHOVlU (ORCPT
+        with ESMTP id S1349533AbiHOVlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:41:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E6A5B07B;
-        Mon, 15 Aug 2022 12:29:09 -0700 (PDT)
+        Mon, 15 Aug 2022 17:41:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F08F5B04D;
+        Mon, 15 Aug 2022 12:29:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9B8DB81122;
-        Mon, 15 Aug 2022 19:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C49C433C1;
-        Mon, 15 Aug 2022 19:29:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3223B81120;
+        Mon, 15 Aug 2022 19:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A6DC4347C;
+        Mon, 15 Aug 2022 19:29:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591746;
-        bh=DzPOh5HBa5hS4q8TybX16QGzzaKpFJOkCzER+G1iOI8=;
+        s=korg; t=1660591743;
+        bh=OGgxQ17kbTAjlDXcvrJNKg7QpRLoW/u7knJvE6gaHwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LSIgtur3FehTsbP/x4L9cU7FG95UTI0dB2bDOgmPaJ6pAav4tYPriSTdIVxWbmwr6
-         90QEgqg2yShWDN9qgjJcsvDypg746mvjZMXkCd3CHyWFJbt3kKvo4G7GQpwXz8jmn6
-         0UvgqlxqCvNdmTuPmskd/vV1z89XTpRb5oc27QLU=
+        b=0lI1IQoHx4iUPADIDhmK/jr6+xptuv/cxpo5Ja9qJGWXV9czDWdlrgi7brp5st1Za
+         oU2m5URzACw2PWU3IqMn6mu/CdxPvpuT8CpW1F/MKzbxw6Iusglum2bX5zUzXnowR/
+         IyJk+6lJkE2qJeQ8KnQDi3CaPAtNxYkAceFp4Qtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0675/1095] clk: mediatek: reset: Fix written reset bit offset
-Date:   Mon, 15 Aug 2022 20:01:14 +0200
-Message-Id: <20220815180457.294286178@linuxfoundation.org>
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.19 0002/1157] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
+Date:   Mon, 15 Aug 2022 19:49:18 +0200
+Message-Id: <20220815180439.556638580@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,53 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rex-BC Chen <rex-bc.chen@mediatek.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
+commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
 
-Original assert/deassert bit is BIT(0), but it's more resonable to modify
-them to BIT(id % 32) which is based on id.
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-This patch will not influence any previous driver because the reset is
-only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
 
-Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
+
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
+
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/mediatek/reset.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/boot/Makefile            |    2 +-
+ arch/x86/boot/compressed/Makefile |    4 ++++
+ arch/x86/entry/vdso/Makefile      |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index bcec4b89f449..834d26e9bdfd 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4);
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -103,7 +103,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
+ AFLAGS_header.o += -I$(objtree)/$(obj)
+ $(obj)/header.o: $(obj)/zoffset.h
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
+-LDFLAGS_setup.elf	:= -m elf_i386 -T
++LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+ $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
+ 	$(call if_changed,ld)
  
- static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
-@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -69,6 +69,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
+ ifdef CONFIG_LD_ORPHAN_WARN
+ LDFLAGS_vmlinux += --orphan-handling=warn
+ endif
++LDFLAGS_vmlinux += -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
++endif
+ LDFLAGS_vmlinux += -T
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
- }
+ hostprogs	:= mkpiggy
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -180,7 +180,7 @@ quiet_cmd_vdso = VDSO    $@
+ 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
  
- static int mtk_reset_assert(struct reset_controller_dev *rcdev,
--- 
-2.35.1
-
+ VDSO_LDFLAGS = -shared --hash-style=both --build-id=sha1 \
+-	$(call ld-option, --eh-frame-hdr) -Bsymbolic
++	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
+ GCOV_PROFILE := n
+ 
+ quiet_cmd_vdso_and_check = VDSO    $@
 
 
