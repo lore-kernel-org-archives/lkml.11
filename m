@@ -2,91 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8EAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B3EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241904AbiHOShz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        id S232043AbiHOSiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244095AbiHOSg1 (ORCPT
+        with ESMTP id S243575AbiHOSgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:36:27 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AFF2CE0A
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:23:13 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id EF2D11C0001; Mon, 15 Aug 2022 20:23:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
-        t=1660587787;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z5wSMTIGBcrUjqUTnSeGz421jCyzZ5BYXN/xendLi44=;
-        b=l4aWaTWky5jKwhxY/ClMtqopUDor6kx+DW01yjgtvKhmv4vy6TOUiWKkq1i64kfBx14ZtU
-        5XmGU0+u8lPuLAqlum0TK8/L+xtQR3XqR49uzUsBeI+mc18KPjmYLqRwbe1eoQfIyw0/iJ
-        9RpqFYnwnzXNE8EJQ0XL8dsNKfeqnR8=
-Date:   Mon, 15 Aug 2022 20:23:07 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Len Brown <len.brown@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: boot stuck at starting kernel, due to __genpd_dev_pm_attach?
-Message-ID: <20220815182307.GA4658@duo.ucw.cz>
-References: <Yvpd2pwUJGp7R+YE@euler>
+        Mon, 15 Aug 2022 14:36:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC732DA92;
+        Mon, 15 Aug 2022 11:23:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0961E6068D;
+        Mon, 15 Aug 2022 18:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03EB8C433C1;
+        Mon, 15 Aug 2022 18:23:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660587792;
+        bh=jhB3BcC4WMae6aGnSw8cXRASOVkW/NucMwW8lJkgSus=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CM3qRwLO9h9THO7BvI5+T7d28id8iR+JV/LPBweL0M/ZZgsrfxt9ylY4XSDxQNdN/
+         CpVmEYsfNaHLt6lFSRVLkzvWLxKLkhqkssE8lO7czx0wrxCcbZvucmG1hBOn+x0V+y
+         V5Sc2DcgaG5pKtqsUUg8taTEGL501b/GoE/kbZFk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Len Baker <len.baker@gmx.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 197/779] drivers/iio: Remove all strcpy() uses
+Date:   Mon, 15 Aug 2022 19:57:21 +0200
+Message-Id: <20220815180345.695878214@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
-Content-Disposition: inline
-In-Reply-To: <Yvpd2pwUJGp7R+YE@euler>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Len Baker <len.baker@gmx.com>
 
---k+w/mQv8wyuph6w0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit d722f1e06fbc53eb369b39646945c1fa92068e74 ]
 
-Hi!
+strcpy() performs no bounds checking on the destination buffer. This
+could result in linear overflows beyond the end of the buffer, leading
+to all kinds of misbehaviors. So, remove all the uses and add
+devm_kstrdup() or devm_kasprintf() instead.
 
-> You might have already gotten this report, but I tried running v6.0-rc1
-> on my BeagleBone Black and it gets stuck right after "Starting kernel
-> ..." from U-Boot.
->=20
-> A bisect pointed me to commit 5a46079a9645 ("PM: domains: Delete usage
-> of driver_deferred_probe_check_state()").
->=20
-> I don't have much more detail than that, other than I'm using the
-> in-tree am335x-boneblack.dts device tree and I believe I had tested with
-> the multi-v7-defconfig for this verification. I'm happy to test anything
-> that might offer more information.
+Also, modify the "for" loop conditions to clarify the access to the
+st->orientation.rotation buffer.
 
-Well, standart next step is reverting 5a46079a9645 on top of v6.0-rc1,
-and if it starts working, either you get fix in your inbox, or you ask
-Linus to revert :-).
+This patch is an effort to clean up the proliferation of str*()
+functions in the kernel and a previous step in the path to remove
+the strcpy function from the kernel entirely [1].
 
-Best regards,
-								Pavel
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
+[1] https://github.com/KSPP/linux/issues/88
 
---k+w/mQv8wyuph6w0
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Len Baker <len.baker@gmx.com>
+Link: https://lore.kernel.org/r/20210815174204.126593-1-len.baker@gmx.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c | 36 +++++++++++++---------
+ 1 file changed, 21 insertions(+), 15 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
+index f282e9cc34c5..6aee6c989485 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
+@@ -261,6 +261,7 @@ int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rate)
+  */
+ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
+ {
++	struct device *dev = regmap_get_device(st->map);
+ 	const char *orient;
+ 	char *str;
+ 	int i;
+@@ -279,22 +280,27 @@ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
+ 		st->magn_orient.rotation[4] = st->orientation.rotation[1];
+ 		st->magn_orient.rotation[5] = st->orientation.rotation[2];
+ 		/* z <- -z */
+-		for (i = 0; i < 3; ++i) {
+-			orient = st->orientation.rotation[6 + i];
+-			/* use length + 2 for adding minus sign if needed */
+-			str = devm_kzalloc(regmap_get_device(st->map),
+-					   strlen(orient) + 2, GFP_KERNEL);
+-			if (str == NULL)
++		for (i = 6; i < 9; ++i) {
++			orient = st->orientation.rotation[i];
++
++			/*
++			 * The value is negated according to one of the following
++			 * rules:
++			 *
++			 * 1) Drop leading minus.
++			 * 2) Leave 0 as is.
++			 * 3) Add leading minus.
++			 */
++			if (orient[0] == '-')
++				str = devm_kstrdup(dev, orient + 1, GFP_KERNEL);
++			else if (!strcmp(orient, "0"))
++				str = devm_kstrdup(dev, orient, GFP_KERNEL);
++			else
++				str = devm_kasprintf(dev, GFP_KERNEL, "-%s", orient);
++			if (!str)
+ 				return -ENOMEM;
+-			if (strcmp(orient, "0") == 0) {
+-				strcpy(str, orient);
+-			} else if (orient[0] == '-') {
+-				strcpy(str, &orient[1]);
+-			} else {
+-				str[0] = '-';
+-				strcpy(&str[1], orient);
+-			}
+-			st->magn_orient.rotation[6 + i] = str;
++
++			st->magn_orient.rotation[i] = str;
+ 		}
+ 		break;
+ 	default:
+-- 
+2.35.1
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYvqPCwAKCRAw5/Bqldv6
-8rAKAJ0ec6bD30pSceC17zYQ2zAshBRlpwCff91TsAEmgjw5q4egvKGIH1XPd9k=
-=lNot
------END PGP SIGNATURE-----
 
---k+w/mQv8wyuph6w0--
+
