@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ABFC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408EDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346382AbiHPAdS (ORCPT
+        id S1350187AbiHPAd1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        Mon, 15 Aug 2022 20:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352792AbiHPAbA (ORCPT
+        with ESMTP id S1352794AbiHPAbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AA3185267;
-        Mon, 15 Aug 2022 13:35:57 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5864B1859BA;
+        Mon, 15 Aug 2022 13:36:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81A1C611D6;
-        Mon, 15 Aug 2022 20:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FFBC433C1;
-        Mon, 15 Aug 2022 20:35:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B90D9611D2;
+        Mon, 15 Aug 2022 20:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1BBC433D6;
+        Mon, 15 Aug 2022 20:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595725;
-        bh=tcxpQnCC4FWeaEHBirbSyphnFcmhMM+J6DV5eHnOI8g=;
+        s=korg; t=1660595766;
+        bh=09RnNxg19SQJ4cNTRE294GN7J1KK248eGE8198Ys4xk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lb3xQSUWcUF87hp+KS3ANAeqmjBnknQRvpC3TrN1P/TRDoCOBaC2JwXoUJqyg9YVO
-         aJKVtlkiBfLqf5D/lWGONNXpyz/625ZXM4K5q2cfpQBeDYbpQeulFQbib3IzW504Vb
-         yBfhOIjDkKZvc8HuSQue47U1jFR1ZCiiPE/z98IQ=
+        b=UeYd+pxgN3vcsTpqLbTFYF7420chX1DstmTocfo4B+KvUxFx+30S20gCBTpF4+mEs
+         XkEdxrTNu++BBt9a3UcKLBGn4gKBYIBt+KRmfVnWbQz5zRRKsT4+JyG972SQPK2zyY
+         2SoXOXo0aa6Ea8xL9mshNWsAEt+jVhsKhqyBZmEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0855/1157] KVM: nVMX: Set UMIP bit CR4_FIXED1 MSR when emulating UMIP
-Date:   Mon, 15 Aug 2022 20:03:31 +0200
-Message-Id: <20220815180513.685879966@linuxfoundation.org>
+Subject: [PATCH 5.19 0835/1157] iio: adc: max1027: unlock on error path in max1027_read_single_value()
+Date:   Mon, 15 Aug 2022 20:03:11 +0200
+Message-Id: <20220815180512.893249817@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,42 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit a910b5ab6b250a88fff1866bf708642d83317466 ]
+[ Upstream commit 06ee60eb507f00fb3643876ec05318c63332dc88 ]
 
-Make UMIP an "allowed-1" bit CR4_FIXED1 MSR when KVM is emulating UMIP.
-KVM emulates UMIP for both L1 and L2, and so should enumerate that L2 is
-allowed to have CR4.UMIP=1.  Not setting the bit doesn't immediately
-break nVMX, as KVM does set/clear the bit in CR4_FIXED1 in response to a
-guest CPUID update, i.e. KVM will correctly (dis)allow nested VM-Entry
-based on whether or not UMIP is exposed to L1.  That said, KVM should
-enumerate the bit as being allowed from time zero, e.g. userspace will
-see the wrong value if the MSR is read before CPUID is written.
+If max1027_wait_eoc() fails then call iio_device_release_direct_mode()
+before returning.
 
-Fixes: 0367f205a3b7 ("KVM: vmx: add support for emulating UMIP")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-12-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: a0e831653ef9 ("iio: adc: max1027: Introduce an end of conversion helper")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YsbztVuAXnau2cIZ@kili
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/max1027.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 66735fbb791d..1b9e5bd2f941 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6786,6 +6786,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
- 	rdmsrl(MSR_IA32_VMX_CR0_FIXED1, msrs->cr0_fixed1);
- 	rdmsrl(MSR_IA32_VMX_CR4_FIXED1, msrs->cr4_fixed1);
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index b725d012625c..136fcf753837 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -349,8 +349,7 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	if (ret < 0) {
+ 		dev_err(&indio_dev->dev,
+ 			"Failed to configure conversion register\n");
+-		iio_device_release_direct_mode(indio_dev);
+-		return ret;
++		goto release;
+ 	}
  
-+	if (vmx_umip_emulated())
-+		msrs->cr4_fixed1 |= X86_CR4_UMIP;
-+
- 	msrs->vmcs_enum = nested_vmx_calc_vmcs_enum_msr();
- }
+ 	/*
+@@ -360,11 +359,12 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	 */
+ 	ret = max1027_wait_eoc(indio_dev);
+ 	if (ret)
+-		return ret;
++		goto release;
  
+ 	/* Read result */
+ 	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
+ 
++release:
+ 	iio_device_release_direct_mode(indio_dev);
+ 
+ 	if (ret < 0)
 -- 
 2.35.1
 
