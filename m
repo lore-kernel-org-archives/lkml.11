@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D58CCC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77A6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348285AbiHOUc0 (ORCPT
+        id S1346579AbiHOUas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
+        Mon, 15 Aug 2022 16:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347847AbiHOU0n (ORCPT
+        with ESMTP id S1347334AbiHOUWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:26:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DD99DB67;
-        Mon, 15 Aug 2022 12:03:46 -0700 (PDT)
+        Mon, 15 Aug 2022 16:22:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8B633E28;
+        Mon, 15 Aug 2022 12:02:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFDD0B81109;
-        Mon, 15 Aug 2022 19:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D8DC433C1;
-        Mon, 15 Aug 2022 19:03:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CCD061299;
+        Mon, 15 Aug 2022 19:02:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E55C433C1;
+        Mon, 15 Aug 2022 19:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590222;
-        bh=4za+avW1T/NnoFjLu6YyZVhW3X3P6uxrYzP7gGEKha0=;
+        s=korg; t=1660590158;
+        bh=lN24LFKC2NWslvWPfsezsUuZEr7kWkBTZ/LrqMh9pO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QpMOrj+eOG+3KO0qEOh0OA3j12LexheuouoYOwDqtMkfTuj1lpPOu6nJD6ubRyf75
-         /hXR5naac8huV+zkFaVwApwjbT9/UVc6a/fCQCA7CLN/Zt1tFomFMof34wDLyyGnmi
-         dUDoQrOaAysHv3M15ZGNY0lqG7Snkp5QSJxgzP2M=
+        b=u1d+tka8nSQhM7YiTcR76raVR8fY5Zjsw853qB9DNe8uQOxikMbk8eSpy68WrpGXm
+         4h/Vgi4sQhkqUtZHkLYQMoThsyEVkZ8ydDECVPs0+x3mqz6iXSHwn6UogwOv62JEOH
+         yaAu8YoU7TDplHf3rpnh0Nm2OXsyyImmWTyFJXiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0191/1095] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
-Date:   Mon, 15 Aug 2022 19:53:10 +0200
-Message-Id: <20220815180437.522203928@linuxfoundation.org>
+Subject: [PATCH 5.18 0163/1095] ARM: OMAP2+: pdata-quirks: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:52:42 +0200
+Message-Id: <20220815180436.317297633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,33 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit cb23389a2458c2e4bfd6c86a513cbbe1c4d35e76 ]
+[ Upstream commit 5cdbab96bab314c6f2f5e4e8b8a019181328bf5f ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+In pdata_quirks_init_clocks(), the loop contains
+of_find_node_by_name() but without corresponding of_node_put().
 
-Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220618020603.4055792-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-bcm/bcm_kona_smc.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap2/pdata-quirks.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-bcm/bcm_kona_smc.c b/arch/arm/mach-bcm/bcm_kona_smc.c
-index 43829e49ad93..347bfb7f03e2 100644
---- a/arch/arm/mach-bcm/bcm_kona_smc.c
-+++ b/arch/arm/mach-bcm/bcm_kona_smc.c
-@@ -52,6 +52,7 @@ int __init bcm_kona_smc_init(void)
- 		return -ENODEV;
+diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+index e7fd29a502a0..af9d8c432af0 100644
+--- a/arch/arm/mach-omap2/pdata-quirks.c
++++ b/arch/arm/mach-omap2/pdata-quirks.c
+@@ -551,6 +551,8 @@ pdata_quirks_init_clocks(const struct of_device_id *omap_dt_match_table)
  
- 	prop_val = of_get_address(node, 0, &prop_size, NULL);
-+	of_node_put(node);
- 	if (!prop_val)
- 		return -EINVAL;
+ 		of_platform_populate(np, omap_dt_match_table,
+ 				     omap_auxdata_lookup, NULL);
++
++		of_node_put(np);
+ 	}
+ }
  
 -- 
 2.35.1
