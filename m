@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C16C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4249FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350022AbiHOVtl (ORCPT
+        id S1350031AbiHOVtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
+        Mon, 15 Aug 2022 17:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349981AbiHOVq6 (ORCPT
+        with ESMTP id S1350004AbiHOVrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:46:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561A333373;
-        Mon, 15 Aug 2022 12:30:42 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185B733A06;
+        Mon, 15 Aug 2022 12:30:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDD6FB81062;
-        Mon, 15 Aug 2022 19:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE25C433C1;
-        Mon, 15 Aug 2022 19:30:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67CE26111E;
+        Mon, 15 Aug 2022 19:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE1CC433D6;
+        Mon, 15 Aug 2022 19:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591839;
-        bh=XMq0FBzvSm4d8cWudGci6m9/G5bGsS5YAQg6qKRSLiA=;
+        s=korg; t=1660591843;
+        bh=dYtzRbPPdLqJorc5v/DVHVdbr2kS8jGXbCpIM27gDQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmaMchCDTtmpCGexpOVsubQT3+voAB4bdk5JrHL617BcnwXCHWb4ZjuOHgIVjAKE9
-         ykhsJTuHoWA890lyUXdYYHx7mjiPiuFBf7hbKvpGAZHsCLPsnPTlfGPMHGv7slWI1S
-         AUqelBuNj+zlzH8XDp3WwdqhwY6/vSg0OHTUo92M=
+        b=u6HCXMi0R/rWMBcw/IjmfFOLMgu2OmWA54qlHIWRL0PayaCbOv9uGDO+67S4RCTj+
+         SxVebInbpyQqcMlMXNOXRtZrrJYcMonNL+wOefTXE2ePZVizCa+t+bfvcmvb30Lbom
+         TDTYrH5HbrzoUHDCxGl8H3kmjfEwCNnV/+XLNYPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Jeongik Cha <jeongik@google.com>
-Subject: [PATCH 5.19 0016/1157] wifi: mac80211_hwsim: use 32-bit skb cookie
-Date:   Mon, 15 Aug 2022 19:49:32 +0200
-Message-Id: <20220815180440.101814496@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0661/1095] iio: imu: inv_icm42600: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:00 +0200
+Message-Id: <20220815180456.748935915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,65 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-commit cc5250cdb43d444061412df7fae72d2b4acbdf97 upstream.
+[ Upstream commit 848847702bd10bf0bf547e38adc44c14e9742784 ]
 
-We won't really have enough skbs to need a 64-bit cookie,
-and on 32-bit platforms storing the 64-bit cookie into the
-void *rate_driver_data doesn't work anyway. Switch back to
-using just a 32-bit cookie and uintptr_t for the type to
-avoid compiler warnings about all this.
+Partial fix for this driver as a second instance was introduced in
+a later patch.
 
-Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: Jeongik Cha <jeongik@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
+
+Fixes: a095fadb443b ("iio: imu: inv_icm42600: add gyroscope IIO device")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-78-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -680,7 +680,7 @@ struct mac80211_hwsim_data {
- 	bool ps_poll_pending;
- 	struct dentry *debugfs;
- 
--	atomic64_t pending_cookie;
-+	atomic_t pending_cookie;
- 	struct sk_buff_head pending;	/* packets pending */
- 	/*
- 	 * Only radios in the same group can communicate together (the
-@@ -1347,7 +1347,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 	int i;
- 	struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
- 	struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
--	u64 cookie;
-+	uintptr_t cookie;
- 
- 	if (data->ps != PS_DISABLED)
- 		hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
-@@ -1416,7 +1416,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 		goto nla_put_failure;
- 
- 	/* We create a cookie to identify this skb */
--	cookie = (u64)atomic64_inc_return(&data->pending_cookie);
-+	cookie = atomic_inc_return(&data->pending_cookie);
- 	info->rate_driver_data[0] = (void *)cookie;
- 	if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
- 		goto nla_put_failure;
-@@ -4109,10 +4109,10 @@ static int hwsim_tx_info_frame_received_
- 	/* look for the skb matching the cookie passed back from user */
- 	spin_lock_irqsave(&data2->pending.lock, flags);
- 	skb_queue_walk_safe(&data2->pending, skb, tmp) {
--		u64 skb_cookie;
-+		uintptr_t skb_cookie;
- 
- 		txi = IEEE80211_SKB_CB(skb);
--		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
-+		skb_cookie = (uintptr_t)txi->rate_driver_data[0];
- 
- 		if (skb_cookie == ret_skb_cookie) {
- 			__skb_unlink(skb, &data2->pending);
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index 995a9dc06521..3d91469beccb 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -141,7 +141,7 @@ struct inv_icm42600_state {
+ 	struct inv_icm42600_suspended suspended;
+ 	struct iio_dev *indio_gyro;
+ 	struct iio_dev *indio_accel;
+-	uint8_t buffer[2] ____cacheline_aligned;
++	uint8_t buffer[2] __aligned(IIO_DMA_MINALIGN);
+ 	struct inv_icm42600_fifo fifo;
+ 	struct {
+ 		int64_t gyro;
+-- 
+2.35.1
+
 
 
