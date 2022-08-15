@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF782C2BB47
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D05C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346993AbiHOUQj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        id S231728AbiHOUQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346712AbiHOUMC (ORCPT
+        with ESMTP id S1346256AbiHOULG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04E184EFE;
-        Mon, 15 Aug 2022 11:58:15 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB2B2A719;
+        Mon, 15 Aug 2022 11:57:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F11561267;
-        Mon, 15 Aug 2022 18:58:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802F7C433C1;
-        Mon, 15 Aug 2022 18:58:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6FAF61268;
+        Mon, 15 Aug 2022 18:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90D2C433B5;
+        Mon, 15 Aug 2022 18:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589894;
-        bh=Dc4YOQQ6zjvzDoMoV0wOA2bk8tMQqRdubB3LBNCpDCo=;
+        s=korg; t=1660589848;
+        bh=0qhytQhAGsmyQiX8PjVBdYkViWXICbwq786/9Rnsrzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0qKciH1KGscbrYdNhDnLkQRGAwG1EtyEelZ2x7szrELU9nm4nVXR1lKTOqEJTO7Z
-         ip7w/00mFVtx2yG3NB1aW3Hhdi9ZtseZuFeY4UQpV6No6J5reFB6gZL5cWxNnLBigz
-         lU5OQ83a5BzTAkbRx8M+5XdCHEoUgw8YcgwCD+iQ=
+        b=m49RwZ7L3kyMWVvJx83XWgtU4k78lkf5/cCJlObk+mW9rhTzHgqunNY+ZxKv1gbUt
+         2jXXveIPynh4AQUM53YtqZOGwYrMc/9LP6HS7PuVnozUKvfTG9k8PLEvgIasGsQmtZ
+         4WC29+fm1PkrFDoyfz7Hnlth8XKgdX2HeKQvkkNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 5.18 0082/1095] drm/nouveau/acpi: Dont print error when we get -EINPROGRESS from pm_runtime
-Date:   Mon, 15 Aug 2022 19:51:21 +0200
-Message-Id: <20220815180432.911868080@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 5.18 0036/1095] KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
+Date:   Mon, 15 Aug 2022 19:50:35 +0200
+Message-Id: <20220815180430.879250866@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,32 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 53c26181950ddc3c8ace3c0939c89e9c4d8deeb9 upstream.
+commit ec6e4d863258d4bfb36d48d5e3ef68140234d688 upstream.
 
-Since this isn't actually a failure.
+Wait to mark the TSS as busy during LTR emulation until after all fault
+checks for the LTR have passed.  Specifically, don't mark the TSS busy if
+the new TSS base is non-canonical.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: 79e765ad665d ("drm/nouveau/drm/nouveau: Prevent handling ACPI HPD events too early")
-Cc: <stable@vger.kernel.org> # v4.19+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-2-lyude@redhat.com
+Opportunistically drop the one-off !seg_desc.PRESENT check for TR as the
+only reason for the early check was to avoid marking a !PRESENT TSS as
+busy, i.e. the common !PRESENT is now done before setting the busy bit.
+
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Reported-by: syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-2-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_display.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_display.c
-@@ -537,7 +537,7 @@ nouveau_display_acpi_ntfy(struct notifie
- 				 * it's own hotplug events.
- 				 */
- 				pm_runtime_put_autosuspend(drm->dev->dev);
--			} else if (ret == 0) {
-+			} else if (ret == 0 || ret == -EINPROGRESS) {
- 				/* We've started resuming the GPU already, so
- 				 * it will handle scheduling a full reprobe
- 				 * itself
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1687,16 +1687,6 @@ static int __load_segment_descriptor(str
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
+-		if (!seg_desc.p) {
+-			err_vec = NP_VECTOR;
+-			goto exception;
+-		}
+-		old_desc = seg_desc;
+-		seg_desc.type |= 2; /* busy */
+-		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+-						  sizeof(seg_desc), &ctxt->exception);
+-		if (ret != X86EMUL_CONTINUE)
+-			return ret;
+ 		break;
+ 	case VCPU_SREG_LDTR:
+ 		if (seg_desc.s || seg_desc.type != 2)
+@@ -1737,6 +1727,15 @@ static int __load_segment_descriptor(str
+ 				((u64)base3 << 32), ctxt))
+ 			return emulate_gp(ctxt, 0);
+ 	}
++
++	if (seg == VCPU_SREG_TR) {
++		old_desc = seg_desc;
++		seg_desc.type |= 2; /* busy */
++		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
++						  sizeof(seg_desc), &ctxt->exception);
++		if (ret != X86EMUL_CONTINUE)
++			return ret;
++	}
+ load:
+ 	ctxt->ops->set_segment(ctxt, selector, &seg_desc, base3, seg);
+ 	if (desc)
 
 
