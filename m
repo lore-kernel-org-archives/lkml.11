@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE565C32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB12C32762
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355300AbiHOXvv (ORCPT
+        id S1355493AbiHOXwP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
+        Mon, 15 Aug 2022 19:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354346AbiHOXoR (ORCPT
+        with ESMTP id S1355203AbiHOXrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:44:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2929986C19;
-        Mon, 15 Aug 2022 13:14:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:47:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC6EA8CD6;
+        Mon, 15 Aug 2022 13:15:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 972D560B6E;
-        Mon, 15 Aug 2022 20:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C51C433C1;
-        Mon, 15 Aug 2022 20:14:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F0ABB81136;
+        Mon, 15 Aug 2022 20:15:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9733EC433D7;
+        Mon, 15 Aug 2022 20:15:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594447;
-        bh=Q8Hc5xyH/xwarte89q54kVHnwt5Jx0tft9JuJvXgEEw=;
+        s=korg; t=1660594523;
+        bh=75Z41sroTYn1e/S0XuKc13w0fL8LkxKB1qEup6hHIg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uEn6+iCZXbQqlQYln1QJuQXXaG1JW9H03U2asc82dlwsmSZzMkz60mPUAY2cdCALJ
-         ZGNCJLDRndDGjLi3OE21jIYyIHAAGb8derSj1Y9dl9gJypg06WPq14JTbX2UC543Qu
-         Bqeb+tSnlzuwEBS4oyjRUX/EbsgKtAtv0H6bAs4A=
+        b=Y9uBpd3rjGSYPyK1/Yr9M2tR+OXwcAbfuz2MrGlOcLv6g81PiU/ETa7qLr1RfPPSH
+         NVUJlqUeobhbvLJhQ4tzrHXiI84bLW+0uYgOQqQjdbpSyiPDtBi4plQZJRnwHao0dz
+         MoTZY9T3l6ALe9t9Mv/xqmy6QFq0i/65TzxDPZE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Jonathan Gray <jsg@jsg.id.au>,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0451/1157] drm/radeon: avoid bogus "vram limit (0) must be a power of 2" warning
-Date:   Mon, 15 Aug 2022 19:56:47 +0200
-Message-Id: <20220815180457.638063331@linuxfoundation.org>
+Subject: [PATCH 5.19 0473/1157] wifi: mac80211: reject WEP or pairwise keys with key ID > 3
+Date:   Mon, 15 Aug 2022 19:57:09 +0200
+Message-Id: <20220815180458.534586999@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,59 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 9da2902609f7519c48eda84f953f72fee53f2b71 ]
+[ Upstream commit 92ea8df110b8ca92f9664ec7bd76dea109115348 ]
 
-I was getting the following message on boot on Linux 5.19-rc5:
-        radeon 0000:01:05.0: vram limit (0) must be a power of 2
-(I didn't use any radeon.vramlimit commandline parameter).
+We don't really care too much right now since our data
+structures are set up to not have a problem with this,
+but clearly it's wrong to accept WEP and pairwise keys
+with key ID > 3.
 
-This is caused by
-commit 8c2d34eb53b9 ("drm/radeon: use kernel is_power_of_2 rather than local version")
-which removed radeon_check_pot_argument() and converted its users to
-is_power_of_2(). The two functions differ in its handling of 0, which is
-the default value of radeon_vram_limit: radeon_check_pot_argument()
-"incorrectly" considered it a power of 2, while is_power_of_2() does not.
+However, with MLD we need to split into per-link (GTK,
+IGTK, BIGTK) and per interface/MLD (including WEP) keys
+so make sure this is not a problem.
 
-An appropriate conditional silences the warning message.
-
-It is not necessary to add a similar test to other callers of
-is_power_of_2() in radeon_device.c. The matching commit in amdgpu:
-commit 761175078466 ("drm/amdgpu: use kernel is_power_of_2 rather than local version")
-is unaffected by this bug.
-
-Tested on Radeon HD 3200.
-
-Not ccing stable, this is not serious enough.
-
-Fixes: 8c2d34eb53b9 ("drm/radeon: use kernel is_power_of_2 rather than local version")
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Jonathan Gray <jsg@jsg.id.au>
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/key.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
-index 15692cb241fc..429644d5ddc6 100644
---- a/drivers/gpu/drm/radeon/radeon_device.c
-+++ b/drivers/gpu/drm/radeon/radeon_device.c
-@@ -1113,7 +1113,7 @@ static int radeon_gart_size_auto(enum radeon_family family)
- static void radeon_check_arguments(struct radeon_device *rdev)
- {
- 	/* vramlimit must be a power of two */
--	if (!is_power_of_2(radeon_vram_limit)) {
-+	if (radeon_vram_limit != 0 && !is_power_of_2(radeon_vram_limit)) {
- 		dev_warn(rdev->dev, "vram limit (%d) must be a power of 2\n",
- 				radeon_vram_limit);
- 		radeon_vram_limit = 0;
+diff --git a/net/mac80211/key.c b/net/mac80211/key.c
+index 0fcf8aebedc4..047a06b857c9 100644
+--- a/net/mac80211/key.c
++++ b/net/mac80211/key.c
+@@ -433,13 +433,25 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
+ 	int idx;
+ 	int ret = 0;
+ 	bool defunikey, defmultikey, defmgmtkey, defbeaconkey;
++	bool is_wep;
+ 
+ 	/* caller must provide at least one old/new */
+ 	if (WARN_ON(!new && !old))
+ 		return 0;
+ 
+-	if (new)
++	if (new) {
++		idx = new->conf.keyidx;
+ 		list_add_tail_rcu(&new->list, &sdata->key_list);
++		is_wep = new->conf.cipher == WLAN_CIPHER_SUITE_WEP40 ||
++			 new->conf.cipher == WLAN_CIPHER_SUITE_WEP104;
++	} else {
++		idx = old->conf.keyidx;
++		is_wep = old->conf.cipher == WLAN_CIPHER_SUITE_WEP40 ||
++			 old->conf.cipher == WLAN_CIPHER_SUITE_WEP104;
++	}
++
++	if ((is_wep || pairwise) && idx >= NUM_DEFAULT_KEYS)
++		return -EINVAL;
+ 
+ 	WARN_ON(new && old && new->conf.keyidx != old->conf.keyidx);
+ 
+@@ -451,8 +463,6 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
+ 	}
+ 
+ 	if (old) {
+-		idx = old->conf.keyidx;
+-
+ 		if (old->flags & KEY_FLAG_UPLOADED_TO_HARDWARE) {
+ 			ieee80211_key_disable_hw_accel(old);
+ 
+@@ -460,8 +470,6 @@ static int ieee80211_key_replace(struct ieee80211_sub_if_data *sdata,
+ 				ret = ieee80211_key_enable_hw_accel(new);
+ 		}
+ 	} else {
+-		/* new must be provided in case old is not */
+-		idx = new->conf.keyidx;
+ 		if (!new->local->wowlan)
+ 			ret = ieee80211_key_enable_hw_accel(new);
+ 	}
 -- 
 2.35.1
 
