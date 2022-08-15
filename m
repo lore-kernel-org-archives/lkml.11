@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC087C19F2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD53C25B0E
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351583AbiHOWpn (ORCPT
+        id S1351685AbiHOWqN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        Mon, 15 Aug 2022 18:46:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351217AbiHOWlj (ORCPT
+        with ESMTP id S1350971AbiHOWnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:41:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D1A2C659;
-        Mon, 15 Aug 2022 12:52:08 -0700 (PDT)
+        Mon, 15 Aug 2022 18:43:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199571F2D8;
+        Mon, 15 Aug 2022 12:52:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61345B80EAD;
-        Mon, 15 Aug 2022 19:52:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9EDC433D6;
-        Mon, 15 Aug 2022 19:52:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DA961226;
+        Mon, 15 Aug 2022 19:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A425C433C1;
+        Mon, 15 Aug 2022 19:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593126;
-        bh=vw72mgzvK0z4q3QqbLAcppyGA/1e3m8UYiLE+hwITeg=;
+        s=korg; t=1660593147;
+        bh=PsE69xMvmGk2e7/ex3krG6uJwOrvOxYgpOS9K1/wK1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WXHD69gbA5SAk+5baG4Y+n6s5ENHV6mBXqXGTEsHdpA034TMStrs8BXj455H95pWM
-         j6QcAE1VtfHeV84Hhqfqfg32+6YPT2Es+wRy+U2x7LKXntq69eDt++1zYTY8u0iU3y
-         1M0H6VBfBb6M4dw4v9Ji+hhwFXci+K870AgANSwg=
+        b=OXztzpPQCZfOBfQP5rsghidWfWqVsewFOr51vb0+y/qooVf7Ixsfi8JpaJBNQq1Ru
+         z5nL5PgBWA3MaP+ltGlYMof3NSBI0TIwscAz0soz3VUIlqLDt/DQ/xVrXpTjNYS5Vj
+         ovH/hcYzLO+ZaEQ2+cSS8uiREkIoauuVZXAF00pY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0218/1157] arm64: dts: mt8192: Fix idle-states entry-method
-Date:   Mon, 15 Aug 2022 19:52:54 +0200
-Message-Id: <20220815180448.316820644@linuxfoundation.org>
+Subject: [PATCH 5.19 0221/1157] locking/lockdep: Fix lockdep_init_map_*() confusion
+Date:   Mon, 15 Aug 2022 19:52:57 +0200
+Message-Id: <20220815180448.426798069@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,38 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 2e599740f7e423ee89fb027896cb2635dd43784f ]
+[ Upstream commit eae6d58d67d9739be5f7ae2dbead1d0ef6528243 ]
 
-The entry-method property of the idle-states node should be "psci" as
-described in the idle-states binding, since this is already the value of
-enable-method in the CPU nodes. Fix it to get rid of a dtbs_check
-warning.
+Commit dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t") added yet
+another lockdep_init_map_*() variant, but forgot to update all the
+existing users of the most complicated version.
 
-Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220617233150.2466344-3-nfraprado@collabora.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+This could lead to a loss of lock_type and hence an incorrect report.
+Given the relative rarity of both local_lock and these annotations,
+this is unlikely to happen in practise, still, best fix things.
+
+Fixes: dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/lockdep.h  | 30 +++++++++++++++++-------------
+ kernel/locking/lockdep.c |  7 ++++---
+ 2 files changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index c739e910883a..d5cae38c842a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -172,7 +172,7 @@ l3_0: l3-cache {
- 		};
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index b6829b970093..1f1099dac3f0 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -188,7 +188,7 @@ static inline void
+ lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
+ 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
+ {
+-	lockdep_init_map_type(lock, name, key, subclass, inner, LD_WAIT_INV, LD_LOCK_NORMAL);
++	lockdep_init_map_type(lock, name, key, subclass, inner, outer, LD_LOCK_NORMAL);
+ }
  
- 		idle-states {
--			entry-method = "arm,psci";
-+			entry-method = "psci";
- 			cpu_sleep_l: cpu-sleep-l {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x00010001>;
+ static inline void
+@@ -211,24 +211,28 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
+  * or they are too narrow (they suffer from a false class-split):
+  */
+ #define lockdep_set_class(lock, key)				\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_name(lock, key, name)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, name, key, 0,	\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, name, key, 0,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_class_and_subclass(lock, key, sub)		\
+-	lockdep_init_map_waits(&(lock)->dep_map, #key, key, sub,\
+-			       (lock)->dep_map.wait_type_inner,	\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #key, key, sub,	\
++			      (lock)->dep_map.wait_type_inner,	\
++			      (lock)->dep_map.wait_type_outer,	\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_subclass(lock, sub)					\
+-	lockdep_init_map_waits(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
+-			       (lock)->dep_map.wait_type_inner,		\
+-			       (lock)->dep_map.wait_type_outer)
++	lockdep_init_map_type(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
++			      (lock)->dep_map.wait_type_inner,		\
++			      (lock)->dep_map.wait_type_outer,		\
++			      (lock)->dep_map.lock_type)
+ 
+ #define lockdep_set_novalidate_class(lock) \
+ 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index f06b91ca6482..e2f179491b08 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5238,9 +5238,10 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
+ 		return 0;
+ 	}
+ 
+-	lockdep_init_map_waits(lock, name, key, 0,
+-			       lock->wait_type_inner,
+-			       lock->wait_type_outer);
++	lockdep_init_map_type(lock, name, key, 0,
++			      lock->wait_type_inner,
++			      lock->wait_type_outer,
++			      lock->lock_type);
+ 	class = register_lock_class(lock, subclass, 0);
+ 	hlock->class_idx = class - lock_classes;
+ 
 -- 
 2.35.1
 
