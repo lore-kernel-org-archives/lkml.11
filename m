@@ -2,71 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F1DC25B06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6021C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241543AbiHOMGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S232246AbiHOMGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241630AbiHOMGG (ORCPT
+        with ESMTP id S231851AbiHOMF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:06:06 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8E5255AB;
-        Mon, 15 Aug 2022 05:06:01 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 10D155FD05;
-        Mon, 15 Aug 2022 15:05:59 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660565159;
-        bh=qnpOaT6JJnvXbIjt2B0k8LM9YQ+BW665J4bNjST6xec=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=m20210HWrvqdlg2rQiwYJ/jbllRjt+JDtg2V2X0324ltsmwEwQ39Yx5+kVwpz3kGL
-         /S3wme124ggfRWSF8ajYIsZS4avtxXNtocm9V0B/vvtmdkAUkIxjVDdJ5vldYVRry8
-         d3JGyPRhvqiWuPVwkbfsxMCMHpw4OLfxKIeFxJiBEIYD3po5JZInC/910TUU/YVMUM
-         IYLxdY40UocIOC27jOzDjqJ3UomrRP6CcL6ITQW0sR8iK/xVvRWHf7wGF7YyaybJVu
-         loFUSq9Yply2iM2t29LCtumOhtr+5b7wX660mBLqi/6rdDE5SjBCfohiylN1hoRJce
-         wtBxOCUHxghFA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 15:05:58 +0300 (MSK)
-From:   Aleksey Romanov <AVRomanov@sberdevices.ru>
-To:     "minchan@kernel.org" <minchan@kernel.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "axboe@chromium.org" <axboe@chromium.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-CC:     kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mnitenko@gmail.com" <mnitenko@gmail.com>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: Re: [PATCH v1] zram: don't retry compress incompressible page
-Thread-Topic: [PATCH v1] zram: don't retry compress incompressible page
-Thread-Index: AQHYrKxf/aKxWvprs0WcIg34PQnzIq2vsxaA
-Date:   Mon, 15 Aug 2022 12:05:07 +0000
-Message-ID: <20220815120551.qhtk5c4gty7wurjl@CAB-WSD-0003100.sigma.sbrf.ru>
-References: <20220810112857.90278-1-avromanov@sberdevices.ru>
-In-Reply-To: <20220810112857.90278-1-avromanov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5EF4E9AD478C014887345254EF694CCF@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 15 Aug 2022 08:05:59 -0400
+Received: from smtp.smtpout.orange.fr (smtp-17.smtpout.orange.fr [80.12.242.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB12D255AB
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:05:58 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id NYqxo2sw0XaJmNYqxoyvCx; Mon, 15 Aug 2022 14:05:56 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 15 Aug 2022 14:05:56 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] serial: icom: Fix some indentation
+Date:   Mon, 15 Aug 2022 14:05:50 +0200
+Message-Id: <037fc7510ff88945e3f0a5756de4cfd135c59849.1660565015.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/15 08:42:00 #20120161
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Forgot to add Andrew Morton.=
+checkpatch and smatch report some code alignment issues.
+
+So remove some unneeded leading spaces to fix the warnings.
+
+While at it remove some {} around a single statement and convert some
+spaces into a tab.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/tty/serial/icom.c | 27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 45df29947fe8..3ac81622c4fb 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1727,10 +1727,10 @@ static int icom_probe(struct pci_dev *dev,
+ 
+ 	retval = pci_request_regions(dev, "icom");
+ 	if (retval) {
+-		 dev_err(&dev->dev, "pci_request_regions FAILED\n");
+-		 pci_disable_device(dev);
+-		 return retval;
+-	 }
++		dev_err(&dev->dev, "pci_request_regions FAILED\n");
++		pci_disable_device(dev);
++		return retval;
++	}
+ 
+ 	pci_set_master(dev);
+ 
+@@ -1754,9 +1754,9 @@ static int icom_probe(struct pci_dev *dev,
+ 
+ 	retval = icom_alloc_adapter(&icom_adapter);
+ 	if (retval) {
+-		 dev_err(&dev->dev, "icom_alloc_adapter FAILED\n");
+-		 retval = -EIO;
+-		 goto probe_exit0;
++		dev_err(&dev->dev, "icom_alloc_adapter FAILED\n");
++		retval = -EIO;
++		goto probe_exit0;
+ 	}
+ 
+ 	icom_adapter->base_addr_pci = pci_resource_start(dev, 0);
+@@ -1778,11 +1778,10 @@ static int icom_probe(struct pci_dev *dev,
+ 		goto probe_exit1;
+ 	}
+ 
+-	 /* save off irq and request irq line */
+-	 retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
+-	 if (retval) {
+-		  goto probe_exit2;
+-	 }
++	/* save off irq and request irq line */
++	retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
++	if (retval)
++		goto probe_exit2;
+ 
+ 	retval = icom_load_ports(icom_adapter);
+ 
+@@ -1798,11 +1797,11 @@ static int icom_probe(struct pci_dev *dev,
+ 			icom_port->uart_port.fifosize = 16;
+ 			icom_port->uart_port.ops = &icom_ops;
+ 			icom_port->uart_port.line =
+-		        icom_port->port + icom_adapter->index * 4;
++			icom_port->port + icom_adapter->index * 4;
+ 			if (uart_add_one_port (&icom_uart_driver, &icom_port->uart_port)) {
+ 				icom_port->status = ICOM_PORT_OFF;
+ 				dev_err(&dev->dev, "Device add failed\n");
+-			 } else
++			} else
+ 				dev_info(&dev->dev, "Device added\n");
+ 		}
+ 	}
+-- 
+2.34.1
+
