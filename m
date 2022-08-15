@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F32C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8E5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348301AbiHOWXc (ORCPT
+        id S1348427AbiHOWXn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        Mon, 15 Aug 2022 18:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350774AbiHOWSa (ORCPT
+        with ESMTP id S1350768AbiHOWS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BCA419B2;
-        Mon, 15 Aug 2022 12:41:29 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553274198D;
+        Mon, 15 Aug 2022 12:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E48A161089;
-        Mon, 15 Aug 2022 19:41:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E72C433C1;
-        Mon, 15 Aug 2022 19:41:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE38E61089;
+        Mon, 15 Aug 2022 19:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD6DDC433C1;
+        Mon, 15 Aug 2022 19:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592488;
-        bh=l1DpSV+JZmB6Uto3+hA8ft5nZq/mq6tTv8aWI1ilAHQ=;
+        s=korg; t=1660592485;
+        bh=imMcvGzzPpr3rWTwGM7Bb11ZJvZPVZIPQT6qdLY3okI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+zjfSN+TU16i/YUWxypmRwYZz2Zxy45vX615bNV8qj3djrzFiuwtL3TKMhC3I894
-         GMnRzJFTCeegsR9rw8fVM0uE7G7SrB3oHDt+6ghb8sLdMLw3gzNXjqB5jHfe9W0sOw
-         E6FbO2vwPqWC4c8CJYgXdf3Byebljzh0iydS1g8Q=
+        b=GhK17yXVuBDxC8btGuf57XAG4txiCajNNbOdd6tjVDvpR0430JrbwwaOzXLd8OKbo
+         59AZJk/czkjg9gaWyAU6+L2PpJyVa4fwnUZKRVR/SUg0Tqn76TBAffZSvJBJZCXhAO
+         P/EwCDQWoKxE3R75H9s22HSZ1JIpVJfInTmhisNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org, Serge Semin <fancer.lancer@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0793/1095] USB: serial: fix tty-port initialized comments
-Date:   Mon, 15 Aug 2022 20:03:12 +0200
-Message-Id: <20220815180502.041681392@linuxfoundation.org>
+Subject: [PATCH 5.18 0759/1095] eeprom: idt_89hpesx: uninitialized data in idt_dbgfs_csr_write()
+Date:   Mon, 15 Aug 2022 20:02:38 +0200
+Message-Id: <20220815180500.682064472@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,64 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 688ee1d1785c1359f9040f615dd8e6054962bce2 ]
+[ Upstream commit 71d46f1ff2212ced4852c7e77c5176382a1bdcec ]
 
-Fix up the tty-port initialized comments which got truncated and
-obfuscated when replacing the old ASYNCB_INITIALIZED flag.
+The simple_write_to_buffer() function will return positive/success if it
+is able to write a single byte anywhere within the buffer.  However that
+potentially leaves a lot of the buffer uninitialized.
 
-Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
+In this code it's better to return 0 if the offset is non-zero.  This
+code is not written to support partial writes.  And then return -EFAULT
+if the buffer is not completely initialized.
+
+Fixes: cfad6425382e ("eeprom: Add IDT 89HPESx EEPROM/CSR driver")
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/Ysg1Pu/nzSMe3r1q@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/sierra.c     | 3 ++-
- drivers/usb/serial/usb-serial.c | 2 +-
- drivers/usb/serial/usb_wwan.c   | 3 ++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/misc/eeprom/idt_89hpesx.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
-index 9d56138133a9..ef6a2891f290 100644
---- a/drivers/usb/serial/sierra.c
-+++ b/drivers/usb/serial/sierra.c
-@@ -737,7 +737,8 @@ static void sierra_close(struct usb_serial_port *port)
+diff --git a/drivers/misc/eeprom/idt_89hpesx.c b/drivers/misc/eeprom/idt_89hpesx.c
+index b0cff4b152da..7f430742ce2b 100644
+--- a/drivers/misc/eeprom/idt_89hpesx.c
++++ b/drivers/misc/eeprom/idt_89hpesx.c
+@@ -909,14 +909,18 @@ static ssize_t idt_dbgfs_csr_write(struct file *filep, const char __user *ubuf,
+ 	u32 csraddr, csrval;
+ 	char *buf;
  
- 	/*
- 	 * Need to take susp_lock to make sure port is not already being
--	 * resumed, but no need to hold it due to initialized
-+	 * resumed, but no need to hold it due to the tty-port initialized
-+	 * flag.
- 	 */
- 	spin_lock_irq(&intfdata->susp_lock);
- 	if (--intfdata->open_ports == 0)
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 24101bd7fcad..e35bea2235c1 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -295,7 +295,7 @@ static int serial_open(struct tty_struct *tty, struct file *filp)
-  *
-  * Shut down a USB serial port. Serialized against activate by the
-  * tport mutex and kept to matching open/close pairs
-- * of calls by the initialized flag.
-+ * of calls by the tty-port initialized flag.
-  *
-  * Not called if tty is console.
-  */
-diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
-index dab38b63eaf7..cc81ab7ef4da 100644
---- a/drivers/usb/serial/usb_wwan.c
-+++ b/drivers/usb/serial/usb_wwan.c
-@@ -388,7 +388,8 @@ void usb_wwan_close(struct usb_serial_port *port)
++	if (*offp)
++		return 0;
++
+ 	/* Copy data from User-space */
+ 	buf = kmalloc(count + 1, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
  
- 	/*
- 	 * Need to take susp_lock to make sure port is not already being
--	 * resumed, but no need to hold it due to initialized
-+	 * resumed, but no need to hold it due to the tty-port initialized
-+	 * flag.
- 	 */
- 	spin_lock_irq(&intfdata->susp_lock);
- 	if (--intfdata->open_ports == 0)
+-	ret = simple_write_to_buffer(buf, count, offp, ubuf, count);
+-	if (ret < 0)
++	if (copy_from_user(buf, ubuf, count)) {
++		ret = -EFAULT;
+ 		goto free_buf;
++	}
+ 	buf[count] = 0;
+ 
+ 	/* Find position of colon in the buffer */
 -- 
 2.35.1
 
