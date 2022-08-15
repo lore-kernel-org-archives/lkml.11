@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6121C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2175C2BB45
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354704AbiHOXqP (ORCPT
+        id S1354817AbiHOXq2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
+        Mon, 15 Aug 2022 19:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354313AbiHOXlv (ORCPT
+        with ESMTP id S1354324AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:51 -0400
+        Mon, 15 Aug 2022 19:41:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C14F2C12B;
-        Mon, 15 Aug 2022 13:12:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E7C2C66D;
+        Mon, 15 Aug 2022 13:12:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F848B80EAD;
-        Mon, 15 Aug 2022 20:12:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0FBAC433D7;
-        Mon, 15 Aug 2022 20:12:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F43FB80EAD;
+        Mon, 15 Aug 2022 20:12:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85049C433C1;
+        Mon, 15 Aug 2022 20:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594328;
-        bh=1YBFdy1O2IEzCfN13KPtg/6oT27WVmCDpW1qbY3k+RM=;
+        s=korg; t=1660594363;
+        bh=d/52b45doYg9s/2ntpneHgZYLVevpz6UYW9ck9AIykk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UtRTQrQDZIYuMhupih7in6oY3fmO75m1vOD62ilaylSfnUbI4eiyW8isxSmm+AEWs
-         wr9f14uYAaDroKmpqfgoOxoVFqjBiOLKojFoaiLGX+eBNbAdIYIHvlq/3J1fYQE7GF
-         bm52Av93lFykVxoueGTaGFZhXKCy3wVAAWO6asdE=
+        b=Mm2mPEot3N7ZPij+qQfbRZbFFRwTOI12KpD6iup/Zlxqwy4lPrp9LqtfKLJjg6025
+         ZoxhzBqSB3IpFesL1ttqDV7AQj6RLBNIguifI6t7by2CgNomZsTp1lxUjZplFZpUYT
+         L71fcHxO6FSrm81nostQ7H94dcUfRG6Wtl5835Mc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 1093/1095] f2fs: fix null-ptr-deref in f2fs_get_dnode_of_data
-Date:   Mon, 15 Aug 2022 20:08:12 +0200
-Message-Id: <20220815180514.218935451@linuxfoundation.org>
+        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0422/1157] drm/vc4: hdmi: Force modeset when bpc or format changes
+Date:   Mon, 15 Aug 2022 19:56:18 +0200
+Message-Id: <20220815180456.543086316@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,115 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Dom Cobley <popcornmix@gmail.com>
 
-commit 4a2c5b7994960fac29cf8a3f4e62855bae1b27d4 upstream.
+[ Upstream commit c94cd0620a922156c9ff9af9c3301b174b287677 ]
 
-There is issue as follows when test f2fs atomic write:
-F2FS-fs (loop0): Can't find valid F2FS filesystem in 2th superblock
-F2FS-fs (loop0): invalid crc_offset: 0
-F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=1, run fsck to fix.
-F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=2, run fsck to fix.
-==================================================================
-BUG: KASAN: null-ptr-deref in f2fs_get_dnode_of_data+0xac/0x16d0
-Read of size 8 at addr 0000000000000028 by task rep/1990
+Whenever the maximum BPC is changed, vc4_hdmi_encoder_compute_config()
+might pick up a different BPC or format depending on the display
+capabilities.
 
-CPU: 4 PID: 1990 Comm: rep Not tainted 5.19.0-rc6-next-20220715 #266
-Call Trace:
- <TASK>
- dump_stack_lvl+0x6e/0x91
- print_report.cold+0x49a/0x6bb
- kasan_report+0xa8/0x130
- f2fs_get_dnode_of_data+0xac/0x16d0
- f2fs_do_write_data_page+0x2a5/0x1030
- move_data_page+0x3c5/0xdf0
- do_garbage_collect+0x2015/0x36c0
- f2fs_gc+0x554/0x1d30
- f2fs_balance_fs+0x7f5/0xda0
- f2fs_write_single_data_page+0xb66/0xdc0
- f2fs_write_cache_pages+0x716/0x1420
- f2fs_write_data_pages+0x84f/0x9a0
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x87/0xa0
- file_write_and_wait_range+0x157/0x1c0
- f2fs_do_sync_file+0x206/0x12d0
- f2fs_sync_file+0x99/0xc0
- vfs_fsync_range+0x75/0x140
- f2fs_file_write_iter+0xd7b/0x1850
- vfs_write+0x645/0x780
- ksys_write+0xf1/0x1e0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+That change will have a number of side effects, including the clock
+rates and whether the scrambling is enabled.
 
-As 3db1de0e582c commit changed atomic write way which new a cow_inode for
-atomic write file, and also mark cow_inode as FI_ATOMIC_FILE.
-When f2fs_do_write_data_page write cow_inode will use cow_inode's cow_inode
-which is NULL. Then will trigger null-ptr-deref.
-To solve above issue, introduce FI_COW_FILE flag for COW inode.
+However, only drm_crtc_state.connectors_changed will be set to true,
+since that properly only affects the connector.
 
-Fiexes: 3db1de0e582c("f2fs: change the current atomic write way")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This means that while drm_atomic_crtc_needs_modeset() will return true,
+and thus drm_atomic_helper_commit_modeset_enables() will call our
+encoder atomic_enable() hook, mode_changed will be false.
+
+So crtc_set_mode() will not call our encoder .atomic_mode_set() hook. We
+use this hook in vc4 to set the vc4_hdmi_connector_state.output_bpc (and
+output_format), and will then reuse the value in .atomic_enable() to select
+whether or not scrambling should be enabled.
+
+However, since our clock rate is pre-computed during .atomic_check(), we
+end up with the clocks properly configured, but the scrambling disabled,
+leading to a blank screen.
+
+Let's set mode_changed to true in our HDMI driver to force the update of
+output_bpc, and thus prevent the issue entirely.
+
+Fixes: ba8c0faebbb0 ("drm/vc4: hdmi: Enable 10/12 bpc output")
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-32-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/f2fs.h    |    6 ++++++
- fs/f2fs/file.c    |    2 +-
- fs/f2fs/segment.c |    4 ++--
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -756,6 +756,7 @@ enum {
- 	FI_ENABLE_COMPRESS,	/* enable compression in "user" compression mode */
- 	FI_COMPRESS_RELEASED,	/* compressed blocks were released */
- 	FI_ALIGNED_WRITE,	/* enable aligned write */
-+	FI_COW_FILE,		/* indicate COW file */
- 	FI_MAX,			/* max flag, never be used */
- };
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 674bd29a7cf2..3829e13c8627 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1620,9 +1620,14 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
+ 					 struct drm_crtc_state *crtc_state,
+ 					 struct drm_connector_state *conn_state)
+ {
++	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
++	struct drm_connector *connector = &vc4_hdmi->connector;
++	struct drm_connector_state *old_conn_state =
++		drm_atomic_get_old_connector_state(conn_state->state, connector);
++	struct vc4_hdmi_connector_state *old_vc4_state =
++		conn_state_to_vc4_hdmi_conn_state(old_conn_state);
+ 	struct vc4_hdmi_connector_state *vc4_state = conn_state_to_vc4_hdmi_conn_state(conn_state);
+ 	struct drm_display_mode *mode = &crtc_state->adjusted_mode;
+-	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
+ 	unsigned long long tmds_char_rate = mode->clock * 1000;
+ 	unsigned long long tmds_bit_rate;
+ 	int ret;
+@@ -1651,6 +1656,11 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
+ 	if (ret)
+ 		return ret;
  
-@@ -3188,6 +3189,11 @@ static inline bool f2fs_is_atomic_file(s
- 	return is_inode_flag_set(inode, FI_ATOMIC_FILE);
++	/* vc4_hdmi_encoder_compute_config may have changed output_bpc and/or output_format */
++	if (vc4_state->output_bpc != old_vc4_state->output_bpc ||
++	    vc4_state->output_format != old_vc4_state->output_format)
++		crtc_state->mode_changed = true;
++
+ 	return 0;
  }
  
-+static inline bool f2fs_is_cow_file(struct inode *inode)
-+{
-+	return is_inode_flag_set(inode, FI_COW_FILE);
-+}
-+
- static inline bool f2fs_is_first_block_written(struct inode *inode)
- {
- 	return is_inode_flag_set(inode, FI_FIRST_BLOCK_WRITTEN);
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2055,7 +2055,7 @@ static int f2fs_ioc_start_atomic_write(s
- 	spin_unlock(&sbi->inode_lock[ATOMIC_FILE]);
- 
- 	set_inode_flag(inode, FI_ATOMIC_FILE);
--	set_inode_flag(fi->cow_inode, FI_ATOMIC_FILE);
-+	set_inode_flag(fi->cow_inode, FI_COW_FILE);
- 	clear_inode_flag(fi->cow_inode, FI_INLINE_DATA);
- 	f2fs_up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
- 
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -193,7 +193,7 @@ void f2fs_abort_atomic_write(struct inod
- 	if (f2fs_is_atomic_file(inode)) {
- 		if (clean)
- 			truncate_inode_pages_final(inode->i_mapping);
--		clear_inode_flag(fi->cow_inode, FI_ATOMIC_FILE);
-+		clear_inode_flag(fi->cow_inode, FI_COW_FILE);
- 		iput(fi->cow_inode);
- 		fi->cow_inode = NULL;
- 		clear_inode_flag(inode, FI_ATOMIC_FILE);
-@@ -3167,7 +3167,7 @@ static int __get_segment_type_6(struct f
- 			return CURSEG_COLD_DATA;
- 		if (file_is_hot(inode) ||
- 				is_inode_flag_set(inode, FI_HOT_DATA) ||
--				f2fs_is_atomic_file(inode))
-+				f2fs_is_cow_file(inode))
- 			return CURSEG_HOT_DATA;
- 		return f2fs_rw_hint_to_seg_type(inode->i_write_hint);
- 	} else {
+-- 
+2.35.1
+
 
 
