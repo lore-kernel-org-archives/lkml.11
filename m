@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA2DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E049C2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245057AbiHOVLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
+        id S232624AbiHOVMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347080AbiHOVGm (ORCPT
+        with ESMTP id S1347838AbiHOVHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:06:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FC063C9;
-        Mon, 15 Aug 2022 12:15:30 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B96D7CD6;
+        Mon, 15 Aug 2022 12:16:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CCAD60FAD;
-        Mon, 15 Aug 2022 19:15:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64604C433D7;
-        Mon, 15 Aug 2022 19:15:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 267C660EF0;
+        Mon, 15 Aug 2022 19:16:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC2AC433D6;
+        Mon, 15 Aug 2022 19:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590929;
-        bh=nCWO8YIu1PEBiyHOTBnU4ZCYz8V+EBt7GoQJfXewjfw=;
+        s=korg; t=1660590971;
+        bh=jFpYE0q8Cil9nULPreWovUqFj5Fwa7A8dX1EsVOA+Wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GW5mQoB6La+JbS3RDSb92X4gcetEorChrPHRUZMHiMcRgMTPZTEFXaKq8DJNcnqzm
-         uJx0fVbgLTPq/FVYbajHUuQpVIhRsifPdUjVRkN+FQBoNZYM0bjHoORgYfI2BsSyyp
-         Ty3xYMfTnBlTU4jk3/BgSkRvFGPG9IGg82kln34Y=
+        b=efatLqxEMYzEsn2KCk9sM5K6JwWPvYEpFkcq3b9F3K1UdVk2ztSGt+xaGZQzKBYzh
+         uTbpk9DJSa9HoFNhvsQCgqWYG/81/kLhcVuDXXdVyuwJGHdxCApC5r/OXZ6ajFjpnj
+         oM/Us02Vn3LhtMGHUvDIsCZgJHdAPkQDzVY5yzsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0416/1095] net: dsa: felix: build as module when tc-taprio is module
-Date:   Mon, 15 Aug 2022 19:56:55 +0200
-Message-Id: <20220815180446.915381685@linuxfoundation.org>
+Subject: [PATCH 5.18 0399/1095] drm/vc4: hdmi: Correct HDMI timing registers for interlaced modes
+Date:   Mon, 15 Aug 2022 19:56:38 +0200
+Message-Id: <20220815180446.198793246@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,36 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit 10ed11ab6399813eb652137db9c378433c28a95c ]
+[ Upstream commit fb10dc451c0f15e3c19798a2f41d357f3f7576f5 ]
 
-felix_vsc9959.c calls taprio_offload_get() and taprio_offload_free(),
-symbols exported by net/sched/sch_taprio.c. As such, we must disallow
-building the Felix driver as built-in when the symbol exported by
-tc-taprio isn't present in the kernel image.
+For interlaced modes the timings were not being correctly
+programmed into the HDMI block, so correct them.
 
-Fixes: 1c9017e44af2 ("net: dsa: felix: keep reference on entire tc-taprio config")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220704190241.1288847-2-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-33-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 220b0b027b55..08db9cf76818 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -6,6 +6,7 @@ config NET_DSA_MSCC_FELIX
- 	depends on NET_VENDOR_FREESCALE
- 	depends on HAS_IOMEM
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	depends on NET_SCH_TAPRIO || NET_SCH_TAPRIO=n
- 	select MSCC_OCELOT_SWITCH_LIB
- 	select NET_DSA_TAG_OCELOT_8021Q
- 	select NET_DSA_TAG_OCELOT
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index da3622f34dba..f7781d171687 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -920,13 +920,13 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
+ 		     VC4_SET_FIELD(mode->crtc_vsync_start - mode->crtc_vdisplay,
+ 				   VC5_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
+-	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
+-				   interlaced,
++	u32 vertb = (VC4_SET_FIELD(mode->htotal >> (2 - pixel_rep),
++				   VC5_HDMI_VERTB_VSPO) |
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end,
++					mode->crtc_vsync_end - interlaced,
+ 					VC4_HDMI_VERTB_VBP));
+ 	unsigned long flags;
+ 	unsigned char gcp;
 -- 
 2.35.1
 
