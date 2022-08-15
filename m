@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB175C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14BDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344614AbiHOXMH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S241049AbiHOXMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353225AbiHOXLD (ORCPT
+        with ESMTP id S1353247AbiHOXLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:11:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10C0144E01;
-        Mon, 15 Aug 2022 13:00:07 -0700 (PDT)
+        Mon, 15 Aug 2022 19:11:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B7779A53;
+        Mon, 15 Aug 2022 13:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 164F3B8113E;
-        Mon, 15 Aug 2022 20:00:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7042DC433D6;
-        Mon, 15 Aug 2022 20:00:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A13960FD8;
+        Mon, 15 Aug 2022 20:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 067FBC433C1;
+        Mon, 15 Aug 2022 20:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593604;
-        bh=jmJ/cWdoNqwuJspvQKVz+/rZ/g7Jr+XVmirj3oU5Jls=;
+        s=korg; t=1660593610;
+        bh=AAVDZDfssf5k6rhB/ON9yV403YnrCocT4nm7X9rDlkY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xnuj4KLJZNYzRl24ADCByeIpe0iesxVkLQzEbZP9gCYVdnbOovIoHsBHhQkIvMfyh
-         XkwuQg6D79wD9WNASSHEDNyD6fXWccBzxU7Wiqy3Ub4CEv+/yYwFWpVTSvMW4bkWY3
-         RupgOkPhDrL3B2uS15pdb5QPM9Rv5/hjXhZYB/lI=
+        b=T+wMK3heW7LSt0ms0Dx1HxvItVQIelDNvJRA6OTbZLxg5xBLKqv3BoILqmDxplUPS
+         ma+411kd2ed4wZ85wRDjMG+kJFKz8v2Lf7L+pPDxRBkdaUjyJCGweLOyCwZbvAZsG2
+         i6I/4Y7SejM/Pn2qjYuNgbJ1KJc5wa31iIdpOJXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai1@huaweicloud.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0277/1157] dm writecache: count number of blocks read, not number of read bios
-Date:   Mon, 15 Aug 2022 19:53:53 +0200
-Message-Id: <20220815180450.690452582@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Bharath SM <bharathsm@microsoft.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 0975/1095] SMB3: fix lease break timeout when multiple deferred close handles for the same file.
+Date:   Mon, 15 Aug 2022 20:06:14 +0200
+Message-Id: <20220815180509.436681728@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,54 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Bharath SM <bharathsm@microsoft.com>
 
-[ Upstream commit 2c6e755b49d273243431f5f1184654e71221fc78 ]
+commit 9e31678fb403eae0f4fe37c6374be098835c73cd upstream.
 
-Change dm-writecache, so that it counts the number of blocks read
-instead of the number of read bios. Bios can be split and requeued
-using the dm_accept_partial_bio function, so counting bios caused
-inaccurate results.
+Solution is to send lease break ack immediately even in case of
+deferred close handles to avoid lease break request timing out
+and let deferred closed handle gets closed as scheduled.
+Later patches could optimize cases where we then close some
+of these handles sooner for the cases where lease break is to 'none'
 
-Fixes: e3a35d03407c ("dm writecache: add event counters")
-Reported-by: Yu Kuai <yukuai1@huaweicloud.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Bharath SM <bharathsm@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/device-mapper/writecache.rst | 4 ++--
- drivers/md/dm-writecache.c                             | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ fs/cifs/file.c |   20 +-------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
 
-diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
-index 10429779a91a..7bead3b52690 100644
---- a/Documentation/admin-guide/device-mapper/writecache.rst
-+++ b/Documentation/admin-guide/device-mapper/writecache.rst
-@@ -78,8 +78,8 @@ Status:
- 2. the number of blocks
- 3. the number of free blocks
- 4. the number of blocks under writeback
--5. the number of read requests
--6. the number of read requests that hit the cache
-+5. the number of read blocks
-+6. the number of read blocks that hit the cache
- 7. the number of write requests
- 8. the number of write requests that hit uncommitted block
- 9. the number of write requests that hit committed block
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index e4753e8c46d3..b71efe08d809 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1365,6 +1365,7 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
- 		}
- 	} else {
- 		writecache_map_remap_origin(wc, bio, e);
-+		wc->stats.reads += (bio->bi_iter.bi_size - wc->block_size) >> wc->block_size_bits;
- 		map_op = WC_MAP_REMAP_ORIGIN;
- 	}
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -4807,8 +4807,6 @@ void cifs_oplock_break(struct work_struc
+ 	struct TCP_Server_Info *server = tcon->ses->server;
+ 	int rc = 0;
+ 	bool purge_cache = false;
+-	bool is_deferred = false;
+-	struct cifs_deferred_close *dclose;
  
--- 
-2.35.1
-
+ 	wait_on_bit(&cinode->flags, CIFS_INODE_PENDING_WRITERS,
+ 			TASK_UNINTERRUPTIBLE);
+@@ -4845,22 +4843,6 @@ void cifs_oplock_break(struct work_struc
+ 
+ oplock_break_ack:
+ 	/*
+-	 * When oplock break is received and there are no active
+-	 * file handles but cached, then schedule deferred close immediately.
+-	 * So, new open will not use cached handle.
+-	 */
+-	spin_lock(&CIFS_I(inode)->deferred_lock);
+-	is_deferred = cifs_is_deferred_close(cfile, &dclose);
+-	spin_unlock(&CIFS_I(inode)->deferred_lock);
+-	if (is_deferred &&
+-	    cfile->deferred_close_scheduled &&
+-	    delayed_work_pending(&cfile->deferred)) {
+-		if (cancel_delayed_work(&cfile->deferred)) {
+-			_cifsFileInfo_put(cfile, false, false);
+-			goto oplock_break_done;
+-		}
+-	}
+-	/*
+ 	 * releasing stale oplock after recent reconnect of smb session using
+ 	 * a now incorrect file handle is not a data integrity issue but do
+ 	 * not bother sending an oplock release if session to server still is
+@@ -4871,7 +4853,7 @@ oplock_break_ack:
+ 							     cinode);
+ 		cifs_dbg(FYI, "Oplock release rc = %d\n", rc);
+ 	}
+-oplock_break_done:
++
+ 	_cifsFileInfo_put(cfile, false /* do not wait for ourself */, false);
+ 	cifs_done_oplock_break(cinode);
+ }
 
 
