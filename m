@@ -2,53 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22349C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D78FAC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242462AbiHOVry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        id S1349309AbiHOVr7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349079AbiHOVmU (ORCPT
+        with ESMTP id S1349150AbiHOVm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:42:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573E1C5788;
-        Mon, 15 Aug 2022 12:29:37 -0700 (PDT)
+        Mon, 15 Aug 2022 17:42:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C42C5795;
+        Mon, 15 Aug 2022 12:29:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC241B8112C;
-        Mon, 15 Aug 2022 19:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF0B5C433C1;
-        Mon, 15 Aug 2022 19:29:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 439C660FBE;
+        Mon, 15 Aug 2022 19:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD2CC433C1;
+        Mon, 15 Aug 2022 19:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591774;
-        bh=REkwR5J41q/Hrazw8AkkdOJJpFzFGfPiF5Ij9pcyQ+g=;
+        s=korg; t=1660591777;
+        bh=OulFKFL7KovR2r6EPGY1gNLGYVPmkKMFn3kUuRZ3tqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rEpJYOZMLOuT+J+7KSuW9VDkVX2q+TcXIIRePOMbEt3lQb69gvvjwh1NXkhI+z7Yq
-         byUCjOvdsgdx1cWFs03l9brvqJ32bpbMMbrOkw+7id9PQ74QyMHH3NdbrAMzGi9Axs
-         s41sW49BZf5o0E/sxmV5JBuqWlqeZaJGvttpVa3Q=
+        b=Ggc26tBQoEI/9DFcfLkeBMJTmWnFSuBZnE4VvzvDXym6N/TwK3whekp/Yx12KYK3s
+         fCvhxtajS3RJYKfZwFVrV61AeVt161qA6h0AkYbcpLoQEyWTZ64jldpZH/6DNOcksl
+         YLWfZo1XF8V2JmMXi1X5hM3kTVW83icGbCIziOHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
-        Abel Vesa <abel.vesa@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0679/1095] clk: imx: clk-fracn-gppll: Return rate in rate table properly in ->recalc_rate()
-Date:   Mon, 15 Aug 2022 20:01:18 +0200
-Message-Id: <20220815180457.458166104@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 0007/1157] ALSA: usb-audio: Add quirk for Behringer UMC202HD
+Date:   Mon, 15 Aug 2022 19:49:23 +0200
+Message-Id: <20220815180439.768101671@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,78 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 5ebaf9f7da5bb2dc56d394eabfcbe46dc6b1ea8d ]
+commit e086c37f876fd1f551e2b4f9be97d4a1923cd219 upstream.
 
-The PLL parameters in rate table should be directly compared with
-those read from PLL registers instead of the cooked ones.
+Just like other Behringer models, UMC202HD (USB ID 1397:0507) requires
+the quirk for the stable streaming, too.
 
-Fixes: 1b26cb8a77a4 ("clk: imx: support fracn gppll")
-Cc: Abel Vesa <abel.vesa@nxp.com>
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-6-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215934
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220722143948.29804-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/imx/clk-fracn-gppll.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ sound/usb/quirks.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/imx/clk-fracn-gppll.c b/drivers/clk/imx/clk-fracn-gppll.c
-index 36a53c60e71f..cb06b0045e9e 100644
---- a/drivers/clk/imx/clk-fracn-gppll.c
-+++ b/drivers/clk/imx/clk-fracn-gppll.c
-@@ -131,18 +131,7 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
- 	mfi = FIELD_GET(PLL_MFI_MASK, pll_div);
- 
- 	rdiv = FIELD_GET(PLL_RDIV_MASK, pll_div);
--	rdiv = rdiv + 1;
- 	odiv = FIELD_GET(PLL_ODIV_MASK, pll_div);
--	switch (odiv) {
--	case 0:
--		odiv = 2;
--		break;
--	case 1:
--		odiv = 3;
--		break;
--	default:
--		break;
--	}
- 
- 	/*
- 	 * Sometimes, the recalculated rate has deviation due to
-@@ -160,6 +149,19 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
- 	if (rate)
- 		return (unsigned long)rate;
- 
-+	rdiv = rdiv + 1;
-+
-+	switch (odiv) {
-+	case 0:
-+		odiv = 2;
-+		break;
-+	case 1:
-+		odiv = 3;
-+		break;
-+	default:
-+		break;
-+	}
-+
- 	/* Fvco = Fref * (MFI + MFN / MFD) */
- 	fvco = fvco * mfi * mfd + fvco * mfn;
- 	do_div(fvco, mfd * rdiv * odiv);
--- 
-2.35.1
-
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1843,6 +1843,8 @@ static const struct usb_audio_quirk_flag
+ 		   QUIRK_FLAG_SHARE_MEDIA_DEVICE | QUIRK_FLAG_ALIGN_TRANSFER),
+ 	DEVICE_FLG(0x1395, 0x740a, /* Sennheiser DECT */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x1397, 0x0507, /* Behringer UMC202HD */
++		   QUIRK_FLAG_PLAYBACK_FIRST | QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x1397, 0x0508, /* Behringer UMC204HD */
+ 		   QUIRK_FLAG_PLAYBACK_FIRST | QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x1397, 0x0509, /* Behringer UMC404HD */
 
 
