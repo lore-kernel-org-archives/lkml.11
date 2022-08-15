@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B6DC2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6336C2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344340AbiHOTge (ORCPT
+        id S1344299AbiHOTg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
+        Mon, 15 Aug 2022 15:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343725AbiHOTa4 (ORCPT
+        with ESMTP id S245626AbiHOTau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:30:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2B25F9AF;
-        Mon, 15 Aug 2022 11:44:18 -0700 (PDT)
+        Mon, 15 Aug 2022 15:30:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EB25F128;
+        Mon, 15 Aug 2022 11:44:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D900E6113D;
-        Mon, 15 Aug 2022 18:44:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA1AC433D6;
-        Mon, 15 Aug 2022 18:44:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A315B8105D;
+        Mon, 15 Aug 2022 18:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7DAC433C1;
+        Mon, 15 Aug 2022 18:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589057;
-        bh=g0WUy9z2Xp8PZ4Dnmj9bYY/NRZgrjr5Aw07PKgj/mhs=;
+        s=korg; t=1660589053;
+        bh=C8wLxk7wMPsaN29ahyc7gGPIyxKfCJhjmUtAVYyWJfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KeC4sl56WtYy01k+zxFQ8O+5QHLhMzX1JR6VcGdLLsJCV6Fn86gJqRRdhKkcfTykr
-         Zuiwl58baT/Epmj8gX7Q2FX2fVlflEsJCAENuWhRVB7bT0gKNCjQ/mqwh3H94qc+HA
-         zc8b/jOxYrD/FWCcgofNbZnDG/KllXnQy2Ea3CwU=
+        b=ZqCtDe331D5nQQ5DCUmFRtYxHWM6qIDvZJ8CLqlmXXWFCAy95a7PMOHgEdFEGin1l
+         7LVnwABJTPlRjhJF+wwTOas2mRh04eeb4cTd5ujESbp0+uL9o9QrMTEqFzfvmiNhw8
+         UFmSdJiOUYhUQ9Ylk3F4DJHcbmCfZuI4fAcWdJgs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li Lingfeng <lilingfeng3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 557/779] ext4: recover csum seed of tmp_inode after migrating to extents
-Date:   Mon, 15 Aug 2022 20:03:21 +0200
-Message-Id: <20220815180401.134739403@linuxfoundation.org>
+Subject: [PATCH 5.15 566/779] ASoC: codecs: da7210: add check for i2c_add_driver
+Date:   Mon, 15 Aug 2022 20:03:30 +0200
+Message-Id: <20220815180401.517388530@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,74 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Lingfeng <lilingfeng3@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 07ea7a617d6b278fb7acedb5cbe1a81ce2de7d0c ]
+[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
 
-When migrating to extents, the checksum seed of temporary inode
-need to be replaced by inode's, otherwise the inode checksums
-will be incorrect when swapping the inodes data.
+As i2c_add_driver could return error if fails, it should be
+better to check the return value.
+However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
+the return value of i2c_add_driver will be covered by
+spi_register_driver.
+Therefore, it is necessary to add check and return error if fails.
 
-However, the temporary inode can not match it's checksum to
-itself since it has lost it's own checksum seed.
-
-mkfs.ext4 -F /dev/sdc
-mount /dev/sdc /mnt/sdc
-xfs_io -fc "pwrite 4k 4k" -c "fsync" /mnt/sdc/testfile
-chattr -e /mnt/sdc/testfile
-chattr +e /mnt/sdc/testfile
-umount /dev/sdc
-fsck -fn /dev/sdc
-
-========
-...
-Pass 1: Checking inodes, blocks, and sizes
-Inode 13 passes checks, but checksum does not match inode.  Fix? no
-...
-========
-
-The fix is simple, save the checksum seed of temporary inode, and
-recover it after migrating to extents.
-
-Fixes: e81c9302a6c3 ("ext4: set csum seed in tmp inode while migrating to extents")
-Signed-off-by: Li Lingfeng <lilingfeng3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220617062515.2113438-1-lilingfeng3@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/migrate.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/soc/codecs/da7210.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/ext4/migrate.c b/fs/ext4/migrate.c
-index ff8916e1d38e..af5a75a89e6e 100644
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -417,7 +417,7 @@ int ext4_ext_migrate(struct inode *inode)
- 	struct inode *tmp_inode = NULL;
- 	struct migrate_struct lb;
- 	unsigned long max_entries;
--	__u32 goal;
-+	__u32 goal, tmp_csum_seed;
- 	uid_t owner[2];
- 
- 	/*
-@@ -465,6 +465,7 @@ int ext4_ext_migrate(struct inode *inode)
- 	 * the migration.
- 	 */
- 	ei = EXT4_I(inode);
-+	tmp_csum_seed = EXT4_I(tmp_inode)->i_csum_seed;
- 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
- 	i_size_write(tmp_inode, i_size_read(inode));
- 	/*
-@@ -575,6 +576,7 @@ int ext4_ext_migrate(struct inode *inode)
- 	 * the inode is not visible to user space.
- 	 */
- 	tmp_inode->i_blocks = 0;
-+	EXT4_I(tmp_inode)->i_csum_seed = tmp_csum_seed;
- 
- 	/* Reset the extent details */
- 	ext4_ext_tree_init(handle, tmp_inode);
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index 8af344b2fdbf..d75d15006f64 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1336,6 +1336,8 @@ static int __init da7210_modinit(void)
+ 	int ret = 0;
+ #if IS_ENABLED(CONFIG_I2C)
+ 	ret = i2c_add_driver(&da7210_i2c_driver);
++	if (ret)
++		return ret;
+ #endif
+ #if defined(CONFIG_SPI_MASTER)
+ 	ret = spi_register_driver(&da7210_spi_driver);
 -- 
 2.35.1
 
