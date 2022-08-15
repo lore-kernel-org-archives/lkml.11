@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 275B5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD93C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349605AbiHOWdP (ORCPT
+        id S1349641AbiHOWdV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        Mon, 15 Aug 2022 18:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350981AbiHOW1X (ORCPT
+        with ESMTP id S1350990AbiHOW1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:23 -0400
+        Mon, 15 Aug 2022 18:27:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72CE12A550;
-        Mon, 15 Aug 2022 12:45:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA89B6C77F;
+        Mon, 15 Aug 2022 12:46:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60F866068D;
-        Mon, 15 Aug 2022 19:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DEEC433C1;
-        Mon, 15 Aug 2022 19:45:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67CA66068D;
+        Mon, 15 Aug 2022 19:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58305C433D7;
+        Mon, 15 Aug 2022 19:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592755;
-        bh=KevEOarrveuP8fPe+sKJzKOnhAYtNeLfYjkThID+/xs=;
+        s=korg; t=1660592761;
+        bh=F2p/WEQeJi8ajn9AXc1MfaTPlgWmnAqr2FACq5qrus4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WrJ6l2+1UIpnwIMwqehKBsCcWDYeqp+kfwv79Atw9uyEYGiKeJ3965HFjGJd+Oj7L
-         zZ88dcfbRhnoG/dte24WbgdZXp9Hk9utXhJYGmay5hnI55Od94wehcH4gws5OWMTaB
-         2M+/v4i6o01S+1x15/9mvIGIYq6Jz6IC8z0BmkCE=
+        b=ODAdvEENNjPyShiEzelvdqxz2rkM//KfmQ9FHYCMs/irBPRaBzvL4bQgSQL5qudwl
+         n/8WgRoK8EnqhoUvvJ0RXuRMeGABDMgJAuNeFx/q2Dg9vEIcrgHfjRMRi8JpKESf3P
+         b1Egf3WE0G8zp0EeBBLEVVzXFfYGIEoUJ5MbxBb0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Chen <david.chen@nutanix.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0160/1157] sched/fair: fix case with reduced capacity CPU
-Date:   Mon, 15 Aug 2022 19:51:56 +0200
-Message-Id: <20220815180446.099180584@linuxfoundation.org>
+Subject: [PATCH 5.18 0841/1095] rpmsg: mtk_rpmsg: Fix circular locking dependency
+Date:   Mon, 15 Aug 2022 20:04:00 +0200
+Message-Id: <20220815180504.137782970@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,134 +52,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit c82a69629c53eda5233f13fc11c3c01585ef48a2 ]
+[ Upstream commit 353d9214682e65c55cdffad8c82139a3321c5f13 ]
 
-The capacity of the CPU available for CFS tasks can be reduced because of
-other activities running on the latter. In such case, it's worth trying to
-move CFS tasks on a CPU with more available capacity.
+During execution of the worker that's used to register rpmsg devices
+we are safely locking the channels mutex but, when creating a new
+endpoint for such devices, we are registering a IPI on the SCP, which
+then makes the SCP to trigger an interrupt, lock its own mutex and in
+turn register more subdevices.
+This creates a circular locking dependency situation, as the mtk_rpmsg
+channels_lock will then depend on the SCP IPI lock.
 
-The rework of the load balance has filtered the case when the CPU is
-classified to be fully busy but its capacity is reduced.
+[   15.447736] ======================================================
+[   15.460158] WARNING: possible circular locking dependency detected
+[   15.460161] 5.17.0-next-20220324+ #399 Not tainted
+[   15.460165] ------------------------------------------------------
+[   15.460166] kworker/0:3/155 is trying to acquire lock:
+[   15.460170] ffff5b4d0eaf1308 (&scp->ipi_desc[i].lock){+.+.}-{4:4}, at: scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
+[   15.504958]
+[]                but task is already holding lock:
+[   15.504960] ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
+[   15.504978]
+[]                which lock already depends on the new lock.
 
-Check if CPU's capacity is reduced while gathering load balance statistic
-and classify it group_misfit_task instead of group_fully_busy so we can
-try to move the load on another CPU.
+[   15.504980]
+[]                the existing dependency chain (in reverse order) is:
+[   15.504982]
+[]               -> #1 (&mtk_subdev->channels_lock){+.+.}-{4:4}:
+[   15.504990]        lock_acquire+0x68/0x84
+[   15.504999]        __mutex_lock+0xa4/0x3e0
+[   15.505007]        mutex_lock_nested+0x40/0x70
+[   15.505012]        mtk_rpmsg_ns_cb+0xe4/0x134 [mtk_rpmsg]
+[   15.641684]        mtk_rpmsg_ipi_handler+0x38/0x64 [mtk_rpmsg]
+[   15.641693]        scp_ipi_handler+0xbc/0x180 [mtk_scp]
+[   15.663905]        mt8192_scp_irq_handler+0x44/0xa4 [mtk_scp]
+[   15.663915]        scp_irq_handler+0x6c/0xa0 [mtk_scp]
+[   15.685779]        irq_thread_fn+0x34/0xa0
+[   15.685785]        irq_thread+0x18c/0x240
+[   15.685789]        kthread+0x104/0x110
+[   15.709579]        ret_from_fork+0x10/0x20
+[   15.709586]
+[]               -> #0 (&scp->ipi_desc[i].lock){+.+.}-{4:4}:
+[   15.731271]        __lock_acquire+0x11e4/0x1910
+[   15.740367]        lock_acquire.part.0+0xd8/0x220
+[   15.749813]        lock_acquire+0x68/0x84
+[   15.757861]        __mutex_lock+0xa4/0x3e0
+[   15.766084]        mutex_lock_nested+0x40/0x70
+[   15.775006]        scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
+[   15.785503]        scp_ipi_register+0x40/0xa4 [mtk_scp_ipi]
+[   15.796697]        scp_register_ipi+0x1c/0x30 [mtk_scp]
+[   15.807194]        mtk_rpmsg_create_ept+0xa0/0x108 [mtk_rpmsg]
+[   15.818912]        rpmsg_create_ept+0x44/0x60
+[   15.827660]        cros_ec_rpmsg_probe+0x15c/0x1f0
+[   15.837282]        rpmsg_dev_probe+0x128/0x1d0
+[   15.846203]        really_probe.part.0+0xa4/0x2a0
+[   15.855649]        __driver_probe_device+0xa0/0x150
+[   15.865443]        driver_probe_device+0x48/0x150
+[   15.877157]        __device_attach_driver+0xc0/0x12c
+[   15.889359]        bus_for_each_drv+0x80/0xe0
+[   15.900330]        __device_attach+0xe4/0x190
+[   15.911303]        device_initial_probe+0x1c/0x2c
+[   15.922969]        bus_probe_device+0xa8/0xb0
+[   15.933927]        device_add+0x3a8/0x8a0
+[   15.944193]        device_register+0x28/0x40
+[   15.954970]        rpmsg_register_device+0x5c/0xa0
+[   15.966782]        mtk_register_device_work_function+0x148/0x1cc [mtk_rpmsg]
+[   15.983146]        process_one_work+0x294/0x664
+[   15.994458]        worker_thread+0x7c/0x45c
+[   16.005069]        kthread+0x104/0x110
+[   16.014789]        ret_from_fork+0x10/0x20
+[   16.025201]
+[]               other info that might help us debug this:
 
-Reported-by: David Chen <david.chen@nutanix.com>
-Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
-Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: David Chen <david.chen@nutanix.com>
-Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
-Link: https://lkml.kernel.org/r/20220708154401.21411-1-vincent.guittot@linaro.org
+[   16.047769]  Possible unsafe locking scenario:
+
+[   16.063942]        CPU0                    CPU1
+[   16.075166]        ----                    ----
+[   16.086376]   lock(&mtk_subdev->channels_lock);
+[   16.097592]                                lock(&scp->ipi_desc[i].lock);
+[   16.113188]                                lock(&mtk_subdev->channels_lock);
+[   16.129482]   lock(&scp->ipi_desc[i].lock);
+[   16.140020]
+[]                *** DEADLOCK ***
+
+[   16.158282] 4 locks held by kworker/0:3/155:
+[   16.168978]  #0: ffff5b4d00008748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
+[   16.190017]  #1: ffff80000953bdc8 ((work_completion)(&mtk_subdev->register_work)){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
+[   16.215269]  #2: ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
+[   16.242131]  #3: ffff5b4d05964190 (&dev->mutex){....}-{4:4}, at: __device_attach+0x44/0x190
+
+To solve this, simply unlock the channels_lock mutex before calling
+mtk_rpmsg_register_device() and relock it right after, as safety is
+still ensured by the locking mechanism that happens right after
+through SCP.
+
+Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220525091201.14210-1-angelogioacchino.delregno@collabora.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 54 +++++++++++++++++++++++++++++++++++----------
- 1 file changed, 42 insertions(+), 12 deletions(-)
+ drivers/rpmsg/mtk_rpmsg.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 3fb857a35b16..9d6058b0a3d4 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -7597,8 +7597,8 @@ enum group_type {
- 	 */
- 	group_fully_busy,
- 	/*
--	 * SD_ASYM_CPUCAPACITY only: One task doesn't fit with CPU's capacity
--	 * and must be migrated to a more powerful CPU.
-+	 * One task doesn't fit with CPU's capacity and must be migrated to a
-+	 * more powerful CPU.
- 	 */
- 	group_misfit_task,
- 	/*
-@@ -8681,6 +8681,19 @@ sched_asym(struct lb_env *env, struct sd_lb_stats *sds,  struct sg_lb_stats *sgs
- 	return sched_asym_prefer(env->dst_cpu, group->asym_prefer_cpu);
- }
- 
-+static inline bool
-+sched_reduced_capacity(struct rq *rq, struct sched_domain *sd)
-+{
-+	/*
-+	 * When there is more than 1 task, the group_overloaded case already
-+	 * takes care of cpu with reduced capacity
-+	 */
-+	if (rq->cfs.h_nr_running != 1)
-+		return false;
-+
-+	return check_cpu_capacity(rq, sd);
-+}
-+
- /**
-  * update_sg_lb_stats - Update sched_group's statistics for load balancing.
-  * @env: The load balancing environment.
-@@ -8703,8 +8716,9 @@ static inline void update_sg_lb_stats(struct lb_env *env,
- 
- 	for_each_cpu_and(i, sched_group_span(group), env->cpus) {
- 		struct rq *rq = cpu_rq(i);
-+		unsigned long load = cpu_load(rq);
- 
--		sgs->group_load += cpu_load(rq);
-+		sgs->group_load += load;
- 		sgs->group_util += cpu_util_cfs(i);
- 		sgs->group_runnable += cpu_runnable(rq);
- 		sgs->sum_h_nr_running += rq->cfs.h_nr_running;
-@@ -8734,11 +8748,17 @@ static inline void update_sg_lb_stats(struct lb_env *env,
- 		if (local_group)
+diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
+index 5b4404b8be4c..d1213c33da20 100644
+--- a/drivers/rpmsg/mtk_rpmsg.c
++++ b/drivers/rpmsg/mtk_rpmsg.c
+@@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
+ 		if (info->registered)
  			continue;
  
--		/* Check for a misfit task on the cpu */
--		if (env->sd->flags & SD_ASYM_CPUCAPACITY &&
--		    sgs->group_misfit_task_load < rq->misfit_task_load) {
--			sgs->group_misfit_task_load = rq->misfit_task_load;
--			*sg_status |= SG_OVERLOAD;
-+		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
-+			/* Check for a misfit task on the cpu */
-+			if (sgs->group_misfit_task_load < rq->misfit_task_load) {
-+				sgs->group_misfit_task_load = rq->misfit_task_load;
-+				*sg_status |= SG_OVERLOAD;
-+			}
-+		} else if ((env->idle != CPU_NOT_IDLE) &&
-+			   sched_reduced_capacity(rq, env->sd)) {
-+			/* Check for a task running on a CPU with reduced capacity */
-+			if (sgs->group_misfit_task_load < load)
-+				sgs->group_misfit_task_load = load;
- 		}
- 	}
- 
-@@ -8791,7 +8811,8 @@ static bool update_sd_pick_busiest(struct lb_env *env,
- 	 * CPUs in the group should either be possible to resolve
- 	 * internally or be covered by avg_load imbalance (eventually).
- 	 */
--	if (sgs->group_type == group_misfit_task &&
-+	if ((env->sd->flags & SD_ASYM_CPUCAPACITY) &&
-+	    (sgs->group_type == group_misfit_task) &&
- 	    (!capacity_greater(capacity_of(env->dst_cpu), sg->sgc->max_capacity) ||
- 	     sds->local_stat.group_type != group_has_spare))
- 		return false;
-@@ -9412,9 +9433,18 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 	busiest = &sds->busiest_stat;
- 
- 	if (busiest->group_type == group_misfit_task) {
--		/* Set imbalance to allow misfit tasks to be balanced. */
--		env->migration_type = migrate_misfit;
--		env->imbalance = 1;
-+		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
-+			/* Set imbalance to allow misfit tasks to be balanced. */
-+			env->migration_type = migrate_misfit;
-+			env->imbalance = 1;
-+		} else {
-+			/*
-+			 * Set load imbalance to allow moving task from cpu
-+			 * with reduced capacity.
-+			 */
-+			env->migration_type = migrate_load;
-+			env->imbalance = busiest->group_misfit_task_load;
-+		}
- 		return;
- 	}
- 
++		mutex_unlock(&subdev->channels_lock);
+ 		ret = mtk_rpmsg_register_device(subdev, &info->info);
++		mutex_lock(&subdev->channels_lock);
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
+ 			continue;
 -- 
 2.35.1
 
