@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC017C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25FDC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349874AbiHOVsz (ORCPT
+        id S1349898AbiHOVs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        Mon, 15 Aug 2022 17:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349376AbiHOVpZ (ORCPT
+        with ESMTP id S1349746AbiHOVq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:45:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33864C9EAA;
-        Mon, 15 Aug 2022 12:30:08 -0700 (PDT)
+        Mon, 15 Aug 2022 17:46:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76F9C9EBF;
+        Mon, 15 Aug 2022 12:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94D49B81062;
-        Mon, 15 Aug 2022 19:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABA6FC433D6;
-        Mon, 15 Aug 2022 19:30:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ABA5B810C6;
+        Mon, 15 Aug 2022 19:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B736CC433D6;
+        Mon, 15 Aug 2022 19:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591806;
-        bh=rqdC4nZwbSnbxPw0o+7GJSE6FDRyxJqDCjoWH0/UZjQ=;
+        s=korg; t=1660591810;
+        bh=1aEBkEVldE0y9BjO7ITmcEY/CmdEXYwxIU4S5/DA+5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G8zxx/mDsjwsvbPa+jaRyGihBRpyFOmBT+VK71qE6f38zE/t75TJ1wHz+TRvIAoQ0
-         bu6nMCj1mSLAKwHQ1Tzyi23fHaYbvItWti/QasNaFcNXb7Pw59C7+lAChXIBP8J0qd
-         XvfpaKv/TzrtwLLxNwnxM72HDvu5UX+KAuN1wfQ4=
+        b=zbI4BhQNmNNLKOO7VUqdFLfqdIGd2IvSAu+sNi8CpFlKOdjrgcFfJQv1LSD7DeNsG
+         MPDKCs3KuPj5mYg7UI6X87lcs7CV9jUhHx2QGq5tWSpBTe7huVDU562DyffVCBefWp
+         OBIW0F2tNU8HwDH9TC3vkCswavTlNsO1hnoXrQgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Robert Jones <rjones@gateworks.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0660/1095] iio: imu: fxos8700: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:59 +0200
-Message-Id: <20220815180456.707717476@linuxfoundation.org>
+Subject: [PATCH 5.18 0684/1095] KVM: Dont set Accessed/Dirty bits for ZERO_PAGE
+Date:   Mon, 15 Aug 2022 20:01:23 +0200
+Message-Id: <20220815180457.671221396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,37 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit c9a8417a13ed9c81383662fca8a4b89f84d31e78 ]
+[ Upstream commit a1040b0d42acf69bb4f6dbdc54c2dcd78eea1de5 ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+Don't set Accessed/Dirty bits for a struct page with PG_reserved set,
+i.e. don't set A/D bits for the ZERO_PAGE.  The ZERO_PAGE (or pages
+depending on the architecture) should obviously never be written, and
+similarly there's no point in marking it accessed as the page will never
+be swapped out or reclaimed.  The comment in page-flags.h is quite clear
+that PG_reserved pages should be managed only by their owner, and
+strictly following that mandate also simplifies KVM's logic.
 
-Fixes: 84e5ddd5c46e ("iio: imu: Add support for the FXOS8700 IMU")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Robert Jones <rjones@gateworks.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-77-jic23@kernel.org
+Fixes: 7df003c85218 ("KVM: fix overflow of zero page refcount with ksm running")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429010416.2788472-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/imu/fxos8700_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ virt/kvm/kvm_main.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/imu/fxos8700_core.c b/drivers/iio/imu/fxos8700_core.c
-index ab288186f36e..423cfe526f2a 100644
---- a/drivers/iio/imu/fxos8700_core.c
-+++ b/drivers/iio/imu/fxos8700_core.c
-@@ -167,7 +167,7 @@
- struct fxos8700_data {
- 	struct regmap *regmap;
- 	struct iio_trigger *trig;
--	__be16 buf[FXOS8700_DATA_BUF_SIZE] ____cacheline_aligned;
-+	__be16 buf[FXOS8700_DATA_BUF_SIZE] __aligned(IIO_DMA_MINALIGN);
- };
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 6c8295e76548..843396ed4ad3 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -2852,16 +2852,28 @@ void kvm_release_pfn_dirty(kvm_pfn_t pfn)
+ }
+ EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
  
- /* Regmap info */
++static bool kvm_is_ad_tracked_pfn(kvm_pfn_t pfn)
++{
++	if (!pfn_valid(pfn))
++		return false;
++
++	/*
++	 * Per page-flags.h, pages tagged PG_reserved "should in general not be
++	 * touched (e.g. set dirty) except by its owner".
++	 */
++	return !PageReserved(pfn_to_page(pfn));
++}
++
+ void kvm_set_pfn_dirty(kvm_pfn_t pfn)
+ {
+-	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
++	if (kvm_is_ad_tracked_pfn(pfn))
+ 		SetPageDirty(pfn_to_page(pfn));
+ }
+ EXPORT_SYMBOL_GPL(kvm_set_pfn_dirty);
+ 
+ void kvm_set_pfn_accessed(kvm_pfn_t pfn)
+ {
+-	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
++	if (kvm_is_ad_tracked_pfn(pfn))
+ 		mark_page_accessed(pfn_to_page(pfn));
+ }
+ EXPORT_SYMBOL_GPL(kvm_set_pfn_accessed);
 -- 
 2.35.1
 
