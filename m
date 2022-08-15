@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEDFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8B4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243000AbiHOUes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        id S241832AbiHOUe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347252AbiHOUbD (ORCPT
+        with ESMTP id S1347303AbiHOUbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:31:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099EFA4046;
-        Mon, 15 Aug 2022 12:04:37 -0700 (PDT)
+        Mon, 15 Aug 2022 16:31:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BC6A4074;
+        Mon, 15 Aug 2022 12:04:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29256612BE;
-        Mon, 15 Aug 2022 19:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31130C433D6;
-        Mon, 15 Aug 2022 19:04:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AFF0B8110A;
+        Mon, 15 Aug 2022 19:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852F3C433D6;
+        Mon, 15 Aug 2022 19:04:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590262;
-        bh=PPKlFE3ND5uq7QSeTU/xSmPJVmUGIqw1ut9sjre9/U4=;
+        s=korg; t=1660590279;
+        bh=eSCLQPm4JrorGQH+yAQyQacLZ20uAQNUTy1284zWgFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O8uJJzgCylHXMs+fhNWBa8Iqed9fKfOt4lAasuUOTqbuPlYbIUZ9jVOVuSkizm0hv
-         KaShFFuO5/vzXEUDR6Gw0RXaTB7AHqb7Ksq06FhoD9GgVNW3wdL1K/XP/0DpTrprBH
-         2tlPr7C5bBNtUYrhAgseg58Hbl7Fuc2UecnLA2HA=
+        b=2Md58umynxB6QaJ6PZPZO/olk7rEyh6KkuTBWoujwiGt9QDHtG8qtpJ70DGpZJyj5
+         RkIGYZgtKzvSrDgyXkPpcSraOuUAE3G/V0bOQSfbrrx8I/vtYK3QOAE8593FMpJZkx
+         R15exNKP36d2rygbnPyMT8G/J2qpssi0e9xrJQsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0205/1095] arm64: cpufeature: Allow different PMU versions in ID_DFR0_EL1
-Date:   Mon, 15 Aug 2022 19:53:24 +0200
-Message-Id: <20220815180438.150739474@linuxfoundation.org>
+        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0210/1095] block: fix infinite loop for invalid zone append
+Date:   Mon, 15 Aug 2022 19:53:29 +0200
+Message-Id: <20220815180438.357692738@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,59 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 506506cad3947b942425b119ffa2b06715d5d804 ]
+[ Upstream commit b82d9fa257cb3725c49d94d2aeafc4677c34448a ]
 
-Commit b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in
-PMU implementations") made it possible to run Linux on a machine with PMUs
-with different versions without tainting the kernel. The patch relaxed the
-restriction only for the ID_AA64DFR0_EL1.PMUVer field, and missed doing the
-same for ID_DFR0_EL1.PerfMon , which also reports the PMU version, but for
-the AArch32 state.
+Returning 0 early from __bio_iov_append_get_pages() for the
+max_append_sectors warning just creates an infinite loop since 0 means
+success, and the bio will never fill from the unadvancing iov_iter. We
+could turn the return into an error value, but it will already be turned
+into an error value later on, so just remove the warning. Clearly no one
+ever hit it anyway.
 
-For example, with Linux running on two clusters with different PMU
-versions, the kernel is tainted when bringing up secondaries with the
-following message:
-
-[    0.097027] smp: Bringing up secondary CPUs ...
-[..]
-[    0.142805] Detected PIPT I-cache on CPU4
-[    0.142805] CPU features: SANITY CHECK: Unexpected variation in SYS_ID_DFR0_EL1. Boot CPU: 0x00000004011088, CPU4: 0x00000005011088
-[    0.143555] CPU features: Unsupported CPU feature variation detected.
-[    0.143702] GICv3: CPU4: found redistributor 10000 region 0:0x000000002f180000
-[    0.143702] GICv3: CPU4: using allocated LPI pending table @0x00000008800d0000
-[    0.144888] CPU4: Booted secondary processor 0x0000010000 [0x410fd0f0]
-
-The boot CPU implements FEAT_PMUv3p1 (ID_DFR0_EL1.PerfMon, bits 27:24, is
-0b0100), but CPU4, part of the other cluster, implements FEAT_PMUv3p4
-(ID_DFR0_EL1.PerfMon = 0b0101).
-
-Treat the PerfMon field as FTR_NONSTRICT and FTR_EXACT to pass the sanity
-check and to match how PMUVer is treated for the 64bit ID register.
-
-Fixes: b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in PMU implementations")
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Link: https://lore.kernel.org/r/20220617111332.203061-1-alexandru.elisei@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 0512a75b98f84 ("block: Introduce REQ_OP_ZONE_APPEND")
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Link: https://lore.kernel.org/r/20220610195830.3574005-2-kbusch@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/cpufeature.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bio.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 5357ba7ea3c7..a54f34aa36e0 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -541,7 +541,7 @@ static const struct arm64_ftr_bits ftr_id_pfr2[] = {
+diff --git a/block/bio.c b/block/bio.c
+index d3ca79c3ebdf..fd73ee03d57e 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1199,9 +1199,6 @@ static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	size_t offset;
+ 	int ret = 0;
  
- static const struct arm64_ftr_bits ftr_id_dfr0[] = {
- 	/* [31:28] TraceFilt */
--	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_PERFMON_SHIFT, 4, 0xf),
-+	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_EXACT, ID_DFR0_PERFMON_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MPROFDBG_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MMAPTRC_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_COPTRC_SHIFT, 4, 0),
+-	if (WARN_ON_ONCE(!max_append_sectors))
+-		return 0;
+-
+ 	/*
+ 	 * Move page array up in the allocated memory for the bio vecs as far as
+ 	 * possible so that we can start filling biovecs from the beginning
 -- 
 2.35.1
 
