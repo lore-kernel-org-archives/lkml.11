@@ -2,203 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B361C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCADC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344193AbiHOX6c (ORCPT
+        id S1346883AbiHOX6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        Mon, 15 Aug 2022 19:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355429AbiHOXwH (ORCPT
+        with ESMTP id S1355367AbiHOXv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:52:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9C595699;
-        Mon, 15 Aug 2022 13:16:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B782B81135;
-        Mon, 15 Aug 2022 20:16:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EF0EC433D6;
-        Mon, 15 Aug 2022 20:16:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594615;
-        bh=kPXsbMgtJuozHfRLqTA/pedF3bB+3i7zxtM9TvfRZjA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8dkMuiaYfcDvYT8ubOZQNoipwH536kC8R4ddeg+E43NHr4cWpl/e4Qo1PmTSGEWl
-         lqBmDXb3IHbzXsXzKSRiMf0f6RgkMx7DPFWKctLT4licSpnNAdlK5onVJEX/xGSK/K
-         DI19MCNVzsjiwaOqQGDNiV4/FE9ckMh6l4PnRIxU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0504/1157] media: uapi: HEVC: Change pic_order_cnt definition in v4l2_hevc_dpb_entry
-Date:   Mon, 15 Aug 2022 19:57:40 +0200
-Message-Id: <20220815180459.861358998@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 19:51:59 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A602D92F4B;
+        Mon, 15 Aug 2022 13:16:41 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-32a17d3bba2so100485077b3.9;
+        Mon, 15 Aug 2022 13:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=F3WR7fgDxcCodVgsjoOsS+f77Gv20JzgJQeYT8zBw8Y=;
+        b=m4GdyZOqTzEPFE5ZNoXqTb7eVjWUfyZNn3ENU/zHMsrwZhp3Byl1BKCAW+70SAfFlX
+         7/EnRFBWxMB+0PFZFjCFYokpp3R6JFLkyEt7jKdgUe3iREKIe2pwbnnEQKGdq9zSi/Rk
+         8eRe2Y2oLaOqAyYlPvVRk5Dtbl/ti9cBijHFqsXdih7YukZVF22d5LMh2iNLnv1op0mO
+         eAFtV1e+FeT9O3GtU65MlTg4wC+BxRO5o4bPRQ/FaMXPRNu0/3PBw2+xt6gnYop4UatJ
+         /2kZkldAP8qpB7fze71ZA2XURtodoYr5XChHX6Es3I896c5gDy65wASUMMfjRHpWbtU9
+         mSDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=F3WR7fgDxcCodVgsjoOsS+f77Gv20JzgJQeYT8zBw8Y=;
+        b=wLh0XxfeOvD68bwRu8MMpuYR3RFBkzFstxulgJAZeKpaDDlIJrFQDhPA00vR70rp6q
+         mFiNiQCbK5/cEIOfZZHUpRZek0Dfee/50q3a5+yKt6rLCgItpVI6+2NcGuYzTRTJ5k4J
+         Q/KEYdiKqjQ2vKGMLrfNVXOc/Zdy7ucOQSGsg9cAnlI6ZZaBmOJwMrfldp5STsKQMLck
+         7JLcEYeOCiVYZswGJI3FVooP8SqTi0oAZ2+0ZrdSJXE/yABxxaYmlf+3iagt9ZIFhLcS
+         fC8VyPtpCYJLQlWVq47nIx9p3YvOHjqueOL8GslZdDbconSloe0V9w7c/v1uyHD+6PFb
+         WpzA==
+X-Gm-Message-State: ACgBeo00DAU/KFS5fyXSw7kVxFcJXih9z8OZ019/wZDbQkikvxK6I4jg
+        BkWYsu6Tx5NRvrKcE7TS+nkUKutNIiSo5DS+lwE=
+X-Google-Smtp-Source: AA6agR53x6Ky5DFoyiOZsi1UNCdLAREHkkmy3+pa3bj7rCyr5qdJmXVXVMo0vrQdOzqePpsCUG0fqZm8CD4XyiuvFwk=
+X-Received: by 2002:a25:3206:0:b0:677:2480:ffa6 with SMTP id
+ y6-20020a253206000000b006772480ffa6mr13207204yby.335.1660594600950; Mon, 15
+ Aug 2022 13:16:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-7-prabhakar.mahadev-lad.rj@bp.renesas.com> <07342070-d96c-59fc-f9dd-b65cd742d97a@microchip.com>
+In-Reply-To: <07342070-d96c-59fc-f9dd-b65cd742d97a@microchip.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 15 Aug 2022 21:16:13 +0100
+Message-ID: <CA+V-a8uNRr+WPX=YC+UMT4ch4S5XwsatHCzUoSt+hTk4C=cheA@mail.gmail.com>
+Subject: Re: [PATCH v2 6/8] riscv: dts: renesas: Add minimal DTS for Renesas
+ RZ/Five SMARC EVK
+To:     Conor.Dooley@microchip.com
+Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Hi Conor,
 
-[ Upstream commit c4a179c7167ee16aad1267f9c99bc1ecff475585 ]
+On Mon, Aug 15, 2022 at 8:00 PM <Conor.Dooley@microchip.com> wrote:
+>
+> On 15/08/2022 16:14, Lad Prabhakar wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >
+> > Enable the minimal blocks required for booting the Renesas RZ/Five
+> > SMARC EVK with initramfs.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> > v1->v2
+> > * New patch
+> > ---
+> >  arch/riscv/boot/dts/Makefile                  |  1 +
+> >  arch/riscv/boot/dts/renesas/Makefile          |  2 ++
+> >  .../boot/dts/renesas/r9a07g043f01-smarc.dts   | 16 ++++++++++
+> >  .../boot/dts/renesas/rzfive-smarc-som.dtsi    | 22 +++++++++++++
+> >  arch/riscv/boot/dts/renesas/rzfive-smarc.dtsi | 32 +++++++++++++++++++
+> >  5 files changed, 73 insertions(+)
+> >  create mode 100644 arch/riscv/boot/dts/renesas/Makefile
+> >  create mode 100644 arch/riscv/boot/dts/renesas/r9a07g043f01-smarc.dts
+> >  create mode 100644 arch/riscv/boot/dts/renesas/rzfive-smarc-som.dtsi
+>
+> Just to sort out some of my own confusion here - is the smarc EVK
+> shared between your arm boards and the riscv ones? Or just the
+> peripherals etc on the soc?
+>
+RZ/Five SoC is pin compatible with RZ/G2UL Type 1 SoC (ARM64). RZ/G2UL
+SMARC EVK carrier board can be swapped with RZ/Five or RZ/G2UL SMARC
+SoM and still be used.
 
-The HEVC specification describes the following:
-"PicOrderCntVal is derived as follows:
-PicOrderCntVal = PicOrderCntMsb + slice_pic_order_cnt_lsb
-The value of PicOrderCntVal shall be in the range of
-−2^31 to 2^31 − 1, inclusive."
+> If it is the forver, does the approach suggested here for the
+> allwinner stuff make sense to also use for risc-v stuff with
+> shared parts of devicetrees?
+> https://lore.kernel.org/linux-riscv/3cd9ed5b-8348-38ac-feb1-9a7da858cebc@microchip.com/
+>
+it does make sense. But I wonder where we would place the common
+shared dtsi that can be used by two arch's.
 
-To match with these definitions change __u16 pic_order_cnt[2]
-into __s32 pic_order_cnt_val.
-Change v4l2_ctrl_hevc_slice_params->slice_pic_order_cnt to __s32 too.
+> Would at least be interesting in hearing more opinions from the dt
+> people, Geert & Palmer. We have some SOM based stuff too with carriers
+> so I am interested in seeing how the cross platform part of that works
+> out.
+>
+Yep, that would be interesting.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 2 +-
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c         | 7 +++----
- drivers/staging/media/hantro/hantro_hevc.c                | 2 +-
- drivers/staging/media/hantro/hantro_hw.h                  | 4 ++--
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c          | 4 ++--
- include/media/hevc-ctrls.h                                | 4 ++--
- 6 files changed, 11 insertions(+), 12 deletions(-)
-
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index 6183f43f4d73..004b0ec62c44 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -2997,7 +2997,7 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-     * - __u8
-       - ``colour_plane_id``
-       -
--    * - __u16
-+    * - __s32
-       - ``slice_pic_order_cnt``
-       -
-     * - __u8
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 5df6f08e26f5..d28653d04d20 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -390,11 +390,10 @@ static int set_ref(struct hantro_ctx *ctx)
- 			 !!(pps->flags & V4L2_HEVC_PPS_FLAG_LOOP_FILTER_ACROSS_TILES_ENABLED));
- 
- 	/*
--	 * Write POC count diff from current pic. For frame decoding only compute
--	 * pic_order_cnt[0] and ignore pic_order_cnt[1] used in field-coding.
-+	 * Write POC count diff from current pic.
- 	 */
- 	for (i = 0; i < decode_params->num_active_dpb_entries && i < ARRAY_SIZE(cur_poc); i++) {
--		char poc_diff = decode_params->pic_order_cnt_val - dpb[i].pic_order_cnt[0];
-+		char poc_diff = decode_params->pic_order_cnt_val - dpb[i].pic_order_cnt_val;
- 
- 		hantro_reg_write(vpu, &cur_poc[i], poc_diff);
- 	}
-@@ -421,7 +420,7 @@ static int set_ref(struct hantro_ctx *ctx)
- 	dpb_longterm_e = 0;
- 	for (i = 0; i < decode_params->num_active_dpb_entries &&
- 	     i < (V4L2_HEVC_DPB_ENTRIES_NUM_MAX - 1); i++) {
--		luma_addr = hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt[0]);
-+		luma_addr = hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt_val);
- 		if (!luma_addr)
- 			return -ENOMEM;
- 
-diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
-index bd924896e409..4f7e2acb46ec 100644
---- a/drivers/staging/media/hantro/hantro_hevc.c
-+++ b/drivers/staging/media/hantro/hantro_hevc.c
-@@ -33,7 +33,7 @@ void hantro_hevc_ref_init(struct hantro_ctx *ctx)
- }
- 
- dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
--				   int poc)
-+				   s32 poc)
- {
- 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
- 	int i;
-diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
-index a2e0f0836281..33d156ccbfeb 100644
---- a/drivers/staging/media/hantro/hantro_hw.h
-+++ b/drivers/staging/media/hantro/hantro_hw.h
-@@ -145,7 +145,7 @@ struct hantro_hevc_dec_hw_ctx {
- 	struct hantro_aux_buf tile_bsd;
- 	struct hantro_aux_buf ref_bufs[NUM_REF_PICTURES];
- 	struct hantro_aux_buf scaling_lists;
--	int ref_bufs_poc[NUM_REF_PICTURES];
-+	s32 ref_bufs_poc[NUM_REF_PICTURES];
- 	u32 ref_bufs_used;
- 	struct hantro_hevc_dec_ctrls ctrls;
- 	unsigned int num_tile_cols_allocated;
-@@ -357,7 +357,7 @@ void hantro_hevc_dec_exit(struct hantro_ctx *ctx);
- int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx);
- int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
- void hantro_hevc_ref_init(struct hantro_ctx *ctx);
--dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
-+dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
- int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
- int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps);
- 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index 2febdf7a97fe..c26e515d64c9 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -143,8 +143,8 @@ static void cedrus_h265_frame_info_write_dpb(struct cedrus_ctx *ctx,
- 	for (i = 0; i < num_active_dpb_entries; i++) {
- 		int buffer_index = vb2_find_timestamp(vq, dpb[i].timestamp, 0);
- 		u32 pic_order_cnt[2] = {
--			dpb[i].pic_order_cnt[0],
--			dpb[i].pic_order_cnt[1]
-+			dpb[i].pic_order_cnt_val,
-+			dpb[i].pic_order_cnt_val
- 		};
- 
- 		cedrus_h265_frame_info_write_single(ctx, i, dpb[i].field_pic,
-diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index 01ccda48d8c5..88e804578cb1 100644
---- a/include/media/hevc-ctrls.h
-+++ b/include/media/hevc-ctrls.h
-@@ -135,7 +135,7 @@ struct v4l2_hevc_dpb_entry {
- 	__u64	timestamp;
- 	__u8	flags;
- 	__u8	field_pic;
--	__u16	pic_order_cnt[2];
-+	__s32	pic_order_cnt_val;
- 	__u8	padding[2];
- };
- 
-@@ -178,7 +178,7 @@ struct v4l2_ctrl_hevc_slice_params {
- 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
- 	__u8	slice_type;
- 	__u8	colour_plane_id;
--	__u16	slice_pic_order_cnt;
-+	__s32	slice_pic_order_cnt;
- 	__u8	num_ref_idx_l0_active_minus1;
- 	__u8	num_ref_idx_l1_active_minus1;
- 	__u8	collocated_ref_idx;
--- 
-2.35.1
-
-
-
+Cheers,
+Prabhakar
