@@ -2,95 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39708C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB155C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352011AbiHOWuj (ORCPT
+        id S1351381AbiHOWwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
+        Mon, 15 Aug 2022 18:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351528AbiHOWse (ORCPT
+        with ESMTP id S1351591AbiHOWtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:48:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA14D136752;
-        Mon, 15 Aug 2022 12:53:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AD71B80EAD;
-        Mon, 15 Aug 2022 19:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B878CC433D7;
-        Mon, 15 Aug 2022 19:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593218;
-        bh=g+7P8x4nQek5z0FnHiv1VkueNiRjREbVGrtQV0qPJVs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YXlQ0G8yLLTS/XZcOttpiiV6whOwLVT1I2kRPilprHDpe87JEpqmV4IZGiZvIL+SD
-         /j8O6WEd0nx7PCsjj03F4xCi/jY6P8Dv3sMx3LbQgS6ntPPqRs2HD1ma4Q0cCX2P7L
-         QK0Y5tKfxmtcV8nwpOeDllgcJS5xncZtWDGkeANY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0913/1095] video: fbdev: sis: fix typos in SiS_GetModeID()
-Date:   Mon, 15 Aug 2022 20:05:12 +0200
-Message-Id: <20220815180507.050652797@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:49:00 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF613675E
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:53:43 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1660593215tx3hnipr
+Received: from harry-jrlc.. ( [182.148.12.144])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 16 Aug 2022 03:53:23 +0800 (CST)
+X-QQ-SSF: 0100000000200050C000B00A0000020
+X-QQ-FEAT: LG+NUo/f6sHc2m+cla/T+TR13heGFQ57WGv8lyWz+MZXwhlAK72VuvQreUg9X
+        rVxxcEAhGeBkoGVsEE/39EHtyMQH0pfQEbV/+hVdnsli4VHitkd4wWIGCbRhQlkpMtC8gpe
+        2FFLHZCnYzl0z2vNe9M1ovLOUHpRiihnkG3QOg0XMHOZQcjau+L1yFYT4jvPQ+2pHutx/3K
+        N4/3olFCLPVmPsLNBJMHj1e74R+2bHM3gPGWCK1e4gFnzgZ0Bj6xtMZEhyUwFqhk+ZVpQ5a
+        f4k6eoHr0jrE2/Q7t/lZOmIDXZgTPo40w+YSZpkfdixYoD1YWg+YXsofBFD5WPY7DMlTiDa
+        vajZB6Kq+id2No9KWmF3NNDU1nrO+lS5GyoL95trIp4iCDT3z004SW1aAK/YQ==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     mpe@ellerman.id.au
+Cc:     benh@kernel.crashing.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] treewide: Complete variable type
+Date:   Tue, 16 Aug 2022 03:53:22 +0800
+Message-Id: <20220815195322.3683-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rustam Subkhankulov <subkhankulov@ispras.ru>
+It is better to use "unsigned int" instead of "unsigned", line 24.
 
-[ Upstream commit 3eb8fccc244bfb41a7961969e4db280d44911226 ]
-
-The second operand of a '&&' operator has no impact on expression
-result for cases 400 and 512 in SiS_GetModeID().
-
-Judging by the logic and the names of the variables, in both cases a
-typo was made.
-
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 ---
- drivers/video/fbdev/sis/init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/boot/epapr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/sis/init.c b/drivers/video/fbdev/sis/init.c
-index b568c646a76c..2ba91d62af92 100644
---- a/drivers/video/fbdev/sis/init.c
-+++ b/drivers/video/fbdev/sis/init.c
-@@ -355,12 +355,12 @@ SiS_GetModeID(int VGAEngine, unsigned int VBFlags, int HDisplay, int VDisplay,
- 		}
- 		break;
- 	case 400:
--		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDwidth >= 600))) {
-+		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDheight >= 600))) {
- 			if(VDisplay == 300) ModeIndex = ModeIndex_400x300[Depth];
- 		}
- 		break;
- 	case 512:
--		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDwidth >= 768))) {
-+		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDheight >= 768))) {
- 			if(VDisplay == 384) ModeIndex = ModeIndex_512x384[Depth];
- 		}
- 		break;
+diff --git a/arch/powerpc/boot/epapr.c b/arch/powerpc/boot/epapr.c
+index 7c5b26ade6c4..4133bee28673 100644
+--- a/arch/powerpc/boot/epapr.c
++++ b/arch/powerpc/boot/epapr.c
+@@ -21,7 +21,7 @@ BSS_STACK(4096);
+ #define EPAPR_SMAGIC	0x65504150
+ #define EPAPR_EMAGIC	0x45504150
+ 
+-static unsigned epapr_magic;
++static unsigned int epapr_magic;
+ static unsigned long ima_size;
+ static unsigned long fdt_addr;
+ 
 -- 
-2.35.1
-
-
+2.30.2
 
