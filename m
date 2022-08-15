@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D78C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D539C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiHOSm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
+        id S242877AbiHOSnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242581AbiHOSkj (ORCPT
+        with ESMTP id S242672AbiHOSkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:40:39 -0400
+        Mon, 15 Aug 2022 14:40:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EDC3DBF5;
-        Mon, 15 Aug 2022 11:24:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFB53DF37;
+        Mon, 15 Aug 2022 11:24:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BBF5B80F99;
-        Mon, 15 Aug 2022 18:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B52A3C433C1;
-        Mon, 15 Aug 2022 18:24:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1438B81081;
+        Mon, 15 Aug 2022 18:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DC8C433C1;
+        Mon, 15 Aug 2022 18:24:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587856;
-        bh=puVQCDxV+dBSjrwYCK79NSsZDZj3njSZ6AHPcdAQAN0=;
+        s=korg; t=1660587859;
+        bh=qFtJTFkGXlUimLZQdQpb9oM5fPuVizHi3ChcOSFqcV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DLafvVNoDlYR1fWQxNjtkKqBS11EtuLGB3CsZV8od0yIqL5CeWAcHA+vwEpyTTOkl
-         zWePwcU4mLI7zHCrm5YzfFKWiASCCvdmNKBXVYZgoJdxh0YEqH4q1l7JvfmWWl6jRc
-         g9zlDgr2k8gZT9GaxecYYirJynNWyhsDjtBBhgLY=
+        b=tcqHxI6ZThfVvjmcfOOBgJYNsmt37p/Ep1eGvGhBHX8+uXQEQQlU2unToLDvFuATm
+         X699PT2PfzfJh7dRXBWkNTq76NQ53ghJxG6BKrTJOuZ9B2NscMe61B6+0v0+gaVorv
+         /sP0hTzveRwVvxwQr8BR0h84Dp8cRX+Gll9fUXGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai1@huaweicloud.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Brian Masney <masneyb@onstation.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 216/779] dm writecache: count number of blocks written, not number of write bios
-Date:   Mon, 15 Aug 2022 19:57:40 +0200
-Message-Id: <20220815180346.504719896@linuxfoundation.org>
+Subject: [PATCH 5.15 190/779] soc: qcom: ocmem: Fix refcount leak in of_get_ocmem
+Date:   Mon, 15 Aug 2022 19:57:14 +0200
+Message-Id: <20220815180345.372294228@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,93 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b2676e1482af89714af6988ce5d31a84692e2530 ]
+[ Upstream commit 92a563fcf14b3093226fb36f12e9b5cf630c5a5d ]
 
-Change dm-writecache, so that it counts the number of blocks written
-instead of the number of write bios. Bios can be split and requeued
-using the dm_accept_partial_bio function, so counting bios caused
-inaccurate results.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() will check NULL pointer.
 
-Fixes: e3a35d03407c ("dm writecache: add event counters")
-Reported-by: Yu Kuai <yukuai1@huaweicloud.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: 88c1e9404f1d ("soc: qcom: add OCMEM driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220602042430.1114-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../admin-guide/device-mapper/writecache.rst         | 10 +++++-----
- drivers/md/dm-writecache.c                           | 12 +++++++++---
- 2 files changed, 14 insertions(+), 8 deletions(-)
+ drivers/soc/qcom/ocmem.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
-index 7bead3b52690..6c9a2c74df8a 100644
---- a/Documentation/admin-guide/device-mapper/writecache.rst
-+++ b/Documentation/admin-guide/device-mapper/writecache.rst
-@@ -80,11 +80,11 @@ Status:
- 4. the number of blocks under writeback
- 5. the number of read blocks
- 6. the number of read blocks that hit the cache
--7. the number of write requests
--8. the number of write requests that hit uncommitted block
--9. the number of write requests that hit committed block
--10. the number of write requests that bypass the cache
--11. the number of write requests that are allocated in the cache
-+7. the number of write blocks
-+8. the number of write blocks that hit uncommitted block
-+9. the number of write blocks that hit committed block
-+10. the number of write blocks that bypass the cache
-+11. the number of write blocks that are allocated in the cache
- 12. the number of write requests that are blocked on the freelist
- 13. the number of flush requests
- 14. the number of discard requests
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index 9d6b7b706a65..c90408eb9c3a 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1412,6 +1412,9 @@ static void writecache_bio_copy_ssd(struct dm_writecache *wc, struct bio *bio,
- 	bio->bi_iter.bi_sector = start_cache_sec;
- 	dm_accept_partial_bio(bio, bio_size >> SECTOR_SHIFT);
+diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
+index 85f82e195ef8..1dfdd0b9ba24 100644
+--- a/drivers/soc/qcom/ocmem.c
++++ b/drivers/soc/qcom/ocmem.c
+@@ -194,14 +194,17 @@ struct ocmem *of_get_ocmem(struct device *dev)
+ 	devnode = of_parse_phandle(dev->of_node, "sram", 0);
+ 	if (!devnode || !devnode->parent) {
+ 		dev_err(dev, "Cannot look up sram phandle\n");
++		of_node_put(devnode);
+ 		return ERR_PTR(-ENODEV);
+ 	}
  
-+	wc->stats.writes += bio->bi_iter.bi_size >> wc->block_size_bits;
-+	wc->stats.writes_allocate += (bio->bi_iter.bi_size - wc->block_size) >> wc->block_size_bits;
-+
- 	if (unlikely(wc->uncommitted_blocks >= wc->autocommit_blocks)) {
- 		wc->uncommitted_blocks = 0;
- 		queue_work(wc->writeback_wq, &wc->flush_work);
-@@ -1427,9 +1430,10 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
- 	do {
- 		bool found_entry = false;
- 		bool search_used = false;
--		wc->stats.writes++;
--		if (writecache_has_error(wc))
-+		if (writecache_has_error(wc)) {
-+			wc->stats.writes += bio->bi_iter.bi_size >> wc->block_size_bits;
- 			return WC_MAP_ERROR;
-+		}
- 		e = writecache_find_entry(wc, bio->bi_iter.bi_sector, 0);
- 		if (e) {
- 			if (!writecache_entry_is_committed(wc, e)) {
-@@ -1453,9 +1457,10 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
- 		if (unlikely(!e)) {
- 			if (!WC_MODE_PMEM(wc) && !found_entry) {
- direct_write:
--				wc->stats.writes_around++;
- 				e = writecache_find_entry(wc, bio->bi_iter.bi_sector, WFE_RETURN_FOLLOWING);
- 				writecache_map_remap_origin(wc, bio, e);
-+				wc->stats.writes_around += bio->bi_iter.bi_size >> wc->block_size_bits;
-+				wc->stats.writes += bio->bi_iter.bi_size >> wc->block_size_bits;
- 				return WC_MAP_REMAP_ORIGIN;
- 			}
- 			wc->stats.writes_blocked_on_freelist++;
-@@ -1469,6 +1474,7 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
- bio_copy:
- 		if (WC_MODE_PMEM(wc)) {
- 			bio_copy_block(wc, bio, memory_data(wc, e));
-+			wc->stats.writes++;
- 		} else {
- 			writecache_bio_copy_ssd(wc, bio, e, search_used);
- 			return WC_MAP_REMAP;
+ 	pdev = of_find_device_by_node(devnode->parent);
+ 	if (!pdev) {
+ 		dev_err(dev, "Cannot find device node %s\n", devnode->name);
++		of_node_put(devnode);
+ 		return ERR_PTR(-EPROBE_DEFER);
+ 	}
++	of_node_put(devnode);
+ 
+ 	ocmem = platform_get_drvdata(pdev);
+ 	if (!ocmem) {
 -- 
 2.35.1
 
