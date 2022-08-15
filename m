@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9739BC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4826C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345501AbiHOXIQ (ORCPT
+        id S1346119AbiHOXIT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
+        Mon, 15 Aug 2022 19:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352560AbiHOXFn (ORCPT
+        with ESMTP id S1352702AbiHOXF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:05:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09092140CAE;
-        Mon, 15 Aug 2022 12:58:44 -0700 (PDT)
+        Mon, 15 Aug 2022 19:05:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27ED785B6;
+        Mon, 15 Aug 2022 12:58:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A81D612A3;
-        Mon, 15 Aug 2022 19:58:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737EAC433C1;
-        Mon, 15 Aug 2022 19:58:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 018EEB81157;
+        Mon, 15 Aug 2022 19:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632ECC433D7;
+        Mon, 15 Aug 2022 19:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593522;
-        bh=9/s9PwEz8qdZIEIq4LzwD7S4d3nxllJUbhvznSvycco=;
+        s=korg; t=1660593525;
+        bh=RyfyMD2avYPrcXzgnjWluHibnunGgUa10wADbejMdW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uGHGoHXan/UE51ElJORySsHwS5FfFGMubgG+mKEfTA4TwWufRmEvN/DFPGfuzE1MJ
-         T39va/EmxPsM5WpLOwXlUxRyOgM5hs2waRysiZKzqdRJxZC9qI9GSwEnHUvu/20pwN
-         Y+bq3fQZ3LiYr2ruCfIYSviSisTPywm06rOsRRbM=
+        b=Ki2dpbVUUSqsP0NV3zNcY/v+equitFl6Ec/K10WnT+vVuOyzAdzGLN7Ir4v5rLhH7
+         GIt5dVzsKZ9EKDZ4xp+s2DtmtDy5iU1lIK2XcE7ZArW5+iTjsPbArT7QDLbWz2C+0/
+         /L7+IMA9BGRXi9gxuDDF1g1Htuh1P6X9hGVd0JPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 0962/1095] scsi: qla2xxx: Fix discovery issues in FC-AL topology
-Date:   Mon, 15 Aug 2022 20:06:01 +0200
-Message-Id: <20220815180508.876319591@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0283/1157] arm64: dts: qcom: msm8998: Make regulator voltages multiple of step-size
+Date:   Mon, 15 Aug 2022 19:53:59 +0200
+Message-Id: <20220815180450.931748149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,107 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
+[ Upstream commit 2aa54fa87cca1fa43870a9caf4fcce00eb087fa5 ]
 
-A direct attach tape device, when gets swapped with another, was not
-discovered. Fix this by looking at loop map and reinitialize link if there
-are devices present.
+These voltages are not a multiple of the given step-size 8000 (with base
+voltage 1664000) in pm8998_pldo, resulting in PLDO regulators l18 and
+l22 failing to validate and in turn not probing the rpm-pm8998-regulator
+driver:
 
-Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
-Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reported-by: Tony Battersby <tonyb@cybernetics.com>
-Tested-by: Tony Battersby <tonyb@cybernetics.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    l18: unsupportable voltage constraints 2856000-2848000uV
+    qcom_rpm_smd_regulator rpm-glink:rpm-requests:pm8998-regulators: l18: devm_regulator_register() failed, ret=-22
+
+Round the voltages down for the sake of erring on the safe side, leaving
+a comment in place to document this discrepancy wrt downstream sources.
+
+Fixes: 390883af89d2 ("arm64: dts: qcom: msm8998: Introduce support for Sony Yoshino platform")
+Reported-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220507153627.1478268-1-marijn.suijten@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
- drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
- drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
- 3 files changed, 35 insertions(+), 2 deletions(-)
+ .../dts/qcom/msm8998-sony-xperia-yoshino-poplar.dts    | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_gbl.h
-+++ b/drivers/scsi/qla2xxx/qla_gbl.h
-@@ -434,7 +434,8 @@ extern int
- qla2x00_get_resource_cnts(scsi_qla_host_t *);
+diff --git a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dts b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dts
+index 4a1f98a21031..c21333aa73c2 100644
+--- a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dts
++++ b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dts
+@@ -26,11 +26,13 @@ &lab {
+ };
  
- extern int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
-+		u8 *num_entries);
+ &vreg_l18a_2p85 {
+-	regulator-min-microvolt = <2850000>;
+-	regulator-max-microvolt = <2850000>;
++	/* Note: Round-down from 2850000 to be a multiple of PLDO step-size 8000 */
++	regulator-min-microvolt = <2848000>;
++	regulator-max-microvolt = <2848000>;
+ };
  
- extern int
- qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -5505,6 +5505,22 @@ static int qla2x00_configure_n2n_loop(sc
- 	return QLA_FUNCTION_FAILED;
- }
- 
-+static void
-+qla_reinitialize_link(scsi_qla_host_t *vha)
-+{
-+	int rval;
-+
-+	atomic_set(&vha->loop_state, LOOP_DOWN);
-+	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-+	rval = qla2x00_full_login_lip(vha);
-+	if (rval == QLA_SUCCESS) {
-+		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
-+	} else {
-+		ql_dbg(ql_dbg_disc, vha, 0xd051,
-+			"Link reinitialization failed (%d)\n", rval);
-+	}
-+}
-+
- /*
-  * qla2x00_configure_local_loop
-  *	Updates Fibre Channel Device Database with local loop devices.
-@@ -5556,6 +5572,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
- 		spin_unlock_irqrestore(&vha->work_lock, flags);
- 
- 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
-+			u8 loop_map_entries = 0;
-+			int rc;
-+
-+			rc = qla2x00_get_fcal_position_map(vha, NULL,
-+						&loop_map_entries);
-+			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
-+				/*
-+				 * There are devices that are still not logged
-+				 * in. Reinitialize to give them a chance.
-+				 */
-+				qla_reinitialize_link(vha);
-+				return QLA_FUNCTION_FAILED;
-+			}
- 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
- 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
- 		}
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -3068,7 +3068,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
-  *	Kernel context.
-  */
- int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
-+		u8 *num_entries)
- {
- 	int rval;
- 	mbx_cmd_t mc;
-@@ -3108,6 +3109,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
- 
- 		if (pos_map)
- 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
-+		if (num_entries)
-+			*num_entries = pmap[0];
- 	}
- 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
- 
+ &vreg_l22a_2p85 {
+-	regulator-min-microvolt = <2700000>;
+-	regulator-max-microvolt = <2700000>;
++	/* Note: Round-down from 2700000 to be a multiple of PLDO step-size 8000 */
++	regulator-min-microvolt = <2696000>;
++	regulator-max-microvolt = <2696000>;
+ };
+-- 
+2.35.1
+
 
 
