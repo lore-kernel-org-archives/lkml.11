@@ -2,68 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB155C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEBCC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351381AbiHOWwH (ORCPT
+        id S1351591AbiHOWwL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
+        Mon, 15 Aug 2022 18:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351591AbiHOWtA (ORCPT
+        with ESMTP id S1351639AbiHOWtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:49:00 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF613675E
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:53:43 -0700 (PDT)
-X-QQ-mid: bizesmtp69t1660593215tx3hnipr
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 03:53:23 +0800 (CST)
-X-QQ-SSF: 0100000000200050C000B00A0000020
-X-QQ-FEAT: LG+NUo/f6sHc2m+cla/T+TR13heGFQ57WGv8lyWz+MZXwhlAK72VuvQreUg9X
-        rVxxcEAhGeBkoGVsEE/39EHtyMQH0pfQEbV/+hVdnsli4VHitkd4wWIGCbRhQlkpMtC8gpe
-        2FFLHZCnYzl0z2vNe9M1ovLOUHpRiihnkG3QOg0XMHOZQcjau+L1yFYT4jvPQ+2pHutx/3K
-        N4/3olFCLPVmPsLNBJMHj1e74R+2bHM3gPGWCK1e4gFnzgZ0Bj6xtMZEhyUwFqhk+ZVpQ5a
-        f4k6eoHr0jrE2/Q7t/lZOmIDXZgTPo40w+YSZpkfdixYoD1YWg+YXsofBFD5WPY7DMlTiDa
-        vajZB6Kq+id2No9KWmF3NNDU1nrO+lS5GyoL95trIp4iCDT3z004SW1aAK/YQ==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     mpe@ellerman.id.au
-Cc:     benh@kernel.crashing.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] treewide: Complete variable type
-Date:   Tue, 16 Aug 2022 03:53:22 +0800
-Message-Id: <20220815195322.3683-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 15 Aug 2022 18:49:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EF5136762;
+        Mon, 15 Aug 2022 12:53:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E20EB81158;
+        Mon, 15 Aug 2022 19:53:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A2FC433D7;
+        Mon, 15 Aug 2022 19:53:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660593221;
+        bh=9MHT2j7H19whKAxT/jIGIdBLHgvWJSOzUbd+1szRyaU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P6MyNloWWQTHpDgAbCvcy/7HzMQwXimhL7YlV4PG5QOvQBzGKkCEnD2IrCzBUiYPj
+         Ox2bbJiB6jhK1JtndPLRywvr+YW4Cif3LVK7Nggu8GLtRYq47K7eb75s848AVd48th
+         Cc/xxcqkT7XSwC+egb4WLh4MD0MG3zrinyMDJV5E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0232/1157] arm64: dts: qcom: sdm630: fix gpus interconnect path
+Date:   Mon, 15 Aug 2022 19:53:08 +0200
+Message-Id: <20220815180448.857916449@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is better to use "unsigned int" instead of "unsigned", line 24.
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+[ Upstream commit 3cd1c4f41d64a40ea6bc4575ae28e37542123d77 ]
+
+ICC path for the GPU incorrectly states <&gnoc 1 &bimc 5>, which is
+a path from SLAVE_GNOC_BIMC to SLAVE_EBI. According to the downstream
+kernel sources, the GPU uses MASTER_OXILI here, which is equivalent to
+<&bimc 1 ...>.
+
+While we are at it, use defined names instead of the numbers for this
+interconnect path.
+
+Fixes: 5cf69dcbec8b ("arm64: dts: qcom: sdm630: Add Adreno 508 GPU configuration")
+Reported-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220521202708.1509308-8-dmitry.baryshkov@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/epapr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sdm630.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/boot/epapr.c b/arch/powerpc/boot/epapr.c
-index 7c5b26ade6c4..4133bee28673 100644
---- a/arch/powerpc/boot/epapr.c
-+++ b/arch/powerpc/boot/epapr.c
-@@ -21,7 +21,7 @@ BSS_STACK(4096);
- #define EPAPR_SMAGIC	0x65504150
- #define EPAPR_EMAGIC	0x45504150
+diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+index dc184d47c8b3..2acd55bd3e5b 100644
+--- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+@@ -8,6 +8,7 @@
+ #include <dt-bindings/clock/qcom,gpucc-sdm660.h>
+ #include <dt-bindings/clock/qcom,mmcc-sdm660.h>
+ #include <dt-bindings/clock/qcom,rpmcc.h>
++#include <dt-bindings/interconnect/qcom,sdm660.h>
+ #include <dt-bindings/power/qcom-rpmpd.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -1045,7 +1046,7 @@ adreno_gpu: gpu@5000000 {
+ 			nvmem-cells = <&gpu_speed_bin>;
+ 			nvmem-cell-names = "speed_bin";
  
--static unsigned epapr_magic;
-+static unsigned int epapr_magic;
- static unsigned long ima_size;
- static unsigned long fdt_addr;
+-			interconnects = <&gnoc 1 &bimc 5>;
++			interconnects = <&bimc MASTER_OXILI &bimc SLAVE_EBI>;
+ 			interconnect-names = "gfx-mem";
  
+ 			operating-points-v2 = <&gpu_sdm630_opp_table>;
 -- 
-2.30.2
+2.35.1
+
+
 
