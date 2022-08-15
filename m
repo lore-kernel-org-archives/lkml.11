@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C9DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D335C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244171AbiHPA7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
+        id S244365AbiHPBAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348421AbiHPAwG (ORCPT
+        with ESMTP id S1348582AbiHPAwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:52:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF3C19B727;
-        Mon, 15 Aug 2022 13:47:29 -0700 (PDT)
+        Mon, 15 Aug 2022 20:52:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F1519B72F;
+        Mon, 15 Aug 2022 13:47:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E865B8113E;
-        Mon, 15 Aug 2022 20:47:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5009C433C1;
-        Mon, 15 Aug 2022 20:47:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1E5F61243;
+        Mon, 15 Aug 2022 20:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF2D8C433D6;
+        Mon, 15 Aug 2022 20:47:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596446;
-        bh=ufwO8vqLDDu71bVtWRi8o3m8JUyw8NsgBLtUn+/druI=;
+        s=korg; t=1660596449;
+        bh=StjgcR6nA87Jhlh+ZwYMvS8/tCMtuZEn7F+G7iUqQg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YCd+No0s3Md66P00O6xes+079qzFuRs0dg68l3tqJRkK9iveuWLM6uJDfJ1Z4sFAd
-         XZPLnLkxKk7rq7/AIQj7Y+IvO0Z/hEg4ATILnAGg69OTtfRUEsqr9wj/yEo2BHhAQI
-         BlPm7DDsHTFSPkp07+FcjGVQBR56afl0pEC3szXo=
+        b=Kljo6ZodJVN/6mNzUXffs4b+0vSYnxvgijik/kvrZlKot2thFG8C3DJtHU7HP1uKc
+         O0Qlr6FucSvpk6u7WBr2hpJmi/XwyXGLM0x7/JIbTy8hpGsL5ikLeApD1kInl6GU50
+         mdUf51whKfPoUPkxBGPsuQ89qy53oSyZs16p+HPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: [PATCH 5.19 1048/1157] x86/kprobes: Update kcb status flag after singlestepping
-Date:   Mon, 15 Aug 2022 20:06:44 +0200
-Message-Id: <20220815180521.971463783@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 5.19 1049/1157] x86/olpc: fix logical not is only applied to the left hand side
+Date:   Mon, 15 Aug 2022 20:06:45 +0200
+Message-Id: <20220815180522.010960862@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,59 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit dec8784c9088b131a1523f582c2194cfc8107dc0 upstream.
+commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
 
-Fix kprobes to update kcb (kprobes control block) status flag to
-KPROBE_HIT_SSDONE even if the kp->post_handler is not set.
+The bitops compile-time optimization series revealed one more
+problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
+warnings:
 
-This bug may cause a kernel panic if another INT3 user runs right
-after kprobes because kprobe_int3_handler() misunderstands the
-INT3 is kprobe's single stepping INT3.
+arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
+      |                                                               ^~
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
 
-Fixes: 6256e668b7af ("x86/kprobes: Use int3 instead of debug trap for single-step")
-Reported-by: Daniel Müller <deso@posteo.net>
-Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: Daniel Müller <deso@posteo.net>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/all/20220727210136.jjgc3lpqeq42yr3m@muellerd-fedora-PC2BDTX9
-Link: https://lore.kernel.org/r/165942025658.342061.12452378391879093249.stgit@devnote2
+Despite this code working as intended, this redundant double
+negation of boolean value, together with comparing to `char`
+with no explicit conversion to bool, makes compilers think
+the author made some unintentional logical mistakes here.
+Make it the other way around and negate the char instead
+to silence the warnings.
+
+Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
+Cc: stable@vger.kernel.org # 3.5+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kprobes/core.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -814,16 +814,20 @@ set_current_kprobe(struct kprobe *p, str
- static void kprobe_post_process(struct kprobe *cur, struct pt_regs *regs,
- 			       struct kprobe_ctlblk *kcb)
- {
--	if ((kcb->kprobe_status != KPROBE_REENTER) && cur->post_handler) {
--		kcb->kprobe_status = KPROBE_HIT_SSDONE;
--		cur->post_handler(cur, regs, 0);
--	}
--
- 	/* Restore back the original saved kprobes variables and continue. */
--	if (kcb->kprobe_status == KPROBE_REENTER)
-+	if (kcb->kprobe_status == KPROBE_REENTER) {
-+		/* This will restore both kcb and current_kprobe */
- 		restore_previous_kprobe(kcb);
--	else
-+	} else {
-+		/*
-+		 * Always update the kcb status because
-+		 * reset_curent_kprobe() doesn't update kcb.
-+		 */
-+		kcb->kprobe_status = KPROBE_HIT_SSDONE;
-+		if (cur->post_handler)
-+			cur->post_handler(cur, regs, 0);
- 		reset_current_kprobe();
-+	}
- }
- NOKPROBE_SYMBOL(kprobe_post_process);
+--- a/arch/x86/platform/olpc/olpc-xo1-sci.c
++++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
+@@ -80,7 +80,7 @@ static void send_ebook_state(void)
+ 		return;
+ 	}
  
+-	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
++	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
+ 		return; /* Nothing new to report. */
+ 
+ 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
 
 
