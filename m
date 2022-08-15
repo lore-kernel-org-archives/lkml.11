@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71711C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1643C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbiHPEtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S232425AbiHPEtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiHPEpp (ORCPT
+        with ESMTP id S232678AbiHPEpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:45:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6F5AF0D9;
-        Mon, 15 Aug 2022 13:42:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC59B10F;
+        Mon, 15 Aug 2022 13:42:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20098B80EAD;
-        Mon, 15 Aug 2022 20:42:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694BFC433C1;
-        Mon, 15 Aug 2022 20:42:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71C6F60F60;
+        Mon, 15 Aug 2022 20:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C0E2C433D6;
+        Mon, 15 Aug 2022 20:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596155;
-        bh=1nxUEJqdGrmDbqMzj+vb/mQeqj5KZSqrH9pIU4WSL2s=;
+        s=korg; t=1660596158;
+        bh=g+7P8x4nQek5z0FnHiv1VkueNiRjREbVGrtQV0qPJVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UUWrEzwLcSz8QKeA3xG+KWWkXTXzLhxcBFwOGIeIVydEuX9xt/2cQbpVUBbPYXvYJ
-         hBEdNWuQbA2Z3iUPEoMvr4JaLLwnLOMwbtFbXylgLx15rRkjzm3dTx4u8GjUWFELtZ
-         uLnAXh9t714vYLac9LgJteRFpcNIlT3cNDx5riuM=
+        b=NtArGsahg0KBsT+IkzBNpM1kkDZTUtnQlJiNGDqS/ijUlttQaXIxB+/1HUFZi7Hc4
+         iSuhOjBhujHIkeFjzeHip7h1DilQ8XyY0EdRzeRpD2sU4RQAo8+cc+g3UZetknabu+
+         cJr1USDv91xsqTH7H5T+QGUe/9Wh5Mt0sxsG1FuM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        kvm@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0973/1157] perf tools: Fix dso_id inode generation comparison
-Date:   Mon, 15 Aug 2022 20:05:29 +0200
-Message-Id: <20220815180518.640417587@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0991/1157] video: fbdev: sis: fix typos in SiS_GetModeID()
+Date:   Mon, 15 Aug 2022 20:05:47 +0200
+Message-Id: <20220815180519.368392861@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,55 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Rustam Subkhankulov <subkhankulov@ispras.ru>
 
-[ Upstream commit 68566a7cf56bf3148797c218ed45a9de078ef47c ]
+[ Upstream commit 3eb8fccc244bfb41a7961969e4db280d44911226 ]
 
-Synthesized MMAP events have zero ino_generation, so do not compare
-them to DSOs with a real ino_generation otherwise we end up with a DSO
-without a build id.
+The second operand of a '&&' operator has no impact on expression
+result for cases 400 and 512 in SiS_GetModeID().
 
-Fixes: 0e3149f86b99ddab ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: kvm@vger.kernel.org
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220711093218.10967-2-adrian.hunter@intel.com
-[ Added clarification to the comment from Ian + more detailed explanation from Adrian ]
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Judging by the logic and the names of the variables, in both cases a
+typo was made.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/dsos.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/sis/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
-index b97366f77bbf..2bd23e4cf19e 100644
---- a/tools/perf/util/dsos.c
-+++ b/tools/perf/util/dsos.c
-@@ -23,8 +23,19 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
- 	if (a->ino > b->ino) return -1;
- 	if (a->ino < b->ino) return 1;
- 
--	if (a->ino_generation > b->ino_generation) return -1;
--	if (a->ino_generation < b->ino_generation) return 1;
-+	/*
-+	 * Synthesized MMAP events have zero ino_generation, avoid comparing
-+	 * them with MMAP events with actual ino_generation.
-+	 *
-+	 * I found it harmful because the mismatch resulted in a new
-+	 * dso that did not have a build ID whereas the original dso did have a
-+	 * build ID. The build ID was essential because the object was not found
-+	 * otherwise. - Adrian
-+	 */
-+	if (a->ino_generation && b->ino_generation) {
-+		if (a->ino_generation > b->ino_generation) return -1;
-+		if (a->ino_generation < b->ino_generation) return 1;
-+	}
- 
- 	return 0;
- }
+diff --git a/drivers/video/fbdev/sis/init.c b/drivers/video/fbdev/sis/init.c
+index b568c646a76c..2ba91d62af92 100644
+--- a/drivers/video/fbdev/sis/init.c
++++ b/drivers/video/fbdev/sis/init.c
+@@ -355,12 +355,12 @@ SiS_GetModeID(int VGAEngine, unsigned int VBFlags, int HDisplay, int VDisplay,
+ 		}
+ 		break;
+ 	case 400:
+-		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDwidth >= 600))) {
++		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDheight >= 600))) {
+ 			if(VDisplay == 300) ModeIndex = ModeIndex_400x300[Depth];
+ 		}
+ 		break;
+ 	case 512:
+-		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDwidth >= 768))) {
++		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDheight >= 768))) {
+ 			if(VDisplay == 384) ModeIndex = ModeIndex_512x384[Depth];
+ 		}
+ 		break;
 -- 
 2.35.1
 
