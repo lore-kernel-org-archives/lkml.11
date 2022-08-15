@@ -2,120 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 244F1C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96676C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbiHOSKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S233132AbiHOSBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233023AbiHOSKM (ORCPT
+        with ESMTP id S232721AbiHOSAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:10:12 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403082A248
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:10:11 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id 7uA42800C4C55Sk06uA4oE; Mon, 15 Aug 2022 20:10:09 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oNeXL-001DJO-RF; Mon, 15 Aug 2022 20:10:03 +0200
-Date:   Mon, 15 Aug 2022 20:10:03 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     linux-kernel@vger.kernel.org
-cc:     linux-parisc@vger.kernel.org, linux-staging@lists.linux.dev,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org
-Subject: Re: Build regressions/improvements in v6.0-rc1
-In-Reply-To: <20220815180438.2875559-1-geert@linux-m68k.org>
-Message-ID: <alpine.DEB.2.22.394.2208152006320.289321@ramsan.of.borg>
-References: <CAHk-=wgRFjPHV-Y_eKP9wQMLFDgG+dEUHiv5wC17OQHsG5z7BA@mail.gmail.com> <20220815180438.2875559-1-geert@linux-m68k.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 15 Aug 2022 14:00:32 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CA512D10
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:30 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id h8-20020a6bfb08000000b00684f0587d0cso4579479iog.14
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=Az43P0Rd0jYbTPd/Nxto4Saoi87cm2HRKHFKeg3PBBE=;
+        b=K0pduNZNDW4bozlHrB+aa5UT4O4oRh7f5eERRaZRCRfKVONCvrz7+5svACAkKyYQ/s
+         +DKe6zKVukC0x6lobFfW6eo/JBSbA5/PAzCQifs+IMlS/VeeULZQV/RLUoumO44+YYFR
+         Z/fvNMgMI32EfVw/EePUq6X+uiIuk+aT3355iwF3zOgf2BHsd6oxhGaVf38MMK60bB0a
+         9xlqwhmQxxkYj16bDVxKf25a23/4tzlCXNxzV1hqtCDv0iWoxow+wnoMrQ/fHGR7Flkc
+         ybVyNRGbXHxbq0pvm+mnP1XARhMPgw4RKnSQN7IMioUpmMYa0/vrmfIi7sc+YXy2mstv
+         4xug==
+X-Gm-Message-State: ACgBeo3+Xlz3oyH/hBe+57DQCVfoOKXAwMKs8Sg0GsVasSCL1cIntnEK
+        hcC8yiCcnLyQqwUCH+7dFKBPtoLsFyfEpUS1Fziry6S/y7Qi
+X-Google-Smtp-Source: AA6agR75sNLYWjc61JGTHeROxl0JUzJfW7rIzB/t7xF/GpO+Paq1G3fmXgIm31wKxJUjlWCL1am+WDkZQ/Yv/cVgC7/T743XMgsH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Received: by 2002:a05:6638:31c1:b0:33f:2450:46a9 with SMTP id
+ n1-20020a05663831c100b0033f245046a9mr7773176jav.45.1660586429877; Mon, 15 Aug
+ 2022 11:00:29 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:00:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000045967505e64b68aa@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
+ request in insert_header
+From:   syzbot <syzbot+6b418544e63ef025d64e@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mcgrof@kernel.org, syzkaller-bugs@googlegroups.com,
+        yzaikin@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022, Geert Uytterhoeven wrote:
-> Below is the list of build error/warning regressions/improvements in
-> v6.0-rc1[1] compared to v5.19[2].
->
-> Summarized:
->  - build errors: +26/-15
+Hello,
 
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: .cfi_endproc without corresponding .cfi_startproc:  => 32
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: bad or irreducible absolute expression:  => 16
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: junk at end of line, first unrecognized character is `:':  => 16
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `be 0x100(%sr2,%r0)':  => 29
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldi 0,%r20':  => 30
-   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldw 0(%sp),%r31':  => 26
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ble 0x100(%sr2,%r0)':  => 51, 46
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 0,%r25':  => 44
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 1,%r25':  => 49
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 173,%r20':  => 50, 45
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.callinfo':  => 40
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.entry':  => 41
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.exit':  => 54
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.proc':  => 39
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.procend':  => 55
-   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.stringz':  => 76
+syzbot found the following issue on:
 
-parisc64-gcc11/generic-64bit_defconfig
-parisc-gcc11/generic-32bit_defconfig
-parisc-gcc11/parisc-{allmod,allno,def}config
+HEAD commit:    9f162193d6e4 radix-tree: replace gfp.h inclusion with gfp_..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=166b56f3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6bcb425ba129b87
+dashboard link: https://syzkaller.appspot.com/bug?extid=6b418544e63ef025d64e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
 
-   + /kisskb/src/arch/sh/include/asm/io.h: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]:  => 239:34
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6b418544e63ef025d64e@syzkaller.appspotmail.com
 
-sh4-gcc11/sh-allmodconfig (drivers/staging/octeon/ethernet-mem.c)
+input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+ACPI: button: Sleep Button [SLPF]
+ACPI: \_SB_.LNKC: Enabled at IRQ 11
+virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKD: Enabled at IRQ 10
+virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKB: Enabled at IRQ 10
+virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
+virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
+N_HDLC line discipline registered with maxframe=4096
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
+00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
+Non-volatile memory driver v1.3
+Linux agpgart interface v0.103
+ACPI: bus type drm_connector registered
+[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+Console: switching to colour frame buffer device 128x48
+platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
+usbcore: registered new interface driver udl
+brd: module loaded
+loop: module loaded
+zram: Added device: zram0
+null_blk: disk nullb0 created
+null_blk: module loaded
+Guest personality initialized and is inactive
+VMCI host device registered (name=vmci, major=10, minor=120)
+Initialized host personality
+usbcore: registered new interface driver rtsx_usb
+usbcore: registered new interface driver viperboard
+usbcore: registered new interface driver dln2
+usbcore: registered new interface driver pn533_usb
+nfcsim 0.2 initialized
+usbcore: registered new interface driver port100
+usbcore: registered new interface driver nfcmrvl
+Loading iSCSI transport class v2.0-870.
+scsi host0: Virtio SCSI HBA
+st: Version 20160209, fixed bufsize 32768, s/g segs 256
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+slram: not enough parameters.
+ftl_cs: FTL header not found.
+wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
+MACsec IEEE 802.1AE
+tun: Universal TUN/TAP device driver, 1.6
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-syzkaller-14377-g9f162193d6e4 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:strlen+0x1a/0x90 lib/string.c:487
+Code: e8 db 51 a6 fd 48 8b 74 24 08 48 8b 3c 24 eb c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 55 48 89 fd 48 c1 ea 03 53 48 83 ec 08 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 04 84 c0 75 48 80 7d 00 00
+RSP: 0000:ffffc90000067588 EFLAGS: 00010296
+RAX: dffffc0000000000 RBX: ffff8881472f8008 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffff88814727b000 RDI: ffff000000000000
+RBP: ffff000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff88801e795600
+R13: ffff88814727b190 R14: 0000000000000003 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __fortify_strlen include/linux/fortify-string.h:141 [inline]
+ insert_entry fs/proc/proc_sysctl.c:164 [inline]
+ insert_header+0x2c0/0xf90 fs/proc/proc_sysctl.c:259
+ __register_sysctl_table+0x6fb/0x10a0 fs/proc/proc_sysctl.c:1379
+ __devinet_sysctl_register+0x156/0x280 net/ipv4/devinet.c:2586
+ devinet_sysctl_register net/ipv4/devinet.c:2626 [inline]
+ devinet_sysctl_register+0x160/0x230 net/ipv4/devinet.c:2616
+ inetdev_init+0x286/0x580 net/ipv4/devinet.c:279
+ inetdev_event+0xa85/0x1610 net/ipv4/devinet.c:1534
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ register_netdevice+0x1127/0x1680 net/core/dev.c:10103
+ virtnet_probe+0x1378/0x2f30 drivers/net/virtio_net.c:3929
+ virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
+ call_driver_probe drivers/base/dd.c:530 [inline]
+ really_probe+0x249/0xb90 drivers/base/dd.c:609
+ __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
+ driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
+ __driver_attach+0x223/0x550 drivers/base/dd.c:1150
+ bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
+ bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
+ driver_register+0x220/0x3a0 drivers/base/driver.c:240
+ virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
+ do_one_initcall+0xfe/0x650 init/main.c:1296
+ do_initcall_level init/main.c:1369 [inline]
+ do_initcalls init/main.c:1385 [inline]
+ do_basic_setup init/main.c:1404 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1611
+ kernel_init+0x1a/0x1d0 init/main.c:1500
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+CR2: ffffdc0000000000
+---[ end trace 0000000000000000 ]---
+RIP: 0010:strlen+0x1a/0x90 lib/string.c:487
+Code: e8 db 51 a6 fd 48 8b 74 24 08 48 8b 3c 24 eb c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 55 48 89 fd 48 c1 ea 03 53 48 83 ec 08 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 04 84 c0 75 48 80 7d 00 00
+RSP: 0000:ffffc90000067588 EFLAGS: 00010296
+RAX: dffffc0000000000 RBX: ffff8881472f8008 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffff88814727b000 RDI: ffff000000000000
+RBP: ffff000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff88801e795600
+R13: ffff88814727b190 R14: 0000000000000003 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e8 db 51 a6 fd       	callq  0xfda651e0
+   5:	48 8b 74 24 08       	mov    0x8(%rsp),%rsi
+   a:	48 8b 3c 24          	mov    (%rsp),%rdi
+   e:	eb c0                	jmp    0xffffffd0
+  10:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  17:	fc ff df
+  1a:	48 89 fa             	mov    %rdi,%rdx
+  1d:	55                   	push   %rbp
+  1e:	48 89 fd             	mov    %rdi,%rbp
+  21:	48 c1 ea 03          	shr    $0x3,%rdx
+  25:	53                   	push   %rbx
+  26:	48 83 ec 08          	sub    $0x8,%rsp
+* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
+  2e:	48 89 fa             	mov    %rdi,%rdx
+  31:	83 e2 07             	and    $0x7,%edx
+  34:	38 d0                	cmp    %dl,%al
+  36:	7f 04                	jg     0x3c
+  38:	84 c0                	test   %al,%al
+  3a:	75 48                	jne    0x84
+  3c:	80 7d 00 00          	cmpb   $0x0,0x0(%rbp)
 
-   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn30/display_mode_vba_30.c: error: the frame size of 2096 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]:  => 6806:1
-   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: error: the frame size of 2160 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]:  => 3778:1
 
-x86_64-gcc8/x86-allmodconfig
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-   + /kisskb/src/include/linux/bitfield.h: error: call to '__field_overflow' declared with attribute error: value doesn't fit into mask:  => 151:3
-
-mipsel-gcc5/mips-allmodconfig (net/mac80211/tx.c)
-
-   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_603' declared with attribute error: FIELD_GET: mask is not constant:  => 354:38
-
-arm64-gcc5/arm64-allmodconfig (arch/arm64/kvm/arm.c)
-
-   + /kisskb/src/include/linux/random.h: error: 'latent_entropy' undeclared (first use in this function):  => 25:39
-
-powerpc-gcc5/powerpc-all{mod,yes}config
-powerpc-gcc5/ppc32_allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
-   + /kisskb/src/include/linux/random.h: error: 'latent_entropy' undeclared (first use in this function); did you mean 'add_latent_entropy'?:  => 25:46
-
-powerpc-gcc11/powerpc-all{mod,yes}config
-powerpc-gcc11/ppc64_book3e_allmodconfig
-
-   + {standard input}: Error: displacement to undefined symbol .L377 overflows 12-bit field:  => 2286
-   + {standard input}: Error: displacement to undefined symbol .L378 overflows 8-bit field :  => 2302
-   + {standard input}: Error: displacement to undefined symbol .L382 overflows 8-bit field :  => 2213
-
-sh4-gcc11/sh-allmodconfig (seen before, root cause is internal compiler error)
-
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/568035b01cfb107af8d2e4bd2fb9aea22cf5b868/ (all 135 configs)
-> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3d7cb6b04c3f3115719235cc6866b10326de34cd/ (all 135 configs)
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
