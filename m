@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 531FEC3276D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D61C3276B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351270AbiHOWhx (ORCPT
+        id S1351128AbiHOWhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
+        Mon, 15 Aug 2022 18:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350658AbiHOWcD (ORCPT
+        with ESMTP id S1349590AbiHOWbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:32:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD94D7D07;
-        Mon, 15 Aug 2022 12:48:42 -0700 (PDT)
+        Mon, 15 Aug 2022 18:31:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDAAD7D27;
+        Mon, 15 Aug 2022 12:48:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 511E26068D;
-        Mon, 15 Aug 2022 19:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42074C433D6;
-        Mon, 15 Aug 2022 19:48:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C13FDCE12E1;
+        Mon, 15 Aug 2022 19:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB10C433D6;
+        Mon, 15 Aug 2022 19:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592914;
-        bh=uoQNnByv+1FbqqjWQwrzqaf0ot43bfZtPaAvo624/cs=;
+        s=korg; t=1660592899;
+        bh=VNrgWDWeGuoXAxyxWEQ/kH7r5U6avZqdm5orjP6BqDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfxJgyStA91rECfbdDrw4YbFDWUSe/g5EWkwlRPsvjo814k59YDbkefvrtEf4r0Cg
-         Qf2XkMIDjwR5OyeVkyhk40nkwrArjwuwwqNOz5lan3yKlv4kz/BnbGYZzHwTIleCmE
-         0xhR8gsWh8+2YmQ2LBQCLGyvoXFleDGyrf7+QYt8=
+        b=1nmSRERI2XwMxbTRdU0npZzYUhkfkcSaHV+kXt64VK4S5hXmlltxCBKBnbZFnRrWa
+         YcNevuBTJhzpRgKfk+HUH3v2tMmr5ua77r7TUUhX3xxGLz9B1CywB+mYTjPotQOCQg
+         RkxxUFXS9GnPD62RgMURtc7+wx872s6iJy4V3zpo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0186/1157] ARM: shmobile: rcar-gen2: Increase refcount for new reference
-Date:   Mon, 15 Aug 2022 19:52:22 +0200
-Message-Id: <20220815180447.198904398@linuxfoundation.org>
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.18 0863/1095] ASoC: qcom: Fix missing of_node_put() in asoc_qcom_lpass_cpu_platform_probe()
+Date:   Mon, 15 Aug 2022 20:04:22 +0200
+Message-Id: <20220815180505.044102979@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,54 +53,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 75a185fb92e58ccd3670258d8d3b826bd2fa6d29 ]
+[ Upstream commit f507c0c67dac57d2bcd5dcae4b6139b0305d8957 ]
 
-In rcar_gen2_regulator_quirk(), for_each_matching_node_and_match() will
-automatically increase and decrease the refcount.  However, we should
-call of_node_get() for the new reference created in 'quirk->np'.
-Besides, we also should call of_node_put() before the 'quirk' being
-freed.
+We should call of_node_put() for the reference 'dsp_of_node' returned by
+of_parse_phandle() which will increase the refcount.
 
+Fixes: 9bae4880acee ("ASoC: qcom: move ipq806x specific bits out of lpass driver.")
+Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220701121804.234223-1-windhl@126.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220702020109.263980-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/qcom/lpass-cpu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-index abea41f7782e..117e7b07995b 100644
---- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-+++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-@@ -125,6 +125,7 @@ static int regulator_quirk_notify(struct notifier_block *nb,
- 
- 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
- 		list_del(&pos->list);
-+		of_node_put(pos->np);
- 		kfree(pos);
- 	}
- 
-@@ -174,11 +175,12 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		memcpy(&quirk->i2c_msg, id->data, sizeof(quirk->i2c_msg));
- 
- 		quirk->id = id;
--		quirk->np = np;
-+		quirk->np = of_node_get(np);
- 		quirk->i2c_msg.addr = addr;
- 
- 		ret = of_irq_parse_one(np, 0, argsa);
- 		if (ret) {	/* Skip invalid entry and continue */
-+			of_node_put(np);
- 			kfree(quirk);
- 			continue;
- 		}
-@@ -225,6 +227,7 @@ static int __init rcar_gen2_regulator_quirk(void)
- err_mem:
- 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
- 		list_del(&pos->list);
-+		of_node_put(pos->np);
- 		kfree(pos);
+diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
+index e6846ad2b5fa..964eb07f46d6 100644
+--- a/sound/soc/qcom/lpass-cpu.c
++++ b/sound/soc/qcom/lpass-cpu.c
+@@ -1090,6 +1090,7 @@ int asoc_qcom_lpass_cpu_platform_probe(struct platform_device *pdev)
+ 	dsp_of_node = of_parse_phandle(pdev->dev.of_node, "qcom,adsp", 0);
+ 	if (dsp_of_node) {
+ 		dev_err(dev, "DSP exists and holds audio resources\n");
++		of_node_put(dsp_of_node);
+ 		return -EBUSY;
  	}
  
 -- 
