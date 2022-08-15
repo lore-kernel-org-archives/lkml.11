@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AC0C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54CDC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241116AbiHPAc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S1345635AbiHPAcc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345376AbiHPAae (ORCPT
+        with ESMTP id S1346372AbiHPAaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:30:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85B7183E1B;
+        Mon, 15 Aug 2022 20:30:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9FB37F8F;
         Mon, 15 Aug 2022 13:35:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65BBCB80EA9;
-        Mon, 15 Aug 2022 20:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F34C433C1;
-        Mon, 15 Aug 2022 20:35:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F468B80EB1;
+        Mon, 15 Aug 2022 20:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8795AC433D6;
+        Mon, 15 Aug 2022 20:35:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595738;
-        bh=dXkowuWnXR/whURw9FmRM5OATjvkSl4KRBfeUx9ZHbA=;
+        s=korg; t=1660595711;
+        bh=l1DpSV+JZmB6Uto3+hA8ft5nZq/mq6tTv8aWI1ilAHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GS2rj2BQVIe5ptyCtJfEnP/qwl02mvhNwV8d+Ew8yo+NaJAMJjQPIGMAffGLeUDXG
-         IXQNfjE6LPq5HlwzEcoR+IJaGqpke2sTwPPl8034fFc1StiVu6I0fjY31E5XcchBnS
-         +AxXxG9PvhvHS2GZ1mPLEZUWIBcquChtYRsE0EyE=
+        b=HhbQli6j7QwsG9WJzNJddfb/Aq+l04CxIXC2iNsZa5B4s9OTebuO3depz/+vtpAL7
+         BJ34kJFNc0cLekq/lI8eoXlkxu7hrgWNXhwLaCHTUey1xkihszBt1FITyLJdICRCaA
+         JYXU7ZX/8avtpmVLlN9BfOvB4m9TcdAtsuSYcag0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0858/1157] platform/mellanox: mlxreg-lc: Fix error flow and extend verbosity
-Date:   Mon, 15 Aug 2022 20:03:34 +0200
-Message-Id: <20220815180513.802676528@linuxfoundation.org>
+Subject: [PATCH 5.19 0850/1157] USB: serial: fix tty-port initialized comments
+Date:   Mon, 15 Aug 2022 20:03:26 +0200
+Message-Id: <20220815180513.486785921@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,192 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit b4b830a34d8046633231b7fe87f6f2cb6240dc9f ]
+[ Upstream commit 688ee1d1785c1359f9040f615dd8e6054962bce2 ]
 
-Fix error flow:
-- Clean-up client object in case of probing failure.
-- Prevent running remove routine in case of probing failure.
-  Probing and removing are invoked by hotplug events raised upon line
-  card insertion and removing. If probing procedure failed all data is
-  cleared and there is nothing to do in remove routine.
+Fix up the tty-port initialized comments which got truncated and
+obfuscated when replacing the old ASYNCB_INITIALIZED flag.
 
-Fixes: 62f9529b8d5c ("platform/mellanox: mlxreg-lc: Add initial support for Nvidia line card devices")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Link: https://lore.kernel.org/r/20220719153540.61304-1-vadimp@nvidia.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/mellanox/mlxreg-lc.c | 82 ++++++++++++++++++++-------
- 1 file changed, 63 insertions(+), 19 deletions(-)
+ drivers/usb/serial/sierra.c     | 3 ++-
+ drivers/usb/serial/usb-serial.c | 2 +-
+ drivers/usb/serial/usb_wwan.c   | 3 ++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/platform/mellanox/mlxreg-lc.c b/drivers/platform/mellanox/mlxreg-lc.c
-index c897a2f15840..55834ccb4ac7 100644
---- a/drivers/platform/mellanox/mlxreg-lc.c
-+++ b/drivers/platform/mellanox/mlxreg-lc.c
-@@ -716,8 +716,12 @@ mlxreg_lc_config_init(struct mlxreg_lc *mlxreg_lc, void *regmap,
- 	switch (regval) {
- 	case MLXREG_LC_SN4800_C16:
- 		err = mlxreg_lc_sn4800_c16_config_init(mlxreg_lc, regmap, data);
--		if (err)
-+		if (err) {
-+			dev_err(dev, "Failed to config client %s at bus %d at addr 0x%02x\n",
-+				data->hpdev.brdinfo->type, data->hpdev.nr,
-+				data->hpdev.brdinfo->addr);
- 			return err;
-+		}
- 		break;
- 	default:
- 		return -ENODEV;
-@@ -730,8 +734,11 @@ mlxreg_lc_config_init(struct mlxreg_lc *mlxreg_lc, void *regmap,
- 	mlxreg_lc->mux = platform_device_register_resndata(dev, "i2c-mux-mlxcpld", data->hpdev.nr,
- 							   NULL, 0, mlxreg_lc->mux_data,
- 							   sizeof(*mlxreg_lc->mux_data));
--	if (IS_ERR(mlxreg_lc->mux))
-+	if (IS_ERR(mlxreg_lc->mux)) {
-+		dev_err(dev, "Failed to create mux infra for client %s at bus %d at addr 0x%02x\n",
-+			data->hpdev.brdinfo->type, data->hpdev.nr, data->hpdev.brdinfo->addr);
- 		return PTR_ERR(mlxreg_lc->mux);
-+	}
+diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
+index 9d56138133a9..ef6a2891f290 100644
+--- a/drivers/usb/serial/sierra.c
++++ b/drivers/usb/serial/sierra.c
+@@ -737,7 +737,8 @@ static void sierra_close(struct usb_serial_port *port)
  
- 	/* Register IO access driver. */
- 	if (mlxreg_lc->io_data) {
-@@ -740,6 +747,9 @@ mlxreg_lc_config_init(struct mlxreg_lc *mlxreg_lc, void *regmap,
- 		platform_device_register_resndata(dev, "mlxreg-io", data->hpdev.nr, NULL, 0,
- 						  mlxreg_lc->io_data, sizeof(*mlxreg_lc->io_data));
- 		if (IS_ERR(mlxreg_lc->io_regs)) {
-+			dev_err(dev, "Failed to create regio for client %s at bus %d at addr 0x%02x\n",
-+				data->hpdev.brdinfo->type, data->hpdev.nr,
-+				data->hpdev.brdinfo->addr);
- 			err = PTR_ERR(mlxreg_lc->io_regs);
- 			goto fail_register_io;
- 		}
-@@ -753,6 +763,9 @@ mlxreg_lc_config_init(struct mlxreg_lc *mlxreg_lc, void *regmap,
- 						  mlxreg_lc->led_data,
- 						  sizeof(*mlxreg_lc->led_data));
- 		if (IS_ERR(mlxreg_lc->led)) {
-+			dev_err(dev, "Failed to create LED objects for client %s at bus %d at addr 0x%02x\n",
-+				data->hpdev.brdinfo->type, data->hpdev.nr,
-+				data->hpdev.brdinfo->addr);
- 			err = PTR_ERR(mlxreg_lc->led);
- 			goto fail_register_led;
- 		}
-@@ -809,7 +822,8 @@ static int mlxreg_lc_probe(struct platform_device *pdev)
- 	if (!data->hpdev.adapter) {
- 		dev_err(&pdev->dev, "Failed to get adapter for bus %d\n",
- 			data->hpdev.nr);
--		return -EFAULT;
-+		err = -EFAULT;
-+		goto i2c_get_adapter_fail;
- 	}
+ 	/*
+ 	 * Need to take susp_lock to make sure port is not already being
+-	 * resumed, but no need to hold it due to initialized
++	 * resumed, but no need to hold it due to the tty-port initialized
++	 * flag.
+ 	 */
+ 	spin_lock_irq(&intfdata->susp_lock);
+ 	if (--intfdata->open_ports == 0)
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 24101bd7fcad..e35bea2235c1 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -295,7 +295,7 @@ static int serial_open(struct tty_struct *tty, struct file *filp)
+  *
+  * Shut down a USB serial port. Serialized against activate by the
+  * tport mutex and kept to matching open/close pairs
+- * of calls by the initialized flag.
++ * of calls by the tty-port initialized flag.
+  *
+  * Not called if tty is console.
+  */
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index dab38b63eaf7..cc81ab7ef4da 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -388,7 +388,8 @@ void usb_wwan_close(struct usb_serial_port *port)
  
- 	/* Create device at the top of line card I2C tree.*/
-@@ -818,32 +832,40 @@ static int mlxreg_lc_probe(struct platform_device *pdev)
- 	if (IS_ERR(data->hpdev.client)) {
- 		dev_err(&pdev->dev, "Failed to create client %s at bus %d at addr 0x%02x\n",
- 			data->hpdev.brdinfo->type, data->hpdev.nr, data->hpdev.brdinfo->addr);
--
--		i2c_put_adapter(data->hpdev.adapter);
--		data->hpdev.adapter = NULL;
--		return PTR_ERR(data->hpdev.client);
-+		err = PTR_ERR(data->hpdev.client);
-+		goto i2c_new_device_fail;
- 	}
- 
- 	regmap = devm_regmap_init_i2c(data->hpdev.client,
- 				      &mlxreg_lc_regmap_conf);
- 	if (IS_ERR(regmap)) {
-+		dev_err(&pdev->dev, "Failed to create regmap for client %s at bus %d at addr 0x%02x\n",
-+			data->hpdev.brdinfo->type, data->hpdev.nr, data->hpdev.brdinfo->addr);
- 		err = PTR_ERR(regmap);
--		goto mlxreg_lc_probe_fail;
-+		goto devm_regmap_init_i2c_fail;
- 	}
- 
- 	/* Set default registers. */
- 	for (i = 0; i < mlxreg_lc_regmap_conf.num_reg_defaults; i++) {
- 		err = regmap_write(regmap, mlxreg_lc_regmap_default[i].reg,
- 				   mlxreg_lc_regmap_default[i].def);
--		if (err)
--			goto mlxreg_lc_probe_fail;
-+		if (err) {
-+			dev_err(&pdev->dev, "Failed to set default regmap %d for client %s at bus %d at addr 0x%02x\n",
-+				i, data->hpdev.brdinfo->type, data->hpdev.nr,
-+				data->hpdev.brdinfo->addr);
-+			goto regmap_write_fail;
-+		}
- 	}
- 
- 	/* Sync registers with hardware. */
- 	regcache_mark_dirty(regmap);
- 	err = regcache_sync(regmap);
--	if (err)
--		goto mlxreg_lc_probe_fail;
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to sync regmap for client %s at bus %d at addr 0x%02x\n",
-+			data->hpdev.brdinfo->type, data->hpdev.nr, data->hpdev.brdinfo->addr);
-+		err = PTR_ERR(regmap);
-+		goto regcache_sync_fail;
-+	}
- 
- 	par_pdata = data->hpdev.brdinfo->platform_data;
- 	mlxreg_lc->par_regmap = par_pdata->regmap;
-@@ -854,12 +876,27 @@ static int mlxreg_lc_probe(struct platform_device *pdev)
- 	/* Configure line card. */
- 	err = mlxreg_lc_config_init(mlxreg_lc, regmap, data);
- 	if (err)
--		goto mlxreg_lc_probe_fail;
-+		goto mlxreg_lc_config_init_fail;
- 
- 	return err;
- 
--mlxreg_lc_probe_fail:
-+mlxreg_lc_config_init_fail:
-+regcache_sync_fail:
-+regmap_write_fail:
-+devm_regmap_init_i2c_fail:
-+	if (data->hpdev.client) {
-+		i2c_unregister_device(data->hpdev.client);
-+		data->hpdev.client = NULL;
-+	}
-+i2c_new_device_fail:
- 	i2c_put_adapter(data->hpdev.adapter);
-+	data->hpdev.adapter = NULL;
-+i2c_get_adapter_fail:
-+	/* Clear event notification callback and handle. */
-+	if (data->notifier) {
-+		data->notifier->user_handler = NULL;
-+		data->notifier->handle = NULL;
-+	}
- 	return err;
- }
- 
-@@ -868,11 +905,18 @@ static int mlxreg_lc_remove(struct platform_device *pdev)
- 	struct mlxreg_core_data *data = dev_get_platdata(&pdev->dev);
- 	struct mlxreg_lc *mlxreg_lc = platform_get_drvdata(pdev);
- 
--	/* Clear event notification callback. */
--	if (data->notifier) {
--		data->notifier->user_handler = NULL;
--		data->notifier->handle = NULL;
--	}
-+	/*
-+	 * Probing and removing are invoked by hotplug events raised upon line card insertion and
-+	 * removing. If probing procedure fails all data is cleared. However, hotplug event still
-+	 * will be raised on line card removing and activate removing procedure. In this case there
-+	 * is nothing to remove.
-+	 */
-+	if (!data->notifier || !data->notifier->handle)
-+		return 0;
-+
-+	/* Clear event notification callback and handle. */
-+	data->notifier->user_handler = NULL;
-+	data->notifier->handle = NULL;
- 
- 	/* Destroy static I2C device feeding by main power. */
- 	mlxreg_lc_destroy_static_devices(mlxreg_lc, mlxreg_lc->main_devs,
+ 	/*
+ 	 * Need to take susp_lock to make sure port is not already being
+-	 * resumed, but no need to hold it due to initialized
++	 * resumed, but no need to hold it due to the tty-port initialized
++	 * flag.
+ 	 */
+ 	spin_lock_irq(&intfdata->susp_lock);
+ 	if (--intfdata->open_ports == 0)
 -- 
 2.35.1
 
