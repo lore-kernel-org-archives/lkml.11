@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB93C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C13CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344856AbiHOWIm (ORCPT
+        id S1347920AbiHOWIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
+        Mon, 15 Aug 2022 18:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346758AbiHOWEv (ORCPT
+        with ESMTP id S1347136AbiHOWFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:04:51 -0400
+        Mon, 15 Aug 2022 18:05:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6A5115B60;
-        Mon, 15 Aug 2022 12:37:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05F5115B7A;
+        Mon, 15 Aug 2022 12:37:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C564BB80EAD;
-        Mon, 15 Aug 2022 19:37:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07FFCC433C1;
-        Mon, 15 Aug 2022 19:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C98C8B80EAB;
+        Mon, 15 Aug 2022 19:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E80C433C1;
+        Mon, 15 Aug 2022 19:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592240;
-        bh=tMbRNLEwJhzBn3I2NtkHXpA8he1iH1lPv6QR3bX1QbM=;
+        s=korg; t=1660592243;
+        bh=+J+Q8LniD2ZXHJOSoRNy/SiVung7frjPqTcLHzcd/cE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWd2wcdTd22EJFBTaVsUpe8XmW7xRuNWTl0u6OfVGyZhQPAFDnrJcilJJ3W/mkyvG
-         OeeXHbQER/QADzGnoXy+VZt2QX9upqtHEwNvVQrWOvo5aKovu8stvaEnO3g+yz2IEL
-         4ZAIIfnF8dDkze/G9viTKiBT2etC/tpF0t+eR3zM=
+        b=V5XUvfmqvpNTOnUo4MKCe1L/ZlQeJ31KJBohUgxQLZ7LQTa4BnyXT9YYDl2EZKzm/
+         mDuEFapokXEiaNKW+5Qrti3PYI3DgAILJ9QpRKg3+Zy/E1U4//ywMHe9cWjyERZmmE
+         Me7K22ZuOkOVko0KS3N226EVWgRu8LAoIv2x1E1Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@rivosinc.com>, Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0079/1157] RISC-V: Update user page mapping only once during start
-Date:   Mon, 15 Aug 2022 19:50:35 +0200
-Message-Id: <20220815180442.689550894@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0755/1095] usb: aspeed-vhub: Fix refcount leak bug in ast_vhub_init_desc()
+Date:   Mon, 15 Aug 2022 20:02:34 +0200
+Message-Id: <20220815180500.551400079@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,50 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Liang He <windhl@126.com>
 
-commit 133a6d1fe7d7ad8393af025c4dde379c0616661f upstream.
+[ Upstream commit 220fafb4ed04187e9c17be4152da5a7f2ffbdd8c ]
 
-Currently, riscv_pmu_event_set_period updates the userpage mapping.
-However, the caller of riscv_pmu_event_set_period should update
-the userpage mapping because the counter can not be updated/started
-from set_period function in counter overflow path.
+We should call of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-Invoke the perf_event_update_userpage at the caller so that it
-doesn't get invoked twice during counter start path.
-
-Fixes: f5bfa23f576f ("RISC-V: Add a perf core library for pmu drivers")
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220711174632.4186047-3-atishp@rivosinc.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 30d2617fd7ed ("usb: gadget: aspeed: allow to set usb strings in device tree")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220713120528.368168-1-windhl@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/riscv_pmu.c     |    1 -
- drivers/perf/riscv_pmu_sbi.c |    1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/udc/aspeed-vhub/hub.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/perf/riscv_pmu.c
-+++ b/drivers/perf/riscv_pmu.c
-@@ -170,7 +170,6 @@ int riscv_pmu_event_set_period(struct pe
- 		left = (max_period >> 1);
+diff --git a/drivers/usb/gadget/udc/aspeed-vhub/hub.c b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
+index 65cd4e46f031..e2207d014620 100644
+--- a/drivers/usb/gadget/udc/aspeed-vhub/hub.c
++++ b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
+@@ -1059,8 +1059,10 @@ static int ast_vhub_init_desc(struct ast_vhub *vhub)
+ 	/* Initialize vhub String Descriptors. */
+ 	INIT_LIST_HEAD(&vhub->vhub_str_desc);
+ 	desc_np = of_get_child_by_name(vhub_np, "vhub-strings");
+-	if (desc_np)
++	if (desc_np) {
+ 		ret = ast_vhub_of_parse_str_desc(vhub, desc_np);
++		of_node_put(desc_np);
++	}
+ 	else
+ 		ret = ast_vhub_str_alloc_add(vhub, &ast_vhub_strings);
  
- 	local64_set(&hwc->prev_count, (u64)-left);
--	perf_event_update_userpage(event);
- 
- 	return overflow;
- }
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -542,6 +542,7 @@ static inline void pmu_sbi_start_overflo
- 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
- 				  flag, init_val, 0, 0);
- #endif
-+			perf_event_update_userpage(event);
- 		}
- 		ctr_ovf_mask = ctr_ovf_mask >> 1;
- 		idx++;
+-- 
+2.35.1
+
 
 
