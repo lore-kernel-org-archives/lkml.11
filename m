@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FCAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4A1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350262AbiHOVwg (ORCPT
+        id S1350281AbiHOVwj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        Mon, 15 Aug 2022 17:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350282AbiHOVrf (ORCPT
+        with ESMTP id S1350288AbiHOVrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:35 -0400
+        Mon, 15 Aug 2022 17:47:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113415FAEB;
-        Mon, 15 Aug 2022 12:31:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5262B634;
+        Mon, 15 Aug 2022 12:31:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1611E60FB9;
-        Mon, 15 Aug 2022 19:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DC7C433D6;
-        Mon, 15 Aug 2022 19:31:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B3A660EF0;
+        Mon, 15 Aug 2022 19:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14821C433D6;
+        Mon, 15 Aug 2022 19:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591898;
-        bh=LReIQ89/CnA3hqpuGEtuig0bfblqLBYyZyH7Eeo99iI=;
+        s=korg; t=1660591901;
+        bh=hVge2b40hrymoACoRoPHQOleTSb2rRVyOkW4WS8IgBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0K+bhox8r/9qZ4OKXwa/vG/TLf7x80iXQ76MljmTq76FnSeduhKtiTMvzPbITQqw
-         lVYKy/nUqGfwFTYbsI7DfQjpomUiMPKI9J8niGvU+0JIrIOeg7TWqtstdvIWJX3dB/
-         ZhDvz0JMJPf2LFe551Eypz4Zl6ytgJO/0Taik2dg=
+        b=flowuNYV4yBgInJ337f2gvVlvXmifOFo25pJCEgtTdcDjPynuoJxGV8Sdgp5MXEr+
+         pioZFHeCVmIhBdVp9zkjaSWeGXT/awRh1KaNZMK0uBM7ArOEI4mwbtjHzgwYBGY+JI
+         4AeTbtYLJSsr2X4Gw8fnAofHBmhtQGTbrZLTQ134=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0701/1095] clk: qcom: gcc-msm8939: Fix bimc_ddr_clk_src rcgr base address
-Date:   Mon, 15 Aug 2022 20:01:40 +0200
-Message-Id: <20220815180458.372804561@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0028/1157] KVM: Put the extra pfn reference when reusing a pfn in the gpc cache
+Date:   Mon, 15 Aug 2022 19:49:44 +0200
+Message-Id: <20220815180440.551008180@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 63d42708320d6d2ca9ed505123d50ff4a542c36f ]
+commit 3dddf65b4f4c451c345d34ae85bdf1791a746e49 upstream.
 
-Reviewing qcom docs for the 8939 we can see the command rcgr is pointing to
-the wrong address. bimc_ddr_clk_src_rcgr is @ 0x01832024 not 0x01832004.
+Put the struct page reference to pfn acquired by hva_to_pfn() when the
+old and new pfns for a gfn=>pfn cache match.  The cache already has a
+reference via the old/current pfn, and will only put one reference when
+the cache is done with the pfn.
 
-Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504163835.40130-3-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 982ed0de4753 ("KVM: Reinstate gfn_to_pfn_cache with invalidation support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429210025.3293691-5-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-msm8939.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ virt/kvm/pfncache.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
-index 39ebb443ae3d..31568658d23d 100644
---- a/drivers/clk/qcom/gcc-msm8939.c
-+++ b/drivers/clk/qcom/gcc-msm8939.c
-@@ -632,7 +632,7 @@ static struct clk_rcg2 system_noc_bfdcd_clk_src = {
- };
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -206,6 +206,14 @@ int kvm_gfn_to_pfn_cache_refresh(struct
  
- static struct clk_rcg2 bimc_ddr_clk_src = {
--	.cmd_rcgr = 0x32004,
-+	.cmd_rcgr = 0x32024,
- 	.hid_width = 5,
- 	.parent_map = gcc_xo_gpll0_bimc_map,
- 	.clkr.hw.init = &(struct clk_init_data){
--- 
-2.35.1
-
+ 		if (gpc->usage & KVM_HOST_USES_PFN) {
+ 			if (new_pfn == old_pfn) {
++				/*
++				 * Reuse the existing pfn and khva, but put the
++				 * reference acquired hva_to_pfn_retry(); the
++				 * cache still holds a reference to the pfn
++				 * from the previous refresh.
++				 */
++				gpc_release_pfn_and_khva(kvm, new_pfn, NULL);
++
+ 				new_khva = old_khva;
+ 				old_pfn = KVM_PFN_ERR_FAULT;
+ 				old_khva = NULL;
 
 
