@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F3BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7121EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242364AbiHPArq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        id S244625AbiHPAr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245174AbiHPAp2 (ORCPT
+        with ESMTP id S243501AbiHPApc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AF4AE9C9;
-        Mon, 15 Aug 2022 13:41:59 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86443ABF3B;
+        Mon, 15 Aug 2022 13:42:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 964C9B80EA9;
-        Mon, 15 Aug 2022 20:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2F46C433C1;
-        Mon, 15 Aug 2022 20:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2A361234;
+        Mon, 15 Aug 2022 20:42:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 105DAC433C1;
+        Mon, 15 Aug 2022 20:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596117;
-        bh=IJlcHDJ/ZiqP3zdKtkNzDljdasU4Uw8/bQxQij0eZvA=;
+        s=korg; t=1660596123;
+        bh=6WQcaD39Z7X1fJpxXq9yMC2ENvQGk6DSE/u5decyplU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qws2ZiwmjsPrrYYlMM4Utw3Cf2zvVqGMwqq+VekRJmcMaqmd/VEAGr0y+IhIxjpml
-         mkT/1X8Lavcaec1WLmfx9z/77jxiOUNHFyEp8U3Lzm1RXgS8IveIwNZntLgxDYiEKO
-         Hv7pBkzG8FZCUIU2cszB3LkdmIl57b9Q4nW3VqOU=
+        b=im+qtrggvkL6oZkZvo01nhUb6pbzf1oABoTqIUUSlbIZINjJX3x1HR+rDBuEOYqxN
+         ykU3mC+AWZvIhRvJFibftKEiHbiRx6B/9YfjuhcxFWU2Z5HBzn8x6RMY2o8UpF2m8E
+         NoqrEpOOmaMDLlS/8NWXJ+nj3HRbg4/9u+GIJnNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0933/1157] tty: n_gsm: fix resource allocation order in gsm_activate_mux()
-Date:   Mon, 15 Aug 2022 20:04:49 +0200
-Message-Id: <20220815180516.811535190@linuxfoundation.org>
+Subject: [PATCH 5.19 0981/1157] ASoC: imx-card: use snd_pcm_format_t type for asrc_format
+Date:   Mon, 15 Aug 2022 20:05:37 +0200
+Message-Id: <20220815180518.985866253@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,50 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 7349660438603ed19282e75949561406531785a5 ]
+[ Upstream commit 409a8652e909e323c715f3088e6c3133e37c8881 ]
 
-Within gsm_activate_mux() all timers and locks are initiated before the
-actual resource for the control channel is allocated. This can lead to race
-conditions.
+Fix sparse warning:
+sound/soc/fsl/imx-card.c:653:59: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/imx-card.c:653:59: sparse:    expected unsigned int [usertype] asrc_format
+sound/soc/fsl/imx-card.c:653:59: sparse:    got restricted snd_pcm_format_t [usertype]
+sound/soc/fsl/imx-card.c:655:59: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/imx-card.c:655:59: sparse:    expected unsigned int [usertype] asrc_format
+sound/soc/fsl/imx-card.c:655:59: sparse:    got restricted snd_pcm_format_t [usertype]
 
-Allocate the control channel DLCI object first to avoid race conditions.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701122332.2039-2-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1658399393-28777-6-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/soc/fsl/imx-card.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 79869f2b570c..ba399a660573 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2497,6 +2497,10 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	struct gsm_dlci *dlci;
- 	int ret;
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index c0eb218a254b..4a8609b0d700 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -118,7 +118,7 @@ struct imx_card_data {
+ 	struct snd_soc_card card;
+ 	int num_dapm_routes;
+ 	u32 asrc_rate;
+-	u32 asrc_format;
++	snd_pcm_format_t asrc_format;
+ };
  
-+	dlci = gsm_dlci_alloc(gsm, 0);
-+	if (dlci == NULL)
-+		return -ENOMEM;
-+
- 	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
-@@ -2513,9 +2517,6 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	if (ret)
- 		return ret;
+ static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
+@@ -474,7 +474,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
  
--	dlci = gsm_dlci_alloc(gsm, 0);
--	if (dlci == NULL)
--		return -ENOMEM;
- 	gsm->has_devices = true;
- 	gsm->dead = false;		/* Tty opens are now permissible */
+ 	mask = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
+ 	snd_mask_none(mask);
+-	snd_mask_set(mask, data->asrc_format);
++	snd_mask_set(mask, (__force unsigned int)data->asrc_format);
+ 
  	return 0;
+ }
+@@ -493,6 +493,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 	struct dai_link_data *link_data;
+ 	struct of_phandle_args args;
+ 	int ret, num_links;
++	u32 asrc_fmt = 0;
+ 	u32 width;
+ 
+ 	ret = snd_soc_of_parse_card_name(card, "model");
+@@ -639,7 +640,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 				goto err;
+ 			}
+ 
+-			ret = of_property_read_u32(args.np, "fsl,asrc-format", &data->asrc_format);
++			ret = of_property_read_u32(args.np, "fsl,asrc-format", &asrc_fmt);
++			data->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
+ 			if (ret) {
+ 				/* Fallback to old binding; translate to asrc_format */
+ 				ret = of_property_read_u32(args.np, "fsl,asrc-width", &width);
 -- 
 2.35.1
 
