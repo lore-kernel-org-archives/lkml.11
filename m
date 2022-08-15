@@ -2,101 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DF3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1817C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245373AbiHOTEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        id S245380AbiHOTEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245196AbiHOTBb (ORCPT
+        with ESMTP id S245208AbiHOTBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:31 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A464B0E0
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:32:59 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so15197595pjm.3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:32:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=8bJQmDi/lCA9PqirReS3MPMutajyKB5RDjNh4fqCzaA=;
-        b=jdED2coZKjWQwnNfe6vINVdrNYG/s4Ap5/xy5Gcip3nOeogSVmoaiJccuFjEMCn604
-         aiAZAQA12xrgovQ0EK7RmswbJp8NFIGlbMK7CJIoj829dlR/YYKVOetZHn6kiWBGYqVw
-         iKFOwG4d+6zBCeFAM+4iDS7+9tD9UBi/j3bzxO26XKdYiOx4BB2DNlOWrPLyESziZRHe
-         LEaQNj92ErOuotlQ1magSPuxiMp4HGWT4qlqOjqs26rIJlOdgx2ohKm85mKBuL0W3Xiz
-         UuCSlnwEL0+m8YK540p/n30zlzjGqOSmL/ZEk6NbS6E6meNvlkJSA2GfQZf+c2O2OWU8
-         uGRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=8bJQmDi/lCA9PqirReS3MPMutajyKB5RDjNh4fqCzaA=;
-        b=X1z9HjMoXjJumWqSQUpfPPbZll+rvhGnJ/wEoQ3mDnTsZpwPuBfOdJdxGUqUfS7DWP
-         dLTAUXAV+1gG1lnWMYjibb5hJRZNEvDV9HkqOHvQy+K06ryCmkpEOHDMIjrRTu4Xxsng
-         fsIUdhB/Z0biPh40wF6GiXXp6dpbKOy8qcLgJO0n0OrihHfw+wGGEHyg5uYZBGL5uo0/
-         Nd47CXQgnRuAPhCi9VE6p5kDx3EA69lfJ1aQRZcOzCl8rJisAagnA257sWN7QJuqLhH7
-         6z/Sl+oAuhSuJWtthe204wtdNyzyjaXQ7jJ/Witmn1l1m5GN8pZuxbl8M2eoYDfUcrAG
-         8oRQ==
-X-Gm-Message-State: ACgBeo1F5milE6JG/nOwQVGNL96dceEdZwzVnM/mfiOj6x5XNU/TNO0/
-        hhF7b9YcWB1eH7OPvVgBVUg=
-X-Google-Smtp-Source: AA6agR6Clbh4D6hp8u1BwYfWLa6d/Cwe/QwEr2ontSg2+IYjxn4HZJNCGeWwoDVqjl6HR/cTznhCPA==
-X-Received: by 2002:a17:902:c201:b0:172:6c9d:14b9 with SMTP id 1-20020a170902c20100b001726c9d14b9mr7195297pll.161.1660588374426;
-        Mon, 15 Aug 2022 11:32:54 -0700 (PDT)
-Received: from [192.168.0.110] ([103.159.189.148])
-        by smtp.gmail.com with ESMTPSA id 200-20020a6216d1000000b005289fad1bbesm7034667pfw.94.2022.08.15.11.32.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 11:32:53 -0700 (PDT)
-Message-ID: <83820e90-04ac-16cd-b5be-87e1a0bbfca8@gmail.com>
-Date:   Tue, 16 Aug 2022 00:32:46 +0600
+        Mon, 15 Aug 2022 15:01:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01CD32EFF;
+        Mon, 15 Aug 2022 11:32:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDD4AB81085;
+        Mon, 15 Aug 2022 18:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34100C433D6;
+        Mon, 15 Aug 2022 18:32:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588371;
+        bh=rCJ5IZlcujA+VBDei++2b8s3UWpJOoJg5ymsyUzwOQ8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aWeyRXExIdfa+T8TL2K4Y4lfi2x37DW/B8W8ZH41AHuwJo+D1JiIcXWW4HHRjuEdl
+         j6lNxtM7YpmIToT4GleD/yIzmphvYTO1CfXeEpzgANtDN5+wgEdgKFNf9nkBCLMEat
+         hurM8yb+06eIqYcWhzFacG7OgdijwhexGzZAHSXk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 381/779] netdevsim: Avoid allocation warnings triggered from user space
+Date:   Mon, 15 Aug 2022 20:00:25 +0200
+Message-Id: <20220815180353.583783799@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH linux-next] drm/amdgpu/vcn: Remove unused assignment in
- vcn_v4_0_stop
-Content-Language: en-US
-To:     "Dong, Ruijing" <Ruijing.Dong@amd.com>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees@lists.linuxfoundation.org" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Cc:     "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Zhu, James" <James.Zhu@amd.com>,
-        "Jiang, Sonny" <Sonny.Jiang@amd.com>,
-        Wan Jiabing <wanjiabing@vivo.com>, "Liu, Leo" <Leo.Liu@amd.com>
-References: <20220815070056.10816-1-khalid.masum.92@gmail.com>
- <SJ1PR12MB61944B1D53330D5E9531158695689@SJ1PR12MB6194.namprd12.prod.outlook.com>
- <86088c17-585c-4a53-312d-ef339b824538@gmail.com>
- <SJ1PR12MB6194C83D51101ACD97B55F0295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
- <f8734af1-6e31-75c9-9556-9519709284f1@gmail.com>
- <SJ1PR12MB6194033EC36251B95A6737A095689@SJ1PR12MB6194.namprd12.prod.outlook.com>
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-In-Reply-To: <SJ1PR12MB6194033EC36251B95A6737A095689@SJ1PR12MB6194.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 22:00, Dong, Ruijing wrote:
-> [AMD Official Use Only - General]
-> 
-> Then please update commit message, this change is due to "value r is never used, and remove unnecessary assignment", that makes sense to me.
-> 
-> Thanks
-> Ruijing
-> 
-Greg also pointed out that the function vcn_v4_0_stop_dpg_mode should 
-return void. I shall send a patch shortly with these two changes. Thanks 
-for your suggestion.
+From: Jakub Kicinski <kuba@kernel.org>
 
-Thanks,
-   -- Khalid Masum
+[ Upstream commit d0b80a9edb1a029ff913e81b47540e57ad034329 ]
+
+We need to suppress warnings from sily map sizes. Also switch
+from GFP_USER to GFP_KERNEL_ACCOUNT, I'm pretty sure I misunderstood
+the flags when writing this code.
+
+Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
+Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220726213605.154204-1-kuba@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/netdevsim/bpf.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
+index a43820212932..50854265864d 100644
+--- a/drivers/net/netdevsim/bpf.c
++++ b/drivers/net/netdevsim/bpf.c
+@@ -351,10 +351,12 @@ nsim_map_alloc_elem(struct bpf_offloaded_map *offmap, unsigned int idx)
+ {
+ 	struct nsim_bpf_bound_map *nmap = offmap->dev_priv;
+ 
+-	nmap->entry[idx].key = kmalloc(offmap->map.key_size, GFP_USER);
++	nmap->entry[idx].key = kmalloc(offmap->map.key_size,
++				       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
+ 	if (!nmap->entry[idx].key)
+ 		return -ENOMEM;
+-	nmap->entry[idx].value = kmalloc(offmap->map.value_size, GFP_USER);
++	nmap->entry[idx].value = kmalloc(offmap->map.value_size,
++					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
+ 	if (!nmap->entry[idx].value) {
+ 		kfree(nmap->entry[idx].key);
+ 		nmap->entry[idx].key = NULL;
+@@ -496,7 +498,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
+ 	if (offmap->map.map_flags)
+ 		return -EINVAL;
+ 
+-	nmap = kzalloc(sizeof(*nmap), GFP_USER);
++	nmap = kzalloc(sizeof(*nmap), GFP_KERNEL_ACCOUNT);
+ 	if (!nmap)
+ 		return -ENOMEM;
+ 
+-- 
+2.35.1
+
+
+
