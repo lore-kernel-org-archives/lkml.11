@@ -2,167 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C24DAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB671C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241546AbiHOH5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
+        id S232846AbiHOH6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiHOH5s (ORCPT
+        with ESMTP id S230527AbiHOH6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:57:48 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD3F1DA6D
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:57:46 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M5mnB2Hz4zGpXl;
-        Mon, 15 Aug 2022 15:56:14 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 15:57:44 +0800
-Received: from huawei.com (10.175.124.27) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
- 2022 15:57:43 +0800
-From:   Shuqi Zhang <zhangshuqi3@huawei.com>
-To:     <jaegeuk@kernel.org>, <chao@kernel.org>
-CC:     <linux-f2fs-devel@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <zhangshuqi3@huawei.com>
-Subject: [PATCH -next] f2fs: fix wrong dirty page count when race between mmap and fallocate.
-Date:   Mon, 15 Aug 2022 16:15:55 +0800
-Message-ID: <20220815081555.2961943-1-zhangshuqi3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 15 Aug 2022 03:58:16 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68571DA73
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:58:14 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id z12so8160480wrs.9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:58:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=4LHTOGZsFNehN7nMM3hFYDsNPkYY0DIUJCRTeMZ3RtQ=;
+        b=qL3ecjHfsDCQmiIjDc5/oL+z+SJNdLWzHZNHyjSi/211iOUz10Fyt0nf2RgsXYAbF7
+         40MLmWPqWN/2OtJrfMfucccnZIDsDAfLcAUlhi5Py76A/ukWhCJUfx8uMRHnXIRIaGPR
+         OVvgkEOQErsJOP11nIL5ufk4XDxvyOqXRsDK2H4bt+k8toyqzRTMdovE3WWyYetP0+W7
+         J1spod2ijPUeon/4aCBYqIMwebZyVOCjpIRcgRyNClksaDoc0qltD62JItV/1jJQb2YI
+         7WpOpS+NsBWS5CnW6/tA579ICLmBz/VNSoFQ+uK7bsoceDDMKqdl05RC4T04RIcWqYf5
+         kCBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=4LHTOGZsFNehN7nMM3hFYDsNPkYY0DIUJCRTeMZ3RtQ=;
+        b=3XJsZMuz9ROIqMeL4GqglJAy+QHcug1ytBY4cTiXMw9pRWJvP7pt2Q9bIzWJWmcnkE
+         +y/XxQttQd3M/N3aikmRCeqcZTv/sjhlLfHe73qLHTWZ512cScjp2M3dpd7xX1G11Kwd
+         9Jcy9cMaX/Tt3sMROwg+InusAAEsFRZHBSHefjfHsstqoG1rBOx4Bqn5WxruR9x1j2DT
+         iurqpPPo2H0WSbau8NnmUF8Q4FJevrKQm9X93rkyIxjGSxvVJsU2GQMhPgI1pBsijsk2
+         i05luKbDThYpAIXxIYxNsNaOn33+mFnDTiPA8tr4LgutqNtUkTfqfJiR6V8/9v5YeHgg
+         1wqw==
+X-Gm-Message-State: ACgBeo0JeKlGrzAfBbyPYRe/R01sMYGhIsTdN/48ztyomqJR9n9h4BFF
+        ZY2oaCNwiDaUZA27JdVp4n80/w==
+X-Google-Smtp-Source: AA6agR4hZeAYzYRs+PLcDNRErousrS1A4XiKlllB0GiCkfj7oR+Cp1G2Ybl/w45MUb9AH3Bzs9kl+g==
+X-Received: by 2002:a05:6000:114b:b0:220:5ff2:b9dc with SMTP id d11-20020a056000114b00b002205ff2b9dcmr8250922wrx.297.1660550293307;
+        Mon, 15 Aug 2022 00:58:13 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id a10-20020a05600c348a00b003a531c7aa66sm8820073wmq.1.2022.08.15.00.58.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 00:58:12 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 10:58:11 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     abelvesa@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>, Ye Li <ye.li@nxp.com>
+Subject: Re: [PATCH V2] clk: imx8mp: tune the order of enet_qos_root_clk
+Message-ID: <Yvn8k0INnkF40Oky@linaro.org>
+References: <20220815013428.476015-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815013428.476015-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a BUG_ON issue as follows when running xfstest-generic-503:
-WARNING: CPU: 21 PID: 1385 at fs/f2fs/inode.c:762 f2fs_evict_inode+0x847/0xaa0
-Modules linked in:
-CPU: 21 PID: 1385 Comm: umount Not tainted 5.19.0-rc5+ #73
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+On 22-08-15 09:34:28, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> The enet_qos_root_clk takes sim_enet_root_clk as parent. When
+> registering enet_qos_root_clk, it will be put into clk orphan list,
+> because sim_enet_root_clk is not ready.
+> 
+> When sim_enet_root_clk is ready, clk_core_reparent_orphans_nolock will
+> set enet_qos_root_clk parent to sim_enet_root_clk.
+> 
+> Because CLK_OPS_PARENT_ENABLE is set, sim_enet_root_clk will be
+> enabled and disabled during the enet_qos_root_clk reparent phase.
+> 
+> All the above are correct. But with M7 booted early and using
+> enet, M7 enet feature will be broken, because clk driver probe phase
+> disable the needed clks, in case M7 firmware not configure
+> sim_enet_root_clk.
+> 
+> And tune the order would also save cpu cycles.
+> 
+> Reviewed-by: Ye Li <ye.li@nxp.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
-Call Trace:
-evict+0x129/0x2d0
-dispose_list+0x4f/0xb0
-evict_inodes+0x204/0x230
-generic_shutdown_super+0x5b/0x1e0
-kill_block_super+0x29/0x80
-kill_f2fs_super+0xe6/0x140
-deactivate_locked_super+0x44/0xc0
-deactivate_super+0x79/0x90
-cleanup_mnt+0x114/0x1a0
-__cleanup_mnt+0x16/0x20
-task_work_run+0x98/0x100
-exit_to_user_mode_prepare+0x3d0/0x3e0
-syscall_exit_to_user_mode+0x12/0x30
-do_syscall_64+0x42/0x80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
 
-Function flow analysis when BUG occurs:
-f2fs_fallocate                    mmap
-                                  do_page_fault
-                                    pte_spinlock  // ---lock_pte
-                                    do_wp_page
-                                      wp_page_shared
-                                        pte_unmap_unlock   // unlock_pte
-                                          do_page_mkwrite
-                                          f2fs_vm_page_mkwrite
-                                            down_read(i_mmap_sem)
-                                            lock_page
-                                            if (PageMappedToDisk(page))
-                                              goto out;
-                                            // set_page_dirty  --NOT RUN
-                                            out: up_read(i_mmap_sem)
-                                          lock_page
-                                        finish_mkwrite_fault // unlock_pte
-f2fs_collapse_range
-  down_write(i_mmap_sem)
-  truncate_pagecache
-    unmap_mapping_pages
-      i_mmap_lock_write // down_write(i_mmap_rwsem)
-        ......
-        zap_pte_range
-          pte_offset_map_lock // ---lock_pte
-          f2fs_set_data_page_dirty
-            if (!PageDirty(page)) {
-                                        fault_dirty_shared_page
-                                          f2fs_set_data_page_dirty
-                                            if (!PageDirty(page)) {
-                                              __set_page_dirty_nobuffer
-                                              f2fs_update_dirty_page // ++
-                                            }
-                                          unlock_page
-              __set_page_dirty_nobuffers
-              f2fs_update_dirty_page // page count++
-            }
-          pte_unmap_unlock  // --unlock_pte
-      i_mmap_unlock_write  // up_write(i_mmap_rwsem)
-  truncate_inode_pages
-  up_write(i_mmap_sem)
-
-When race happens between mmap-do_page_fault-wp_page_shared and
-fallocate-truncate_pagecache-zap_pte_range, the zap_pte_range calls
-function set_page_dirty without page lock. Besides, though
-truncate_pagecache has immap and pte lock, wp_page_shared calls
-fault_dirty_shared_page without any. In this case, two threads race
-in f2fs_set_data_page_dirty function. Page is set to dirty only ONCE,
-but the count is added TWICE by calling f2fs_update_dirty_page.
-Thus the count of dirty page cannot accord with the real dirty pages.
-
-Following is the solution to in case of race happens without any lock.
-If making sure f2fs_vm_page_mkwrite calls set_page_dirty within immap
-lock area, page will already be dirtied when running into
-fault_dirty_shared_page-f2fs_set_data_page_dirty.
-The count of dirty page will not be increased wrong times.
-
-Signed-off-by: Shuqi Zhang <zhangshuqi3@huawei.com>
----
- fs/f2fs/file.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index ce4905a073b3..d837359a9c00 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -140,7 +140,7 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
- 	 * check to see if the page is mapped already (no holes)
- 	 */
- 	if (PageMappedToDisk(page))
--		goto out_sem;
-+		goto set_dirty;
- 
- 	/* page is wholly or partially inside EOF */
- 	if (((loff_t)(page->index + 1) << PAGE_SHIFT) >
-@@ -150,14 +150,15 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
- 		offset = i_size_read(inode) & ~PAGE_MASK;
- 		zero_user_segment(page, offset, PAGE_SIZE);
- 	}
--	set_page_dirty(page);
--	if (!PageUptodate(page))
--		SetPageUptodate(page);
- 
- 	f2fs_update_iostat(sbi, APP_MAPPED_IO, F2FS_BLKSIZE);
--	f2fs_update_time(sbi, REQ_TIME);
- 
-+set_dirty:
- 	trace_f2fs_vm_page_mkwrite(page, DATA);
-+	set_page_dirty(page);
-+	if (!PageUptodate(page))
-+		SetPageUptodate(page);
-+	f2fs_update_time(sbi, REQ_TIME);
- out_sem:
- 	filemap_invalidate_unlock_shared(inode->i_mapping);
- 
--- 
-2.25.1
-
+> ---
+> 
+> V2:
+>  Use Abel's new address
+> 
+> V1:
+>  Patch got reviewed in NXP internal.
+> 
+>  drivers/clk/imx/clk-imx8mp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/imx/clk-imx8mp.c b/drivers/clk/imx/clk-imx8mp.c
+> index e89db568f5a8..652ae58c2735 100644
+> --- a/drivers/clk/imx/clk-imx8mp.c
+> +++ b/drivers/clk/imx/clk-imx8mp.c
+> @@ -665,8 +665,8 @@ static int imx8mp_clocks_probe(struct platform_device *pdev)
+>  	hws[IMX8MP_CLK_CAN1_ROOT] = imx_clk_hw_gate2("can1_root_clk", "can1", ccm_base + 0x4350, 0);
+>  	hws[IMX8MP_CLK_CAN2_ROOT] = imx_clk_hw_gate2("can2_root_clk", "can2", ccm_base + 0x4360, 0);
+>  	hws[IMX8MP_CLK_SDMA1_ROOT] = imx_clk_hw_gate4("sdma1_root_clk", "ipg_root", ccm_base + 0x43a0, 0);
+> -	hws[IMX8MP_CLK_ENET_QOS_ROOT] = imx_clk_hw_gate4("enet_qos_root_clk", "sim_enet_root_clk", ccm_base + 0x43b0, 0);
+>  	hws[IMX8MP_CLK_SIM_ENET_ROOT] = imx_clk_hw_gate4("sim_enet_root_clk", "enet_axi", ccm_base + 0x4400, 0);
+> +	hws[IMX8MP_CLK_ENET_QOS_ROOT] = imx_clk_hw_gate4("enet_qos_root_clk", "sim_enet_root_clk", ccm_base + 0x43b0, 0);
+>  	hws[IMX8MP_CLK_GPU2D_ROOT] = imx_clk_hw_gate4("gpu2d_root_clk", "gpu2d_core", ccm_base + 0x4450, 0);
+>  	hws[IMX8MP_CLK_GPU3D_ROOT] = imx_clk_hw_gate4("gpu3d_root_clk", "gpu3d_core", ccm_base + 0x4460, 0);
+>  	hws[IMX8MP_CLK_UART1_ROOT] = imx_clk_hw_gate4("uart1_root_clk", "uart1", ccm_base + 0x4490, 0);
+> -- 
+> 2.37.1
+> 
