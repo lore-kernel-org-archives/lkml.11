@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF70C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6C4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239868AbiHOVKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
+        id S230189AbiHOVKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343757AbiHOVFr (ORCPT
+        with ESMTP id S1343703AbiHOVFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:05:47 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F69951433
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:15:07 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Mon, 15 Aug 2022 17:05:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9369D59AD;
+        Mon, 15 Aug 2022 12:15:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 2C02044E47;
-        Mon, 15 Aug 2022 19:15:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1660590905; bh=qqaaeEPVyM0kn+wlB73W5v9RUTLjhjxD0bTjXPsKLTc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=MUGsMWhyajDA1ZUk/xpNWAPGXiNsuhJLSZapOYcsH8J65ov5p7MXVNW4wWtYnxRtq
-         dF5k63BfNZ3QJJ3hKvPQcN6DLqwjESodNVQdMRoyMFbPczGR/oHQYymELOsKWdb6dd
-         buRfqWuFmD+eFUOm7pNTtSRdlPTCUNZHgIRSjGdGY28o8ecf8XIDfu8WamkyxMmS1z
-         TBXtvIEsLFWccPsje9gCHmQtsSySV7zMaxc10Q30M2JU0RSr095MkdYAOldPm2nTXD
-         dYeKdZco8iKuDsmloBu5sPV86KO5dhMguOgZBsY01uvFyagSoLrguVfhBOrew40a+w
-         LWparOodqyBuw==
-Message-ID: <f3f84fc1-50be-0a9b-0538-6ea26dd93b16@marcan.st>
-Date:   Tue, 16 Aug 2022 04:15:00 +0900
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5491BB810C6;
+        Mon, 15 Aug 2022 19:15:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7685DC433D7;
+        Mon, 15 Aug 2022 19:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590904;
+        bh=FxBN7LaxHEX1si3N7YKQqHSv/xxhqf4UY3m1TLZKvMc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DdyxxYlt0XdlbaAPAvF8A7fqIbmhgt09X3dj4G6WGoFjA+lVSzD6oBvdEJyvoGq38
+         lLtDtgzFRPvA+6OgFAbI+LPpZb89zb8rfIGkf+mUb+1qIDSxgN6sS69XdffW5lGp9x
+         gngSFcWsPWI34weyxZQyHSP+u4/ic1e7Ub2Uz/Zs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0409/1095] drm/rockchip: vop: Dont crash for invalid duplicate_state()
+Date:   Mon, 15 Aug 2022 19:56:48 +0200
+Message-Id: <20220815180446.629620476@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: Debugging a TTY race condition on M1 (memory ordering dragons)
-Content-Language: es-ES
-To:     Boqun Feng <boqun.feng@gmail.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Asahi Linux <asahi@lists.linux.dev>,
-        Oliver Neukum <oneukum@suse.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <6c089268-4f2c-9fdf-7bcb-107b611fbc21@marcan.st>
- <20220815134711.GA10374@willie-the-truck>
- <63cd54a8-3c48-d1b9-406a-c521bd02ee4a@marcan.st>
- <YvqKtJn5eBsDJXBI@boqun-archlinux>
- <8ccfdd2d-ef77-4586-e50c-985e1d13726a@marcan.st>
- <YvqXbApYbGGEqQl+@boqun-archlinux>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <YvqXbApYbGGEqQl+@boqun-archlinux>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 03.58, Boqun Feng wrote:
-> I agree this is handy, but an unconditional full barrier may be costy to
-> some users, and probably unnecessary if the users periodically queue
-> the work. In that case, some successful enqueue will eventually make all
-> memory accesses observable. Also if workqueue users use their own
-> locking in work function, then the barrier is also unnecessary.
-> 
-> The document part of course needs some help to clear things up. But I'm
-> not sure "strengthen"ing the ordering guarantee of queue_work() is a
-> good idea. Maybe a dedicated API, like:
-> 
-> // More work is needed for the @work, it has the same semantics as
-> // queue_work() if the @work is not pending. If the @work is pending,
-> // this ensures the work function observes all memory access before
-> // this.
-> void queue_more_work(struct work_struct *work)
-> {
-> 	smp_mb();
-> 	queue_work(work);
-> }
-> 
-> Regards,
-> Boqun
+From: Brian Norris <briannorris@chromium.org>
 
-FWIW, I didn't actually use a full barrier in my patch. I just replaced
-the test_and_set_bit() with the underlying atomic op, sans early exit path.
+[ Upstream commit 1449110b0dade8b638d2c17ab7c5b0ff696bfccb ]
 
-Personally though, I think it makes more sense to have the default
-function provide the guarantees, and if someone *really* needs the
-performance gain from eliding the implicit barrier, they could use an
-alternate API for that (after they show useful gains). This stuff is too
-subtle to expect every caller to wrap their head around memory ordering,
-and having queue_work() always provide order with prior stores *feels*
-intuitive.
+It's possible for users to try to duplicate the CRTC state even when the
+state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
+users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
+with a WARN_ON() instead of crashing, so let's do that here too.
 
-But let's see what the workqueue folks say :)
+Fixes: 4e257d9eee23 ("drm/rockchip: get rid of rockchip_drm_crtc_mode_config")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-- Hector
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index d53037531f40..26e24f62f75f 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -1552,6 +1552,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
+ {
+ 	struct rockchip_crtc_state *rockchip_state;
+ 
++	if (WARN_ON(!crtc->state))
++		return NULL;
++
+ 	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
+ 	if (!rockchip_state)
+ 		return NULL;
+-- 
+2.35.1
+
+
+
