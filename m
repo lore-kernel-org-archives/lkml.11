@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DF4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A886AC282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233159AbiHPEun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        id S231710AbiHPEwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233263AbiHPEqi (ORCPT
+        with ESMTP id S232662AbiHPErl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF934B249B;
-        Mon, 15 Aug 2022 13:43:30 -0700 (PDT)
+        Tue, 16 Aug 2022 00:47:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3419B07C2;
+        Mon, 15 Aug 2022 13:43:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2A7DB81197;
-        Mon, 15 Aug 2022 20:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03638C433C1;
-        Mon, 15 Aug 2022 20:43:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF88860F60;
+        Mon, 15 Aug 2022 20:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D9DC433C1;
+        Mon, 15 Aug 2022 20:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596207;
-        bh=zqRJVTqnhVnCcS8AAZW3JKoLlu8MDd4u9JRcij25GfU=;
+        s=korg; t=1660596198;
+        bh=8h8eRryY+Nlcy5QakMX7qwQudFKSukdR+46jHwLhkvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbjBukhuAnusNpHiF6Eg9v1CLdK5NzXxRmai34uuFCkjwkKZ6hRA2qaGFnDeXY4i+
-         FJq452Dv2z8zkEjGS7gOxCJvkCbCt+5rjTbw6HLToyAyX0WvaWgTKGe5/4kD8RhIvh
-         hchm/GlfdzD1rhqD/MplwFaRIMl7aA7+eWaWAnv4=
+        b=MQHMQWAMLFVhqExyA1393Fe1KH/uIrirAmcYGKhRsCVVYNT1tIzBk1vcfb4CFcWVj
+         QMlYylzR5zgKgjrsm1FIgx6YzmGJOCEHnSo7h4qcnF/S7SectZ0+u2HwEZ3TclQWPi
+         gqujlRYKtKO2HRzFZqv7nWzwaXOm9dU5XawrPLnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1005/1157] perf stat: Revert "perf stat: Add default hybrid events"
-Date:   Mon, 15 Aug 2022 20:06:01 +0200
-Message-Id: <20220815180520.003520098@linuxfoundation.org>
+Subject: [PATCH 5.19 1002/1157] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Mon, 15 Aug 2022 20:05:58 +0200
+Message-Id: <20220815180519.873396149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -56,90 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 
-[ Upstream commit ace3e31e653e79cae9b047e85f567e6b44c98532 ]
+[ Upstream commit c474c775716edd46a51bf8161142bbd1545f8733 ]
 
-This reverts commit Fixes: ac2dc29edd21f9ec ("perf stat: Add default
-hybrid events")
+In the logic around call to clk_round_rate(), for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-Between this patch and the reverted patch, the commit 6c1912898ed21bef
-("perf parse-events: Rename parse_events_error functions") and the
-commit 07eafd4e053a41d7 ("perf parse-event: Add init and exit to
-parse_event_error") clean up the parse_events_error_*() codes. The
-related change is also reverted.
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-The reverted patch is hard to be extended to support new default events,
-e.g., Topdown events, and the existing "--detailed" option on a hybrid
-platform.
-
-A new solution will be proposed in the following patch to enable the
-perf stat default on a hybrid platform.
-
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220721065706.2886112-2-zhengjun.xing@linux.intel.com
-Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Link: https://lore.kernel.org/r/1657911343-1909-1-git-send-email-quic_vnivarth@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-stat.c | 30 ------------------------------
- 1 file changed, 30 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 88 ++++++++++++++++-----------
+ 1 file changed, 53 insertions(+), 35 deletions(-)
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index d2ecd4d29624..86f838c5661e 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -1685,12 +1685,6 @@ static int add_default_attributes(void)
-   { .type = PERF_TYPE_HARDWARE, .config = PERF_COUNT_HW_BRANCH_INSTRUCTIONS	},
-   { .type = PERF_TYPE_HARDWARE, .config = PERF_COUNT_HW_BRANCH_MISSES		},
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f8f950641ad9..f754619451dc 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -940,52 +940,63 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
  
--};
--	struct perf_event_attr default_sw_attrs[] = {
--  { .type = PERF_TYPE_SOFTWARE, .config = PERF_COUNT_SW_TASK_CLOCK		},
--  { .type = PERF_TYPE_SOFTWARE, .config = PERF_COUNT_SW_CONTEXT_SWITCHES	},
--  { .type = PERF_TYPE_SOFTWARE, .config = PERF_COUNT_SW_CPU_MIGRATIONS		},
--  { .type = PERF_TYPE_SOFTWARE, .config = PERF_COUNT_SW_PAGE_FAULTS		},
- };
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol)
+ {
+-	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
++	unsigned long freq;
+ 	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	u64 mult;
++	unsigned long offset, abs_tol, achieved;
  
- /*
-@@ -1947,30 +1941,6 @@ static int add_default_attributes(void)
++	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
+-
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	div = 1;
++	while (div <= maxdiv) {
++		mult = (u64)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
+-		if (!(freq % desired_clk)) {
+-			ser_clk = freq;
+-			break;
+-		}
++		offset = div * abs_tol;
++		freq = clk_round_rate(clk, mult - offset);
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
++		/* Can only get lower if we're done */
++		if (freq < mult - offset)
+ 			break;
+ 
+-		prev = freq;
+-	}
++		/*
++		 * Re-calculate div in case rounding skipped rates but we
++		 * ended up at a good one, then check for a match.
++		 */
++		div = DIV_ROUND_CLOSEST(freq, desired_clk);
++		achieved = DIV_ROUND_CLOSEST(freq, div);
++		if (achieved <= desired_clk + abs_tol &&
++		    achieved >= desired_clk - abs_tol) {
++			*clk_div = div;
++			return freq;
++		}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
+-		return ser_clk;
++		div = DIV_ROUND_UP(freq, desired_clk);
  	}
  
- 	if (!evsel_list->core.nr_entries) {
--		if (perf_pmu__has_hybrid()) {
--			struct parse_events_error errinfo;
--			const char *hybrid_str = "cycles,instructions,branches,branch-misses";
--
--			if (target__has_cpu(&target))
--				default_sw_attrs[0].config = PERF_COUNT_SW_CPU_CLOCK;
--
--			if (evlist__add_default_attrs(evsel_list,
--						      default_sw_attrs) < 0) {
--				return -1;
--			}
--
--			parse_events_error__init(&errinfo);
--			err = parse_events(evsel_list, hybrid_str, &errinfo);
--			if (err) {
--				fprintf(stderr,
--					"Cannot set up hybrid events %s: %d\n",
--					hybrid_str, err);
--				parse_events_error__print(&errinfo, hybrid_str);
--			}
--			parse_events_error__exit(&errinfo);
--			return err ? -1 : 0;
--		}
--
- 		if (target__has_cpu(&target))
- 			default_attrs0[0].config = PERF_COUNT_SW_CPU_CLOCK;
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	return 0;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
++			unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk)
++		return 0;
++
++	/*
++	 * try to find a clock rate within 2% tolerance, then within 5%
++	 */
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
++	if (!ser_clk)
++		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
  
+ 	return ser_clk;
+ }
+@@ -1020,8 +1031,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 
+ 	clk_rate = get_clk_div_rate(port->se.clk, baud,
+ 		sampling_rate, &clk_div);
+-	if (!clk_rate)
++	if (!clk_rate) {
++		dev_err(port->se.dev,
++			"Couldn't find suitable clock rate for %lu\n",
++			baud * sampling_rate);
+ 		goto out_restart_rx;
++	}
++
++	dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
++			baud * sampling_rate, clk_rate, clk_div);
+ 
+ 	uport->uartclk = clk_rate;
+ 	dev_pm_opp_set_rate(uport->dev, clk_rate);
 -- 
 2.35.1
 
