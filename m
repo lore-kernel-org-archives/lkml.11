@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9423C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F00BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241918AbiHOT6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
+        id S230123AbiHOT67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345975AbiHOT4r (ORCPT
+        with ESMTP id S1345997AbiHOT4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:56:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719D57697E;
-        Mon, 15 Aug 2022 11:52:42 -0700 (PDT)
+        Mon, 15 Aug 2022 15:56:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BB578200;
+        Mon, 15 Aug 2022 11:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D89C7B810A1;
-        Mon, 15 Aug 2022 18:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD67C433C1;
-        Mon, 15 Aug 2022 18:52:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39D4FB810AB;
+        Mon, 15 Aug 2022 18:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FAF0C433C1;
+        Mon, 15 Aug 2022 18:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589559;
-        bh=J49d4DEptKMWjWx4b8cin41uCtkezrgo6ZY79QE+qhg=;
+        s=korg; t=1660589562;
+        bh=eFaHFkpV57iAEFT1udc1njZg4czBYhPhe2DlhD1mYqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVge0nTwV7rBPzYflRo9xPNfPMtZpNoeAwUIw/+NuLk71VBO8froQTopdyRJvhUW5
-         GhiaUoh1bCLsXjMHGwh0Okr1L3vz/lnHuTjV9YrQP/p4ZC9NzL0bIUn3r8VsYb6xmk
-         p2lWNURIThBWr4SibMgStP9qKSzptlRCCA4LRBx8=
+        b=BtpWjTC6wzHXVStPWPzc4P8fkfBb5UYkcHR+WEYJyLnAkWKYZG6ONFGLkH9kXic4G
+         Ld4WuPPxbLY3i/MEl210b8ZAVSJ1X6RnjlYIKDw/bfSzWL6MsLgBFkvIYGQl0xh1uF
+         UGNQY8UYW2fb7Ra8O8TfGgRusBfGmOuTYhbuclm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maximilian Heyne <mheyne@amazon.de>,
-        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 756/779] xen-blkback: fix persistent grants negotiation
-Date:   Mon, 15 Aug 2022 20:06:40 +0200
-Message-Id: <20220815180409.784025415@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 730/779] ACPI: CPPC: Do not prevent CPPC from working in the future
+Date:   Mon, 15 Aug 2022 20:06:14 +0200
+Message-Id: <20220815180408.656338304@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,90 +49,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: SeongJae Park <sj@kernel.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit fc9be616bb8f3ed9cf560308f86904f5c06be205 upstream.
+[ Upstream commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 ]
 
-Persistent grants feature can be used only when both backend and the
-frontend supports the feature.  The feature was always supported by
-'blkback', but commit aac8a70db24b ("xen-blkback: add a parameter for
-disabling of persistent grants") has introduced a parameter for
-disabling it runtime.
+There is a problem with the current revision checks in
+is_cppc_supported() that they essentially prevent the CPPC support
+from working if a new _CPC package format revision being a proper
+superset of the v3 and only causing _CPC to return a package with more
+entries (while retaining the types and meaning of the entries defined by
+the v3) is introduced in the future and used by the platform firmware.
 
-To avoid the parameter be updated while being used by 'blkback', the
-commit caches the parameter into 'vbd->feature_gnt_persistent' in
-'xen_vbd_create()', and then check if the guest also supports the
-feature and finally updates the field in 'connect_ring()'.
+In that case, as long as the number of entries in the _CPC return
+package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
+use the v3 support code and disregard the additional package entries
+added by the new package format revision.
 
-However, 'connect_ring()' could be called before 'xen_vbd_create()', so
-later execution of 'xen_vbd_create()' can wrongly overwrite 'true' to
-'vbd->feature_gnt_persistent'.  As a result, 'blkback' could try to use
-'persistent grants' feature even if the guest doesn't support the
-feature.
+For this reason, drop is_cppc_supported() altogether, put the revision
+checks directly into acpi_cppc_processor_probe() so they are easier to
+follow and rework them to take the case mentioned above into account.
 
-This commit fixes the issue by moving the parameter value caching to
-'xen_blkif_alloc()', which allocates the 'blkif'.  Because the struct
-embeds 'vbd' object, which will be used by 'connect_ring()' later, this
-should be called before 'connect_ring()' and therefore this should be
-the right and safe place to do the caching.
-
-Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-Signed-off-by: SeongJae Park <sj@kernel.org>
-Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220715225108.193398-2-sj@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
+Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/xen-blkback/xenbus.c |   15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/acpi/cppc_acpi.c | 54 ++++++++++++++++++----------------------
+ include/acpi/cppc_acpi.h |  2 +-
+ 2 files changed, 25 insertions(+), 31 deletions(-)
 
---- a/drivers/block/xen-blkback/xenbus.c
-+++ b/drivers/block/xen-blkback/xenbus.c
-@@ -156,6 +156,11 @@ static int xen_blkif_alloc_rings(struct
+diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+index ed1341030684..7cc9183c8dc8 100644
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -597,33 +597,6 @@ static int pcc_data_alloc(int pcc_ss_id)
  	return 0;
  }
  
-+/* Enable the persistent grants feature. */
-+static bool feature_persistent = true;
-+module_param(feature_persistent, bool, 0644);
-+MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
-+
- static struct xen_blkif *xen_blkif_alloc(domid_t domid)
- {
- 	struct xen_blkif *blkif;
-@@ -180,6 +185,8 @@ static struct xen_blkif *xen_blkif_alloc
- 	__module_get(THIS_MODULE);
- 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
- 
-+	blkif->vbd.feature_gnt_persistent = feature_persistent;
-+
- 	return blkif;
- }
- 
-@@ -471,12 +478,6 @@ static void xen_vbd_free(struct xen_vbd
- 	vbd->bdev = NULL;
- }
- 
--/* Enable the persistent grants feature. */
--static bool feature_persistent = true;
--module_param(feature_persistent, bool, 0644);
--MODULE_PARM_DESC(feature_persistent,
--		"Enables the persistent grants feature");
+-/* Check if CPPC revision + num_ent combination is supported */
+-static bool is_cppc_supported(int revision, int num_ent)
+-{
+-	int expected_num_ent;
 -
- static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
- 			  unsigned major, unsigned minor, int readonly,
- 			  int cdrom)
-@@ -522,8 +523,6 @@ static int xen_vbd_create(struct xen_blk
- 	if (q && blk_queue_secure_erase(q))
- 		vbd->discard_secure = true;
- 
--	vbd->feature_gnt_persistent = feature_persistent;
+-	switch (revision) {
+-	case CPPC_V2_REV:
+-		expected_num_ent = CPPC_V2_NUM_ENT;
+-		break;
+-	case CPPC_V3_REV:
+-		expected_num_ent = CPPC_V3_NUM_ENT;
+-		break;
+-	default:
+-		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
+-			revision);
+-		return false;
+-	}
 -
- 	pr_debug("Successful creation of handle=%04x (dom=%u)\n",
- 		handle, blkif->domid);
- 	return 0;
+-	if (expected_num_ent != num_ent) {
+-		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
+-			num_ent, expected_num_ent, revision);
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+ /*
+  * An example CPC table looks like the following.
+  *
+@@ -723,7 +696,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
+ 				cpc_obj->type);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->num_entries = num_ent;
+ 
+ 	/* Second entry should be revision. */
+ 	cpc_obj = &out_obj->package.elements[1];
+@@ -734,10 +706,32 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
+ 				cpc_obj->type);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->version = cpc_rev;
+ 
+-	if (!is_cppc_supported(cpc_rev, num_ent))
++	if (cpc_rev < CPPC_V2_REV) {
++		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
++			 pr->id);
++		goto out_free;
++	}
++
++	/*
++	 * Disregard _CPC if the number of entries in the return pachage is not
++	 * as expected, but support future revisions being proper supersets of
++	 * the v3 and only causing more entries to be returned by _CPC.
++	 */
++	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
++	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
++	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
++		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
++			 num_ent, pr->id);
+ 		goto out_free;
++	}
++	if (cpc_rev > CPPC_V3_REV) {
++		num_ent = CPPC_V3_NUM_ENT;
++		cpc_rev = CPPC_V3_REV;
++	}
++
++	cpc_ptr->num_entries = num_ent;
++	cpc_ptr->version = cpc_rev;
+ 
+ 	/* Iterate through remaining entries in _CPC */
+ 	for (i = 2; i < num_ent; i++) {
+diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
+index bc159a9b4a73..6b14414b9ec1 100644
+--- a/include/acpi/cppc_acpi.h
++++ b/include/acpi/cppc_acpi.h
+@@ -17,7 +17,7 @@
+ #include <acpi/pcc.h>
+ #include <acpi/processor.h>
+ 
+-/* Support CPPCv2 and CPPCv3  */
++/* CPPCv2 and CPPCv3 support */
+ #define CPPC_V2_REV	2
+ #define CPPC_V3_REV	3
+ #define CPPC_V2_NUM_ENT	21
+-- 
+2.35.1
+
 
 
