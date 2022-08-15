@@ -2,226 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC816C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54473C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242637AbiHOXjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S1345952AbiHOXjw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353888AbiHOXgu (ORCPT
+        with ESMTP id S1353900AbiHOXgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:36:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5D482FB9;
+        Mon, 15 Aug 2022 19:36:51 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE30782F80;
         Mon, 15 Aug 2022 13:09:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13A7DB810C5;
-        Mon, 15 Aug 2022 20:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D64C433C1;
-        Mon, 15 Aug 2022 20:09:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594166;
-        bh=v79BDIz+bJxNdmMCpKkjIK9UA5+kvyKRUyd0IFt9G2Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IUMgZ9pqZaYZlwUMb9EPaEuUc5GDv9pPzl+/nLtqlcAMDj+Rtq5nIOgWPmvZ67X/E
-         XUKYXNk2qBw1DHNcfglVu7mdbVEEe3Su1qR1YR7CJXprNNakxm2L1N9K8FEX059W1v
-         qi9iEdshRg85XOFF3dX/qTiuVFDyz6elcjjaLMF0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        Ritesh Harjani <ritesh.list@gmail.com>
-Subject: [PATCH 5.18 1066/1095] ext4: fix race when reusing xattr blocks
-Date:   Mon, 15 Aug 2022 20:07:45 +0200
-Message-Id: <20220815180513.145436023@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=j2447HleS4DZ4bCY1Uc5ZeerWZpk2ShbXplreI9Wu+I=; b=XKwsXUL7HkZMtobsnhd4VwDrt7
+        18FvZmDomuG990H123wQK+O+zNBnYHwYW9vebxqpw/njGrNYO7Nqkjws21CoRMC8M2jTp62mdHNP8
+        YR9n6s/l6z7O8qGepB7Doc/pHeqtbSY2Zb/W7WeHB08KOlVgA+vit2hI4/V2MJwq6HOPsd0fYqsMV
+        wrACJfOaHUqer5Y85dSzOgNlPq8mBXQ+EMtbc2L3ipN+jWBwsdACtpfA2xdgG93zK94W3DtK3Nmsa
+        w+LBaSWt9AoBaM/20fg2AlqIFoyNw1TeQqdrw3DwxbbltF3/eQMS/eyHEYDGGwQUz/uMt6z6XmI03
+        qi2H6FFQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNgOn-0063I6-TP; Mon, 15 Aug 2022 20:09:22 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 47A81980264; Mon, 15 Aug 2022 22:09:20 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 22:09:20 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Subject: Re: Simplify load_unaligned_zeropad() (was Re: [GIT PULL] Ceph
+ updates for 5.20-rc1)
+Message-ID: <Yvqn8BqE7FdB6Ccd@worktop.programming.kicks-ass.net>
+References: <CAHk-=wh1xHi-WeytuAK1-iSsR0wi=6e4-WgFq6ZPt8Z1mvqoNA@mail.gmail.com>
+ <Yvny9L3tw1EolqQ4@worktop.programming.kicks-ass.net>
+ <CAHk-=whnEN3Apb5gRXSZK7BM+MOby9VCZe3sDcW34Zme_wk3uA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whnEN3Apb5gRXSZK7BM+MOby9VCZe3sDcW34Zme_wk3uA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+On Mon, Aug 15, 2022 at 08:58:21AM -0700, Linus Torvalds wrote:
+> And no, disassembling the instruction wouldn't kill us either (we know
+> it's a "mov" instruction, so it's just the modrm bytes), but again it
+> really didn't seem worth the pain. The generated code with the fixed
+> registers wasn't optimal, but it was close enough that it really
+> doesn't seem to matter.
 
-[ Upstream commit 65f8b80053a1b2fd602daa6814e62d6fa90e5e9b ]
-
-When ext4_xattr_block_set() decides to remove xattr block the following
-race can happen:
-
-CPU1                                    CPU2
-ext4_xattr_block_set()                  ext4_xattr_release_block()
-  new_bh = ext4_xattr_block_cache_find()
-
-                                          lock_buffer(bh);
-                                          ref = le32_to_cpu(BHDR(bh)->h_refcount);
-                                          if (ref == 1) {
-                                            ...
-                                            mb_cache_entry_delete();
-                                            unlock_buffer(bh);
-                                            ext4_free_blocks();
-                                              ...
-                                              ext4_forget(..., bh, ...);
-                                                jbd2_journal_revoke(..., bh);
-
-  ext4_journal_get_write_access(..., new_bh, ...)
-    do_get_write_access()
-      jbd2_journal_cancel_revoke(..., new_bh);
-
-Later the code in ext4_xattr_block_set() finds out the block got freed
-and cancels reusal of the block but the revoke stays canceled and so in
-case of block reuse and journal replay the filesystem can get corrupted.
-If the race works out slightly differently, we can also hit assertions
-in the jbd2 code.
-
-Fix the problem by making sure that once matching mbcache entry is
-found, code dropping the last xattr block reference (or trying to modify
-xattr block in place) waits until the mbcache entry reference is
-dropped. This way code trying to reuse xattr block is protected from
-someone trying to drop the last reference to xattr block.
-
-Reported-and-tested-by: Ritesh Harjani <ritesh.list@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 82939d7999df ("ext4: convert to mbcache2")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220712105436.32204-5-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ext4/xattr.c | 67 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 45 insertions(+), 22 deletions(-)
-
-diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
-index a25942a74929..533216e80fa2 100644
---- a/fs/ext4/xattr.c
-+++ b/fs/ext4/xattr.c
-@@ -439,9 +439,16 @@ static int ext4_xattr_inode_iget(struct inode *parent, unsigned long ea_ino,
- /* Remove entry from mbcache when EA inode is getting evicted */
- void ext4_evict_ea_inode(struct inode *inode)
- {
--	if (EA_INODE_CACHE(inode))
--		mb_cache_entry_delete(EA_INODE_CACHE(inode),
--			ext4_xattr_inode_get_hash(inode), inode->i_ino);
-+	struct mb_cache_entry *oe;
-+
-+	if (!EA_INODE_CACHE(inode))
-+		return;
-+	/* Wait for entry to get unused so that we can remove it */
-+	while ((oe = mb_cache_entry_delete_or_get(EA_INODE_CACHE(inode),
-+			ext4_xattr_inode_get_hash(inode), inode->i_ino))) {
-+		mb_cache_entry_wait_unused(oe);
-+		mb_cache_entry_put(EA_INODE_CACHE(inode), oe);
-+	}
- }
- 
- static int
-@@ -1229,6 +1236,7 @@ ext4_xattr_release_block(handle_t *handle, struct inode *inode,
- 	if (error)
- 		goto out;
- 
-+retry_ref:
- 	lock_buffer(bh);
- 	hash = le32_to_cpu(BHDR(bh)->h_hash);
- 	ref = le32_to_cpu(BHDR(bh)->h_refcount);
-@@ -1238,9 +1246,18 @@ ext4_xattr_release_block(handle_t *handle, struct inode *inode,
- 		 * This must happen under buffer lock for
- 		 * ext4_xattr_block_set() to reliably detect freed block
- 		 */
--		if (ea_block_cache)
--			mb_cache_entry_delete(ea_block_cache, hash,
--					      bh->b_blocknr);
-+		if (ea_block_cache) {
-+			struct mb_cache_entry *oe;
-+
-+			oe = mb_cache_entry_delete_or_get(ea_block_cache, hash,
-+							  bh->b_blocknr);
-+			if (oe) {
-+				unlock_buffer(bh);
-+				mb_cache_entry_wait_unused(oe);
-+				mb_cache_entry_put(ea_block_cache, oe);
-+				goto retry_ref;
-+			}
-+		}
- 		get_bh(bh);
- 		unlock_buffer(bh);
- 
-@@ -1867,9 +1884,20 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 			 * ext4_xattr_block_set() to reliably detect modified
- 			 * block
- 			 */
--			if (ea_block_cache)
--				mb_cache_entry_delete(ea_block_cache, hash,
--						      bs->bh->b_blocknr);
-+			if (ea_block_cache) {
-+				struct mb_cache_entry *oe;
-+
-+				oe = mb_cache_entry_delete_or_get(ea_block_cache,
-+					hash, bs->bh->b_blocknr);
-+				if (oe) {
-+					/*
-+					 * Xattr block is getting reused. Leave
-+					 * it alone.
-+					 */
-+					mb_cache_entry_put(ea_block_cache, oe);
-+					goto clone_block;
-+				}
-+			}
- 			ea_bdebug(bs->bh, "modifying in-place");
- 			error = ext4_xattr_set_entry(i, s, handle, inode,
- 						     true /* is_block */);
-@@ -1885,6 +1913,7 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 				goto cleanup;
- 			goto inserted;
- 		}
-+clone_block:
- 		unlock_buffer(bs->bh);
- 		ea_bdebug(bs->bh, "cloning");
- 		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
-@@ -1990,18 +2019,13 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 				lock_buffer(new_bh);
- 				/*
- 				 * We have to be careful about races with
--				 * freeing, rehashing or adding references to
--				 * xattr block. Once we hold buffer lock xattr
--				 * block's state is stable so we can check
--				 * whether the block got freed / rehashed or
--				 * not.  Since we unhash mbcache entry under
--				 * buffer lock when freeing / rehashing xattr
--				 * block, checking whether entry is still
--				 * hashed is reliable. Same rules hold for
--				 * e_reusable handling.
-+				 * adding references to xattr block. Once we
-+				 * hold buffer lock xattr block's state is
-+				 * stable so we can check the additional
-+				 * reference fits.
- 				 */
--				if (hlist_bl_unhashed(&ce->e_hash_list) ||
--				    !ce->e_reusable) {
-+				ref = le32_to_cpu(BHDR(new_bh)->h_refcount) + 1;
-+				if (ref > EXT4_XATTR_REFCOUNT_MAX) {
- 					/*
- 					 * Undo everything and check mbcache
- 					 * again.
-@@ -2016,9 +2040,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 					new_bh = NULL;
- 					goto inserted;
- 				}
--				ref = le32_to_cpu(BHDR(new_bh)->h_refcount) + 1;
- 				BHDR(new_bh)->h_refcount = cpu_to_le32(ref);
--				if (ref >= EXT4_XATTR_REFCOUNT_MAX)
-+				if (ref == EXT4_XATTR_REFCOUNT_MAX)
- 					ce->e_reusable = 0;
- 				ea_bdebug(new_bh, "reusing; refcount now=%d",
- 					  ref);
--- 
-2.35.1
-
-
-
+I'm not at all suggesting we do this; but it might be
+insn_get_addr_ref() does what is needed.
