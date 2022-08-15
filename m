@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A152C32763
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D76C2BB47
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355093AbiHOXrE (ORCPT
+        id S1354892AbiHOXqp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        Mon, 15 Aug 2022 19:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354325AbiHOXlx (ORCPT
+        with ESMTP id S1354316AbiHOXlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048B32C66C;
-        Mon, 15 Aug 2022 13:12:41 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBB82C64F;
+        Mon, 15 Aug 2022 13:12:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E4A60B9B;
-        Mon, 15 Aug 2022 20:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8002EC433D6;
-        Mon, 15 Aug 2022 20:12:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 001B7CE12EB;
+        Mon, 15 Aug 2022 20:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FBA4C433C1;
+        Mon, 15 Aug 2022 20:12:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594360;
-        bh=wGmzxuR/0P2E5LaW6gBwW3BBKMxMqFowNKE4fr6qJi8=;
+        s=korg; t=1660594338;
+        bh=Wfw8rRoaZ6N/NdQxj2mH6K/qXFAUdGxq9Vm0O0/U+n4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/U5D6ihR8X8GMc3cP/tiDUxvyZq7vh582+kcuxOOQkJswbKzFFNUEnn483mnntLW
-         Ac7fG64volYeU+fAtjzHNNTEHkMQjOkZ00y3IgjLJ80WvF5Fi8jzMRJR4Su0eIj6CJ
-         wvyGRBGgGJu4GD90W43Pp+FPaiGqUuTs5vnlqaXg=
+        b=OVQ1igbglSrvhoudwneHyLJWbr2aVKop/xNnAUE7helzN0hCSUyBFWpYuEWo1rddY
+         Fu/f42y35EybUfMB4Qx2Ei6lwszlym43zZJTWJiBjCJ17nN7HFewF3Bj+NUAWY7D8c
+         iaLotyDVpuaAdLwjgi/xcb1TCGYAgH0ncFCPH8tE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0421/1157] drm/vc4: hdmi: Fix timings for interlaced modes
-Date:   Mon, 15 Aug 2022 19:56:17 +0200
-Message-Id: <20220815180456.509015789@linuxfoundation.org>
+Subject: [PATCH 5.19 0416/1157] drm/vc4: hdmi: Clear unused infoframe packet RAM registers
+Date:   Mon, 15 Aug 2022 19:56:12 +0200
+Message-Id: <20220815180456.289106333@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,96 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+From: Dom Cobley <popcornmix@gmail.com>
 
-[ Upstream commit 0ee5a40152b15f200ed3a0d51e8aa782ea979c6a ]
+[ Upstream commit b6079d1578dc4b4b8050d613a5449a63def7d1dd ]
 
-Increase the number of post-sync blanking lines on odd fields instead of
-decreasing it on even fields. This makes the total number of lines
-properly match the modelines.
+Using a hdmi analyser the bytes in packet ram
+registers beyond the length were visible in the
+infoframes and it flagged the checksum as invalid.
 
-Additionally fix the value of PV_VCONTROL_ODD_DELAY, which did not take
-pixels_per_clock into account, causing some displays to invert the
-fields when driven by bcm2711.
+Zeroing unused words of packet RAM avoids this
 
-Fixes: 682e62c45406 ("drm/vc4: Fix support for interlaced modes on HDMI.")
-Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-31-maxime@cerno.tech
+Fixes: 21317b3fba54 ("drm/vc4: Set up the AVI and SPD infoframes.")
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-20-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c |  7 ++++---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 12 ++++++------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 12a5944ee980..b2628afcb327 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -346,7 +346,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
- 				 PV_HORZB_HACTIVE));
- 
- 	CRTC_WRITE(PV_VERTA,
--		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				 interlace,
- 				 PV_VERTA_VBP) |
- 		   VC4_SET_FIELD(mode->crtc_vsync_end - mode->crtc_vsync_start,
- 				 PV_VERTA_VSYNC));
-@@ -358,7 +359,7 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
- 	if (interlace) {
- 		CRTC_WRITE(PV_VERTA_EVEN,
- 			   VC4_SET_FIELD(mode->crtc_vtotal -
--					 mode->crtc_vsync_end - 1,
-+					 mode->crtc_vsync_end,
- 					 PV_VERTA_VBP) |
- 			   VC4_SET_FIELD(mode->crtc_vsync_end -
- 					 mode->crtc_vsync_start,
-@@ -378,7 +379,7 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
- 			   PV_VCONTROL_CONTINUOUS |
- 			   (is_dsi ? PV_VCONTROL_DSI : 0) |
- 			   PV_VCONTROL_INTERLACE |
--			   VC4_SET_FIELD(mode->htotal * pixel_rep / 2,
-+			   VC4_SET_FIELD(mode->htotal * pixel_rep / (2 * ppc),
- 					 PV_VCONTROL_ODD_DELAY));
- 		CRTC_WRITE(PV_VSYNCD_EVEN, 0);
- 	} else {
 diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index f3e0de6515e0..674bd29a7cf2 100644
+index e314e0a4c4c3..ecd49214bd92 100644
 --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
 +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -988,12 +988,12 @@ static void vc4_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
- 				   VC4_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC4_HDMI_VERTA_VAL));
- 	u32 vertb = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				   interlaced,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end -
--					interlaced,
-+					mode->crtc_vsync_end,
- 					VC4_HDMI_VERTB_VBP));
+@@ -461,9 +461,11 @@ static void vc4_hdmi_write_infoframe(struct drm_encoder *encoder,
+ 	const struct vc4_hdmi_register *ram_packet_start =
+ 		&vc4_hdmi->variant->registers[HDMI_RAM_PACKET_START];
+ 	u32 packet_reg = ram_packet_start->offset + VC4_HDMI_PACKET_STRIDE * packet_id;
++	u32 packet_reg_next = ram_packet_start->offset +
++		VC4_HDMI_PACKET_STRIDE * (packet_id + 1);
+ 	void __iomem *base = __vc4_hdmi_get_field_base(vc4_hdmi,
+ 						       ram_packet_start->reg);
+-	uint8_t buffer[VC4_HDMI_PACKET_STRIDE];
++	uint8_t buffer[VC4_HDMI_PACKET_STRIDE] = {};
  	unsigned long flags;
+ 	ssize_t len, i;
+ 	int ret;
+@@ -499,6 +501,13 @@ static void vc4_hdmi_write_infoframe(struct drm_encoder *encoder,
+ 		packet_reg += 4;
+ 	}
  
-@@ -1041,12 +1041,12 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
- 				   VC5_HDMI_VERTA_VFP) |
- 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
- 	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
--		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
-+		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
-+				   interlaced,
- 				   VC4_HDMI_VERTB_VBP));
- 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
- 			  VC4_SET_FIELD(mode->crtc_vtotal -
--					mode->crtc_vsync_end -
--					interlaced,
-+					mode->crtc_vsync_end,
- 					VC4_HDMI_VERTB_VBP));
- 	unsigned long flags;
- 	unsigned char gcp;
++	/*
++	 * clear remainder of packet ram as it's included in the
++	 * infoframe and triggers a checksum error on hdmi analyser
++	 */
++	for (; packet_reg < packet_reg_next; packet_reg += 4)
++		writel(0, base + packet_reg);
++
+ 	HDMI_WRITE(HDMI_RAM_PACKET_CONFIG,
+ 		   HDMI_READ(HDMI_RAM_PACKET_CONFIG) | BIT(packet_id));
+ 
 -- 
 2.35.1
 
