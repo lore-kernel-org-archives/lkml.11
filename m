@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A21DDC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A18C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344981AbiHOVzH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
+        id S230366AbiHOVzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349970AbiHOVwJ (ORCPT
+        with ESMTP id S1350293AbiHOVws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:52:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47107107F1B;
-        Mon, 15 Aug 2022 12:33:17 -0700 (PDT)
+        Mon, 15 Aug 2022 17:52:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8447108945;
+        Mon, 15 Aug 2022 12:33:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0416114B;
-        Mon, 15 Aug 2022 19:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C7EC433C1;
-        Mon, 15 Aug 2022 19:33:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18E2BB80EAC;
+        Mon, 15 Aug 2022 19:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45FB5C433C1;
+        Mon, 15 Aug 2022 19:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591995;
-        bh=g1Bx1HzdKI7GlDoXKpbcU4VMK32z9g/6QCn0thKghpY=;
+        s=korg; t=1660591998;
+        bh=wWCgrPVrYdAMVWPaZH24aEPoNQN+KLCiqhuw3uMJlzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F2smWI5GT0vrNB+BuDYCh5iWsiVHLbmdhYXJjM3tYZ+CUdJEN7eIY3+H7TwODzI8U
-         RouW+0KC+teKeCuC26iMmULeIxQMzDBW4lD62irqmtM/a4PCEelZq1pClv4Kk7Ytaw
-         NTcjp4W6oo9Tb/uNl3Hh6RvwL+/GW0r8uUEjQBYc=
+        b=eQfhVkRhzbwCgGZgjuUS4PJ6em0GfiInftONwVttHiWz0VJyv4j2ykfov6S3cmlwj
+         /YPAhsK1+L/LbE7WsBsM0mQ+9R+kmjIARXHMAbS5tNQ/+d/eMumiDzEC8+pa/tW1Jd
+         L1PYyEise/Sjqwk7EC6Xkar53x8kUDbMMytUAo5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Shi <shy828301@gmail.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0715/1095] mm: rmap: use the correct parameter name for DEFINE_PAGE_VMA_WALK
-Date:   Mon, 15 Aug 2022 20:01:54 +0200
-Message-Id: <20220815180458.976610783@linuxfoundation.org>
+        stable@vger.kernel.org, David Woodhouse <dwmw@amazon.co.uk>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0042/1157] KVM: x86: do not report preemption if the steal time cache is stale
+Date:   Mon, 15 Aug 2022 19:49:58 +0200
+Message-Id: <20220815180441.121490727@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Shi <shy828301@gmail.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 507db7927cd181d409dd495c8384b8e14c21c600 ]
+commit c3c28d24d910a746b02f496d190e0e8c6560224b upstream.
 
-The parameter used by DEFINE_PAGE_VMA_WALK is _page not page, fix the
-parameter name.  It didn't cause any build error, it is probably because
-the only caller is write_protect_page() from ksm.c, which pass in page.
+Commit 7e2175ebd695 ("KVM: x86: Fix recording of guest steal time
+/ preempted status", 2021-11-11) open coded the previous call to
+kvm_map_gfn, but in doing so it dropped the comparison between the cached
+guest physical address and the one in the MSR.  This cause an incorrect
+cache hit if the guest modifies the steal time address while the memslots
+remain the same.  This can happen with kexec, in which case the preempted
+bit is written at the address used by the old kernel instead of
+the old one.
 
-Link: https://lkml.kernel.org/r/20220512174551.81279-1-shy828301@gmail.com
-Fixes: 2aff7a4755be ("mm: Convert page_vma_mapped_walk to work on PFNs")
-Signed-off-by: Yang Shi <shy828301@gmail.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Muchun Song <songmuchun@bytedance.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: stable@vger.kernel.org
+Fixes: 7e2175ebd695 ("KVM: x86: Fix recording of guest steal time / preempted status")
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/rmap.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/x86.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index 17230c458341..a0c4a870bb48 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -220,8 +220,8 @@ struct page_vma_mapped_walk {
- #define DEFINE_PAGE_VMA_WALK(name, _page, _vma, _address, _flags)	\
- 	struct page_vma_mapped_walk name = {				\
- 		.pfn = page_to_pfn(_page),				\
--		.nr_pages = compound_nr(page),				\
--		.pgoff = page_to_pgoff(page),				\
-+		.nr_pages = compound_nr(_page),				\
-+		.pgoff = page_to_pgoff(_page),				\
- 		.vma = _vma,						\
- 		.address = _address,					\
- 		.flags = _flags,					\
--- 
-2.35.1
-
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4635,6 +4635,7 @@ static void kvm_steal_time_set_preempted
+ 	struct kvm_steal_time __user *st;
+ 	struct kvm_memslots *slots;
+ 	static const u8 preempted = KVM_VCPU_PREEMPTED;
++	gpa_t gpa = vcpu->arch.st.msr_val & KVM_STEAL_VALID_BITS;
+ 
+ 	/*
+ 	 * The vCPU can be marked preempted if and only if the VM-Exit was on
+@@ -4662,6 +4663,7 @@ static void kvm_steal_time_set_preempted
+ 	slots = kvm_memslots(vcpu->kvm);
+ 
+ 	if (unlikely(slots->generation != ghc->generation ||
++		     gpa != ghc->gpa ||
+ 		     kvm_is_error_hva(ghc->hva) || !ghc->memslot))
+ 		return;
+ 
 
 
