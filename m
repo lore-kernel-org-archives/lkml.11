@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 096C1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768E2C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354804AbiHOXuk (ORCPT
+        id S1355432AbiHOXwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        Mon, 15 Aug 2022 19:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354764AbiHOXqX (ORCPT
+        with ESMTP id S1354939AbiHOXqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:46:23 -0400
+        Mon, 15 Aug 2022 19:46:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE811C0B58;
-        Mon, 15 Aug 2022 13:14:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC38F8E991;
+        Mon, 15 Aug 2022 13:15:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17D10B80EA8;
-        Mon, 15 Aug 2022 20:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E25EC433C1;
-        Mon, 15 Aug 2022 20:14:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7257CB80EA9;
+        Mon, 15 Aug 2022 20:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C10EC433D7;
+        Mon, 15 Aug 2022 20:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594481;
-        bh=nCiKlH4Fbxk6s64eGjkygA7hlHyQsFsuzpMOIZBmidY=;
+        s=korg; t=1660594501;
+        bh=nUubxWZTlLnx+rOCghc0oRuIANaK9QPhD549Gb2CnV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e/c0aNDqTW0YaRXfFRie0W7OTNspBBPzCG+TDni6y6hnrp6gurf4DosR1nP2TXMJZ
-         BNod85WQOYd9m0O26ZydZDFpYo8N2XIC2wJ0ypqcP4zy1whOKqBBc9rMcYjiiyW/Pa
-         IIjJQ1lULU3MlJ7hNt7TFSVHHt844ec7JD8XX6Jk=
+        b=P0EjW0lmfIy8lPsOQAJDYxdDwxBcJIs9ilZq90VMoHbG7EesK50AsALspkzJThkCa
+         cGv6ARYOTwmBi4P4/v9uls3Kdc0NGEcxuFxHVdX6JbVml5GOR2E2VGEC/4/U8uRL7t
+         2ZR//HJUzwyskBxpbk5V1v26/YbFnQGA3Nr+klk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0461/1157] media: mediatek: vcodec: decoder: Drop max_{width,height} from mtk_vcodec_ctx
-Date:   Mon, 15 Aug 2022 19:56:57 +0200
-Message-Id: <20220815180458.051019128@linuxfoundation.org>
+Subject: [PATCH 5.19 0467/1157] media: amphion: only insert the first sequence startcode for vc1l format
+Date:   Mon, 15 Aug 2022 19:57:03 +0200
+Message-Id: <20220815180458.278879721@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,82 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Ming Qian <ming.qian@nxp.com>
 
-[ Upstream commit e8d266d533b171387945f8a0bad1944a5609f63b ]
+[ Upstream commit e670f5d672ef3d00b0b8c69eff09a019e6dd4ef9 ]
 
-This partially reverts commit b018be06f3c7 ("media: mediatek: vcodec:
-Read max resolution from dec_capability").
+For format V4L2_PIX_FMT_VC1_ANNEX_L,
+the amphion vpu requires driver to help insert some custom startcode
+before sequence and frame.
+but only the first sequence startcode is needed,
+the extra startcode will cause decoding error.
+So after seek, we don't need to insert the sequence startcode.
 
-After the previous patches:
+In other words, for V4L2_PIX_FMT_VC1_ANNEX_L,
+the vpu doesn't support dynamic resolution change.
 
-  - media: mediatek: vcodec: decoder: Fix 4K frame size enumeration
-  - media: mediatek: vcodec: decoder: Skip alignment for default resolution
-  - media: mediatek: vcodec: decoder: Fix resolution clamping in TRY_FMT
-
-the max_{width,height} fields in |struct mtk_vcodec_ctx| no longer have
-any real users. Remove them.
-
-Fixes: b018be06f3c7 ("media: mediatek: vcodec: Read max resolution from dec_capability")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Fixes: 145e936380edb ("media: amphion: implement malone decoder rpc interface")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 9 ---------
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h | 4 ----
- 2 files changed, 13 deletions(-)
+ drivers/media/platform/amphion/vdec.c       | 2 +-
+ drivers/media/platform/amphion/vpu.h        | 1 +
+ drivers/media/platform/amphion/vpu_malone.c | 2 ++
+ drivers/media/platform/amphion/vpu_rpc.h    | 7 ++++++-
+ 4 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index 7d654efabdfe..af3cd2e36451 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -139,8 +139,6 @@ void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
- 	q_data->coded_height = DFT_CFG_HEIGHT;
- 	q_data->fmt = ctx->dev->vdec_pdata->default_cap_fmt;
- 	q_data->field = V4L2_FIELD_NONE;
--	ctx->max_width = MTK_VDEC_MAX_W;
--	ctx->max_height = MTK_VDEC_MAX_H;
+diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+index 5e3b08d07abd..44dbca0fe17f 100644
+--- a/drivers/media/platform/amphion/vdec.c
++++ b/drivers/media/platform/amphion/vdec.c
+@@ -105,7 +105,6 @@ static const struct vpu_format vdec_formats[] = {
+ 		.pixfmt = V4L2_PIX_FMT_VC1_ANNEX_L,
+ 		.num_planes = 1,
+ 		.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
+-		.flags = V4L2_FMT_FLAG_DYN_RESOLUTION
+ 	},
+ 	{
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2,
+@@ -741,6 +740,7 @@ static void vdec_stop_done(struct vpu_inst *inst)
+ 	vdec->eos_received = 0;
+ 	vdec->is_source_changed = false;
+ 	vdec->source_change = 0;
++	inst->total_input_count = 0;
+ 	vpu_inst_unlock(inst);
+ }
  
- 	q_data->sizeimage[0] = q_data->coded_width * q_data->coded_height;
- 	q_data->bytesperline[0] = q_data->coded_width;
-@@ -455,13 +453,6 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
- 	if (fmt == NULL)
+diff --git a/drivers/media/platform/amphion/vpu.h b/drivers/media/platform/amphion/vpu.h
+index e56b96a7e5d3..f914de6ed81e 100644
+--- a/drivers/media/platform/amphion/vpu.h
++++ b/drivers/media/platform/amphion/vpu.h
+@@ -258,6 +258,7 @@ struct vpu_inst {
+ 	struct vpu_format cap_format;
+ 	u32 min_buffer_cap;
+ 	u32 min_buffer_out;
++	u32 total_input_count;
+ 
+ 	struct v4l2_rect crop;
+ 	u32 colorspace;
+diff --git a/drivers/media/platform/amphion/vpu_malone.c b/drivers/media/platform/amphion/vpu_malone.c
+index 40267c73b1f9..542bbe361bd8 100644
+--- a/drivers/media/platform/amphion/vpu_malone.c
++++ b/drivers/media/platform/amphion/vpu_malone.c
+@@ -1298,6 +1298,8 @@ static int vpu_malone_insert_scode_vc1_l_seq(struct malone_scode_t *scode)
+ 	int size = 0;
+ 	u8 rcv_seqhdr[MALONE_VC1_RCV_SEQ_HEADER_LEN];
+ 
++	if (scode->inst->total_input_count)
++		return 0;
+ 	scode->need_data = 0;
+ 
+ 	ret = vpu_malone_insert_scode_seq(scode, MALONE_CODEC_ID_VC1_SIMPLE, sizeof(rcv_seqhdr));
+diff --git a/drivers/media/platform/amphion/vpu_rpc.h b/drivers/media/platform/amphion/vpu_rpc.h
+index 25119e5e807e..7eb6f01e6ab5 100644
+--- a/drivers/media/platform/amphion/vpu_rpc.h
++++ b/drivers/media/platform/amphion/vpu_rpc.h
+@@ -312,11 +312,16 @@ static inline int vpu_iface_input_frame(struct vpu_inst *inst,
+ 					struct vb2_buffer *vb)
+ {
+ 	struct vpu_iface_ops *ops = vpu_core_get_iface(inst->core);
++	int ret;
+ 
+ 	if (!ops || !ops->input_frame)
  		return -EINVAL;
  
--	if (!(ctx->dev->dec_capability & VCODEC_CAPABILITY_4K_DISABLED) &&
--	    fmt->fourcc != V4L2_PIX_FMT_VP8_FRAME) {
--		mtk_v4l2_debug(3, "4K is enabled");
--		ctx->max_width = VCODEC_DEC_4K_CODED_WIDTH;
--		ctx->max_height = VCODEC_DEC_4K_CODED_HEIGHT;
--	}
--
- 	q_data->fmt = fmt;
- 	vidioc_try_fmt(ctx, f, q_data->fmt);
- 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-index a29041a0b7e0..16e91d9568e9 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-@@ -285,8 +285,6 @@ struct vdec_pic_info {
-  *	  mtk_video_dec_buf.
-  * @hw_id: hardware index used to identify different hardware.
-  *
-- * @max_width: hardware supported max width
-- * @max_height: hardware supported max height
-  * @msg_queue: msg queue used to store lat buffer information.
-  */
- struct mtk_vcodec_ctx {
-@@ -333,8 +331,6 @@ struct mtk_vcodec_ctx {
- 	struct mutex lock;
- 	int hw_id;
+-	return ops->input_frame(inst->core->iface, inst, vb);
++	ret = ops->input_frame(inst->core->iface, inst, vb);
++	if (ret < 0)
++		return ret;
++	inst->total_input_count++;
++	return ret;
+ }
  
--	unsigned int max_width;
--	unsigned int max_height;
- 	struct vdec_msg_queue msg_queue;
- };
- 
+ static inline int vpu_iface_config_memory_resource(struct vpu_inst *inst,
 -- 
 2.35.1
 
