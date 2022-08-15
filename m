@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9E4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FA2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244331AbiHOUhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S1345905AbiHOUh6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347101AbiHOU2p (ORCPT
+        with ESMTP id S1348291AbiHOUc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:28:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF19402ED;
-        Mon, 15 Aug 2022 12:04:21 -0700 (PDT)
+        Mon, 15 Aug 2022 16:32:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121125A2EC;
+        Mon, 15 Aug 2022 12:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45091612C5;
-        Mon, 15 Aug 2022 19:04:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48950C433D6;
-        Mon, 15 Aug 2022 19:04:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAC81612AF;
+        Mon, 15 Aug 2022 19:05:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC31DC433C1;
+        Mon, 15 Aug 2022 19:05:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590259;
-        bh=wo4l3src4p2Y6TKnCr9r6/z8QAnWWL3kywTWwoncKeE=;
+        s=korg; t=1660590335;
+        bh=NpP1xSHXN7C1Bjs+TVA9esRLrTXCrQMqK4pxcramw2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WplpO9Hf0zFcjneJxtOTZaQiaXKI470hR8o1fyAYhskIr8aHiYX2VA903Z/IUA9vJ
-         J2dCdO+rU4NU9EHQRdyRhI5KkveLDVaUW8SLz9kaNpWckwui7+l5W4aKlu4qUe1xdo
-         /wHjmJdNa3/qTWTPwM2eoQniBjzScQOH7VPBPn+M=
+        b=c8UV2xKoLPRqnp0eHlKAH4xkktLJ+FWFc6NI3rPoA1dqqgwSEDJ7FT5tknVqI29X8
+         8/Oo5rLwGIP3kkW7G35LeQ4Tbp4/jAUbMYPXUOu4bLKhlYxWCJepRWqngLFxyWENrl
+         NQVt0QdG4kHawWlT0R3At01fIQTb4LCMte1yXOgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0196/1095] arm64: dts: renesas: Fix thermal-sensors on single-zone sensors
-Date:   Mon, 15 Aug 2022 19:53:15 +0200
-Message-Id: <20220815180437.734907497@linuxfoundation.org>
+Subject: [PATCH 5.18 0226/1095] ARM: dts: qcom: do not use underscore in node name
+Date:   Mon, 15 Aug 2022 19:53:45 +0200
+Message-Id: <20220815180439.060686085@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,62 +51,188 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 62e8a53431145e06e503b71625a34eaa87b72b2c ]
+[ Upstream commit 43cdc159d203eb6d02b312409e634a3fa06632ac ]
 
-"make dtbs_check":
+Align RPM requests node with DT schema by using hyphen instead of
+underscore.
 
-    arch/arm64/boot/dts/renesas/r8a774c0-cat874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[74], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[79], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874-idk-2121wr.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[82], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a774c0-ek874-mipi-2.1.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[87], [0]] is too long
-    arch/arm64/boot/dts/renesas/r8a77990-ebisu.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[105], [0]] is too long
-	    From schema: Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-
-Indeed, the thermal sensors on R-Car E3 and RZ/G2E support only a single
-zone, hence #thermal-sensor-cells = <0>.
-
-Fix this by dropping the bogus zero cell from the thermal sensor
-specifiers.
-
-Fixes: 8fa7d18f9ee2dc20 ("arm64: dts: renesas: r8a77990: Create thermal zone to support IPA")
-Fixes: 8438bfda9d768157 ("arm64: dts: renesas: r8a774c0: Create thermal zone to support IPA")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/28b812fdd1fc3698311fac984ab8b91d3d655c1c.1655301684.git.geert+renesas@glider.be
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[bjorn: Fixed up qcom-{apq8074,msm8974}-*.dts to match the qcom-msm8974.dtsi]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220401201035.189106-8-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi | 2 +-
- arch/arm64/boot/dts/renesas/r8a77990.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-apq8064.dtsi                      | 8 ++++----
+ arch/arm/boot/dts/qcom-apq8074-dragonboard.dts           | 2 +-
+ arch/arm/boot/dts/qcom-apq8084.dtsi                      | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts         | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts          | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts     | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts    | 2 +-
+ arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts    | 2 +-
+ arch/arm/boot/dts/qcom-msm8974.dtsi                      | 2 +-
+ 10 files changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-index e123c8d1bab9..337efbeda5a9 100644
---- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-@@ -1956,7 +1956,7 @@ thermal-zones {
- 		cpu-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <0>;
--			thermal-sensors = <&thermal 0>;
-+			thermal-sensors = <&thermal>;
- 			sustainable-power = <717>;
+diff --git a/arch/arm/boot/dts/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom-apq8064.dtsi
+index a1c8ae516d21..33a4d3441959 100644
+--- a/arch/arm/boot/dts/qcom-apq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8064.dtsi
+@@ -227,7 +227,7 @@ smem {
+ 	smd {
+ 		compatible = "qcom,smd";
  
- 			cooling-maps {
-diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-index 7e0f1aab2135..155589f67e1b 100644
---- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-@@ -2117,7 +2117,7 @@ thermal-zones {
- 		cpu-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <0>;
--			thermal-sensors = <&thermal 0>;
-+			thermal-sensors = <&thermal>;
- 			sustainable-power = <717>;
+-		modem@0 {
++		modem-edge {
+ 			interrupts = <0 37 IRQ_TYPE_EDGE_RISING>;
  
- 			cooling-maps {
+ 			qcom,ipc = <&l2cc 8 3>;
+@@ -236,7 +236,7 @@ modem@0 {
+ 			status = "disabled";
+ 		};
+ 
+-		q6@1 {
++		q6-edge {
+ 			interrupts = <0 90 IRQ_TYPE_EDGE_RISING>;
+ 
+ 			qcom,ipc = <&l2cc 8 15>;
+@@ -245,7 +245,7 @@ q6@1 {
+ 			status = "disabled";
+ 		};
+ 
+-		dsps@3 {
++		dsps-edge {
+ 			interrupts = <0 138 IRQ_TYPE_EDGE_RISING>;
+ 
+ 			qcom,ipc = <&sps_sic_non_secure 0x4080 0>;
+@@ -254,7 +254,7 @@ dsps@3 {
+ 			status = "disabled";
+ 		};
+ 
+-		riva@6 {
++		riva-edge {
+ 			interrupts = <0 198 IRQ_TYPE_EDGE_RISING>;
+ 
+ 			qcom,ipc = <&l2cc 8 25>;
+diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+index 83793b835d40..e2b4e4fc6377 100644
+--- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
++++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+@@ -147,7 +147,7 @@ eeprom: eeprom@52 {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8841-regulators {
+ 					s1 {
+ 						regulator-min-microvolt = <675000>;
+diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
+index 52240fc7a1a6..da50a1a0197f 100644
+--- a/arch/arm/boot/dts/qcom-apq8084.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
+@@ -470,7 +470,7 @@ rpm {
+ 			qcom,ipc = <&apcs 8 0>;
+ 			qcom,smd-edge = <15>;
+ 
+-			rpm_requests {
++			rpm-requests {
+ 				compatible = "qcom,rpm-apq8084";
+ 				qcom,smd-channels = "rpm_requests";
+ 
+diff --git a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+index 6d77e0f8ca4d..9dbfc9f8646a 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+@@ -57,7 +57,7 @@ vibrator {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8841-regulators {
+ 					s1 {
+ 						regulator-min-microvolt = <675000>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index 6d5fb60e798f..5fbdba73c07f 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -42,7 +42,7 @@ volume-down {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8841-regulators {
+ 					s1 {
+ 						regulator-min-microvolt = <675000>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+index 6e036a440532..1f630120c01f 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+@@ -54,7 +54,7 @@ volume-up {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pma8084-regulators {
+ 					compatible = "qcom,rpm-pma8084-regulators";
+ 					status = "okay";
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
+index 79e2cfbbb1ba..8cace789fb26 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
+@@ -60,7 +60,7 @@ memory@0 {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8841-regulators {
+ 					s1 {
+ 						regulator-min-microvolt = <675000>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
+index e66937e3f7dd..3c4a7d760ba9 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
+@@ -55,7 +55,7 @@ volume-up {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8941-regulators {
+ 					vdd_l1_l3-supply = <&pm8941_s1>;
+ 					vdd_l2_lvs1_2_3-supply = <&pm8941_s3>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
+index a62e5c25b23c..f4a2e2560777 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
+@@ -60,7 +60,7 @@ memory@0 {
+ 
+ 	smd {
+ 		rpm {
+-			rpm_requests {
++			rpm-requests {
+ 				pm8841-regulators {
+ 					s1 {
+ 						regulator-min-microvolt = <675000>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index 412d94736c35..08497783757a 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -1614,7 +1614,7 @@ rpm {
+ 			qcom,ipc = <&apcs 8 0>;
+ 			qcom,smd-edge = <15>;
+ 
+-			rpm_requests {
++			rpm-requests {
+ 				compatible = "qcom,rpm-msm8974";
+ 				qcom,smd-channels = "rpm_requests";
+ 
 -- 
 2.35.1
 
