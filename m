@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51E5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAE2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242371AbiHOVX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
+        id S1345079AbiHOVYH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345138AbiHOVRk (ORCPT
+        with ESMTP id S1345261AbiHOVRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:40 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E987E58B56
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:20:58 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id l5so6198707qtv.4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nWWEkKmSWnkiiy7izskbbW/D3F+ai2DNKOALKhXWG58=;
-        b=Q+lR3j7XMHncwQKjvVizFCVhptT2wAkxQ5WP4Vm9d7Ve1iU/nluBn4VgyQ1LKBw3GN
-         y52YyiniQ2XwvERCQR8ZtSu6jFs7CBpOP/7amWa0XbR6s3IHXPAyGisMQAmL/N2EkKTA
-         2mEAoVQePhhbclw0+7IE8QxXpjAcLcOdXmj0E3v3EcbufXUO3NAZThDTXMjhgPZU5OH/
-         Q9ku6RyWxdDjpyXxKGcnXPCGsWSW1rUnOy894nd08RV0ckFJIg9osYXYShH3lpuUV0il
-         056+gvm3WEG0zQLQlqUVMe72BiAbuV/XT/0cRZ7GtGCmpvH5slAC0gRfEngfdONlSCOm
-         Vo+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nWWEkKmSWnkiiy7izskbbW/D3F+ai2DNKOALKhXWG58=;
-        b=qipqftxcLZIr6R0CKcVzKqgoeAGi6eNYzwhVfwZ9fJjcoEpVOVL6qJS+LUlMmcFhpO
-         Z93OHd/4BBRs1GlWTZ2b4CDdtcxLGsGVIyLlOPfClOJ8AOw9knZKGo2L+cvFYqKFkamW
-         NGLm+slQhxdP6gSTNST8bTlOiXFFsHT3WwSZAoj5Kit94p9ganOx0flnIWG869CRyVZq
-         7qWmdAGMKuxSPBJviECQSeck3EVq1HVZwFxQ9T8kKugiOufeeYZYfR5PZJRX9sDekcs2
-         UEeUCzschWLYYWtc5VMSbqexuqwaEybfenWtmW+hHMXTcJtcITfgpekbQBf5R4pIGCSM
-         zBLg==
-X-Gm-Message-State: ACgBeo00SBL3qyCrf9i24/P2ewQsfk0I/7OOFStK7kgf5+BD5MRATIkq
-        CkVePFUKp6STOXHUZQz+qBtndv5gvad3VGhr2hFX1r2ZQIU8aA==
-X-Google-Smtp-Source: AA6agR6DqfhPz6GTIOlcUAsYF3qsJEJzQ53rL8tIr+uvAiEkMDyI4i60c5howf2bzhpVTY9Tfc0lCcgMdx7pgJof35U=
-X-Received: by 2002:a05:622a:205:b0:343:282:3d0e with SMTP id
- b5-20020a05622a020500b0034302823d0emr15445268qtx.436.1660591257986; Mon, 15
- Aug 2022 12:20:57 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AE258B67;
+        Mon, 15 Aug 2022 12:21:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 928466100A;
+        Mon, 15 Aug 2022 19:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAE7C433C1;
+        Mon, 15 Aug 2022 19:20:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660591259;
+        bh=E9Bqs6DXdhLdrqZtlcaeECpgCsSG1vqbp0DxY58K9A8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NGy3T/e0eSTu29QzuCs156o/8pxVdEnUeHVGo9NQNqS/om7NjaSC+HDvnjvzJPZz7
+         8Sv5yuNne73ShxXyRQcHUuIA2J2tol4NOCAf7fnqvNwbrat9hFhSxkmeVQbVKsZd36
+         snY3zoGjwwXt1DqDz1V8RiulxYbPhkQWNltV86gw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0522/1095] crypto: inside-secure - Add missing MODULE_DEVICE_TABLE for of
+Date:   Mon, 15 Aug 2022 19:58:41 +0200
+Message-Id: <20220815180451.152236045@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220712144917.4497-1-ubizjak@gmail.com> <20220814184823.c6ca2c396db0d8817e518ef9@linux-foundation.org>
-In-Reply-To: <20220814184823.c6ca2c396db0d8817e518ef9@linux-foundation.org>
-From:   Uros Bizjak <ubizjak@gmail.com>
-Date:   Mon, 15 Aug 2022 21:20:46 +0200
-Message-ID: <CAFULd4YuYhNmhx3tBwBeR=ascfy=BZfZKk4e7vMq6gy06zk41Q@mail.gmail.com>
-Subject: Re: [PATCH] llist: Use try_cmpxchg in llist_add_batch and llist_del_first
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 3:48 AM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Tue, 12 Jul 2022 16:49:17 +0200 Uros Bizjak <ubizjak@gmail.com> wrote:
->
-> > Use try_cmpxchg instead of cmpxchg (*ptr, old, new) == old in
-> > llist_add_batch and llist_del_first. x86 CMPXCHG instruction returns
-> > success in ZF flag, so this change saves a compare after cmpxchg.
-> >
-> > Also, try_cmpxchg implicitly assigns old *ptr value to "old" when
-> > cmpxchg fails, enabling further code simplifications.
-> >
-> > No functional change intended.
->
-> Well this is strange.  Your innocuous little patch:
+From: Pali Rohár <pali@kernel.org>
 
-[...]
+[ Upstream commit fa4d57b85786ec0e16565c75a51c208834b0c24d ]
 
-> Does this:
->
-> x1:/usr/src/25> size lib/llist.o-before lib/llist.o-after
->    text    data     bss     dec     hex filename
->     541      24       0     565     235 lib/llist.o-before
->     940      24       0     964     3c4 lib/llist.o-after
->
-> with x86_64 allmodconfig, gcc-11.1.0.
->
-> No change with allnoconfig, some bloat with defconfig.
->
-> I was too lazy to figure out why this happened, but it'd be great if
-> someone could investigate.  Something has gone wrong somewhere.
+Without MODULE_DEVICE_TABLE, crypto_safexcel.ko module is not automatically
+loaded on platforms where inside-secure crypto HW is specified in device
+tree (e.g. Armada 3720). So add missing MODULE_DEVICE_TABLE for of.
 
-Sanitizer is detecting a comparison with a constant and emits:
+Fixes: 1b44c5a60c13 ("crypto: inside-secure - add SafeXcel EIP197 crypto engine driver")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Acked-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/crypto/inside-secure/safexcel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- 132:    f0 48 0f b1 2b           lock cmpxchg %rbp,(%rbx)
- 137:    41 0f 94 c6              sete   %r14b
- 13b:    31 ff                    xor    %edi,%edi
- 13d:    44 89 f6                 mov    %r14d,%esi
- 140:    e8 00 00 00 00           call   145 <llist_add_batch+0xc5>
-            141: R_X86_64_PLT32    __sanitizer_cov_trace_const_cmp1-0x4
+diff --git a/drivers/crypto/inside-secure/safexcel.c b/drivers/crypto/inside-secure/safexcel.c
+index 9ff885d50edf..389a7b51f1f3 100644
+--- a/drivers/crypto/inside-secure/safexcel.c
++++ b/drivers/crypto/inside-secure/safexcel.c
+@@ -1831,6 +1831,8 @@ static const struct of_device_id safexcel_of_match_table[] = {
+ 	{},
+ };
+ 
++MODULE_DEVICE_TABLE(of, safexcel_of_match_table);
++
+ static struct platform_driver  crypto_safexcel = {
+ 	.probe		= safexcel_probe,
+ 	.remove		= safexcel_remove,
+-- 
+2.35.1
 
-Since a new call is inserted, the compiler has to save all
-call-clobbered variables around the call, this triggers another call
-to __kasan_check_write. Finally, stack checking is emitted for patched
-functions.
 
-Without sanitizer (make defconfig), the code is as expected, with a
-couple of bytes saved due to unneeded mov/cmp.
 
-Uros.
