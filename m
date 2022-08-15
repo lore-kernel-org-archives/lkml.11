@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0904C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD048C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344825AbiHOUeQ (ORCPT
+        id S1345898AbiHOUeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        Mon, 15 Aug 2022 16:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345956AbiHOU2S (ORCPT
+        with ESMTP id S1346701AbiHOU23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:28:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEC6A0305;
-        Mon, 15 Aug 2022 12:04:09 -0700 (PDT)
+        Mon, 15 Aug 2022 16:28:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDA0A1A5F;
+        Mon, 15 Aug 2022 12:04:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDE8661281;
-        Mon, 15 Aug 2022 19:04:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABA74C433C1;
-        Mon, 15 Aug 2022 19:04:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16022612AF;
+        Mon, 15 Aug 2022 19:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07301C433B5;
+        Mon, 15 Aug 2022 19:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590247;
-        bh=m7W2Uu+7QdsldiMwSIaJvP+5QGzHdK7f+nSQK7+tS2s=;
+        s=korg; t=1660590256;
+        bh=uY13mo9qtASTnrLurEscpXAMDs4UVUh1xoWThPdMtxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nu0RKXMtDbCTcEK26fj5GvlDLs6Ie03kHCLT2fnKqxzUFa04s8LPZePmma5dxqBtF
-         zi2D+bjBaT4GQApe1+x3NV/ZpjJwgNCrU/zGEaAVJ31OvZmK+q4aOg9oub7fKOIybD
-         vIWm+MK/zODDp/ZsH2j24b2xwVWufx3LqwLeycsI=
+        b=wmPSmVORPm7BomJZbAjQuRYITAWdpdSYYeonylgVz8qcwfi5c2LDrR2zRABw8nOOu
+         e3u9S6GdUV+AHKU2icY3fuhbtPTn7LtEBQTJafWPHImsfnN6e7HgJXCf3Aj5J8J37X
+         oAcq6BEQXUingOzzseLb91iNAX++T7/ZfsA5VWjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0169/1095] arm64: dts: qcom: add missing AOSS QMP compatible fallback
-Date:   Mon, 15 Aug 2022 19:52:48 +0200
-Message-Id: <20220815180436.603356159@linuxfoundation.org>
+Subject: [PATCH 5.18 0162/1095] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:52:41 +0200
+Message-Id: <20220815180436.271876476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,93 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 6ba93ba9f63fbc44c3a6af7fe6f2536d009cfd5a ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-The AOSS QMP bindings expect all compatibles to be followed by fallback
-"qcom,aoss-qmp" because all of these are actually compatible with each
-other.  This fixes dtbs_check warnings like:
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-  sm8250-hdk.dtb: power-controller@c300000: compatible: ['qcom,sm8250-aoss-qmp'] is too short
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504131923.214367-6-krzysztof.kozlowski@linaro.org
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index e9fb3c9a2d6e..120db2d0a309 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -3219,7 +3219,7 @@ aoss_reset: reset-controller@c2a0000 {
- 		};
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 21413a9b7b6c..eb09a25e3b45 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sc7180-aoss-qmp";
-+			compatible = "qcom,sc7180-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts = <GIC_SPI 389 IRQ_TYPE_EDGE_RISING>;
- 			mboxes = <&apss_shared 0>;
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 8a4fd614d0a1..7925c8561117 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3467,7 +3467,7 @@ aoss_reset: reset-controller@c2a0000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sc7280-aoss-qmp";
-+			compatible = "qcom,sc7280-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP
- 						     IPCC_MPROC_SIGNAL_GLINK_QMP
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index d4f288edf3c9..6edb3986a473 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -3382,7 +3382,7 @@ camnoc_virt: interconnect@ac00000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8150-aoss-qmp";
-+			compatible = "qcom,sm8150-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0x0 0x0c300000 0x0 0x400>;
- 			interrupts = <GIC_SPI 389 IRQ_TYPE_EDGE_RISING>;
- 			mboxes = <&apss_shared 0>;
-diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-index ed4e288c921f..1d62b2130e04 100644
---- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-@@ -3475,7 +3475,7 @@ tsens1: thermal-sensor@c265000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8250-aoss-qmp";
-+			compatible = "qcom,sm8250-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP
- 						     IPCC_MPROC_SIGNAL_GLINK_QMP
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index d843a550314a..ee6c202ab68c 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -1537,7 +1537,7 @@ tsens1: thermal-sensor@c265000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8350-aoss-qmp";
-+			compatible = "qcom,sm8350-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP
- 						     IRQ_TYPE_EDGE_RISING>;
+ 	return 0;
+ }
 -- 
 2.35.1
 
