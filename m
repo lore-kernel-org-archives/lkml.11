@@ -2,47 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0ABFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B569C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353315AbiHOXeV (ORCPT
+        id S1353378AbiHOXe0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
+        Mon, 15 Aug 2022 19:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347572AbiHOX1b (ORCPT
+        with ESMTP id S1352832AbiHOX1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFBFD5EBE;
-        Mon, 15 Aug 2022 13:07:18 -0700 (PDT)
+        Mon, 15 Aug 2022 19:27:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BFC14D722;
+        Mon, 15 Aug 2022 13:07:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 850C56068D;
-        Mon, 15 Aug 2022 20:07:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF45C433C1;
-        Mon, 15 Aug 2022 20:07:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2366FB80EAD;
+        Mon, 15 Aug 2022 20:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECA9C433D6;
+        Mon, 15 Aug 2022 20:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594036;
-        bh=U9LEU0PNPrUcv/u8DbqdvwnTORGar03sf6rsAhm7UPg=;
+        s=korg; t=1660594039;
+        bh=ZVE2RNHPOttuDHZ2xX2gbbcEhpFNhv9Nt5X6GeRZKSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QpfzIWaoaQo04O7Ze/Vga0iC50FoV5TgUZQkyH6dBSXI2y0ruQK/3ZU/YkQz255bL
-         ucW5mJRkbfrf9y2HkcPihSbKZn0+pPPqP2wBdYPYCyvmxoc75IvjgELSuiMzQtooCJ
-         4gQuWeleJWWz2htbO8HlmsomloK07+WR4/mRAvc4=
+        b=VkWP08ORQ9PtPN7Mzdle9M/hAVKlXcelGbkgd0qOqBUhS/EKcrgG5f3IWAfpXKAGY
+         pih3xQvWhJm3AYZWXY/s5d3qU2h8eROXz505NQ878M4N4Hq04+8PbSuCpalfnC1Z0T
+         mJkappOehipy8pTdlE63bt+8qC3lCLRgTij/AmDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Marek Lindner <mareklindner@neomailbox.ch>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        Sven Eckelmann <sven@narfation.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0365/1157] crypto: sun8i-ss - fix infinite loop in sun8i_ss_setup_ivs()
-Date:   Mon, 15 Aug 2022 19:55:21 +0200
-Message-Id: <20220815180454.322392241@linuxfoundation.org>
+Subject: [PATCH 5.18 1046/1095] batman-adv: tracing: Use the new __vstring() helper
+Date:   Mon, 15 Aug 2022 20:07:25 +0200
+Message-Id: <20220815180512.360819821@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +60,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit d61a7b3decf7f0cf4121a7204303deefd2c7151b ]
+[ Upstream commit 9abc291812d784bd4a26c01af4ebdbf9f2dbf0bb ]
 
-There is no i decrement in while (i >= 0) loop.
+Instead of open coding a __dynamic_array() with a fixed length (which
+defeats the purpose of the dynamic array in the first place). Use the new
+__vstring() helper that will use a va_list and only write enough of the
+string into the ring buffer that is needed.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Link: https://lkml.kernel.org/r/20220724191650.236b1355@rorschach.local.home
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
-Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Marek Lindner <mareklindner@neomailbox.ch>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Antonio Quartulli <a@unstable.cc>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: b.a.t.m.a.n@lists.open-mesh.org
+Cc: netdev@vger.kernel.org
+Acked-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/batman-adv/trace.h | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-index 5bb950182026..910d6751644c 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-@@ -170,6 +170,7 @@ static int sun8i_ss_setup_ivs(struct skcipher_request *areq)
- 	while (i >= 0) {
- 		dma_unmap_single(ss->dev, rctx->p_iv[i], ivsize, DMA_TO_DEVICE);
- 		memzero_explicit(sf->iv[i], ivsize);
-+		i--;
- 	}
- 	return err;
- }
+diff --git a/net/batman-adv/trace.h b/net/batman-adv/trace.h
+index d673ebdd0426..31c8f922651d 100644
+--- a/net/batman-adv/trace.h
++++ b/net/batman-adv/trace.h
+@@ -28,8 +28,6 @@
+ 
+ #endif /* CONFIG_BATMAN_ADV_TRACING */
+ 
+-#define BATADV_MAX_MSG_LEN	256
+-
+ TRACE_EVENT(batadv_dbg,
+ 
+ 	    TP_PROTO(struct batadv_priv *bat_priv,
+@@ -40,16 +38,13 @@ TRACE_EVENT(batadv_dbg,
+ 	    TP_STRUCT__entry(
+ 		    __string(device, bat_priv->soft_iface->name)
+ 		    __string(driver, KBUILD_MODNAME)
+-		    __dynamic_array(char, msg, BATADV_MAX_MSG_LEN)
++		    __vstring(msg, vaf->fmt, vaf->va)
+ 	    ),
+ 
+ 	    TP_fast_assign(
+ 		    __assign_str(device, bat_priv->soft_iface->name);
+ 		    __assign_str(driver, KBUILD_MODNAME);
+-		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-					   BATADV_MAX_MSG_LEN,
+-					   vaf->fmt,
+-					   *vaf->va) >= BATADV_MAX_MSG_LEN);
++		    __assign_vstr(msg, vaf->fmt, vaf->va);
+ 	    ),
+ 
+ 	    TP_printk(
 -- 
 2.35.1
 
