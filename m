@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D581DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A0EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352295AbiHOWyd (ORCPT
+        id S1352208AbiHOWzL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        Mon, 15 Aug 2022 18:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351974AbiHOWw3 (ORCPT
+        with ESMTP id S1352162AbiHOWxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:52:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AE6139DB7;
-        Mon, 15 Aug 2022 12:54:41 -0700 (PDT)
+        Mon, 15 Aug 2022 18:53:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14DA7F10C;
+        Mon, 15 Aug 2022 12:54:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EED99B80EAD;
-        Mon, 15 Aug 2022 19:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57EBCC433D6;
-        Mon, 15 Aug 2022 19:54:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FB42B81144;
+        Mon, 15 Aug 2022 19:54:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F727C433D7;
+        Mon, 15 Aug 2022 19:54:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593278;
-        bh=/cGEn+6BCeTjq2+UqwOMiLt2G6tohuKeiGuDl+l7d1U=;
+        s=korg; t=1660593281;
+        bh=keQl0RqzTCXOjfuUaTm3QR3v50m15zFuKa0dQ4j6y1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L8TmRXjBbEfbVoKMG+540Aj7CTKG06hg9RDPtt/zvtjZ6j/1y3zfaReM7fqaT2I3S
-         HfyQN15771iSk8Kn4YCCsynRyrzxClikJRdCCsbkULBUYjLsXTNUvfgZDYJcPRyX+4
-         Bb0KqKvj7pGSLLJrxYyIanviTs5b4Xfg6/NwpGCw=
+        b=r9j8aEMAR5LCQNrfKbKnfoxyq4Pr/HIs4z3RsrOY9R254XN24jgH0kwHarp95xnaJ
+         7pt3d3USjMx1e6TtU9cl7DYzrUX+rsDiFRPdHR9FVdnFT16M52a00Pt7jDdoVS5L6y
+         Jlc1xTW1Xm2PiNFXBLOIEk32c5yLPdlhVPERj9os=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guo Mengqi <guomengqi3@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0240/1157] ARM: dts: qcom-msm8974: fix irq type on blsp2_uart1
-Date:   Mon, 15 Aug 2022 19:53:16 +0200
-Message-Id: <20220815180449.157971905@linuxfoundation.org>
+Subject: [PATCH 5.18 0922/1095] serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
+Date:   Mon, 15 Aug 2022 20:05:21 +0200
+Message-Id: <20220815180507.406769177@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca@z3ntu.xyz>
+From: Guo Mengqi <guomengqi3@huawei.com>
 
-[ Upstream commit ab1489017aa7a9f02e24bee73cf9ec8079cd3909 ]
+[ Upstream commit b9f1736e475dba0d6da48fdcb831248ab1597886 ]
 
-IRQ_TYPE_NONE is invalid, so use the correct interrupt type.
+The error path when get clock frequency fails in bcm2835aux_serial
+driver does not correctly disable the clock.
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Fixes: b05f82b152c9 ("ARM: dts: qcom: msm8974: Add blsp2_uart7 for bluetooth on sirius")
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220522083618.17894-1-luca@z3ntu.xyz
+This flaw was found using a static analysis tool "Hulk Robot", which
+reported the following warning when analyzing linux-next/master:
+
+    drivers/tty/serial/8250/8250_bcm2835aux.c:
+    warning: clk_disable_unprepare_missing.cocci
+
+The cocci script checks for the existence of clk_disable_unprepare()
+paired with clk_prepare_enable().
+
+Add the missing clk_disable_unprepare() to the error path.
+
+Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+Link: https://lore.kernel.org/r/20220715023312.37808-1-guomengqi3@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index c3b8a6d63027..ce9cb5e4e95d 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -580,7 +580,7 @@ blsp2_dma: dma-controller@f9944000 {
- 		blsp2_uart1: serial@f995d000 {
- 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
- 			reg = <0xf995d000 0x1000>;
--			interrupts = <GIC_SPI 113 IRQ_TYPE_NONE>;
-+			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc GCC_BLSP2_UART1_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
- 			clock-names = "core", "iface";
- 			pinctrl-names = "default", "sleep";
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index 2a1226a78a0c..21939bb44613 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	uartclk = clk_get_rate(data->clk);
+ 	if (!uartclk) {
+ 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
+-		if (ret)
+-			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++		if (ret) {
++			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++			goto dis_clk;
++		}
+ 	}
+ 
+ 	/* the HW-clock divider for bcm2835aux is 8,
 -- 
 2.35.1
 
