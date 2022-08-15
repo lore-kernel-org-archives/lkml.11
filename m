@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BF3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0866C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349950AbiHOWio (ORCPT
+        id S1350008AbiHOWiz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        Mon, 15 Aug 2022 18:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350844AbiHOWcQ (ORCPT
+        with ESMTP id S1348784AbiHOWcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:32:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA77912E244;
-        Mon, 15 Aug 2022 12:49:05 -0700 (PDT)
+        Mon, 15 Aug 2022 18:32:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAE212E24D;
+        Mon, 15 Aug 2022 12:49:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65901B80EB2;
-        Mon, 15 Aug 2022 19:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9EBBC433C1;
-        Mon, 15 Aug 2022 19:48:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 459FF61231;
+        Mon, 15 Aug 2022 19:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30652C433D6;
+        Mon, 15 Aug 2022 19:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592921;
-        bh=698Flm7SpQJiRiiikVpbc456D/RJv3Ovb7vU4f/tM+Y=;
+        s=korg; t=1660592942;
+        bh=oF4xWoSbIFPJ8tM34EAHPqzQikSWy54TF/PD7GuhNQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qKQfigKloQrcMwo9Pj8BdYJfzr04IuSFtKYpunkX3AV/BZ0Os/EbJlGJGlyvhNm4i
-         emmBxS88G1BCejT861jq0pjjHkIUMkoFXR7+etLzfkEeKw4A0hw/3wrVJGOsQEGy1e
-         rkDqNlf804Odfe6Y20+zI8mDf/yJIxsAT4UZg6PI=
+        b=hhbzdzLw5h/poR914wgW+bd0hcJPDTm5ISIUL4/EGqdgXH8P2hN3Cvi+XCXrVmA1I
+         CwdNcDMGRcn/6wOM2dHiaxZHWIJhBZI5XcN2u7BSibWd6X+TICH2PtAPoCY0ZEA1W2
+         gBYps6p7nA6+89cjMR3rN4FT28d2Ub0imlYNIhKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0187/1157] firmware: tegra: Fix error check return value of debugfs_create_file()
-Date:   Mon, 15 Aug 2022 19:52:23 +0200
-Message-Id: <20220815180447.239973487@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Ben Greening <bgreening@gmail.com>
+Subject: [PATCH 5.19 0190/1157] ACPI: video: Use native backlight on Dell Inspiron N4010
+Date:   Mon, 15 Aug 2022 19:52:26 +0200
+Message-Id: <20220815180447.351486607@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,66 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
+[ Upstream commit 03c440a26cba6cfa540d65924e9db86fcea362b2 ]
 
-If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
-so use IS_ERR() to check it.
+The Dell Inspiron N4010 does not have ACPI backlight control,
+so acpi_video_get_backlight_type()'s heuristics return vendor as
+the type to use.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+But the vendor interface is broken, where as the native (intel_backlight)
+works well, add a quirk to use native.
+
+Link: https://lore.kernel.org/regressions/CALF=6jEe5G8+r1Wo0vvz4GjNQQhdkLT5p8uCHn6ZXhg4nsOWow@mail.gmail.com/
+Reported-and-tested-by: Ben Greening <bgreening@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/acpi/video_detect.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
-index fd89899aeeed..0c440afd5224 100644
---- a/drivers/firmware/tegra/bpmp-debugfs.c
-+++ b/drivers/firmware/tegra/bpmp-debugfs.c
-@@ -474,7 +474,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
- 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
- 			dentry = debugfs_create_file(name, mode, parent, bpmp,
- 						     &bpmp_debug_fops);
--			if (!dentry) {
-+			if (IS_ERR(dentry)) {
- 				err = -ENOMEM;
- 				goto out;
- 			}
-@@ -725,7 +725,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
- 
- 		if (t & DEBUGFS_S_ISDIR) {
- 			dentry = debugfs_create_dir(name, parent);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
- 			if (err < 0)
-@@ -738,7 +738,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
- 			dentry = debugfs_create_file(name, mode,
- 						     parent, bpmp,
- 						     &debugfs_fops);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 		}
- 	}
-@@ -788,11 +788,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
- 		return 0;
- 
- 	root = debugfs_create_dir("bpmp", NULL);
--	if (!root)
-+	if (IS_ERR(root))
- 		return -ENOMEM;
- 
- 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
--	if (!bpmp->debugfs_mirror) {
-+	if (IS_ERR(bpmp->debugfs_mirror)) {
- 		err = -ENOMEM;
- 		goto out;
- 	}
+diff --git a/drivers/acpi/video_detect.c b/drivers/acpi/video_detect.c
+index 6615f59ab7fd..5d7f38016a24 100644
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -347,6 +347,14 @@ static const struct dmi_system_id video_detect_dmi_table[] = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "MacBookPro12,1"),
+ 		},
+ 	},
++	{
++	 .callback = video_detect_force_native,
++	 /* Dell Inspiron N4010 */
++	 .matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++		DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron N4010"),
++		},
++	},
+ 	{
+ 	 .callback = video_detect_force_native,
+ 	 /* Dell Vostro V131 */
 -- 
 2.35.1
 
