@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1E1C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0BBC28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353705AbiHOXgD (ORCPT
+        id S1353730AbiHOXgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        Mon, 15 Aug 2022 19:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353520AbiHOX2T (ORCPT
+        with ESMTP id S1353490AbiHOX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:28:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658A714ECA3;
-        Mon, 15 Aug 2022 13:07:49 -0700 (PDT)
+        Mon, 15 Aug 2022 19:28:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BE014EC8E;
+        Mon, 15 Aug 2022 13:07:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BD3B60B69;
-        Mon, 15 Aug 2022 20:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFEFC433D6;
-        Mon, 15 Aug 2022 20:07:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8708860B9F;
+        Mon, 15 Aug 2022 20:07:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79DC0C433D6;
+        Mon, 15 Aug 2022 20:07:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594068;
-        bh=Ycp0s2Glg8mhvTj7X08fjKGg5VeHENMBJ1BiPadpejc=;
+        s=korg; t=1660594064;
+        bh=uBTs2mOn13ESBinmKiYeWbj6FUqajHxRdNTleHPJqw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O1ZsTV26xlaci6EevSOFWAn5Ny/oRo5vfCF6c5UzPXn8I37x4BYvIXvEhO1ZI5S4F
-         6aQMZ0AbZwYrE/MgpB1MUo9AfGeUN0DpwIih/RCLNLFyPCeHE50UviiWfy+VHclBzW
-         UHNo6EHeLMv5gmT/LajrUa+FN0vrHb8uEq31is1o=
+        b=1EbYjf9VoPItVOLSvSDS9wxhh/JeVhoIl94JKLTorIjXdO+r9LUwivWcPwSQausYb
+         xWycYWWuDlNn4tmSedP1s1SQ0kGMoFeLkPBeVvZPOhQycbzUJ2B42KlznZds/rvVqt
+         syrZU5AKljPc047Cx7qILnZ7PjIBOazwgd+EOBHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1050/1095] ksmbd: smbd: introduce read/write credits for RDMA read/write
-Date:   Mon, 15 Aug 2022 20:07:29 +0200
-Message-Id: <20220815180512.513026047@linuxfoundation.org>
+Subject: [PATCH 5.19 0369/1157] raw: convert raw sockets to RCU
+Date:   Mon, 15 Aug 2022 19:55:25 +0200
+Message-Id: <20220815180454.479726199@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,292 +50,465 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit ddbdc861e37c168cf2fb8a7b7477f5d18b4daf76 ]
+[ Upstream commit 0daf07e527095e64ee8927ce297ab626643e9f51 ]
 
-SMB2_READ/SMB2_WRITE request has to be granted the number
-of rw credits, the pages the request wants to transfer
-/ the maximum pages which can be registered with one
-MR to read and write a file.
-And allocate enough RDMA resources for the maximum
-number of rw credits allowed by ksmbd.
+Using rwlock in networking code is extremely risky.
+writers can starve if enough readers are constantly
+grabing the rwlock.
 
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+I thought rwlock were at fault and sent this patch:
+
+https://lkml.org/lkml/2022/6/17/272
+
+But Peter and Linus essentially told me rwlock had to be unfair.
+
+We need to get rid of rwlock in networking code.
+
+Without this fix, following script triggers soft lockups:
+
+for i in {1..48}
+do
+ ping -f -n -q 127.0.0.1 &
+ sleep 0.1
+done
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/transport_rdma.c | 120 ++++++++++++++++++++++----------------
- 1 file changed, 71 insertions(+), 49 deletions(-)
+ include/net/raw.h   | 11 +++++-
+ include/net/rawv6.h |  1 +
+ net/ipv4/af_inet.c  |  2 ++
+ net/ipv4/raw.c      | 83 +++++++++++++++++++++------------------------
+ net/ipv4/raw_diag.c | 22 +++++++-----
+ net/ipv6/af_inet6.c |  3 ++
+ net/ipv6/raw.c      | 28 +++++++--------
+ 7 files changed, 80 insertions(+), 70 deletions(-)
 
-diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
-index 479d279ee146..b44a5e584bac 100644
---- a/fs/ksmbd/transport_rdma.c
-+++ b/fs/ksmbd/transport_rdma.c
-@@ -80,9 +80,7 @@ static int smb_direct_max_fragmented_recv_size = 1024 * 1024;
- /*  The maximum single-message size which can be received */
- static int smb_direct_max_receive_size = 8192;
+diff --git a/include/net/raw.h b/include/net/raw.h
+index 6324965779ec..537d9d1df890 100644
+--- a/include/net/raw.h
++++ b/include/net/raw.h
+@@ -33,9 +33,18 @@ int raw_rcv(struct sock *, struct sk_buff *);
  
--static int smb_direct_max_read_write_size = 524224;
--
--static int smb_direct_max_outstanding_rw_ops = 8;
-+static int smb_direct_max_read_write_size = 8 * 1024 * 1024;
+ struct raw_hashinfo {
+ 	rwlock_t lock;
+-	struct hlist_head ht[RAW_HTABLE_SIZE];
++	struct hlist_nulls_head ht[RAW_HTABLE_SIZE];
+ };
  
- static LIST_HEAD(smb_direct_device_list);
- static DEFINE_RWLOCK(smb_direct_device_lock);
-@@ -147,10 +145,12 @@ struct smb_direct_transport {
- 	atomic_t		send_credits;
- 	spinlock_t		lock_new_recv_credits;
- 	int			new_recv_credits;
--	atomic_t		rw_avail_ops;
-+	int			max_rw_credits;
-+	int			pages_per_rw_credit;
-+	atomic_t		rw_credits;
++static inline void raw_hashinfo_init(struct raw_hashinfo *hashinfo)
++{
++	int i;
++
++	rwlock_init(&hashinfo->lock);
++	for (i = 0; i < RAW_HTABLE_SIZE; i++)
++		INIT_HLIST_NULLS_HEAD(&hashinfo->ht[i], i);
++}
++
+ #ifdef CONFIG_PROC_FS
+ int raw_proc_init(void);
+ void raw_proc_exit(void);
+diff --git a/include/net/rawv6.h b/include/net/rawv6.h
+index c48c1298699a..bc70909625f6 100644
+--- a/include/net/rawv6.h
++++ b/include/net/rawv6.h
+@@ -3,6 +3,7 @@
+ #define _NET_RAWV6_H
  
- 	wait_queue_head_t	wait_send_credits;
--	wait_queue_head_t	wait_rw_avail_ops;
-+	wait_queue_head_t	wait_rw_credits;
+ #include <net/protocol.h>
++#include <net/raw.h>
  
- 	mempool_t		*sendmsg_mempool;
- 	struct kmem_cache	*sendmsg_cache;
-@@ -377,7 +377,7 @@ static struct smb_direct_transport *alloc_transport(struct rdma_cm_id *cm_id)
- 	t->reassembly_queue_length = 0;
- 	init_waitqueue_head(&t->wait_reassembly_queue);
- 	init_waitqueue_head(&t->wait_send_credits);
--	init_waitqueue_head(&t->wait_rw_avail_ops);
-+	init_waitqueue_head(&t->wait_rw_credits);
+ extern struct raw_hashinfo raw_v6_hashinfo;
+ bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 252c8bceaba4..6f5556cb0d97 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1919,6 +1919,8 @@ static int __init inet_init(void)
  
- 	spin_lock_init(&t->receive_credit_lock);
- 	spin_lock_init(&t->recvmsg_queue_lock);
-@@ -984,18 +984,19 @@ static int smb_direct_flush_send_list(struct smb_direct_transport *t,
- }
+ 	sock_skb_cb_check_size(sizeof(struct inet_skb_parm));
  
- static int wait_for_credits(struct smb_direct_transport *t,
--			    wait_queue_head_t *waitq, atomic_t *credits)
-+			    wait_queue_head_t *waitq, atomic_t *total_credits,
-+			    int needed)
++	raw_hashinfo_init(&raw_v4_hashinfo);
++
+ 	rc = proto_register(&tcp_prot, 1);
+ 	if (rc)
+ 		goto out;
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 05e0de4a7c7f..d28bf0b901a2 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -85,20 +85,19 @@ struct raw_frag_vec {
+ 	int hlen;
+ };
+ 
+-struct raw_hashinfo raw_v4_hashinfo = {
+-	.lock = __RW_LOCK_UNLOCKED(raw_v4_hashinfo.lock),
+-};
++struct raw_hashinfo raw_v4_hashinfo;
+ EXPORT_SYMBOL_GPL(raw_v4_hashinfo);
+ 
+ int raw_hash_sk(struct sock *sk)
  {
- 	int ret;
+ 	struct raw_hashinfo *h = sk->sk_prot->h.raw_hash;
+-	struct hlist_head *head;
++	struct hlist_nulls_head *hlist;
  
- 	do {
--		if (atomic_dec_return(credits) >= 0)
-+		if (atomic_sub_return(needed, total_credits) >= 0)
- 			return 0;
+-	head = &h->ht[inet_sk(sk)->inet_num & (RAW_HTABLE_SIZE - 1)];
++	hlist = &h->ht[inet_sk(sk)->inet_num & (RAW_HTABLE_SIZE - 1)];
  
--		atomic_inc(credits);
-+		atomic_add(needed, total_credits);
- 		ret = wait_event_interruptible(*waitq,
--					       atomic_read(credits) > 0 ||
--						t->status != SMB_DIRECT_CS_CONNECTED);
-+					       atomic_read(total_credits) >= needed ||
-+					       t->status != SMB_DIRECT_CS_CONNECTED);
+ 	write_lock_bh(&h->lock);
+-	sk_add_node(sk, head);
++	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, hlist);
++	sock_set_flag(sk, SOCK_RCU_FREE);
+ 	write_unlock_bh(&h->lock);
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
  
- 		if (t->status != SMB_DIRECT_CS_CONNECTED)
- 			return -ENOTCONN;
-@@ -1016,7 +1017,19 @@ static int wait_for_send_credits(struct smb_direct_transport *t,
- 			return ret;
- 	}
+@@ -111,7 +110,7 @@ void raw_unhash_sk(struct sock *sk)
+ 	struct raw_hashinfo *h = sk->sk_prot->h.raw_hash;
  
--	return wait_for_credits(t, &t->wait_send_credits, &t->send_credits);
-+	return wait_for_credits(t, &t->wait_send_credits, &t->send_credits, 1);
-+}
-+
-+static int wait_for_rw_credits(struct smb_direct_transport *t, int credits)
-+{
-+	return wait_for_credits(t, &t->wait_rw_credits, &t->rw_credits, credits);
-+}
-+
-+static int calc_rw_credits(struct smb_direct_transport *t,
-+			   char *buf, unsigned int len)
-+{
-+	return DIV_ROUND_UP(get_buf_page_count(buf, len),
-+			    t->pages_per_rw_credit);
+ 	write_lock_bh(&h->lock);
+-	if (sk_del_node_init(sk))
++	if (__sk_nulls_del_node_init_rcu(sk))
+ 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+ 	write_unlock_bh(&h->lock);
  }
- 
- static int smb_direct_create_header(struct smb_direct_transport *t,
-@@ -1332,8 +1345,8 @@ static void read_write_done(struct ib_cq *cq, struct ib_wc *wc,
- 		smb_direct_disconnect_rdma_connection(t);
- 	}
- 
--	if (atomic_inc_return(&t->rw_avail_ops) > 0)
--		wake_up(&t->wait_rw_avail_ops);
-+	if (atomic_inc_return(&t->rw_credits) > 0)
-+		wake_up(&t->wait_rw_credits);
- 
- 	rdma_rw_ctx_destroy(&msg->rw_ctx, t->qp, t->qp->port,
- 			    msg->sg_list, msg->sgt.nents, dir);
-@@ -1364,8 +1377,10 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
- 	struct ib_send_wr *first_wr = NULL;
- 	u32 remote_key = le32_to_cpu(desc[0].token);
- 	u64 remote_offset = le64_to_cpu(desc[0].offset);
-+	int credits_needed;
- 
--	ret = wait_for_credits(t, &t->wait_rw_avail_ops, &t->rw_avail_ops);
-+	credits_needed = calc_rw_credits(t, buf, buf_len);
-+	ret = wait_for_rw_credits(t, credits_needed);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1373,7 +1388,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
- 	msg = kmalloc(offsetof(struct smb_direct_rdma_rw_msg, sg_list) +
- 		      sizeof(struct scatterlist) * SG_CHUNK_SIZE, GFP_KERNEL);
- 	if (!msg) {
--		atomic_inc(&t->rw_avail_ops);
-+		atomic_add(credits_needed, &t->rw_credits);
- 		return -ENOMEM;
- 	}
- 
-@@ -1382,7 +1397,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
- 				     get_buf_page_count(buf, buf_len),
- 				     msg->sg_list, SG_CHUNK_SIZE);
- 	if (ret) {
--		atomic_inc(&t->rw_avail_ops);
-+		atomic_add(credits_needed, &t->rw_credits);
- 		kfree(msg);
- 		return -ENOMEM;
- 	}
-@@ -1418,7 +1433,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
- 	return 0;
- 
- err:
--	atomic_inc(&t->rw_avail_ops);
-+	atomic_add(credits_needed, &t->rw_credits);
- 	if (first_wr)
- 		rdma_rw_ctx_destroy(&msg->rw_ctx, t->qp, t->qp->port,
- 				    msg->sg_list, msg->sgt.nents,
-@@ -1643,11 +1658,19 @@ static int smb_direct_prepare_negotiation(struct smb_direct_transport *t)
- 	return ret;
- }
- 
-+static unsigned int smb_direct_get_max_fr_pages(struct smb_direct_transport *t)
-+{
-+	return min_t(unsigned int,
-+		     t->cm_id->device->attrs.max_fast_reg_page_list_len,
-+		     256);
-+}
-+
- static int smb_direct_init_params(struct smb_direct_transport *t,
- 				  struct ib_qp_cap *cap)
+@@ -164,17 +163,16 @@ static int icmp_filter(const struct sock *sk, const struct sk_buff *skb)
+ static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
  {
- 	struct ib_device *device = t->cm_id->device;
--	int max_send_sges, max_pages, max_rw_wrs, max_send_wrs;
-+	int max_send_sges, max_rw_wrs, max_send_wrs;
-+	unsigned int max_sge_per_wr, wrs_per_credit;
+ 	struct net *net = dev_net(skb->dev);
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	int sdif = inet_sdif(skb);
+ 	int dif = inet_iif(skb);
+-	struct hlist_head *head;
+ 	int delivered = 0;
+ 	struct sock *sk;
  
- 	/* need 2 more sge. because a SMB_DIRECT header will be mapped,
- 	 * and maybe a send buffer could be not page aligned.
-@@ -1659,25 +1682,31 @@ static int smb_direct_init_params(struct smb_direct_transport *t,
- 		return -EINVAL;
- 	}
- 
--	/*
--	 * allow smb_direct_max_outstanding_rw_ops of in-flight RDMA
--	 * read/writes. HCA guarantees at least max_send_sge of sges for
--	 * a RDMA read/write work request, and if memory registration is used,
--	 * we need reg_mr, local_inv wrs for each read/write.
-+	/* Calculate the number of work requests for RDMA R/W.
-+	 * The maximum number of pages which can be registered
-+	 * with one Memory region can be transferred with one
-+	 * R/W credit. And at least 4 work requests for each credit
-+	 * are needed for MR registration, RDMA R/W, local & remote
-+	 * MR invalidation.
- 	 */
- 	t->max_rdma_rw_size = smb_direct_max_read_write_size;
--	max_pages = DIV_ROUND_UP(t->max_rdma_rw_size, PAGE_SIZE) + 1;
--	max_rw_wrs = DIV_ROUND_UP(max_pages, SMB_DIRECT_MAX_SEND_SGES);
--	max_rw_wrs += rdma_rw_mr_factor(device, t->cm_id->port_num,
--			max_pages) * 2;
--	max_rw_wrs *= smb_direct_max_outstanding_rw_ops;
-+	t->pages_per_rw_credit = smb_direct_get_max_fr_pages(t);
-+	t->max_rw_credits = DIV_ROUND_UP(t->max_rdma_rw_size,
-+					 (t->pages_per_rw_credit - 1) *
-+					 PAGE_SIZE);
-+
-+	max_sge_per_wr = min_t(unsigned int, device->attrs.max_send_sge,
-+			       device->attrs.max_sge_rd);
-+	wrs_per_credit = max_t(unsigned int, 4,
-+			       DIV_ROUND_UP(t->pages_per_rw_credit,
-+					    max_sge_per_wr) + 1);
-+	max_rw_wrs = t->max_rw_credits * wrs_per_credit;
- 
- 	max_send_wrs = smb_direct_send_credit_target + max_rw_wrs;
- 	if (max_send_wrs > device->attrs.max_cqe ||
- 	    max_send_wrs > device->attrs.max_qp_wr) {
--		pr_err("consider lowering send_credit_target = %d, or max_outstanding_rw_ops = %d\n",
--		       smb_direct_send_credit_target,
--		       smb_direct_max_outstanding_rw_ops);
-+		pr_err("consider lowering send_credit_target = %d\n",
-+		       smb_direct_send_credit_target);
- 		pr_err("Possible CQE overrun, device reporting max_cqe %d max_qp_wr %d\n",
- 		       device->attrs.max_cqe, device->attrs.max_qp_wr);
- 		return -EINVAL;
-@@ -1712,7 +1741,7 @@ static int smb_direct_init_params(struct smb_direct_transport *t,
- 
- 	t->send_credit_target = smb_direct_send_credit_target;
- 	atomic_set(&t->send_credits, 0);
--	atomic_set(&t->rw_avail_ops, smb_direct_max_outstanding_rw_ops);
-+	atomic_set(&t->rw_credits, t->max_rw_credits);
- 
- 	t->max_send_size = smb_direct_max_send_size;
- 	t->max_recv_size = smb_direct_max_receive_size;
-@@ -1720,12 +1749,10 @@ static int smb_direct_init_params(struct smb_direct_transport *t,
- 
- 	cap->max_send_wr = max_send_wrs;
- 	cap->max_recv_wr = t->recv_credit_max;
--	cap->max_send_sge = SMB_DIRECT_MAX_SEND_SGES;
-+	cap->max_send_sge = max_sge_per_wr;
- 	cap->max_recv_sge = SMB_DIRECT_MAX_RECV_SGES;
- 	cap->max_inline_data = 0;
--	cap->max_rdma_ctxs =
--		rdma_rw_mr_factor(device, t->cm_id->port_num, max_pages) *
--		smb_direct_max_outstanding_rw_ops;
-+	cap->max_rdma_ctxs = t->max_rw_credits;
- 	return 0;
- }
- 
-@@ -1818,7 +1845,8 @@ static int smb_direct_create_qpair(struct smb_direct_transport *t,
- 	}
- 
- 	t->send_cq = ib_alloc_cq(t->cm_id->device, t,
--				 t->send_credit_target, 0, IB_POLL_WORKQUEUE);
-+				 smb_direct_send_credit_target + cap->max_rdma_ctxs,
-+				 0, IB_POLL_WORKQUEUE);
- 	if (IS_ERR(t->send_cq)) {
- 		pr_err("Can't create RDMA send CQ\n");
- 		ret = PTR_ERR(t->send_cq);
-@@ -1827,8 +1855,7 @@ static int smb_direct_create_qpair(struct smb_direct_transport *t,
- 	}
- 
- 	t->recv_cq = ib_alloc_cq(t->cm_id->device, t,
--				 cap->max_send_wr + cap->max_rdma_ctxs,
--				 0, IB_POLL_WORKQUEUE);
-+				 t->recv_credit_max, 0, IB_POLL_WORKQUEUE);
- 	if (IS_ERR(t->recv_cq)) {
- 		pr_err("Can't create RDMA recv CQ\n");
- 		ret = PTR_ERR(t->recv_cq);
-@@ -1857,17 +1884,12 @@ static int smb_direct_create_qpair(struct smb_direct_transport *t,
- 
- 	pages_per_rw = DIV_ROUND_UP(t->max_rdma_rw_size, PAGE_SIZE) + 1;
- 	if (pages_per_rw > t->cm_id->device->attrs.max_sgl_rd) {
--		int pages_per_mr, mr_count;
--
--		pages_per_mr = min_t(int, pages_per_rw,
--				     t->cm_id->device->attrs.max_fast_reg_page_list_len);
--		mr_count = DIV_ROUND_UP(pages_per_rw, pages_per_mr) *
--			atomic_read(&t->rw_avail_ops);
--		ret = ib_mr_pool_init(t->qp, &t->qp->rdma_mrs, mr_count,
--				      IB_MR_TYPE_MEM_REG, pages_per_mr, 0);
-+		ret = ib_mr_pool_init(t->qp, &t->qp->rdma_mrs,
-+				      t->max_rw_credits, IB_MR_TYPE_MEM_REG,
-+				      t->pages_per_rw_credit, 0);
- 		if (ret) {
- 			pr_err("failed to init mr pool count %d pages %d\n",
--			       mr_count, pages_per_mr);
-+			       t->max_rw_credits, t->pages_per_rw_credit);
- 			goto err;
+-	head = &raw_v4_hashinfo.ht[hash];
+-	if (hlist_empty(head))
+-		return 0;
+-	read_lock(&raw_v4_hashinfo.lock);
+-	sk_for_each(sk, head) {
++	hlist = &raw_v4_hashinfo.ht[hash];
++	rcu_read_lock();
++	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		if (!raw_v4_match(net, sk, iph->protocol,
+ 				  iph->saddr, iph->daddr, dif, sdif))
+ 			continue;
+@@ -189,7 +187,7 @@ static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
+ 				raw_rcv(sk, clone);
  		}
  	}
+-	read_unlock(&raw_v4_hashinfo.lock);
++	rcu_read_unlock();
+ 	return delivered;
+ }
+ 
+@@ -265,25 +263,26 @@ static void raw_err(struct sock *sk, struct sk_buff *skb, u32 info)
+ void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
+ {
+ 	struct net *net = dev_net(skb->dev);;
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	int dif = skb->dev->ifindex;
+ 	int sdif = inet_sdif(skb);
+-	struct hlist_head *head;
+ 	const struct iphdr *iph;
+ 	struct sock *sk;
+ 	int hash;
+ 
+ 	hash = protocol & (RAW_HTABLE_SIZE - 1);
+-	head = &raw_v4_hashinfo.ht[hash];
++	hlist = &raw_v4_hashinfo.ht[hash];
+ 
+-	read_lock(&raw_v4_hashinfo.lock);
+-	sk_for_each(sk, head) {
++	rcu_read_lock();
++	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		iph = (const struct iphdr *)skb->data;
+ 		if (!raw_v4_match(net, sk, iph->protocol,
+ 				  iph->saddr, iph->daddr, dif, sdif))
+ 			continue;
+ 		raw_err(sk, skb, info);
+ 	}
+-	read_unlock(&raw_v4_hashinfo.lock);
++	rcu_read_unlock();
+ }
+ 
+ static int raw_rcv_skb(struct sock *sk, struct sk_buff *skb)
+@@ -944,44 +943,41 @@ struct proto raw_prot = {
+ };
+ 
+ #ifdef CONFIG_PROC_FS
+-static struct sock *raw_get_first(struct seq_file *seq)
++static struct sock *raw_get_first(struct seq_file *seq, int bucket)
+ {
+-	struct sock *sk;
+ 	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
+ 	struct raw_iter_state *state = raw_seq_private(seq);
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
++	struct sock *sk;
+ 
+-	for (state->bucket = 0; state->bucket < RAW_HTABLE_SIZE;
++	for (state->bucket = bucket; state->bucket < RAW_HTABLE_SIZE;
+ 			++state->bucket) {
+-		sk_for_each(sk, &h->ht[state->bucket])
++		hlist = &h->ht[state->bucket];
++		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 			if (sock_net(sk) == seq_file_net(seq))
+-				goto found;
++				return sk;
++		}
+ 	}
+-	sk = NULL;
+-found:
+-	return sk;
++	return NULL;
+ }
+ 
+ static struct sock *raw_get_next(struct seq_file *seq, struct sock *sk)
+ {
+-	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
+ 	struct raw_iter_state *state = raw_seq_private(seq);
+ 
+ 	do {
+-		sk = sk_next(sk);
+-try_again:
+-		;
++		sk = sk_nulls_next(sk);
+ 	} while (sk && sock_net(sk) != seq_file_net(seq));
+ 
+-	if (!sk && ++state->bucket < RAW_HTABLE_SIZE) {
+-		sk = sk_head(&h->ht[state->bucket]);
+-		goto try_again;
+-	}
++	if (!sk)
++		return raw_get_first(seq, state->bucket + 1);
+ 	return sk;
+ }
+ 
+ static struct sock *raw_get_idx(struct seq_file *seq, loff_t pos)
+ {
+-	struct sock *sk = raw_get_first(seq);
++	struct sock *sk = raw_get_first(seq, 0);
+ 
+ 	if (sk)
+ 		while (pos && (sk = raw_get_next(seq, sk)) != NULL)
+@@ -990,11 +986,9 @@ static struct sock *raw_get_idx(struct seq_file *seq, loff_t pos)
+ }
+ 
+ void *raw_seq_start(struct seq_file *seq, loff_t *pos)
+-	__acquires(&h->lock)
++	__acquires(RCU)
+ {
+-	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
+-
+-	read_lock(&h->lock);
++	rcu_read_lock();
+ 	return *pos ? raw_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
+ }
+ EXPORT_SYMBOL_GPL(raw_seq_start);
+@@ -1004,7 +998,7 @@ void *raw_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ 	struct sock *sk;
+ 
+ 	if (v == SEQ_START_TOKEN)
+-		sk = raw_get_first(seq);
++		sk = raw_get_first(seq, 0);
+ 	else
+ 		sk = raw_get_next(seq, v);
+ 	++*pos;
+@@ -1013,11 +1007,9 @@ void *raw_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ EXPORT_SYMBOL_GPL(raw_seq_next);
+ 
+ void raw_seq_stop(struct seq_file *seq, void *v)
+-	__releases(&h->lock)
++	__releases(RCU)
+ {
+-	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
+-
+-	read_unlock(&h->lock);
++	rcu_read_unlock();
+ }
+ EXPORT_SYMBOL_GPL(raw_seq_stop);
+ 
+@@ -1079,6 +1071,7 @@ static __net_initdata struct pernet_operations raw_net_ops = {
+ 
+ int __init raw_proc_init(void)
+ {
++
+ 	return register_pernet_subsys(&raw_net_ops);
+ }
+ 
+diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
+index b6d92dc7b051..5f208e840d85 100644
+--- a/net/ipv4/raw_diag.c
++++ b/net/ipv4/raw_diag.c
+@@ -57,31 +57,32 @@ static bool raw_lookup(struct net *net, struct sock *sk,
+ static struct sock *raw_sock_get(struct net *net, const struct inet_diag_req_v2 *r)
+ {
+ 	struct raw_hashinfo *hashinfo = raw_get_hashinfo(r);
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	struct sock *sk;
+ 	int slot;
+ 
+ 	if (IS_ERR(hashinfo))
+ 		return ERR_CAST(hashinfo);
+ 
+-	read_lock(&hashinfo->lock);
++	rcu_read_lock();
+ 	for (slot = 0; slot < RAW_HTABLE_SIZE; slot++) {
+-		sk_for_each(sk, &hashinfo->ht[slot]) {
++		hlist = &hashinfo->ht[slot];
++		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 			if (raw_lookup(net, sk, r)) {
+ 				/*
+ 				 * Grab it and keep until we fill
+-				 * diag meaage to be reported, so
++				 * diag message to be reported, so
+ 				 * caller should call sock_put then.
+-				 * We can do that because we're keeping
+-				 * hashinfo->lock here.
+ 				 */
+-				sock_hold(sk);
+-				goto out_unlock;
++				if (refcount_inc_not_zero(&sk->sk_refcnt))
++					goto out_unlock;
+ 			}
+ 		}
+ 	}
+ 	sk = ERR_PTR(-ENOENT);
+ out_unlock:
+-	read_unlock(&hashinfo->lock);
++	rcu_read_unlock();
+ 
+ 	return sk;
+ }
+@@ -141,6 +142,8 @@ static void raw_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 	struct raw_hashinfo *hashinfo = raw_get_hashinfo(r);
+ 	struct net *net = sock_net(skb->sk);
+ 	struct inet_diag_dump_data *cb_data;
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	int num, s_num, slot, s_slot;
+ 	struct sock *sk = NULL;
+ 	struct nlattr *bc;
+@@ -157,7 +160,8 @@ static void raw_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 	for (slot = s_slot; slot < RAW_HTABLE_SIZE; s_num = 0, slot++) {
+ 		num = 0;
+ 
+-		sk_for_each(sk, &hashinfo->ht[slot]) {
++		hlist = &hashinfo->ht[slot];
++		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 			struct inet_sock *inet = inet_sk(sk);
+ 
+ 			if (!net_eq(sock_net(sk), net))
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 6f354f8be2c5..9f6f4a41245d 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -63,6 +63,7 @@
+ #include <net/compat.h>
+ #include <net/xfrm.h>
+ #include <net/ioam6.h>
++#include <net/rawv6.h>
+ 
+ #include <linux/uaccess.h>
+ #include <linux/mroute6.h>
+@@ -1073,6 +1074,8 @@ static int __init inet6_init(void)
+ 		goto out;
+ 	}
+ 
++	raw_hashinfo_init(&raw_v6_hashinfo);
++
+ 	err = proto_register(&tcpv6_prot, 1);
+ 	if (err)
+ 		goto out;
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index c0f2e3475984..f6119998700e 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -61,9 +61,7 @@
+ 
+ #define	ICMPV6_HDRLEN	4	/* ICMPv6 header, RFC 4443 Section 2.1 */
+ 
+-struct raw_hashinfo raw_v6_hashinfo = {
+-	.lock = __RW_LOCK_UNLOCKED(raw_v6_hashinfo.lock),
+-};
++struct raw_hashinfo raw_v6_hashinfo;
+ EXPORT_SYMBOL_GPL(raw_v6_hashinfo);
+ 
+ bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
+@@ -143,9 +141,10 @@ EXPORT_SYMBOL(rawv6_mh_filter_unregister);
+ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+ {
+ 	struct net *net = dev_net(skb->dev);
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	const struct in6_addr *saddr;
+ 	const struct in6_addr *daddr;
+-	struct hlist_head *head;
+ 	struct sock *sk;
+ 	bool delivered = false;
+ 	__u8 hash;
+@@ -154,11 +153,9 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+ 	daddr = saddr + 1;
+ 
+ 	hash = nexthdr & (RAW_HTABLE_SIZE - 1);
+-	head = &raw_v6_hashinfo.ht[hash];
+-	if (hlist_empty(head))
+-		return false;
+-	read_lock(&raw_v6_hashinfo.lock);
+-	sk_for_each(sk, head) {
++	hlist = &raw_v6_hashinfo.ht[hash];
++	rcu_read_lock();
++	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		int filtered;
+ 
+ 		if (!raw_v6_match(net, sk, nexthdr, daddr, saddr,
+@@ -203,7 +200,7 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+ 			}
+ 		}
+ 	}
+-	read_unlock(&raw_v6_hashinfo.lock);
++	rcu_read_unlock();
+ 	return delivered;
+ }
+ 
+@@ -337,14 +334,15 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+ {
+ 	const struct in6_addr *saddr, *daddr;
+ 	struct net *net = dev_net(skb->dev);
+-	struct hlist_head *head;
++	struct hlist_nulls_head *hlist;
++	struct hlist_nulls_node *hnode;
+ 	struct sock *sk;
+ 	int hash;
+ 
+ 	hash = nexthdr & (RAW_HTABLE_SIZE - 1);
+-	head = &raw_v6_hashinfo.ht[hash];
+-	read_lock(&raw_v6_hashinfo.lock);
+-	sk_for_each(sk, head) {
++	hlist = &raw_v6_hashinfo.ht[hash];
++	rcu_read_lock();
++	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		/* Note: ipv6_hdr(skb) != skb->data */
+ 		const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
+ 		saddr = &ip6h->saddr;
+@@ -355,7 +353,7 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+ 			continue;
+ 		rawv6_err(sk, skb, NULL, type, code, inner_offset, info);
+ 	}
+-	read_unlock(&raw_v6_hashinfo.lock);
++	rcu_read_unlock();
+ }
+ 
+ static inline int rawv6_rcv_skb(struct sock *sk, struct sk_buff *skb)
 -- 
 2.35.1
 
