@@ -2,83 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C2FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF57C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355629AbiHOX5T (ORCPT
+        id S1355636AbiHOX52 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
+        Mon, 15 Aug 2022 19:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355369AbiHOXwA (ORCPT
+        with ESMTP id S1355356AbiHOXv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:52:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD8592F4C;
-        Mon, 15 Aug 2022 13:16:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 15 Aug 2022 19:51:57 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC64C915C8;
+        Mon, 15 Aug 2022 13:16:39 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b988d329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:988d:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAA24B81135;
-        Mon, 15 Aug 2022 20:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22EA3C433C1;
-        Mon, 15 Aug 2022 20:16:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594599;
-        bh=/HDOzt1fxq18AH8twZPBlkZvpI2voQRH1kRapURW0Q0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dydQNzT5HsIbr4/SCl27P5CKJAq6pjT/b7ti+RxD205uEcFu6QkJhg8xck2v2VTMP
-         o8i6D0tTnbEYWXCoM5G0+1V+c5K4Kg3h6+dN5Rp9CVHVottg0yXcGmGqGBSSpMswxj
-         MfTW5zJ8kSPEDnwx1xhUH2FS5HrB2pe/1/I5lVdg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0499/1157] wifi: nl80211: acquire wdev mutex for dump_survey
-Date:   Mon, 15 Aug 2022 19:57:35 +0200
-Message-Id: <20220815180459.646326974@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BB2E01EC02AD;
+        Mon, 15 Aug 2022 22:16:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660594593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=KMD5ZZW0UGq2Obs996tfjGpJxzdAX0qHGDYWDHvQl+Q=;
+        b=L0QhKbmGsK+x7YnEkJO3Efs8BnoHyjMhN6fVG8HyEAb+v6OPMY5NRRmwfr1N+wTC4qwX+M
+        KR558BiStQ1xGsTbFHpB+zRz0BtpTb3YSrsxi+cGm36DHMlDsnCXuM26DderQLFaZ3r760
+        aF1onIFyJBQlok+JIWgrfndBo46rZbQ=
+Date:   Mon, 15 Aug 2022 22:16:29 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Johannes Erdfelt <johannes@erdfelt.com>,
+        Ingo Molnar <mingo@redhat.com>, live-patching@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: ftrace regression with CONFIG_UNWINDER_FRAME_POINTER
+Message-ID: <YvqpnfM9ZdRO6oXa@zn.tnic>
+References: <20220815195828.GE3948@sventech.com>
+ <20220815160646.0dca7227@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220815160646.0dca7227@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Mon, Aug 15, 2022 at 04:06:46PM -0400, Steven Rostedt wrote:
+> On Mon, 15 Aug 2022 12:58:28 -0700
+> Johannes Erdfelt <johannes@erdfelt.com> wrote:
+> 
+> > I recently ran across an oops with ftrace when using the frame pointer
+> > unwinder. It does not affect Linus' tree (tested 6.0-rc1), but it does
+> > affect 5.15.60 and 5.10.136 (at least, have not tested other kernels).
+> > 
+> > It appears to be related to the recently merged retbleed mitigations,
+> 
+> If you believe this, then Cc those that are involved with those
+> mitigations, which I did.
 
-[ Upstream commit 284b38b6902a7154e3675482418a7b6df47808fe ]
+Sounds like this one:
 
-At least the quantenna driver calls wdev_chandef() here
-which now requires the lock, so acquire it.
+https://lore.kernel.org/all/Yu2H%2FRdg%2FU4bHWaY@quatroqueijos/
 
-Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/wireless/nl80211.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index af31978fc9cc..c4014ee3f667 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -10126,7 +10126,9 @@ static int nl80211_dump_survey(struct sk_buff *skb, struct netlink_callback *cb)
- 	}
- 
- 	while (1) {
-+		wdev_lock(wdev);
- 		res = rdev_dump_survey(rdev, wdev->netdev, survey_idx, &survey);
-+		wdev_unlock(wdev);
- 		if (res == -ENOENT)
- 			break;
- 		if (res)
 -- 
-2.35.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
