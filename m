@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC609C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6959C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351963AbiHOWuN (ORCPT
+        id S1351975AbiHOWuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        Mon, 15 Aug 2022 18:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352181AbiHOWsB (ORCPT
+        with ESMTP id S1352189AbiHOWsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:48:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655DE7DF4D;
-        Mon, 15 Aug 2022 12:53:32 -0700 (PDT)
+        Mon, 15 Aug 2022 18:48:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69D37DF60;
+        Mon, 15 Aug 2022 12:53:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5066FB81154;
-        Mon, 15 Aug 2022 19:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841DEC433D7;
-        Mon, 15 Aug 2022 19:53:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6A4260FB9;
+        Mon, 15 Aug 2022 19:53:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A1EC433D6;
+        Mon, 15 Aug 2022 19:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593209;
-        bh=X6KmnTVuELz2mu756BHVn4erskBA2eCATAenHmPgQiI=;
+        s=korg; t=1660593212;
+        bh=vo0TAGeRPJNhuCFG7rNuv/V9pYpe7Wt0kisbfUGzm10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IS/T6EJ7rtL26FueL7TEUQLctTmRbYA/tROw3G/0m+ndCiVajDVUmbsUenbTikYez
-         w+ZTo6xcR2FMXkL+qcaq+XlnfoCjXOLELkbtpQegCBTDjqeZUbrrvNnhHub7O2opti
-         TStUxlsMC05WVoMTbP3/F8lpSN0B5w/vVixsm+cg=
+        b=VXqOxrIXx3oEUVvfQ74LZS2LROyAvxrBQ495AYqKxxzIXB+kkAF4utxGkc5HRmaPQ
+         o5M+4OpLa+koFlYWHUyZaRQwqBXuE4mDbd/3yFDEW9BnxJf6C0ny75pI5Ej9k3Ex44
+         CuGwHn+cAI366MSgFSzv4zD/gorvcAOIbozIigrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0230/1157] arm64: dts: qcom: sdm630: disable GPU by default
-Date:   Mon, 15 Aug 2022 19:53:06 +0200
-Message-Id: <20220815180448.785102730@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0912/1095] video: fbdev: amba-clcd: Fix refcount leak bugs
+Date:   Mon, 15 Aug 2022 20:05:11 +0200
+Message-Id: <20220815180507.015333870@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,39 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 1c047919763b4548381d1ab3320af1df66ab83df ]
+[ Upstream commit 26c2b7d9fac42eb8317f3ceefa4c1a9a9170ca69 ]
 
-The SoC's device tree file disables gpucc and adreno's SMMU by default.
-So let's disable the GPU too. Moreover it looks like SMMU might be not
-usable without additional patches (which means that GPU is unusable
-too). No board uses GPU at this moment.
+In clcdfb_of_init_display(), we should call of_node_put() for the
+references returned by of_graph_get_next_endpoint() and
+of_graph_get_remote_port_parent() which have increased the refcount.
 
-Fixes: 5cf69dcbec8b ("arm64: dts: qcom: sdm630: Add Adreno 508 GPU configuration")
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220521202708.1509308-4-dmitry.baryshkov@linaro.org
+Besides, we should call of_node_put() both in fail path or when
+the references are not used anymore.
+
+Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/video/fbdev/amba-clcd.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index b72e8e6c52f3..b4dcfecd5cf3 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -1050,6 +1050,8 @@ adreno_gpu: gpu@5000000 {
+diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
+index 8080116aea84..f65c96d1394d 100644
+--- a/drivers/video/fbdev/amba-clcd.c
++++ b/drivers/video/fbdev/amba-clcd.c
+@@ -698,16 +698,18 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 		return -ENODEV;
  
- 			operating-points-v2 = <&gpu_sdm630_opp_table>;
+ 	panel = of_graph_get_remote_port_parent(endpoint);
+-	if (!panel)
+-		return -ENODEV;
++	if (!panel) {
++		err = -ENODEV;
++		goto out_endpoint_put;
++	}
  
-+			status = "disabled";
+ 	err = clcdfb_of_get_backlight(&fb->dev->dev, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
+ 
+ 	err = clcdfb_of_get_mode(&fb->dev->dev, panel, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
+ 
+ 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
+ 			&max_bandwidth);
+@@ -736,11 +738,21 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 
+ 	if (of_property_read_u32_array(endpoint,
+ 			"arm,pl11x,tft-r0g0b0-pads",
+-			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0)
+-		return -ENOENT;
++			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0) {
++		err = -ENOENT;
++		goto out_panel_put;
++	}
 +
- 			gpu_sdm630_opp_table: opp-table {
- 				compatible  = "operating-points-v2";
- 				opp-775000000 {
++	of_node_put(panel);
++	of_node_put(endpoint);
+ 
+ 	return clcdfb_of_init_tft_panel(fb, tft_r0b0g0[0],
+ 					tft_r0b0g0[1],  tft_r0b0g0[2]);
++out_panel_put:
++	of_node_put(panel);
++out_endpoint_put:
++	of_node_put(endpoint);
++	return err;
+ }
+ 
+ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
 -- 
 2.35.1
 
