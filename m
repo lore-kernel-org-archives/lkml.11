@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE79C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E052C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245484AbiHOTFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S245582AbiHOTFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245526AbiHOTCR (ORCPT
+        with ESMTP id S245566AbiHOTCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:02:17 -0400
+        Mon, 15 Aug 2022 15:02:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4E933E30;
-        Mon, 15 Aug 2022 11:33:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D586933436;
+        Mon, 15 Aug 2022 11:33:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2748CB8105C;
-        Mon, 15 Aug 2022 18:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB3DC433C1;
-        Mon, 15 Aug 2022 18:33:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A80EB81081;
+        Mon, 15 Aug 2022 18:33:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1065C433C1;
+        Mon, 15 Aug 2022 18:33:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588401;
-        bh=8TplkGd97N18pN9xdr3NQUO0P7WdvSM5cJZ6n9xVWmU=;
+        s=korg; t=1660588408;
+        bh=GOWshVnBwy6EwloCgplMH55chcLT2EZdBYc4L1saBCk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Up/1Vk+9BU1uphqQM/iS3u5520owWz1j/5mJk3FK5dkSRdzAlteylCMUVZKbYYHbB
-         3okI4YZy96YFMUAqTV7U1U5Zk41N/sUhrNmImuGHH43VfW+hiCPQ5fjGGhFjuH6tZt
-         8K9Bb0pc9ztXBpaf50e7FW8J8qHhefDZ7hDE7Dy4=
+        b=QjybJC5claaT44IqMOsmFiw5kQR+Tb81WCaWUx57Uk1qmYruyQh0CjRZ7ydR1pE+k
+         T12qReVfcO0I7TQ/gn6UMJ9ZoxplUiRXOkY/FytSRHDHgldZ3kt9mmMM5G9JjNGCOz
+         JGJKjQvwtQNPL7DmlVYvqrL5ZhvmvqX9qw//dDKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 361/779] Bluetooth: hci_intel: Add check for platform_driver_register
-Date:   Mon, 15 Aug 2022 20:00:05 +0200
-Message-Id: <20220815180352.668150891@linuxfoundation.org>
+Subject: [PATCH 5.15 363/779] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
+Date:   Mon, 15 Aug 2022 20:00:07 +0200
+Message-Id: <20220815180352.756604330@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,39 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
+[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+In i2c_mux_probe(), we should call of_node_put() when breaking out
+of for_each_child_of_node() which will automatically increase and
+decrease the refcount.
 
-Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_intel.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
-index 7249b91d9b91..78afb9a348e7 100644
---- a/drivers/bluetooth/hci_intel.c
-+++ b/drivers/bluetooth/hci_intel.c
-@@ -1217,7 +1217,11 @@ static struct platform_driver intel_driver = {
+diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
+index d3acd8d66c32..33024acaac02 100644
+--- a/drivers/i2c/muxes/i2c-mux-gpmux.c
++++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
+@@ -134,6 +134,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
+ 	return 0;
  
- int __init intel_init(void)
- {
--	platform_driver_register(&intel_driver);
-+	int err;
-+
-+	err = platform_driver_register(&intel_driver);
-+	if (err)
-+		return err;
- 
- 	return hci_uart_register_proto(&intel_proto);
- }
+ err_children:
++	of_node_put(child);
+ 	i2c_mux_del_adapters(muxc);
+ err_parent:
+ 	i2c_put_adapter(parent);
 -- 
 2.35.1
 
