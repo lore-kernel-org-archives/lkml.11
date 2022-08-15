@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BD8C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8E8C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiHPAtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S241326AbiHPAtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346765AbiHPApr (ORCPT
+        with ESMTP id S1346951AbiHPApt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA5DAE9CC;
-        Mon, 15 Aug 2022 13:41:03 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6037912D;
+        Mon, 15 Aug 2022 13:42:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BC160F60;
-        Mon, 15 Aug 2022 20:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D947C433C1;
-        Mon, 15 Aug 2022 20:41:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D643B80EA8;
+        Mon, 15 Aug 2022 20:42:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D112C433D6;
+        Mon, 15 Aug 2022 20:42:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596062;
-        bh=f1yBoZdlxrrj+e56t5SpYyY3+I6Cwa8ohg4maem5XqM=;
+        s=korg; t=1660596133;
+        bh=WF7gVEsWaD81stKo2H4fD5esY9t3YMHFHgogMQnH3z8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCg77N3uWRv3i5OGBIU+BlsJtnt8CkfmnVPoY9zWAnx8YkPnu6dexyO9UAD9PRY1C
-         Wf0oKfKJQtbOg88WtucKDrh8RwXXgkdBI49mAGkpRX1lZRAhYpnbWCTGysDBTyDsFp
-         5U6cQHWhBuAfLhOmRPTY6mkbW1LZdJ5pJEGuIp0Y=
+        b=EYKS1SfXcoU/ieYBPfw7V4Zl2a6SQOS39h9iqiRVkT1ktwc4dAcAtQOsokGEqZVuH
+         eeVdQUhO/sMwiR8J7KYH+o2CJRHcOGt4azVvqUEsGPmwfCxh1LO7L0CPCTNC+tFgfv
+         g6Trnfli1/n0YsxiY2MYvSvhfvaV08SUnsYebI0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0961/1157] MIPS: Fixed __debug_virt_addr_valid()
-Date:   Mon, 15 Aug 2022 20:05:17 +0200
-Message-Id: <20220815180518.081863333@linuxfoundation.org>
+Subject: [PATCH 5.19 0984/1157] ASoC: audio-graph-card: Add of_node_put() in fail path
+Date:   Mon, 15 Aug 2022 20:05:40 +0200
+Message-Id: <20220815180519.105579478@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,70 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 8a2b456665d1e797123669581524cbb095fb003b ]
+[ Upstream commit 65fb8e2ef3531a6e950060fca6e551c923fb0f0e ]
 
-It is permissible for kernel code to call virt_to_phys() against virtual
-addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
-types. Rewrite the test condition to ensure that the kernel virtual
-addresses are above PAGE_OFFSET which they must be, and below KSEG2
-where the non-linear mapping starts.
+In asoc_simple_parse_dai(), we should call of_node_put() for the
+reference returned by of_graph_get_port_parent() in fail path.
 
-For EVA, there is not much that we can do given the linear address range
-that is offered, so just return any virtual address as being valid.
-
-Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
-to be valid as well.
-
-Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: ae30a694da4c ("ASoC: simple-card-utils: add asoc_simple_card_parse_dai()")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220721144308.1301587-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/physaddr.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ sound/soc/generic/audio-graph-card.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
-index a1ced5e44951..f9b8c85e9843 100644
---- a/arch/mips/mm/physaddr.c
-+++ b/arch/mips/mm/physaddr.c
-@@ -5,6 +5,7 @@
- #include <linux/mmdebug.h>
- #include <linux/mm.h>
+diff --git a/sound/soc/generic/audio-graph-card.c b/sound/soc/generic/audio-graph-card.c
+index 2b598af8feef..b327372f2e4a 100644
+--- a/sound/soc/generic/audio-graph-card.c
++++ b/sound/soc/generic/audio-graph-card.c
+@@ -158,8 +158,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
+ 	 *    if he unbinded CPU or Codec.
+ 	 */
+ 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
+-	if (ret < 0)
++	if (ret < 0) {
++		of_node_put(node);
+ 		return ret;
++	}
  
-+#include <asm/addrspace.h>
- #include <asm/sections.h>
- #include <asm/io.h>
- #include <asm/page.h>
-@@ -12,15 +13,6 @@
+ 	dlc->of_node = node;
  
- static inline bool __debug_virt_addr_valid(unsigned long x)
- {
--	/* high_memory does not get immediately defined, and there
--	 * are early callers of __pa() against PAGE_OFFSET
--	 */
--	if (!high_memory && x >= PAGE_OFFSET)
--		return true;
--
--	if (high_memory && x >= PAGE_OFFSET && x < (unsigned long)high_memory)
--		return true;
--
- 	/*
- 	 * MAX_DMA_ADDRESS is a virtual address that may not correspond to an
- 	 * actual physical address. Enough code relies on
-@@ -30,7 +22,9 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
- 	if (x == MAX_DMA_ADDRESS)
- 		return true;
- 
--	return false;
-+	return x >= PAGE_OFFSET && (KSEGX(x) < KSEG2 ||
-+	       IS_ENABLED(CONFIG_EVA) ||
-+	       !IS_ENABLED(CONFIG_HIGHMEM));
- }
- 
- phys_addr_t __virt_to_phys(volatile const void *x)
 -- 
 2.35.1
 
