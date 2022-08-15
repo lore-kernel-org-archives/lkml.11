@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FA0C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F77DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345381AbiHPAh1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
+        id S245393AbiHPAhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344061AbiHPAek (ORCPT
+        with ESMTP id S1349222AbiHPAfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:34:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D567B187FBC;
-        Mon, 15 Aug 2022 13:37:23 -0700 (PDT)
+        Mon, 15 Aug 2022 20:35:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D6418A08D;
+        Mon, 15 Aug 2022 13:37:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FD70611E2;
-        Mon, 15 Aug 2022 20:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D1EC433C1;
-        Mon, 15 Aug 2022 20:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC04EB8114A;
+        Mon, 15 Aug 2022 20:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48456C433D6;
+        Mon, 15 Aug 2022 20:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595840;
-        bh=zKoOUGLc9GCXGCCdM2OM3y02a5kExyeYGGHCHrGuQzQ=;
+        s=korg; t=1660595861;
+        bh=gAhaqdi2MNJ7YsEZoDyKRrz/8+l523h+AKKJdZP7w0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZcSwslqt51fB5uQPqo+DYSkeR31tjax4FMFeyQQAWbwwMWSOMt1ub1OQXFNLBP9jO
-         7cX5ExnLMmjqKOUo595F/TMvlfYpAtJmbwsKL/faQ/v4pq5SpusLsdKnfQccCNI/ye
-         FiLXU7c8qyt/9DL7gr3zkkLTj/4sVBZbQcMQVRVU=
+        b=x3czMBjjK3Ee8eBFbnAqCN5WXu703zp7Upkf9ovZ0BR9XaffjDTbWurR3b7n2hcKU
+         3P/0WNeerFCz0fI8sOUHBrGWet5r4wwPuol9ZhYdoUjSYVpjdv4MIfUSQFM7d80LXW
+         mlZsWzKVbA3TFmPAOUmJe8vM55ForjVRP9IrWwIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0891/1157] ASoC: samsung: Fix error handling in aries_audio_probe
-Date:   Mon, 15 Aug 2022 20:04:07 +0200
-Message-Id: <20220815180515.081357047@linuxfoundation.org>
+Subject: [PATCH 5.19 0866/1157] tools/testing/selftests/vm/hugetlb-madvise.c: silence uninitialized variable warning
+Date:   Mon, 15 Aug 2022 20:03:42 +0200
+Message-Id: <20220815180514.107865945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,42 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 3e2649c5e8643bea0867bb1dd970fedadb0eb7f3 ]
+[ Upstream commit 3d5367a0426da61c7cb616cc85b6239467e261dd ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-This function is missing of_node_put(cpu) in the error path.
-Fix this by goto out label. of_node_put() will check NULL pointer.
+This code just reads from memory without caring about the data itself.
+However static checkers complain that "tmp" is never properly initialized.
+Initialize it to zero and change the name to "dummy" to show that we
+don't care about the value stored in it.
 
-Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220603130640.37624-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lkml.kernel.org/r/YtZ8mKJmktA2GaHB@kili
+Fixes: c4b6cb884011 ("selftests/vm: add hugetlb madvise MADV_DONTNEED MADV_REMOVE test")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/aries_wm8994.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/testing/selftests/vm/hugetlb-madvise.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
-index bb0cf4244e00..edee02d7f100 100644
---- a/sound/soc/samsung/aries_wm8994.c
-+++ b/sound/soc/samsung/aries_wm8994.c
-@@ -628,8 +628,10 @@ static int aries_audio_probe(struct platform_device *pdev)
- 		return -EINVAL;
+diff --git a/tools/testing/selftests/vm/hugetlb-madvise.c b/tools/testing/selftests/vm/hugetlb-madvise.c
+index 6c6af40f5747..3c9943131881 100644
+--- a/tools/testing/selftests/vm/hugetlb-madvise.c
++++ b/tools/testing/selftests/vm/hugetlb-madvise.c
+@@ -89,10 +89,11 @@ void write_fault_pages(void *addr, unsigned long nr_pages)
  
- 	codec = of_get_child_by_name(dev->of_node, "codec");
--	if (!codec)
--		return -EINVAL;
-+	if (!codec) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
+ void read_fault_pages(void *addr, unsigned long nr_pages)
+ {
+-	unsigned long i, tmp;
++	unsigned long dummy = 0;
++	unsigned long i;
  
- 	for_each_card_prelinks(card, i, dai_link) {
- 		dai_link->codecs->of_node = of_parse_phandle(codec,
+ 	for (i = 0; i < nr_pages; i++)
+-		tmp += *((unsigned long *)(addr + (i * huge_page_size)));
++		dummy += *((unsigned long *)(addr + (i * huge_page_size)));
+ }
+ 
+ int main(int argc, char **argv)
 -- 
 2.35.1
 
