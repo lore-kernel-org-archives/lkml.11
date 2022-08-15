@@ -2,40 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF28C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9577C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244833AbiHOWDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S1347631AbiHOWD4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348684AbiHOWBS (ORCPT
+        with ESMTP id S1348990AbiHOWBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:18 -0400
+        Mon, 15 Aug 2022 18:01:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ADBAEDA1;
-        Mon, 15 Aug 2022 12:35:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC8810EEDD;
+        Mon, 15 Aug 2022 12:35:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BDA06113B;
-        Mon, 15 Aug 2022 19:35:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92945C433C1;
-        Mon, 15 Aug 2022 19:35:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60C1C61089;
+        Mon, 15 Aug 2022 19:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 448E0C433D6;
+        Mon, 15 Aug 2022 19:35:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592132;
-        bh=7M4uIosGCQ+JVXn5ixS/gPXhPLLzxgVy6nzH25ETjwQ=;
+        s=korg; t=1660592152;
+        bh=e1bcoMHQ8z6gZIrlyNFmAhWYxrybUozV7Q7y76/g4bc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fSeUHA5XEMkRfPwD/Z03uDeFEfb0tZcHw5mSHuiAyy8uYcZ68DMphwGrd2evma83m
-         6eSpNO3mSjrBDFotn9ZFW7BZsOm1G+IPQQy/5rE6dOSD+sf7+BILma50anEG+e8THi
-         TmTh8CCFjfMz0/c+6tskQi5G6ip+/G7OSFY0HkeY=
+        b=phGKZyY0K/2zKzift24YxRkAiSBpX9yL1AQb0vAoI8dD080+Qlu6FxmNEpG2dXz7E
+         6wyXNyCOY6+k4RXxdBoSSmxdS+kU6hH5FMsU/fhN6ti/2tTHuxaTHQUtpz6jnX0RZZ
+         Kl7a+Dau/dWX5JrB7MPxpNPHc7jtWN99liMAP3D8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.19 0063/1157] parisc: Fix device names in /proc/iomem
-Date:   Mon, 15 Aug 2022 19:50:19 +0200
-Message-Id: <20220815180442.022281406@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.19 0053/1157] vfs: Check the truncate maximum size in inode_newsize_ok()
+Date:   Mon, 15 Aug 2022 19:50:09 +0200
+Message-Id: <20220815180441.572481916@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -47,45 +56,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: David Howells <dhowells@redhat.com>
 
-commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
+commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
 
-Fix the output of /proc/iomem to show the real hardware device name
-including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
-Up to now only the pa_pathname ("[8:16.0]") was shown.
+If something manages to set the maximum file size to MAX_OFFSET+1, this
+can cause the xfs and ext4 filesystems at least to become corrupt.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org> # v4.9+
+Ordinarily, the kernel protects against userspace trying this by
+checking the value early in the truncate() and ftruncate() system calls
+calls - but there are at least two places that this check is bypassed:
+
+ (1) Cachefiles will round up the EOF of the backing file to DIO block
+     size so as to allow DIO on the final block - but this might push
+     the offset negative. It then calls notify_change(), but this
+     inadvertently bypasses the checking. This can be triggered if
+     someone puts an 8EiB-1 file on a server for someone else to try and
+     access by, say, nfs.
+
+ (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
+     and then calls vfs_truncate() directly - which also bypasses the
+     check.
+
+In both cases, it is potentially possible for a network filesystem to
+cause a disk filesystem to be corrupted: cachefiles in the client's
+cache filesystem; ksmbd in the server's filesystem.
+
+nfsd is okay as it checks the value, but we can then remove this check
+too.
+
+Fix this by adding a check to inode_newsize_ok(), as called from
+setattr_prepare(), thereby catching the issue as filesystems set up to
+perform the truncate with minimal opportunity for bypassing the new
+check.
+
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
+Fixes: f44158485826 ("cifsd: add file operations")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Tested-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: stable@kernel.org
+Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Steve French <sfrench@samba.org>
+cc: Hyunchul Lee <hyc.lee@gmail.com>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/drivers.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ fs/attr.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/parisc/kernel/drivers.c
-+++ b/arch/parisc/kernel/drivers.c
-@@ -520,7 +520,6 @@ alloc_pa_dev(unsigned long hpa, struct h
- 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
- 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
- 			(iodc_data[5] << 8) | iodc_data[6];
--	dev->hpa.name = parisc_pathname(dev);
- 	dev->hpa.start = hpa;
- 	/* This is awkward.  The STI spec says that gfx devices may occupy
- 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
-@@ -534,10 +533,10 @@ alloc_pa_dev(unsigned long hpa, struct h
- 		dev->hpa.end = hpa + 0xfff;
- 	}
- 	dev->hpa.flags = IORESOURCE_MEM;
--	name = parisc_hardware_description(&dev->id);
--	if (name) {
--		strlcpy(dev->name, name, sizeof(dev->name));
--	}
-+	dev->hpa.name = dev->name;
-+	name = parisc_hardware_description(&dev->id) ? : "unknown";
-+	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
-+		name, parisc_pathname(dev));
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -184,6 +184,8 @@ EXPORT_SYMBOL(setattr_prepare);
+  */
+ int inode_newsize_ok(const struct inode *inode, loff_t offset)
+ {
++	if (offset < 0)
++		return -EINVAL;
+ 	if (inode->i_size < offset) {
+ 		unsigned long limit;
  
- 	/* Silently fail things like mouse ports which are subsumed within
- 	 * the keyboard controller
 
 
