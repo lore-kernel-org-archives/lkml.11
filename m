@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B07C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9A0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241755AbiHOSj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S242049AbiHOSkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240890AbiHOSix (ORCPT
+        with ESMTP id S240822AbiHOSjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:38:53 -0400
+        Mon, 15 Aug 2022 14:39:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A472F3D59A;
-        Mon, 15 Aug 2022 11:23:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9B82ED4B;
+        Mon, 15 Aug 2022 11:23:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ABE76068D;
-        Mon, 15 Aug 2022 18:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED809C433D7;
-        Mon, 15 Aug 2022 18:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43F5360FA3;
+        Mon, 15 Aug 2022 18:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E031C433C1;
+        Mon, 15 Aug 2022 18:23:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587827;
-        bh=wxOLwuRbTjTq7t+voomz6BH+XUZah3K8GfdHFh66MGg=;
+        s=korg; t=1660587833;
+        bh=G2wKVs2hxomJLfCHleVjEq03UftGpFfhnCPiTRRTtEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OKsFY2nAIKyAjvpZQYAJusxO5dHlBEoQML3cQsgDNgjoiyMG1D+aCkEFHJ+qXU/o+
-         91EY07tirtpcvXkC9Ge4oP/3uTHe/vtzFcKiTIl7LOg67i1sW7Rp9Vp74hcLsfQuBw
-         PrikwKwKtAsaoDVCcbXUvo1gWrKlagQvGyf7iFgk=
+        b=jk5ECl1GYkZOgqQqeAqUb3Y+A5s5NgKRVcOvfHU0oRwQOGGcBnPiDMscXTqmbYBHP
+         rDVJWxHC+gWLm0oeqcdAyJTcwcqDAcsAFFcVcHu8a5+BlS/XJp94wcGBZlc2Vjz76w
+         zlhmg0+sbnEu30z44lXQ2mTUEOeW73dO6UNGLMas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jinbao <liujinbao1@xiaomi.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 207/779] erofs: avoid consecutive detection for Highmem memory
-Date:   Mon, 15 Aug 2022 19:57:31 +0200
-Message-Id: <20220815180346.123733950@linuxfoundation.org>
+Subject: [PATCH 5.15 209/779] spi: Fix simplification of devm_spi_register_controller
+Date:   Mon, 15 Aug 2022 19:57:33 +0200
+Message-Id: <20220815180346.204631619@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,57 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Xiang <hsiangkao@linux.alibaba.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 448b5a1548d87c246c3d0c3df8480d3c6eb6c11a ]
+[ Upstream commit 43cc5a0afe4184a7fafe1eba32b5a11bb69c9ce0 ]
 
-Currently, vmap()s are avoided if physical addresses are
-consecutive for decompressed buffers.
+This reverts commit 59ebbe40fb51 ("spi: simplify
+devm_spi_register_controller").
 
-I observed that is very common for 4KiB pclusters since the
-numbers of decompressed pages are almost 2 or 3.
+If devm_add_action() fails in devm_add_action_or_reset(),
+devm_spi_unregister() will be called, it decreases the
+refcount of 'ctlr->dev' to 0, then it will cause uaf in
+the drivers that calling spi_put_controller() in error path.
 
-However, such detection doesn't work for Highmem pages on
-32-bit machines, let's fix it now.
-
-Reported-by: Liu Jinbao <liujinbao1@xiaomi.com>
-Fixes: 7fc45dbc938a ("staging: erofs: introduce generic decompression backend")
-Link: https://lore.kernel.org/r/20220708101001.21242-1-hsiangkao@linux.alibaba.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: 59ebbe40fb51 ("spi: simplify devm_spi_register_controller")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Link: https://lore.kernel.org/r/20220712135504.1055688-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/decompressor.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/spi/spi.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
-index ad3f31380e6b..8193c14bb111 100644
---- a/fs/erofs/decompressor.c
-+++ b/fs/erofs/decompressor.c
-@@ -93,14 +93,18 @@ static int z_erofs_lz4_prepare_destpages(struct z_erofs_decompress_req *rq,
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index d0bbf8f9414d..556d65af5e23 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -2949,9 +2949,9 @@ int spi_register_controller(struct spi_controller *ctlr)
+ }
+ EXPORT_SYMBOL_GPL(spi_register_controller);
  
- 		if (page) {
- 			__clear_bit(j, bounced);
--			if (kaddr) {
--				if (kaddr + PAGE_SIZE == page_address(page))
-+			if (!PageHighMem(page)) {
-+				if (!i) {
-+					kaddr = page_address(page);
-+					continue;
-+				}
-+				if (kaddr &&
-+				    kaddr + PAGE_SIZE == page_address(page)) {
- 					kaddr += PAGE_SIZE;
--				else
--					kaddr = NULL;
--			} else if (!i) {
--				kaddr = page_address(page);
-+					continue;
-+				}
- 			}
-+			kaddr = NULL;
- 			continue;
- 		}
- 		kaddr = NULL;
+-static void devm_spi_unregister(void *ctlr)
++static void devm_spi_unregister(struct device *dev, void *res)
+ {
+-	spi_unregister_controller(ctlr);
++	spi_unregister_controller(*(struct spi_controller **)res);
+ }
+ 
+ /**
+@@ -2970,13 +2970,22 @@ static void devm_spi_unregister(void *ctlr)
+ int devm_spi_register_controller(struct device *dev,
+ 				 struct spi_controller *ctlr)
+ {
++	struct spi_controller **ptr;
+ 	int ret;
+ 
++	ptr = devres_alloc(devm_spi_unregister, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
+ 	ret = spi_register_controller(ctlr);
+-	if (ret)
+-		return ret;
++	if (!ret) {
++		*ptr = ctlr;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
+ 
+-	return devm_add_action_or_reset(dev, devm_spi_unregister, ctlr);
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(devm_spi_register_controller);
+ 
 -- 
 2.35.1
 
