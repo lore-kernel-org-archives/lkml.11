@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B39EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA21BC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348224AbiHPBFR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
+        id S244659AbiHPBFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344841AbiHPA4j (ORCPT
+        with ESMTP id S1349582AbiHPA6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:56:39 -0400
+        Mon, 15 Aug 2022 20:58:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E157DAA34;
-        Mon, 15 Aug 2022 13:48:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE411A2E81;
+        Mon, 15 Aug 2022 13:49:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EEC2B8114A;
-        Mon, 15 Aug 2022 20:48:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD6C7C433B5;
-        Mon, 15 Aug 2022 20:48:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35CF9B811B1;
+        Mon, 15 Aug 2022 20:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775C7C433C1;
+        Mon, 15 Aug 2022 20:49:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596497;
-        bh=fl6aQ3CVc6JwqDVOpcW/ukJkVIlnhjCIaGaKvweZe8o=;
+        s=korg; t=1660596587;
+        bh=FMs/sWj9WFMQUIEfGyLx6NRo6/tJlhfm8nDKhrM5/EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tVTExP5Z92DbXK5vJ4JUHt8C6WVUrAMPxrw02UtUspFXp8JN84lyCAPzGxIpb739W
-         Dog5vDfQqAuO9Wuee13lLS280BiJT73Ln31U56Ri9u5Jg+FezstG392OEGn0f4+5tP
-         0sEF86tZITfmBd6Bf1ImiX6T6Lchb1yYjXdX8Nfw=
+        b=WxH0GBtYKkbr60INSNGiWq1DIUjcO2ANO4Lq+3ImhlVPlIva0AksPxIxVBufGl818
+         JXI+5mDNHj6YycO9l+ZjZqJ8dFtLwaS0F1ZeOjGRj9fW6paexuSMOzq6SOeI9Bix3a
+         mUKOW4JfmdyH11ZOXYPVILPwU/YryeWNR3c46l50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1099/1157] ACPI: CPPC: Do not prevent CPPC from working in the future
-Date:   Mon, 15 Aug 2022 20:07:35 +0200
-Message-Id: <20220815180524.221246151@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1128/1157] ext4: unindent codeblock in ext4_xattr_block_set()
+Date:   Mon, 15 Aug 2022 20:08:04 +0200
+Message-Id: <20220815180525.497337396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,129 +48,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 ]
+[ Upstream commit fd48e9acdf26d0cbd80051de07d4a735d05d29b2 ]
 
-There is a problem with the current revision checks in
-is_cppc_supported() that they essentially prevent the CPPC support
-from working if a new _CPC package format revision being a proper
-superset of the v3 and only causing _CPC to return a package with more
-entries (while retaining the types and meaning of the entries defined by
-the v3) is introduced in the future and used by the platform firmware.
+Remove unnecessary else (and thus indentation level) from a code block
+in ext4_xattr_block_set(). It will also make following code changes
+easier. No functional changes.
 
-In that case, as long as the number of entries in the _CPC return
-package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
-use the v3 support code and disregard the additional package entries
-added by the new package format revision.
-
-For this reason, drop is_cppc_supported() altogether, put the revision
-checks directly into acpi_cppc_processor_probe() so they are easier to
-follow and rework them to take the case mentioned above into account.
-
-Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
-Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-4-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 54 ++++++++++++++++++----------------------
- include/acpi/cppc_acpi.h |  2 +-
- 2 files changed, 25 insertions(+), 31 deletions(-)
+ fs/ext4/xattr.c | 77 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 38 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 3c6d4ef87be0..1e15a9f25ae9 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -618,33 +618,6 @@ static int pcc_data_alloc(int pcc_ss_id)
- 	return 0;
- }
+diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
+index d92d50de5a01..a25942a74929 100644
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -1850,6 +1850,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ #define header(x) ((struct ext4_xattr_header *)(x))
  
--/* Check if CPPC revision + num_ent combination is supported */
--static bool is_cppc_supported(int revision, int num_ent)
--{
--	int expected_num_ent;
--
--	switch (revision) {
--	case CPPC_V2_REV:
--		expected_num_ent = CPPC_V2_NUM_ENT;
--		break;
--	case CPPC_V3_REV:
--		expected_num_ent = CPPC_V3_NUM_ENT;
--		break;
--	default:
--		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
--			revision);
--		return false;
--	}
--
--	if (expected_num_ent != num_ent) {
--		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
--			num_ent, expected_num_ent, revision);
--		return false;
--	}
--
--	return true;
--}
--
- /*
-  * An example CPC table looks like the following.
-  *
-@@ -733,7 +706,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 			 cpc_obj->type, pr->id);
- 		goto out_free;
- 	}
--	cpc_ptr->num_entries = num_ent;
- 
- 	/* Second entry should be revision. */
- 	cpc_obj = &out_obj->package.elements[1];
-@@ -744,10 +716,32 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 			 cpc_obj->type, pr->id);
- 		goto out_free;
- 	}
--	cpc_ptr->version = cpc_rev;
- 
--	if (!is_cppc_supported(cpc_rev, num_ent))
-+	if (cpc_rev < CPPC_V2_REV) {
-+		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
-+			 pr->id);
-+		goto out_free;
-+	}
+ 	if (s->base) {
++		int offset = (char *)s->here - bs->bh->b_data;
 +
-+	/*
-+	 * Disregard _CPC if the number of entries in the return pachage is not
-+	 * as expected, but support future revisions being proper supersets of
-+	 * the v3 and only causing more entries to be returned by _CPC.
-+	 */
-+	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
-+	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
-+	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
-+		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
-+			 num_ent, pr->id);
- 		goto out_free;
-+	}
-+	if (cpc_rev > CPPC_V3_REV) {
-+		num_ent = CPPC_V3_NUM_ENT;
-+		cpc_rev = CPPC_V3_REV;
-+	}
+ 		BUFFER_TRACE(bs->bh, "get_write_access");
+ 		error = ext4_journal_get_write_access(handle, sb, bs->bh,
+ 						      EXT4_JTR_NONE);
+@@ -1882,49 +1884,46 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ 			if (error)
+ 				goto cleanup;
+ 			goto inserted;
+-		} else {
+-			int offset = (char *)s->here - bs->bh->b_data;
++		}
++		unlock_buffer(bs->bh);
++		ea_bdebug(bs->bh, "cloning");
++		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
++		error = -ENOMEM;
++		if (s->base == NULL)
++			goto cleanup;
++		s->first = ENTRY(header(s->base)+1);
++		header(s->base)->h_refcount = cpu_to_le32(1);
++		s->here = ENTRY(s->base + offset);
++		s->end = s->base + bs->bh->b_size;
+ 
+-			unlock_buffer(bs->bh);
+-			ea_bdebug(bs->bh, "cloning");
+-			s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
+-			error = -ENOMEM;
+-			if (s->base == NULL)
++		/*
++		 * If existing entry points to an xattr inode, we need
++		 * to prevent ext4_xattr_set_entry() from decrementing
++		 * ref count on it because the reference belongs to the
++		 * original block. In this case, make the entry look
++		 * like it has an empty value.
++		 */
++		if (!s->not_found && s->here->e_value_inum) {
++			ea_ino = le32_to_cpu(s->here->e_value_inum);
++			error = ext4_xattr_inode_iget(inode, ea_ino,
++				      le32_to_cpu(s->here->e_hash),
++				      &tmp_inode);
++			if (error)
+ 				goto cleanup;
+-			s->first = ENTRY(header(s->base)+1);
+-			header(s->base)->h_refcount = cpu_to_le32(1);
+-			s->here = ENTRY(s->base + offset);
+-			s->end = s->base + bs->bh->b_size;
+ 
+-			/*
+-			 * If existing entry points to an xattr inode, we need
+-			 * to prevent ext4_xattr_set_entry() from decrementing
+-			 * ref count on it because the reference belongs to the
+-			 * original block. In this case, make the entry look
+-			 * like it has an empty value.
+-			 */
+-			if (!s->not_found && s->here->e_value_inum) {
+-				ea_ino = le32_to_cpu(s->here->e_value_inum);
+-				error = ext4_xattr_inode_iget(inode, ea_ino,
+-					      le32_to_cpu(s->here->e_hash),
+-					      &tmp_inode);
+-				if (error)
+-					goto cleanup;
+-
+-				if (!ext4_test_inode_state(tmp_inode,
+-						EXT4_STATE_LUSTRE_EA_INODE)) {
+-					/*
+-					 * Defer quota free call for previous
+-					 * inode until success is guaranteed.
+-					 */
+-					old_ea_inode_quota = le32_to_cpu(
+-							s->here->e_value_size);
+-				}
+-				iput(tmp_inode);
+-
+-				s->here->e_value_inum = 0;
+-				s->here->e_value_size = 0;
++			if (!ext4_test_inode_state(tmp_inode,
++					EXT4_STATE_LUSTRE_EA_INODE)) {
++				/*
++				 * Defer quota free call for previous
++				 * inode until success is guaranteed.
++				 */
++				old_ea_inode_quota = le32_to_cpu(
++						s->here->e_value_size);
+ 			}
++			iput(tmp_inode);
 +
-+	cpc_ptr->num_entries = num_ent;
-+	cpc_ptr->version = cpc_rev;
- 
- 	/* Iterate through remaining entries in _CPC */
- 	for (i = 2; i < num_ent; i++) {
-diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
-index d389bab54241..f73d357ecdf5 100644
---- a/include/acpi/cppc_acpi.h
-+++ b/include/acpi/cppc_acpi.h
-@@ -17,7 +17,7 @@
- #include <acpi/pcc.h>
- #include <acpi/processor.h>
- 
--/* Support CPPCv2 and CPPCv3  */
-+/* CPPCv2 and CPPCv3 support */
- #define CPPC_V2_REV	2
- #define CPPC_V3_REV	3
- #define CPPC_V2_NUM_ENT	21
++			s->here->e_value_inum = 0;
++			s->here->e_value_size = 0;
+ 		}
+ 	} else {
+ 		/* Allocate a buffer where we construct the new block. */
 -- 
 2.35.1
 
