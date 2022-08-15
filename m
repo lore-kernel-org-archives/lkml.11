@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F552C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A7FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349882AbiHOWeP (ORCPT
+        id S1349326AbiHOWeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        Mon, 15 Aug 2022 18:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351051AbiHOW1b (ORCPT
+        with ESMTP id S1351049AbiHOW1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E41341D0F;
-        Mon, 15 Aug 2022 12:46:32 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AFE6CF63;
+        Mon, 15 Aug 2022 12:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C58F46122B;
-        Mon, 15 Aug 2022 19:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7253C433B5;
-        Mon, 15 Aug 2022 19:46:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E968B80EB2;
+        Mon, 15 Aug 2022 19:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F9DC433D6;
+        Mon, 15 Aug 2022 19:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592791;
-        bh=H9BOwCrBvhJ2D/pmVP5DNxKN0ES8c7NcKffve4+d2QI=;
+        s=korg; t=1660592788;
+        bh=vG/vDzx6+5VGFKUst4YBhuRJs1eVtMEp3W1+Ucpt4Yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cymIhDyaGbKjVBRgmDvNYb4O3hJ2LtTmjT00lmfLPWWcP9AHWZ2Gfschra6VJ1YtB
-         2Y/6R5zI+j9p1M+DAf6/IecN3HnJLnzO1OHFxlFEIwBI9FZ8F5Sjs5KyVn3ozQ0hFB
-         DJKyGIFHrWEYSlqd92zFx27ZHXHL0bMRZ8x1SZE8=
+        b=d0JxvcnDmOFvKGUYQJa0g4ewZ4okQFVStZhb+tNcQx+5VOocrJNQuLutFN1fA066H
+         7Fkr+hLm8AnzT1n6CFkoB3lzknyRsAupinOrpGEgC82/+LF9UHufkKHKpZUF+XbleK
+         Ro2gIQ2WX80spwCXLUCA8dkmhd71MHcCgssDXR2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0165/1157] ARM: dts: imx6ul: fix keypad compatible
-Date:   Mon, 15 Aug 2022 19:52:01 +0200
-Message-Id: <20220815180446.290781551@linuxfoundation.org>
+Subject: [PATCH 5.18 0845/1095] remoteproc: imx_rproc: Fix refcount leak in imx_rproc_addr_init
+Date:   Mon, 15 Aug 2022 20:04:04 +0200
+Message-Id: <20220815180504.291023472@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7d15e0c9a515494af2e3199741cdac7002928a0e ]
+[ Upstream commit 61afafe8b938bc74841cf4b1a73dd08b9d287c5a ]
 
-According to binding, the compatible shall only contain imx6ul and imx21
-compatibles. Fixes the dt_binding_check warning:
-keypad@20b8000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-kpp', 'fsl,imx6q-kpp', 'fsl,imx21-kpp'] is too long
-Additional items are not allowed ('fsl,imx6q-kpp', 'fsl,imx21-kpp' were
-unexpected)
-Additional items are not allowed ('fsl,imx21-kpp' was unexpected)
-'fsl,imx21-kpp' was expected
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not needed anymore.
+This function has two paths missing of_node_put().
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 6e962bfe56b9 ("remoteproc: imx_rproc: add missing of_node_put")
+Fixes: a0ff4aa6f010 ("remoteproc: imx_rproc: add a NXP/Freescale imx_rproc driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220512045558.7142-1-linmq006@gmail.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/remoteproc/imx_rproc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 2fcbd9d91521..df8b4ad62418 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -544,7 +544,7 @@ fec2: ethernet@20b4000 {
- 			};
+diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+index 91eb037089ef..f17bb41a6551 100644
+--- a/drivers/remoteproc/imx_rproc.c
++++ b/drivers/remoteproc/imx_rproc.c
+@@ -562,16 +562,17 @@ static int imx_rproc_addr_init(struct imx_rproc *priv,
  
- 			kpp: keypad@20b8000 {
--				compatible = "fsl,imx6ul-kpp", "fsl,imx6q-kpp", "fsl,imx21-kpp";
-+				compatible = "fsl,imx6ul-kpp", "fsl,imx21-kpp";
- 				reg = <0x020b8000 0x4000>;
- 				interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&clks IMX6UL_CLK_KPP>;
+ 		node = of_parse_phandle(np, "memory-region", a);
+ 		/* Not map vdevbuffer, vdevring region */
+-		if (!strncmp(node->name, "vdev", strlen("vdev")))
++		if (!strncmp(node->name, "vdev", strlen("vdev"))) {
++			of_node_put(node);
+ 			continue;
++		}
+ 		err = of_address_to_resource(node, 0, &res);
++		of_node_put(node);
+ 		if (err) {
+ 			dev_err(dev, "unable to resolve memory region\n");
+ 			return err;
+ 		}
+ 
+-		of_node_put(node);
+-
+ 		if (b >= IMX_RPROC_MEM_MAX)
+ 			break;
+ 
 -- 
 2.35.1
 
