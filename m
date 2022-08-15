@@ -2,165 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765A4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCDAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242186AbiHOJui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
+        id S242197AbiHOJu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231819AbiHOJuf (ORCPT
+        with ESMTP id S242230AbiHOJuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:50:35 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659D51027;
-        Mon, 15 Aug 2022 02:50:34 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id n4so8433526wrp.10;
-        Mon, 15 Aug 2022 02:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
-         :cc;
-        bh=psPpKOGAtOeEDOvtXs+apIVxxYFLedxYJn8rDYeTSCI=;
-        b=PK2DQ3jN1k0ul0I4lNJsvoX8D8d/pWB4v4UqceK+ww+/lTWvd5YcI87PHTTT6XpZf4
-         bZiM4SGEDS5n6XS9YdXFl9ukYqIblFl17u/dEz1nikjXlzp4YuGzlElxqNKL5zIFzqX+
-         HGWkJI5Nk6+9yRgPza14UwKBsixMsAWVwUyCKlyotUwLV3xAgWOU+LcmUL58YMxqNMjL
-         EnGhB+Sx4eBQ1kMqCweDdN0oH+l2/+vJDDabgdE3451oiXitxmjVAqYo821OT1pjumJo
-         bao1AF5HusRVbeQeLr6cbydIwHkxgG43Lpg1jp6OigsHyfBxYbm95vUZuUjEZrktqv3b
-         r8Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=psPpKOGAtOeEDOvtXs+apIVxxYFLedxYJn8rDYeTSCI=;
-        b=F7ycitHfvkZeQrmJBHncTp4jq7yvzi2JoE8XAX1Dp7ckH6lTLoqNtgksU5h8ocYAe1
-         WUtEfgtJ9hOiMCDtDgcBfwlJj/2h/nVLAw+IKOqb2JdRK1wqSGbk8dE1cL/opUJnEiFd
-         p3p0xx7tZuPL8+E69R/EutpFlltttu4DeUA8rQp0qQNBuH7z4cSvMUanl6WA4cDYOB2r
-         G0EYV5ma2f8PyKNzWAI7jEjO8r6v4hBzxO0BgEdP+UzG7KTLqOrcGzUMz6lZwdniAoa6
-         ZnH0/0qDgv8MTTb9UxXwGilm2kQjw+SPnTcnsCQNuiTKceoqWH82egVBPN5YWKe0nPyA
-         VOHg==
-X-Gm-Message-State: ACgBeo3ajksAjYLNqblxwRXZ5EjqlAbiKhzLSsAv5nGMnRO/YiA7ZTOU
-        s8qPQkaESrTejJNlyoqPqD4=
-X-Google-Smtp-Source: AA6agR7Fll0IsHCmnqegeErvjOXbjZ88G3w3Re6FoaI23BQ+MWnCi0Ef8ldTP5VOGG2rxRelJEthrw==
-X-Received: by 2002:a05:6000:18a2:b0:221:7d32:e6a5 with SMTP id b2-20020a05600018a200b002217d32e6a5mr8282027wri.278.1660557032800;
-        Mon, 15 Aug 2022 02:50:32 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:5fc6])
-        by smtp.gmail.com with ESMTPSA id j3-20020a5d5643000000b0021f138e07acsm6832311wrw.35.2022.08.15.02.50.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 02:50:32 -0700 (PDT)
-Message-ID: <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
-Date:   Mon, 15 Aug 2022 10:46:47 +0100
+        Mon, 15 Aug 2022 05:50:44 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F77710C4;
+        Mon, 15 Aug 2022 02:50:42 -0700 (PDT)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M5qK11dRlz67x0m;
+        Mon, 15 Aug 2022 17:50:29 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 15 Aug 2022 11:50:39 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
+ 2022 10:50:39 +0100
+Date:   Mon, 15 Aug 2022 10:50:38 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     "Li, Ming" <ming4.li@intel.com>
+CC:     <ira.weiny@intel.com>, Dan Williams <dan.j.williams@intel.com>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        "Matthew Wilcox" <willy@infradead.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        "Alison Schofield" <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V16 3/6] PCI/DOE: Add DOE mailbox support functions
+Message-ID: <20220815105038.00000336@huawei.com>
+In-Reply-To: <a3f72cdd-884d-efa1-89e8-f9d6660bf760@intel.com>
+References: <20220719205249.566684-1-ira.weiny@intel.com>
+        <20220719205249.566684-4-ira.weiny@intel.com>
+        <a3f72cdd-884d-efa1-89e8-f9d6660bf760@intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Subject: Re: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
-To:     Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1653992701.git.asml.silence@gmail.com>
- <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
- <cccec667-d762-9bfd-f5a5-1c9fb46df5af@samba.org>
- <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
- <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
-Content-Language: en-US
-In-Reply-To: <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/13/22 09:45, Stefan Metzmacher wrote:
-> Hi Pavel,
+On Mon, 15 Aug 2022 10:17:00 +0800
+"Li, Ming" <ming4.li@intel.com> wrote:
 
-Hi Stefan,
-
-Thanks for giving a thought about the API, are you trying
-to use it in samba?
-
->>> Given that this fills in msg almost completely can we also have
->>> a version of SENDMSGZC, it would be very useful to also allow
->>> msg_control to be passed and as well as an iovec.
->>>
->>> Would that be possible?
->>
->> Right, I left it to follow ups as the series is already too long.
->>
->> fwiw, I'm going to also add addr to IORING_OP_SEND.
+> On 7/20/2022 4:52 AM, ira.weiny@intel.com wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > Introduced in a PCIe r6.0, sec 6.30, DOE provides a config space based
+> > mailbox with standard protocol discovery.  Each mailbox is accessed
+> > through a DOE Extended Capability.
+> > 
+> > Each DOE mailbox must support the DOE discovery protocol in addition to
+> > any number of additional protocols.
+> > 
+> > Define core PCIe functionality to manage a single PCIe DOE mailbox at a
+> > defined config space offset.  Functionality includes iterating,
+> > creating, query of supported protocol, and task submission.  Destruction
+> > of the mailboxes is device managed.
+> > 
+> > Cc: "Li, Ming" <ming4.li@intel.com>
+> > Cc: Bjorn Helgaas <helgaas@kernel.org>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Acked-by: Bjorn Helgaas <helgaas@kernel.org>
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Co-developed-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > 
+> > ---  
 > 
+> > +/**
+> > + * pci_doe_submit_task() - Submit a task to be processed by the state machine
+> > + *
+> > + * @doe_mb: DOE mailbox capability to submit to
+> > + * @task: task to be queued
+> > + *
+> > + * Submit a DOE task (request/response) to the DOE mailbox to be processed.
+> > + * Returns upon queueing the task object.  If the queue is full this function
+> > + * will sleep until there is room in the queue.
+> > + *
+> > + * task->complete will be called when the state machine is done processing this
+> > + * task.
+> > + *
+> > + * Excess data will be discarded.
+> > + *
+> > + * RETURNS: 0 when task has been successfully queued, -ERRNO on error
+> > + */
+> > +int pci_doe_submit_task(struct pci_doe_mb *doe_mb, struct pci_doe_task *task)
+> > +{
+> > +	if (!pci_doe_supports_prot(doe_mb, task->prot.vid, task->prot.type))
+> > +		return -EINVAL;
+> > +
+> > +	/*
+> > +	 * DOE requests must be a whole number of DW and the response needs to
+> > +	 * be big enough for at least 1 DW
+> > +	 */
+> > +	if (task->request_pl_sz % sizeof(u32) ||
+> > +	    task->response_pl_sz < sizeof(u32))
+> > +		return -EINVAL;
+> > +
+> > +	if (test_bit(PCI_DOE_FLAG_DEAD, &doe_mb->flags))
+> > +		return -EIO;
+> > +
+> > +	task->doe_mb = doe_mb;
+> > +	INIT_WORK(&task->work, doe_statemachine_work);
+> > +	queue_work(doe_mb->work_queue, &task->work);
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_doe_submit_task);  
 > 
-> Given the minimal differences, which were left between
-> IORING_OP_SENDZC and IORING_OP_SEND, wouldn't it be better
-> to merge things to IORING_OP_SEND using a IORING_RECVSEND_ZC_NOTIF
-> as indication to use the notif slot.
 
-And will be even more similar in for-next, but with notifications
-I'd still prefer different opcodes to get a little bit more
-flexibility and not making the normal io_uring send path messier.
+> I'm curious why there is not a sychronous function for DOE users. I
+> think some protocols over DOE need a DOE sychrounous interface(e.g.
+> SPDM, TDISP, IDE...). These protocols have to implement an sychronous
+> function over pci_doe_submit_task() by themselves, maybe we can
+> implement an generic sychronous function in PCI/DOE for these DOE
+> users.
 
-> It would means we don't need to waste two opcodes for
-> IORING_OP_SENDZC and IORING_OP_SENDMSGZC (and maybe more)
+This came up during discussions of earlier versions of the series.
+IIRC we decided to postpone adding a synchronous wrapper function
+until there were more use cases.
+
+So if it is useful to you, go ahead and propose it as part of a
+patch series supporting one of those protocols you reference.
+
+Note there are a bunch of other changes that will be necessary
+in this code to make it more generic anyway.  The plan is to
+make those as and when they are useful.  E.g. interrupt support,
+coupling some of the infrastructure more closely to the PCI core,
+probably a few other things I've forgotten.
+
+Jonathan
+
+
+
+
 > 
+> Thanks
+> Ming
 > 
-> I also noticed a problem in io_notif_update()
+> > diff --git a/include/linux/pci-doe.h b/include/linux/pci-doe.h
+> > new file mode 100644
+> > index 000000000000..ed9b4df792b8
+> > --- /dev/null
+> > +++ b/include/linux/pci-doe.h
+> > @@ -0,0 +1,77 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Data Object Exchange
+> > + *	PCIe r6.0, sec 6.30 DOE
+> > + *
+> > + * Copyright (C) 2021 Huawei
+> > + *     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > + *
+> > + * Copyright (C) 2022 Intel Corporation
+> > + *	Ira Weiny <ira.weiny@intel.com>
+> > + */
+> > +
+> > +#ifndef LINUX_PCI_DOE_H
+> > +#define LINUX_PCI_DOE_H
+> > +
+> > +struct pci_doe_protocol {
+> > +	u16 vid;
+> > +	u8 type;
+> > +};
+> > +
+> > +struct pci_doe_mb;
+> > +
+> > +/**
+> > + * struct pci_doe_task - represents a single query/response
+> > + *
+> > + * @prot: DOE Protocol
+> > + * @request_pl: The request payload
+> > + * @request_pl_sz: Size of the request payload (bytes)
+> > + * @response_pl: The response payload
+> > + * @response_pl_sz: Size of the response payload (bytes)
+> > + * @rv: Return value.  Length of received response or error (bytes)
+> > + * @complete: Called when task is complete
+> > + * @private: Private data for the consumer
+> > + * @work: Used internally by the mailbox
+> > + * @doe_mb: Used internally by the mailbox
+> > + *
+> > + * The payload sizes and rv are specified in bytes with the following
+> > + * restrictions concerning the protocol.
+> > + *
+> > + *	1) The request_pl_sz must be a multiple of double words (4 bytes)
+> > + *	2) The response_pl_sz must be >= a single double word (4 bytes)
+> > + *	3) rv is returned as bytes but it will be a multiple of double words
+> > + *
+> > + * NOTE there is no need for the caller to initialize work or doe_mb.
+> > + */
+> > +struct pci_doe_task {
+> > +	struct pci_doe_protocol prot;
+> > +	u32 *request_pl;
+> > +	size_t request_pl_sz;
+> > +	u32 *response_pl;
+> > +	size_t response_pl_sz;
+> > +	int rv;
+> > +	void (*complete)(struct pci_doe_task *task);
+> > +	void *private;
+> > +
+> > +	/* No need for the user to initialize these fields */
+> > +	struct work_struct work;
+> > +	struct pci_doe_mb *doe_mb;
+> > +};
+> > +
+> > +/**
+> > + * pci_doe_for_each_off - Iterate each DOE capability
+> > + * @pdev: struct pci_dev to iterate
+> > + * @off: u16 of config space offset of each mailbox capability found
+> > + */
+> > +#define pci_doe_for_each_off(pdev, off) \
+> > +	for (off = pci_find_next_ext_capability(pdev, off, \
+> > +					PCI_EXT_CAP_ID_DOE); \
+> > +		off > 0; \
+> > +		off = pci_find_next_ext_capability(pdev, off, \
+> > +					PCI_EXT_CAP_ID_DOE))
+> > +
+> > +struct pci_doe_mb *pcim_doe_create_mb(struct pci_dev *pdev, u16 cap_offset);
+> > +bool pci_doe_supports_prot(struct pci_doe_mb *doe_mb, u16 vid, u8 type);
+> > +int pci_doe_submit_task(struct pci_doe_mb *doe_mb, struct pci_doe_task *task);
+> > +
+> > +#endif
+> > diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+> > index 108f8523fa04..57b8e2ffb1dd 100644
+> > --- a/include/uapi/linux/pci_regs.h
+> > +++ b/include/uapi/linux/pci_regs.h
+> > @@ -737,7 +737,8 @@
+> >  #define PCI_EXT_CAP_ID_DVSEC	0x23	/* Designated Vendor-Specific */
+> >  #define PCI_EXT_CAP_ID_DLF	0x25	/* Data Link Feature */
+> >  #define PCI_EXT_CAP_ID_PL_16GT	0x26	/* Physical Layer 16.0 GT/s */
+> > -#define PCI_EXT_CAP_ID_MAX	PCI_EXT_CAP_ID_PL_16GT
+> > +#define PCI_EXT_CAP_ID_DOE	0x2E	/* Data Object Exchange */
+> > +#define PCI_EXT_CAP_ID_MAX	PCI_EXT_CAP_ID_DOE
+> >  
+> >  #define PCI_EXT_CAP_DSN_SIZEOF	12
+> >  #define PCI_EXT_CAP_MCAST_ENDPOINT_SIZEOF 40
+> > @@ -1103,4 +1104,30 @@
+> >  #define  PCI_PL_16GT_LE_CTRL_USP_TX_PRESET_MASK		0x000000F0
+> >  #define  PCI_PL_16GT_LE_CTRL_USP_TX_PRESET_SHIFT	4
+> >  
+> > +/* Data Object Exchange */
+> > +#define PCI_DOE_CAP		0x04    /* DOE Capabilities Register */
+> > +#define  PCI_DOE_CAP_INT_SUP			0x00000001  /* Interrupt Support */
+> > +#define  PCI_DOE_CAP_INT_MSG_NUM		0x00000ffe  /* Interrupt Message Number */
+> > +#define PCI_DOE_CTRL		0x08    /* DOE Control Register */
+> > +#define  PCI_DOE_CTRL_ABORT			0x00000001  /* DOE Abort */
+> > +#define  PCI_DOE_CTRL_INT_EN			0x00000002  /* DOE Interrupt Enable */
+> > +#define  PCI_DOE_CTRL_GO			0x80000000  /* DOE Go */
+> > +#define PCI_DOE_STATUS		0x0c    /* DOE Status Register */
+> > +#define  PCI_DOE_STATUS_BUSY			0x00000001  /* DOE Busy */
+> > +#define  PCI_DOE_STATUS_INT_STATUS		0x00000002  /* DOE Interrupt Status */
+> > +#define  PCI_DOE_STATUS_ERROR			0x00000004  /* DOE Error */
+> > +#define  PCI_DOE_STATUS_DATA_OBJECT_READY	0x80000000  /* Data Object Ready */
+> > +#define PCI_DOE_WRITE		0x10    /* DOE Write Data Mailbox Register */
+> > +#define PCI_DOE_READ		0x14    /* DOE Read Data Mailbox Register */
+> > +
+> > +/* DOE Data Object - note not actually registers */
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_1_VID		0x0000ffff
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_1_TYPE		0x00ff0000
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH		0x0003ffff
+> > +
+> > +#define PCI_DOE_DATA_OBJECT_DISC_REQ_3_INDEX		0x000000ff
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID		0x0000ffff
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL		0x00ff0000
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX	0xff000000
+> > +
+> >  #endif /* LINUX_PCI_REGS_H */  
 > 
->          for (; idx < idx_end; idx++) {
->                  struct io_notif_slot *slot = &ctx->notif_slots[idx];
-> 
->                  if (!slot->notif)
->                          continue;
->                  if (up->arg)
->                          slot->tag = up->arg;
->                  io_notif_slot_flush_submit(slot, issue_flags);
->          }
-> 
->   slot->tag = up->arg is skipped if there is no notif already.
-> 
-> So you can't just use a 2 linked sqe's with
-> 
-> IORING_RSRC_UPDATE_NOTIF followed by IORING_OP_SENDZC(with IORING_RECVSEND_NOTIF_FLUSH)
 
-slot->notif is lazily initialised with the first send attached to it,
-so in your example IORING_OP_SENDZC will first create a notification
-to execute the send and then will flush it.
-
-This "if" is there is only to have a more reliable API. We can
-go over the range and allocate all empty slots and then flush
-all of them, but allocation failures should be propagated to the
-userspace when currently the function it can't fail.
-
-> I think the if (!slot->notif) should be moved down a bit.
-
-Not sure what you mean
-
-> It would somehow be nice to avoid the notif slots at all and somehow
-> use some kind of multishot request in order to generate two qces.
-
-It is there first to ammortise overhead of zerocopy infra and bits
-for second CQE posting. But more importantly, without it for TCP
-the send payload size would need to be large enough or performance
-would suffer, but all depends on the use case. TL;DR; it would be
-forced to create a new SKB for each new send.
-
-For something simpler, I'll push another zc variant that doesn't
-have notifiers and posts only one CQE and only after the buffers
-are no more in use by the kernel. This works well for UDP and for
-some TCP scenarios, but doesn't cover all cases.
-> I'm also wondering what will happen if a notif will be referenced by the net layer
-> but the io_uring instance is already closed, wouldn't
-> io_uring_tx_zerocopy_callback() or __io_notif_complete_tw() crash
-> because notif->ctx is a stale pointer, of notif itself is already gone...
-
-io_uring will flush all slots and wait for all notifications
-to fire, i.e. io_uring_tx_zerocopy_callback(), so it's not a
-problem.
-
--- 
-Pavel Begunkov
