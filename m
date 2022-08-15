@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAEEDC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5E7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350734AbiHOWkd (ORCPT
+        id S1350759AbiHOWkk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
+        Mon, 15 Aug 2022 18:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350045AbiHOWfO (ORCPT
+        with ESMTP id S1350190AbiHOWfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:35:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC4371BE5;
-        Mon, 15 Aug 2022 12:49:57 -0700 (PDT)
+        Mon, 15 Aug 2022 18:35:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5900371BF1;
+        Mon, 15 Aug 2022 12:49:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D08066123B;
-        Mon, 15 Aug 2022 19:49:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD95AC433D7;
-        Mon, 15 Aug 2022 19:49:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CB52B8114D;
+        Mon, 15 Aug 2022 19:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E22CC433D6;
+        Mon, 15 Aug 2022 19:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592997;
-        bh=YhgF2yt0u3VyqWuFgGE9+OCvXB5d0Chiy9PsctpcyxA=;
+        s=korg; t=1660592967;
+        bh=MNK7u5dyCfo7vAH0daYRM5AOYYJy+wYIqzg5aLVcy9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hj+WhJ7JyCxdvqlc2aIlZCqc11oDuA5J57ZXSFjvtHl8IV8Do9ROOiJN+i0V4diRs
-         RA6iWZlQfqjumwf0TuRuLMrUpAsBc4rP+JjF4B8XXSaEyJtdoDnWhuv23q4G956Wi3
-         1Gj1FZy3tUw8kNXroJOhoyqRfac+XKwKYb0+D6A8=
+        b=WOZmHCspgGrBey04IOvCquv4ytgK9e8vWLYBTP5qQ2JWxEhDxNcvMCfJHcz3xjASw
+         c6AXFa0JNAFoADVH5urdlHfaXNJMFMzEC9617mpvapCRIebF1lo+6a7FA4NIeUIpCI
+         ODDsIX+Oe/Vrh5Y4GT7WJZhk4YJLYmnSnmM0FFsM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0198/1157] meson-mx-socinfo: Fix refcount leak in meson_mx_socinfo_init
-Date:   Mon, 15 Aug 2022 19:52:34 +0200
-Message-Id: <20220815180447.622557858@linuxfoundation.org>
+Subject: [PATCH 5.18 0873/1095] tty: n_gsm: fix flow control handling in tx path
+Date:   Mon, 15 Aug 2022 20:04:32 +0200
+Message-Id: <20220815180505.489476843@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit a2106f38077e78afcb4bf98fdda3e162118cfb3d ]
+[ Upstream commit 59ff0680ecbfec742b1e0381e7cc46b41eb06647 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The current implementation constipates all transmission paths during flow
+control except for flow control frames. However, these may not be located
+at the beginning of the transmission queue of the control channel.
+Ensure that flow control frames in the transmission queue for the control
+channel are always handled even if constipated by skipping through other
+messages.
 
-Fixes: 5e68c0fc8df8 ("soc: amlogic: Add Meson6/Meson8/Meson8b/Meson8m2 SoC Information driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220524065729.33689-1-linmq006@gmail.com
+Fixes: 0af021678d5d ("tty: n_gsm: fix deadlock and link starvation in outgoing data path")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-3-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/amlogic/meson-mx-socinfo.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soc/amlogic/meson-mx-socinfo.c b/drivers/soc/amlogic/meson-mx-socinfo.c
-index 78f0f1aeca57..92125dd65f33 100644
---- a/drivers/soc/amlogic/meson-mx-socinfo.c
-+++ b/drivers/soc/amlogic/meson-mx-socinfo.c
-@@ -126,6 +126,7 @@ static int __init meson_mx_socinfo_init(void)
- 	np = of_find_matching_node(NULL, meson_mx_socinfo_analog_top_ids);
- 	if (np) {
- 		analog_top_regmap = syscon_node_to_regmap(np);
-+		of_node_put(np);
- 		if (IS_ERR(analog_top_regmap))
- 			return PTR_ERR(analog_top_regmap);
- 
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 8b8c7312935f..7749de4f269a 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -891,7 +891,7 @@ static int gsm_data_kick(struct gsm_mux *gsm)
+ 	/* Serialize control messages and control channel messages first */
+ 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_ctrl_list, list) {
+ 		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
+-			return -EAGAIN;
++			continue;
+ 		ret = gsm_send_packet(gsm, msg);
+ 		switch (ret) {
+ 		case -ENOSPC:
 -- 
 2.35.1
 
