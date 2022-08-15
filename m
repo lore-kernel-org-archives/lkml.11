@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D30C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1226FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348316AbiHOVcy (ORCPT
+        id S1348356AbiHOVdC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
+        Mon, 15 Aug 2022 17:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348548AbiHOV1w (ORCPT
+        with ESMTP id S1347203AbiHOV27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:27:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AB6ED00C;
-        Mon, 15 Aug 2022 12:23:51 -0700 (PDT)
+        Mon, 15 Aug 2022 17:28:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DF1EE4A5;
+        Mon, 15 Aug 2022 12:23:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 681B960693;
-        Mon, 15 Aug 2022 19:23:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508BAC433D6;
-        Mon, 15 Aug 2022 19:23:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C578B80FD3;
+        Mon, 15 Aug 2022 19:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6F7C433C1;
+        Mon, 15 Aug 2022 19:23:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591429;
-        bh=BXbrf2VsO7sCBorUn5KdpawL5FlbDVwfKdOkkWueWDo=;
+        s=korg; t=1660591433;
+        bh=u0HsNN8rMYruFAvZHEvP0r2fe53rUhzO3lCv1NuR+A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QsW2e1laMga6zo0+sLtQpmgwQTUHEbxN47QZf5/02/6iQJndfTx8Gur9nT5krmXCB
-         5BaT7OxjoFm+jC/Je0ZKlTemmagT2uyh7Bi/x7O7Bcwvy8qWmSH9GBbgcbMtP8NVks
-         Ss3iqzqobe2cS+IhoNTOuqxOoJqk1rYIqjqWUQec=
+        b=A1CWwJ0qGH3RFEiOyJyikecZyGVGeSDyYzwdsq0pqUaX/0CtlbJzaICvXrBlFqldm
+         Qbzpsx5ajM1RY+EfFdMBfThkXtfCu5hjxhPSjDEpvSwmV4N9rll5LV+lEAA+j4S1dD
+         xsPWSwIOR2+nvXx68UedPqp8qTRcaRdYDC4dUAKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0575/1095] scsi: qla2xxx: edif: Reduce disruption due to multiple app start
-Date:   Mon, 15 Aug 2022 19:59:34 +0200
-Message-Id: <20220815180453.352026999@linuxfoundation.org>
+Subject: [PATCH 5.18 0539/1095] wireguard: allowedips: dont corrupt stack when detecting overflow
+Date:   Mon, 15 Aug 2022 19:58:58 +0200
+Message-Id: <20220815180451.840742115@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,46 +52,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 0dbfce5255fe8d069a1a3b712a25b263264cfa58 ]
+[ Upstream commit c31b14d86dfe7174361e8c6e5df6c2c3a4d5918c ]
 
-Multiple app start can trigger a session bounce. Make driver skip over
-session teardown if app start is seen more than once.
+In case push_rcu() and related functions are buggy, there's a
+WARN_ON(len >= 128), which the selftest tries to hit by being tricky. In
+case it is hit, we shouldn't corrupt the kernel's stack, though;
+otherwise it may be hard to even receive the report that it's buggy. So
+conditionalize the stack write based on that WARN_ON()'s return value.
 
-Link: https://lore.kernel.org/r/20220608115849.16693-4-njavali@marvell.com
-Fixes: 7ebb336e45ef ("scsi: qla2xxx: edif: Add start + stop bsgs")
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Note that this never *actually* happens anyway. The WARN_ON() in the
+first place is bounded by IS_ENABLED(DEBUG), and isn't expected to ever
+actually hit. This is just a debugging sanity check.
+
+Additionally, hoist the constant 128 into a named enum,
+MAX_ALLOWEDIPS_BITS, so that it's clear why this value is chosen.
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/all/CAHk-=wjJZGA6w_DxA+k7Ejbqsq+uGK==koPai3sqdsfJqemvag@mail.gmail.com/
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/allowedips.c          | 9 ++++++---
+ drivers/net/wireguard/selftest/allowedips.c | 6 +++---
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index 0ead3d95f594..208a16cb54f0 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -510,8 +510,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 		/* mark doorbell as active since an app is now present */
- 		vha->e_dbell.db_flags |= EDB_ACTIVE;
- 	} else {
--		ql_dbg(ql_dbg_edif, vha, 0x911e, "%s doorbell already active\n",
--		     __func__);
-+		goto out;
- 	}
+diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
+index 9a4c8ff32d9d..5bf7822c53f1 100644
+--- a/drivers/net/wireguard/allowedips.c
++++ b/drivers/net/wireguard/allowedips.c
+@@ -6,6 +6,8 @@
+ #include "allowedips.h"
+ #include "peer.h"
  
- 	if (N2N_TOPO(vha->hw)) {
-@@ -578,6 +577,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 		     __func__);
- 	}
++enum { MAX_ALLOWEDIPS_BITS = 128 };
++
+ static struct kmem_cache *node_cache;
  
-+out:
- 	appreply.host_support_edif = vha->hw->flags.edif_enabled;
- 	appreply.edif_enode_active = vha->pur_cinfo.enode_flags;
- 	appreply.edif_edb_active = vha->e_dbell.db_flags;
+ static void swap_endian(u8 *dst, const u8 *src, u8 bits)
+@@ -40,7 +42,8 @@ static void push_rcu(struct allowedips_node **stack,
+ 		     struct allowedips_node __rcu *p, unsigned int *len)
+ {
+ 	if (rcu_access_pointer(p)) {
+-		WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
++		if (WARN_ON(IS_ENABLED(DEBUG) && *len >= MAX_ALLOWEDIPS_BITS))
++			return;
+ 		stack[(*len)++] = rcu_dereference_raw(p);
+ 	}
+ }
+@@ -52,7 +55,7 @@ static void node_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_free_rcu(struct rcu_head *rcu)
+ {
+-	struct allowedips_node *node, *stack[128] = {
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
+ 		container_of(rcu, struct allowedips_node, rcu) };
+ 	unsigned int len = 1;
+ 
+@@ -65,7 +68,7 @@ static void root_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_remove_peer_lists(struct allowedips_node *root)
+ {
+-	struct allowedips_node *node, *stack[128] = { root };
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
+ 	unsigned int len = 1;
+ 
+ 	while (len > 0 && (node = stack[--len])) {
+diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
+index e173204ae7d7..41db10f9be49 100644
+--- a/drivers/net/wireguard/selftest/allowedips.c
++++ b/drivers/net/wireguard/selftest/allowedips.c
+@@ -593,10 +593,10 @@ bool __init wg_allowedips_selftest(void)
+ 	wg_allowedips_remove_by_peer(&t, a, &mutex);
+ 	test_negative(4, a, 192, 168, 0, 1);
+ 
+-	/* These will hit the WARN_ON(len >= 128) in free_node if something
+-	 * goes wrong.
++	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_BITS) in free_node
++	 * if something goes wrong.
+ 	 */
+-	for (i = 0; i < 128; ++i) {
++	for (i = 0; i < MAX_ALLOWEDIPS_BITS; ++i) {
+ 		part = cpu_to_be64(~(1LLU << (i % 64)));
+ 		memset(&ip, 0xff, 16);
+ 		memcpy((u8 *)&ip + (i < 64) * 8, &part, 8);
 -- 
 2.35.1
 
