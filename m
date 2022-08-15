@@ -2,95 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3FAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB914C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233225AbiHOPqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
+        id S229627AbiHOPtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiHOPpS (ORCPT
+        with ESMTP id S230208AbiHOPtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:45:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A165AC28;
-        Mon, 15 Aug 2022 08:45:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE3ADB80F2B;
-        Mon, 15 Aug 2022 15:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C419C4347C;
-        Mon, 15 Aug 2022 15:45:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660578313;
-        bh=JwjxJ7MOVdbsgqpb/k0rGtudkHpbtxGUbAtOmA+7kb4=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=tsqfhZF0byibwTSWDbd8UBOt4qmu251PmImxGxyvih5jtAVHspXV8Bu51VzsPeM1U
-         oq8g/FuG5Hj72UVtFgziDO9U27EZZRnKIvdFF6g0RAmp+IsSkcZNelH3ffc7HAg0qw
-         1YPMFyCGw0I8cN27fVVcGCuhFtRUDuZo1rI2yNfIgBmyigj0ra2Gpzh7WrTia0H4vB
-         v5/GQn5Xhb3dSct2jCO56KXXGQqzOEuG8Wg7EVqgb7HEWTRIZufGztGmUf3YWb7mGw
-         Yc2gVUl2s1eNjrWS6zlQSyORnqVoFFb2UNHG7mJcdl17dcMQXoNODBQBVSSsEBfODd
-         p3d1SN03bHSbA==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        devicetree@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        Christophe Branchereau <cbranchereau@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-spi@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>
-In-Reply-To: <20220810131311.428645-1-krzysztof.kozlowski@linaro.org>
-References: <20220810131311.428645-1-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] spi/panel: dt-bindings: drop 3-wire from common properties
-Message-Id: <166057830909.697678.2981260978895066117.b4-ty@kernel.org>
-Date:   Mon, 15 Aug 2022 16:45:09 +0100
+        Mon, 15 Aug 2022 11:49:00 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADE9EE32;
+        Mon, 15 Aug 2022 08:48:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=P5wY5zgg3rjOGWIVZoee4r16o0xMuIGJOZZTb6Q98pw=; b=cGyHTvHgOgGnA3KI+8g9w+XWlt
+        N/0YnVmrgyjEAkR/jU/cyKgYsOOyrOu8Y1c+vunhtZQCKA4ZdEtrEwD49WJf/9QWRc//3g8D4YqVp
+        DXX/ZDLGBSBuP9I1f9ZuRpaPakNRJqj7bxXP3WgvGEgXg7AlktKH1QKAb4LJ39AIDjEAonl3b6REk
+        qgy6llVcH+zA8neTygsz1XUcBAk6uEYaB6363ngNIjhwcJORPC27TiEJcyCaP0gezi2gmdoNUNBAE
+        Knszmkl3DyH4Uo25vNxpDvKNEXFPSo/y0WanxovWiil8U7KbOOXE23CDnyeUIjSlNHOrJepfbTzHt
+        zIIipRlw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNcKb-005q2a-BO; Mon, 15 Aug 2022 15:48:45 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 8613F9801D4; Mon, 15 Aug 2022 17:48:44 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 17:48:44 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+Message-ID: <Yvpq3JDk8fTgdMv8@worktop.programming.kicks-ass.net>
+References: <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
+ <YvoVgMzMuQbAEayk@krava>
+ <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
+ <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
+ <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
+ <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
+ <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
+ <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
+ <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
+ <CAADnVQJuDS22o7fi9wPZx9siAWgu1grQXXB02KfasxZ-RPdRSw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-fe10a
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJuDS22o7fi9wPZx9siAWgu1grQXXB02KfasxZ-RPdRSw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 16:13:11 +0300, Krzysztof Kozlowski wrote:
-> The spi-3wire property is device specific and should be accepted only if
-> device really needs them.  Drop it from common spi-peripheral-props.yaml
-> schema, mention in few panel drivers which use it and include instead in
-> the SPI controller bindings.  The controller bindings will provide
-> spi-3wire type validation and one place for description.  Each device
-> schema must list the property if it is applicable.
+On Mon, Aug 15, 2022 at 08:35:53AM -0700, Alexei Starovoitov wrote:
+> On Mon, Aug 15, 2022 at 8:28 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > On Mon, Aug 15, 2022 at 08:17:42AM -0700, Alexei Starovoitov wrote:
+> > > It's hiding a fake function from ftrace, since it's not a function
+> > > and ftrace infra shouldn't show it tracing logs.
+> > > In other words it's a _notrace_ function with nop5.
+> >
+> > Then make it a notrace function with a nop5 in it. That isn't hard.
 > 
-> [...]
+> That's exactly what we're trying to do.
 
-Applied to
+All the while claiming ftrace is broken while it is not.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+> Jiri's patch is one way to achieve that.
 
-Thanks!
+Fairly horrible way.
 
-[1/1] spi/panel: dt-bindings: drop 3-wire from common properties
-      commit: 41f53a65444997f55c82c67f71a9cff05c1dee31
+> What is your suggestion?
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Mailed it already.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+> Move it from C to asm ?
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Would be much better than proposed IMO.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+> Make it naked function with explicit inline asm?
 
-Thanks,
-Mark
+Can be made to work but is iffy because the compiler can do horrible
+things with placing the asm().
