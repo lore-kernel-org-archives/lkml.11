@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F86C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0A2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244641AbiHOW3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S1348670AbiHOW3Q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345968AbiHOWWI (ORCPT
+        with ESMTP id S1347762AbiHOWWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:22:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CD26B65D;
-        Mon, 15 Aug 2022 12:43:59 -0700 (PDT)
+        Mon, 15 Aug 2022 18:22:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD927124F7A;
+        Mon, 15 Aug 2022 12:44:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7052BCE12C4;
-        Mon, 15 Aug 2022 19:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBDEC433D7;
-        Mon, 15 Aug 2022 19:43:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B48AB80EB2;
+        Mon, 15 Aug 2022 19:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758B7C43470;
+        Mon, 15 Aug 2022 19:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592635;
-        bh=i8C6Dc6qGwwea9fahLykl8aMjWmt2PqEQCvALcK+vZk=;
+        s=korg; t=1660592638;
+        bh=q3vg4sFHpr8OQHoNrI0kfchaXIRIA0O/tgiOkVCgces=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AcwLGf+jnK70hsiHQxnptOuheAJs0dIG/iGykdNIbf/CiM+GgHse0u4bv06+RSsg9
-         s8lqSol9TF5AF8EVGuu/TJUCnM8Y04WRMx6GR8BNTU43hjxs3qY6p0GhYOwk9ttmXh
-         MYNHWdF+giPMPkbtOi3ZUowpvIGKz+khNi4QHKEM=
+        b=PD8eMpU4iRHIvoGFzDuZVYcWLowJXOjhlFiF0TstqbSKpmDJypYDi7T4BIq6B2qBg
+         /6E4LE5m6eKaZxio8HGW+G5F6TboCWp5YVZuR0DNB31UJmV4lpH4elgH3VtOqKHbX9
+         v6q+DlX7ma2n2aX02uYWDRiKneWTJOxlD2xEoAjY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Granados <j.granados@samsung.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0819/1095] nvme: catch -ENODEV from nvme_revalidate_zones again
-Date:   Mon, 15 Aug 2022 20:03:38 +0200
-Message-Id: <20220815180503.162495247@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.19 0141/1157] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
+Date:   Mon, 15 Aug 2022 19:51:37 +0200
+Message-Id: <20220815180445.270777201@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,73 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-[ Upstream commit e06b425bc835ead08b9fd935bf5e47eef473e7a0 ]
+commit 95f466d22364a33d183509629d0879885b4f547e upstream.
 
-nvme_revalidate_zones can also return -ENODEV if e.g. zone sizes aren't
-constant or not a power of two.  In that case we should jump to marking
-the gendisk hidden and only support pass through.
+When doing lookups for chains on the same batch by using its ID, a chain
+from a different table can be used. If a rule is added to a table but
+refers to a chain in a different table, it will be linked to the chain in
+table2, but would have expressions referring to objects in table1.
 
-Fixes: 602e57c9799c ("nvme: also mark passthrough-only namespaces ready in nvme_update_ns_info")
-Reported-by: Joel Granados <j.granados@samsung.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Joel Granados <j.granados@samsung.com>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Then, when table1 is removed, the rule will not be removed as its linked to
+a chain in table2. When expressions in the rule are processed or removed,
+that will lead to a use-after-free.
+
+When looking for chains by ID, use the table that was used for the lookup
+by name, and only return chains belonging to that same table.
+
+Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ net/netfilter/nf_tables_api.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index cf7be9b4f5d3..a58a69999dbc 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1897,8 +1897,10 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 
- 	if (ns->head->ids.csi == NVME_CSI_ZNS) {
- 		ret = nvme_update_zone_info(ns, lbaf);
--		if (ret)
--			goto out_unfreeze;
-+		if (ret) {
-+			blk_mq_unfreeze_queue(ns->disk->queue);
-+			goto out;
-+		}
- 	}
- 
- 	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
-@@ -1909,7 +1911,7 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 	if (blk_queue_is_zoned(ns->queue)) {
- 		ret = nvme_revalidate_zones(ns);
- 		if (ret && !nvme_first_scan(ns->disk))
--			return ret;
-+			goto out;
- 	}
- 
- 	if (nvme_ns_head_multipath(ns->head)) {
-@@ -1924,9 +1926,9 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		disk_update_readahead(ns->head->disk);
- 		blk_mq_unfreeze_queue(ns->head->disk->queue);
- 	}
--	return 0;
- 
--out_unfreeze:
-+	ret = 0;
-+out:
- 	/*
- 	 * If probing fails due an unsupported feature, hide the block device,
- 	 * but still allow other access.
-@@ -1936,7 +1938,6 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		set_bit(NVME_NS_READY, &ns->flags);
- 		ret = 0;
- 	}
--	blk_mq_unfreeze_queue(ns->disk->queue);
- 	return ret;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2472,6 +2472,7 @@ err:
  }
  
--- 
-2.35.1
-
+ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
++					       const struct nft_table *table,
+ 					       const struct nlattr *nla)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -2482,6 +2483,7 @@ static struct nft_chain *nft_chain_looku
+ 		struct nft_chain *chain = trans->ctx.chain;
+ 
+ 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
++		    chain->table == table &&
+ 		    id == nft_trans_chain_id(trans))
+ 			return chain;
+ 	}
+@@ -3417,7 +3419,7 @@ static int nf_tables_newrule(struct sk_b
+ 			return -EOPNOTSUPP;
+ 
+ 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
+-		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
++		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
+ 		if (IS_ERR(chain)) {
+ 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
+ 			return PTR_ERR(chain);
+@@ -9607,7 +9609,7 @@ static int nft_verdict_init(const struct
+ 						 tb[NFTA_VERDICT_CHAIN],
+ 						 genmask);
+ 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
+-			chain = nft_chain_lookup_byid(ctx->net,
++			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
+ 						      tb[NFTA_VERDICT_CHAIN_ID]);
+ 			if (IS_ERR(chain))
+ 				return PTR_ERR(chain);
 
 
