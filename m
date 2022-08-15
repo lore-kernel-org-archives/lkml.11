@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA91C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358C5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242717AbiHOS3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
+        id S242741AbiHOS33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241375AbiHOS1S (ORCPT
+        with ESMTP id S241863AbiHOS1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:27:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8584832046;
-        Mon, 15 Aug 2022 11:20:06 -0700 (PDT)
+        Mon, 15 Aug 2022 14:27:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F7232063;
+        Mon, 15 Aug 2022 11:20:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60A58B81076;
-        Mon, 15 Aug 2022 18:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE90EC433D6;
-        Mon, 15 Aug 2022 18:19:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEA8B60F25;
+        Mon, 15 Aug 2022 18:19:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0307C433D6;
+        Mon, 15 Aug 2022 18:19:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587593;
-        bh=Shks8rDUt6fwvZCiVNN+z/KX40yACmnhgAaxaywLQ9Y=;
+        s=korg; t=1660587599;
+        bh=3RnyWp/lAIMu5h7J9loyAZyYyPtqH0Qubt7OGV3anYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jBswlEHJsq0eFf67LZO0LC2+9OK0a25/G+9Rtxv8QjyI0YCnkuIE8khGhnCrFh5iS
-         sKcBQbVjvs0pTXTwgPfKkK3l9zmuzhBm9v2HCJCDOSAfuurYcQTVcmQrrsS0N8MTFJ
-         xWRnGqkH2V5Tuo1U80Ora+YUuZhTUqOUEcFi44Qw=
+        b=Az1AY4i7JeAkJ3k90IteFKfsmcDpI6BcIBopSRifPIGoa1pgeijH8HOFdQzcB6q+q
+         RMHGu6f2PTi8mUddR0VYCHyWBC4UXYvllN+45w87NPzb6h757XqnAHkVEJZr+7EGnV
+         QrMfQjglg2bZZfG2OlxyiiQQENaOKHys3SZrOwqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Guo Mengqi <guomengqi3@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 133/779] spi: synquacer: Add missing clk_disable_unprepare()
-Date:   Mon, 15 Aug 2022 19:56:17 +0200
-Message-Id: <20220815180342.963400297@linuxfoundation.org>
+Subject: [PATCH 5.15 135/779] ARM: OMAP2+: pdata-quirks: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:56:19 +0200
+Message-Id: <20220815180343.060665985@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,33 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Mengqi <guomengqi3@huawei.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 917e43de2a56d9b82576f1cc94748261f1988458 ]
+[ Upstream commit 5cdbab96bab314c6f2f5e4e8b8a019181328bf5f ]
 
-Add missing clk_disable_unprepare() in synquacer_spi_resume().
+In pdata_quirks_init_clocks(), the loop contains
+of_find_node_by_name() but without corresponding of_node_put().
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
-Link: https://lore.kernel.org/r/20220624005614.49434-1-guomengqi3@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220618020603.4055792-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-synquacer.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap2/pdata-quirks.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/spi/spi-synquacer.c b/drivers/spi/spi-synquacer.c
-index ea706d9629cb..47cbe73137c2 100644
---- a/drivers/spi/spi-synquacer.c
-+++ b/drivers/spi/spi-synquacer.c
-@@ -783,6 +783,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
+diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+index 765809b214e7..bf50acd6b8a3 100644
+--- a/arch/arm/mach-omap2/pdata-quirks.c
++++ b/arch/arm/mach-omap2/pdata-quirks.c
+@@ -587,6 +587,8 @@ pdata_quirks_init_clocks(const struct of_device_id *omap_dt_match_table)
  
- 		ret = synquacer_spi_enable(master);
- 		if (ret) {
-+			clk_disable_unprepare(sspi->clk);
- 			dev_err(dev, "failed to enable spi (%d)\n", ret);
- 			return ret;
- 		}
+ 		of_platform_populate(np, omap_dt_match_table,
+ 				     omap_auxdata_lookup, NULL);
++
++		of_node_put(np);
+ 	}
+ }
+ 
 -- 
 2.35.1
 
