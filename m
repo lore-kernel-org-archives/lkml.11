@@ -2,151 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A490FC2BB43
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E5FC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233137AbiHPE4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56820 "EHLO
+        id S233463AbiHPE4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233885AbiHPEzp (ORCPT
+        with ESMTP id S233478AbiHPEyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:55:45 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758D11A6246
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:52:53 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id r69so7490931pgr.2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc;
-        bh=c+KhdgocO4zsjTWrfEV5k5L4Uxolaa6Gk/jRei7Y/Oc=;
-        b=TS0+ZzP9+U3VDMoCF/KWdxpkXkeK9XBjuv9Qdin0izW547qxfmT/bA8xx8wwbmRPMm
-         YyFvlXPDcb6xeyzuuSZDKfFQKR10Ww7hlSNSuWjku2HbH5tCvGdTad7S0zdd/exgT3Kp
-         DkK4/aWC25K2HvXNWn8tHyUzcfbT+pB+7idD9/9SgIxfRJ5pHqTz9Jo8n+NT0fyVGIgw
-         QYuKP8CDazls33bgYYwojsdwRcP+pKigDbNeoXK9tC0bRsPLjSnXrv5j0leIwJrCMiUk
-         4jQvMS6q3J3P2CwxlMjJH/k948lSu4TjZYlZXfrN5CQEgANr0UvLmqB7qtsyUPvvrNr9
-         cUYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
-        bh=c+KhdgocO4zsjTWrfEV5k5L4Uxolaa6Gk/jRei7Y/Oc=;
-        b=MO2Fx7OJrDxJQl958OzLF8LqRwvTofQWIk6Ia+R/dQ9KpDQxOzHQ/MCH9tTRSxDwgV
-         gY+w+jAubIXcNkxX0VIiAkSBoEcvyrzHAFsNPerBNLrTxqR8XWTsAtW4pR9CSQEulnUC
-         SqlXEYc1A/N0FQMZgMK2E5xPE4Ky89N0WUWzr/mnL0BcrGqR2mAHCOMJ5hsdWTzP8OSk
-         C+XpOy8qVQU+cCPV+487TsgTsJvHlC10IgYfg6xcUbtZalsOCCwAht1kbGZhdnyzXYVw
-         HLaPGaV6NifAhqT/kurMTOdbWjOZ8ef0SUj4XLgiDXoFMmN8BzOWoe6xXp2rxP1ElMfa
-         5FQQ==
-X-Gm-Message-State: ACgBeo0nCMeTb8GRYI3JZ5OSqJLtAvu9qp54BhWCz6b2ra8FFCnC7Ltt
-        /ba66Snln0l67rNw0NficcI=
-X-Google-Smtp-Source: AA6agR7rwQ+jhfuSVG+xP3HP1o2g8wJCiy47OwluqMsTQl2gJNobuOXBh1yf09JSr8vzaFu8WioaYA==
-X-Received: by 2002:a63:cf0d:0:b0:429:983d:272a with SMTP id j13-20020a63cf0d000000b00429983d272amr1746473pgg.209.1660596772468;
-        Mon, 15 Aug 2022 13:52:52 -0700 (PDT)
-Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
-        by smtp.gmail.com with ESMTPSA id q2-20020a170902f78200b0016d1f474653sm7437465pln.52.2022.08.15.13.52.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Aug 2022 13:52:51 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [PATCH v3 5/7] mm: Remember young/dirty bit for page migrations
-From:   Nadav Amit <nadav.amit@gmail.com>
-In-Reply-To: <YvqcGq44oonHNyCO@xz-m1.local>
-Date:   Mon, 15 Aug 2022 13:52:49 -0700
-Cc:     "Huang, Ying" <ying.huang@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <5B21352C-2BE6-4070-BB6B-C1B7A5D4D225@gmail.com>
-References: <20220809220100.20033-1-peterx@redhat.com>
- <20220809220100.20033-6-peterx@redhat.com> <YvUeB0jc6clz59z5@xz-m1.local>
- <87pmh6dwdr.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <YvqcGq44oonHNyCO@xz-m1.local>
-To:     Peter Xu <peterx@redhat.com>
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
+        Tue, 16 Aug 2022 00:54:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F37B958D;
+        Mon, 15 Aug 2022 13:50:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A05FA61283;
+        Mon, 15 Aug 2022 20:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5849C433C1;
+        Mon, 15 Aug 2022 20:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660596617;
+        bh=xjwEAjQmDMvwXBghWtChvjHsn8c+SsVYe94+bRZyOQY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tRoi35PzS8t00u7CjYXMzy6Nsu959O6vaK5cejy2/g0qkFtFrpjNvEU8bxinyVLHT
+         ahseQytLorxsbN5ZFOWtFWm3z/kMSzV+jdM+XUP6DaPGWv+4KWo7a+LkrkN0GILj6f
+         NghqfiaSXUjNB663yh8ityFqR3W7loSe4ZBP526Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.19 1136/1157] powerpc: Fix eh field when calling lwarx on PPC32
+Date:   Mon, 15 Aug 2022 20:08:12 +0200
+Message-Id: <20220815180525.881777875@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Aug 15, 2022, at 12:18 PM, Peter Xu <peterx@redhat.com> wrote:
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-> On Fri, Aug 12, 2022 at 10:32:48AM +0800, Huang, Ying wrote:
->> Peter Xu <peterx@redhat.com> writes:
->>=20
->>> On Tue, Aug 09, 2022 at 06:00:58PM -0400, Peter Xu wrote:
->>>> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
->>>> index 27fb37d65476..699f821b8443 100644
->>>> --- a/mm/migrate_device.c
->>>> +++ b/mm/migrate_device.c
->>>> @@ -221,6 +221,10 @@ static int migrate_vma_collect_pmd(pmd_t =
-*pmdp,
->>>> 			else
->>>> 				entry =3D make_readable_migration_entry(
->>>> 							=
-page_to_pfn(page));
->>>> +			if (pte_young(pte))
->>>> +				entry =3D =
-make_migration_entry_young(entry);
->>>> +			if (pte_dirty(pte))
->>>> +				entry =3D =
-make_migration_entry_dirty(entry);
->>>> 			swp_pte =3D swp_entry_to_pte(entry);
->>>> 			if (pte_present(pte)) {
->>>> 				if (pte_soft_dirty(pte))
->>>=20
->>> This change needs to be wrapped with pte_present() at least..
->>>=20
->>> I also just noticed that this change probably won't help anyway =
-because:
->>>=20
->>>  (1) When ram->device, the pte will finally be replaced with a =
-device
->>>      private entry, and device private entry does not yet support =
-A/D, it
->>>      means A/D will be dropped again,
->>>=20
->>>  (2) When device->ram, we are missing information on either A/D =
-bits, or
->>>      even if device private entries start to suport A/D, it's still =
-not
->>>      clear whether we should take device read/write into =
-considerations
->>>      too on the page A/D bits to be accurate.
->>>=20
->>> I think I'll probably keep the code there for completeness, but I =
-think it
->>> won't really help much until more things are done.
->>=20
->> It appears that there are more issues.  Between "pte =3D *ptep" and =
-pte
->> clear, CPU may set A/D bit in PTE, so we may need to update pte when
->> clearing PTE.
->=20
-> Agreed, I didn't see it a huge problem with current code, but it =
-should be
-> better in that way.
->=20
->> And I don't find the TLB is flushed in some cases after PTE is =
-cleared.
->=20
-> I think it's okay to not flush tlb if pte not present.  But maybe =
-you're
-> talking about something else?
+commit 18db466a9a306406dab3b134014d9f6ed642471c upstream.
 
-I think Huang refers to situation in which the PTE is cleared, still not
-flushed, and then A/D is being set by the hardware.
+Commit 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of
+PPC_LWARX/LDARX macros") properly handled the eh field of lwarx
+in asm/bitops.h but failed to clear it for PPC32 in
+asm/simple_spinlock.h
 
-At least on x86, the hardware is not supposed to do so. The only case I
-remember (and sometimes misremembers) is with KNL erratum, which perhaps
-needs to be considered:
+So, do as in arch_atomic_try_cmpxchg_lock(), set it to 1 if PPC64
+but set it to 0 if PPC32. For that use IS_ENABLED(CONFIG_PPC64) which
+returns 1 when CONFIG_PPC64 is set and 0 otherwise.
 
-https://lore.kernel.org/all/20160708001911.9A3FD2B6@viggo.jf.intel.com/
+Fixes: 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of PPC_LWARX/LDARX macros")
+Cc: stable@vger.kernel.org # v5.15+
+Reported-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+[mpe: Use symbolic names, use 'n' constraint per Segher]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/include/asm/simple_spinlock.h |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+--- a/arch/powerpc/include/asm/simple_spinlock.h
++++ b/arch/powerpc/include/asm/simple_spinlock.h
+@@ -48,10 +48,11 @@ static inline int arch_spin_is_locked(ar
+ static inline unsigned long __arch_spin_trylock(arch_spinlock_t *lock)
+ {
+ 	unsigned long tmp, token;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+ 
+ 	token = LOCK_TOKEN;
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%2,1\n\
++"1:	lwarx		%0,0,%2,%[eh]\n\
+ 	cmpwi		0,%0,0\n\
+ 	bne-		2f\n\
+ 	stwcx.		%1,0,%2\n\
+@@ -59,7 +60,7 @@ static inline unsigned long __arch_spin_
+ 	PPC_ACQUIRE_BARRIER
+ "2:"
+ 	: "=&r" (tmp)
+-	: "r" (token), "r" (&lock->slock)
++	: "r" (token), "r" (&lock->slock), [eh] "n" (eh)
+ 	: "cr0", "memory");
+ 
+ 	return tmp;
+@@ -156,9 +157,10 @@ static inline void arch_spin_unlock(arch
+ static inline long __arch_read_trylock(arch_rwlock_t *rw)
+ {
+ 	long tmp;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+ 
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%1,1\n"
++"1:	lwarx		%0,0,%1,%[eh]\n"
+ 	__DO_SIGN_EXTEND
+ "	addic.		%0,%0,1\n\
+ 	ble-		2f\n"
+@@ -166,7 +168,7 @@ static inline long __arch_read_trylock(a
+ 	bne-		1b\n"
+ 	PPC_ACQUIRE_BARRIER
+ "2:"	: "=&r" (tmp)
+-	: "r" (&rw->lock)
++	: "r" (&rw->lock), [eh] "n" (eh)
+ 	: "cr0", "xer", "memory");
+ 
+ 	return tmp;
+@@ -179,17 +181,18 @@ static inline long __arch_read_trylock(a
+ static inline long __arch_write_trylock(arch_rwlock_t *rw)
+ {
+ 	long tmp, token;
++	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+ 
+ 	token = WRLOCK_TOKEN;
+ 	__asm__ __volatile__(
+-"1:	lwarx		%0,0,%2,1\n\
++"1:	lwarx		%0,0,%2,%[eh]\n\
+ 	cmpwi		0,%0,0\n\
+ 	bne-		2f\n"
+ "	stwcx.		%1,0,%2\n\
+ 	bne-		1b\n"
+ 	PPC_ACQUIRE_BARRIER
+ "2:"	: "=&r" (tmp)
+-	: "r" (token), "r" (&rw->lock)
++	: "r" (token), "r" (&rw->lock), [eh] "n" (eh)
+ 	: "cr0", "memory");
+ 
+ 	return tmp;
+
 
