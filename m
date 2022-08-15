@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F378C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6FBC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244258AbiHOVCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
+        id S244873AbiHOVCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240957AbiHOVAI (ORCPT
+        with ESMTP id S243990AbiHOVAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:00:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA83250704;
-        Mon, 15 Aug 2022 12:12:58 -0700 (PDT)
+        Mon, 15 Aug 2022 17:00:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DBFC3F78;
+        Mon, 15 Aug 2022 12:13:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBDF560EDA;
-        Mon, 15 Aug 2022 19:12:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD60C433D6;
-        Mon, 15 Aug 2022 19:12:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80FA9B81113;
+        Mon, 15 Aug 2022 19:13:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB9B1C433D6;
+        Mon, 15 Aug 2022 19:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590777;
-        bh=FU27mNks8W5srJ5JvNYi5+dQrXnSsKiy73X4z1VGlp4=;
+        s=korg; t=1660590780;
+        bh=Y2uiP0tWBwL6vxqhyLR7WjAMopNb9WKuAgmZ1YDI9Ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iNCqtNY7+f9WWtDbZK0mfu1MQZnDGNmGe0q0Gc57ygT6Ucv+g4yMQ1VVsD7NKLxxJ
-         vtnBwKN6Ux6FIOHplAG30jMzwW2jfamoBxvAh7BDEvvsnksuIsQdoNySS2w0ZNehhw
-         l0vQciFnO7h7YCVCm404yzOaINb/0jLiJOonUjns=
+        b=EATJtiTTJbxQdoapJ55ndWb9BiYW5TfV1PCMvR8oAAgIK55hOcjg3Oe3LFC8lEHPG
+         gP6h3bAZCd/z92x+rd3jwyOAvgE70ErplFHfsO+hyDQ/RnpDJEuMYVwjLNxapedA0J
+         eVjF+BcUkRhb54XJm0sglQ+2O/B7nKbLygfos5o0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@riseup.net>,
-        Tales Lelo da Aparecida <tales.aparecida@gmail.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0337/1095] drm/vkms: check plane_composer->map[0] before using it
-Date:   Mon, 15 Aug 2022 19:55:36 +0200
-Message-Id: <20220815180443.743885616@linuxfoundation.org>
+        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0328/1095] i2c: npcm: Correct slave role behavior
+Date:   Mon, 15 Aug 2022 19:55:27 +0200
+Message-Id: <20220815180443.359172851@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,37 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+From: Tali Perry <tali.perry1@gmail.com>
 
-[ Upstream commit 24f6fe3226c6f9f1b8406311a96b59c6e650b707 ]
+[ Upstream commit d7aa1b149b8fc04d802879cf4662010aa4a42deb ]
 
-Fix a copypasta error. The caller of compose_plane() already checks
-primary_composer->map. In contrast, plane_composer->map is never
-verified here before handling.
+Correct the slave transaction logic to be compatible with the generic
+slave backend driver.
 
-Fixes: 7938f4218168 ("dma-buf-map: Rename to iosys-map")
-Reviewed-by: André Almeida <andrealmeid@riseup.net>
-Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220415111300.61013-2-tales.aparecida@gmail.com
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vkms/vkms_composer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/vkms/vkms_composer.c b/drivers/gpu/drm/vkms/vkms_composer.c
-index c6a1036bf2ea..b47ac170108c 100644
---- a/drivers/gpu/drm/vkms/vkms_composer.c
-+++ b/drivers/gpu/drm/vkms/vkms_composer.c
-@@ -157,7 +157,7 @@ static void compose_plane(struct vkms_composer *primary_composer,
- 	void *vaddr;
- 	void (*pixel_blend)(const u8 *p_src, u8 *p_dst);
- 
--	if (WARN_ON(iosys_map_is_null(&primary_composer->map[0])))
-+	if (WARN_ON(iosys_map_is_null(&plane_composer->map[0])))
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index bc462d257baa..9f0462fb2504 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -912,11 +912,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
+ 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
+ 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
+ 			break;
+-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
++		if (bus->state == I2C_SLAVE_MATCH) {
++			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
++			bus->state = I2C_OPER_STARTED;
++		} else {
++			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
++		}
+ 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
+ 		bus->slv_wr_buf[ind] = value;
+ 		bus->slv_wr_size++;
+-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
+ 	}
+ 	return I2C_HW_FIFO_SIZE - ret;
+ }
+@@ -964,7 +968,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
+ 	if (nwrite == 0)
  		return;
  
- 	vaddr = plane_composer->map[0].vaddr;
+-	bus->state = I2C_OPER_STARTED;
+ 	bus->operation = I2C_WRITE_OPER;
+ 
+ 	/* get the next buffer */
 -- 
 2.35.1
 
