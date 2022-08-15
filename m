@@ -2,48 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DB6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9912EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241929AbiHOS2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
+        id S241973AbiHOS2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242318AbiHOS0C (ORCPT
+        with ESMTP id S241848AbiHOSZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:02 -0400
+        Mon, 15 Aug 2022 14:25:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8902F67F;
-        Mon, 15 Aug 2022 11:19:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CDD2F648;
+        Mon, 15 Aug 2022 11:18:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67252B80F99;
-        Mon, 15 Aug 2022 18:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D80DC433C1;
-        Mon, 15 Aug 2022 18:18:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF66BB81076;
+        Mon, 15 Aug 2022 18:18:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A57AC433C1;
+        Mon, 15 Aug 2022 18:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587521;
-        bh=ktZ+YUfLo8CeU345XT9G1M7j/YCZnhlTFnxaB4h9gXE=;
+        s=korg; t=1660587504;
+        bh=RMT8ytOfZjSu0bN8FyZcF57Fp9VFOBE1H9lsAtGFPlw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RAYr4bsoBwILyJNoD/k3wk4EMnxa9EuVw9OKrYXkJkKvAQBJfp+z4YqqHUtbAH1YF
-         yfUvnlm1/gan7Kypa6iqj2B9Qt87F9Z33/F5sKMZIXknh/j4oCyXBI/zZohc4evKpd
-         6Sf8TXcM+v/XzNfc99OtOH4IafBroV6/crJ6fEQc=
+        b=AT5FqB4Cwgeq5ez6Md3JgtEOqxGprFRDijvplbcWtg2EfisDfVrNt65oY2QRr4bgO
+         hji2qavSd9tzSGySZSVvNfIwr2lnFGTfVx53EgDAfhevi5f0NW0fRXwYKgDldSOgzm
+         EcgO34kla9+vnwYLwfB7cID4eNQOrmybr8IQRmM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Roman Penyaev <rpenyaev@suse.de>,
-        Jason Baron <jbaron@akamai.com>,
-        Khazhismel Kumykov <khazhy@google.com>, Heiher <r@hev.cc>,
-        stable@kernel.org, Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 110/779] epoll: autoremove wakers even more aggressively
-Date:   Mon, 15 Aug 2022 19:55:54 +0200
-Message-Id: <20220815180342.032766610@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 088/779] md-raid: destroy the bitmap after destroying the thread
+Date:   Mon, 15 Aug 2022 19:55:32 +0200
+Message-Id: <20220815180341.047846128@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -55,90 +48,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Segall <bsegall@google.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit a16ceb13961068f7209e34d7984f8e42d2c06159 upstream.
+commit e151db8ecfb019b7da31d076130a794574c89f6f upstream.
 
-If a process is killed or otherwise exits while having active network
-connections and many threads waiting on epoll_wait, the threads will all
-be woken immediately, but not removed from ep->wq.  Then when network
-traffic scans ep->wq in wake_up, every wakeup attempt will fail, and will
-not remove the entries from the list.
+When we ran the lvm test "shell/integrity-blocksize-3.sh" on a kernel with
+kasan, we got failure in write_page.
 
-This means that the cost of the wakeup attempt is far higher than usual,
-does not decrease, and this also competes with the dying threads trying to
-actually make progress and remove themselves from the wq.
+The reason for the failure is that md_bitmap_destroy is called before
+destroying the thread and the thread may be waiting in the function
+write_page for the bio to complete. When the thread finishes waiting, it
+executes "if (test_bit(BITMAP_WRITE_ERROR, &bitmap->flags))", which
+triggers the kasan warning.
 
-Handle this by removing visited epoll wq entries unconditionally, rather
-than only when the wakeup succeeds - the structure of ep_poll means that
-the only potential loss is the timed_out->eavail heuristic, which now can
-race and result in a redundant ep_send_events attempt.  (But only when
-incoming data and a timeout actually race, not on every timeout)
+Note that the commit 48df498daf62 that caused this bug claims that it is
+neede for md-cluster, you should check md-cluster and possibly find
+another bugfix for it.
 
-Shakeel added:
+BUG: KASAN: use-after-free in write_page+0x18d/0x680 [md_mod]
+Read of size 8 at addr ffff889162030c78 by task mdX_raid1/5539
 
-: We are seeing this issue in production with real workloads and it has
-: caused hard lockups.  Particularly network heavy workloads with a lot
-: of threads in epoll_wait() can easily trigger this issue if they get
-: killed (oom-killed in our case).
+CPU: 10 PID: 5539 Comm: mdX_raid1 Not tainted 5.19.0-rc2 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x34/0x44
+ print_report.cold+0x45/0x57a
+ ? __lock_text_start+0x18/0x18
+ ? write_page+0x18d/0x680 [md_mod]
+ kasan_report+0xa8/0xe0
+ ? write_page+0x18d/0x680 [md_mod]
+ kasan_check_range+0x13f/0x180
+ write_page+0x18d/0x680 [md_mod]
+ ? super_sync+0x4d5/0x560 [dm_raid]
+ ? md_bitmap_file_kick+0xa0/0xa0 [md_mod]
+ ? rs_set_dev_and_array_sectors+0x2e0/0x2e0 [dm_raid]
+ ? mutex_trylock+0x120/0x120
+ ? preempt_count_add+0x6b/0xc0
+ ? preempt_count_sub+0xf/0xc0
+ md_update_sb+0x707/0xe40 [md_mod]
+ md_reap_sync_thread+0x1b2/0x4a0 [md_mod]
+ md_check_recovery+0x533/0x960 [md_mod]
+ raid1d+0xc8/0x2a20 [raid1]
+ ? var_wake_function+0xe0/0xe0
+ ? psi_group_change+0x411/0x500
+ ? preempt_count_sub+0xf/0xc0
+ ? _raw_spin_lock_irqsave+0x78/0xc0
+ ? __lock_text_start+0x18/0x18
+ ? raid1_end_read_request+0x2a0/0x2a0 [raid1]
+ ? preempt_count_sub+0xf/0xc0
+ ? _raw_spin_unlock_irqrestore+0x19/0x40
+ ? del_timer_sync+0xa9/0x100
+ ? try_to_del_timer_sync+0xc0/0xc0
+ ? _raw_spin_lock_irqsave+0x78/0xc0
+ ? __lock_text_start+0x18/0x18
+ ? __list_del_entry_valid+0x68/0xa0
+ ? finish_wait+0xa3/0x100
+ md_thread+0x161/0x260 [md_mod]
+ ? unregister_md_personality+0xa0/0xa0 [md_mod]
+ ? _raw_spin_lock_irqsave+0x78/0xc0
+ ? prepare_to_wait_event+0x2c0/0x2c0
+ ? unregister_md_personality+0xa0/0xa0 [md_mod]
+ kthread+0x148/0x180
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x1f/0x30
+ </TASK>
 
-Link: https://lkml.kernel.org/r/xm26fsjotqda.fsf@google.com
-Signed-off-by: Ben Segall <bsegall@google.com>
-Tested-by: Shakeel Butt <shakeelb@google.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Roman Penyaev <rpenyaev@suse.de>
-Cc: Jason Baron <jbaron@akamai.com>
-Cc: Khazhismel Kumykov <khazhy@google.com>
-Cc: Heiher <r@hev.cc>
-Cc: <stable@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Allocated by task 5522:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0x80/0xa0
+ md_bitmap_create+0xa8/0xe80 [md_mod]
+ md_run+0x777/0x1300 [md_mod]
+ raid_ctr+0x249c/0x4a30 [dm_raid]
+ dm_table_add_target+0x2b0/0x620 [dm_mod]
+ table_load+0x1c8/0x400 [dm_mod]
+ ctl_ioctl+0x29e/0x560 [dm_mod]
+ dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
+ __do_compat_sys_ioctl+0xfa/0x160
+ do_syscall_64+0x90/0xc0
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 5680:
+ kasan_save_stack+0x1e/0x40
+ kasan_set_track+0x21/0x40
+ kasan_set_free_info+0x20/0x40
+ __kasan_slab_free+0xf7/0x140
+ kfree+0x80/0x240
+ md_bitmap_free+0x1c3/0x280 [md_mod]
+ __md_stop+0x21/0x120 [md_mod]
+ md_stop+0x9/0x40 [md_mod]
+ raid_dtr+0x1b/0x40 [dm_raid]
+ dm_table_destroy+0x98/0x1e0 [dm_mod]
+ __dm_destroy+0x199/0x360 [dm_mod]
+ dev_remove+0x10c/0x160 [dm_mod]
+ ctl_ioctl+0x29e/0x560 [dm_mod]
+ dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
+ __do_compat_sys_ioctl+0xfa/0x160
+ do_syscall_64+0x90/0xc0
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/eventpoll.c |   22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/md/md.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -1740,6 +1740,21 @@ static struct timespec64 *ep_timeout_to_
- 	return to;
- }
- 
-+/*
-+ * autoremove_wake_function, but remove even on failure to wake up, because we
-+ * know that default_wake_function/ttwu will only fail if the thread is already
-+ * woken, and in that case the ep_poll loop will remove the entry anyways, not
-+ * try to reuse it.
-+ */
-+static int ep_autoremove_wake_function(struct wait_queue_entry *wq_entry,
-+				       unsigned int mode, int sync, void *key)
-+{
-+	int ret = default_wake_function(wq_entry, mode, sync, key);
-+
-+	list_del_init(&wq_entry->entry);
-+	return ret;
-+}
-+
- /**
-  * ep_poll - Retrieves ready events, and delivers them to the caller-supplied
-  *           event buffer.
-@@ -1821,8 +1836,15 @@ static int ep_poll(struct eventpoll *ep,
- 		 * normal wakeup path no need to call __remove_wait_queue()
- 		 * explicitly, thus ep->lock is not taken, which halts the
- 		 * event delivery.
-+		 *
-+		 * In fact, we now use an even more aggressive function that
-+		 * unconditionally removes, because we don't reuse the wait
-+		 * entry between loop iterations. This lets us also avoid the
-+		 * performance issue if a process is killed, causing all of its
-+		 * threads to wake up without being removed normally.
- 		 */
- 		init_wait(&wait);
-+		wait.func = ep_autoremove_wake_function;
- 
- 		write_lock_irq(&ep->lock);
- 		/*
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -6251,11 +6251,11 @@ static void mddev_detach(struct mddev *m
+ static void __md_stop(struct mddev *mddev)
+ {
+ 	struct md_personality *pers = mddev->pers;
+-	md_bitmap_destroy(mddev);
+ 	mddev_detach(mddev);
+ 	/* Ensure ->event_work is done */
+ 	if (mddev->event_work.func)
+ 		flush_workqueue(md_misc_wq);
++	md_bitmap_destroy(mddev);
+ 	spin_lock(&mddev->lock);
+ 	mddev->pers = NULL;
+ 	spin_unlock(&mddev->lock);
 
 
