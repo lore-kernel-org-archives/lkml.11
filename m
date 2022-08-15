@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E58BEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF29C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242768AbiHOUPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S240906AbiHOUPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346654AbiHOULy (ORCPT
+        with ESMTP id S1346363AbiHOULP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4D549B58;
-        Mon, 15 Aug 2022 11:58:06 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C3F31373;
+        Mon, 15 Aug 2022 11:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A399561230;
-        Mon, 15 Aug 2022 18:58:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904FEC433C1;
-        Mon, 15 Aug 2022 18:58:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C8F460A71;
+        Mon, 15 Aug 2022 18:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068E6C433C1;
+        Mon, 15 Aug 2022 18:57:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589885;
-        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
+        s=korg; t=1660589857;
+        bh=tMbRNLEwJhzBn3I2NtkHXpA8he1iH1lPv6QR3bX1QbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kqS50959rYDnVY3joO1MRhORVfdAV7912OYyR7NqXgeMKzpiMteVXeIXMLbbRUkl7
-         clcTVPTzNIG13WAtDtEyfCa2qTZUC9o9Clp9LGHm/Euk2WtcLLHu+kWOIgDRT8rDOq
-         fIQY6jUSU4hcyXTdFyMkj5ZuTmMfVIx+uy3i6Kzk=
+        b=ke0btZn/ca66Ownbl3i4AXFvJjcvxFenmxyFsprPYeJTEELnF2C2CFFmac9qwvSg7
+         /9cS9yuFRL3ASECkQS90TcHdAGP1iNAwKf4nHjymdk201MNE+ZLBA7+9pGhVEeVrJT
+         CICbQPur37iF0iDyThQnwWoTsA2jfV621SqZQHNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.18 0080/1095] drm/nouveau: fix another off-by-one in nvbios_addr
-Date:   Mon, 15 Aug 2022 19:51:19 +0200
-Message-Id: <20220815180432.833787907@linuxfoundation.org>
+        stable@vger.kernel.org, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@rivosinc.com>, Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0071/1095] RISC-V: Update user page mapping only once during start
+Date:   Mon, 15 Aug 2022 19:51:10 +0200
+Message-Id: <20220815180432.452222140@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,35 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timur Tabi <ttabi@nvidia.com>
+From: Atish Patra <atishp@rivosinc.com>
 
-commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
+commit 133a6d1fe7d7ad8393af025c4dde379c0616661f upstream.
 
-This check determines whether a given address is part of
-image 0 or image 1.  Image 1 starts at offset image0_size,
-so that address should be included.
+Currently, riscv_pmu_event_set_period updates the userpage mapping.
+However, the caller of riscv_pmu_event_set_period should update
+the userpage mapping because the counter can not be updated/started
+from set_period function in counter overflow path.
 
-Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
-Cc: <stable@vger.kernel.org> # v4.8+
-Signed-off-by: Timur Tabi <ttabi@nvidia.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
+Invoke the perf_event_update_userpage at the caller so that it
+doesn't get invoked twice during counter start path.
+
+Fixes: f5bfa23f576f ("RISC-V: Add a perf core library for pmu drivers")
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220711174632.4186047-3-atishp@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/perf/riscv_pmu.c     |    1 -
+ drivers/perf/riscv_pmu_sbi.c |    1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
- {
- 	u32 p = *addr;
+--- a/drivers/perf/riscv_pmu.c
++++ b/drivers/perf/riscv_pmu.c
+@@ -170,7 +170,6 @@ int riscv_pmu_event_set_period(struct pe
+ 		left = (max_period >> 1);
  
--	if (*addr > bios->image0_size && bios->imaged_addr) {
-+	if (*addr >= bios->image0_size && bios->imaged_addr) {
- 		*addr -= bios->image0_size;
- 		*addr += bios->imaged_addr;
- 	}
+ 	local64_set(&hwc->prev_count, (u64)-left);
+-	perf_event_update_userpage(event);
+ 
+ 	return overflow;
+ }
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -542,6 +542,7 @@ static inline void pmu_sbi_start_overflo
+ 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
+ 				  flag, init_val, 0, 0);
+ #endif
++			perf_event_update_userpage(event);
+ 		}
+ 		ctr_ovf_mask = ctr_ovf_mask >> 1;
+ 		idx++;
 
 
