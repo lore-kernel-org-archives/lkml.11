@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A871C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E64FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbiHOXTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S244469AbiHOXTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348279AbiHOXPg (ORCPT
+        with ESMTP id S1348202AbiHOXPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:15:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B0F9D651;
-        Mon, 15 Aug 2022 13:02:38 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40C79D64A;
+        Mon, 15 Aug 2022 13:02:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27C686068D;
-        Mon, 15 Aug 2022 20:02:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F6BC433C1;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 57B73CE12E8;
         Mon, 15 Aug 2022 20:02:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABA8C433C1;
+        Mon, 15 Aug 2022 20:02:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593757;
-        bh=pGy4ntkhvh8VNmVIX73uYF4znikFfDQUAqiExqIXPK0=;
+        s=korg; t=1660593754;
+        bh=+skbTRi2GS+5nB4ubqEygyjM5jHzwVEmhibFxuKJtwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1h/Lyyh2j5i/WBmAybB2WX25UsjnzhNejdGRei0kF1x9fOjcoqQ/vqWHHz2XeD3cy
-         bq1ryvzMv6l/Oj4TfiHo28Me8B5yjRbfunMSaW22KYJ89hBxcway/fx4caB7S79/0z
-         2LP208+3KnSqewjBFk79yz6BoaTM/71hE8pT6OO8=
+        b=eDCyAGOQ8h7YpX4452KEQ/6QPMxXkaUjEHJNoAM8AVce88p2g8femmF5IXpCuXRx0
+         n5pyPftgSm+5i/DQxlc//cmvXHEVdzRmUrqfT3yURqKehazWQdVUNcWD125WLVL5/Q
+         q325L3J+Egro83eg228NvwdSl0GtdAK/I7ugBN/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Gao Chao <gaochao49@huawei.com>,
-        Douglas Anderson <dianders@chromium.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0321/1157] drm/panel: Fix build error when CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20=y && CONFIG_DRM_DISPLAY_HELPER=m
-Date:   Mon, 15 Aug 2022 19:54:37 +0200
-Message-Id: <20220815180452.487000940@linuxfoundation.org>
+Subject: [PATCH 5.18 1001/1095] dm writecache: set a default MAX_WRITEBACK_JOBS
+Date:   Mon, 15 Aug 2022 20:06:40 +0200
+Message-Id: <20220815180510.528171361@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Chao <gaochao49@huawei.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit a67664860f7833015a683ea295f7c79ac2901332 ]
+[ Upstream commit ca7dc242e358e46d963b32f9d9dd829785a9e957 ]
 
-If CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20=y && CONFIG_DRM_DISPLAY_HELPER=m,
-bulding fails:
+dm-writecache has the capability to limit the number of writeback jobs
+in progress. However, this feature was off by default. As such there
+were some out-of-memory crashes observed when lowering the low
+watermark while the cache is full.
 
-drivers/gpu/drm/panel/panel-samsung-atna33xc20.o: In function `atana33xc20_probe':
-panel-samsung-atna33xc20.c:(.text+0x744): undefined reference to
- `drm_panel_dp_aux_backlight'
-make: *** [vmlinux] Error 1
+This commit enables writeback limit by default. It is set to 256MiB or
+1/16 of total system memory, whichever is smaller.
 
-Let CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20 select DRM_DISPLAY_DP_HELPER and
-CONFIG_DRM_DISPLAY_HELPER to fix this error.
-
-Fixes: 32ce3b320343 ("drm/panel: atna33xc20: Introduce the Samsung ATNA33XC20 panel")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Gao Chao <gaochao49@huawei.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220524024551.539-1-gaochao49@huawei.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/md/dm-writecache.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 38799effd00a..4f1f004b3c54 100644
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -438,6 +438,8 @@ config DRM_PANEL_SAMSUNG_ATNA33XC20
- 	depends on OF
- 	depends on BACKLIGHT_CLASS_DEVICE
- 	depends on PM
-+	select DRM_DISPLAY_DP_HELPER
-+	select DRM_DISPLAY_HELPER
- 	select DRM_DP_AUX_BUS
- 	help
- 	  DRM panel driver for the Samsung ATNA33XC20 panel. This panel can't
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index e5acb393f70b..27557b852c94 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -22,7 +22,7 @@
+ 
+ #define HIGH_WATERMARK			50
+ #define LOW_WATERMARK			45
+-#define MAX_WRITEBACK_JOBS		0
++#define MAX_WRITEBACK_JOBS		min(0x10000000 / PAGE_SIZE, totalram_pages() / 16)
+ #define ENDIO_LATENCY			16
+ #define WRITEBACK_LATENCY		64
+ #define AUTOCOMMIT_BLOCKS_SSD		65536
 -- 
 2.35.1
 
