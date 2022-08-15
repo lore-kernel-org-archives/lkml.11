@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4173DC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3123FC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345168AbiHOXU5 (ORCPT
+        id S1344261AbiHOXUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Mon, 15 Aug 2022 19:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353456AbiHOXQe (ORCPT
+        with ESMTP id S1353434AbiHOXQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:16:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAD37CB7E;
-        Mon, 15 Aug 2022 13:03:19 -0700 (PDT)
+        Mon, 15 Aug 2022 19:16:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D771481FD;
+        Mon, 15 Aug 2022 13:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9E75BCE12C5;
-        Mon, 15 Aug 2022 20:03:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A8BC433C1;
-        Mon, 15 Aug 2022 20:03:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 920AC61299;
+        Mon, 15 Aug 2022 20:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 964AEC433D6;
+        Mon, 15 Aug 2022 20:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593796;
-        bh=BUqfmJppzrrDjgVL8ArtUJH4QAhxvWr+02ifyMxp61o=;
+        s=korg; t=1660593793;
+        bh=5Yp6igdeXS+EWXG2NTOm4EuzoPMlhsDncrfw0qxvFDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oI06dbogt1cmK4XcxyCGzNXwLxqsfm66f+OdeW14rhF0s4raAAqjwHMmFxOd0O82v
-         9Gj64LwhnctNGoCG4iAdTXhuona2THX71Eu0gPC9pL/FRyRhUCjnfYHIE3Be/QCiaf
-         OLSop5zIzRRUr9lZJcmLrw8aC4yF4hItjhzISZqE=
+        b=Z33Hk1t7duRNQxsHXNJ1H3hJqNtH4LHj+M1WRJqS3zCed6qvBeZGPSrZeOlCiZ5dX
+         AqkiWCoS4nd5ziQfUzqC0UCdTVJMNP50+tV2T267a3aK1KnbcVppfX/LxOHRMctWma
+         FsA01KmZTMxy9sOZJMUkE8GyT791ZQSqeE4LUsQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Ji <xji@analogixsemi.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0309/1157] drm/bridge: anx7625: Use DPI bus type
-Date:   Mon, 15 Aug 2022 19:54:25 +0200
-Message-Id: <20220815180452.024856616@linuxfoundation.org>
+Subject: [PATCH 5.18 1007/1095] net/9p: Initialize the iounit field during fid creation
+Date:   Mon, 15 Aug 2022 20:06:46 +0200
+Message-Id: <20220815180510.754918285@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Ji <xji@analogixsemi.com>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-[ Upstream commit a77c2af0994e24ee36c7ffb6dc852770bdf06fb1 ]
+[ Upstream commit aa7aeee169480e98cf41d83c01290a37e569be6d ]
 
-As V4L2_FWNODE_BUS_TYPE_PARALLEL not properly descript for DPI
-interface, this patch use new defined V4L2_FWNODE_BUS_TYPE_DPI for it.
+Ensure that the fid's iounit field is set to zero when a new fid is
+created. Certain 9P operations, such as OPEN and CREATE, allow the
+server to reply with an iounit size which the client code assigns to the
+p9_fid struct shortly after the fid is created by p9_fid_create(). On
+the other hand, an XATTRWALK operation doesn't allow for the server to
+specify an iounit value. The iounit field of the newly allocated p9_fid
+struct remained uninitialized in that case. Depending on allocation
+patterns, the iounit value could have been something reasonable that was
+carried over from previously freed fids or, in the worst case, could
+have been arbitrary values from non-fid related usages of the memory
+location.
 
-Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
-Signed-off-by: Xin Ji <xji@analogixsemi.com>
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-Acked-by: Robert Foss <robert.foss@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220422084720.959271-4-xji@analogixsemi.com
+The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
+after the uninitialized iounit field resulted in the typical sequence of
+two getxattr(2) syscalls, one to get the size of an xattr and another
+after allocating a sufficiently sized buffer to fit the xattr value, to
+hit an unexpected ERANGE error in the second call to getxattr(2). An
+uninitialized iounit field would sometimes force rsize to be smaller
+than the xattr value size in p9_client_read_once() and the 9P server in
+WSL refused to chunk up the READ on the attr_fid and, instead, returned
+ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
+the READ and this problem goes undetected there.
+
+Link: https://lkml.kernel.org/r/20220710141402.803295-1-tyhicks@linux.microsoft.com
+Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/9p/client.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 53a5da6c49dd..01f46d9189c1 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -1623,14 +1623,14 @@ static int anx7625_parse_dt(struct device *dev,
+diff --git a/net/9p/client.c b/net/9p/client.c
+index a36a40137caa..87cde948f628 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -886,16 +886,13 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+ 	struct p9_fid *fid;
  
- 	anx7625_get_swing_setting(dev, pdata);
+ 	p9_debug(P9_DEBUG_FID, "clnt %p\n", clnt);
+-	fid = kmalloc(sizeof(*fid), GFP_KERNEL);
++	fid = kzalloc(sizeof(*fid), GFP_KERNEL);
+ 	if (!fid)
+ 		return NULL;
  
--	pdata->is_dpi = 1; /* default dpi mode */
-+	pdata->is_dpi = 0; /* default dsi mode */
- 	pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
- 	if (!pdata->mipi_host_node) {
- 		DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
- 		return -ENODEV;
- 	}
+-	memset(&fid->qid, 0, sizeof(fid->qid));
+ 	fid->mode = -1;
+ 	fid->uid = current_fsuid();
+ 	fid->clnt = clnt;
+-	fid->rdir = NULL;
+-	fid->fid = 0;
+ 	refcount_set(&fid->count, 1);
  
--	bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
-+	bus_type = 0;
- 	mipi_lanes = MAX_LANES_SUPPORT;
- 	ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
- 	if (ep0) {
-@@ -1640,8 +1640,8 @@ static int anx7625_parse_dt(struct device *dev,
- 		mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
- 	}
- 
--	if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
--		pdata->is_dpi = 0;
-+	if (bus_type == V4L2_FWNODE_BUS_TYPE_DPI) /* bus type is DPI */
-+		pdata->is_dpi = 1;
- 
- 	pdata->mipi_lanes = mipi_lanes;
- 	if (pdata->mipi_lanes > MAX_LANES_SUPPORT || pdata->mipi_lanes <= 0)
+ 	idr_preload(GFP_KERNEL);
 -- 
 2.35.1
 
