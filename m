@@ -2,183 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C89C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAB1C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242157AbiHOLGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 07:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
+        id S242389AbiHOLHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 07:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241716AbiHOLG3 (ORCPT
+        with ESMTP id S242637AbiHOLHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 07:06:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4761425291;
-        Mon, 15 Aug 2022 04:05:50 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M5rwQ6lyszlVn7;
-        Mon, 15 Aug 2022 19:02:46 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 19:05:47 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 19:05:47 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>
-CC:     <linux@armlinux.org.uk>, <arnd@arndb.de>,
-        <linus.walleij@linaro.org>, <ardb@kernel.org>,
-        <rmk+kernel@armlinux.org.uk>, <rostedt@goodmis.org>,
-        <nick.hawkins@hpe.com>, <john@phrozen.org>, <mhiramat@kernel.org>,
-        <chenzhongjin@huawei.com>
-Subject: [RESEND PATCH] ARM: Recover kretprobes return address for EABI stack unwinder
-Date:   Mon, 15 Aug 2022 19:02:40 +0800
-Message-ID: <20220815110240.18293-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 15 Aug 2022 07:07:02 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9F01A381;
+        Mon, 15 Aug 2022 04:06:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1660561599; x=1692097599;
+  h=subject:from:to:cc:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lR4e/Yj+v+orzNhR6UdlTiIXidtC5q1zi9QQkSuY8HY=;
+  b=brFxTKdozU4ZwKl1vkU4CM8f3SwsAK2meVcSc40IslPqn/RgUo95sOSD
+   ZAH4P/x6qtE+bpqA5D1BgRU74B2E/EcgqY74IjcVC8pqBLHdcVZif4kvE
+   ZJ0HjAL1uMRTgnnk+LtYEkWuYvGn9zOTWTlvit/F3hT0plHszP3PmWcEA
+   2tmTHRZ71M2IUQqI+9obUQEgohI39LQ9O08VhObuyKqIbs1AOHpL1ziXx
+   X1QWujnv7fdPWrLAPzK8urHzI/yfuYqxPDL/BF0F7+cWC4AMp8+M2Kcel
+   VgOqytKSstXSQaxkfDhabdK1ffccJmpCu8tJfHsodsxOU8KDM5GYQC5uv
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,238,1654552800"; 
+   d="scan'208";a="25604415"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 15 Aug 2022 13:06:37 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 15 Aug 2022 13:06:37 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 15 Aug 2022 13:06:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1660561597; x=1692097597;
+  h=from:to:cc:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding:subject;
+  bh=lR4e/Yj+v+orzNhR6UdlTiIXidtC5q1zi9QQkSuY8HY=;
+  b=MpSfJWTq+0O7BL6IclojsVsPcaVvdT8LKCxMtCZFiKalaZw73OABEqz7
+   y3X2zOfCcdBOyrszIwAaw7k4JzmC2ezmyFPx2LAYd1EQKqcDRpl5n2APq
+   r9bUMs7uv6ASXhc/NAmd17xRz+48qe82wSaKiRqdgPIZQrySWM5LB5QnF
+   Ng3azSVcRKQoMaRxZLmIlO3LcWQVRSJhYxbL5JkRxeZCXGhUEM6+YRLNr
+   2ykm8EkQM0/PB+0zkekfJTpwaf/2zjuSaH5Xhq7lQYs6iB2tbzHaoQL83
+   UijQKC8oPjF/DvO3yKk8yILgYNtvhdFVYChSomUWy0cmPUPWSGhOTpR92
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,238,1654552800"; 
+   d="scan'208";a="25604414"
+Subject: Re: [PATCH] spi: lpspi: Simplify some error message
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 15 Aug 2022 13:06:37 +0200
+Received: from steina-w.localnet (unknown [10.123.49.11])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 2501D280056;
+        Mon, 15 Aug 2022 13:06:37 +0200 (CEST)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-spi@vger.kernel.org
+Date:   Mon, 15 Aug 2022 13:06:34 +0200
+Message-ID: <2796602.mvXUDI8C0e@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <253543c462b765eca40ba54c66f4e3fdf4acdeb7.1659735546.git.christophe.jaillet@wanadoo.fr>
+References: <253543c462b765eca40ba54c66f4e3fdf4acdeb7.1659735546.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'fed240d9c974 ("ARM: Recover kretprobe modified return address in stacktrace")'
-has implemented kretprobes return address recovery for FP
-unwinder, this patch makes it works for EABI unwinder.
+Am Freitag, 5. August 2022, 23:39:19 CEST schrieb Christophe JAILLET:
+> dev_err_probe() already prints the error code in a human readable way, so
+> there is no need to duplicate it as a numerical value at the end of the
+> message.
+> 
+> Fixes: 12f62a857c83 ("spi: lpspi: Silence error message upon deferred
+> probe") Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/spi/spi-fsl-lpspi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/spi/spi-fsl-lpspi.c b/drivers/spi/spi-fsl-lpspi.c
+> index 19b1f3d881b0..cbbe8bbef90a 100644
+> --- a/drivers/spi/spi-fsl-lpspi.c
+> +++ b/drivers/spi/spi-fsl-lpspi.c
+> @@ -912,7 +912,7 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
+> 
+>  	ret = devm_spi_register_controller(&pdev->dev, controller);
+>  	if (ret < 0) {
+> -		dev_err_probe(&pdev->dev, ret, "spi_register_controller 
+error: %i\n",
+> ret); +		dev_err_probe(&pdev->dev, ret, "spi_register_controller 
+error\n");
+> goto free_dma;
+>  	}
 
-It saves __kretprobe_trampoline address in LR on stack to identify
-and recover the correct return address in EABI unwinder.
+Acked-By: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-Since EABI doesn't use r11 as frame pointer, we need to use SP to
-identify different kretprobes addresses. Here the value of SP has fixed
-distance to conventional FP position so it's fine to use it.
-
-Passed kunit kprobes_test on QEMU.
-
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- arch/arm/Kconfig               |  2 +-
- arch/arm/kernel/unwind.c       | 12 ++++++++++++
- arch/arm/probes/kprobes/core.c | 20 +++++++++++++++++---
- 3 files changed, 30 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 87badeae3181..7165e314c0de 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -3,7 +3,7 @@ config ARM
- 	bool
- 	default y
- 	select ARCH_32BIT_OFF_T
--	select ARCH_CORRECT_STACKTRACE_ON_KRETPROBE if HAVE_KRETPROBES && FRAME_POINTER && !ARM_UNWIND
-+	select ARCH_CORRECT_STACKTRACE_ON_KRETPROBE if HAVE_KRETPROBES
- 	select ARCH_HAS_BINFMT_FLAT
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DEBUG_VIRTUAL if MMU
-diff --git a/arch/arm/kernel/unwind.c b/arch/arm/kernel/unwind.c
-index a37ea6c772cd..51e34fa4a4b3 100644
---- a/arch/arm/kernel/unwind.c
-+++ b/arch/arm/kernel/unwind.c
-@@ -28,6 +28,7 @@
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/list.h>
-+#include <linux/kprobes.h>
- 
- #include <asm/stacktrace.h>
- #include <asm/traps.h>
-@@ -482,6 +483,12 @@ int unwind_frame(struct stackframe *frame)
- 	frame->pc = ctrl.vrs[PC];
- 	frame->lr_addr = ctrl.lr_addr;
- 
-+#ifdef CONFIG_KRETPROBES
-+	if (is_kretprobe_trampoline(frame->pc))
-+		frame->pc = kretprobe_find_ret_addr(frame->tsk,
-+					(void *)frame->sp, &frame->kr_cur);
-+#endif
-+
- 	return URC_OK;
- }
- 
-@@ -522,6 +529,11 @@ void unwind_backtrace(struct pt_regs *regs, struct task_struct *tsk,
- 		frame.pc = thread_saved_pc(tsk);
- 	}
- 
-+#ifdef CONFIG_KRETPROBES
-+	frame.kr_cur = NULL;
-+	frame.tsk = tsk;
-+#endif
-+
- 	while (1) {
- 		int urc;
- 		unsigned long where = frame.pc;
-diff --git a/arch/arm/probes/kprobes/core.c b/arch/arm/probes/kprobes/core.c
-index 9090c3a74dcc..1435b508aa36 100644
---- a/arch/arm/probes/kprobes/core.c
-+++ b/arch/arm/probes/kprobes/core.c
-@@ -41,6 +41,16 @@
- 			   (unsigned long)(addr) +	\
- 			   (size))
- 
-+/*
-+ * Since EABI unwinder doesn't use ARM_fp as conventional fp
-+ * use ARM_sp as hint register for kretprobes.
-+ */
-+#ifdef CONFIG_ARM_UNWIND
-+#define TRAMP_FP ARM_sp
-+#else /* CONFIG_FRAME_POINTER */
-+#define TRAMP_FP ARM_fp
-+#endif
-+
- DEFINE_PER_CPU(struct kprobe *, current_kprobe) = NULL;
- DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
- 
-@@ -376,8 +386,8 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
- void __naked __kprobes __kretprobe_trampoline(void)
- {
- 	__asm__ __volatile__ (
--#ifdef CONFIG_FRAME_POINTER
- 		"ldr	lr, =__kretprobe_trampoline	\n\t"
-+#ifdef CONFIG_FRAME_POINTER
- 	/* __kretprobe_trampoline makes a framepointer on pt_regs. */
- #ifdef CONFIG_CC_IS_CLANG
- 		"stmdb	sp, {sp, lr, pc}	\n\t"
-@@ -395,8 +405,12 @@ void __naked __kprobes __kretprobe_trampoline(void)
- 		"add	fp, sp, #60		\n\t"
- #endif /* CONFIG_CC_IS_CLANG */
- #else /* !CONFIG_FRAME_POINTER */
-+		/* store SP, LR on stack and add EABI unwind hint */
-+		"stmdb  sp, {sp, lr, pc}	\n\t"
-+		".save	{sp, lr, pc}	\n\t"
- 		"sub	sp, sp, #16		\n\t"
- 		"stmdb	sp!, {r0 - r11}		\n\t"
-+		".pad	#52				\n\t"
- #endif /* CONFIG_FRAME_POINTER */
- 		"mov	r0, sp			\n\t"
- 		"bl	trampoline_handler	\n\t"
-@@ -414,14 +428,14 @@ void __naked __kprobes __kretprobe_trampoline(void)
- /* Called from __kretprobe_trampoline */
- static __used __kprobes void *trampoline_handler(struct pt_regs *regs)
- {
--	return (void *)kretprobe_trampoline_handler(regs, (void *)regs->ARM_fp);
-+	return (void *)kretprobe_trampoline_handler(regs, (void *)regs->TRAMP_FP);
- }
- 
- void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
- 				      struct pt_regs *regs)
- {
- 	ri->ret_addr = (kprobe_opcode_t *)regs->ARM_lr;
--	ri->fp = (void *)regs->ARM_fp;
-+	ri->fp = (void *)regs->TRAMP_FP;
- 
- 	/* Replace the return addr with trampoline addr. */
- 	regs->ARM_lr = (unsigned long)&__kretprobe_trampoline;
--- 
-2.17.1
 
