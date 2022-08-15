@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FBBC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 10:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16868C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 10:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242317AbiHOKJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 06:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
+        id S229967AbiHOKKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 06:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231851AbiHOKJS (ORCPT
+        with ESMTP id S231851AbiHOKKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 06:09:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D06D165A4;
-        Mon, 15 Aug 2022 03:09:17 -0700 (PDT)
-Received: from [IPV6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1] (unknown [IPv6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 76D4166016A1;
-        Mon, 15 Aug 2022 11:09:14 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1660558155;
-        bh=IxA0RyRCASMAbomjQ2FWjdpXxwbEqxEzDpKA7fGLa7Q=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=go6c+u43kUxsC/J1y+p7RUVs759KcyhNIhYyXhunR6hhypP/9riSdcsuKp9xYkp9z
-         zhxWZeGVtPTWSmnnhLpvXwmlqZUubpnEZ5Rn75kcnFUaMdCAuWKmi4tYq9T3Jwy6Y3
-         2OZZQkT9PP/tBSmpvDs5SFHnzaPpglhOQkYAV3nbdIL+5J5nE6pKG9NVZO6vUuL7Rh
-         7zCsGxGex5LS/fC62BDhwS6clWn0oioBq7sPlILr5ze//9trIq4GRbpsdv/U9Wgykt
-         qR0xDhFOJK2vibBgqzspHgpag3ADM+XPkgfYvDrP7s4iXjtWFZQYCG5Iq/UML8QGTY
-         GFlSyHuGlBNNQ==
-Message-ID: <134bce02-58d6-8553-bb73-42dfda18a595@collabora.com>
-Date:   Mon, 15 Aug 2022 13:09:11 +0300
+        Mon, 15 Aug 2022 06:10:09 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1727C1A045
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:10:08 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id l4so8489441wrm.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=b0BG6zqNuGD+/4ZeY3ZglvZEqAlCRmK7KBUEnJVhtZY=;
+        b=x0cUGTaM7DOQAD+YM58GNbMGMtq1gCmQlmnmftzyBI29oKOvOdUlbgecFPFJ1BgZ2U
+         tbjw+j+BNQVl5617D4uN38Xk/t/ozPQhcj0zP9x5zHbOMYz42hh6Y3uIIKlA1DIGv29l
+         Zz9pRvJgziux1lNhfbSJCWACFx+5s1VuYbQpW2rlkcGeNAgJjmxfj6HcX6PPlGPCR3i+
+         A54aV6J+phJTrjfuRVi5lDVuAFoJ0fxT74VtsF2UkDfld1p1oeL12QlyZUNVeQsme2Wq
+         4mxzFzFw5aifvA0PRsOep8QRrYACpu7wzjecti+yimKmReAvpqzMnBQmO6/2lCno20F1
+         ev2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=b0BG6zqNuGD+/4ZeY3ZglvZEqAlCRmK7KBUEnJVhtZY=;
+        b=2vS9OmCJa/Pv/PyTSKib3SAa9vuwOjTfU3TFUITNIj7DufF+ygcVHuJT+6AcJFKZmt
+         OnaN0TBVhEY8NfwdiZEDnonkavv2EMHTWSLiiwFI3oW+z3KZ4tHqg0+wyeEFksLVt2Ae
+         AdtKwqq4GnB5DAjedM/Zzx8njyoQRka8XOfJlth3+J2JzsapZVi+8FI0ExoKgZ8e9rPm
+         QaaMod+JZRGO1KYRv1AuC5OomVOLMVqBVnT288Vwd83R9tthgATi38E5mHMOUGxemMq/
+         EnLlW56zVFcHXSa5yGk6R3UH1/XNPGRUMIYxCDgfr9L8QvvHYXoqNzBEX2ruBM2eVEBB
+         U9AA==
+X-Gm-Message-State: ACgBeo2zw/OphERhLmHdwViOT738diTMbYpibnbEw4agDYKK0Cy0fFFf
+        RZyDDpARqXy2WnUI1LmIvOdkAw==
+X-Google-Smtp-Source: AA6agR5hAfQyfMOqfODbwifOJptkZd3sU12ygFhz9rZ+qe8JD6bOzrF7GiV/dIjhd/OOaU2EJnS8Bw==
+X-Received: by 2002:adf:fa81:0:b0:224:f260:2523 with SMTP id h1-20020adffa81000000b00224f2602523mr5305703wrr.26.1660558206570;
+        Mon, 15 Aug 2022 03:10:06 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id w5-20020adfee45000000b0020e6ce4dabdsm6693090wro.103.2022.08.15.03.10.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 03:10:06 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:10:03 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     lee@kernel.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        linux@roeck-us.net, heikki.krogerus@linux.intel.com, deller@gmx.de,
+        broonie@kernel.org, mazziesaccount@gmail.com, lgirdwood@gmail.com,
+        andriy.shevchenko@linux.intel.com, chiaen_wu@richtek.com,
+        alice_chen@richtek.com, cy_huang@richtek.com,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, Rob Herring <robh@kernel.org>
+Subject: Re: [RESEND PATCH v8 05/12] dt-bindings: backlight: Add MediaTek
+ MT6370 backlight
+Message-ID: <20220815101003.ilgbrxhsqk53i7u3@maple.lan>
+References: <20220815090125.27705-1-peterwu.pub@gmail.com>
+ <20220815090125.27705-6-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v1] drm/ttm: Refcount allocated tail pages
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>, Huang Rui <ray.huang@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Trigger Huang <Trigger.Huang@gmail.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Antonio Caggiano <antonio.caggiano@collabora.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>, kvm@vger.kernel.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org
-References: <20220815095423.11131-1-dmitry.osipenko@collabora.com>
- <8230a356-be38-f228-4a8e-95124e8e8db6@amd.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <8230a356-be38-f228-4a8e-95124e8e8db6@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815090125.27705-6-peterwu.pub@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 13:05, Christian König wrote:
-> Am 15.08.22 um 11:54 schrieb Dmitry Osipenko:
->> Higher order pages allocated using alloc_pages() aren't refcounted and
->> they
->> need to be refcounted, otherwise it's impossible to map them by KVM. This
->> patch sets the refcount of the tail pages and fixes the KVM memory
->> mapping
->> faults.
->>
->> Without this change guest virgl driver can't map host buffers into guest
->> and can't provide OpenGL 4.5 profile support to the guest. The host
->> mappings are also needed for enabling the Venus driver using host GPU
->> drivers that are utilizing TTM.
->>
->> Based on a patch proposed by Trigger Huang.
-> 
-> Well I can't count how often I have repeated this: This is an absolutely
-> clear NAK!
-> 
-> TTM pages are not reference counted in the first place and because of
-> this giving them to virgl is illegal.
+On Mon, Aug 15, 2022 at 05:01:18PM +0800, ChiaEn Wu wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+>
+> Add MT6370 backlight binding documentation.
+>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
 
-A? The first page is refcounted when allocated, the tail pages are not.
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-> Please immediately stop this completely broken approach. We have
-> discussed this multiple times now.
 
-Could you please give me a link to these discussions?
-
--- 
-Best regards,
-Dmitry
+Daniel.
