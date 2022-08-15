@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F49C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C24C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:58:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbiHOU6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
+        id S232245AbiHOU6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347007AbiHOU4L (ORCPT
+        with ESMTP id S1347018AbiHOU4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:56:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5C23C15E;
-        Mon, 15 Aug 2022 12:11:53 -0700 (PDT)
+        Mon, 15 Aug 2022 16:56:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1472DA8E;
+        Mon, 15 Aug 2022 12:11:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ACE8B810A3;
-        Mon, 15 Aug 2022 19:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AAFC433C1;
-        Mon, 15 Aug 2022 19:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3757A60BC2;
+        Mon, 15 Aug 2022 19:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41571C433C1;
+        Mon, 15 Aug 2022 19:11:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590711;
-        bh=yoQg6NKdMlJWBXAeCm7pQmdhWY0gthNK7cvvUtgPvxU=;
+        s=korg; t=1660590714;
+        bh=qd7DGm7gGOW9kfEJ46D2NiTS3ftZuyV6LqQZH+9ayTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HaEyb97Xx8tDya1NemuXuHw7u9z2tnzBiJ8tbwHY5pZkVUgA4SLUNwLCkpKcuxvqH
-         oOPkKM+PTi5Dzvcmeo9Z53LbkPL2YHjjd3qv9UL9TWy5Ms4OajZW7PLOq2uvK8O0/L
-         HzW/GVwqDL/W6Swu8G9RqoQ9At2PMcRgiRcnfqc4=
+        b=IN/vwRZReM78KSPc4Nqn6idmUscBBNNR5TMiWhK/KRLHrlZTKb1AHLMz+jUGy+P0V
+         1zTj2kpY6Ptgc42v8yLi9l7br5gAuYUVY4MyvSH0z0xTc6bn00pAiMT3o5RmlDpMYR
+         UyqLmsFSM4rCwD+v04UpxRtvz2+U9KmvW36Bvamw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0347/1095] media: atmel: atmel-sama7g5-isc: fix warning in configs without OF
-Date:   Mon, 15 Aug 2022 19:55:46 +0200
-Message-Id: <20220815180444.139026910@linuxfoundation.org>
+Subject: [PATCH 5.18 0330/1095] virtio-gpu: fix a missing check to avoid NULL dereference
+Date:   Mon, 15 Aug 2022 19:55:29 +0200
+Message-Id: <20220815180443.434668603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,57 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit b2bae4b8e637dd751d27918a6b27bd5abcd08859 ]
+[ Upstream commit bd63f11f4c3c46afec07d821f74736161ff6e526 ]
 
-All warnings (new ones prefixed by >>):
+'cache_ent' could be set NULL inside virtio_gpu_cmd_get_capset()
+and it will lead to a NULL dereference by a lately use of it
+(i.e., ptr = cache_ent->caps_cache). Fix it with a NULL check.
 
->> drivers/media/platform/atmel/atmel-sama7g5-isc.c:610:34: warning: unused variable 'microchip_xisc_of_match' [-Wunused-const-variable]
-   static const struct of_device_id microchip_xisc_of_match[] = {
-                                    ^
-   13 warnings generated.
+Fixes: 62fb7a5e10962 ("virtio-gpu: add 3d/virgl support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220327050945.1614-1-xiam0nd.tong@gmail.com
 
-vim +/microchip_xisc_of_match +610 drivers/media/platform/atmel/atmel-sama7g5-isc.c
+[ kraxel: minor codestyle fixup ]
 
-   609
- > 610  static const struct of_device_id microchip_xisc_of_match[] = {
-   611          { .compatible = "microchip,sama7g5-isc" },
-   612          { }
-   613  };
-   614  MODULE_DEVICE_TABLE(of, microchip_xisc_of_match);
-   615
-
-Fixed warning by guarding the atmel_isc_of_match by CONFIG_OF.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: c9aa973884a1 ("media: atmel: atmel-isc: add microchip-xisc driver")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama7g5-isc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/virtio/virtgpu_ioctl.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-index 07a80b08bc54..e292a8d790a3 100644
---- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-@@ -612,11 +612,13 @@ static const struct dev_pm_ops microchip_xisc_dev_pm_ops = {
- 	SET_RUNTIME_PM_OPS(xisc_runtime_suspend, xisc_runtime_resume, NULL)
- };
+diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+index c708bab555c6..10f080060923 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
++++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+@@ -579,8 +579,10 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
+ 	spin_unlock(&vgdev->display_info_lock);
  
-+#if IS_ENABLED(CONFIG_OF)
- static const struct of_device_id microchip_xisc_of_match[] = {
- 	{ .compatible = "microchip,sama7g5-isc" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, microchip_xisc_of_match);
-+#endif
+ 	/* not in cache - need to talk to hw */
+-	virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
+-				  &cache_ent);
++	ret = virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
++					&cache_ent);
++	if (ret)
++		return ret;
+ 	virtio_gpu_notify(vgdev);
  
- static struct platform_driver microchip_xisc_driver = {
- 	.probe	= microchip_xisc_probe,
+ copy_exit:
 -- 
 2.35.1
 
