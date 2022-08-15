@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAE1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4BDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351657AbiHOWtH (ORCPT
+        id S1351773AbiHOWtL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        Mon, 15 Aug 2022 18:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351904AbiHOWrU (ORCPT
+        with ESMTP id S1351932AbiHOWrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:20 -0400
+        Mon, 15 Aug 2022 18:47:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE318134BB1;
-        Mon, 15 Aug 2022 12:53:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FA5134B9C;
+        Mon, 15 Aug 2022 12:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9E9861206;
-        Mon, 15 Aug 2022 19:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDDA7C433C1;
-        Mon, 15 Aug 2022 19:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41E861178;
+        Mon, 15 Aug 2022 19:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB43FC433D6;
+        Mon, 15 Aug 2022 19:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593181;
-        bh=tJAnO42wOvjfzA6oc3W60FsYJ9qlzwG5YhKzZ2eZRWw=;
+        s=korg; t=1660593184;
+        bh=n53XmxCgwLMlqFZN8KbH07lCxfM9RjyR4HTH0+4uqBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEm3Rz3nKpaEH5as4ioz45oDqTrTreFHS+iNOmzGezZM5Xu0nvLCBK2v2BBlQ8R+K
-         ComaxQRf7O9XJVMaWDCMukz7UuUaex28iyJ8GC+UxSkyDBQcIrdXckTv57bzuxS/JS
-         zODQ5HBVWjv83TK+HaM/A4f0bmHycyuUsQ4b0mPU=
+        b=XHfhGwCZC66ElinauN7Z/MJItsmlvvDr1QfHA8TQpfFheVOSxFyHlUlDcYiLigQFp
+         oE7QTBLrvC7c1LKipf4yCIwO5lntM34O+18S+Zg9n56QRG4h3VyIqheRn6TiaMSwm/
+         gxlV9OAZdAy0R0sZ/JdCe7xKGzS1DxvRObbEv4aY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0226/1157] arm64: dts: qcom: sdm845-akatsuki: Round down l22a regulator voltage
-Date:   Mon, 15 Aug 2022 19:53:02 +0200
-Message-Id: <20220815180448.622647005@linuxfoundation.org>
+Subject: [PATCH 5.18 0908/1095] watchdog: f71808e_wdt: Add check for platform_driver_register
+Date:   Mon, 15 Aug 2022 20:05:07 +0200
+Message-Id: <20220815180506.855128263@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,44 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 4148a9eeb15152865d60b0913d96beb7ca166f9a ]
+[ Upstream commit 97d5ec548150764946f38632e62e79759832b54b ]
 
-2700000 is not a multiple of pmic4_pldo's step size of 8000 (with base
-voltage 1664000), resulting in pm8998-rpmh-regulators not probing.  Just
-as we did with MSM8998's Sony Yoshino Poplar [1], round the voltages
-down to err on the cautious side and leave a comment in place to
-document this discrepancy wrt downstream sources.
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-[1]: https://lore.kernel.org/linux-arm-msm/20220507153627.1478268-1-marijn.suijten@somainline.org/
-
-Fixes: 30a7f99befc6 ("arm64: dts: qcom: Add support for SONY Xperia XZ2 / XZ2C / XZ3 (Tama platform)")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220620211212.269956-1-marijn.suijten@somainline.org
+Fixes: 27e0fe00a5c6 ("watchdog: f71808e_wdt: refactor to platform device/driver pair")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+https://lore.kernel.org/r/20220526080303.1005063-1-jiasheng@iscas.ac.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/watchdog/f71808e_wdt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-index 8a0d94e7f598..2f5e12deaada 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-@@ -19,8 +19,9 @@ &vreg_l14a_1p8 {
- };
+diff --git a/drivers/watchdog/f71808e_wdt.c b/drivers/watchdog/f71808e_wdt.c
+index 7f59c680de25..6a16d3d0bb1e 100644
+--- a/drivers/watchdog/f71808e_wdt.c
++++ b/drivers/watchdog/f71808e_wdt.c
+@@ -634,7 +634,9 @@ static int __init fintek_wdt_init(void)
  
- &vreg_l22a_2p8 {
--	regulator-min-microvolt = <2700000>;
--	regulator-max-microvolt = <2700000>;
-+	/* Note: Round-down from 2700000 to be a multiple of PLDO step-size 8000 */
-+	regulator-min-microvolt = <2696000>;
-+	regulator-max-microvolt = <2696000>;
- };
+ 	pdata.type = ret;
  
- &vreg_l28a_2p8 {
+-	platform_driver_register(&fintek_wdt_driver);
++	ret = platform_driver_register(&fintek_wdt_driver);
++	if (ret)
++		return ret;
+ 
+ 	wdt_res.name = "superio port";
+ 	wdt_res.flags = IORESOURCE_IO;
 -- 
 2.35.1
 
