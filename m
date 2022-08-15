@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BE8C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E55C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348271AbiHOWa2 (ORCPT
+        id S1348447AbiHOWae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        Mon, 15 Aug 2022 18:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348520AbiHOWZi (ORCPT
+        with ESMTP id S1348783AbiHOWZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:25:38 -0400
+        Mon, 15 Aug 2022 18:25:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D86D126949;
-        Mon, 15 Aug 2022 12:44:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A2D12695D;
+        Mon, 15 Aug 2022 12:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36347610A3;
-        Mon, 15 Aug 2022 19:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245C9C433D6;
-        Mon, 15 Aug 2022 19:44:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A12761206;
+        Mon, 15 Aug 2022 19:44:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F003C43147;
+        Mon, 15 Aug 2022 19:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592667;
-        bh=1nyJF6tS4IDL2t+3hw/6H7P10fs3MNbMX922x6MthPw=;
+        s=korg; t=1660592670;
+        bh=fARe67w7ny+A6i7gN0xjocrEatnsn/It0giNt8OH2e4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jwvMdp5VrbFhjLEm8zCN+kV53u29vXJjgSXyn22weB6sx7zW5AG2YM3VnJm2eO/jc
-         Cy1IxaO0I1aHan/6LiemPSy8AeGv34X6BR8WA53Zvgc7r5Ex/Qph0WsNxYVCKRrRiw
-         S8ohYDJxnFAdVVrpY896ZTd9T8MXuQCqWM60gsuM=
+        b=dinWvH1usGVROLcjbq9plkjJ36WMtGAadNRaYnYFPJADaiVnPsnKa51zijsg0tGwe
+         I/bZu9TZmmsH5udAlBltr6ps4SMpTlMy+xI6W/DpzHs9SK0cxZdypvfEhaI9H9MWfT
+         LWnuu5bPG0vobN8VkOMID8e1WK8gS7sF3V/P7B2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 0145/1157] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Mon, 15 Aug 2022 19:51:41 +0200
-Message-Id: <20220815180445.432580001@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0824/1095] jbd2: fix assertion jh->b_frozen_data == NULL failure when journal aborted
+Date:   Mon, 15 Aug 2022 20:03:43 +0200
+Message-Id: <20220815180503.390849749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+[ Upstream commit 4a734f0869f970b8a9b65062ea40b09a5da9dba8 ]
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+Following process will fail assertion 'jh->b_frozen_data == NULL' in
+jbd2_journal_dirty_metadata():
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
+                   jbd2_journal_commit_transaction
+unlink(dir/a)
+ jh->b_transaction = trans1
+ jh->b_jlist = BJ_Metadata
+                    journal->j_running_transaction = NULL
+                    trans1->t_state = T_COMMIT
+unlink(dir/b)
+ handle->h_trans = trans2
+ do_get_write_access
+  jh->b_modified = 0
+  jh->b_frozen_data = frozen_buffer
+  jh->b_next_transaction = trans2
+ jbd2_journal_dirty_metadata
+  is_handle_aborted
+   is_journal_aborted // return false
 
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
+           --> jbd2 abort <--
 
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
+                     while (commit_transaction->t_buffers)
+                      if (is_journal_aborted)
+                       jbd2_journal_refile_buffer
+                        __jbd2_journal_refile_buffer
+                         WRITE_ONCE(jh->b_transaction,
+						jh->b_next_transaction)
+                         WRITE_ONCE(jh->b_next_transaction, NULL)
+                         __jbd2_journal_file_buffer(jh, BJ_Reserved)
+        J_ASSERT_JH(jh, jh->b_frozen_data == NULL) // assertion failure !
 
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The reproducer (See detail in [Link]) reports:
+ ------------[ cut here ]------------
+ kernel BUG at fs/jbd2/transaction.c:1629!
+ invalid opcode: 0000 [#1] PREEMPT SMP
+ CPU: 2 PID: 584 Comm: unlink Tainted: G        W
+ 5.19.0-rc6-00115-g4a57a8400075-dirty #697
+ RIP: 0010:jbd2_journal_dirty_metadata+0x3c5/0x470
+ RSP: 0018:ffffc90000be7ce0 EFLAGS: 00010202
+ Call Trace:
+  <TASK>
+  __ext4_handle_dirty_metadata+0xa0/0x290
+  ext4_handle_dirty_dirblock+0x10c/0x1d0
+  ext4_delete_entry+0x104/0x200
+  __ext4_unlink+0x22b/0x360
+  ext4_unlink+0x275/0x390
+  vfs_unlink+0x20b/0x4c0
+  do_unlinkat+0x42f/0x4c0
+  __x64_sys_unlink+0x37/0x50
+  do_syscall_64+0x35/0x80
+
+After journal aborting, __jbd2_journal_refile_buffer() is executed with
+holding @jh->b_state_lock, we can fix it by moving 'is_handle_aborted()'
+into the area protected by @jh->b_state_lock.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216251
+Fixes: 470decc613ab20 ("[PATCH] jbd2: initial copy of files from jbd")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Link: https://lore.kernel.org/r/20220715125152.4022726-1-chengzhihao1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/jbd2/transaction.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -153,6 +153,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
+diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
+index fcb9175016a5..49f109699933 100644
+--- a/fs/jbd2/transaction.c
++++ b/fs/jbd2/transaction.c
+@@ -1486,8 +1486,6 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	struct journal_head *jh;
+ 	int ret = 0;
  
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
+-	if (is_handle_aborted(handle))
+-		return -EROFS;
+ 	if (!buffer_jbd(bh))
+ 		return -EUCLEAN;
  
+@@ -1534,6 +1532,18 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	journal = transaction->t_journal;
+ 	spin_lock(&jh->b_state_lock);
+ 
++	if (is_handle_aborted(handle)) {
++		/*
++		 * Check journal aborting with @jh->b_state_lock locked,
++		 * since 'jh->b_transaction' could be replaced with
++		 * 'jh->b_next_transaction' during old transaction
++		 * committing if journal aborted, which may fail
++		 * assertion on 'jh->b_frozen_data == NULL'.
++		 */
++		ret = -EROFS;
++		goto out_unlock_bh;
++	}
++
+ 	if (jh->b_modified == 0) {
+ 		/*
+ 		 * This buffer's got modified and becoming part
+-- 
+2.35.1
+
 
 
