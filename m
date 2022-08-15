@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC20C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED64C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243624AbiHPAb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
+        id S1345314AbiHPAcG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240843AbiHPAaI (ORCPT
+        with ESMTP id S229939AbiHPAaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:30:08 -0400
+        Mon, 15 Aug 2022 20:30:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B0BAA4EE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D003F183122;
         Mon, 15 Aug 2022 13:35:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 014C0B811A0;
-        Mon, 15 Aug 2022 20:34:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332DBC433C1;
-        Mon, 15 Aug 2022 20:34:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A490B811A5;
+        Mon, 15 Aug 2022 20:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC55C433C1;
+        Mon, 15 Aug 2022 20:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595685;
-        bh=njgtn/5vil/3SWQGkDVgSDn7wCT+1DXns7cLGzDpX1I=;
+        s=korg; t=1660595695;
+        bh=0DD4p/4boBuJc0WUfW/tRCXt/2UI7dH2bDTdd2p/vnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/0VpBIrBOv39WBpdKr/jcJ7HYXtxUSC3WeoxtiasKa0yeM2QpDZ/ANRE/6DeiC54
-         28QY+GzhLqXxppg3AB90xUBHDjiLhNeujG1Fy3gBwPU1yPrCamqjihivDbuIj4vTAa
-         ZM12cNxHEkJwd7HY7uYMEu7qLNIgo0O+UcGVZi8w=
+        b=GyEB22cPDCcCbpDtTbQeSYL3whCy8qeACyAlObdHy55YyPESp+a0SHGaS8w56gDGS
+         bhmQZ7nJnFAa4SGOGPSFy84bsNfu0FYQRGVrKCqInY34UXFnYioe6YJ1mgxFlKduoN
+         VpHv2wVccF/g4dsCHml/+er2IU3n+Czv4iWE+h/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Zhu Yanjun <yanjun.zhu@linux.dev>,
+        Bob Pearson <rpearsonhpe@gmail.com>,
+        Md Haris Iqbal <haris.iqbal@ionos.com>,
+        Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0843/1157] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
-Date:   Mon, 15 Aug 2022 20:03:19 +0200
-Message-Id: <20220815180513.220935822@linuxfoundation.org>
+Subject: [PATCH 5.19 0828/1157] RDMA/rxe: Fix BUG: KASAN: null-ptr-deref in rxe_qp_do_cleanup
+Date:   Mon, 15 Aug 2022 20:03:04 +0200
+Message-Id: <20220815180512.603314197@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,40 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
 
-[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
+[ Upstream commit 37da51efe6eaa0560f46803c8c436a48a2084da7 ]
 
-In thunder_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+The function rxe_create_qp calls rxe_qp_from_init. If some error
+occurs, the error handler of function rxe_qp_from_init will set
+both scq and rcq to NULL.
 
-Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Then rxe_create_qp calls rxe_put to handle qp. In the end,
+rxe_qp_do_cleanup is called by rxe_put. rxe_qp_do_cleanup directly
+accesses scq and rcq before checking them. This will cause
+null-ptr-deref error.
+
+The call graph is as below:
+
+rxe_create_qp {
+  ...
+  rxe_qp_from_init {
+    ...
+  err1:
+    ...
+    qp->rcq = NULL;  <---rcq is set to NULL
+    qp->scq = NULL;  <---scq is set to NULL
+    ...
+  }
+
+qp_init:
+  rxe_put{
+    ...
+    rxe_qp_do_cleanup {
+      ...
+      atomic_dec(&qp->scq->num_wq); <--- scq is accessed
+      ...
+      atomic_dec(&qp->rcq->num_wq); <--- rcq is accessed
+    }
+}
+
+Fixes: 4703b4f0d94a ("RDMA/rxe: Enforce IBA C11-17")
+Link: https://lore.kernel.org/r/20220705225414.315478-1-yanjun.zhu@linux.dev
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
+Reviewed-by: Md Haris Iqbal <haris.iqbal@ionos.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-thunderx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/infiniband/sw/rxe/rxe_qp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
-index 76013bbbcff3..202b1d6da678 100644
---- a/drivers/mmc/host/cavium-thunderx.c
-+++ b/drivers/mmc/host/cavium-thunderx.c
-@@ -142,8 +142,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
- 				continue;
+diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
+index 22e9b85344c3..b79e1b43454e 100644
+--- a/drivers/infiniband/sw/rxe/rxe_qp.c
++++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+@@ -804,13 +804,15 @@ static void rxe_qp_do_cleanup(struct work_struct *work)
+ 	if (qp->rq.queue)
+ 		rxe_queue_cleanup(qp->rq.queue);
  
- 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
--			if (ret)
-+			if (ret) {
-+				of_node_put(child_node);
- 				goto error;
-+			}
- 		}
- 		i++;
- 	}
+-	atomic_dec(&qp->scq->num_wq);
+-	if (qp->scq)
++	if (qp->scq) {
++		atomic_dec(&qp->scq->num_wq);
+ 		rxe_put(qp->scq);
++	}
+ 
+-	atomic_dec(&qp->rcq->num_wq);
+-	if (qp->rcq)
++	if (qp->rcq) {
++		atomic_dec(&qp->rcq->num_wq);
+ 		rxe_put(qp->rcq);
++	}
+ 
+ 	if (qp->pd)
+ 		rxe_put(qp->pd);
 -- 
 2.35.1
 
