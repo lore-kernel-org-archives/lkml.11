@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D74AC28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B11C2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344136AbiHOTbI (ORCPT
+        id S1344337AbiHOTbX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        Mon, 15 Aug 2022 15:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344108AbiHOT0X (ORCPT
+        with ESMTP id S1344116AbiHOT0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:26:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900A12702;
-        Mon, 15 Aug 2022 11:42:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD3C65E1;
+        Mon, 15 Aug 2022 11:42:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A93FB81084;
-        Mon, 15 Aug 2022 18:42:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56D4C433D6;
-        Mon, 15 Aug 2022 18:42:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAAB460FEE;
+        Mon, 15 Aug 2022 18:42:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDD4C433D6;
+        Mon, 15 Aug 2022 18:42:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588933;
-        bh=xEf/k7miYj598fvT11oa+UpDHarhQ255uiyXjXf6Mp0=;
+        s=korg; t=1660588939;
+        bh=0nQaV3+rrOhMh1mRySeJDS/Al/3mQd4ZX+OAPi1Dh8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OhLDBv+YZWVby5+22o664BAJQjtVODH5vQkJlmtxYV9l2jsVM4iJjzla0sGmPu0uy
-         ORWCMWa2DAzlQGJyf9137v/vjiVRTO8QkHI5HoVJoFtye8PB8E1CVQ8O4qFBXT/wwZ
-         FfhIMDhzFdRiYDUEX20d3VvOZZzPk7Es9EpLyU0w=
+        b=lK70HW0fwLyQvAXnLmVX99kRH6aAqVy1qaZbPTqmk9urSr8PtQzsJutf7HmvwLRPg
+         iCzmYIpX3kmoal0k93KsloMJy7Qp4CvpTOvvRnLHBYH6CGvJJbiTZoR0wCzwjttCFH
+         dhWya5raQEwxZOmaGNC0pBuhc7V/sfydf0VfwlNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 528/779] PCI: tegra194: Fix Root Port interrupt handling
-Date:   Mon, 15 Aug 2022 20:02:52 +0200
-Message-Id: <20220815180359.848628295@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 530/779] HID: amd_sfh: Handle condition of "no sensors"
+Date:   Mon, 15 Aug 2022 20:02:54 +0200
+Message-Id: <20220815180359.938933696@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,113 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vidya Sagar <vidyas@nvidia.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit 6646e99bcec627e866bc84365af37942c72b4b76 ]
+[ Upstream commit 5d4d0f15657535f6a122ab26d47230b5c2b944af ]
 
-As part of Root Port interrupt handling, level-0 register is read first and
-based on the bits set in that, corresponding level-1 registers are read for
-further interrupt processing. Since both these values are currently read
-into the same 'val' variable, checking level-0 bits the second time around
-is happening on the 'val' variable value of level-1 register contents
-instead of freshly reading the level-0 value again.
+Add a check for num_hid_devices to handle special case the situation
+of "no sensors".
 
-Fix by using different variables to store level-0 and level-1 registers
-contents.
-
-Link: https://lore.kernel.org/r/20220721142052.25971-11-vidyas@nvidia.com
-Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 46 +++++++++++-----------
- 1 file changed, 22 insertions(+), 24 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_client.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 98da2578e4db..ba9f29d6bca1 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -352,15 +352,14 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 	struct tegra_pcie_dw *pcie = arg;
- 	struct dw_pcie *pci = &pcie->pci;
- 	struct pcie_port *pp = &pci->pp;
--	u32 val, tmp;
-+	u32 val, status_l0, status_l1;
- 	u16 val_w;
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_client.c b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+index 6284db50ec9b..ab149b80f86c 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_client.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+@@ -154,6 +154,8 @@ int amd_sfh_hid_client_init(struct amd_mp2_dev *privdata)
+ 	dev = &privdata->pdev->dev;
  
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
--		if (val & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
--			appl_writel(pcie, val, APPL_INTR_STATUS_L1_0_0);
--
-+	status_l0 = appl_readl(pcie, APPL_INTR_STATUS_L0);
-+	if (status_l0 & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
-+		appl_writel(pcie, status_l1, APPL_INTR_STATUS_L1_0_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
- 			/* SBR & Surprise Link Down WAR */
- 			val = appl_readl(pcie, APPL_CAR_RESET_OVRD);
- 			val &= ~APPL_CAR_RESET_OVRD_CYA_OVERRIDE_CORE_RST_N;
-@@ -376,15 +375,15 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
- 	}
+ 	cl_data->num_hid_devices = amd_mp2_get_sensor_num(privdata, &cl_data->sensor_idx[0]);
++	if (cl_data->num_hid_devices == 0)
++		return -ENODEV;
  
--	if (val & APPL_INTR_STATUS_L0_INT_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
--		if (val & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_INT_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
- 			apply_bad_link_workaround(pp);
- 		}
--		if (val & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
-@@ -396,25 +395,24 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
- 	}
- 
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
- 			dev_info(pci->dev, "CDM check complete\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
- 			dev_err(pci->dev, "CDM comparison mismatch\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
- 			dev_err(pci->dev, "CDM Logic error\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
- 		}
--		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, tmp);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
--		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", tmp);
-+		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
-+		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", val);
- 	}
- 
- 	return IRQ_HANDLED;
+ 	INIT_DELAYED_WORK(&cl_data->work, amd_sfh_work);
+ 	INIT_DELAYED_WORK(&cl_data->work_buffer, amd_sfh_work_buffer);
 -- 
 2.35.1
 
