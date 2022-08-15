@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E211C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65B3C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354011AbiHOXks (ORCPT
+        id S1354026AbiHOXkv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
+        Mon, 15 Aug 2022 19:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232665AbiHOXha (ORCPT
+        with ESMTP id S1353643AbiHOXhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:37:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209A683BF1;
-        Mon, 15 Aug 2022 13:09:53 -0700 (PDT)
+        Mon, 15 Aug 2022 19:37:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804ADBD1D6;
+        Mon, 15 Aug 2022 13:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6683560B6E;
-        Mon, 15 Aug 2022 20:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77478C43144;
-        Mon, 15 Aug 2022 20:09:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DA80B80EA9;
+        Mon, 15 Aug 2022 20:09:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6760DC433D6;
+        Mon, 15 Aug 2022 20:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594191;
-        bh=QXTGSx7ODr0ZLVLHfecCAQdyOcrmgkVGa7p1m1KvxRw=;
+        s=korg; t=1660594194;
+        bh=Sc7BqZDk1f59iz6GdHTuaXWtnjTzvHo7f/8963wEQ2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yiz1cTXLOYouXRJUfCSPTutkGEAh9bDQ5gcczP2tOiqhhVNWvkGXjR5HoXWCEg9Tx
-         tR3R/sUyu19FcjyQCgJfkxu/5xZ4nyNhV+FQJJwYHqfIaTBM0IyDFcMq6oV8JBRBZc
-         Ji7sANSAjv5itcUWUZmxoZf34JJHBTs0+o9hDK8Q=
+        b=uk/o8MJ03ySba3xU45X7uYcpcz6Dr1JGx+y/NbVYdnse7UaBNZ2HVHiTCLEePgYRx
+         ZH/BJFPWEXyStDaZ0P6tq6Ofcj84NuDln8mnWjSx9WFRo98Ke/gCN73GJTh3uREbuA
+         qIwmvDNTUC6DM9rbB0En5VlIKVLk9nWSPVX1/zeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1052/1095] ksmbd: fix wrong smbd max read/write size check
-Date:   Mon, 15 Aug 2022 20:07:31 +0200
-Message-Id: <20220815180512.596642150@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.18 1070/1095] xen-blkback: fix persistent grants negotiation
+Date:   Mon, 15 Aug 2022 20:07:49 +0200
+Message-Id: <20220815180513.313695090@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,172 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: SeongJae Park <sj@kernel.org>
 
-[ Upstream commit 7a84399e1ce3f5f2fbec3e7dd93459ba25badc2f ]
+commit fc9be616bb8f3ed9cf560308f86904f5c06be205 upstream.
 
-smb-direct max read/write size can be different with smb2 max read/write
-size. So smb2_read() can return error by wrong max read/write size check.
-This patch use smb_direct_max_read_write_size for this check in
-smb-direct read/write().
+Persistent grants feature can be used only when both backend and the
+frontend supports the feature.  The feature was always supported by
+'blkback', but commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has introduced a parameter for
+disabling it runtime.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To avoid the parameter be updated while being used by 'blkback', the
+commit caches the parameter into 'vbd->feature_gnt_persistent' in
+'xen_vbd_create()', and then check if the guest also supports the
+feature and finally updates the field in 'connect_ring()'.
+
+However, 'connect_ring()' could be called before 'xen_vbd_create()', so
+later execution of 'xen_vbd_create()' can wrongly overwrite 'true' to
+'vbd->feature_gnt_persistent'.  As a result, 'blkback' could try to use
+'persistent grants' feature even if the guest doesn't support the
+feature.
+
+This commit fixes the issue by moving the parameter value caching to
+'xen_blkif_alloc()', which allocates the 'blkif'.  Because the struct
+embeds 'vbd' object, which will be used by 'connect_ring()' later, this
+should be called before 'connect_ring()' and therefore this should be
+the right and safe place to do the caching.
+
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-2-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c        | 39 +++++++++++++++++++++++++--------------
- fs/ksmbd/transport_rdma.c |  5 +++++
- fs/ksmbd/transport_rdma.h |  2 ++
- 3 files changed, 32 insertions(+), 14 deletions(-)
+ drivers/block/xen-blkback/xenbus.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 8f86b8d6765f..6c8dd718b5db 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -6194,6 +6194,8 @@ int smb2_read(struct ksmbd_work *work)
- 	size_t length, mincount;
- 	ssize_t nbytes = 0, remain_bytes = 0;
- 	int err = 0;
-+	bool is_rdma_channel = false;
-+	unsigned int max_read_size = conn->vals->max_read_size;
- 
- 	WORK_BUFFERS(work, req, rsp);
- 
-@@ -6205,6 +6207,11 @@ int smb2_read(struct ksmbd_work *work)
- 
- 	if (req->Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE ||
- 	    req->Channel == SMB2_CHANNEL_RDMA_V1) {
-+		is_rdma_channel = true;
-+		max_read_size = get_smbd_max_read_write_size();
-+	}
-+
-+	if (is_rdma_channel == true) {
- 		unsigned int ch_offset = le16_to_cpu(req->ReadChannelInfoOffset);
- 
- 		if (ch_offset < offsetof(struct smb2_read_req, Buffer)) {
-@@ -6236,9 +6243,9 @@ int smb2_read(struct ksmbd_work *work)
- 	length = le32_to_cpu(req->Length);
- 	mincount = le32_to_cpu(req->MinimumCount);
- 
--	if (length > conn->vals->max_read_size) {
-+	if (length > max_read_size) {
- 		ksmbd_debug(SMB, "limiting read size to max size(%u)\n",
--			    conn->vals->max_read_size);
-+			    max_read_size);
- 		err = -EINVAL;
- 		goto out;
- 	}
-@@ -6270,8 +6277,7 @@ int smb2_read(struct ksmbd_work *work)
- 	ksmbd_debug(SMB, "nbytes %zu, offset %lld mincount %zu\n",
- 		    nbytes, offset, mincount);
- 
--	if (req->Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE ||
--	    req->Channel == SMB2_CHANNEL_RDMA_V1) {
-+	if (is_rdma_channel == true) {
- 		/* write data to the client using rdma channel */
- 		remain_bytes = smb2_read_rdma_channel(work, req,
- 						      work->aux_payload_buf,
-@@ -6432,8 +6438,9 @@ int smb2_write(struct ksmbd_work *work)
- 	size_t length;
- 	ssize_t nbytes;
- 	char *data_buf;
--	bool writethrough = false;
-+	bool writethrough = false, is_rdma_channel = false;
- 	int err = 0;
-+	unsigned int max_write_size = work->conn->vals->max_write_size;
- 
- 	WORK_BUFFERS(work, req, rsp);
- 
-@@ -6442,8 +6449,17 @@ int smb2_write(struct ksmbd_work *work)
- 		return smb2_write_pipe(work);
- 	}
- 
-+	offset = le64_to_cpu(req->Offset);
-+	length = le32_to_cpu(req->Length);
-+
- 	if (req->Channel == SMB2_CHANNEL_RDMA_V1 ||
- 	    req->Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE) {
-+		is_rdma_channel = true;
-+		max_write_size = get_smbd_max_read_write_size();
-+		length = le32_to_cpu(req->RemainingBytes);
-+	}
-+
-+	if (is_rdma_channel == true) {
- 		unsigned int ch_offset = le16_to_cpu(req->WriteChannelInfoOffset);
- 
- 		if (req->Length != 0 || req->DataOffset != 0 ||
-@@ -6478,12 +6494,9 @@ int smb2_write(struct ksmbd_work *work)
- 		goto out;
- 	}
- 
--	offset = le64_to_cpu(req->Offset);
--	length = le32_to_cpu(req->Length);
--
--	if (length > work->conn->vals->max_write_size) {
-+	if (length > max_write_size) {
- 		ksmbd_debug(SMB, "limiting write size to max size(%u)\n",
--			    work->conn->vals->max_write_size);
-+			    max_write_size);
- 		err = -EINVAL;
- 		goto out;
- 	}
-@@ -6491,8 +6504,7 @@ int smb2_write(struct ksmbd_work *work)
- 	if (le32_to_cpu(req->Flags) & SMB2_WRITEFLAG_WRITE_THROUGH)
- 		writethrough = true;
- 
--	if (req->Channel != SMB2_CHANNEL_RDMA_V1 &&
--	    req->Channel != SMB2_CHANNEL_RDMA_V1_INVALIDATE) {
-+	if (is_rdma_channel == false) {
- 		if ((u64)le16_to_cpu(req->DataOffset) + length >
- 		    get_rfc1002_len(work->request_buf)) {
- 			pr_err("invalid write data offset %u, smb_len %u\n",
-@@ -6518,8 +6530,7 @@ int smb2_write(struct ksmbd_work *work)
- 		/* read data from the client using rdma channel, and
- 		 * write the data.
- 		 */
--		nbytes = smb2_write_rdma_channel(work, req, fp, offset,
--						 le32_to_cpu(req->RemainingBytes),
-+		nbytes = smb2_write_rdma_channel(work, req, fp, offset, length,
- 						 writethrough);
- 		if (nbytes < 0) {
- 			err = (int)nbytes;
-diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
-index afc66b9765e7..c6af8d89b7f7 100644
---- a/fs/ksmbd/transport_rdma.c
-+++ b/fs/ksmbd/transport_rdma.c
-@@ -220,6 +220,11 @@ void init_smbd_max_io_size(unsigned int sz)
- 	smb_direct_max_read_write_size = sz;
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -157,6 +157,11 @@ static int xen_blkif_alloc_rings(struct
+ 	return 0;
  }
  
-+unsigned int get_smbd_max_read_write_size(void)
-+{
-+	return smb_direct_max_read_write_size;
-+}
++/* Enable the persistent grants feature. */
++static bool feature_persistent = true;
++module_param(feature_persistent, bool, 0644);
++MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
 +
- static inline int get_buf_page_count(void *buf, int size)
+ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
  {
- 	return DIV_ROUND_UP((uintptr_t)buf + size, PAGE_SIZE) -
-diff --git a/fs/ksmbd/transport_rdma.h b/fs/ksmbd/transport_rdma.h
-index e7b4e6790fab..77aee4e5c9dc 100644
---- a/fs/ksmbd/transport_rdma.h
-+++ b/fs/ksmbd/transport_rdma.h
-@@ -57,11 +57,13 @@ int ksmbd_rdma_init(void);
- void ksmbd_rdma_destroy(void);
- bool ksmbd_rdma_capable_netdev(struct net_device *netdev);
- void init_smbd_max_io_size(unsigned int sz);
-+unsigned int get_smbd_max_read_write_size(void);
- #else
- static inline int ksmbd_rdma_init(void) { return 0; }
- static inline int ksmbd_rdma_destroy(void) { return 0; }
- static inline bool ksmbd_rdma_capable_netdev(struct net_device *netdev) { return false; }
- static inline void init_smbd_max_io_size(unsigned int sz) { }
-+static inline unsigned int get_smbd_max_read_write_size(void) { return 0; }
- #endif
+ 	struct xen_blkif *blkif;
+@@ -181,6 +186,8 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
  
- #endif /* __KSMBD_TRANSPORT_RDMA_H__ */
--- 
-2.35.1
-
++	blkif->vbd.feature_gnt_persistent = feature_persistent;
++
+ 	return blkif;
+ }
+ 
+@@ -472,12 +479,6 @@ static void xen_vbd_free(struct xen_vbd
+ 	vbd->bdev = NULL;
+ }
+ 
+-/* Enable the persistent grants feature. */
+-static bool feature_persistent = true;
+-module_param(feature_persistent, bool, 0644);
+-MODULE_PARM_DESC(feature_persistent,
+-		"Enables the persistent grants feature");
+-
+ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+ 			  unsigned major, unsigned minor, int readonly,
+ 			  int cdrom)
+@@ -523,8 +524,6 @@ static int xen_vbd_create(struct xen_blk
+ 	if (q && blk_queue_secure_erase(q))
+ 		vbd->discard_secure = true;
+ 
+-	vbd->feature_gnt_persistent = feature_persistent;
+-
+ 	pr_debug("Successful creation of handle=%04x (dom=%u)\n",
+ 		handle, blkif->domid);
+ 	return 0;
 
 
