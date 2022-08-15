@@ -2,131 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B4FC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 00:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AACC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 00:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbiHOAl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 20:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
+        id S229502AbiHOAsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 20:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiHOAlY (ORCPT
+        with ESMTP id S229379AbiHOAsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 20:41:24 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8685F75
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 17:41:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660524084; x=1692060084;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nG0i8Kdv6v0yYaspB/vNr/mJCBvXZ6bkT/01hEiUMuk=;
-  b=jEnYKMa8mF9IuYPx+BqF/rh9gK8zAzlvLlcLey0zfMxQh6rXFXWgP5ZH
-   5468wtzxhWiQlkrCrXUDXSxZjif+9+LuGlEfrzVCVP5lkkkN/9d1M+IbN
-   Hq43oII+JsvrlvEb+Uxtu7Kmw+SgdDKzG3R0pkx624EBUQkboWC+ldyxj
-   YcucRVhEUYusPO9APobrRLOg3i/St0mT7RAcDsrzrMn5vKbC00brrH4ut
-   FXr/PZ4oGBzWChKPGsjATTe5hTsi5bq8QjrRmThecuaQhiVVMMELtrEc/
-   Oyy21BTN9kF2AWlIxBmsPJNe6k/FSuQd6fm4Py7zXjdnPrg5PwQmTWejb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="353605683"
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="353605683"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 17:41:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="606484043"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 14 Aug 2022 17:41:22 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNOAT-0000fG-2T;
-        Mon, 15 Aug 2022 00:41:21 +0000
-Date:   Mon, 15 Aug 2022 08:41:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: drivers/clocksource/timer-ti-dm.c:1039:34: warning:
- 'omap_timer_match' defined but not used
-Message-ID: <202208150851.T0MUBaQR-lkp@intel.com>
+        Sun, 14 Aug 2022 20:48:15 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BC163DA
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 17:48:14 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id p125so5530351pfp.2
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 17:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=wWwFnOcKNFFMa2I1f4N8kIQ8xtUH0qGmMJMSeLkGgUM=;
+        b=cnsvXZscMaGqqVzF6w1PgtzM7sxlYmPPO3j9kGlc8ZXTE2IFn2eOC6wD3VAoVD9TT9
+         59/vQySf7Y+OVSRyZKkC2ygpm052htPhd3WkJfrXLhOMKyQli9Nqb5Ggeo520kQOfvwS
+         a3XuDvYYcEDbYGm4d3KOWUiKffx/cYnCCpygI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=wWwFnOcKNFFMa2I1f4N8kIQ8xtUH0qGmMJMSeLkGgUM=;
+        b=cuFzb7UM5C08/+xgEJilv4wTfEw4RBlgR/x4bg6DlejdMTm7O6j5DJY+TpIx1Gu7eW
+         hefotzGuxCi2X6wRkojuyzkBPDOd7qjlAeicja4MHPMzD26UTg178k3NzOEjQuKHuZ8g
+         EnUdAA/IrTZt1usBRs02cz/wmxmiZwtbYES9MNDwqp0HlcWkISsgm3UdTgsExoi3SPP3
+         Vp6kcj+FHt7J+HQAzlIBeBNy46ZvkK4PsFMXRzK1p6zqReUWt6zHxWNt3WoItUc6QrBL
+         oG8GlDCt+SepH3UbDnFVBK5E7qJ/ZZJulaxqP+NUe+o0kZsqjFbWyVktlt7kfprpV2DV
+         fJkQ==
+X-Gm-Message-State: ACgBeo0OlH3enj43WbKurXzk2ObvxWnkSNv6O9Jjpry2gBUqClQNCqw8
+        APde0LqlifnZDRaqfb4GBLFBAw==
+X-Google-Smtp-Source: AA6agR4aD0qJ8x85FdyFAvxRUXukVhHntihHkCxj9f7loaP4b/KZC0smqwYjpLfjFAVNOfmK1vowoQ==
+X-Received: by 2002:a63:135b:0:b0:41e:928:832c with SMTP id 27-20020a63135b000000b0041e0928832cmr11526135pgt.178.1660524494049;
+        Sun, 14 Aug 2022 17:48:14 -0700 (PDT)
+Received: from dlunevwfh.roam.corp.google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
+        by smtp.gmail.com with ESMTPSA id n16-20020a170902d2d000b001618b70dcc9sm5940776plc.101.2022.08.14.17.48.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 17:48:13 -0700 (PDT)
+From:   Daniil Lunev <dlunev@chromium.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniil Lunev <dlunev@chromium.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Keoseong Park <keosung.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: [PATCH v7] ufs: core: print UFSHCD capabilities in controller's sysfs node
+Date:   Mon, 15 Aug 2022 10:48:03 +1000
+Message-Id: <20220815104739.v7.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tony,
+Allows userspace to check if Clock Scaling and Write Booster are
+supported.
 
-First bad commit (maybe != root cause):
+Signed-off-by: Daniil Lunev <dlunev@chromium.org>
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-commit: ab0bbef3ae0f6b5a3b60671cd0124d0fc4fc2567 clocksource/drivers/timer-ti-dm: Make timer selectable for ARCH_K3
-date:   3 weeks ago
-config: x86_64-buildonly-randconfig-r004-20220815 (https://download.01.org/0day-ci/archive/20220815/202208150851.T0MUBaQR-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ab0bbef3ae0f6b5a3b60671cd0124d0fc4fc2567
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout ab0bbef3ae0f6b5a3b60671cd0124d0fc4fc2567
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/clocksource/ drivers/soc/mediatek/ drivers/usb/misc/
+---
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Changes in v7:
+* Move the comment to the documnetation
+* Update the month on the documentation
 
-All warnings (new ones prefixed by >>):
+Changes in v6:
+* Add comment to clarify meaning of the "capbilities" sysfs group.
 
->> drivers/clocksource/timer-ti-dm.c:1039:34: warning: 'omap_timer_match' defined but not used [-Wunused-const-variable=]
-    1039 | static const struct of_device_id omap_timer_match[] = {
-         |                                  ^~~~~~~~~~~~~~~~
+Changes in v5:
+* Correct wording for clock scaling.
+* Correct wording for the commit message.
 
+Changes in v4:
+* Dropped crypto node per Eric Biggers mentioning it can be queried from
+  disk's queue node
 
-vim +/omap_timer_match +1039 drivers/clocksource/timer-ti-dm.c
+Changes in v3:
+* Expose each capability individually.
+* Update documentation to represent new scheme.
 
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1038  
-9725f4451a9ccd arch/arm/plat-omap/dmtimer.c Jon Hunter     2012-05-14 @1039  static const struct of_device_id omap_timer_match[] = {
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1040  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1041  		.compatible = "ti,omap2420-timer",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1042  	},
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1043  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1044  		.compatible = "ti,omap3430-timer",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1045  		.data = &omap3plus_pdata,
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1046  	},
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1047  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1048  		.compatible = "ti,omap4430-timer",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1049  		.data = &omap3plus_pdata,
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1050  	},
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1051  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1052  		.compatible = "ti,omap5430-timer",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1053  		.data = &omap3plus_pdata,
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1054  	},
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1055  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1056  		.compatible = "ti,am335x-timer",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1057  		.data = &omap3plus_pdata,
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1058  	},
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1059  	{
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1060  		.compatible = "ti,am335x-timer-1ms",
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1061  		.data = &omap3plus_pdata,
-d1c6ccfe3dbdd2 arch/arm/plat-omap/dmtimer.c Jon Hunter     2013-03-19  1062  	},
-8c0cabd7970c0d arch/arm/plat-omap/dmtimer.c Neil Armstrong 2015-10-22  1063  	{
-8c0cabd7970c0d arch/arm/plat-omap/dmtimer.c Neil Armstrong 2015-10-22  1064  		.compatible = "ti,dm816-timer",
-8c0cabd7970c0d arch/arm/plat-omap/dmtimer.c Neil Armstrong 2015-10-22  1065  		.data = &omap3plus_pdata,
-8c0cabd7970c0d arch/arm/plat-omap/dmtimer.c Neil Armstrong 2015-10-22  1066  	},
-9725f4451a9ccd arch/arm/plat-omap/dmtimer.c Jon Hunter     2012-05-14  1067  	{},
-9725f4451a9ccd arch/arm/plat-omap/dmtimer.c Jon Hunter     2012-05-14  1068  };
-9725f4451a9ccd arch/arm/plat-omap/dmtimer.c Jon Hunter     2012-05-14  1069  MODULE_DEVICE_TABLE(of, omap_timer_match);
-9725f4451a9ccd arch/arm/plat-omap/dmtimer.c Jon Hunter     2012-05-14  1070  
+Changes in v2:
+* Add documentation entry for the new sysfs node.
 
-:::::: The code at line 1039 was first introduced by commit
-:::::: 9725f4451a9ccd159b1d13f63e05896cd9bce07d ARM: OMAP: Add DT support for timer driver
+ Documentation/ABI/testing/sysfs-driver-ufs | 37 ++++++++++++++++++++++
+ drivers/ufs/core/ufs-sysfs.c               | 35 ++++++++++++++++++++
+ 2 files changed, 72 insertions(+)
 
-:::::: TO: Jon Hunter <jon-hunter@ti.com>
-:::::: CC: Jon Hunter <jon-hunter@ti.com>
-
+diff --git a/Documentation/ABI/testing/sysfs-driver-ufs b/Documentation/ABI/testing/sysfs-driver-ufs
+index 6b248abb1bd71..78f3e393d2498 100644
+--- a/Documentation/ABI/testing/sysfs-driver-ufs
++++ b/Documentation/ABI/testing/sysfs-driver-ufs
+@@ -1591,6 +1591,43 @@ Description:	This entry shows the status of HPB.
+ 
+ 		The file is read only.
+ 
++Contact:	Daniil Lunev <dlunev@chromium.org>
++What:		/sys/bus/platform/drivers/ufshcd/*/capabilities/
++What:		/sys/bus/platform/devices/*.ufs/capabilities/
++Date:		August 2022
++Description:	The group represents the effective capabilities of the
++		host-device pair. i.e. the capabilities which are enabled in the
++		driver for the specific host controller, supported by the host
++		controller and are supported and/or have compatible
++		configuration on the device side.
++
++Contact:	Daniil Lunev <dlunev@chromium.org>
++What:		/sys/bus/platform/drivers/ufshcd/*/capabilities/clock_scaling
++What:		/sys/bus/platform/devices/*.ufs/capabilities/clock_scaling
++Date:		August 2022
++Contact:	Daniil Lunev <dlunev@chromium.org>
++Description:	Indicates status of clock scaling.
++
++		== ============================
++		0  Clock scaling is not supported.
++		1  Clock scaling is supported.
++		== ============================
++
++		The file is read only.
++
++What:		/sys/bus/platform/drivers/ufshcd/*/capabilities/write_booster
++What:		/sys/bus/platform/devices/*.ufs/capabilities/write_booster
++Date:		August 2022
++Contact:	Daniil Lunev <dlunev@chromium.org>
++Description:	Indicates status of Write Booster.
++
++		== ============================
++		0  Write Booster can not be enabled.
++		1  Write Booster can be enabled.
++		== ============================
++
++		The file is read only.
++
+ What:		/sys/class/scsi_device/*/device/hpb_param_sysfs/activation_thld
+ Date:		February 2021
+ Contact:	Avri Altman <avri.altman@wdc.com>
+diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
+index 0a088b47d5570..75d4287657c80 100644
+--- a/drivers/ufs/core/ufs-sysfs.c
++++ b/drivers/ufs/core/ufs-sysfs.c
+@@ -279,6 +279,40 @@ static const struct attribute_group ufs_sysfs_default_group = {
+ 	.attrs = ufs_sysfs_ufshcd_attrs,
+ };
+ 
++static ssize_t clock_scaling_show(struct device *dev, struct device_attribute *attr,
++				  char *buf)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%d\n", ufshcd_is_clkscaling_supported(hba));
++}
++
++static ssize_t write_booster_show(struct device *dev, struct device_attribute *attr,
++				  char *buf)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%d\n", ufshcd_is_wb_allowed(hba));
++}
++
++static DEVICE_ATTR_RO(clock_scaling);
++static DEVICE_ATTR_RO(write_booster);
++
++/*
++ * See Documentation/ABI/testing/sysfs-driver-ufs for the semantics of this
++ * group.
++ */
++static struct attribute *ufs_sysfs_capabilities_attrs[] = {
++	&dev_attr_clock_scaling.attr,
++	&dev_attr_write_booster.attr,
++	NULL
++};
++
++static const struct attribute_group ufs_sysfs_capabilities_group = {
++	.name = "capabilities",
++	.attrs = ufs_sysfs_capabilities_attrs,
++};
++
+ static ssize_t monitor_enable_show(struct device *dev,
+ 				   struct device_attribute *attr, char *buf)
+ {
+@@ -1134,6 +1168,7 @@ static const struct attribute_group ufs_sysfs_attributes_group = {
+ 
+ static const struct attribute_group *ufs_sysfs_groups[] = {
+ 	&ufs_sysfs_default_group,
++	&ufs_sysfs_capabilities_group,
+ 	&ufs_sysfs_monitor_group,
+ 	&ufs_sysfs_device_descriptor_group,
+ 	&ufs_sysfs_interconnect_descriptor_group,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.0
+
