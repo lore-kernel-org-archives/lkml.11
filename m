@@ -2,75 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85D5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EACC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231301AbiHOFoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 01:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46012 "EHLO
+        id S233252AbiHOFpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 01:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHOFoV (ORCPT
+        with ESMTP id S229887AbiHOFo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 01:44:21 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E509514081;
-        Sun, 14 Aug 2022 22:44:18 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VMDjRLc_1660542252;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VMDjRLc_1660542252)
-          by smtp.aliyun-inc.com;
-          Mon, 15 Aug 2022 13:44:13 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     viro@zeniv.linux.org.uk
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] fs/kernel_read_file: Fix some kernel-doc comments
-Date:   Mon, 15 Aug 2022 13:44:11 +0800
-Message-Id: <20220815054411.68818-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Mon, 15 Aug 2022 01:44:59 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8853A14081
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 22:44:58 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id a89so8342672edf.5
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 22:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=mMUN8Qee6AU9PyduawvjEcL4SapJHncscr/7tXu4+K4=;
+        b=Tm5jgzTUgOoMSpl3LI8IvwEC8JMinl+dfgcGXsPbqWsYTOq549KDt7bK8DtuIhoqfd
+         AFlbevdMUrem9eftVh5qM2VuCXBx1BoQnw2fa/tNbicaGYRDoqkEu0Ungjj0AMd5YBbW
+         ClNV4qmZBmiFhJg0D/n2jAeIYC/xIpR7T8X3b/HXdkD9KRu3Ectb0IWkXE/e3REKDILA
+         I6mm9CK7IErvIAP/FlFTdF0vXQAq2+TTZlAHaWGYxM589WTZTAnr99Jpav2WcRfbSryo
+         7H7MeQ48OrAFyosCRasiMYIiMJE29a8VqsRZRUrgDw3KiXE5MXaoNYXdpVV3JWT1RsFK
+         5NPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=mMUN8Qee6AU9PyduawvjEcL4SapJHncscr/7tXu4+K4=;
+        b=I4+e1b+SPu12/nw45ZM+fIsbmqsNOQnGTabmpZAcFUd1KThz9ZpZpE3FaCePrjZd/F
+         P9XzVqfEwQZnpzLBjVuEQbPd9dqqoLrfzbe+PPpOH9NR9LzZdyfbVanzSbhm9gt8bLrf
+         LStewy2HsYKMIovcoA3+OM7Em3MuAnM/wdpgb0LPwGWZRNVsrs+jKmznLygameFX53Ja
+         8OhRTmjzquhHV+UI4RH6uYWTTPzlQYHjWxgEgjirLyoimuUOAnEnoZSfQdreI0Z8S70U
+         6BqV4F9hUeG/a29A/xtbxs0gJzVQlrU5V50ln1V/lCn6JThkClOe4FDHNETFI477iIce
+         PNvQ==
+X-Gm-Message-State: ACgBeo0MzVz9nqJcwU2own5C6g7/FPPirUHY9drnFBHw3X5h7XHgxVtJ
+        lqXM6DdcULFLWxDPjix9xaxaQg==
+X-Google-Smtp-Source: AA6agR4Z6hwKoMrydksGcFsvhS3VExRGPQc6QMqRIYwU9hUrshQYx5Yt//HSTO0ijqaMxIFKRRB70w==
+X-Received: by 2002:a05:6402:3408:b0:43c:2dd3:d86b with SMTP id k8-20020a056402340800b0043c2dd3d86bmr13277953edc.108.1660542297073;
+        Sun, 14 Aug 2022 22:44:57 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id r21-20020aa7cb95000000b0043cfc872e7dsm5979905edt.10.2022.08.14.22.44.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Aug 2022 22:44:56 -0700 (PDT)
+Message-ID: <feff23c6-529c-3421-c48c-463846e59630@blackwall.org>
+Date:   Mon, 15 Aug 2022 08:44:55 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next] net: rtnetlink: fix module reference count leak
+ issue in rtnetlink_rcv_msg
+Content-Language: en-US
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     idosch@nvidia.com, petrm@nvidia.com, florent.fourcot@wifirst.fr,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+References: <20220815024629.240367-1-shaozhengchao@huawei.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220815024629.240367-1-shaozhengchao@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a colon between the parameter name and description to meet the
-scripts/kernel-doc.
+On 15/08/2022 05:46, Zhengchao Shao wrote:
+> When bulk delete command is received in the rtnetlink_rcv_msg function,
+> if bulk delete is not supported, module_put is not called to release
+> the reference counting. As a result, module reference count is leaked.
+> 
+> Fixes: a6cec0bcd342("net: rtnetlink: add bulk delete support flag")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/core/rtnetlink.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index ac45328607f7..4b5b15c684ed 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -6070,6 +6070,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	if (kind == RTNL_KIND_DEL && (nlh->nlmsg_flags & NLM_F_BULK) &&
+>  	    !(flags & RTNL_FLAG_BULK_DEL_SUPPORTED)) {
+>  		NL_SET_ERR_MSG(extack, "Bulk delete is not supported");
+> +		module_put(owner);
+>  		goto err_unlock;
+>  	}
+>  
 
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1901
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- fs/kernel_read_file.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/fs/kernel_read_file.c b/fs/kernel_read_file.c
-index 5d826274570c..c4fc84e6d099 100644
---- a/fs/kernel_read_file.c
-+++ b/fs/kernel_read_file.c
-@@ -8,16 +8,16 @@
- /**
-  * kernel_read_file() - read file contents into a kernel buffer
-  *
-- * @file	file to read from
-- * @offset	where to start reading from (see below).
-- * @buf		pointer to a "void *" buffer for reading into (if
-+ * @file:	file to read from
-+ * @offset:	where to start reading from (see below).
-+ * @buf:	pointer to a "void *" buffer for reading into (if
-  *		*@buf is NULL, a buffer will be allocated, and
-  *		@buf_size will be ignored)
-- * @buf_size	size of buf, if already allocated. If @buf not
-+ * @buf_size:	size of buf, if already allocated. If @buf not
-  *		allocated, this is the largest size to allocate.
-- * @file_size	if non-NULL, the full size of @file will be
-+ * @file_size:	if non-NULL, the full size of @file will be
-  *		written here.
-- * @id		the kernel_read_file_id identifying the type of
-+ * @id:	the kernel_read_file_id identifying the type of
-  *		file contents being read (for LSMs to examine)
-  *
-  * @offset must be 0 unless both @buf and @file_size are non-NULL
--- 
-2.20.1.7.g153144c
-
+Oops, thanks.
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
