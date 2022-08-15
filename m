@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8600DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AA7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344762AbiHOV6W (ORCPT
+        id S1344987AbiHOV61 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        Mon, 15 Aug 2022 17:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350726AbiHOV4y (ORCPT
+        with ESMTP id S1350628AbiHOV4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:56:54 -0400
+        Mon, 15 Aug 2022 17:56:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDA86B8FE;
-        Mon, 15 Aug 2022 12:34:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106E810AE3A;
+        Mon, 15 Aug 2022 12:34:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 320CF610A5;
-        Mon, 15 Aug 2022 19:34:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 199F3C433D6;
-        Mon, 15 Aug 2022 19:34:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC4416113B;
+        Mon, 15 Aug 2022 19:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98E7C433D6;
+        Mon, 15 Aug 2022 19:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592068;
-        bh=xiETIeoHQ+5PvRfu22IMJsts+TQDJtrJiMNFQMjmY/o=;
+        s=korg; t=1660592052;
+        bh=g65Y0FS559Rvkft/CdVUJI8JMFlhXvOguP2WrPaED/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytMjJR3KK+g7+yLJSfmFx6VpmViXczwOhyym/JlJ16InwqRjvyXdZw5AnXqax7dTO
-         cuTIoGKATwMsyRrAHus+cOu2N28GQpjjY2qq5FA3LAe2l6+Vgbpxn/IFD9nDUtiups
-         n1hVj/DJEvxpQ4M6lXCHnSlGpK5VQ0ffhvyy4J5o=
+        b=uEw3xXVDSgdNfK95Zhe+sYnqr9qA4z+lCutQPdvl8EUgvZTStmDkrFSdZq3DwEBva
+         6sFE45sH3duSibHZI6oEQUJFqm1qBHUfvvmeT5MEp2DicPUPBkYxhNq7sZBbMtdPEg
+         YTChX4Y11fNH/LuOpv+ckYUtgJeILer8ktp1xQw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot <syzbot+31a641689d43387f05d3@syzkaller.appspotmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH 5.19 0052/1157] tty: vt: initialize unicode screen buffer
-Date:   Mon, 15 Aug 2022 19:50:08 +0200
-Message-Id: <20220815180441.527555144@linuxfoundation.org>
+        stable@vger.kernel.org, Lei Wang <lei4.wang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0023/1157] KVM: nVMX: Snapshot pre-VM-Enter BNDCFGS for !nested_run_pending case
+Date:   Mon, 15 Aug 2022 19:49:39 +0200
+Message-Id: <20220815180440.357606776@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,51 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Sean Christopherson <seanjc@google.com>
 
-commit af77c56aa35325daa2bc2bed5c2ebf169be61b86 upstream.
+commit fa578398a0ba2c079fa1170da21fa5baae0cedb2 upstream.
 
-syzbot reports kernel infoleak at vcs_read() [1], for buffer can be read
-immediately after resize operation. Initialize buffer using kzalloc().
+If a nested run isn't pending, snapshot vmcs01.GUEST_BNDCFGS irrespective
+of whether or not VM_ENTRY_LOAD_BNDCFGS is set in vmcs12.  When restoring
+nested state, e.g. after migration, without a nested run pending,
+prepare_vmcs02() will propagate nested.vmcs01_guest_bndcfgs to vmcs02,
+i.e. will load garbage/zeros into vmcs02.GUEST_BNDCFGS.
 
-  ----------
-  #include <fcntl.h>
-  #include <unistd.h>
-  #include <sys/ioctl.h>
-  #include <linux/fb.h>
+If userspace restores nested state before MSRs, then loading garbage is a
+non-issue as loading BNDCFGS will also update vmcs02.  But if usersepace
+restores MSRs first, then KVM is responsible for propagating L2's value,
+which is actually thrown into vmcs01, into vmcs02.
 
-  int main(int argc, char *argv[])
-  {
-    struct fb_var_screeninfo var = { };
-    const int fb_fd = open("/dev/fb0", 3);
-    ioctl(fb_fd, FBIOGET_VSCREENINFO, &var);
-    var.yres = 0x21;
-    ioctl(fb_fd, FBIOPUT_VSCREENINFO, &var);
-    return read(open("/dev/vcsu", O_RDONLY), &var, sizeof(var)) == -1;
-  }
-  ----------
+Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
+is all kinds of bizarre and ideally would not be supported.  Sadly, some
+VMMs do exactly that and rely on KVM to make things work.
 
-Link: https://syzkaller.appspot.com/bug?extid=31a641689d43387f05d3 [1]
-Cc: stable <stable@vger.kernel.org>
-Reported-by: syzbot <syzbot+31a641689d43387f05d3@syzkaller.appspotmail.com>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Link: https://lore.kernel.org/r/4ef053cf-e796-fb5e-58b7-3ae58242a4ad@I-love.SAKURA.ne.jp
+Note, there's still a lurking SMM bug, as propagating vmcs01.GUEST_BNDFGS
+to vmcs02 across RSM may corrupt L2's BNDCFGS.  But KVM's entire VMX+SMM
+emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
+"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+
+Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
+Fixes: 62cf9bd8118c ("KVM: nVMX: Fix emulation of VM_ENTRY_LOAD_BNDCFGS")
+Cc: stable@vger.kernel.org
+Cc: Lei Wang <lei4.wang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220614215831.3762138-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/vt/vt.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/nested.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -344,7 +344,7 @@ static struct uni_screen *vc_uniscr_allo
- 	/* allocate everything in one go */
- 	memsize = cols * rows * sizeof(char32_t);
- 	memsize += rows * sizeof(char32_t *);
--	p = vmalloc(memsize);
-+	p = vzalloc(memsize);
- 	if (!p)
- 		return NULL;
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3376,7 +3376,8 @@ enum nvmx_vmentry_status nested_vmx_ente
+ 	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
+ 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 	if (kvm_mpx_supported() &&
+-		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
++	    (!vmx->nested.nested_run_pending ||
++	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
+ 		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
  
+ 	/*
 
 
