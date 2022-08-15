@@ -2,166 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D925CC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 443ADC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241147AbiHOHe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S241227AbiHOHec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241021AbiHOHeY (ORCPT
+        with ESMTP id S241073AbiHOHe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:34:24 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D8F183AD;
-        Mon, 15 Aug 2022 00:34:23 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id p125so6052049pfp.2;
-        Mon, 15 Aug 2022 00:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=up++5EREYL75SQc53yDph90kSCluwcs4sUEUFyLB5DY=;
-        b=gZH7c2f1bPRfAynZ6wdxSOg7T8PRgU8LR1G7ucYyNw4x+vV6NpYdcpME5BDnrwfQNn
-         +okUQTIo24cahw90COH98uPiMfr9bKd4VzNePSxQemRQS9Nbb4XHiz2HFOAvRiiU9/V9
-         dItwuf5dBk9FkSh4nLjZX+3rC6/I/RNptfE9w+XBXYbxqVzbPr/HoE5lTPOw366TseFf
-         jhYxJUe6fcXXccQB2t7CZI+E8wTnZ+fEjd3jL1YBLobFHzzUnUnumV8mzmSiasLk+21X
-         n+laqZLV+KoRC9SuCr770ko+68zrzGmfmVz0KriboANEQQqy2tYjU/Mtd2DxNwUOV6wT
-         v5/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=up++5EREYL75SQc53yDph90kSCluwcs4sUEUFyLB5DY=;
-        b=db2AHmKoPkfVnhKk43ZOsEowfOLyyw4uKZ33gdrCzQGFfPeLWGTtnb61J7pS3PVQMD
-         IDqvFbZ47bil8BkkUydpiqaUtGUIRN8EQSPnHeki8euAAGWeUp4fkx7VtW3j7UiFOIU3
-         XHCC1ff2Lky1DilTymnstG7qza2xdGYZLcB19S77GklprmlKRK2wI+zjRfaXYzUJ1hXd
-         XBpcuhUKeoOY28x/myb4w7QkFvq7jxh0rvlyqV+dSvyYrDNZV/y0w49B5WNJpXMiSMZl
-         Sx8AMlhTtS4BfvT0RQyVWWnad8NQOf0Me8O6ELAJRNUEEA5ZyNudVdH/D4nEIcR/Ktku
-         xeSw==
-X-Gm-Message-State: ACgBeo3JnuObAp6/+6yINCJ7/XTFDlsrYjlfRMzDHTmfsNBXOSQzOytM
-        Z70rgyR7skq1oDjLGxTZ7+U=
-X-Google-Smtp-Source: AA6agR6V1Ptsb8psMUVEy8FccO/BOlc3X/IZzoactMIKHm4JP8UlTTnGpFAPbKOAaXJCWXKRAlxYeg==
-X-Received: by 2002:a05:6a00:4304:b0:532:3c0f:3597 with SMTP id cb4-20020a056a00430400b005323c0f3597mr15231159pfb.44.1660548863296;
-        Mon, 15 Aug 2022 00:34:23 -0700 (PDT)
-Received: from localhost.localdomain ([2402:7500:46b:2a3e:f57e:22d4:1ae1:ffd3])
-        by smtp.gmail.com with ESMTPSA id r1-20020aa79ec1000000b0053249b67215sm6088503pfq.131.2022.08.15.00.34.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Aug 2022 00:34:22 -0700 (PDT)
-From:   cy_huang <u0084500@gmail.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        sre@kernel.org
-Cc:     alina_yu@richtek.com, cy_huang@richtek.com, alinayu829@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] dt-bindings: power: supply: Add Richtek RT9471 battery charger
-Date:   Mon, 15 Aug 2022 15:34:11 +0800
-Message-Id: <1660548852-6222-2-git-send-email-u0084500@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660548852-6222-1-git-send-email-u0084500@gmail.com>
-References: <1660548852-6222-1-git-send-email-u0084500@gmail.com>
+        Mon, 15 Aug 2022 03:34:26 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD55F18B0A
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:34:24 -0700 (PDT)
+X-UUID: 959acbab234941399b0f551cce68c329-20220815
+X-CPASD-INFO: 1356cf6c575f474587e1bfe31a0696fb@eoNvVpCYZJNhV3eyg3p_b1holWGSkoW
+        Cc5tQZmdmkoKVgnxsTV5qXFWCgGpQYWNdYlV3fGtQYmBgZFB5i4Jyj1RgXmCCVHSTgHNtVWaRlg==
+X-CLOUD-ID: 1356cf6c575f474587e1bfe31a0696fb
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:168.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:270.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
+        5,AUF:3,DUF:2354,ACD:50,DCD:50,SL:0,EISP:0,AG:0,CFC:0.741,CFSR:0.041,UAT:0,RA
+        F:2,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,E
+        AF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: 959acbab234941399b0f551cce68c329-20220815
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: 959acbab234941399b0f551cce68c329-20220815
+X-User: lizhenneng@kylinos.cn
+Received: from [172.20.124.41] [(116.128.244.169)] by mailgw
+        (envelope-from <lizhenneng@kylinos.cn>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
+        with ESMTP id 1747963816; Mon, 15 Aug 2022 15:34:25 +0800
+Message-ID: <db2a43da-256d-402e-882b-c05436d4e83b@kylinos.cn>
+Date:   Mon, 15 Aug 2022 15:34:18 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] drm/radeon: add a force flush to delay work when radeon
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Cc:     David Airlie <airlied@linux.ie>, Pan Xinhui <Xinhui.Pan@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20220811072540.964309-1-lizhenneng@kylinos.cn>
+ <b23e4037-2030-32d0-d626-b5a846fcafeb@gmail.com>
+From:   =?UTF-8?B?5p2O55yf6IO9?= <lizhenneng@kylinos.cn>
+In-Reply-To: <b23e4037-2030-32d0-d626-b5a846fcafeb@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
 
-Add bindings for the Richtek RT9471 I2C controlled battery charger.
+在 2022/8/12 18:55, Christian König 写道:
+> Am 11.08.22 um 09:25 schrieb Zhenneng Li:
+>> Although radeon card fence and wait for gpu to finish processing 
+>> current batch rings,
+>> there is still a corner case that radeon lockup work queue may not be 
+>> fully flushed,
+>> and meanwhile the radeon_suspend_kms() function has called 
+>> pci_set_power_state() to
+>> put device in D3hot state.
+>
+> If I'm not completely mistaken the reset worker uses the 
+> suspend/resume functionality as well to get the hardware into a 
+> working state again.
+>
+> So if I'm not completely mistaken this here would lead to a deadlock, 
+> please double check that.
 
-Co-developed-by: Alina Yu <alina_yu@richtek.com>
-Signed-off-by: Alina Yu <alina_yu@richtek.com>
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
----
-Since v2
-- Remove the properties for interrupt controller things in the binding documentation.
-- Fix dtc error for typo, it's 'regulator-name', not 'regulator-compatible'.
-- Add regulator min/max microamp to allow otg vbus current adjustable in example.
-- Specify the active-level for charge-enable-gpios in binding example.
+We have tested many times, there are no deadlock.
 
----
- .../bindings/power/supply/richtek,rt9471.yaml      | 73 ++++++++++++++++++++++
- 1 file changed, 73 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
+In which situation, there would lead to a deadlock?
 
-diff --git a/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml b/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
-new file mode 100644
-index 00000000..9286b82
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/power/supply/richtek,rt9471.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Richtek RT9471 3A Single Cell Switching Battery charger
-+
-+maintainers:
-+  - Alina Yu <alina_yu@richtek.com>
-+  - ChiYuan Huang <cy_huang@richtek.com>
-+
-+description: |
-+  RT9471 is a switch-mode single cell Li-Ion/Li-Polymer battery charger for
-+  portable applications. It supports USB BC1.2 port detection, current and
-+  voltage regulations in both charging and boost mode.
-+
-+  Datasheet is available at
-+  https://www.richtek.com/assets/product_file/RT9471=RT9471D/DS9471D-02.pdf
-+
-+properties:
-+  compatible:
-+    const: richtek,rt9471
-+
-+  reg:
-+    maxItems: 1
-+
-+  charge-enable-gpios:
-+    description: GPIO used to turn on and off charging.
-+    maxItems: 1
-+
-+  wakeup-source: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  usb-otg-vbus-regulator:
-+    type: object
-+    unevaluatedProperties: false
-+    $ref: /schemas/regulator/regulator.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - wakeup-source
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      charger@53 {
-+        compatible = "richtek,rt9471";
-+        reg = <0x53>;
-+        charge-enable-gpios = <&gpio26 1 GPIO_ACTIVE_LOW>;
-+        wakeup-source;
-+        interrupts-extended = <&gpio_intc 32 IRQ_TYPE_EDGE_FALLING>;
-+
-+        usb-otg-vbus-regulator {
-+          regulator-name = "usb-otg-vbus";
-+          regulator-min-microvolt = <4850000>;
-+          regulator-max-microvolt = <5300000>;
-+          regulator-min-microamp = <500000>;
-+          regulator-max-microamp = <1200000>;
-+        };
-+      };
-+    };
--- 
-2.7.4
-
+>
+> Regards,
+> Christian.
+>
+>> Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
+>>> Configuration and Message requests are the only TLPs accepted by a 
+>>> Function in
+>>> the D3hot state. All other received Requests must be handled as 
+>>> Unsupported Requests,
+>>> and all received Completions may optionally be handled as Unexpected 
+>>> Completions.
+>> This issue will happen in following logs:
+>> Unable to handle kernel paging request at virtual address 
+>> 00008800e0008010
+>> CPU 0 kworker/0:3(131): Oops 0
+>> pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 
+>> Tainted: G        W
+>> pc is at si_gpu_check_soft_reset+0x3c/0x240
+>> ra is at si_dma_is_lockup+0x34/0xd0
+>> v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
+>> t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
+>> t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
+>> s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
+>> s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
+>> s6 = fff00007ef07bd98
+>> a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
+>> a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
+>> t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
+>> t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
+>> gp = ffffffff81d89690  sp = 00000000aa814126
+>> Disabling lock debugging due to kernel taint
+>> Trace:
+>> [<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
+>> [<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
+>> [<ffffffff80977010>] process_one_work+0x280/0x550
+>> [<ffffffff80977350>] worker_thread+0x70/0x7c0
+>> [<ffffffff80977410>] worker_thread+0x130/0x7c0
+>> [<ffffffff80982040>] kthread+0x200/0x210
+>> [<ffffffff809772e0>] worker_thread+0x0/0x7c0
+>> [<ffffffff80981f8c>] kthread+0x14c/0x210
+>> [<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
+>> [<ffffffff80981e40>] kthread+0x0/0x210
+>>   Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8 40230101
+>>   <88210000> 4821ed21
+>> So force lockup work queue flush to fix this problem.
+>>
+>> Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+>> ---
+>>   drivers/gpu/drm/radeon/radeon_device.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/radeon/radeon_device.c 
+>> b/drivers/gpu/drm/radeon/radeon_device.c
+>> index 15692cb241fc..e608ca26780a 100644
+>> --- a/drivers/gpu/drm/radeon/radeon_device.c
+>> +++ b/drivers/gpu/drm/radeon/radeon_device.c
+>> @@ -1604,6 +1604,9 @@ int radeon_suspend_kms(struct drm_device *dev, 
+>> bool suspend,
+>>           if (r) {
+>>               /* delay GPU reset to resume */
+>>               radeon_fence_driver_force_completion(rdev, i);
+>> +        } else {
+>> +            /* finish executing delayed work */
+>> + flush_delayed_work(&rdev->fence_drv[i].lockup_work);
+>>           }
+>>       }
+>
