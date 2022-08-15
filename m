@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86372C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960C5C2BBC5
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348189AbiHPAwA (ORCPT
+        id S1348341AbiHPAwF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        Mon, 15 Aug 2022 20:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349245AbiHPAqd (ORCPT
+        with ESMTP id S1349372AbiHPAqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5F9178C19;
-        Mon, 15 Aug 2022 13:45:19 -0700 (PDT)
+        Mon, 15 Aug 2022 20:46:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4996FB5E6B;
+        Mon, 15 Aug 2022 13:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E15DF61262;
-        Mon, 15 Aug 2022 20:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD3C9C433B5;
-        Mon, 15 Aug 2022 20:45:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C90CB80EB1;
+        Mon, 15 Aug 2022 20:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11E8C433D6;
+        Mon, 15 Aug 2022 20:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596318;
-        bh=BWkT5Y8yauvayeEYP3032GkgL1q2sJJNLjErP6LavCU=;
+        s=korg; t=1660596312;
+        bh=rBDcUaW6y7qrMZnKzZg6t/2s8g0030ERifBQbxVCGxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K9Kq1T61Z/1O2gfSpnvxZJQt+urzSogw3N4hy67W7c58k3tl+c7A9Adi+H4P2SQyf
-         tezi1z5EYSicagV4d+25W5DSHM04Ko4XDSGmKb/ZnYOPLQTDZ1Wl+zNMUwQyi8v4V9
-         ijkWsWO5JTdLtUvFsCe50SC7Y4Pda+jyxFmG7JfM=
+        b=Oi2Ad80h9+Rm15rgTSKLZeUrMulW0k7Z2MYWtEMFDU5QFAtbVtaahhQiAYlj/5K3N
+         +0zYU1NSzdzwrDh4g8uZIAtblMtc7kODFfmeTvPEC0YFE5fXt3bpH3Jj0mp404X8uf
+         AYic8+GuF5JZ7e3bQjNS5+GiImjaRQrUTT3mtXvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naresh Bannoth <nbannoth@in.ibm.com>,
-        Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>,
-        Quinn Tran <qutran@marvell.com>,
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1040/1157] scsi: qla2xxx: Fix erroneous mailbox timeout after PCI error injection
-Date:   Mon, 15 Aug 2022 20:06:36 +0200
-Message-Id: <20220815180521.594043203@linuxfoundation.org>
+Subject: [PATCH 5.19 1038/1157] scsi: qla2xxx: Fix crash due to stale SRB access around I/O timeouts
+Date:   Mon, 15 Aug 2022 20:06:34 +0200
+Message-Id: <20220815180521.511042881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,61 +50,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit f260694e6463b63ae550aad25ddefe94cb1904da upstream.
+commit c39587bc0abaf16593f7abcdf8aeec3c038c7d52 upstream.
 
-Clear wait for mailbox interrupt flag to prevent stale mailbox:
+Ensure SRB is returned during I/O timeout error escalation. If that is not
+possible fail the escalation path.
 
-Feb 22 05:22:56 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-500a:4: LOOP UP detected (16 Gbps).
-Feb 22 05:22:59 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-d04c:4: MBX Command timeout for cmd 69, ...
+Following crash stack was seen:
 
-To fix the issue, driver needs to clear the MBX_INTR_WAIT flag on purging
-the mailbox. When the stale mailbox completion does arrive, it will be
-dropped.
+BUG: unable to handle kernel paging request at 0000002f56aa90f8
+IP: qla_chk_edif_rx_sa_delete_pending+0x14/0x30 [qla2xxx]
+Call Trace:
+ ? qla2x00_status_entry+0x19f/0x1c50 [qla2xxx]
+ ? qla2x00_start_sp+0x116/0x1170 [qla2xxx]
+ ? dma_pool_alloc+0x1d6/0x210
+ ? mempool_alloc+0x54/0x130
+ ? qla24xx_process_response_queue+0x548/0x12b0 [qla2xxx]
+ ? qla_do_work+0x2d/0x40 [qla2xxx]
+ ? process_one_work+0x14c/0x390
 
-Link: https://lore.kernel.org/r/20220616053508.27186-11-njavali@marvell.com
-Fixes: b6faaaf796d7 ("scsi: qla2xxx: Serialize mailbox request")
-Cc: Naresh Bannoth <nbannoth@in.ibm.com>
-Cc: Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>
+Link: https://lore.kernel.org/r/20220616053508.27186-6-njavali@marvell.com
+Fixes: d74595278f4a ("scsi: qla2xxx: Add multiple queue pair functionality.")
 Cc: stable@vger.kernel.org
-Reported-by: Naresh Bannoth <nbannoth@in.ibm.com>
-Tested-by: Naresh Bannoth <nbannoth@in.ibm.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_mbx.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/scsi/qla2xxx/qla_os.c |   43 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -276,6 +276,12 @@ qla2x00_mailbox_command(scsi_qla_host_t
- 		atomic_inc(&ha->num_pend_mbx_stage3);
- 		if (!wait_for_completion_timeout(&ha->mbx_intr_comp,
- 		    mcp->tov * HZ)) {
-+			ql_dbg(ql_dbg_mbx, vha, 0x117a,
-+			    "cmd=%x Timeout.\n", command);
-+			spin_lock_irqsave(&ha->hardware_lock, flags);
-+			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
-+			spin_unlock_irqrestore(&ha->hardware_lock, flags);
-+
- 			if (chip_reset != ha->chip_reset) {
- 				eeh_delay = ha->flags.eeh_busy ? 1 : 0;
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -1337,21 +1337,20 @@ qla2xxx_eh_abort(struct scsi_cmnd *cmd)
+ /*
+  * Returns: QLA_SUCCESS or QLA_FUNCTION_FAILED.
+  */
+-int
+-qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *vha, unsigned int t,
+-	uint64_t l, enum nexus_wait_type type)
++static int
++__qla2x00_eh_wait_for_pending_commands(struct qla_qpair *qpair, unsigned int t,
++				       uint64_t l, enum nexus_wait_type type)
+ {
+ 	int cnt, match, status;
+ 	unsigned long flags;
+-	struct qla_hw_data *ha = vha->hw;
+-	struct req_que *req;
++	scsi_qla_host_t *vha = qpair->vha;
++	struct req_que *req = qpair->req;
+ 	srb_t *sp;
+ 	struct scsi_cmnd *cmd;
  
-@@ -288,12 +294,6 @@ qla2x00_mailbox_command(scsi_qla_host_t
- 				rval = QLA_ABORTED;
- 				goto premature_exit;
- 			}
--			ql_dbg(ql_dbg_mbx, vha, 0x117a,
--			    "cmd=%x Timeout.\n", command);
--			spin_lock_irqsave(&ha->hardware_lock, flags);
--			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
--			spin_unlock_irqrestore(&ha->hardware_lock, flags);
--
- 		} else if (ha->flags.purge_mbox ||
- 		    chip_reset != ha->chip_reset) {
- 			eeh_delay = ha->flags.eeh_busy ? 1 : 0;
+ 	status = QLA_SUCCESS;
+ 
+-	spin_lock_irqsave(&ha->hardware_lock, flags);
+-	req = vha->req;
++	spin_lock_irqsave(qpair->qp_lock_ptr, flags);
+ 	for (cnt = 1; status == QLA_SUCCESS &&
+ 		cnt < req->num_outstanding_cmds; cnt++) {
+ 		sp = req->outstanding_cmds[cnt];
+@@ -1378,12 +1377,32 @@ qla2x00_eh_wait_for_pending_commands(scs
+ 		if (!match)
+ 			continue;
+ 
+-		spin_unlock_irqrestore(&ha->hardware_lock, flags);
++		spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
+ 		status = qla2x00_eh_wait_on_command(cmd);
+-		spin_lock_irqsave(&ha->hardware_lock, flags);
++		spin_lock_irqsave(qpair->qp_lock_ptr, flags);
+ 	}
+-	spin_unlock_irqrestore(&ha->hardware_lock, flags);
++	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
++
++	return status;
++}
++
++int
++qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *vha, unsigned int t,
++				     uint64_t l, enum nexus_wait_type type)
++{
++	struct qla_qpair *qpair;
++	struct qla_hw_data *ha = vha->hw;
++	int i, status = QLA_SUCCESS;
+ 
++	status = __qla2x00_eh_wait_for_pending_commands(ha->base_qpair, t, l,
++							type);
++	for (i = 0; status == QLA_SUCCESS && i < ha->max_qpairs; i++) {
++		qpair = ha->queue_pair_map[i];
++		if (!qpair)
++			continue;
++		status = __qla2x00_eh_wait_for_pending_commands(qpair, t, l,
++								type);
++	}
+ 	return status;
+ }
+ 
+@@ -1420,7 +1439,7 @@ qla2xxx_eh_device_reset(struct scsi_cmnd
+ 		return err;
+ 
+ 	if (fcport->deleted)
+-		return SUCCESS;
++		return FAILED;
+ 
+ 	ql_log(ql_log_info, vha, 0x8009,
+ 	    "DEVICE RESET ISSUED nexus=%ld:%d:%llu cmd=%p.\n", vha->host_no,
+@@ -1488,7 +1507,7 @@ qla2xxx_eh_target_reset(struct scsi_cmnd
+ 		return err;
+ 
+ 	if (fcport->deleted)
+-		return SUCCESS;
++		return FAILED;
+ 
+ 	ql_log(ql_log_info, vha, 0x8009,
+ 	    "TARGET RESET ISSUED nexus=%ld:%d cmd=%p.\n", vha->host_no,
 
 
