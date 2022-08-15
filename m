@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C11C7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C648BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346189AbiHOVYV (ORCPT
+        id S1346306AbiHOVY1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
+        Mon, 15 Aug 2022 17:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345754AbiHOVRu (ORCPT
+        with ESMTP id S1345934AbiHOVSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:50 -0400
+        Mon, 15 Aug 2022 17:18:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E519E3942;
-        Mon, 15 Aug 2022 12:21:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEEA59273;
+        Mon, 15 Aug 2022 12:21:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D63AC60EF0;
-        Mon, 15 Aug 2022 19:21:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1EF8C433D6;
-        Mon, 15 Aug 2022 19:21:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27DDA60EF0;
+        Mon, 15 Aug 2022 19:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16797C433D6;
+        Mon, 15 Aug 2022 19:21:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591271;
-        bh=iZFd9z97YtMV3WCy5/Eyrxb+ZVXfH1kFgooGwXNH438=;
+        s=korg; t=1660591274;
+        bh=rrQeGSVgnu2T3cpBdnktpWmYUw4Kt7wbOPiN/PrBLLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zgPJdUJZwPTmiFMevXBjvzIOE9S2+9aSLWt79IsQhVwZC0qyiGyv6BnTioOlaVakI
-         n14Hy9S+WxvXSCNMYaukVfxhxK1nR4MoHeGsy0rurIRs4bBkqWhOo49QU1Fvjt1knx
-         S/ha57msdc48FMKJtCfocdPJEp8SN1mPiQtXxuWs=
+        b=i8WcICYCRchjkgS7aY0V+hvl4ikBnqakFd3aYQjtHnHYp1NLjxLeh03j5CSDJ2W/8
+         Y1zJ2VpshAKyV9NpAv69JCxxzIMW61WoixRHSkfz5CfgWeipvqC+/YI/3WHIAA0YZ9
+         E+LWXYNYZsPiYKoPp8BUVKNtXgB8KVlGorvssK3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Manning <mvrmanning@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Ying Hsu <yinghsu@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0526/1095] net: allow unbound socket for packets in VRF when tcp_l3mdev_accept set
-Date:   Mon, 15 Aug 2022 19:58:45 +0200
-Message-Id: <20220815180451.317397256@linuxfoundation.org>
+Subject: [PATCH 5.18 0500/1095] Bluetooth: Add default wakeup callback for HCI UART driver
+Date:   Mon, 15 Aug 2022 19:58:19 +0200
+Message-Id: <20220815180450.218033541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,123 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Manning <mvrmanning@gmail.com>
+From: Ying Hsu <yinghsu@chromium.org>
 
-[ Upstream commit 944fd1aeacb627fa617f85f8e5a34f7ae8ea4d8e ]
+[ Upstream commit bee5395ced44c5a312348557eb2dfb0c2a7bfaa2 ]
 
-The commit 3c82a21f4320 ("net: allow binding socket in a VRF when
-there's an unbound socket") changed the inet socket lookup to avoid
-packets in a VRF from matching an unbound socket. This is to ensure the
-necessary isolation between the default and other VRFs for routing and
-forwarding. VRF-unaware processes running in the default VRF cannot
-access another VRF and have to be run with 'ip vrf exec <vrf>'. This is
-to be expected with tcp_l3mdev_accept disabled, but could be reallowed
-when this sysctl option is enabled. So instead of directly checking dif
-and sdif in inet[6]_match, here call inet_sk_bound_dev_eq(). This
-allows a match on unbound socket for non-zero sdif i.e. for packets in
-a VRF, if tcp_l3mdev_accept is enabled.
+Bluetooth HCI devices indicate if they are able to wakeup in the wakeup
+callback since 'commit 4539ca67fe8e ("Bluetooth: Rename driver
+.prevent_wake to .wakeup")'. This patch adds a default wakeup callback
+for Bluetooth HCI UAR devices. It assumes Bluetooth HCI UART devices are
+wakeable for backward compatibility. For those who need a customized
+behavior, one can override it before calling hci_uart_register_device().
 
-Fixes: 3c82a21f4320 ("net: allow binding socket in a VRF when there's an unbound socket")
-Signed-off-by: Mike Manning <mvrmanning@gmail.com>
-Link: https://lore.kernel.org/netdev/a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de/
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 4539ca67fe8e ("Bluetooth: Rename driver .prevent_wake to .wakeup")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+Reviewed-by: Alain Michaud <alainm@chromium.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/inet6_hashtables.h |  7 +++----
- include/net/inet_hashtables.h  | 19 +++----------------
- include/net/inet_sock.h        | 11 +++++++++++
- 3 files changed, 17 insertions(+), 20 deletions(-)
+ drivers/bluetooth/hci_serdev.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-index f259e1ae14ba..56f1286583d3 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -110,8 +110,6 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 			       const __portpair ports,
- 			       const int dif, const int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_family != AF_INET6 ||
- 	    sk->sk_portpair != ports ||
-@@ -119,8 +117,9 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
- 		return false;
- 
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- #endif /* IS_ENABLED(CONFIG_IPV6) */
- 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 825ad1d06d05..53c22b64e972 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -203,17 +203,6 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
- 	hashinfo->ehash_locks = NULL;
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 4cda890ce647..c0e5f42ec6b7 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -231,6 +231,15 @@ static int hci_uart_setup(struct hci_dev *hdev)
+ 	return 0;
  }
  
--static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
--					int dif, int sdif)
--{
--#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
--	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
--				 bound_dev_if, dif, sdif);
--#else
--	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
--#endif
--}
--
- struct inet_bind_bucket *
- inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
- 			struct inet_bind_hashbucket *head,
-@@ -311,16 +300,14 @@ static inline bool INET_MATCH(struct net *net, const struct sock *sk,
- 			      const __addrpair cookie, const __portpair ports,
- 			      int dif, int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_portpair != ports ||
- 	    sk->sk_addrpair != cookie)
- 	        return false;
- 
--	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- 
- /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index 6395f6b9a5d2..bf5654ce711e 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -149,6 +149,17 @@ static inline bool inet_bound_dev_eq(bool l3mdev_accept, int bound_dev_if,
- 	return bound_dev_if == dif || bound_dev_if == sdif;
- }
- 
-+static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
-+					int dif, int sdif)
++/* Check if the device is wakeable */
++static bool hci_uart_wakeup(struct hci_dev *hdev)
 +{
-+#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
-+	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
-+				 bound_dev_if, dif, sdif);
-+#else
-+	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
-+#endif
++	/* HCI UART devices are assumed to be wakeable by default.
++	 * Implement wakeup callback to override this behavior.
++	 */
++	return true;
 +}
 +
- struct inet_cork {
- 	unsigned int		flags;
- 	__be32			addr;
+ /** hci_uart_write_wakeup - transmit buffer wakeup
+  * @serdev: serial device
+  *
+@@ -342,6 +351,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	hdev->flush = hci_uart_flush;
+ 	hdev->send  = hci_uart_send_frame;
+ 	hdev->setup = hci_uart_setup;
++	if (!hdev->wakeup)
++		hdev->wakeup = hci_uart_wakeup;
+ 	SET_HCIDEV_DEV(hdev, &hu->serdev->dev);
+ 
+ 	if (test_bit(HCI_UART_NO_SUSPEND_NOTIFIER, &hu->flags))
 -- 
 2.35.1
 
