@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AE2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA7BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244869AbiHOWZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S1348160AbiHOWZM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350798AbiHOWSf (ORCPT
+        with ESMTP id S1350801AbiHOWSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:18:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6898865577;
-        Mon, 15 Aug 2022 12:41:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4569465649;
+        Mon, 15 Aug 2022 12:42:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E386068D;
-        Mon, 15 Aug 2022 19:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DBEC433C1;
-        Mon, 15 Aug 2022 19:41:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07A93B80EAB;
+        Mon, 15 Aug 2022 19:42:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE97C433D6;
+        Mon, 15 Aug 2022 19:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592517;
-        bh=6KB1K5LhbCZrhA4TaHgr+wvgq+MkkC0XdMw8XVVZ2RQ=;
+        s=korg; t=1660592520;
+        bh=xAgZioIB4x9uXAgmjXbNJvNDtCFdqwR8DK2FLyFyvU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oMoBi+7IcVzf5z4y1jiE+kg3WxuQb1EU5ju+jCknV3xsuJeC906gR8JTQkhJ7zs4C
-         xaBeexnJ/G/lzvlZwIg5JCesRGgXnliT9LzGuIhXeFnSLrvxkmT99luccemimPJc1C
-         vO0jvmSatjQGmQBQqIk39U93IyX9FORiephU0RWg=
+        b=Syj/4tbByufIJXlrPyQFaz/jDUTSXLVuPAsAJnxRK0v04sTVXYNF9lUJemfiSI4lr
+         Ed/7wegdkY2at2b0mcndJT4zcM517UugYXoGNeEIiCyISQ8ZqL+jC7UwH4Dp/CZojL
+         a5eqsPqMlH8lg3iRtiZ6m70OZxCCdryl3aON5snU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0802/1095] RDMA/srpt: Duplicate port name members
-Date:   Mon, 15 Aug 2022 20:03:21 +0200
-Message-Id: <20220815180502.442574572@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 5.19 0124/1157] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
+Date:   Mon, 15 Aug 2022 19:51:20 +0200
+Message-Id: <20220815180444.565236881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,85 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit b03b1ae2a3125d4475452e4f19f5d3a6e910ff6e ]
+commit e5a16a5c4602c119262f350274021f90465f479d upstream.
 
-Prepare for decoupling the lifetimes of struct srpt_port and struct
-srpt_port_id by duplicating the port name into struct srpt_port.
+test_bit(), as any other bitmap op, takes `unsigned long *` as a
+second argument (pointer to the actual bitmap), as any bitmap
+itself is an array of unsigned longs. However, the ia64_get_irr()
+code passes a ref to `u64` as a second argument.
+This works with the ia64 bitops implementation due to that they
+have `void *` as the second argument and then cast it later on.
+This works with the bitmap API itself due to that `unsigned long`
+has the same size on ia64 as `u64` (`unsigned long long`), but
+from the compiler PoV those two are different.
+Define @irr as `unsigned long` to fix that. That implies no
+functional changes. Has been hidden for 16 years!
 
-Link: https://lore.kernel.org/r/20220727193415.1583860-2-bvanassche@acm.org
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
+Cc: stable@vger.kernel.org # 2.6.16+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/ulp/srpt/ib_srpt.c |  9 ++++++---
- drivers/infiniband/ulp/srpt/ib_srpt.h | 10 +++++++---
- 2 files changed, 13 insertions(+), 6 deletions(-)
+ arch/ia64/include/asm/processor.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
-index f86ee1c4b970..8253d55b9c26 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.c
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
-@@ -566,14 +566,17 @@ static int srpt_refresh_port(struct srpt_port *sport)
- 		return ret;
+--- a/arch/ia64/include/asm/processor.h
++++ b/arch/ia64/include/asm/processor.h
+@@ -538,7 +538,7 @@ ia64_get_irr(unsigned int vector)
+ {
+ 	unsigned int reg = vector / 64;
+ 	unsigned int bit = vector % 64;
+-	u64 irr;
++	unsigned long irr;
  
- 	sport->port_guid_id.wwn.priv = sport;
--	srpt_format_guid(sport->port_guid_id.name,
--			 sizeof(sport->port_guid_id.name),
-+	srpt_format_guid(sport->guid_name, ARRAY_SIZE(sport->guid_name),
- 			 &sport->gid.global.interface_id);
-+	memcpy(sport->port_guid_id.name, sport->guid_name,
-+	       ARRAY_SIZE(sport->guid_name));
- 	sport->port_gid_id.wwn.priv = sport;
--	snprintf(sport->port_gid_id.name, sizeof(sport->port_gid_id.name),
-+	snprintf(sport->gid_name, ARRAY_SIZE(sport->gid_name),
- 		 "0x%016llx%016llx",
- 		 be64_to_cpu(sport->gid.global.subnet_prefix),
- 		 be64_to_cpu(sport->gid.global.interface_id));
-+	memcpy(sport->port_gid_id.name, sport->gid_name,
-+	       ARRAY_SIZE(sport->gid_name));
- 
- 	if (rdma_protocol_iwarp(sport->sdev->device, sport->port))
- 		return 0;
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
-index 76e66f630c17..3844a7058559 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.h
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
-@@ -376,7 +376,7 @@ struct srpt_tpg {
- };
- 
- /**
-- * struct srpt_port_id - information about an RDMA port name
-+ * struct srpt_port_id - LIO RDMA port information
-  * @mutex:	Protects @tpg_list changes.
-  * @tpg_list:	TPGs associated with the RDMA port name.
-  * @wwn:	WWN associated with the RDMA port name.
-@@ -402,8 +402,10 @@ struct srpt_port_id {
-  * @lid:       cached value of the port's lid.
-  * @gid:       cached value of the port's gid.
-  * @work:      work structure for refreshing the aforementioned cached values.
-- * @port_guid_id: target port GUID
-- * @port_gid_id: target port GID
-+ * @guid_name: port name in GUID format.
-+ * @port_guid_id: LIO target port information for the port name in GUID format.
-+ * @gid_name:  port name in GID format.
-+ * @port_gid_id: LIO target port information for the port name in GID format.
-  * @port_attrib:   Port attributes that can be accessed through configfs.
-  * @refcount:	   Number of objects associated with this port.
-  * @freed_channels: Completion that will be signaled once @refcount becomes 0.
-@@ -419,7 +421,9 @@ struct srpt_port {
- 	u32			lid;
- 	union ib_gid		gid;
- 	struct work_struct	work;
-+	char			guid_name[64];
- 	struct srpt_port_id	port_guid_id;
-+	char			gid_name[64];
- 	struct srpt_port_id	port_gid_id;
- 	struct srpt_port_attrib port_attrib;
- 	atomic_t		refcount;
--- 
-2.35.1
-
+ 	switch (reg) {
+ 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
 
 
