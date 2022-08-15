@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB71C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA4FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244107AbiHOSt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S244115AbiHOSuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243519AbiHOSom (ORCPT
+        with ESMTP id S243588AbiHOSow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:44:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B0D2FFE7;
-        Mon, 15 Aug 2022 11:27:21 -0700 (PDT)
+        Mon, 15 Aug 2022 14:44:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2523C30540;
+        Mon, 15 Aug 2022 11:27:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62E24B8107B;
-        Mon, 15 Aug 2022 18:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9495DC433D6;
-        Mon, 15 Aug 2022 18:27:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DB9BB8107D;
+        Mon, 15 Aug 2022 18:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA10C433D6;
+        Mon, 15 Aug 2022 18:27:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588038;
-        bh=hlUezt4dDe5NSypX1nefqTVbi2t5LWEChRAf2JC1sIc=;
+        s=korg; t=1660588044;
+        bh=YZkmjwX7Z1FgL8qC8zGujWuyNfh/J5kjf4QiARB3t4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X+t/oMifAe1S47VKneEAstlcIgWcoC8Oyc5Ip9e2lf0KNp5PF24yOOtdmNsqfDja4
-         h/Jhz8ujZO7bPL3ac3IfWJbdHnGMZEtR7uZA6CmUCBj1oDF/5WwuvbVwtKsvIp/zx2
-         l5VJCjaFdEbYcEReHvKTXFTGEA9taZUQffCFDCy4=
+        b=yDtKmhIOaLmI9l/7mFm/bX9viVc/CDlz5zKvBk8vCgWjHknPV3hu71ilmFHtAF/QU
+         Iq0Mf5BmgxSZTFR9sHYXAwbJWDxRPGPVXwbSKofnAq3ghP9huCmWBh00b9HumGNrfh
+         NnDclh9ExMQytP2uaZF41NimL/FPnHs4mO0pzcwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 275/779] media: imx-jpeg: Handle source change in a function
-Date:   Mon, 15 Aug 2022 19:58:39 +0200
-Message-Id: <20220815180349.062957517@linuxfoundation.org>
+Subject: [PATCH 5.15 277/779] media: imx-jpeg: Align upwards buffer size
+Date:   Mon, 15 Aug 2022 19:58:41 +0200
+Message-Id: <20220815180349.152856750@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,180 +52,184 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ming Qian <ming.qian@nxp.com>
 
-[ Upstream commit 831f87424dd3973612782983ef7352789795b4df ]
+[ Upstream commit 9e7aa76cdb02923ee23a0ddd48f38bdc3512f92b ]
 
-Refine code to support dynamic resolution change
+The hardware can support any image size WxH,
+with arbitrary W (image width) and H (image height) dimensions.
 
+Align upwards buffer size for both encoder and decoder.
+and leave the picture resolution unchanged.
+
+For decoder, the risk of memory out of bounds can be avoided.
+For both encoder and decoder, the driver will lift the limitation of
+resolution alignment.
+
+For example, the decoder can support jpeg whose resolution is 227x149
+the encoder can support nv12 1080P, won't change it to 1920x1072.
+
+Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
 Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 114 ++++++++++++---------
- 1 file changed, 65 insertions(+), 49 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 88 +++++++++-------------
+ 1 file changed, 37 insertions(+), 51 deletions(-)
 
 diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index 718de999987e..6289fec6e2a0 100644
+index 52732fbb2664..e043023836e3 100644
 --- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
 +++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -301,6 +301,9 @@ struct mxc_jpeg_src_buf {
- 	/* mxc-jpeg specific */
- 	bool			dht_needed;
- 	bool			jpeg_parse_error;
-+	const struct mxc_jpeg_fmt	*fmt;
-+	int			w;
-+	int			h;
- };
+@@ -875,8 +875,8 @@ static void mxc_jpeg_config_enc_desc(struct vb2_buffer *out_buf,
+ 	jpeg->slot_data[slot].cfg_stream_size =
+ 			mxc_jpeg_setup_cfg_stream(cfg_stream_vaddr,
+ 						  q_data->fmt->fourcc,
+-						  q_data->w_adjusted,
+-						  q_data->h_adjusted);
++						  q_data->w,
++						  q_data->h);
  
- static inline struct mxc_jpeg_src_buf *vb2_to_mxc_buf(struct vb2_buffer *vb)
-@@ -313,6 +316,9 @@ static unsigned int debug;
- module_param(debug, int, 0644);
- MODULE_PARM_DESC(debug, "Debug level (0-3)");
+ 	/* chain the config descriptor with the encoding descriptor */
+ 	cfg_desc->next_descpt_ptr = desc_handle | MXC_NXT_DESCPT_EN;
+@@ -956,7 +956,7 @@ static bool mxc_jpeg_source_change(struct mxc_jpeg_ctx *ctx,
+ 				      &q_data_cap->h_adjusted,
+ 				      q_data_cap->h_adjusted, /* adjust up */
+ 				      MXC_JPEG_MAX_HEIGHT,
+-				      q_data_cap->fmt->v_align,
++				      0,
+ 				      0);
  
-+static void mxc_jpeg_bytesperline(struct mxc_jpeg_q_data *q, u32 precision);
-+static void mxc_jpeg_sizeimage(struct mxc_jpeg_q_data *q);
-+
- static void _bswap16(u16 *a)
+ 		/* setup bytesperline/sizeimage for capture queue */
+@@ -1145,16 +1145,28 @@ static int mxc_jpeg_queue_setup(struct vb2_queue *q,
  {
- 	*a = ((*a & 0x00FF) << 8) | ((*a & 0xFF00) >> 8);
-@@ -908,6 +914,59 @@ static void mxc_jpeg_config_enc_desc(struct vb2_buffer *out_buf,
- 	mxc_jpeg_set_desc(cfg_desc_handle, reg, slot);
- }
+ 	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(q);
+ 	struct mxc_jpeg_q_data *q_data = NULL;
++	struct mxc_jpeg_q_data tmp_q;
+ 	int i;
  
-+static bool mxc_jpeg_source_change(struct mxc_jpeg_ctx *ctx,
-+				   struct mxc_jpeg_src_buf *jpeg_src_buf)
-+{
-+	struct device *dev = ctx->mxc_jpeg->dev;
-+	struct mxc_jpeg_q_data *q_data_cap;
-+	bool src_chg = false;
-+
-+	if (!jpeg_src_buf->fmt)
-+		return src_chg;
-+
-+	q_data_cap = mxc_jpeg_get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
-+	if (q_data_cap->w != jpeg_src_buf->w || q_data_cap->h != jpeg_src_buf->h) {
-+		dev_dbg(dev, "Detected jpeg res=(%dx%d)->(%dx%d), pixfmt=%c%c%c%c\n",
-+			q_data_cap->w, q_data_cap->h,
-+			jpeg_src_buf->w, jpeg_src_buf->h,
-+			(jpeg_src_buf->fmt->fourcc & 0xff),
-+			(jpeg_src_buf->fmt->fourcc >>  8) & 0xff,
-+			(jpeg_src_buf->fmt->fourcc >> 16) & 0xff,
-+			(jpeg_src_buf->fmt->fourcc >> 24) & 0xff);
-+
-+		/*
-+		 * set-up the capture queue with the pixelformat and resolution
-+		 * detected from the jpeg output stream
-+		 */
-+		q_data_cap->w = jpeg_src_buf->w;
-+		q_data_cap->h = jpeg_src_buf->h;
-+		q_data_cap->fmt = jpeg_src_buf->fmt;
-+		q_data_cap->w_adjusted = q_data_cap->w;
-+		q_data_cap->h_adjusted = q_data_cap->h;
-+
-+		/*
-+		 * align up the resolution for CAST IP,
-+		 * but leave the buffer resolution unchanged
-+		 */
-+		v4l_bound_align_image(&q_data_cap->w_adjusted,
-+				      q_data_cap->w_adjusted,  /* adjust up */
-+				      MXC_JPEG_MAX_WIDTH,
-+				      q_data_cap->fmt->h_align,
-+				      &q_data_cap->h_adjusted,
-+				      q_data_cap->h_adjusted, /* adjust up */
-+				      MXC_JPEG_MAX_HEIGHT,
-+				      q_data_cap->fmt->v_align,
-+				      0);
-+
-+		/* setup bytesperline/sizeimage for capture queue */
-+		mxc_jpeg_bytesperline(q_data_cap, jpeg_src_buf->fmt->precision);
-+		mxc_jpeg_sizeimage(q_data_cap);
-+		notify_src_chg(ctx);
-+		src_chg = true;
-+	}
-+	return src_chg;
-+}
-+
- static void mxc_jpeg_device_run(void *priv)
- {
- 	struct mxc_jpeg_ctx *ctx = priv;
-@@ -1200,8 +1259,7 @@ static u32 mxc_jpeg_get_image_format(struct device *dev,
- 	return fourcc;
- }
- 
--static void mxc_jpeg_bytesperline(struct mxc_jpeg_q_data *q,
--				  u32 precision)
-+static void mxc_jpeg_bytesperline(struct mxc_jpeg_q_data *q, u32 precision)
- {
- 	/* Bytes distance between the leftmost pixels in two adjacent lines */
- 	if (q->fmt->fourcc == V4L2_PIX_FMT_JPEG) {
-@@ -1252,9 +1310,7 @@ static void mxc_jpeg_sizeimage(struct mxc_jpeg_q_data *q)
- static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
- {
- 	struct device *dev = ctx->mxc_jpeg->dev;
--	struct mxc_jpeg_q_data *q_data_out, *q_data_cap;
--	enum v4l2_buf_type cap_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
--	bool src_chg = false;
-+	struct mxc_jpeg_q_data *q_data_out;
- 	u32 fourcc;
- 	struct v4l2_jpeg_header header;
- 	struct mxc_jpeg_sof *psof = NULL;
-@@ -1322,51 +1378,11 @@ static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
- 	if (fourcc == 0)
+ 	q_data = mxc_jpeg_get_q_data(ctx, q->type);
+ 	if (!q_data)
  		return -EINVAL;
  
--	/*
--	 * set-up the capture queue with the pixelformat and resolution
--	 * detected from the jpeg output stream
--	 */
--	q_data_cap = mxc_jpeg_get_q_data(ctx, cap_type);
--	if (q_data_cap->w != header.frame.width ||
--	    q_data_cap->h != header.frame.height)
--		src_chg = true;
--	q_data_cap->w = header.frame.width;
--	q_data_cap->h = header.frame.height;
--	q_data_cap->fmt = mxc_jpeg_find_format(ctx, fourcc);
--	q_data_cap->w_adjusted = q_data_cap->w;
--	q_data_cap->h_adjusted = q_data_cap->h;
--	/*
--	 * align up the resolution for CAST IP,
--	 * but leave the buffer resolution unchanged
--	 */
--	v4l_bound_align_image(&q_data_cap->w_adjusted,
--			      q_data_cap->w_adjusted,  /* adjust up */
--			      MXC_JPEG_MAX_WIDTH,
--			      q_data_cap->fmt->h_align,
--			      &q_data_cap->h_adjusted,
--			      q_data_cap->h_adjusted, /* adjust up */
--			      MXC_JPEG_MAX_HEIGHT,
--			      q_data_cap->fmt->v_align,
--			      0);
--	dev_dbg(dev, "Detected jpeg res=(%dx%d)->(%dx%d), pixfmt=%c%c%c%c\n",
--		q_data_cap->w, q_data_cap->h,
--		q_data_cap->w_adjusted, q_data_cap->h_adjusted,
--		(fourcc & 0xff),
--		(fourcc >>  8) & 0xff,
--		(fourcc >> 16) & 0xff,
--		(fourcc >> 24) & 0xff);
--
--	/* setup bytesperline/sizeimage for capture queue */
--	mxc_jpeg_bytesperline(q_data_cap, q_data_cap->fmt->precision);
--	mxc_jpeg_sizeimage(q_data_cap);
-+	jpeg_src_buf->fmt = mxc_jpeg_find_format(ctx, fourcc);
-+	jpeg_src_buf->w = header.frame.width;
-+	jpeg_src_buf->h = header.frame.height;
- 
--	/*
--	 * if the CAPTURE format was updated with new values, regardless of
--	 * whether they match the values set by the client or not, signal
--	 * a source change event
--	 */
--	if (src_chg)
--		notify_src_chg(ctx);
-+	mxc_jpeg_source_change(ctx, jpeg_src_buf);
++	tmp_q.fmt = q_data->fmt;
++	tmp_q.w = q_data->w_adjusted;
++	tmp_q.h = q_data->h_adjusted;
++	for (i = 0; i < MXC_JPEG_MAX_PLANES; i++) {
++		tmp_q.bytesperline[i] = q_data->bytesperline[i];
++		tmp_q.sizeimage[i] = q_data->sizeimage[i];
++	}
++	mxc_jpeg_sizeimage(&tmp_q);
++	for (i = 0; i < MXC_JPEG_MAX_PLANES; i++)
++		tmp_q.sizeimage[i] = max(tmp_q.sizeimage[i], q_data->sizeimage[i]);
++
+ 	/* Handle CREATE_BUFS situation - *nplanes != 0 */
+ 	if (*nplanes) {
+ 		for (i = 0; i < *nplanes; i++) {
+-			if (sizes[i] < q_data->sizeimage[i])
++			if (sizes[i] < tmp_q.sizeimage[i])
+ 				return -EINVAL;
+ 		}
+ 		return 0;
+@@ -1163,7 +1175,7 @@ static int mxc_jpeg_queue_setup(struct vb2_queue *q,
+ 	/* Handle REQBUFS situation */
+ 	*nplanes = q_data->fmt->colplanes;
+ 	for (i = 0; i < *nplanes; i++)
+-		sizes[i] = q_data->sizeimage[i];
++		sizes[i] = tmp_q.sizeimage[i];
  
  	return 0;
  }
+@@ -1363,11 +1375,6 @@ static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
+ 	}
+ 	q_data_out->w = header.frame.width;
+ 	q_data_out->h = header.frame.height;
+-	if (header.frame.width % 8 != 0 || header.frame.height % 8 != 0) {
+-		dev_err(dev, "JPEG width or height not multiple of 8: %dx%d\n",
+-			header.frame.width, header.frame.height);
+-		return -EINVAL;
+-	}
+ 	if (header.frame.width > MXC_JPEG_MAX_WIDTH ||
+ 	    header.frame.height > MXC_JPEG_MAX_HEIGHT) {
+ 		dev_err(dev, "JPEG width or height should be <= 8192: %dx%d\n",
+@@ -1679,22 +1686,17 @@ static int mxc_jpeg_try_fmt(struct v4l2_format *f, const struct mxc_jpeg_fmt *fm
+ 	pix_mp->num_planes = fmt->colplanes;
+ 	pix_mp->pixelformat = fmt->fourcc;
+ 
+-	/*
+-	 * use MXC_JPEG_H_ALIGN instead of fmt->v_align, for vertical
+-	 * alignment, to loosen up the alignment to multiple of 8,
+-	 * otherwise NV12-1080p fails as 1080 is not a multiple of 16
+-	 */
++	pix_mp->width = w;
++	pix_mp->height = h;
+ 	v4l_bound_align_image(&w,
+-			      MXC_JPEG_MIN_WIDTH,
+-			      w, /* adjust downwards*/
++			      w, /* adjust upwards*/
++			      MXC_JPEG_MAX_WIDTH,
+ 			      fmt->h_align,
+ 			      &h,
+-			      MXC_JPEG_MIN_HEIGHT,
+-			      h, /* adjust downwards*/
+-			      MXC_JPEG_H_ALIGN,
++			      h, /* adjust upwards*/
++			      MXC_JPEG_MAX_HEIGHT,
++			      0,
+ 			      0);
+-	pix_mp->width = w; /* negotiate the width */
+-	pix_mp->height = h; /* negotiate the height */
+ 
+ 	/* get user input into the tmp_q */
+ 	tmp_q.w = w;
+@@ -1820,35 +1822,19 @@ static int mxc_jpeg_s_fmt(struct mxc_jpeg_ctx *ctx,
+ 
+ 	q_data->w_adjusted = q_data->w;
+ 	q_data->h_adjusted = q_data->h;
+-	if (jpeg->mode == MXC_JPEG_DECODE) {
+-		/*
+-		 * align up the resolution for CAST IP,
+-		 * but leave the buffer resolution unchanged
+-		 */
+-		v4l_bound_align_image(&q_data->w_adjusted,
+-				      q_data->w_adjusted,  /* adjust upwards */
+-				      MXC_JPEG_MAX_WIDTH,
+-				      q_data->fmt->h_align,
+-				      &q_data->h_adjusted,
+-				      q_data->h_adjusted, /* adjust upwards */
+-				      MXC_JPEG_MAX_HEIGHT,
+-				      q_data->fmt->v_align,
+-				      0);
+-	} else {
+-		/*
+-		 * align down the resolution for CAST IP,
+-		 * but leave the buffer resolution unchanged
+-		 */
+-		v4l_bound_align_image(&q_data->w_adjusted,
+-				      MXC_JPEG_MIN_WIDTH,
+-				      q_data->w_adjusted, /* adjust downwards*/
+-				      q_data->fmt->h_align,
+-				      &q_data->h_adjusted,
+-				      MXC_JPEG_MIN_HEIGHT,
+-				      q_data->h_adjusted, /* adjust downwards*/
+-				      q_data->fmt->v_align,
+-				      0);
+-	}
++	/*
++	 * align up the resolution for CAST IP,
++	 * but leave the buffer resolution unchanged
++	 */
++	v4l_bound_align_image(&q_data->w_adjusted,
++			      q_data->w_adjusted,  /* adjust upwards */
++			      MXC_JPEG_MAX_WIDTH,
++			      q_data->fmt->h_align,
++			      &q_data->h_adjusted,
++			      q_data->h_adjusted, /* adjust upwards */
++			      MXC_JPEG_MAX_HEIGHT,
++			      q_data->fmt->v_align,
++			      0);
+ 
+ 	for (i = 0; i < pix_mp->num_planes; i++) {
+ 		q_data->bytesperline[i] = pix_mp->plane_fmt[i].bytesperline;
 -- 
 2.35.1
 
