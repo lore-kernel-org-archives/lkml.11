@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA54EC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D40BEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243749AbiHOShF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        id S243758AbiHOShI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243521AbiHOSev (ORCPT
+        with ESMTP id S243787AbiHOSfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:34:51 -0400
+        Mon, 15 Aug 2022 14:35:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924D52C13F;
-        Mon, 15 Aug 2022 11:22:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071C32CE2B;
+        Mon, 15 Aug 2022 11:22:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28F48B80F99;
-        Mon, 15 Aug 2022 18:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78ACFC433C1;
-        Mon, 15 Aug 2022 18:22:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C354B80F99;
+        Mon, 15 Aug 2022 18:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC6FC43149;
+        Mon, 15 Aug 2022 18:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587743;
-        bh=ApGZls245OFaL4bZDd2zk1ckQldFOthVbDmUJI6iQH0=;
+        s=korg; t=1660587758;
+        bh=DFtHf9Vx/V4Ci2AIcFn+vfGjpCKmCPJC8oqDEtLSqq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqxyQpKY/jpqzS6PLkPKx+Yc+cBJqmnN4jS2PBuQHlPklWqi/shj28Zz8IzhBeTgi
-         SGnZ/Fg4FVpXKmZ6FIsqwFo44SFm0pibuxZs3n1lowbZcMw/e2VleinOWoCHd6gAXY
-         QGtLx1XHt3xqrLgwajEHAwNyKI03puUzz45nar74=
+        b=I0qn6kLRqt7hM1rmaOT8dOTNUFlCIsL/mOU1OpVbpGPGY5awe44JNm/jPMvYKyX0T
+         hqdEEFTJw0fBrfQn2Scus7Ufgx4fktdOw0bfor+v042Mqv42b83dXqFc3Jj7rDfoum
+         jkAmkJYZriYQKOWAzaQOzZjsrh2oSGX1MUGdaPCU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 180/779] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
-Date:   Mon, 15 Aug 2022 19:57:04 +0200
-Message-Id: <20220815180344.949179655@linuxfoundation.org>
+Subject: [PATCH 5.15 184/779] arm64: dts: qcom: sdm630: fix gpus interconnect path
+Date:   Mon, 15 Aug 2022 19:57:08 +0200
+Message-Id: <20220815180345.132439453@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,43 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
+[ Upstream commit 3cd1c4f41d64a40ea6bc4575ae28e37542123d77 ]
 
-omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
-node. of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() in later error path and normal path.
+ICC path for the GPU incorrectly states <&gnoc 1 &bimc 5>, which is
+a path from SLAVE_GNOC_BIMC to SLAVE_EBI. According to the downstream
+kernel sources, the GPU uses MASTER_OXILI here, which is equivalent to
+<&bimc 1 ...>.
 
-Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+While we are at it, use defined names instead of the numbers for this
+interconnect path.
+
+Fixes: 5cf69dcbec8b ("arm64: dts: qcom: sdm630: Add Adreno 508 GPU configuration")
+Reported-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220521202708.1509308-8-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/sdm630.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index eb09a25e3b45..8d829f3dafe7 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
+diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+index dca66b8c166c..952bb133914f 100644
+--- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
+@@ -8,6 +8,7 @@
+ #include <dt-bindings/clock/qcom,gpucc-sdm660.h>
+ #include <dt-bindings/clock/qcom,mmcc-sdm660.h>
+ #include <dt-bindings/clock/qcom,rpmcc.h>
++#include <dt-bindings/interconnect/qcom,sdm660.h>
+ #include <dt-bindings/power/qcom-rpmpd.h>
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -1041,7 +1042,7 @@ adreno_gpu: gpu@5000000 {
+ 			nvmem-cells = <&gpu_speed_bin>;
+ 			nvmem-cell-names = "speed_bin";
  
- 	if (!pdev) {
- 		pr_err("Unable to find DSS platform device\n");
-+		of_node_put(node);
- 		return -ENODEV;
- 	}
+-			interconnects = <&gnoc 1 &bimc 5>;
++			interconnects = <&bimc MASTER_OXILI &bimc SLAVE_EBI>;
+ 			interconnect-names = "gfx-mem";
  
- 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
- 	put_device(&pdev->dev);
-+	of_node_put(node);
- 	if (r) {
- 		pr_err("Unable to populate DSS submodule devices\n");
- 		return r;
+ 			operating-points-v2 = <&gpu_sdm630_opp_table>;
 -- 
 2.35.1
 
