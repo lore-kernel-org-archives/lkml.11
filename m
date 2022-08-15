@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7635BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA759C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245025AbiHOTYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
+        id S243840AbiHOTZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245158AbiHOTWn (ORCPT
+        with ESMTP id S245542AbiHOTXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:22:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6615A179;
-        Mon, 15 Aug 2022 11:40:41 -0700 (PDT)
+        Mon, 15 Aug 2022 15:23:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904042E9E1;
+        Mon, 15 Aug 2022 11:40:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0345B81081;
-        Mon, 15 Aug 2022 18:40:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DB27C433D6;
-        Mon, 15 Aug 2022 18:40:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBF21B8108B;
+        Mon, 15 Aug 2022 18:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E53AC433D6;
+        Mon, 15 Aug 2022 18:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588838;
-        bh=UmW1dDwj+2KZmvTxLZOreHEXMcT3SnZWcsvpmVelZBw=;
+        s=korg; t=1660588841;
+        bh=USaoXt23dkPCUkqdy9sXfYf2lS1Nk6uh96T3TB7tnc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VtNbrUYg7ZhZW4DUUoZGn9bH+3cGyFtBpSMtnrlEk1RQJs4ecUmX4wPObelb6DQYK
-         l3xZvWppRE4l20Tk5Q/myXcdOi2Evshnuvi+mxAn5aqhY7Obc3eyZ4Y5JjUAf43yrm
-         5Zv+n5wXD4M6ni2ANO8tiYIlOC0OyhDq9aTPBGWc=
+        b=saXLHIrQ9Z71JAe52I8csMcUJvt8yceXzm1+CRZ3nPn9HziAXyLcy20BUWs4eRRGj
+         Wdwogt2wmMJS0wGeoABak3yfo6KIH8udLWh5kXeS+QES5zlwsYL0OpqVEHJvqWFMko
+         BHq9TldlNXYy/LlaxsxUSZCeocEA8BU/ro8zCSbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Andrey Strachuk <strochuk@ispras.ru>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 523/779] RDMA/rxe: Fix mw bind to allow any consumer key portion
-Date:   Mon, 15 Aug 2022 20:02:47 +0200
-Message-Id: <20220815180359.612340190@linuxfoundation.org>
+Subject: [PATCH 5.15 532/779] usb: cdns3: change place of priv_ep assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()
+Date:   Mon, 15 Aug 2022 20:02:56 +0200
+Message-Id: <20220815180400.033429209@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,50 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+From: Andrey Strachuk <strochuk@ispras.ru>
 
-[ Upstream commit 1603f89935ec86d40a7667e1250392626976ccc2 ]
+[ Upstream commit c3ffc9c4ca44bfe9562166793d133e1fb0630ea6 ]
 
-The current implementation of rxe_check_bind_mw() in rxe_mw.c is incorrect
-since it requires the new key portion provided by the mw consumer to be
-different than the previous key portion. This is not required by the
-IBA. Remove the test.
+If 'ep' is NULL, result of ep_to_cdns3_ep(ep) is invalid pointer
+and its dereference with priv_ep->cdns3_dev may cause panic.
 
-Link: https://lore.kernel.org/linux-rdma/fb4614e7-4cac-0dc7-3ef7-766dfd10e8f2@gmail.com/
-Fixes: 32a577b4c3a9 ("Add support for bind MW work requests")
-Link: https://lore.kernel.org/r/20220714204619.13396-1-rpearsonhpe@gmail.com
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
+Acked-by: Peter Chen <peter.chen@kernel.org>
+Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Link: https://lore.kernel.org/r/20220718160052.4188-1-strochuk@ispras.ru
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_mw.c | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/usb/cdns3/cdns3-gadget.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_mw.c b/drivers/infiniband/sw/rxe/rxe_mw.c
-index a5e2ea7d80f0..933a0b29275b 100644
---- a/drivers/infiniband/sw/rxe/rxe_mw.c
-+++ b/drivers/infiniband/sw/rxe/rxe_mw.c
-@@ -71,8 +71,6 @@ int rxe_dealloc_mw(struct ib_mw *ibmw)
- static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
- 			 struct rxe_mw *mw, struct rxe_mr *mr)
- {
--	u32 key = wqe->wr.wr.mw.rkey & 0xff;
--
- 	if (mw->ibmw.type == IB_MW_TYPE_1) {
- 		if (unlikely(mw->state != RXE_MW_STATE_VALID)) {
- 			pr_err_once(
-@@ -110,11 +108,6 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
- 		}
+diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
+index d6d515d598dc..e0cf62e65075 100644
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -2281,14 +2281,15 @@ static int cdns3_gadget_ep_enable(struct usb_ep *ep,
+ 	int val;
+ 
+ 	priv_ep = ep_to_cdns3_ep(ep);
+-	priv_dev = priv_ep->cdns3_dev;
+-	comp_desc = priv_ep->endpoint.comp_desc;
+ 
+ 	if (!ep || !desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
+ 		dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+ 		return -EINVAL;
  	}
  
--	if (unlikely(key == (mw->rkey & 0xff))) {
--		pr_err_once("attempt to bind MW with same key\n");
--		return -EINVAL;
--	}
--
- 	/* remaining checks only apply to a nonzero MR */
- 	if (!mr)
- 		return 0;
++	comp_desc = priv_ep->endpoint.comp_desc;
++	priv_dev = priv_ep->cdns3_dev;
++
+ 	if (!desc->wMaxPacketSize) {
+ 		dev_err(priv_dev->dev, "usbss: missing wMaxPacketSize\n");
+ 		return -EINVAL;
+@@ -2596,7 +2597,7 @@ int cdns3_gadget_ep_dequeue(struct usb_ep *ep,
+ 			    struct usb_request *request)
+ {
+ 	struct cdns3_endpoint *priv_ep = ep_to_cdns3_ep(ep);
+-	struct cdns3_device *priv_dev = priv_ep->cdns3_dev;
++	struct cdns3_device *priv_dev;
+ 	struct usb_request *req, *req_temp;
+ 	struct cdns3_request *priv_req;
+ 	struct cdns3_trb *link_trb;
+@@ -2607,6 +2608,8 @@ int cdns3_gadget_ep_dequeue(struct usb_ep *ep,
+ 	if (!ep || !request || !ep->desc)
+ 		return -EINVAL;
+ 
++	priv_dev = priv_ep->cdns3_dev;
++
+ 	spin_lock_irqsave(&priv_dev->lock, flags);
+ 
+ 	priv_req = to_cdns3_request(request);
 -- 
 2.35.1
 
