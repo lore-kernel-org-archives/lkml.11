@@ -2,224 +2,453 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C42A5C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAA4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241846AbiHOJDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
+        id S241875AbiHOJDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241792AbiHOJC5 (ORCPT
+        with ESMTP id S231418AbiHOJC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:02:57 -0400
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419AC21E38;
-        Mon, 15 Aug 2022 02:02:45 -0700 (PDT)
-X-QQ-mid: bizesmtp70t1660554134t47qzo8d
-Received: from [10.4.23.219] ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 15 Aug 2022 17:02:13 +0800 (CST)
-X-QQ-SSF: 00400000002000B0I000B00A0000000
-X-QQ-FEAT: DRnj/z+Sqac/pDfMcGKewOhR8gwdyqv276yH3w/u2kw2jNHQieFeCF97uH08o
-        MgYYYfIP6Z23HyViNi3apYkWhX9dyjlh9tP6TnRDIdEk+EeZKdRY2M8KTLG/3bD6DsruTCF
-        FMxHIPzUzo17pO2CIrJv9TvrPlcDdONuNznoCaH6nNp0llct+cHEnzDWLeADHbezx7shODB
-        PQHA8q+lOMnz3ynakb4Vwfx5aRf3JZ55uamnAgd+lGF1h64p8i09hjDhLGyoR4N5CPcjP/H
-        29wYDhzNDPbBbS7FHfqD0PS80LEF1XjGOhiUjWNM4FTtiBLS9hU5sGT2MaiKyDC5d4WvhLY
-        S1kPMVukCIsIbZxrQ+8W1WR0CMgtSU5nESkrxjYcHoT/MR37bs2OweEEcHAmDpf2EsVs2t7
-        i5fn65HH14c=
-X-QQ-GoodBg: 2
-Message-ID: <6D38148AAA1F82C9+de98717f-8d03-7583-299e-f48050d11dba@uniontech.com>
-Date:   Mon, 15 Aug 2022 17:02:13 +0800
+        Mon, 15 Aug 2022 05:02:58 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDCD21E3D;
+        Mon, 15 Aug 2022 02:02:52 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id x23so5859728pll.7;
+        Mon, 15 Aug 2022 02:02:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=+KBs+fGMKfjR4aTYFkw3DY64vddtSsjF8xAbiynU/mo=;
+        b=NXqkTZGj0mKvPMYypbDghHQdXiS9khi5QOz4H/TAIifUEtc1bN9rMDr4VXOB8LxPZo
+         EEzJvZJadn48qoQGSu5C3DH+zk5z7FBIeoHB3MNLn66lKSGfL1xRN6V3ykUmm62VIcZA
+         NJ4z7gATwkuhSl1zmegdNZaywkLU7hP79zfM4OqCgKRW3dLvGUgwTMxQt2JfS8DZzPUj
+         gbjD7GtFlC0A2l/fNFbVZVAD5SRaRqjnxT6nYCXXh/mzDvs27r79V7i0Ba+5EDgmzHQC
+         fRelKi/JZscGDK6IE84yE3lIW0bpJQexknw3l636PLxuuEFI9yccGnhxqxzIsnbL0HwU
+         5zVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=+KBs+fGMKfjR4aTYFkw3DY64vddtSsjF8xAbiynU/mo=;
+        b=6R9WehRdzTdpDyntzx/p6txr2+RqaqlPKS7Mx9YD6Kuau/55c9jOafL7pqnw+eTElm
+         YoMDmeTy8tQktKDYZsaEJDB6Sk8rmmvdQOQvmEWeH1eg5TQyrdDF+oZRgNwAJDrpA/F/
+         pcZ7UqV81zFmh60gHPNRLlPgaISfgyyH7EIddkRogX5xuCUJIHrmejITKUzI/05rWG+m
+         DkDKtRaPy14g/o/Fm9A1bpT4XAtH6PikqOxvhPOkauGFwfoeQY8O7aZrPmlRwOXNY2mI
+         Nm4PkwcLjQfY6w/WkVqslBo+YRobtP/z0EZBy+FsjuHD2mtf0NtK6TWJ6aeD3Fpxs03w
+         KZrg==
+X-Gm-Message-State: ACgBeo0L9fn9atRdwB0EWGuTALFMII5f88tasetDVHRPdOVWgaHH0uyb
+        cTHyZa0zdIUoMM6EdorOL5k=
+X-Google-Smtp-Source: AA6agR4J6FuXKP31hZrvYj5p3Bg+z4mDEQHI1Vz53WXKdMqKjPIv9PSFaYZ9L47qpXJvWGnSPKaEpg==
+X-Received: by 2002:a17:902:d484:b0:171:3cbc:7c6 with SMTP id c4-20020a170902d48400b001713cbc07c6mr15916499plg.85.1660554171798;
+        Mon, 15 Aug 2022 02:02:51 -0700 (PDT)
+Received: from DESKTOP-IBN2BAQ.localdomain ([123.110.155.185])
+        by smtp.gmail.com with ESMTPSA id a17-20020a656411000000b00412a708f38asm5491612pgv.35.2022.08.15.02.02.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 02:02:51 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     lee@kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com,
+        pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        linux@roeck-us.net, heikki.krogerus@linux.intel.com, deller@gmx.de,
+        broonie@kernel.org, mazziesaccount@gmail.com, lgirdwood@gmail.com,
+        andriy.shevchenko@linux.intel.com
+Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [RESEND PATCH v8 08/12] iio: adc: mt6370: Add MediaTek MT6370 support
+Date:   Mon, 15 Aug 2022 17:01:21 +0800
+Message-Id: <20220815090125.27705-9-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220815090125.27705-1-peterwu.pub@gmail.com>
+References: <20220815090125.27705-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] PCI/ASPM: Should not report ASPM support to BIOS if FADT
- indicates ASPM is unsupported
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Rajat Jain <rajatja@google.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-References: <20220713112612.6935-1-limanyi@uniontech.com>
- <20220713182852.GA841582@bhelgaas>
- <CAAd53p7g2Md73=UU6Rp-TZkksc+H02KAX58bWCzsgQ__VwvJ+g@mail.gmail.com>
- <62d11a02.1c69fb81.ee60c.b0efSMTPIN_ADDED_BROKEN@mx.google.com>
- <CAJZ5v0gKMqOwg3JLx4PBksnpUhgaDDfahmE5RjJMTByOLAQOFg@mail.gmail.com>
- <CAJZ5v0gt761WUPn-3HQ3sA+8N_s_yHrSkk6CH1gBW0gy1c_+KA@mail.gmail.com>
-From:   Manyi Li <limanyi@uniontech.com>
-In-Reply-To: <CAJZ5v0gt761WUPn-3HQ3sA+8N_s_yHrSkk6CH1gBW0gy1c_+KA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: ChiaEn Wu <chiaen_wu@richtek.com>
 
+MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
+with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
+driver, display bias voltage supply, one general purpose LDO, and the
+USB Type-C & PD controller complies with the latest USB Type-C and PD
+standards.
 
-在 2022/7/15 22:07, Rafael J. Wysocki 写道:
-> On Fri, Jul 15, 2022 at 2:24 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->>
->> On Fri, Jul 15, 2022 at 9:40 AM Manyi Li <limanyi@uniontech.com> wrote:
->>>
->>>
->>>
->>> On 2022/7/14 11:20, Kai-Heng Feng wrote:
->>>> [+Cc Matthew]
->>>>
->>>> On Thu, Jul 14, 2022 at 2:28 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->>>>>
->>>>> [+cc Kai-Heng, Vidya, who also have ASPM patches in flight]
->>>>>
->>>>> On Wed, Jul 13, 2022 at 07:26:12PM +0800, Manyi Li wrote:
->>>>>> Startup log of ASUSTeK X456UJ Notebook show:
->>>>>> [    0.130563] ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
->>>>>> [   48.092472] pcieport 0000:00:1c.5: PCIe Bus Error: severity=Corrected, type=Physical Layer, (Receiver ID)
->>>>>> [   48.092479] pcieport 0000:00:1c.5:   device [8086:9d15] error status/mask=00000001/00002000
->>>>>> [   48.092481] pcieport 0000:00:1c.5:    [ 0] RxErr
->>>>>> [   48.092490] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
->>>>>> [   48.092504] pcieport 0000:00:1c.5: AER: can't find device of ID00e5
->>>>>> [   48.092506] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
->>>>>
->>>>> Can you elaborate on the connection between the FADT ASPM bit and the
->>>>> AER logs above?
->>>
->>> Sorry,I don't know about that.
->>>
->>>>>
->>>>> What problem are we solving here?  A single corrected error being
->>>>> logged?  An infinite stream of errors?  A device that doesn't work at
->>>>> all?
->>>>
->>>> Agree, what's the real symptom of the issue?
->>>
->>> Please see the details of this issus:
->>> https://bugzilla.kernel.org/show_bug.cgi?id=216245
->>>
->>>>
->>>>>
->>>>> We don't need the dmesg timestamps unless they contribute to
->>>>> understanding the problem.  I don't think they do in this case.
->>>>
->>>> According to commit 387d37577fdd ("PCI: Don't clear ASPM bits when the
->>>> FADT declares it's unsupported"), the bit means "just use the ASPM
->>>> bits handed over by BIOS".
->>>>
->>>> However, I do wonder why both drivers/pci/pci-acpi.c and
->>>> drivers/acpi/pci_root.c are doing the ACPI_FADT_NO_ASPM check,
->>
->> Because pci_root.c doesn't read aspm_disabled.
-> 
-> I've recalled a bit in the meantime.
-> 
-> First off, ACPI_FADT_NO_ASPM forbids the OS from enabling ASPM control
-> (quite literally).  It doesn't mean that the OS should not enumerate
-> ASPM and it doesn't mean that it should not report ASPM support to the
-> firmware via _OSC.  Moreover, there are (or at least there were)
-> systems where the firmware expected ASPM support to be reported via
-> _OSC anyway (see commit 8b8bae901ce2 PCI/ACPI: Report ASPM support to
-> BIOS if not disabled from command line).
-> 
-> Thus, if ASPM is not disabled from command line, it would be
-> consistent to carry out the _OSC negotiation as usual regardless of
-> ACPI_FADT_NO_ASPM and then handle the case in which it is set in the
-> same way as the case in which the firmware doesn't grant the kernel
-> control of some PCIe features.  Does this sound reasonable
+Add support for the MT6370 ADC driver for system monitoring, including
+charger current, voltage, and temperature.
 
-This sound reasonable.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+---
+ drivers/iio/adc/Kconfig      |  12 ++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/mt6370-adc.c | 305 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 318 insertions(+)
+ create mode 100644 drivers/iio/adc/mt6370-adc.c
 
-> 
-> If it does, I think that ASPM should be enumerated regardless of
-> ACPI_FADT_NO_ASPM, but we need to ensure that its configuration is not
-> changed in any way if ACPI_FADT_NO_ASPM is set and I'm not sure if
-> that is the case now.
-> 
-> Of course, the same needs to happen when the kernel doesn't get full
-> control over PCIe features via _OSC, but AFAICS that case is handled
-> in the same way as the above already.
-> 
->>>> maybe one of them should be removed?
->>
->> Arguably, pci_root.c could look at aspm_disabled instead of looking at
->> the FADT flag directly.
-> 
-> Second, if the former does sound reasonable, I'd rather avoid setting
-> aspm_disabled from drivers/pci/pci-acpi.c upfront when
-> ACPI_FADT_NO_ASPM is set, because doing that is not consistent with
-> the above.
-> 
-> Now, there may be BIOSes that don't expect to be informed of the OS
-> support for ASPM via _OSC if ACPI_FADT_NO_ASPM is set, and the
-> question is what to do with them.  They clearly are at odds with the
-> BIOSes that do expect that to happen (mentioned above), so honestly
-> I'm not sure.
-
-I'm not sure my issues is caused by report ASPM support to the firmware 
-via _OSC.My issues is the same as this link:
-https://groups.google.com/g/fa.linux.kernel/c/0uz8Nr_NVOI
-
-Links to other discussions on this issue:
-https://lore.kernel.org/all/20151229155822.GA17321@localhost/T/#u
-https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1521173
-
-> 
->>> I think duplicate work has been done, but comment
->>> in drivers/acpi/pci_root.c is
->>> * We want to disable ASPM here, but aspm_disabled
->>> * needs to remain in its state from boot so that we
->>> * properly handle PCIe 1.1 devices.  So we set this
->>> * flag here, to defer the action until after the ACPI
->>> * root scan.
->>>
->>> I don't understand this logic.
->>
->> This is about the case after failing acpi_pci_osc_control_set() and
->> generally we need to defer setting aspm_disabled because of
->> pcie_aspm_sanity_check().
->>
->>>>
->>>>>
->>>>>> Signed-off-by: Manyi Li <limanyi@uniontech.com>
->>>>>> ---
->>>>>>    drivers/pci/pcie/aspm.c | 1 +
->>>>>>    1 file changed, 1 insertion(+)
->>>>>>
->>>>>> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
->>>>>> index a96b7424c9bc..b173d3c75ae7 100644
->>>>>> --- a/drivers/pci/pcie/aspm.c
->>>>>> +++ b/drivers/pci/pcie/aspm.c
->>>>>> @@ -1359,6 +1359,7 @@ void pcie_no_aspm(void)
->>>>>>         if (!aspm_force) {
->>>>>>                 aspm_policy = POLICY_DEFAULT;
->>>>>>                 aspm_disabled = 1;
->>>>>> +             aspm_support_enabled = false;
->>>>>
->>>>> This makes pcie_no_aspm() work the same as booting with
->>>>> "pcie_aspm=off".  That might be reasonable.
->>>>>
->>>>> I do wonder why we need both "aspm_disabled" and
->>>>> "aspm_support_enabled".  And I wonder why we need to set "aspm_policy"
->>>>> when we're disabling ASPM.  But those aren't really connected to your
->>>>> change here.
->>>>
->>>>   From what I can understand "aspm_disabled" means "don't touch ASPM
->>>> left by BIOS", and "aspm_support_enabled" means "whether ASPM is
->>>> disabled via command line".
->>>> There seems to be some overlaps though.
->>>
->>> According to commit 8b8bae901ce23 ("PCI/ACPI: Report ASPM support to
->>> BIOS if not disabled from command line"), "aspm_support_enabled" means
->>> whether or not report ASPM support to the BIOS through _OSC.
->>
->> Right.
-> 
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7fe5930891e0..995cbb5e5b9e 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -736,6 +736,18 @@ config MEDIATEK_MT6360_ADC
+ 	  is used in smartphones and tablets and supports a 11 channel
+ 	  general purpose ADC.
+ 
++config MEDIATEK_MT6370_ADC
++	tristate "MediaTek MT6370 ADC driver"
++	depends on MFD_MT6370
++	help
++	  Say yes here to enable MediaTek MT6370 ADC support.
++
++	  This ADC driver provides 9 channels for system monitoring (charger
++	  current, voltage, and temperature).
++
++	  This driver can also be built as a module. If so, the module
++	  will be called "mt6370-adc".
++
+ config MEDIATEK_MT6577_AUXADC
+ 	tristate "MediaTek AUXADC driver"
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 1772a549a3c8..c6bc35fcf1ac 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -68,6 +68,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_MCP3911) += mcp3911.o
+ obj-$(CONFIG_MEDIATEK_MT6360_ADC) += mt6360-adc.o
++obj-$(CONFIG_MEDIATEK_MT6370_ADC) += mt6370-adc.o
+ obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
+diff --git a/drivers/iio/adc/mt6370-adc.c b/drivers/iio/adc/mt6370-adc.c
+new file mode 100644
+index 000000000000..2a46471f819b
+--- /dev/null
++++ b/drivers/iio/adc/mt6370-adc.c
+@@ -0,0 +1,305 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2022 Richtek Technology Corp.
++ *
++ * Author: ChiaEn Wu <chiaen_wu@richtek.com>
++ */
++
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/iio/iio.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/sysfs.h>
++#include <linux/units.h>
++
++#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
++
++#define MT6370_REG_CHG_CTRL3		0x113
++#define MT6370_REG_CHG_CTRL7		0x117
++#define MT6370_REG_CHG_ADC		0x121
++#define MT6370_REG_ADC_DATA_H		0x14C
++
++#define MT6370_ADC_START_MASK		BIT(0)
++#define MT6370_ADC_IN_SEL_MASK		GENMASK(7, 4)
++#define MT6370_AICR_ICHG_MASK		GENMASK(7, 2)
++
++#define MT6370_AICR_100_mA		0x0
++#define MT6370_AICR_150_mA		0x1
++#define MT6370_AICR_200_mA		0x2
++#define MT6370_AICR_250_mA		0x3
++#define MT6370_AICR_300_mA		0x4
++#define MT6370_AICR_350_mA		0x5
++
++#define MT6370_ICHG_100_mA		0x0
++#define MT6370_ICHG_200_mA		0x1
++#define MT6370_ICHG_300_mA		0x2
++#define MT6370_ICHG_400_mA		0x3
++#define MT6370_ICHG_500_mA		0x4
++#define MT6370_ICHG_600_mA		0x5
++#define MT6370_ICHG_700_mA		0x6
++#define MT6370_ICHG_800_mA		0x7
++
++#define ADC_CONV_TIME_MS		35
++#define ADC_CONV_POLLING_TIME_US	1000
++
++struct mt6370_adc_data {
++	struct device *dev;
++	struct regmap *regmap;
++	/*
++	 * This mutex lock is for preventing the different ADC channels
++	 * from being read at the same time.
++	 */
++	struct mutex adc_lock;
++};
++
++static int mt6370_adc_read_channel(struct mt6370_adc_data *priv, int chan,
++				   unsigned long addr, int *val)
++{
++	unsigned int reg_val;
++	__be16 be_val;
++	int ret;
++
++	mutex_lock(&priv->adc_lock);
++
++	reg_val = MT6370_ADC_START_MASK |
++		  FIELD_PREP(MT6370_ADC_IN_SEL_MASK, addr);
++	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, reg_val);
++	if (ret)
++		goto adc_unlock;
++
++	msleep(ADC_CONV_TIME_MS);
++
++	ret = regmap_read_poll_timeout(priv->regmap,
++				       MT6370_REG_CHG_ADC, reg_val,
++				       !(reg_val & MT6370_ADC_START_MASK),
++				       ADC_CONV_POLLING_TIME_US,
++				       ADC_CONV_TIME_MS * MILLI * 3);
++	if (ret) {
++		dev_err(priv->dev, "Failed to read ADC register (%d)\n", ret);
++		goto adc_unlock;
++	}
++
++	ret = regmap_raw_read(priv->regmap, MT6370_REG_ADC_DATA_H,
++			      &be_val, sizeof(be_val));
++	if (ret)
++		goto adc_unlock;
++
++	*val = be16_to_cpu(be_val);
++	ret = IIO_VAL_INT;
++
++adc_unlock:
++	mutex_unlock(&priv->adc_lock);
++
++	return ret;
++}
++
++static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
++				 int chan, int *val1, int *val2)
++{
++	unsigned int reg_val;
++	int ret;
++
++	switch (chan) {
++	case MT6370_CHAN_VBAT:
++	case MT6370_CHAN_VSYS:
++	case MT6370_CHAN_CHG_VDDP:
++		*val1 = 5;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_IBUS:
++		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL3, &reg_val);
++		if (ret)
++			return ret;
++
++		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
++		switch (reg_val) {
++		case MT6370_AICR_100_mA:
++		case MT6370_AICR_150_mA:
++		case MT6370_AICR_200_mA:
++		case MT6370_AICR_250_mA:
++		case MT6370_AICR_300_mA:
++		case MT6370_AICR_350_mA:
++			*val1 = 3350;
++			break;
++		default:
++			*val1 = 5000;
++			break;
++		}
++
++		*val2 = 100;
++
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_IBAT:
++		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL7, &reg_val);
++		if (ret)
++			return ret;
++
++		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
++		switch (reg_val) {
++		case MT6370_ICHG_100_mA:
++		case MT6370_ICHG_200_mA:
++		case MT6370_ICHG_300_mA:
++		case MT6370_ICHG_400_mA:
++			*val1 = 2375;
++			break;
++		case MT6370_ICHG_500_mA:
++		case MT6370_ICHG_600_mA:
++		case MT6370_ICHG_700_mA:
++		case MT6370_ICHG_800_mA:
++			*val1 = 2680;
++			break;
++		default:
++			*val1 = 5000;
++			break;
++		}
++
++		*val2 = 100;
++
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_VBUSDIV5:
++		*val1 = 25;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_VBUSDIV2:
++		*val1 = 50;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_TS_BAT:
++		*val1 = 25;
++		*val2 = 10000;
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_TEMP_JC:
++		*val1 = 2000;
++		return IIO_VAL_FRACTIONAL;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mt6370_adc_read_offset(struct mt6370_adc_data *priv,
++				  int chan, int *val)
++{
++	*val = -20;
++
++	return IIO_VAL_INT;
++}
++
++static int mt6370_adc_read_raw(struct iio_dev *iio_dev,
++			       const struct iio_chan_spec *chan,
++			       int *val, int *val2, long mask)
++{
++	struct mt6370_adc_data *priv = iio_priv(iio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return mt6370_adc_read_channel(priv, chan->channel,
++					       chan->address, val);
++	case IIO_CHAN_INFO_SCALE:
++		return mt6370_adc_read_scale(priv, chan->channel, val, val2);
++	case IIO_CHAN_INFO_OFFSET:
++		return mt6370_adc_read_offset(priv, chan->channel, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {
++	[MT6370_CHAN_VBUSDIV5] = "vbusdiv5",
++	[MT6370_CHAN_VBUSDIV2] = "vbusdiv2",
++	[MT6370_CHAN_VSYS] = "vsys",
++	[MT6370_CHAN_VBAT] = "vbat",
++	[MT6370_CHAN_TS_BAT] = "ts_bat",
++	[MT6370_CHAN_IBUS] = "ibus",
++	[MT6370_CHAN_IBAT] = "ibat",
++	[MT6370_CHAN_CHG_VDDP] = "chg_vddp",
++	[MT6370_CHAN_TEMP_JC] = "temp_jc",
++};
++
++static int mt6370_adc_read_label(struct iio_dev *iio_dev,
++				 struct iio_chan_spec const *chan, char *label)
++{
++	return sysfs_emit(label, "%s\n", mt6370_channel_labels[chan->channel]);
++}
++
++static const struct iio_info mt6370_adc_iio_info = {
++	.read_raw = mt6370_adc_read_raw,
++	.read_label = mt6370_adc_read_label,
++};
++
++#define MT6370_ADC_CHAN(_idx, _type, _addr, _extra_info) {	\
++	.type = _type,						\
++	.channel = MT6370_CHAN_##_idx,				\
++	.address = _addr,					\
++	.scan_index = MT6370_CHAN_##_idx,			\
++	.indexed = 1,						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++			      BIT(IIO_CHAN_INFO_SCALE) |	\
++			      _extra_info,			\
++}
++
++static const struct iio_chan_spec mt6370_adc_channels[] = {
++	MT6370_ADC_CHAN(VBUSDIV5, IIO_VOLTAGE, 1, 0),
++	MT6370_ADC_CHAN(VBUSDIV2, IIO_VOLTAGE, 2, 0),
++	MT6370_ADC_CHAN(VSYS, IIO_VOLTAGE, 3, 0),
++	MT6370_ADC_CHAN(VBAT, IIO_VOLTAGE, 4, 0),
++	MT6370_ADC_CHAN(TS_BAT, IIO_VOLTAGE, 6, 0),
++	MT6370_ADC_CHAN(IBUS, IIO_CURRENT, 8, 0),
++	MT6370_ADC_CHAN(IBAT, IIO_CURRENT, 9, 0),
++	MT6370_ADC_CHAN(CHG_VDDP, IIO_VOLTAGE, 11, 0),
++	MT6370_ADC_CHAN(TEMP_JC, IIO_TEMP, 12, BIT(IIO_CHAN_INFO_OFFSET)),
++};
++
++static int mt6370_adc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mt6370_adc_data *priv;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	regmap = dev_get_regmap(pdev->dev.parent, NULL);
++	if (!regmap)
++		return dev_err_probe(dev, -ENODEV, "Failed to get regmap\n");
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	priv = iio_priv(indio_dev);
++	priv->dev = dev;
++	priv->regmap = regmap;
++	mutex_init(&priv->adc_lock);
++
++	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to reset ADC\n");
++
++	indio_dev->name = "mt6370-adc";
++	indio_dev->info = &mt6370_adc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mt6370_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mt6370_adc_channels);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct of_device_id mt6370_adc_of_id[] = {
++	{ .compatible = "mediatek,mt6370-adc", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mt6370_adc_of_id);
++
++static struct platform_driver mt6370_adc_driver = {
++	.driver = {
++		.name = "mt6370-adc",
++		.of_match_table = mt6370_adc_of_id,
++	},
++	.probe = mt6370_adc_probe,
++};
++module_platform_driver(mt6370_adc_driver);
++
++MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
++MODULE_DESCRIPTION("MT6370 ADC Driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Manyi Li
+2.34.1
+
