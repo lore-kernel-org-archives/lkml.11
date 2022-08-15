@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B5FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09410C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347372AbiHOU11 (ORCPT
+        id S1347387AbiHOU1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47858 "EHLO
+        Mon, 15 Aug 2022 16:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347082AbiHOUV5 (ORCPT
+        with ESMTP id S1347241AbiHOUWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:21:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7A298D3A;
-        Mon, 15 Aug 2022 12:01:08 -0700 (PDT)
+        Mon, 15 Aug 2022 16:22:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C6A9A960;
+        Mon, 15 Aug 2022 12:01:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E68B61230;
-        Mon, 15 Aug 2022 19:01:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1689AC433D6;
-        Mon, 15 Aug 2022 19:01:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DDBA1CE12C1;
+        Mon, 15 Aug 2022 19:01:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D61E4C433C1;
+        Mon, 15 Aug 2022 19:01:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590067;
-        bh=Ll3VrOpxsVmeadqheby9L6HRHAFePhaWMYtkUoqpQtY=;
+        s=korg; t=1660590088;
+        bh=Vehy/BoBvNjd/WWLdoFvaGjwdX2Ws4HjflkU6Q6uxtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tSiP4VNKNnVW2y8TnavONPG1nQjNeI+AeKQM8mNUPkPDeH4EPYPURm08eP9rTP5AH
-         i2cosss8il3yW3TYaYwA7rVZOHIgAzcdfb78ifC3F8HB7GeH/wW6zzFf5ahcAB5PqQ
-         uIohsAwwWoRV+abtzwE97RDvNsgN6s3okldhMXRg=
+        b=CfFb27pWvUr2Qb27pS7PgEsXqs6IrxFpc62eox0SSLs3olsfzGNnRkkYQEBOoBRbg
+         IYEIXKDBdLu4aPDgBhNdqw30LgLlHVRT4DUO+pYF7grEDyK+neHWFo7ODHHcpnvBdj
+         +/l6MUsBFOmkhjLi6xJszwiH/17GjoI62sXPGRK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0141/1095] ext2: Add more validity checks for inode counts
-Date:   Mon, 15 Aug 2022 19:52:20 +0200
-Message-Id: <20220815180435.414430515@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0147/1095] sched/core: Always flush pending blk_plug
+Date:   Mon, 15 Aug 2022 19:52:26 +0200
+Message-Id: <20220815180435.672142961@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,53 +51,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: John Keeping <john@metanate.com>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+[ Upstream commit 401e4963bf45c800e3e9ea0d3a0289d738005fd4 ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+With CONFIG_PREEMPT_RT, it is possible to hit a deadlock between two
+normal priority tasks (SCHED_OTHER, nice level zero):
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+	INFO: task kworker/u8:0:8 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:kworker/u8:0    state:D stack:    0 pid:    8 ppid:     2 flags:0x00000000
+	Workqueue: writeback wb_workfn (flush-7:0)
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a65a0>] (rt_mutex_slowlock_block.constprop.0+0xb8/0x174)
+	[<c08a65a0>] (rt_mutex_slowlock_block.constprop.0) from [<c08a6708>]
+	+(rt_mutex_slowlock.constprop.0+0xac/0x174)
+	[<c08a6708>] (rt_mutex_slowlock.constprop.0) from [<c0374d60>] (fat_write_inode+0x34/0x54)
+	[<c0374d60>] (fat_write_inode) from [<c0297304>] (__writeback_single_inode+0x354/0x3ec)
+	[<c0297304>] (__writeback_single_inode) from [<c0297998>] (writeback_sb_inodes+0x250/0x45c)
+	[<c0297998>] (writeback_sb_inodes) from [<c0297c20>] (__writeback_inodes_wb+0x7c/0xb8)
+	[<c0297c20>] (__writeback_inodes_wb) from [<c0297f24>] (wb_writeback+0x2c8/0x2e4)
+	[<c0297f24>] (wb_writeback) from [<c0298c40>] (wb_workfn+0x1a4/0x3e4)
+	[<c0298c40>] (wb_workfn) from [<c0138ab8>] (process_one_work+0x1fc/0x32c)
+	[<c0138ab8>] (process_one_work) from [<c0139120>] (worker_thread+0x22c/0x2d8)
+	[<c0139120>] (worker_thread) from [<c013e6e0>] (kthread+0x16c/0x178)
+	[<c013e6e0>] (kthread) from [<c01000fc>] (ret_from_fork+0x14/0x38)
+	Exception stack(0xc10e3fb0 to 0xc10e3ff8)
+	3fa0:                                     00000000 00000000 00000000 00000000
+	3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+	3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+
+	INFO: task tar:2083 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:tar             state:D stack:    0 pid: 2083 ppid:  2082 flags:0x00000000
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a41b0>] (io_schedule+0x14/0x24)
+	[<c08a41b0>] (io_schedule) from [<c08a455c>] (bit_wait_io+0xc/0x30)
+	[<c08a455c>] (bit_wait_io) from [<c08a441c>] (__wait_on_bit_lock+0x54/0xa8)
+	[<c08a441c>] (__wait_on_bit_lock) from [<c08a44f4>] (out_of_line_wait_on_bit_lock+0x84/0xb0)
+	[<c08a44f4>] (out_of_line_wait_on_bit_lock) from [<c0371fb0>] (fat_mirror_bhs+0xa0/0x144)
+	[<c0371fb0>] (fat_mirror_bhs) from [<c0372a68>] (fat_alloc_clusters+0x138/0x2a4)
+	[<c0372a68>] (fat_alloc_clusters) from [<c0370b14>] (fat_alloc_new_dir+0x34/0x250)
+	[<c0370b14>] (fat_alloc_new_dir) from [<c03787c0>] (vfat_mkdir+0x58/0x148)
+	[<c03787c0>] (vfat_mkdir) from [<c0277b60>] (vfs_mkdir+0x68/0x98)
+	[<c0277b60>] (vfs_mkdir) from [<c027b484>] (do_mkdirat+0xb0/0xec)
+	[<c027b484>] (do_mkdirat) from [<c0100060>] (ret_fast_syscall+0x0/0x1c)
+	Exception stack(0xc2e1bfa8 to 0xc2e1bff0)
+	bfa0:                   01ee42f0 01ee4208 01ee42f0 000041ed 00000000 00004000
+	bfc0: 01ee42f0 01ee4208 00000000 00000027 01ee4302 00000004 000dcb00 01ee4190
+	bfe0: 000dc368 bed11924 0006d4b0 b6ebddfc
+
+Here the kworker is waiting on msdos_sb_info::s_lock which is held by
+tar which is in turn waiting for a buffer which is locked waiting to be
+flushed, but this operation is plugged in the kworker.
+
+The lock is a normal struct mutex, so tsk_is_pi_blocked() will always
+return false on !RT and thus the behaviour changes for RT.
+
+It seems that the intent here is to skip blk_flush_plug() in the case
+where a non-preemptible lock (such as a spinlock) has been converted to
+a rtmutex on RT, which is the case covered by the SM_RTLOCK_WAIT
+schedule flag.  But sched_submit_work() is only called from schedule()
+which is never called in this scenario, so the check can simply be
+deleted.
+
+Looking at the history of the -rt patchset, in fact this change was
+present from v5.9.1-rt20 until being dropped in v5.13-rt1 as it was part
+of a larger patch [1] most of which was replaced by commit b4bfa3fcfe3b
+("sched/core: Rework the __schedule() preempt argument").
+
+As described in [1]:
+
+   The schedule process must distinguish between blocking on a regular
+   sleeping lock (rwsem and mutex) and a RT-only sleeping lock (spinlock
+   and rwlock):
+   - rwsem and mutex must flush block requests (blk_schedule_flush_plug())
+     even if blocked on a lock. This can not deadlock because this also
+     happens for non-RT.
+     There should be a warning if the scheduling point is within a RCU read
+     section.
+
+   - spinlock and rwlock must not flush block requests. This will deadlock
+     if the callback attempts to acquire a lock which is already acquired.
+     Similarly to being preempted, there should be no warning if the
+     scheduling point is within a RCU read section.
+
+and with the tsk_is_pi_blocked() in the scheduler path, we hit the first
+issue.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tree/patches/0022-locking-rtmutex-Use-custom-scheduling-function-for-s.patch?h=linux-5.10.y-rt-patches
+
+Signed-off-by: John Keeping <john@metanate.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lkml.kernel.org/r/20220708162702.1758865-1-john@metanate.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ include/linux/sched/rt.h | 8 --------
+ kernel/sched/core.c      | 8 ++++++--
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index f6a19f6d9f6d..cdffa2a041af 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1059,9 +1059,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
+diff --git a/include/linux/sched/rt.h b/include/linux/sched/rt.h
+index e5af028c08b4..994c25640e15 100644
+--- a/include/linux/sched/rt.h
++++ b/include/linux/sched/rt.h
+@@ -39,20 +39,12 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
+ }
+ extern void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task);
+ extern void rt_mutex_adjust_pi(struct task_struct *p);
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return tsk->pi_blocked_on != NULL;
+-}
+ #else
+ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+ {
+ 	return NULL;
+ }
+ # define rt_mutex_adjust_pi(p)		do { } while (0)
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return false;
+-}
+ #endif
+ 
+ extern void normalize_rt_tasks(void);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index dd11daa7a84b..6baf96d2fa39 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6460,8 +6460,12 @@ static inline void sched_submit_work(struct task_struct *tsk)
+ 			io_wq_worker_sleeping(tsk);
  	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1071,6 +1072,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array(db_count,
+ 
+-	if (tsk_is_pi_blocked(tsk))
+-		return;
++	/*
++	 * spinlock and rwlock must not flush block requests.  This will
++	 * deadlock if the callback attempts to acquire a lock which is
++	 * already acquired.
++	 */
++	SCHED_WARN_ON(current->__state & TASK_RTLOCK_WAIT);
+ 
+ 	/*
+ 	 * If we are going to sleep and we have plugged IO queued,
 -- 
 2.35.1
 
