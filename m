@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4E7C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D086FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347762AbiHOW7U (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        id S233251AbiHOW72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352271AbiHOW5R (ORCPT
+        with ESMTP id S1352288AbiHOW5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:57:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1121F62AA8;
-        Mon, 15 Aug 2022 12:56:12 -0700 (PDT)
+        Mon, 15 Aug 2022 18:57:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612C962AB8;
+        Mon, 15 Aug 2022 12:56:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AF14B80EB1;
-        Mon, 15 Aug 2022 19:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C57C433D6;
-        Mon, 15 Aug 2022 19:56:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF0E260FB5;
+        Mon, 15 Aug 2022 19:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9706C433D6;
+        Mon, 15 Aug 2022 19:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593369;
-        bh=FDoJxHlFo7cH3ku55qhsLbAub7KyWpXjqOlGy/VtYmA=;
+        s=korg; t=1660593372;
+        bh=GHUg3/3om1y16xLkY9xRDeAEW++BDx8eOg8B/6QwxXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HbBnyhCqOXid8+c+rm0h8EGRVhRkNNuqqwoqmoARpHOVK9X94idFgx1ICD/wPBU+s
-         d2czrHSD2oyUyMxlqNYexQqT84SmUjBQaQs6XMOXJd7XmphSfcoLJo1Gy1Y1CX4tRa
-         Pqrs2YLMWHGepRRJSFDoAUbIOruGaaVY3Ay6Kgq8=
+        b=XE4YExgQp5ux6gHuT8VD0lJsvFG7iYR4Fp7K7M6s5L6+N2Hmh7CCpkbALcvK8ItCf
+         /4BrVUObhab+SEAJDaiTtSIRXOhXHGRByR2fwlOFKsD9rXjeOEX7cChNNLUCbf4T+H
+         WKSdHxDL3sXupwm017ENM299/yhArmJ1pLiFbx/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0936/1095] powerpc/spufs: Fix refcount leak in spufs_init_isolated_loader
-Date:   Mon, 15 Aug 2022 20:05:35 +0200
-Message-Id: <20220815180507.938063912@linuxfoundation.org>
+Subject: [PATCH 5.19 0258/1157] arm64: dts: qcom: msm8996: correct #clock-cells for QMP PHY nodes
+Date:   Mon, 15 Aug 2022 19:53:34 +0200
+Message-Id: <20220815180449.897779983@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 6ac059dacffa8ab2f7798f20e4bd3333890c541c ]
+[ Upstream commit b874fff9a7683df30e5aff16d5a85b1f8a43aa5d ]
 
-of_find_node_by_path() returns remote device nodepointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The commit 82d61e19fccb ("arm64: dts: qcom: msm8996: Move '#clock-cells'
+to QMP PHY child node") moved the '#clock-cells' properties to the child
+nodes. However it missed the fact that the property must have been set
+to <0> (as all pipe clocks use of_clk_hw_simple_get as the xlate
+function. Also the mentioned commit didn't add '#clock-cells' properties
+to second and third PCIe PHY nodes. Correct both these mistakes:
 
-Fixes: 0afacde3df4c ("[POWERPC] spufs: allow isolated mode apps by starting the SPE loader")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220603121543.22884-1-linmq006@gmail.com
+- Set '#clock-cells' to <0>,
+- Add the property to pciephy_1 and pciephy_2 nodes.
+
+Fixes: 82d61e19fccb ("arm64: dts: qcom: msm8996: Move '#clock-cells' to QMP PHY child node")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220620071936.1558906-3-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/spufs/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/spufs/inode.c b/arch/powerpc/platforms/cell/spufs/inode.c
-index 4c702192412f..96f5e2e43018 100644
---- a/arch/powerpc/platforms/cell/spufs/inode.c
-+++ b/arch/powerpc/platforms/cell/spufs/inode.c
-@@ -660,6 +660,7 @@ spufs_init_isolated_loader(void)
- 		return;
+diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+index 9932186f7ceb..b670d0412760 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -609,7 +609,7 @@ pciephy_0: phy@35000 {
+ 				      <0x00035400 0x1dc>;
+ 				#phy-cells = <0>;
  
- 	loader = of_get_property(dn, "loader", &size);
-+	of_node_put(dn);
- 	if (!loader)
- 		return;
+-				#clock-cells = <1>;
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_0_pipe_clk_src";
+ 				clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
+ 				clock-names = "pipe0";
+@@ -623,6 +623,7 @@ pciephy_1: phy@36000 {
+ 				      <0x00036400 0x1dc>;
+ 				#phy-cells = <0>;
  
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_1_pipe_clk_src";
+ 				clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
+ 				clock-names = "pipe1";
+@@ -636,6 +637,7 @@ pciephy_2: phy@37000 {
+ 				      <0x00037400 0x1dc>;
+ 				#phy-cells = <0>;
+ 
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_2_pipe_clk_src";
+ 				clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
+ 				clock-names = "pipe2";
+@@ -2769,7 +2771,7 @@ ssusb_phy_0: phy@7410200 {
+ 				      <0x07410600 0x1a8>;
+ 				#phy-cells = <0>;
+ 
+-				#clock-cells = <1>;
++				#clock-cells = <0>;
+ 				clock-output-names = "usb3_phy_pipe_clk_src";
+ 				clocks = <&gcc GCC_USB3_PHY_PIPE_CLK>;
+ 				clock-names = "pipe0";
 -- 
 2.35.1
 
