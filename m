@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08295C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250E5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243445AbiHOSoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
+        id S240804AbiHOSoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243815AbiHOSl0 (ORCPT
+        with ESMTP id S243826AbiHOSl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:41:26 -0400
+        Mon, 15 Aug 2022 14:41:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423123F32A;
-        Mon, 15 Aug 2022 11:25:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265F02ED5B;
+        Mon, 15 Aug 2022 11:25:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB41B80F99;
-        Mon, 15 Aug 2022 18:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CD3C433D6;
-        Mon, 15 Aug 2022 18:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55CABB8107A;
+        Mon, 15 Aug 2022 18:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C044BC433D6;
+        Mon, 15 Aug 2022 18:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587902;
-        bh=UF5GPIszFRHwpo/77bs1bWbnNvzx9uno6HUPVgnvNao=;
+        s=korg; t=1660587596;
+        bh=uY13mo9qtASTnrLurEscpXAMDs4UVUh1xoWThPdMtxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPf5cRvjf2EIFMPV7OauN6gY4yCMlT9VclNlyujHy8zAZyt/4Znku91ZoKdinvFQd
-         Lcx1A+y6VZ8Mu5TxU1KKYR3d23SmYXhbKc6xYvTh/BRAkYy0nHHPh6O36gcmuZgf66
-         edMjZLFwNQcJI5Ra4ZZZ/2lDyPFbFOmTeSXU+fCM=
+        b=gwZLWYBxruN8ur6qACvYnc5dH0JrLZDC4WggTXVTKEb8Ia0oHtjCMnu7m9Tb4yhvz
+         Vevw3duh7IPuOsGPdHEyQh69tvYqnIa0Mn0v+6ARhB/fnzbdZ+s3GVy6T9o45neERU
+         kAnSE5O5xiMReI2RiHje94X4E41oQsIef04k0nb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 232/779] pwm: lpc18xx-sct: Simplify driver by not using pwm_[gs]et_chip_data()
-Date:   Mon, 15 Aug 2022 19:57:56 +0200
-Message-Id: <20220815180347.200305319@linuxfoundation.org>
+Subject: [PATCH 5.15 134/779] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:56:18 +0200
+Message-Id: <20220815180343.008593274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,119 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 9136a39e6cf69e49803ac6123a4ac4431bc915a2 ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-The per-channel data is available directly in the driver data struct. So
-use it without making use of pwm_[gs]et_chip_data().
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-The relevant change introduced by this patch to lpc18xx_pwm_disable() at
-the assembler level (for an arm lpc18xx_defconfig build) is:
-
-	push    {r3, r4, r5, lr}
-	mov     r4, r0
-	mov     r0, r1
-	mov     r5, r1
-	bl      0 <pwm_get_chip_data>
-	ldr     r3, [r0, #0]
-
-changes to
-
-	ldr     r3, [r1, #8]
-	push    {r4, lr}
-	add.w   r3, r0, r3, lsl #2
-	ldr     r3, [r3, #92]   ; 0x5c
-
-So this reduces stack usage, has an improved runtime behavior because of
-better pipeline usage, doesn't branch to an external function and the
-generated code is a bit smaller occupying less memory.
-
-The codesize of lpc18xx_pwm_probe() is reduced by 32 bytes.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 6cf02554066c..b909096dba2f 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -166,7 +166,7 @@ static void lpc18xx_pwm_config_duty(struct pwm_chip *chip,
- 				    struct pwm_device *pwm, int duty_ns)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
--	struct lpc18xx_pwm_data *lpc18xx_data = pwm_get_chip_data(pwm);
-+	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
- 	u64 val;
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 21413a9b7b6c..eb09a25e3b45 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
- 	val = (u64)duty_ns * lpc18xx_pwm->clk_rate;
-@@ -236,7 +236,7 @@ static int lpc18xx_pwm_set_polarity(struct pwm_chip *chip,
- static int lpc18xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
--	struct lpc18xx_pwm_data *lpc18xx_data = pwm_get_chip_data(pwm);
-+	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
- 	enum lpc18xx_pwm_res_action res_action;
- 	unsigned int set_event, clear_event;
- 
-@@ -271,7 +271,7 @@ static int lpc18xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- static void lpc18xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
--	struct lpc18xx_pwm_data *lpc18xx_data = pwm_get_chip_data(pwm);
-+	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
- 
- 	lpc18xx_pwm_writel(lpc18xx_pwm,
- 			   LPC18XX_PWM_EVCTRL(lpc18xx_data->duty_event), 0);
-@@ -282,7 +282,7 @@ static void lpc18xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- static int lpc18xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
--	struct lpc18xx_pwm_data *lpc18xx_data = pwm_get_chip_data(pwm);
-+	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
- 	unsigned long event;
- 
- 	event = find_first_zero_bit(&lpc18xx_pwm->event_map,
-@@ -303,7 +303,7 @@ static int lpc18xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- static void lpc18xx_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
--	struct lpc18xx_pwm_data *lpc18xx_data = pwm_get_chip_data(pwm);
-+	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
- 
- 	clear_bit(lpc18xx_data->duty_event, &lpc18xx_pwm->event_map);
+ 	return 0;
  }
-@@ -327,8 +327,7 @@ MODULE_DEVICE_TABLE(of, lpc18xx_pwm_of_match);
- static int lpc18xx_pwm_probe(struct platform_device *pdev)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm;
--	struct pwm_device *pwm;
--	int ret, i;
-+	int ret;
- 	u64 val;
- 
- 	lpc18xx_pwm = devm_kzalloc(&pdev->dev, sizeof(*lpc18xx_pwm),
-@@ -398,16 +397,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
- 			   BIT(lpc18xx_pwm->period_event));
- 
--	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
--		struct lpc18xx_pwm_data *data;
--
--		pwm = &lpc18xx_pwm->chip.pwms[i];
--
--		data = &lpc18xx_pwm->channeldata[i];
--
--		pwm_set_chip_data(pwm, data);
--	}
--
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	val &= ~LPC18XX_PWM_BIDIR;
- 	val &= ~LPC18XX_PWM_CTRL_HALT;
 -- 
 2.35.1
 
