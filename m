@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0A5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AE2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347881AbiHOWY7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
+        id S244869AbiHOWZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350797AbiHOWSf (ORCPT
+        with ESMTP id S1350798AbiHOWSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:18:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69E5419BB;
-        Mon, 15 Aug 2022 12:41:56 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6898865577;
+        Mon, 15 Aug 2022 12:41:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93219B80EA7;
-        Mon, 15 Aug 2022 19:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1B8AC433D6;
-        Mon, 15 Aug 2022 19:41:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E386068D;
+        Mon, 15 Aug 2022 19:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DBEC433C1;
+        Mon, 15 Aug 2022 19:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592514;
-        bh=sJwBtXUrD47c4QQvixP6qvX5NK11LGGDAI+blx1in/c=;
+        s=korg; t=1660592517;
+        bh=6KB1K5LhbCZrhA4TaHgr+wvgq+MkkC0XdMw8XVVZ2RQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tXvu4NAFpgLQ16AYq4ELJyGlNMi9IG0P8GZTDgm+/M5A6aszNrBlT1X7S0dSMqKmO
-         alNBTuWWav0lbFC47mEKkdUHClzN015mnOxfN1mzdnmUUzFjZQynSArIq2Jh4Pdzpx
-         ni5miGsaM5onC4dB/aD913abI7YDeTALcgjv4ios=
+        b=oMoBi+7IcVzf5z4y1jiE+kg3WxuQb1EU5ju+jCknV3xsuJeC906gR8JTQkhJ7zs4C
+         xaBeexnJ/G/lzvlZwIg5JCesRGgXnliT9LzGuIhXeFnSLrvxkmT99luccemimPJc1C
+         vO0jvmSatjQGmQBQqIk39U93IyX9FORiephU0RWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.19 0123/1157] media: [PATCH] pci: atomisp_cmd: fix three missing checks on list iterator
-Date:   Mon, 15 Aug 2022 19:51:19 +0200
-Message-Id: <20220815180444.522818934@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0802/1095] RDMA/srpt: Duplicate port name members
+Date:   Mon, 15 Aug 2022 20:03:21 +0200
+Message-Id: <20220815180502.442574572@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,142 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit 09b204eb9de9fdf07d028c41c4331b5cfeb70dd7 upstream.
+[ Upstream commit b03b1ae2a3125d4475452e4f19f5d3a6e910ff6e ]
 
-The three bugs are here:
-	__func__, s3a_buf->s3a_data->exp_id);
-	__func__, md_buf->metadata->exp_id);
-	__func__, dis_buf->dis_data->exp_id);
+Prepare for decoupling the lifetimes of struct srpt_port and struct
+srpt_port_id by duplicating the port name into struct srpt_port.
 
-The list iterator 's3a_buf/md_buf/dis_buf' will point to a bogus
-position containing HEAD if the list is empty or no element is found.
-This case must be checked before any use of the iterator, otherwise
-it will lead to a invalid memory access.
-
-To fix this bug, add an check. Use a new variable '*_iter' as the
-list iterator, while use the old variable '*_buf' as a dedicated
-pointer to point to the found element.
-
-Link: https://lore.kernel.org/linux-media/20220414041415.3342-1-xiam0nd.tong@gmail.com
-Cc: stable@vger.kernel.org
-Fixes: ad85094b293e4 ("Revert "media: staging: atomisp: Remove driver"")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220727193415.1583860-2-bvanassche@acm.org
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_cmd.c |   57 +++++++++++++++---------
- 1 file changed, 36 insertions(+), 21 deletions(-)
+ drivers/infiniband/ulp/srpt/ib_srpt.c |  9 ++++++---
+ drivers/infiniband/ulp/srpt/ib_srpt.h | 10 +++++++---
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
---- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-@@ -901,9 +901,9 @@ void atomisp_buf_done(struct atomisp_sub
- 	int err;
- 	unsigned long irqflags;
- 	struct ia_css_frame *frame = NULL;
--	struct atomisp_s3a_buf *s3a_buf = NULL, *_s3a_buf_tmp;
--	struct atomisp_dis_buf *dis_buf = NULL, *_dis_buf_tmp;
--	struct atomisp_metadata_buf *md_buf = NULL, *_md_buf_tmp;
-+	struct atomisp_s3a_buf *s3a_buf = NULL, *_s3a_buf_tmp, *s3a_iter;
-+	struct atomisp_dis_buf *dis_buf = NULL, *_dis_buf_tmp, *dis_iter;
-+	struct atomisp_metadata_buf *md_buf = NULL, *_md_buf_tmp, *md_iter;
- 	enum atomisp_metadata_type md_type;
- 	struct atomisp_device *isp = asd->isp;
- 	struct v4l2_control ctrl;
-@@ -942,60 +942,75 @@ void atomisp_buf_done(struct atomisp_sub
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
+index f86ee1c4b970..8253d55b9c26 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.c
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
+@@ -566,14 +566,17 @@ static int srpt_refresh_port(struct srpt_port *sport)
+ 		return ret;
  
- 	switch (buf_type) {
- 	case IA_CSS_BUFFER_TYPE_3A_STATISTICS:
--		list_for_each_entry_safe(s3a_buf, _s3a_buf_tmp,
-+		list_for_each_entry_safe(s3a_iter, _s3a_buf_tmp,
- 					 &asd->s3a_stats_in_css, list) {
--			if (s3a_buf->s3a_data ==
-+			if (s3a_iter->s3a_data ==
- 			    buffer.css_buffer.data.stats_3a) {
--				list_del_init(&s3a_buf->list);
--				list_add_tail(&s3a_buf->list,
-+				list_del_init(&s3a_iter->list);
-+				list_add_tail(&s3a_iter->list,
- 					      &asd->s3a_stats_ready);
-+				s3a_buf = s3a_iter;
- 				break;
- 			}
- 		}
+ 	sport->port_guid_id.wwn.priv = sport;
+-	srpt_format_guid(sport->port_guid_id.name,
+-			 sizeof(sport->port_guid_id.name),
++	srpt_format_guid(sport->guid_name, ARRAY_SIZE(sport->guid_name),
+ 			 &sport->gid.global.interface_id);
++	memcpy(sport->port_guid_id.name, sport->guid_name,
++	       ARRAY_SIZE(sport->guid_name));
+ 	sport->port_gid_id.wwn.priv = sport;
+-	snprintf(sport->port_gid_id.name, sizeof(sport->port_gid_id.name),
++	snprintf(sport->gid_name, ARRAY_SIZE(sport->gid_name),
+ 		 "0x%016llx%016llx",
+ 		 be64_to_cpu(sport->gid.global.subnet_prefix),
+ 		 be64_to_cpu(sport->gid.global.interface_id));
++	memcpy(sport->port_gid_id.name, sport->gid_name,
++	       ARRAY_SIZE(sport->gid_name));
  
- 		asd->s3a_bufs_in_css[css_pipe_id]--;
- 		atomisp_3a_stats_ready_event(asd, buffer.css_buffer.exp_id);
--		dev_dbg(isp->dev, "%s: s3a stat with exp_id %d is ready\n",
--			__func__, s3a_buf->s3a_data->exp_id);
-+		if (s3a_buf)
-+			dev_dbg(isp->dev, "%s: s3a stat with exp_id %d is ready\n",
-+				__func__, s3a_buf->s3a_data->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: s3a stat is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_METADATA:
- 		if (error)
- 			break;
+ 	if (rdma_protocol_iwarp(sport->sdev->device, sport->port))
+ 		return 0;
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
+index 76e66f630c17..3844a7058559 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.h
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
+@@ -376,7 +376,7 @@ struct srpt_tpg {
+ };
  
- 		md_type = atomisp_get_metadata_type(asd, css_pipe_id);
--		list_for_each_entry_safe(md_buf, _md_buf_tmp,
-+		list_for_each_entry_safe(md_iter, _md_buf_tmp,
- 					 &asd->metadata_in_css[md_type], list) {
--			if (md_buf->metadata ==
-+			if (md_iter->metadata ==
- 			    buffer.css_buffer.data.metadata) {
--				list_del_init(&md_buf->list);
--				list_add_tail(&md_buf->list,
-+				list_del_init(&md_iter->list);
-+				list_add_tail(&md_iter->list,
- 					      &asd->metadata_ready[md_type]);
-+				md_buf = md_iter;
- 				break;
- 			}
- 		}
- 		asd->metadata_bufs_in_css[stream_id][css_pipe_id]--;
- 		atomisp_metadata_ready_event(asd, md_type);
--		dev_dbg(isp->dev, "%s: metadata with exp_id %d is ready\n",
--			__func__, md_buf->metadata->exp_id);
-+		if (md_buf)
-+			dev_dbg(isp->dev, "%s: metadata with exp_id %d is ready\n",
-+				__func__, md_buf->metadata->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: metadata is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_DIS_STATISTICS:
--		list_for_each_entry_safe(dis_buf, _dis_buf_tmp,
-+		list_for_each_entry_safe(dis_iter, _dis_buf_tmp,
- 					 &asd->dis_stats_in_css, list) {
--			if (dis_buf->dis_data ==
-+			if (dis_iter->dis_data ==
- 			    buffer.css_buffer.data.stats_dvs) {
- 				spin_lock_irqsave(&asd->dis_stats_lock,
- 						  irqflags);
--				list_del_init(&dis_buf->list);
--				list_add(&dis_buf->list, &asd->dis_stats);
-+				list_del_init(&dis_iter->list);
-+				list_add(&dis_iter->list, &asd->dis_stats);
- 				asd->params.dis_proj_data_valid = true;
- 				spin_unlock_irqrestore(&asd->dis_stats_lock,
- 						       irqflags);
-+				dis_buf = dis_iter;
- 				break;
- 			}
- 		}
- 		asd->dis_bufs_in_css--;
--		dev_dbg(isp->dev, "%s: dis stat with exp_id %d is ready\n",
--			__func__, dis_buf->dis_data->exp_id);
-+		if (dis_buf)
-+			dev_dbg(isp->dev, "%s: dis stat with exp_id %d is ready\n",
-+				__func__, dis_buf->dis_data->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: dis stat is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_VF_OUTPUT_FRAME:
- 	case IA_CSS_BUFFER_TYPE_SEC_VF_OUTPUT_FRAME:
+ /**
+- * struct srpt_port_id - information about an RDMA port name
++ * struct srpt_port_id - LIO RDMA port information
+  * @mutex:	Protects @tpg_list changes.
+  * @tpg_list:	TPGs associated with the RDMA port name.
+  * @wwn:	WWN associated with the RDMA port name.
+@@ -402,8 +402,10 @@ struct srpt_port_id {
+  * @lid:       cached value of the port's lid.
+  * @gid:       cached value of the port's gid.
+  * @work:      work structure for refreshing the aforementioned cached values.
+- * @port_guid_id: target port GUID
+- * @port_gid_id: target port GID
++ * @guid_name: port name in GUID format.
++ * @port_guid_id: LIO target port information for the port name in GUID format.
++ * @gid_name:  port name in GID format.
++ * @port_gid_id: LIO target port information for the port name in GID format.
+  * @port_attrib:   Port attributes that can be accessed through configfs.
+  * @refcount:	   Number of objects associated with this port.
+  * @freed_channels: Completion that will be signaled once @refcount becomes 0.
+@@ -419,7 +421,9 @@ struct srpt_port {
+ 	u32			lid;
+ 	union ib_gid		gid;
+ 	struct work_struct	work;
++	char			guid_name[64];
+ 	struct srpt_port_id	port_guid_id;
++	char			gid_name[64];
+ 	struct srpt_port_id	port_gid_id;
+ 	struct srpt_port_attrib port_attrib;
+ 	atomic_t		refcount;
+-- 
+2.35.1
+
 
 
