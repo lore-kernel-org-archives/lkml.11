@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D304C32757
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF782C2BB47
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347036AbiHOUQp (ORCPT
+        id S1346993AbiHOUQj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
+        Mon, 15 Aug 2022 16:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346112AbiHOUKs (ORCPT
+        with ESMTP id S1346712AbiHOUMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:10:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692FB64FD;
-        Mon, 15 Aug 2022 11:56:48 -0700 (PDT)
+        Mon, 15 Aug 2022 16:12:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04E184EFE;
+        Mon, 15 Aug 2022 11:58:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12D0EB81082;
-        Mon, 15 Aug 2022 18:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E7FC433D6;
-        Mon, 15 Aug 2022 18:56:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F11561267;
+        Mon, 15 Aug 2022 18:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802F7C433C1;
+        Mon, 15 Aug 2022 18:58:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589804;
-        bh=Wujj5i866p9om6sVU/5OKGHjwQgKQ35nherAfS8OOgs=;
+        s=korg; t=1660589894;
+        bh=Dc4YOQQ6zjvzDoMoV0wOA2bk8tMQqRdubB3LBNCpDCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1b69kOmwzoLvxg5QBId2FYNh3F2K8WOv2CwxLMH5rW1jGGb7dbQr5jYWrgZgSGJou
-         uT4beftPI9j4XOxXxrr3Qn2UQ07G+sexqf2sxCHXtp9+S4EZJhVbEpsZIHqpZFCLXa
-         7NKgoAK8Cg/q4NGlFW98l1X6Ht4uYqxY1UjHYfK8=
+        b=h0qKciH1KGscbrYdNhDnLkQRGAwG1EtyEelZ2x7szrELU9nm4nVXR1lKTOqEJTO7Z
+         ip7w/00mFVtx2yG3NB1aW3Hhdi9ZtseZuFeY4UQpV6No6J5reFB6gZL5cWxNnLBigz
+         lU5OQ83a5BzTAkbRx8M+5XdCHEoUgw8YcgwCD+iQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>, stable@kernel.org
-Subject: [PATCH 5.18 0053/1095] fix short copy handling in copy_mc_pipe_to_iter()
-Date:   Mon, 15 Aug 2022 19:50:52 +0200
-Message-Id: <20220815180431.667421965@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH 5.18 0082/1095] drm/nouveau/acpi: Dont print error when we get -EINPROGRESS from pm_runtime
+Date:   Mon, 15 Aug 2022 19:51:21 +0200
+Message-Id: <20220815180432.911868080@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,82 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Lyude Paul <lyude@redhat.com>
 
-commit c3497fd009ef2c59eea60d21c3ac22de3585ed7d upstream.
+commit 53c26181950ddc3c8ace3c0939c89e9c4d8deeb9 upstream.
 
-Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
-result in a short copy.  In that case we need to trim the unused
-buffers, as well as the length of partially filled one - it's not
-enough to set ->head, ->iov_offset and ->count to reflect how
-much had we copied.  Not hard to fix, fortunately...
+Since this isn't actually a failure.
 
-I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
-rather than iov_iter.c - it has nothing to do with iov_iter and
-having it will allow us to avoid an ugly kludge in fs/splice.c.
-We could put it into lib/iov_iter.c for now and move it later,
-but I don't see the point going that way...
-
-Cc: stable@kernel.org # 4.19+
-Fixes: ca146f6f091e "lib/iov_iter: Fix pipe handling in _copy_to_iter_mcsafe()"
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Reviewed-by: David Airlie <airlied@linux.ie>
+Fixes: 79e765ad665d ("drm/nouveau/drm/nouveau: Prevent handling ACPI HPD events too early")
+Cc: <stable@vger.kernel.org> # v4.19+
+Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-2-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pipe_fs_i.h |    9 +++++++++
- lib/iov_iter.c            |   15 +++++++++++----
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/pipe_fs_i.h
-+++ b/include/linux/pipe_fs_i.h
-@@ -229,6 +229,15 @@ static inline bool pipe_buf_try_steal(st
- 	return buf->ops->try_steal(pipe, buf);
- }
- 
-+static inline void pipe_discard_from(struct pipe_inode_info *pipe,
-+		unsigned int old_head)
-+{
-+	unsigned int mask = pipe->ring_size - 1;
-+
-+	while (pipe->head > old_head)
-+		pipe_buf_release(pipe, &pipe->bufs[--pipe->head & mask]);
-+}
-+
- /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
-    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
- #define PIPE_SIZE		PAGE_SIZE
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -689,6 +689,7 @@ static size_t copy_mc_pipe_to_iter(const
- 	struct pipe_inode_info *pipe = i->pipe;
- 	unsigned int p_mask = pipe->ring_size - 1;
- 	unsigned int i_head;
-+	unsigned int valid = pipe->head;
- 	size_t n, off, xfer = 0;
- 
- 	if (!sanity(i))
-@@ -702,11 +703,17 @@ static size_t copy_mc_pipe_to_iter(const
- 		rem = copy_mc_to_kernel(p + off, addr + xfer, chunk);
- 		chunk -= rem;
- 		kunmap_local(p);
--		i->head = i_head;
--		i->iov_offset = off + chunk;
--		xfer += chunk;
--		if (rem)
-+		if (chunk) {
-+			i->head = i_head;
-+			i->iov_offset = off + chunk;
-+			xfer += chunk;
-+			valid = i_head + 1;
-+		}
-+		if (rem) {
-+			pipe->bufs[i_head & p_mask].len -= rem;
-+			pipe_discard_from(pipe, valid);
- 			break;
-+		}
- 		n -= chunk;
- 		off = 0;
- 		i_head++;
+--- a/drivers/gpu/drm/nouveau/nouveau_display.c
++++ b/drivers/gpu/drm/nouveau/nouveau_display.c
+@@ -537,7 +537,7 @@ nouveau_display_acpi_ntfy(struct notifie
+ 				 * it's own hotplug events.
+ 				 */
+ 				pm_runtime_put_autosuspend(drm->dev->dev);
+-			} else if (ret == 0) {
++			} else if (ret == 0 || ret == -EINPROGRESS) {
+ 				/* We've started resuming the GPU already, so
+ 				 * it will handle scheduling a full reprobe
+ 				 * itself
 
 
