@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B680C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20469C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344323AbiHOTkB (ORCPT
+        id S1344335AbiHOTkH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
+        Mon, 15 Aug 2022 15:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344455AbiHOTgm (ORCPT
+        with ESMTP id S1344437AbiHOTgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:36:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282F731211;
-        Mon, 15 Aug 2022 11:46:09 -0700 (PDT)
+        Mon, 15 Aug 2022 15:36:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A615B30F6B;
+        Mon, 15 Aug 2022 11:46:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B923A611DD;
-        Mon, 15 Aug 2022 18:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5FBC433D6;
-        Mon, 15 Aug 2022 18:46:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 514D5B81071;
+        Mon, 15 Aug 2022 18:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD77C433C1;
+        Mon, 15 Aug 2022 18:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589168;
-        bh=mUVe9/nmN1h9AHULm+LGHsm4E1xXlvp9qIYrPIpf/lU=;
+        s=korg; t=1660589165;
+        bh=NQ/7lkw2mnIkkDW+T812q2jdHGkwZYAPQVpi7RPSVnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Vfbnlr1dxSa6hhiifsuXUVtRBKWPTWQQTOE6NCBQZOtsx+xOssruU0KJTkVYNtnp
-         jst2hoDhSJOwBV7hwVjt24PM4vpeWL85H4QrHU+7JASAYSaFVsOYgBupcv+9cgRLtN
-         cXJ7fxRSV39m4MR07rqh8ypw6RUvjbNfSjbf5QvA=
+        b=xhvZxD6JBY4IRjD7gSluDFw0MGyDBvRYoWzr2ATCj5LCqTa3tdN3b6WhWwJzlM2jS
+         bX2Jesw0afpIV/pofEJsl8H9baGSiNT3RyCre26OdFGBfwEnRzo8RH6WGyLCH7pwre
+         hHyfZf00GtFO4jKHYqzdvUwT0fgsWcqlqMkGgVMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 627/779] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
-Date:   Mon, 15 Aug 2022 20:04:31 +0200
-Message-Id: <20220815180404.173912748@linuxfoundation.org>
+Subject: [PATCH 5.15 592/779] ASoC: imx-card: Fix DSD/PDM mclk frequency
+Date:   Mon, 15 Aug 2022 20:03:56 +0200
+Message-Id: <20220815180402.631828875@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,35 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
+[ Upstream commit c0fabd12a8570cb932f13d9388f3d887ad44369b ]
 
-find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
-So 'idx' should be tested with ">=" or the test can't match.
+The DSD/PDM rate not only DSD64/128/256/512, which are the
+multiple rate of 44.1kHz,  but also support the multiple
+rate of 8kHz, so can't force all mclk frequency to be
+22579200Hz, need to assign the frequency according to
+rate.
 
-Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
+Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1657100575-8261-1-git-send-email-shengjiu.wang@nxp.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/qdsp6/q6adm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/imx-card.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
-index 3d831b635524..4ae97afe9062 100644
---- a/sound/soc/qcom/qdsp6/q6adm.c
-+++ b/sound/soc/qcom/qdsp6/q6adm.c
-@@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
- 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
- 				  MAX_COPPS_PER_PORT);
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index 55bc1bb0dbbd..b28b30c69a3f 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -17,6 +17,9 @@
  
--	if (idx > MAX_COPPS_PER_PORT)
-+	if (idx >= MAX_COPPS_PER_PORT)
- 		return ERR_PTR(-EBUSY);
+ #include "fsl_sai.h"
  
- 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
++#define IMX_CARD_MCLK_22P5792MHZ  22579200
++#define IMX_CARD_MCLK_24P576MHZ   24576000
++
+ enum codec_type {
+ 	CODEC_DUMMY = 0,
+ 	CODEC_AK5558 = 1,
+@@ -353,9 +356,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
+ 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
+ 	else
+ 		mclk_freq = params_rate(params) * slots * slot_width;
+-	/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
+-	if (format_is_dsd(params))
+-		mclk_freq = 22579200;
++
++	if (format_is_dsd(params)) {
++		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
++		if (!(params_rate(params) % 11025))
++			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
++		else
++			mclk_freq = IMX_CARD_MCLK_24P576MHZ;
++	}
+ 
+ 	ret = snd_soc_dai_set_sysclk(cpu_dai, link_data->cpu_sysclk_id, mclk_freq,
+ 				     SND_SOC_CLOCK_OUT);
 -- 
 2.35.1
 
