@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2B4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA561C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243825AbiHOWEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
+        id S245479AbiHOWEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349948AbiHOWBr (ORCPT
+        with ESMTP id S1350086AbiHOWBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F30112F88;
-        Mon, 15 Aug 2022 12:36:06 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C29112FB6;
+        Mon, 15 Aug 2022 12:36:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D4A6113B;
-        Mon, 15 Aug 2022 19:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8ED1C433D7;
-        Mon, 15 Aug 2022 19:36:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1511B81142;
+        Mon, 15 Aug 2022 19:36:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7922FC433D6;
+        Mon, 15 Aug 2022 19:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592165;
-        bh=PnK96AcJoNH02OrlMKcpheKhKI/ZKO5ifjdCqo9v2nI=;
+        s=korg; t=1660592162;
+        bh=wp7hdPxu6ia6rtSa1iMl9K8eSmzVjZoytHNlJt9raVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xikvCP/99cGXvUQ3XldHoR1npBRDdY2QzJZE2cdNV0rW4cf1ToECd+KuELnr5HNEz
-         VTlm2PsaN5QaIurcZ8LJDB8/NnDZPQSNu4V0Kz5C0fLt5UX/MBf3xA+Ey8cLot0WZe
-         RyI4/FR4CoYhzKIXgBkwKvohh+IVGweg5v6hu4CA=
+        b=X0mLnWk0iCnBUUVkqG+a4MXzt1XWF560H/sjVRhn2xog4CWUZEZ4GveteevGfjBN7
+         3lRnSNBc/WIDvHvzA76gDyUUa3K/gPZ5Y1u41pjt9glyATJV+tZZgSKvJejDJntm+j
+         kFYe98+fDLSoTemx1boBqimW5aMRrl3hvDEM1ZwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Lifu <chenlifu@huawei.com>,
-        Ben Dooks <ben.dooks@codethink.co.uk>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0068/1157] riscv: lib: uaccess: fix CSR_STATUS SR_SUM bit
-Date:   Mon, 15 Aug 2022 19:50:24 +0200
-Message-Id: <20220815180442.218601764@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0743/1095] memstick/ms_block: Fix some incorrect memory allocation
+Date:   Mon, 15 Aug 2022 20:02:22 +0200
+Message-Id: <20220815180500.110410011@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Lifu <chenlifu@huawei.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit c08b4848f596fd95543197463b5162bd7bab2442 upstream.
+[ Upstream commit 2e531bc3e0d86362fcd8a577b3278d9ef3cc2ba0 ]
 
-Since commit 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
-and commit ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code"),
-if __clear_user and __copy_user return from an fixup branch,
-CSR_STATUS SR_SUM bit will be set, it is a vulnerability, so that
-S-mode memory accesses to pages that are accessible by U-mode will success.
-Disable S-mode access to U-mode memory should clear SR_SUM bit.
+Some functions of the bitmap API take advantage of the fact that a bitmap
+is an array of long.
 
-Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
-Fixes: ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code")
-Signed-off-by: Chen Lifu <chenlifu@huawei.com>
-Reviewed-by: Ben Dooks <ben.dooks@codethink.co.uk>
-Link: https://lore.kernel.org/r/20220615014714.1650349-1-chenlifu@huawei.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So, to make sure this assertion is correct, allocate bitmaps with
+bitmap_zalloc() instead of kzalloc()+hand-computed number of bytes.
+
+While at it, also use bitmap_free() instead of kfree() to keep the
+semantic.
+
+Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/dbf633c48c24ae6d95f852557e8d8b3bbdef65fe.1656155715.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/lib/uaccess.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/memstick/core/ms_block.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/arch/riscv/lib/uaccess.S
-+++ b/arch/riscv/lib/uaccess.S
-@@ -175,7 +175,7 @@ ENTRY(__asm_copy_from_user)
- 	/* Exception fixup code */
- 10:
- 	/* Disable access to user memory */
--	csrs CSR_STATUS, t6
-+	csrc CSR_STATUS, t6
- 	mv a0, t5
- 	ret
- ENDPROC(__asm_copy_to_user)
-@@ -227,7 +227,7 @@ ENTRY(__clear_user)
- 	/* Exception fixup code */
- 11:
- 	/* Disable access to user memory */
--	csrs CSR_STATUS, t6
-+	csrc CSR_STATUS, t6
- 	mv a0, a1
- 	ret
- ENDPROC(__clear_user)
+diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
+index 3993bdd4b519..f8f151163667 100644
+--- a/drivers/memstick/core/ms_block.c
++++ b/drivers/memstick/core/ms_block.c
+@@ -1341,17 +1341,17 @@ static int msb_ftl_initialize(struct msb_data *msb)
+ 	msb->zone_count = msb->block_count / MS_BLOCKS_IN_ZONE;
+ 	msb->logical_block_count = msb->zone_count * 496 - 2;
+ 
+-	msb->used_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
+-	msb->erased_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
++	msb->used_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
++	msb->erased_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
+ 	msb->lba_to_pba_table =
+ 		kmalloc_array(msb->logical_block_count, sizeof(u16),
+ 			      GFP_KERNEL);
+ 
+ 	if (!msb->used_blocks_bitmap || !msb->lba_to_pba_table ||
+ 						!msb->erased_blocks_bitmap) {
+-		kfree(msb->used_blocks_bitmap);
++		bitmap_free(msb->used_blocks_bitmap);
++		bitmap_free(msb->erased_blocks_bitmap);
+ 		kfree(msb->lba_to_pba_table);
+-		kfree(msb->erased_blocks_bitmap);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -1946,7 +1946,7 @@ static DEFINE_MUTEX(msb_disk_lock); /* protects against races in open/release */
+ static void msb_data_clear(struct msb_data *msb)
+ {
+ 	kfree(msb->boot_page);
+-	kfree(msb->used_blocks_bitmap);
++	bitmap_free(msb->used_blocks_bitmap);
+ 	kfree(msb->lba_to_pba_table);
+ 	kfree(msb->cache);
+ 	msb->card = NULL;
+-- 
+2.35.1
+
 
 
