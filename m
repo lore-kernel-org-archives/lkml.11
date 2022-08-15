@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCECCC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC89C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346182AbiHOUT1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
+        id S243450AbiHOUTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346283AbiHOULI (ORCPT
+        with ESMTP id S1347025AbiHOUMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0636C19285;
-        Mon, 15 Aug 2022 11:57:32 -0700 (PDT)
+        Mon, 15 Aug 2022 16:12:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFF289CF9;
+        Mon, 15 Aug 2022 11:58:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C442E6126D;
-        Mon, 15 Aug 2022 18:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A4FC433D7;
-        Mon, 15 Aug 2022 18:57:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D3496CE129D;
+        Mon, 15 Aug 2022 18:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCBB5C433D6;
+        Mon, 15 Aug 2022 18:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589851;
-        bh=KKc5u0c4svxwVAcIxxjFmvahLmLCXSorZlxcM4OLRUU=;
+        s=korg; t=1660589926;
+        bh=/Uxe+l8gUs8wUOcFTLTxxqtvEkCdZRTt4cEZRSDrAr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZEm9ZVsImEKThcmT4hmWlp6hPSAHG2+5KrBP5qpVtJsAXDbPcOdXUYG7ul4NPZkL
-         K2FxoZWgBZs926qpGEt7/CUOhdy2svaZUaMjqluWltjFa9wXfEdyD7OcTUuNGTXzHl
-         oEnnYAviDNDsDjNCL8UkjNTvi/odPTt9EqqUx9/k=
+        b=ZNhRrlm/FGMvlu6q1x775FKszWoxF7LcAAdXCnwLdCIuwQQL6LzNhpkP+YIyk0JJk
+         fEwONfJPDZ2Gl7w2VIS5o25gSs41SNBEls7fR0cEbmNirv3FwGlL0Mq/lmejeJdryU
+         s4a1yu3eE3q2ceJiHxeiaMHkd3aRBcSdrdNlTSvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 0027/1095] KVM: Drop unused @gpa param from gfn=>pfn caches __release_gpc() helper
-Date:   Mon, 15 Aug 2022 19:50:26 +0200
-Message-Id: <20220815180430.481743335@linuxfoundation.org>
+        stable@vger.kernel.org, Fawzi Khaber <fawzi.khaber@tdk.com>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.18 0092/1095] iio: fix iio_format_avail_range() printing for none IIO_VAL_INT
+Date:   Mon, 15 Aug 2022 19:51:31 +0200
+Message-Id: <20220815180433.342708066@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,86 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Fawzi Khaber <fawzi.khaber@tdk.com>
 
-commit 345b0fd6fe5f66dfe841bad0b39dd11a5672df68 upstream.
+commit 5e1f91850365de55ca74945866c002fda8f00331 upstream.
 
-Drop the @pga param from __release_gpc() and rename the helper to make it
-more obvious that the cache itself is not being released.  The helper
-will be reused by a future commit to release a pfn+khva combination that
-is _never_ associated with the cache, at which point the current name
-would go from slightly misleading to blatantly wrong.
+iio_format_avail_range() should print range as follow [min, step, max], so
+the function was previously calling iio_format_list() with length = 3,
+length variable refers to the array size of values not the number of
+elements. In case of non IIO_VAL_INT values each element has integer part
+and decimal part. With length = 3 this would cause premature end of loop
+and result in printing only one element.
 
-No functional change intended.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220429210025.3293691-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Fawzi Khaber <fawzi.khaber@tdk.com>
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Fixes: eda20ba1e25e ("iio: core: Consolidate iio_format_avail_{list,range}()")
+Link: https://lore.kernel.org/r/20220718130706.32571-1-jmaneyrol@invensense.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/pfncache.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/iio/industrialio-core.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -95,7 +95,7 @@ bool kvm_gfn_to_pfn_cache_check(struct k
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_check);
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -821,7 +821,23 @@ static ssize_t iio_format_avail_list(cha
  
--static void __release_gpc(struct kvm *kvm, kvm_pfn_t pfn, void *khva, gpa_t gpa)
-+static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
+ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
  {
- 	/* Unmap the old page if it was mapped before, and release it */
- 	if (!is_error_noslot_pfn(pfn)) {
-@@ -146,7 +146,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 	unsigned long page_offset = gpa & ~PAGE_MASK;
- 	kvm_pfn_t old_pfn, new_pfn;
- 	unsigned long old_uhva;
--	gpa_t old_gpa;
- 	void *old_khva;
- 	bool old_valid;
- 	int ret = 0;
-@@ -160,7 +159,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 
- 	write_lock_irq(&gpc->lock);
- 
--	old_gpa = gpc->gpa;
- 	old_pfn = gpc->pfn;
- 	old_khva = gpc->khva - offset_in_page(gpc->khva);
- 	old_uhva = gpc->uhva;
-@@ -244,7 +242,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
-  out:
- 	write_unlock_irq(&gpc->lock);
- 
--	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
-+	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- 
- 	return ret;
+-	return iio_format_list(buf, vals, type, 3, "[", "]");
++	int length;
++
++	/*
++	 * length refers to the array size , not the number of elements.
++	 * The purpose is to print the range [min , step ,max] so length should
++	 * be 3 in case of int, and 6 for other types.
++	 */
++	switch (type) {
++	case IIO_VAL_INT:
++		length = 3;
++		break;
++	default:
++		length = 6;
++		break;
++	}
++
++	return iio_format_list(buf, vals, type, length, "[", "]");
  }
-@@ -254,14 +252,12 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- {
- 	void *old_khva;
- 	kvm_pfn_t old_pfn;
--	gpa_t old_gpa;
  
- 	write_lock_irq(&gpc->lock);
- 
- 	gpc->valid = false;
- 
- 	old_khva = gpc->khva - offset_in_page(gpc->khva);
--	old_gpa = gpc->gpa;
- 	old_pfn = gpc->pfn;
- 
- 	/*
-@@ -273,7 +269,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- 
- 	write_unlock_irq(&gpc->lock);
- 
--	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
-+	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_unmap);
- 
+ static ssize_t iio_read_channel_info_avail(struct device *dev,
 
 
