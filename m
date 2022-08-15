@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64636C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A92C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348087AbiHPA5b (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
+        id S244043AbiHPA6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347638AbiHPAvw (ORCPT
+        with ESMTP id S1347923AbiHPAv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:51:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FC119B70D;
-        Mon, 15 Aug 2022 13:47:24 -0700 (PDT)
+        Mon, 15 Aug 2022 20:51:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E764DA3C1;
+        Mon, 15 Aug 2022 13:47:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB01461274;
-        Mon, 15 Aug 2022 20:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB32FC433C1;
-        Mon, 15 Aug 2022 20:47:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29BF8B8114A;
+        Mon, 15 Aug 2022 20:47:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFE6C433D6;
+        Mon, 15 Aug 2022 20:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596443;
-        bh=7X7MmrZ08bBgdzIW1Zl5Wy+KfjZsXVE18OZDafYU/S0=;
+        s=korg; t=1660596430;
+        bh=b36WB6IAy6WVS7Me8ov6v93+IVXEGpv3YEPhTmt49s0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fRtG0vYRwV++xlHaL8VW0UIoeKVxBQ83ByA6/bZiIhdatu6PGUs2n7m34BbHLMJZ3
-         gl5R3QK8XdQjMrIXTEyMKbFPzW4VXymKxcGxNLkOTEq8yFKObLNeTDcEQnxYG3gRnJ
-         UUjgj5ZsXQ9ZKncbl16i4e35RFEZHNMYwni7tK5Q=
+        b=RCyoz3fkCNrky7aByoQ+LF6NT2WJu7Hl9kkkG+DrsaF2OL6yVa6EG0dorhcKmXera
+         UPhqOcCAZTZUIL71BHVnWiUBMAwUbZBHX1ReGNlZyGNmq1tUl/KpVevMo3jcIGa6HY
+         V9qUA1PATiyj9dmCpSXpQBtzKI/8UjbqttXyiYuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.19 1047/1157] ftrace/x86: Add back ftrace_expected assignment
-Date:   Mon, 15 Aug 2022 20:06:43 +0200
-Message-Id: <20220815180521.924584593@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1076/1157] timekeeping: contribute wall clock to rng on time change
+Date:   Mon, 15 Aug 2022 20:07:12 +0200
+Message-Id: <20220815180523.167658976@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,44 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit ac6c1b2ca77e722a1e5d651f12f437f2f237e658 upstream.
+[ Upstream commit b8ac29b40183a6038919768b5d189c9bd91ce9b4 ]
 
-When a ftrace_bug happens (where ftrace fails to modify a location) it is
-helpful to have what was at that location as well as what was expected to
-be there.
+The rng's random_init() function contributes the real time to the rng at
+boot time, so that events can at least start in relation to something
+particular in the real world. But this clock might not yet be set that
+point in boot, so nothing is contributed. In addition, the relation
+between minor clock changes from, say, NTP, and the cycle counter is
+potentially useful entropic data.
 
-But with the conversion to text_poke() the variable that assigns the
-expected for debugging was dropped. Unfortunately, I noticed this when I
-needed it. Add it back.
+This commit addresses this by mixing in a time stamp on calls to
+settimeofday and adjtimex. No entropy is credited in doing so, so it
+doesn't make initialization faster, but it is still useful input to
+have.
 
-Link: https://lkml.kernel.org/r/20220726101851.069d2e70@gandalf.local.home
-
-Cc: "x86@kernel.org" <x86@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable@vger.kernel.org
-Fixes: 768ae4406a5c ("x86/ftrace: Use text_poke()")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/ftrace.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/time/timekeeping.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -91,6 +91,7 @@ static int ftrace_verify_code(unsigned l
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 8e4b3c32fcf9..f72b9f1de178 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -23,6 +23,7 @@
+ #include <linux/pvclock_gtod.h>
+ #include <linux/compiler.h>
+ #include <linux/audit.h>
++#include <linux/random.h>
  
- 	/* Make sure it is what we expect it to be */
- 	if (memcmp(cur_code, old_code, MCOUNT_INSN_SIZE) != 0) {
-+		ftrace_expected = old_code;
- 		WARN_ON(1);
- 		return -EINVAL;
- 	}
+ #include "tick-internal.h"
+ #include "ntp_internal.h"
+@@ -1343,8 +1344,10 @@ int do_settimeofday64(const struct timespec64 *ts)
+ 	/* Signal hrtimers about time change */
+ 	clock_was_set(CLOCK_SET_WALL);
+ 
+-	if (!ret)
++	if (!ret) {
+ 		audit_tk_injoffset(ts_delta);
++		add_device_randomness(ts, sizeof(*ts));
++	}
+ 
+ 	return ret;
+ }
+@@ -2430,6 +2433,7 @@ int do_adjtimex(struct __kernel_timex *txc)
+ 	ret = timekeeping_validate_timex(txc);
+ 	if (ret)
+ 		return ret;
++	add_device_randomness(txc, sizeof(*txc));
+ 
+ 	if (txc->modes & ADJ_SETOFFSET) {
+ 		struct timespec64 delta;
+@@ -2447,6 +2451,7 @@ int do_adjtimex(struct __kernel_timex *txc)
+ 	audit_ntp_init(&ad);
+ 
+ 	ktime_get_real_ts64(&ts);
++	add_device_randomness(&ts, sizeof(ts));
+ 
+ 	raw_spin_lock_irqsave(&timekeeper_lock, flags);
+ 	write_seqcount_begin(&tk_core.seq);
+-- 
+2.35.1
+
 
 
