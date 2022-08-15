@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A395C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237E9C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241407AbiHOTSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
+        id S1343738AbiHOTTl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343785AbiHOTOH (ORCPT
+        with ESMTP id S1344504AbiHOTQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:14:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC74051421;
-        Mon, 15 Aug 2022 11:37:40 -0700 (PDT)
+        Mon, 15 Aug 2022 15:16:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B6B2DAAE;
+        Mon, 15 Aug 2022 11:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37A17B81081;
-        Mon, 15 Aug 2022 18:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90728C433D6;
-        Mon, 15 Aug 2022 18:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8842060FB8;
+        Mon, 15 Aug 2022 18:38:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D66DC433C1;
+        Mon, 15 Aug 2022 18:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588657;
-        bh=X3qPuLav52OOzYvZwltcATXGFNNz09hxt2osJYcE06Y=;
+        s=korg; t=1660588697;
+        bh=TSsNCgelctt+58xqKftZUVvkb58cH3/mqhqsM63/6wk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h6hIDkD3nK0mZnygtbMiU0U6tsmIYQB1c3f8e1vo1SDrBeCAvr+Ak3l9LxEP5fnyJ
-         qxuxbjtyOYA0vtlIw1HesNUhoVe2sy6t/0qoBuzVbmFaIAxnKvEMiUbmGy3tclu+6Z
-         4sFwMZ38FKHWTyRKG8g5SXZu2eeD+B7b2sk0gNcw=
+        b=ImZRJ3G5vhtua67goD7jj1CBoVJna/WDec7uV68lAIN8pVYf4pOQIXLGRXI6IEs62
+         FrcXZarGpoQ5mFzIWjJr0pEOG3u6kqyMGWqBqiuovoy82xFzRKSH6E5IgTpxu7Dras
+         I3L2coBYEGkHgv0NXQFQ6ebMhwiwkbXPzRq2FNUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Carlos Llamas <cmllamas@google.com>,
+        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 474/779] binder: fix redefinition of seq_file attributes
-Date:   Mon, 15 Aug 2022 20:01:58 +0200
-Message-Id: <20220815180357.535529555@linuxfoundation.org>
+Subject: [PATCH 5.15 485/779] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
+Date:   Mon, 15 Aug 2022 20:02:09 +0200
+Message-Id: <20220815180357.995081206@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,344 +56,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlos Llamas <cmllamas@google.com>
+From: Stefan Roese <sr@denx.de>
 
-[ Upstream commit b7e241bbff24f9e106bf616408fd58bcedc44bae ]
+[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
 
-The patchset in [1] exported some definitions to binder_internal.h in
-order to make the debugfs entries such as 'stats' and 'transaction_log'
-available in a binderfs instance. However, the DEFINE_SHOW_ATTRIBUTE
-macro expands into a static function/variable pair, which in turn get
-redefined each time a source file includes this internal header.
+AER reporting is currently disabled in the DevCtl registers of all non Root
+Port PCIe devices on systems using pcie_ports_native || host->native_aer,
+disabling AER completely in such systems. This is because 2bd50dd800b5
+("PCI: PCIe: Disable PCIe port services during port initialization"), added
+a call to pci_disable_pcie_error_reporting() *after* the AER setup was
+completed for the PCIe device tree.
 
-This problem was made evident after a report from the kernel test robot
-<lkp@intel.com> where several W=1 build warnings are seen in downstream
-kernels. See the following example:
+Here a longer analysis about the current status of AER enabling /
+disabling upon bootup provided by Bjorn:
 
-  include/../drivers/android/binder_internal.h:111:23: warning: 'binder_stats_fops' defined but not used [-Wunused-const-variable=]
-     111 | DEFINE_SHOW_ATTRIBUTE(binder_stats);
-         |                       ^~~~~~~~~~~~
-  include/linux/seq_file.h:174:37: note: in definition of macro 'DEFINE_SHOW_ATTRIBUTE'
-     174 | static const struct file_operations __name ## _fops = {                 \
-         |                                     ^~~~~~
+  pcie_portdrv_probe
+    pcie_port_device_register
+      get_port_device_capability
+        pci_disable_pcie_error_reporting
+          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
+      pcie_device_init
+        device_register                            # new AER service device
+          aer_probe
+            aer_enable_rootport                    # RP only
+              set_downstream_devices_error_reporting
+                set_device_error_reporting         # self (RP)
+                  if (RP || USP || DSP)
+                    pci_enable_pcie_error_reporting
+                      set CERE NFERE FERE URRE     # <-- enable for RP
+                pci_walk_bus
+                  set_device_error_reporting
+                    if (RP || USP || DSP)
+                      pci_enable_pcie_error_reporting
+                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
 
-This patch fixes the above issues by moving back the definitions into
-binder.c and instead creates an array of the debugfs entries which is
-more convenient to share with binderfs and iterate through.
+In a typical Root Port -> Endpoint hierarchy, the above:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port.
 
-  [1] https://lore.kernel.org/all/20190903161655.107408-1-hridya@google.com/
+In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
+Port -> Endpoint hierarchy:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Enables Error Reporting for both Switch Ports,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port,
+  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
+    claims them.  AER does not re-enable it because these are not Root
+    Ports.
 
-Fixes: 0e13e452dafc ("binder: Add stats, state and transactions files")
-Fixes: 03e2e07e3814 ("binder: Make transaction_log available in binderfs")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Link: https://lore.kernel.org/r/20220701182041.2134313-1-cmllamas@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Remove this call to pci_disable_pcie_error_reporting() from
+get_port_device_capability(), leaving the already enabled AER configuration
+intact. With this change, AER is enabled in the Root Port and the PCIe
+switch upstream and downstream ports. Only the PCIe Endpoints don't have
+AER enabled yet. A follow-up patch will take care of this Endpoint
+enabling.
+
+Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
+Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
+Signed-off-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc: Naveen Naidu <naveennaidu479@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/android/binder.c          | 114 +++++++++++++++++++++---------
- drivers/android/binder_internal.h |  46 +++---------
- drivers/android/binderfs.c        |  47 +++---------
- 3 files changed, 100 insertions(+), 107 deletions(-)
+ drivers/pci/pcie/portdrv_core.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 99ae919255f4..56a2387656a0 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -170,8 +170,32 @@ static inline void binder_stats_created(enum binder_stat_types type)
- 	atomic_inc(&binder_stats.obj_created[type]);
- }
+diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+index 604feeb84ee4..1ac7fec47d6f 100644
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -222,15 +222,8 @@ static int get_port_device_capability(struct pci_dev *dev)
  
--struct binder_transaction_log binder_transaction_log;
--struct binder_transaction_log binder_transaction_log_failed;
-+struct binder_transaction_log_entry {
-+	int debug_id;
-+	int debug_id_done;
-+	int call_type;
-+	int from_proc;
-+	int from_thread;
-+	int target_handle;
-+	int to_proc;
-+	int to_thread;
-+	int to_node;
-+	int data_size;
-+	int offsets_size;
-+	int return_error_line;
-+	uint32_t return_error;
-+	uint32_t return_error_param;
-+	char context_name[BINDERFS_MAX_NAME + 1];
-+};
-+
-+struct binder_transaction_log {
-+	atomic_t cur;
-+	bool full;
-+	struct binder_transaction_log_entry entry[32];
-+};
-+
-+static struct binder_transaction_log binder_transaction_log;
-+static struct binder_transaction_log binder_transaction_log_failed;
- 
- static struct binder_transaction_log_entry *binder_transaction_log_add(
- 	struct binder_transaction_log *log)
-@@ -5801,8 +5825,7 @@ static void print_binder_proc_stats(struct seq_file *m,
- 	print_binder_stats(m, "  ", &proc->stats);
- }
- 
+ #ifdef CONFIG_PCIEAER
+ 	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer)) {
++	    (pcie_ports_native || host->native_aer))
+ 		services |= PCIE_PORT_SERVICE_AER;
 -
--int binder_state_show(struct seq_file *m, void *unused)
-+static int state_show(struct seq_file *m, void *unused)
- {
- 	struct binder_proc *proc;
- 	struct binder_node *node;
-@@ -5841,7 +5864,7 @@ int binder_state_show(struct seq_file *m, void *unused)
- 	return 0;
- }
- 
--int binder_stats_show(struct seq_file *m, void *unused)
-+static int stats_show(struct seq_file *m, void *unused)
- {
- 	struct binder_proc *proc;
- 
-@@ -5857,7 +5880,7 @@ int binder_stats_show(struct seq_file *m, void *unused)
- 	return 0;
- }
- 
--int binder_transactions_show(struct seq_file *m, void *unused)
-+static int transactions_show(struct seq_file *m, void *unused)
- {
- 	struct binder_proc *proc;
- 
-@@ -5913,7 +5936,7 @@ static void print_binder_transaction_log_entry(struct seq_file *m,
- 			"\n" : " (incomplete)\n");
- }
- 
--int binder_transaction_log_show(struct seq_file *m, void *unused)
-+static int transaction_log_show(struct seq_file *m, void *unused)
- {
- 	struct binder_transaction_log *log = m->private;
- 	unsigned int log_cur = atomic_read(&log->cur);
-@@ -5945,6 +5968,45 @@ const struct file_operations binder_fops = {
- 	.release = binder_release,
- };
- 
-+DEFINE_SHOW_ATTRIBUTE(state);
-+DEFINE_SHOW_ATTRIBUTE(stats);
-+DEFINE_SHOW_ATTRIBUTE(transactions);
-+DEFINE_SHOW_ATTRIBUTE(transaction_log);
-+
-+const struct binder_debugfs_entry binder_debugfs_entries[] = {
-+	{
-+		.name = "state",
-+		.mode = 0444,
-+		.fops = &state_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "stats",
-+		.mode = 0444,
-+		.fops = &stats_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "transactions",
-+		.mode = 0444,
-+		.fops = &transactions_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "transaction_log",
-+		.mode = 0444,
-+		.fops = &transaction_log_fops,
-+		.data = &binder_transaction_log,
-+	},
-+	{
-+		.name = "failed_transaction_log",
-+		.mode = 0444,
-+		.fops = &transaction_log_fops,
-+		.data = &binder_transaction_log_failed,
-+	},
-+	{} /* terminator */
-+};
-+
- static int __init init_binder_device(const char *name)
- {
- 	int ret;
-@@ -5990,36 +6052,18 @@ static int __init binder_init(void)
- 	atomic_set(&binder_transaction_log_failed.cur, ~0U);
- 
- 	binder_debugfs_dir_entry_root = debugfs_create_dir("binder", NULL);
--	if (binder_debugfs_dir_entry_root)
-+	if (binder_debugfs_dir_entry_root) {
-+		const struct binder_debugfs_entry *db_entry;
-+
-+		binder_for_each_debugfs_entry(db_entry)
-+			debugfs_create_file(db_entry->name,
-+					    db_entry->mode,
-+					    binder_debugfs_dir_entry_root,
-+					    db_entry->data,
-+					    db_entry->fops);
-+
- 		binder_debugfs_dir_entry_proc = debugfs_create_dir("proc",
- 						 binder_debugfs_dir_entry_root);
--
--	if (binder_debugfs_dir_entry_root) {
--		debugfs_create_file("state",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_state_fops);
--		debugfs_create_file("stats",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_stats_fops);
--		debugfs_create_file("transactions",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_transactions_fops);
--		debugfs_create_file("transaction_log",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    &binder_transaction_log,
--				    &binder_transaction_log_fops);
--		debugfs_create_file("failed_transaction_log",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    &binder_transaction_log_failed,
--				    &binder_transaction_log_fops);
- 	}
- 
- 	if (!IS_ENABLED(CONFIG_ANDROID_BINDERFS) &&
-diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
-index d6b6b8cb7346..1ade9799c8d5 100644
---- a/drivers/android/binder_internal.h
-+++ b/drivers/android/binder_internal.h
-@@ -107,41 +107,19 @@ static inline int __init init_binderfs(void)
- }
+-		/*
+-		 * Disable AER on this port in case it's been enabled by the
+-		 * BIOS (the AER service driver will enable it when necessary).
+-		 */
+-		pci_disable_pcie_error_reporting(dev);
+-	}
  #endif
  
--int binder_stats_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_stats);
--
--int binder_state_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_state);
--
--int binder_transactions_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_transactions);
--
--int binder_transaction_log_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_transaction_log);
--
--struct binder_transaction_log_entry {
--	int debug_id;
--	int debug_id_done;
--	int call_type;
--	int from_proc;
--	int from_thread;
--	int target_handle;
--	int to_proc;
--	int to_thread;
--	int to_node;
--	int data_size;
--	int offsets_size;
--	int return_error_line;
--	uint32_t return_error;
--	uint32_t return_error_param;
--	char context_name[BINDERFS_MAX_NAME + 1];
-+struct binder_debugfs_entry {
-+	const char *name;
-+	umode_t mode;
-+	const struct file_operations *fops;
-+	void *data;
- };
- 
--struct binder_transaction_log {
--	atomic_t cur;
--	bool full;
--	struct binder_transaction_log_entry entry[32];
--};
-+extern const struct binder_debugfs_entry binder_debugfs_entries[];
-+
-+#define binder_for_each_debugfs_entry(entry)	\
-+	for ((entry) = binder_debugfs_entries;	\
-+	     (entry)->name;			\
-+	     (entry)++)
- 
- enum binder_stat_types {
- 	BINDER_STAT_PROC,
-@@ -575,6 +553,4 @@ struct binder_object {
- 	};
- };
- 
--extern struct binder_transaction_log binder_transaction_log;
--extern struct binder_transaction_log binder_transaction_log_failed;
- #endif /* _LINUX_BINDER_INTERNAL_H */
-diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-index e3605cdd4335..6d717ed76766 100644
---- a/drivers/android/binderfs.c
-+++ b/drivers/android/binderfs.c
-@@ -621,6 +621,7 @@ static int init_binder_features(struct super_block *sb)
- static int init_binder_logs(struct super_block *sb)
- {
- 	struct dentry *binder_logs_root_dir, *dentry, *proc_log_dir;
-+	const struct binder_debugfs_entry *db_entry;
- 	struct binderfs_info *info;
- 	int ret = 0;
- 
-@@ -631,43 +632,15 @@ static int init_binder_logs(struct super_block *sb)
- 		goto out;
- 	}
- 
--	dentry = binderfs_create_file(binder_logs_root_dir, "stats",
--				      &binder_stats_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir, "state",
--				      &binder_state_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir, "transactions",
--				      &binder_transactions_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir,
--				      "transaction_log",
--				      &binder_transaction_log_fops,
--				      &binder_transaction_log);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir,
--				      "failed_transaction_log",
--				      &binder_transaction_log_fops,
--				      &binder_transaction_log_failed);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
-+	binder_for_each_debugfs_entry(db_entry) {
-+		dentry = binderfs_create_file(binder_logs_root_dir,
-+					      db_entry->name,
-+					      db_entry->fops,
-+					      db_entry->data);
-+		if (IS_ERR(dentry)) {
-+			ret = PTR_ERR(dentry);
-+			goto out;
-+		}
- 	}
- 
- 	proc_log_dir = binderfs_create_dir(binder_logs_root_dir, "proc");
+ 	/* Root Ports and Root Complex Event Collectors may generate PMEs */
 -- 
 2.35.1
 
