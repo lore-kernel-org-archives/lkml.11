@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A4DC28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC54C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347038AbiHOWDE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
+        id S243983AbiHOWDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347537AbiHOWAo (ORCPT
+        with ESMTP id S1347512AbiHOWAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:00:44 -0400
+        Mon, 15 Aug 2022 18:00:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53877167F1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A73114D30;
         Mon, 15 Aug 2022 12:35:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0DFE611E4;
-        Mon, 15 Aug 2022 19:35:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBBD4C433D6;
-        Mon, 15 Aug 2022 19:35:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16A00610A3;
+        Mon, 15 Aug 2022 19:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E4B5C433C1;
+        Mon, 15 Aug 2022 19:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592109;
-        bh=Wujj5i866p9om6sVU/5OKGHjwQgKQ35nherAfS8OOgs=;
+        s=korg; t=1660592125;
+        bh=pqBJ1NWS1RN2vBwc3PaPKuwfdOzMrRfU7YsQ6GivFJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Luna2qnUDcZ9YV/yIKjYA52ygw9clZOCo5BtYeUFaDGWmb22xTA+k5RZjaEFq4Z/9
-         POWslPxCmngccm4O1SpwB8Y4Cq/2MrSeVN5id85rVTfwxkgvFSPPCWHwbqKYj1XZ/X
-         eTKeC9o6ky3bNCzTP6CxyisIzTCnyyi8ggOzYOQQ=
+        b=Ns9hQLraPh4bH4XxgpZXkD/fMghSDMXqLbHmx9OLrzxGVFKv8YsfRofnuJGzO5rr6
+         GgobWeKJdNSLGeN9MehJEH1gV8sZEFv3Q+kOgjJrfk0E3ZMGYK1G+qLaFR07F0sSD5
+         74th3O5G4qvpXup/JwYu09EmUShKPfQdC+gGLUDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>, stable@kernel.org
-Subject: [PATCH 5.19 0060/1157] fix short copy handling in copy_mc_pipe_to_iter()
-Date:   Mon, 15 Aug 2022 19:50:16 +0200
-Message-Id: <20220815180441.901113302@linuxfoundation.org>
+        stable@vger.kernel.org, Hongbo Yin <yinhongbo@bytedance.com>,
+        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
+        Tianci Zhang <zhangtianci.1997@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.19 0062/1157] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
+Date:   Mon, 15 Aug 2022 19:50:18 +0200
+Message-Id: <20220815180441.981805922@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,82 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
 
-commit c3497fd009ef2c59eea60d21c3ac22de3585ed7d upstream.
+commit dd524b7f317de8d31d638cbfdc7be4cf9b770e42 upstream.
 
-Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
-result in a short copy.  In that case we need to trim the unused
-buffers, as well as the length of partially filled one - it's not
-enough to set ->head, ->iov_offset and ->count to reflect how
-much had we copied.  Not hard to fix, fortunately...
+Some code paths cannot guarantee the inode have any dentry alias. So
+WARN_ON() all !dentry may flood the kernel logs.
 
-I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
-rather than iov_iter.c - it has nothing to do with iov_iter and
-having it will allow us to avoid an ugly kludge in fs/splice.c.
-We could put it into lib/iov_iter.c for now and move it later,
-but I don't see the point going that way...
+For example, when an overlayfs inode is watched by inotifywait (1), and
+someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
+at that time if the dentry has been reclaimed by kernel (such as
+echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
+printed call stack would be like:
 
-Cc: stable@kernel.org # 4.19+
-Fixes: ca146f6f091e "lib/iov_iter: Fix pipe handling in _copy_to_iter_mcsafe()"
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+    ? show_mark_fhandle+0xf0/0xf0
+    show_mark_fhandle+0x4a/0xf0
+    ? show_mark_fhandle+0xf0/0xf0
+    ? seq_vprintf+0x30/0x50
+    ? seq_printf+0x53/0x70
+    ? show_mark_fhandle+0xf0/0xf0
+    inotify_fdinfo+0x70/0x90
+    show_fdinfo.isra.4+0x53/0x70
+    seq_show+0x130/0x170
+    seq_read+0x153/0x440
+    vfs_read+0x94/0x150
+    ksys_read+0x5f/0xe0
+    do_syscall_64+0x59/0x1e0
+    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+So let's drop WARN_ON() to avoid kernel log flooding.
+
+Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
+Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
+Fixes: 8ed5eec9d6c4 ("ovl: encode pure upper file handles")
+Cc: <stable@vger.kernel.org> # v4.16
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pipe_fs_i.h |    9 +++++++++
- lib/iov_iter.c            |   15 +++++++++++----
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ fs/overlayfs/export.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/pipe_fs_i.h
-+++ b/include/linux/pipe_fs_i.h
-@@ -229,6 +229,15 @@ static inline bool pipe_buf_try_steal(st
- 	return buf->ops->try_steal(pipe, buf);
- }
+--- a/fs/overlayfs/export.c
++++ b/fs/overlayfs/export.c
+@@ -259,7 +259,7 @@ static int ovl_encode_fh(struct inode *i
+ 		return FILEID_INVALID;
  
-+static inline void pipe_discard_from(struct pipe_inode_info *pipe,
-+		unsigned int old_head)
-+{
-+	unsigned int mask = pipe->ring_size - 1;
-+
-+	while (pipe->head > old_head)
-+		pipe_buf_release(pipe, &pipe->bufs[--pipe->head & mask]);
-+}
-+
- /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
-    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
- #define PIPE_SIZE		PAGE_SIZE
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -689,6 +689,7 @@ static size_t copy_mc_pipe_to_iter(const
- 	struct pipe_inode_info *pipe = i->pipe;
- 	unsigned int p_mask = pipe->ring_size - 1;
- 	unsigned int i_head;
-+	unsigned int valid = pipe->head;
- 	size_t n, off, xfer = 0;
+ 	dentry = d_find_any_alias(inode);
+-	if (WARN_ON(!dentry))
++	if (!dentry)
+ 		return FILEID_INVALID;
  
- 	if (!sanity(i))
-@@ -702,11 +703,17 @@ static size_t copy_mc_pipe_to_iter(const
- 		rem = copy_mc_to_kernel(p + off, addr + xfer, chunk);
- 		chunk -= rem;
- 		kunmap_local(p);
--		i->head = i_head;
--		i->iov_offset = off + chunk;
--		xfer += chunk;
--		if (rem)
-+		if (chunk) {
-+			i->head = i_head;
-+			i->iov_offset = off + chunk;
-+			xfer += chunk;
-+			valid = i_head + 1;
-+		}
-+		if (rem) {
-+			pipe->bufs[i_head & p_mask].len -= rem;
-+			pipe_discard_from(pipe, valid);
- 			break;
-+		}
- 		n -= chunk;
- 		off = 0;
- 		i_head++;
+ 	bytes = ovl_dentry_to_fid(ofs, dentry, fid, buflen);
 
 
