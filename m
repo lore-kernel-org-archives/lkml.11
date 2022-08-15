@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C79AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBEBC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343686AbiHOXPQ (ORCPT
+        id S1343566AbiHOXPd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
+        Mon, 15 Aug 2022 19:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244990AbiHOXN7 (ORCPT
+        with ESMTP id S244510AbiHOXOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:13:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADEE9C1EA;
-        Mon, 15 Aug 2022 13:01:14 -0700 (PDT)
+        Mon, 15 Aug 2022 19:14:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4815C7B1E4;
+        Mon, 15 Aug 2022 13:01:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7572B80EA8;
-        Mon, 15 Aug 2022 20:01:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD9D2C433B5;
-        Mon, 15 Aug 2022 20:01:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1D6FB80EAD;
+        Mon, 15 Aug 2022 20:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D6EC433D6;
+        Mon, 15 Aug 2022 20:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593672;
-        bh=PJE+inI1DtTXcax9IrXNRS5Dqpo+upJVHA2pt0tSuOc=;
+        s=korg; t=1660593675;
+        bh=RFuo3WxZHd0czDWPWQq5UQkkkavjlJKyFlZDppA2rJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cB87dhCrGPHRRoMaJee0Ow1Cirm/HzJGhYBnFkUOVmZGur5Voc+8mb1HYIG/Z3SFt
-         lw5zYnqcFW+nPCNGNgbU5VQDSprTvS5gtngK7WbxGbMCSFzofu9EMm/u7gW7S5UADF
-         +nvlojG2a7OoMd4Cwhy1aP/4UhjZx8ecEQOHLiB8=
+        b=ye9a+lfIbFO4FCFcltTrjeGwHIaGb0aIYlYpzT+Zob/RDvck4G/yNvK9ZYwqdH/Sg
+         rKDhKBmxEQ9BmPUjXQToNftxIaBqvdzpQs1clGyjKtaQcML0R0u4zBSsgfErbRJ6mX
+         2mluBBiv8Paz5VDJovcfH0ZP1urCCSlN6VHnF80o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maxime Ripard <maxime@cerno.tech>, Peng Fan <peng.fan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robby Cai <robby.cai@nxp.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0305/1157] dt-bindings: display: bridge: ldb: Fill in reg property
-Date:   Mon, 15 Aug 2022 19:54:21 +0200
-Message-Id: <20220815180451.855180319@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.18 0985/1095] usbnet: smsc95xx: Dont clear read-only PHY interrupt
+Date:   Mon, 15 Aug 2022 20:06:24 +0200
+Message-Id: <20220815180509.873447422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -58,71 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 16c8d76abe83d75b578d72ee22d25a52c764e14a ]
+[ Upstream commit 3108871f19221372b251f7da1ac38736928b5b3a ]
 
-Add missing reg and reg-names properties for both 'LDB_CTRL'
-and 'LVDS_CTRL' registers.
+Upon receiving data from the Interrupt Endpoint, the SMSC LAN95xx driver
+attempts to clear the signaled interrupts by writing "all ones" to the
+Interrupt Status Register.
 
-Fixes: 463db5c2ed4ae ("drm: bridge: ldb: Implement simple Freescale i.MX8MP LDB bridge")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Peng Fan <peng.fan@nxp.com>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Robby Cai <robby.cai@nxp.com>
-Cc: Robert Foss <robert.foss@linaro.org>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: devicetree@vger.kernel.org
-To: dri-devel@lists.freedesktop.org
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220504012601.423644-1-marex@denx.de
+However the driver only ever enables a single type of interrupt, namely
+the PHY Interrupt.  And according to page 119 of the LAN950x datasheet,
+its bit in the Interrupt Status Register is read-only.  There's no other
+way to clear it than in a separate PHY register:
+
+https://www.microchip.com/content/dam/mchp/documents/UNG/ProductDocuments/DataSheets/LAN950x-Data-Sheet-DS00001875D.pdf
+
+Consequently, writing "all ones" to the Interrupt Status Register is
+pointless and can be dropped.
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/display/bridge/fsl,ldb.yaml         | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/net/usb/smsc95xx.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-index 77f174eee424..2ebaa43eb62e 100644
---- a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-@@ -24,6 +24,15 @@ properties:
-   clock-names:
-     const: ldb
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index edf0492ad489..2cb44d65bbc3 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -572,10 +572,6 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	unsigned long flags;
+ 	int ret;
  
-+  reg:
-+    minItems: 2
-+    maxItems: 2
-+
-+  reg-names:
-+    items:
-+      - const: ldb
-+      - const: lvds
-+
-   ports:
-     $ref: /schemas/graph.yaml#/properties/ports
- 
-@@ -56,10 +65,15 @@ examples:
-     #include <dt-bindings/clock/imx8mp-clock.h>
- 
-     blk-ctrl {
--        bridge {
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        bridge@5c {
-             compatible = "fsl,imx8mp-ldb";
-             clocks = <&clk IMX8MP_CLK_MEDIA_LDB>;
-             clock-names = "ldb";
-+            reg = <0x5c 0x4>, <0x128 0x4>;
-+            reg-names = "ldb", "lvds";
- 
-             ports {
-                 #address-cells = <1>;
+-	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
+-	if (ret < 0)
+-		return ret;
+-
+ 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
+ 	if (pdata->phydev->duplex != DUPLEX_FULL) {
+ 		pdata->mac_cr &= ~MAC_CR_FDPX_;
 -- 
 2.35.1
 
