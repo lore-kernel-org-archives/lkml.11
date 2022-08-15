@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B51BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D05C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349570AbiHOVu3 (ORCPT
+        id S1350136AbiHOVuh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58988 "EHLO
+        Mon, 15 Aug 2022 17:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350148AbiHOVrS (ORCPT
+        with ESMTP id S1350184AbiHOVrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:18 -0400
+        Mon, 15 Aug 2022 17:47:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0205C7D1F4;
-        Mon, 15 Aug 2022 12:31:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53425F9AA;
+        Mon, 15 Aug 2022 12:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F8FFB81126;
-        Mon, 15 Aug 2022 19:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3161BC433C1;
-        Mon, 15 Aug 2022 19:31:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69094B81062;
+        Mon, 15 Aug 2022 19:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50D8C433D6;
+        Mon, 15 Aug 2022 19:31:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591865;
-        bh=kiF11z6MXxdcmqUH02ZK+3YK79JUgbzvn7owzU+ly+s=;
+        s=korg; t=1660591871;
+        bh=5CiSJRDycVN1/+uf8e3hF3S3PgT4ShsvHAWoBCYNW5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJpE4ANYVqxEdvOhwMLbpWE1ezXmypNEPmGCu3bO3TmZL7E6vMAAJCtqH0P8VWbjU
-         Y7q7bzHgxgA0kwLtMRQtCGIxrp+AJuWW1RvvwLBfpKYe376vLIhypw7GJ4aETcF5PU
-         3MrReH85eKPhnqnqMS5R1as3SALdzI0dxzp0q008=
+        b=lkJZrY+p5erzJW6ZIRw7p4Yx3vND2O+ZQf5jHntibB5QnWYs9+qFdzG8536KyBS7C
+         451j8htkSzayjrcPnz7CPnaFAki7D0LXxkZtCeTMmlvpgrspWmwCpKmefX8eiZXY06
+         ufhgGqwB2Dq8TQjQtpiHSe0wsK4yO0egQXO7WOmw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0662/1095] iio: imu: inv_icm42600: Fix alignment for DMA safety in buffer code.
-Date:   Mon, 15 Aug 2022 20:01:01 +0200
-Message-Id: <20220815180456.784614907@linuxfoundation.org>
+Subject: [PATCH 5.18 0664/1095] iio: potentiometer: ad5110: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:03 +0200
+Message-Id: <20220815180456.859968072@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -55,38 +54,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit b0aa05065a0c1d1bffa10923dbc36f7193babbb7 ]
-
-Second fix for this driver due to different introducing patches.
+[ Upstream commit b5841c38cb2f7e54b0787b3e0326a6b21b89ea3e ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 7f85e42a6c54 ("iio: imu: inv_icm42600: add buffer support in iio devices")
+Fixes: d03a74bfacce ("iio: potentiometer: Add driver support for AD5110")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Cc: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-79-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-81-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/potentiometer/ad5110.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-index de2a3949dcc7..8b85ee333bf8 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-@@ -39,7 +39,7 @@ struct inv_icm42600_fifo {
- 		size_t accel;
- 		size_t total;
- 	} nb;
--	uint8_t data[2080] ____cacheline_aligned;
-+	uint8_t data[2080] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/potentiometer/ad5110.c b/drivers/iio/potentiometer/ad5110.c
+index d4eeedae56e5..8fbcce482989 100644
+--- a/drivers/iio/potentiometer/ad5110.c
++++ b/drivers/iio/potentiometer/ad5110.c
+@@ -63,10 +63,10 @@ struct ad5110_data {
+ 	struct mutex            lock;
+ 	const struct ad5110_cfg	*cfg;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	u8			buf[2] ____cacheline_aligned;
++	u8			buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- /* FIFO data packet */
+ static const struct iio_chan_spec ad5110_channels[] = {
 -- 
 2.35.1
 
