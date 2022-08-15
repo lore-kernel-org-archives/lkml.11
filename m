@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5071AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3005C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiHOUOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S243601AbiHOUO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346050AbiHOUKn (ORCPT
+        with ESMTP id S1346203AbiHOULD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:10:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976192606;
-        Mon, 15 Aug 2022 11:56:34 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDC2AE5C;
+        Mon, 15 Aug 2022 11:57:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 547A1B81057;
-        Mon, 15 Aug 2022 18:56:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E9EC433D6;
-        Mon, 15 Aug 2022 18:56:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 207DC6125B;
+        Mon, 15 Aug 2022 18:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109D4C433C1;
+        Mon, 15 Aug 2022 18:57:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589792;
-        bh=aEfeu9f1lMXq8ZH7oRYczw5jkBVwbMgOJJdgiuGDQx4=;
+        s=korg; t=1660589823;
+        bh=Muz+6devd5UaSOJcMQZ9LRIIl260cRIsDAwDtiF54MI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQYQf6eNVGDTQ6XJEWX/pkRHwsto9xiN963OGO3K9AQ+eRUfEUEzVMXM0VyAN41VY
-         TcM/chTtDzZyvFrEKrIazqsDePhvbLyoy+u8QHgp8iossHutFtNJLCkWVodIvPcZaT
-         A5RJKKDSnYUX9xjLyYXj3k/q0qNlWdtkcT7WrdL8=
+        b=fzPgYHccgP7nM9JLM5Zrzt6MYqglc3H1To23HmEZltBrWANjDAtSsMiASMVN95opi
+         XrKAPzRjv3PQA6kbjBHvuC/Vj/BFAaQUjvnq9jj6mfUrHnzdIwbEM0l6rmsSBFU3c4
+         qJoGDZVmvMLCmrFpFLa7CsWojO6ZFu0T/njFDhY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Di Shen <di.shen@unisoc.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 0049/1095] thermal: sysfs: Fix cooling_device_stats_setup() error code path
-Date:   Mon, 15 Aug 2022 19:50:48 +0200
-Message-Id: <20220815180431.491568771@linuxfoundation.org>
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 0058/1095] parisc: Check the return value of ioremap() in lba_driver_probe()
+Date:   Mon, 15 Aug 2022 19:50:57 +0200
+Message-Id: <20220815180431.876467103@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -48,69 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: William Dean <williamsukatube@gmail.com>
 
-commit d5a8aa5d7d80d21ab6b266f1bed4194b61746199 upstream.
+commit cf59f34d7f978d14d6520fd80a78a5ad5cb8abf8 upstream.
 
-If cooling_device_stats_setup() fails to create the stats object, it
-must clear the last slot in cooling_device_attr_groups that was
-initially empty (so as to make it possible to add stats attributes to
-the cooling device attribute groups).
+The function ioremap() in lba_driver_probe() can fail, so
+its return value should be checked.
 
-Failing to do so may cause the stats attributes to be created by
-mistake for a device that doesn't have a stats object, because the
-slot in question might be populated previously during the registration
-of another cooling device.
-
-Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
-Reported-by: Di Shen <di.shen@unisoc.com>
-Tested-by: Di Shen <di.shen@unisoc.com>
-Cc: 4.17+ <stable@vger.kernel.org> # 4.17+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v5.6+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/thermal_sysfs.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/parisc/lba_pci.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -813,12 +813,13 @@ static const struct attribute_group cool
+--- a/drivers/parisc/lba_pci.c
++++ b/drivers/parisc/lba_pci.c
+@@ -1476,9 +1476,13 @@ lba_driver_probe(struct parisc_device *d
+ 	u32 func_class;
+ 	void *tmp_obj;
+ 	char *version;
+-	void __iomem *addr = ioremap(dev->hpa.start, 4096);
++	void __iomem *addr;
+ 	int max;
  
- static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- {
-+	const struct attribute_group *stats_attr_group = NULL;
- 	struct cooling_dev_stats *stats;
- 	unsigned long states;
- 	int var;
- 
- 	if (cdev->ops->get_max_state(cdev, &states))
--		return;
-+		goto out;
- 
- 	states++; /* Total number of states is highest state + 1 */
- 
-@@ -828,7 +829,7 @@ static void cooling_device_stats_setup(s
- 
- 	stats = kzalloc(var, GFP_KERNEL);
- 	if (!stats)
--		return;
-+		goto out;
- 
- 	stats->time_in_state = (ktime_t *)(stats + 1);
- 	stats->trans_table = (unsigned int *)(stats->time_in_state + states);
-@@ -838,9 +839,12 @@ static void cooling_device_stats_setup(s
- 
- 	spin_lock_init(&stats->lock);
- 
-+	stats_attr_group = &cooling_device_stats_attr_group;
++	addr = ioremap(dev->hpa.start, 4096);
++	if (addr == NULL)
++		return -ENOMEM;
 +
-+out:
- 	/* Fill the empty slot left in cooling_device_attr_groups */
- 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
--	cooling_device_attr_groups[var] = &cooling_device_stats_attr_group;
-+	cooling_device_attr_groups[var] = stats_attr_group;
- }
+ 	/* Read HW Rev First */
+ 	func_class = READ_REG32(addr + LBA_FCLASS);
  
- static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
 
 
