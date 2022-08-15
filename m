@@ -2,205 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D99C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5628EC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232529AbiHOPPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        id S233111AbiHOPP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiHOPPE (ORCPT
+        with ESMTP id S231861AbiHOPP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:15:04 -0400
-Received: from mail1.bemta33.messagelabs.com (mail1.bemta33.messagelabs.com [67.219.247.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4737321E08;
-        Mon, 15 Aug 2022 08:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lenovo.com;
-        s=Selector; t=1660576502; i=@lenovo.com;
-        bh=bmk/exeyJ9k0pyPTDzAUVeM545Da+oIJ42Iao6v1Mu8=;
-        h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-         In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        b=3U2ksQT8EMLzkKJy/N9dZD1YE6yTxlLswDV3vffsw+rjW6kpLg1xdUVIc6JFqWho6
-         v3cJteZBQKt6c2hMpe9/7441e8WrYxLj1wRnnr4xzRHdGFPhRdO/tTtr1iyf/jti1b
-         ZBIEVwKFJtUnZkcuVdeOzXicRyUMs4OAeZknGdEUwokSRKz4rVnl4JQUOSusyx40Tu
-         llXLex6IIbVElRbDXrnZpCccHMWY8ArNAliexrv3rFsRbHmmkpJCeVaFlilWW/4P3h
-         W4DfqGwlJjrEosALHYEopRYUCpvfPH7guRrU1V6BHHjkZ5zjoeq5FBGomD9p7vAA/p
-         JKfFMANgtlGsA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA1WTe0xTZxjGOZeeHg2VQ6HhkwlqJ8u4tJah7MO
-  xBBMvx12ZmQTmHLSj0C6lkJ7CwD8MGzNCi4JCUEqpUFASBEHG/TKwG3GAcpEJEcExVuZgQYyC
-  QGfYWg469s+X33Oe733f503OR2L8Aa4nKU/VyjVqqUpIbMYVu9X+ogWZTSbJHg2BFd3DKHxS/
-  SYcuDVMwNFrHRi0jH6LQ0ttFwozymoIeNZcjsPFn0Yw+KiuFYWr+qsEzDpfzoXDrUYCZtc2cG
-  DFgzMYnDHEwaf1z1HYdsNMwLwnM1xofrjMhUs55zhhAvr69SWcNqSfJeii9CGcvlB4CaNbDBN
-  cuqQumS7KLOTQZe0zKG3q+YTuLK7i0tb+XIye/+EeQT+r8w7nfcZRqmWJqTEcxeD341hStWtq
-  Se93WDqSu0WHbCIR6goGcmtP6pDNdjZzwOmcfoQVOShoqxrGHIJPGVEwbfiLy4ouFNRP93Ac9
-  YC6hQB95WHWyEJAW8MywYrzKChfuYmzwoqAonQd4ShZE3VNuxzMo94FVX19XAfjlA8oMJo47H
-  dX0FNoxR0soCLBb1MX1tiNigKW2Rdr9zHKA4xZL6M6hCTdKQV4/OsuxyyMussBuuzi9cGLKCj
-  NnMMcBQTlD+rrbWshNlH7wLlv2jG2kS843fT3etPtoGnOiLFBXwe2nAGM3XMnyL+2grIcAzLy
-  uxGWt4KR+4Nclr1A9x0jzvKHwNY6ts4iYF6dJFj2Br1n+9f7bActNx7guUiAYcPOhg27GTbEM
-  2yIV4Lglcg+mUYZr9AmSJUqUaBEIgoM3CMK3iMKkoilJ0VScTIjkksZregtsfRrRixnGDGTlv
-  ClKlaslmvrEPv/HKsJ825GGitXxBZkK4kKBbyRoRUZf4ssMTZNIWUU0ZpklZyxINtIUgh4dTE
-  2Gd9VI4+Xp8YpVfZX8dIGpLPQnVcebbd5TJI0gVHGs1YvEkL+0tjRgZEDLZ32M6tT14XxcXWi
-  Wu7pwbv9qb2AchQoktWv2r18Z3cRL083HuLk5MR3TpJrEpTa//uziAeJCN14U1H2Ls5KtfbV1
-  Fl7INQeSDyx5Aiklf5neaaj0Y0HUv6ApoKyN6ydRov/U9uqr18pddXH95EwYuCf8erio36TQX
-  nly+Q7NzsE3RVf9Q39+cwlXxuaFtUb3oSpxCnWyv0+/DiBnwfhOdXFmCPjvTtMnCu/ByiOT/a
-  dGFE/f0yU7qxxTQqW3DFs07svjOzdHzFkOqrQvLcy8dE9mUQY+vBQgdcXjeEv3j5wuGbHdOvn
-  7WM5zXrvRfmRn8/oM6rdjg0PnmIuFQqC9KcOiY5Exu/gJnUvufSHOZ04CCNrj2fKAsYaYjTzx
-  hST4RipdNsdzJsP1WGp2bEhe+OKI7j8y/cv6mDlx4sHx/N+/GCOjr690OwSWeuuT/Rddha8/5
-  oQZxTSQD9Mw0j/BTt8Y6biBAAA
-X-Env-Sender: markpearson@lenovo.com
-X-Msg-Ref: server-19.tower-635.messagelabs.com!1660576499!194!1
-X-Originating-IP: [104.47.110.43]
-X-SYMC-ESS-Client-Auth: mailfrom-relay-check=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.87.3; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 11472 invoked from network); 15 Aug 2022 15:15:00 -0000
-Received: from mail-tyzapc01lp2043.outbound.protection.outlook.com (HELO APC01-TYZ-obe.outbound.protection.outlook.com) (104.47.110.43)
-  by server-19.tower-635.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 15 Aug 2022 15:15:00 -0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUu6zA6BYFsbShqR22XXiOjAVBUDBslzjiVzEE5TSvMIjZhZTYSoXT1AkfvMknW+jMtR7qhBTGw2GG2jFK4ft2Z3aK/DyA3helGcbdv7FaToZp4PZjmhUCYb+2DXhmxsKny8GdMKMFDu5MCRdsIK+r0RCZMAHTyygxbvPDem61OaqF7uhNqTA7W280sb0lXQU1stBY0mY+cIA+1rxsi//NDvr9o4XrcK2ryDJKCnAYD5/i/X/wE21UqCNKA+kvROE1TcAHYCyKzT/o7F981jYIuR7fZwXTpvz+oRcNMzdw5Q621jAFi5XNWH7KSzwiap5s/s+YpmsRG1rZQFYmjLKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bmk/exeyJ9k0pyPTDzAUVeM545Da+oIJ42Iao6v1Mu8=;
- b=YT6wRY8OIuXeF/duGJ5524edPcN+7PwHrV29JCdzI57SpvNaiTENHXYQ/XmkYmxy5qUdL6UkpbWfpl9vJxcLKBOofr8T1PSVoMlo2pvAadi78u8BJJPLkI/B9WmLAd7CjQqFoUSQ7YVURyeOKyOzK9NXOEt4q8ciRny8G4/9OyVXWb00l5y9gkDWbSks1nuFqA/igE+E2tw0y9ArtRXcJEFhPybUZ8/zh6vq8qw9Z0ujSmXiv+1sP2aSghA4AHhP0jMGVfXcTtiPM6bZ9R+qb85Q56VK9m/GJBhpRZlrkdy16Ki8tAdXliq/SP2rErETiyRPcAh2c1DJeQn9orbAhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
- is 104.232.225.6) smtp.rcpttodomain=ideasonboard.com
- smtp.mailfrom=lenovo.com; dmarc=fail (p=none sp=none pct=100) action=none
- header.from=lenovo.com; dkim=none (message not signed); arc=none
-Received: from SG2PR06CA0244.apcprd06.prod.outlook.com (2603:1096:4:ac::28) by
- HK0PR03MB3908.apcprd03.prod.outlook.com (2603:1096:203:3c::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.14; Mon, 15 Aug 2022 15:14:57 +0000
-Received: from SG2APC01FT0024.eop-APC01.prod.protection.outlook.com
- (2603:1096:4:ac:cafe::40) by SG2PR06CA0244.outlook.office365.com
- (2603:1096:4:ac::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11 via Frontend
- Transport; Mon, 15 Aug 2022 15:14:57 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
- 104.232.225.6) smtp.mailfrom=lenovo.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=lenovo.com;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
- lenovo.com discourages use of 104.232.225.6 as permitted sender)
-Received: from mail.lenovo.com (104.232.225.6) by
- SG2APC01FT0024.mail.protection.outlook.com (10.13.36.118) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 15:14:56 +0000
-Received: from reswpmail01.lenovo.com (10.62.32.20) by mail.lenovo.com
- (10.62.123.116) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.28; Mon, 15 Aug
- 2022 11:14:54 -0400
-Received: from [10.46.215.102] (10.46.215.102) by reswpmail01.lenovo.com
- (10.62.32.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.28; Mon, 15 Aug
- 2022 11:14:53 -0400
-Message-ID: <9a396cc3-5b0f-6db3-bad5-b4d81ecdf834@lenovo.com>
-Date:   Mon, 15 Aug 2022 11:14:52 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [External] Re: Missing MIPI IPU6 camera driver for Intel Alder
- Lake laptops
-Content-Language: en-US
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-CC:     Greg KH <gregkh@linuxfoundation.org>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Wang Yating <yating.wang@intel.com>,
-        Christoph Jechlitschek <christoph.jechlitschek@intel.com>,
-        Hao Yao <hao.yao@intel.com>, Andy Yeh <andy.yeh@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Bingbu Cao <bingbu.cao@intel.com>,
-        Tianshu Qiu <tian.shu.qiu@intel.com>,
-        <linux-media@vger.kernel.org>, <Dell.Client.Kernel@dell.com>,
-        <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@google.com>,
-        "Andy Whitcroft" <apw@canonical.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Christian Schaller <cschalle@redhat.com>,
-        Wouter Bolsterlee <wouter@bolsterl.ee>,
-        Miguel Palhas <mpalhas@gmail.com>,
-        <it+linux-media@molgen.mpg.de>
-References: <YvUaEDMbZD70x+hD@kroah.com>
- <YvUbhx4HSxAAwIvv@pendragon.ideasonboard.com> <YvUghWZbXIUofg5A@kroah.com>
- <YvmqL6Wz7o77ukF5@google.com> <YvnpVmnROTsWWw0o@kroah.com>
- <YvnrJBI8599+E43T@google.com> <YvnvnL9pBAgWMgTk@kroah.com>
- <YvnwtN1SwQjilJ97@google.com> <YvnybHVFmpUJs4qi@kroah.com>
- <Yvn0o96K8j5gRaWM@google.com> <Yvn4aiVLzFMneZCc@pendragon.ideasonboard.com>
-From:   Mark Pearson <markpearson@lenovo.com>
-In-Reply-To: <Yvn4aiVLzFMneZCc@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.46.215.102]
-X-ClientProxiedBy: reswpmail01.lenovo.com (10.62.32.20) To
- reswpmail01.lenovo.com (10.62.32.20)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2ce1ecd6-7cfc-42dc-6115-08da7ed0e9bb
-X-MS-TrafficTypeDiagnostic: HK0PR03MB3908:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iCcALnHi6sb71gSyHFu7po7z2LJ7PRGa409phPQPDBf+Un11xRKasV62XSlqiYwMkekxv3ZCzwyeKzy2121LHtyBO9rACcEFOhnn8H7E3aPnpigJXz0CqJYHAo5ieC9/dNGZX/SSFZ1k70su9vRli3fop65HW+OEiID7SI9ULmMN4GFlIKws9jlMz6x/+s8nE22zzlqKuDb/ZoPNVNsSS8gUvFPYqGnt/2NkWauAVox6TUH8DlkpYLFpvOm+AW8OJGgxlrM3MRVW36ECb4CyBnOZI1wc2zFbYyQ8O8ieOTLXsOrL+SCnRKelU48RAapF5pZntmhAYE+78vUyw8JTawo4n48sgeqSHOoYmJlqPdUN/5qUcGE6HDPu1oqXnU97uSkbfvkPBxxXFMeJy+YQFK0U0F+3hqetTEnt6HD2ZOe1/0TOEKZZKDmgmVCYThwqwWtttvf8zjRGOp8ILo25eJL2dyZAeNw+Ke8Vi7iSp1XJuEdkcgjVy5KfIYcy6xjbQRC9zE1PRv5oQZ/g2rVH7zu6CQZrBgux+FWrTcC3VW0CEbtjX35sPbvtNOgud3wrII847cfRfhAOoq81FK3hYJ66/GVABl94uzgD6Oo1FjrRc9aZlOGDa9Jq4Y8744k9eeXKU2W/QnJdmEt6ElL14op0cozUgoGlUGM3D5Xhg/rqaCdY0kb5nG6OvSvH8GMC6nT8TIrN54A7F/BPVGZo+ksvr0m3x5x/n7M9AjjOJxm7XLsag0qKzS1cc68OemPg06Bmevo7KfrBZnkjJOu7IP/rVB68ftd2tHf0CqpuWutk50carwj7QIRDJS6UlTh0Bn8cG8NF+ob8k3orQEA7TGfxloj+nF2WCl2jzkqNQwfboIWFDi0fFd2bRQ/PWOQ0sn0O9RtQF4FXkl3LKYEifg==
-X-Forefront-Antispam-Report: CIP:104.232.225.6;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.lenovo.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(396003)(40470700004)(46966006)(36840700001)(8676002)(8936002)(478600001)(40480700001)(36860700001)(4326008)(16526019)(82740400003)(70206006)(54906003)(70586007)(186003)(81166007)(47076005)(82310400005)(356005)(336012)(426003)(41300700001)(110136005)(36756003)(82960400001)(53546011)(31696002)(2906002)(40460700003)(31686004)(86362001)(7416002)(2616005)(5660300002)(316002)(16576012)(26005)(36906005)(83380400001)(3940600001)(36900700001)(43740500002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: lenovo.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 15:14:56.0703
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ce1ecd6-7cfc-42dc-6115-08da7ed0e9bb
-X-MS-Exchange-CrossTenant-Id: 5c7d0b28-bdf8-410c-aa93-4df372b16203
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5c7d0b28-bdf8-410c-aa93-4df372b16203;Ip=[104.232.225.6];Helo=[mail.lenovo.com]
-X-MS-Exchange-CrossTenant-AuthSource: SG2APC01FT0024.eop-APC01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR03MB3908
+        Mon, 15 Aug 2022 11:15:58 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DA03EE3D;
+        Mon, 15 Aug 2022 08:15:56 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.93,238,1654527600"; 
+   d="scan'208";a="131484119"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 16 Aug 2022 00:15:55 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 3E4FF403965B;
+        Tue, 16 Aug 2022 00:15:50 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Conor Dooley <Conor.Dooley@microchip.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 0/8] Add support for Renesas RZ/Five SoC
+Date:   Mon, 15 Aug 2022 16:14:43 +0100
+Message-Id: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 03:40, Laurent Pinchart wrote:
-> On Mon, Aug 15, 2022 at 04:24:19PM +0900, Sergey Senozhatsky wrote:
->> On (22/08/15 09:14), Greg KH wrote:
->>>> Definitely not today. Someday, for sure :)
->>>>
->>>> I don't want to promise any timelines. But we are certainly not
->>>> talking "weeks", we are talking "months". Several months is a
->>>> realistic timeline.
->>>
->>> Ok, so getting this merged is a good year out at the best, realisticly 2
->>> years given that once you submit the first version for review, the real
->>> work will start happening.
->>
->> Well, nothing is really set in stone here. We may revisit our strategy,
->> say turn it upside down, and hit upstream mailing list as soon as possible
->> instead.
->>
->>> So I'll stick with my original statement, don't buy this hardware
->>   ... if you plan on running vanilla kernel. Otherwise do buy :)
-> 
-> If you want to run a proprietary OS.
-> 
-Not sure where best to jump in...but just to add some perspective from a
-Lenovo perspective.
+Hi All,
 
-100% agreed - don't buy the platforms (X1 Carbon G10, X1 Yoga G7, X1
-Nano G2) with the MIPI camera (called 'computer vision' on the Lenovo
-site) if you plan to run Linux. We are disabling that config on our
-Linux preload.
+The RZ/Five microprocessor includes a RISC-V CPU Core (AX45MP Single)
+1.0 GHz, 16-bit DDR3L/DDR4 interface. And it also has many interfaces such
+as Gbit-Ether, CAN, and USB 2.0, making it ideal for applications such as
+entry-class social infrastructure gateway control and industrial gateway
+control.
 
-From the 'reaching out to the community' perspective that was flagged
-earlier in the thread - I've been discussing MIPI with Red Hat,
-Canonical and Intel for a year now. We knew it was going to be a problem
-and in fairness to Intel they've been very clear that initially the
-'workaround' was going to be available and that the full solution will
-be coming later. I've had some disappointments with progress but I also
-don't have the expertise to be able to solve it myself and fully
-appreciate these things don't happen overnight. Intel have been working
-with us on this and I appreciate their support.
+This patch series adds initial SoC DTSi support for Renesas RZ/Five
+(R9A07G043) SoC and updates the bindings for the same. Below is the list
+of IP blocks added in the initial SoC DTSI which can be used to boot via
+initramfs on RZ/Five SMARC EVK:
+- AX45MP CPU
+- CPG
+- PINCTRL
+- PLIC
+- SCIF0
+- SYSC
 
-If there are people I should be engaged with let me know and we can
-discuss offline. Going forward - I guess the good news is we have some
-platforms with MIPI on to work with....having HW usually helps. I'm also
-very open to any ideas of suggestions for accelerating getting this done
-and where Lenovo can help. We're limited on a technical resource side of
-things, but we do have HW :)
+Useful links:
+-------------
+[0] https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rz-mpus/rzfive-risc-v-general-purpose-microprocessors-risc-v-cpu-core-andes-ax45mp-single-10-ghz-2ch-gigabit-ethernet
+[1] http://www.andestech.com/en/products-solutions/andescore-processors/riscv-ax45mp/
 
-Mark
+Patch series depends on:
+-----------------------
+[0] https://patchwork.kernel.org/project/linux-renesas-soc/cover/20220722141506.20171-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[1] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220726174525.620-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[2] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220726174929.950-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[3] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220726175315.1147-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+[4] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220815111708.22302-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+
+Below are the logs from RZ/Five SMARC EVK:
+------------------------------------------
+/ # uname -ra
+Linux (none) 5.19.0-next-20220815-00072-ge2dccecbe54f #256 SMP Mon Aug 15 15:12:03 BST 2022 riscv64 GNU/Linux
+/ #
+/ # cat /proc/cpuinfo
+processor       : 0
+hart            : 0
+isa             : rv64imafdc
+mmu             : sv39
+uarch           : andestech,ax45mp
+mvendorid       : 0x31e
+marchid         : 0x8000000000008a45
+mimpid          : 0x500
+
+/ # cat /proc/interrupts
+           CPU0
+  1:          0  SiFive PLIC 412 Level     1004b800.serial:rx err
+  2:          1  SiFive PLIC 414 Level     1004b800.serial:rx full
+  3:        181  SiFive PLIC 415 Level     1004b800.serial:tx empty
+  4:          0  SiFive PLIC 413 Level     1004b800.serial:break
+  5:       2435  RISC-V INTC   5 Edge      riscv-timer
+  6:         38  SiFive PLIC 416 Level     1004b800.serial:rx ready
+IPI0:         0  Rescheduling interrupts
+IPI1:         0  Function call interrupts
+IPI2:         0  CPU stop interrupts
+IPI3:         0  IRQ work interrupts
+IPI4:         0  Timer broadcast interrupts
+/ # cat /proc/meminfo
+MemTotal:         882356 kB
+MemFree:          861996 kB
+MemAvailable:     859744 kB
+Buffers:               0 kB
+Cached:             1796 kB
+SwapCached:            0 kB
+Active:                0 kB
+Inactive:             80 kB
+Active(anon):          0 kB
+Inactive(anon):       80 kB
+Active(file):          0 kB
+Inactive(file):        0 kB
+Unevictable:        1796 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:           116 kB
+Mapped:             1136 kB
+Shmem:                 0 kB
+KReclaimable:       6732 kB
+Slab:              11904 kB
+SReclaimable:       6732 kB
+SUnreclaim:         5172 kB
+KernelStack:         556 kB
+PageTables:           32 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      441176 kB
+Committed_AS:        592 kB
+VmallocTotal:   67108864 kB
+VmallocUsed:         716 kB
+VmallocChunk:          0 kB
+Percpu:               84 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+/ #
+/ # for i in machine family soc_id revision; do echo -n "$i: ";cat /sys/devices/
+soc0/$i; done
+machine: Renesas SMARC EVK based on r9a07g043f01
+family: RZ/Five
+soc_id: r9a07g043
+revision: 0
+/ #
+
+Lad Prabhakar (8):
+  dt-bindings: riscv: Sort the CPU core list alphabetically
+  dt-bindings: riscv: Add Andes AX45MP core to the list
+  dt-bindings: soc: renesas: renesas.yaml: Document Renesas RZ/Five SoC
+  RISC-V: Kconfig.socs: Add Renesas RZ/Five SoC kconfig option
+  riscv: dts: renesas: Add initial devicetree for Renesas RZ/Five SoC
+  riscv: dts: renesas: Add minimal DTS for Renesas RZ/Five SMARC EVK
+  MAINTAINERS: Add entry for Renesas RISC-V architecture
+  RISC-V: configs: defconfig: Enable Renesas RZ/Five SoC
+
+ .../devicetree/bindings/arm/renesas.yaml      |   3 +-
+ .../devicetree/bindings/riscv/cpus.yaml       |  11 +-
+ MAINTAINERS                                   |  10 ++
+ arch/riscv/Kconfig.socs                       |  14 ++
+ arch/riscv/boot/dts/Makefile                  |   1 +
+ arch/riscv/boot/dts/renesas/Makefile          |   2 +
+ arch/riscv/boot/dts/renesas/r9a07g043.dtsi    | 121 ++++++++++++++++++
+ .../boot/dts/renesas/r9a07g043f01-smarc.dts   |  16 +++
+ .../boot/dts/renesas/rzfive-smarc-som.dtsi    |  22 ++++
+ arch/riscv/boot/dts/renesas/rzfive-smarc.dtsi |  32 +++++
+ arch/riscv/configs/defconfig                  |   2 +
+ 11 files changed, 228 insertions(+), 6 deletions(-)
+ create mode 100644 arch/riscv/boot/dts/renesas/Makefile
+ create mode 100644 arch/riscv/boot/dts/renesas/r9a07g043.dtsi
+ create mode 100644 arch/riscv/boot/dts/renesas/r9a07g043f01-smarc.dts
+ create mode 100644 arch/riscv/boot/dts/renesas/rzfive-smarc-som.dtsi
+ create mode 100644 arch/riscv/boot/dts/renesas/rzfive-smarc.dtsi
+
+-- 
+2.25.1
+
