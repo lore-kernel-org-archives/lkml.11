@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75523C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF43C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352153AbiHPAI5 (ORCPT
+        id S1352432AbiHPAJH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
+        Mon, 15 Aug 2022 20:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352715AbiHPAA1 (ORCPT
+        with ESMTP id S1354940AbiHPAAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D2C61DB0;
-        Mon, 15 Aug 2022 13:21:44 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F66C743F;
+        Mon, 15 Aug 2022 13:20:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1355F61057;
-        Mon, 15 Aug 2022 20:21:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC819C433D7;
-        Mon, 15 Aug 2022 20:21:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17BECB80EB1;
+        Mon, 15 Aug 2022 20:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6380EC433D7;
+        Mon, 15 Aug 2022 20:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594903;
-        bh=aZcGBsdZmldfbvVLdPKlPrR+pTlUOeweKXXlUsFE84I=;
+        s=korg; t=1660594836;
+        bh=e9whEK17xKjaAzRvOp5nbn9YoNuJqN2Qv4Jjbm+eUP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6Os2QTFk/SQWFta9qr4KfT0RQhmPpov+6q1xZ/78hX+cdqpRZ2xrmgpZVPiPj5XZ
-         ESPFTQYmNxfG9eFPWicX2+bp3FFmcO7qIBYf7OHVEm6eAhv6nIg46aO27TL1mbtB2v
-         zbtq6wFCmlhD6pwU3PgaS/s9f+OAOL4rmaVA+PgE=
+        b=uDxTb2jMk4r9TcDOdg3/QHss2hok0StcurhdIL2FaAr/yleCJKWYB2LxB/C8gf6S6
+         72aafNuYzLn8FZbnvbL16fcc4gduKFAnJqBtMNpO7lt4KfYvG2EvgvubBBJB+RhbkF
+         vgo/+qRlXLtUqjIzF5tMSOv6fn9gYUOqJAHLMVkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        stable@vger.kernel.org, David Chang <David.Chang@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
         Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0596/1157] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
-Date:   Mon, 15 Aug 2022 19:59:12 +0200
-Message-Id: <20220815180503.499512051@linuxfoundation.org>
+Subject: [PATCH 5.19 0574/1157] HID: amd_sfh: Dont show client init failed as error when discovery fails
+Date:   Mon, 15 Aug 2022 19:58:50 +0200
+Message-Id: <20220815180502.599031993@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,45 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 381583845d19cb4bd21c8193449385f3fefa9caf ]
+[ Upstream commit e51d8d3ea3d773334d2c047c8d1623dba66f592a ]
 
-Smatch warnings:
-drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
-'data->block[1]' too small (33 vs 255)
-drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
-small (64 vs 255)
+When sensor discovery fails, this means that the system doesn't have
+any sensors connected and a user should only be notified at most one time.
+A message is already displayed at WARN level of "failed to discover,
+sensors not enabled".  It's pointless to show that the client init failed
+at ERR level for the same condition.
 
-The 'read_length' variable is provided by 'data->block[0]' which comes
-from user and it(read_length) can take a value between 0-255. Add an
-upper bound to 'read_length' variable to prevent a buffer overflow in
-memcpy().
+Check the return code and don't display this message in those conditions.
 
-Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Fixes: b5d7f43e97da ("HID: amd_sfh: Add support for sensor discovery")
+Reported-by: David Chang <David.Chang@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-cp2112.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
-index ece147d1a278..1e16b0fa310d 100644
---- a/drivers/hid/hid-cp2112.c
-+++ b/drivers/hid/hid-cp2112.c
-@@ -790,6 +790,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
- 		data->word = le16_to_cpup((__le16 *)buf);
- 		break;
- 	case I2C_SMBUS_I2C_BLOCK_DATA:
-+		if (read_length > I2C_SMBUS_BLOCK_MAX) {
-+			ret = -EINVAL;
-+			goto power_normal;
-+		}
-+
- 		memcpy(data->block + 1, buf, read_length);
- 		break;
- 	case I2C_SMBUS_BLOCK_DATA:
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+index dadc491bbf6b..1441787a154a 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -327,7 +327,8 @@ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
+ 	rc = amd_sfh_hid_client_init(privdata);
+ 	if (rc) {
+ 		amd_sfh_clear_intr(privdata);
+-		dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
++		if (rc != -EOPNOTSUPP)
++			dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
+ 		return rc;
+ 	}
+ 
 -- 
 2.35.1
 
