@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 917CDC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6CFC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349071AbiHOVjy (ORCPT
+        id S1349194AbiHOVj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        Mon, 15 Aug 2022 17:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349074AbiHOVgg (ORCPT
+        with ESMTP id S1349073AbiHOVgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:36:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58EDF4C;
-        Mon, 15 Aug 2022 12:26:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11ED420F;
+        Mon, 15 Aug 2022 12:26:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4010ECE12C8;
-        Mon, 15 Aug 2022 19:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17390C433C1;
-        Mon, 15 Aug 2022 19:26:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8CA3B80FD3;
+        Mon, 15 Aug 2022 19:26:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154C6C433C1;
+        Mon, 15 Aug 2022 19:26:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591584;
-        bh=HLQ2nldeCGQ4S65ve1hTIYx9ITuoCpzbvZnJt2vv1aU=;
+        s=korg; t=1660591581;
+        bh=o+aJkkxQg1xdwE3GE8FcNT0QI3kL4+w+o02wQgstK8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JibUvFGpV86Va/4TAcldEJkk4V5qw5h9oDi/lOEqsbtoIMEzQlRcPZFHureuYRRL9
-         jDDrUtAYmbO4XemvVj7FVp9JY1E4TCVwg+ZpHVHQ91xH9no0vuxI3boAUpn1eANnjQ
-         up/xDJOT6VTS63YZJNSlMuNN5J8RzmXIpuZb3pu0=
+        b=MMwUKPPjoROqNOzJrbLzSRY5u8u4/yhAmkMEld8Jc2VDyYlSncElMj0h30UpjdI9Q
+         QG/3ZTdSE+xVO9NSLqIVlVQzK/da9745gRI1UNTXgPeI7WYPMtyPmbWXXJA6ErkgVE
+         5Jkycg3tCf+mg+Oo8l/dZBsies0bcbUufovRvrgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        Tomislav Denis <tomislav.denis@avl.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0628/1095] iio: dac: ad5360: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:27 +0200
-Message-Id: <20220815180455.419064911@linuxfoundation.org>
+Subject: [PATCH 5.18 0619/1095] iio: adc: ti-ads131e08: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:18 +0200
+Message-Id: <20220815180455.091558736@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,44 +54,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 94ec314e1bd686b669c24385ce2dbc967eb74147 ]
+[ Upstream commit 55afdd050c063ae4b8dbd566107a030c00d005fd ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
-
-Fixes: a3e2940c24d3 ("staging:iio:dac: Add AD5360 driver")
+Fixes: d935eddd2799 ("iio: adc: Add driver for Texas Instruments ADS131E0x ADC family")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Tomislav Denis <tomislav.denis@avl.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-45-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-36-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad5360.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ti-ads131e08.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
-index ecbc6a51d60f..1bde696a572c 100644
---- a/drivers/iio/dac/ad5360.c
-+++ b/drivers/iio/dac/ad5360.c
-@@ -79,13 +79,13 @@ struct ad5360_state {
- 	struct mutex			lock;
+diff --git a/drivers/iio/adc/ti-ads131e08.c b/drivers/iio/adc/ti-ads131e08.c
+index 80a09817c119..32237cacc9a3 100644
+--- a/drivers/iio/adc/ti-ads131e08.c
++++ b/drivers/iio/adc/ti-ads131e08.c
+@@ -105,7 +105,7 @@ struct ads131e08_state {
+ 		s64 ts __aligned(8);
+ 	} tmp_buf;
  
+-	u8 tx_buf[3] ____cacheline_aligned;
++	u8 tx_buf[3] __aligned(IIO_DMA_MINALIGN);
  	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
- 	union {
- 		__be32 d32;
- 		u8 d8[4];
--	} data[2] ____cacheline_aligned;
-+	} data[2] __aligned(IIO_DMA_MINALIGN);
- };
- 
- enum ad5360_type {
+ 	 * Add extra one padding byte to be able to access the last channel
+ 	 * value using u32 pointer
 -- 
 2.35.1
 
