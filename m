@@ -2,151 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E38E0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 674C8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbiHOPkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        id S231978AbiHOPlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiHOPkD (ORCPT
+        with ESMTP id S230321AbiHOPlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:40:03 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9A913F69
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 08:40:01 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id z16so9472936wrh.12
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 08:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=VP31WSY65QEYHmGKkheHdJtit2IxlAC3C/GTNPT6J3M=;
-        b=KDR20vjhDq0om+BbSpgVjbjIEfKyM9hzqellnZMBbjPYhKfqx8ikJsySttFwFlY2Hw
-         oiDxEt4RpXxN6hUaJW8OuaENfYZOafXkSDkX1vb9dg7V/aG4QsRJ6TYY0F9WUlTLn6Vf
-         NHF+LgUaJFpui1g9qC+Rv3LypInoC1lE1hsrJ8BiNxbEAPP6tn3XdJyY/w0KbBw7PpJD
-         oH77RjEzfa5ost8upGE9k1u6DJriI0mcBtWbmFcq9KC94GZZe4EqzVQ4aUBaXW6zABOk
-         ZIGRqcpIb5HIHOLH2gv1bH3WqUBDiCE5BvLQ/x7yySs3uf1w5ktkzspTtUNcCnzYJQEj
-         8w1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=VP31WSY65QEYHmGKkheHdJtit2IxlAC3C/GTNPT6J3M=;
-        b=6isdgIKUuKsOeLnCIGsrd6/K9yV0XfCjLttb5D0wz10AzjeaFBDHjLdLV3IHcgLNAe
-         gKt2SyW5EF2N655TeBOM9TCec0zncqSCARTXGlRkDzIHjakKmKfYKri+PqlB78La0hFC
-         OAPnZutweJ5D0vP/w1RonuwcNidXeGEDpTh4zUgXARsc6WW6DDEY2wJIabFLjWvXyPSU
-         FCGBHMEJgWZVmeVyPjrSAPEWmwlCSQq/4IzwMAmErLz5RDXcZpR/W+3Rj1pPV1gAoNDA
-         dtLt9LEK2t8R3GR6BiqnxKBofFssuuoe2SmNbFP+PvpFpXrqd2WhCPKgDPyAEfLGvQVq
-         vTZg==
-X-Gm-Message-State: ACgBeo1Regz/5552ZNNpDkl9JLFj3n965c/5+7/kDFqTlC0gWVUv+j1k
-        wI5Ny5OkW48J7bVsS8z52mI8BBNfxT6CdtCGptjyQA==
-X-Google-Smtp-Source: AA6agR7zuuSgDdcz2wd92uz0ytguGNdoZjdF2d8ZPVqoybSSwNN8/GwgwCl+M3WDqdInbEa6zFZJ4DJNkrQDuxI0MHA=
-X-Received: by 2002:a5d:5a82:0:b0:224:f744:1799 with SMTP id
- bp2-20020a5d5a82000000b00224f7441799mr1748341wrb.582.1660577999491; Mon, 15
- Aug 2022 08:39:59 -0700 (PDT)
+        Mon, 15 Aug 2022 11:41:06 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2862711;
+        Mon, 15 Aug 2022 08:41:04 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 7BEB177A; Mon, 15 Aug 2022 10:41:02 -0500 (CDT)
+Date:   Mon, 15 Aug 2022 10:41:02 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
+Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
+Message-ID: <20220815154102.GA20944@mail.hallyn.com>
+References: <20220801180146.1157914-1-fred@cloudflare.com>
+ <87les7cq03.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhRpUxyxkPaTz1scGeRm+i4KviQQA7WismOX2q5agzC+DQ@mail.gmail.com>
+ <87wnbia7jh.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
+ <20220814155508.GA7991@mail.hallyn.com>
+ <CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220628220938.3657876-1-yosryahmed@google.com>
- <20220628220938.3657876-2-yosryahmed@google.com> <YsdJPeVOqlj4cf2a@google.com>
- <CAJD7tkYE+pZdk=-psEP_Rq_1CmDjY7Go+s1LXm-ctryWvUdgLA@mail.gmail.com>
- <Ys3+UTTC4Qgbm7pQ@google.com> <CAJD7tkY91oiDWTj5FY2Upc5vabsjLk+CBMNzAepXLUdF_GS11w@mail.gmail.com>
- <CAJD7tkbc+E7f+ENRazf0SO7C3gR2bHiN4B0F1oPn8Pa6juAVfg@mail.gmail.com> <Yvpir0nWuTsXz322@cmpxchg.org>
-In-Reply-To: <Yvpir0nWuTsXz322@cmpxchg.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 15 Aug 2022 08:39:23 -0700
-Message-ID: <CAJD7tkYJcsSvCUCkNgcWvi2Xoa3GDZk81p5GUptZzkOkrhrTWQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Sean Christopherson <seanjc@google.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>, Huang@google.com,
-        Shaoqin <shaoqin.huang@intel.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 8:13 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
->
-> On Mon, Aug 08, 2022 at 01:06:15PM -0700, Yosry Ahmed wrote:
-> > On Mon, Jul 18, 2022 at 11:26 AM Yosry Ahmed <yosryahmed@google.com> wrote:
-> > >
-> > > On Tue, Jul 12, 2022 at 4:06 PM Sean Christopherson <seanjc@google.com> wrote:
-> > > >
-> > > > On Tue, Jul 12, 2022, Yosry Ahmed wrote:
-> > > > > Thanks for taking another look at this!
+On Sun, Aug 14, 2022 at 10:32:51PM -0400, Paul Moore wrote:
+> On Sun, Aug 14, 2022 at 11:55 AM Serge E. Hallyn <serge@hallyn.com> wrote:
+> > On Mon, Aug 08, 2022 at 03:16:16PM -0400, Paul Moore wrote:
+> > > On Mon, Aug 8, 2022 at 2:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> > > > Paul Moore <paul@paul-moore.com> writes:
+> > > > > On Mon, Aug 1, 2022 at 10:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> > > > >> Frederick Lawler <fred@cloudflare.com> writes:
+> > > > >>
+> > > > >> > While creating a LSM BPF MAC policy to block user namespace creation, we
+> > > > >> > used the LSM cred_prepare hook because that is the closest hook to prevent
+> > > > >> > a call to create_user_ns().
+> > > > >>
+> > > > >> Re-nack for all of the same reasons.
+> > > > >> AKA This can only break the users of the user namespace.
+> > > > >>
+> > > > >> Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> > > > >>
+> > > > >> You aren't fixing what your problem you are papering over it by denying
+> > > > >> access to the user namespace.
+> > > > >>
+> > > > >> Nack Nack Nack.
+> > > > >>
+> > > > >> Stop.
+> > > > >>
+> > > > >> Go back to the drawing board.
+> > > > >>
+> > > > >> Do not pass go.
+> > > > >>
+> > > > >> Do not collect $200.
 > > > > >
-> > > > > On Thu, Jul 7, 2022 at 1:59 PM Sean Christopherson <seanjc@google.com> wrote:
-> > > > > >
-> > > > > > On Tue, Jun 28, 2022, Yosry Ahmed wrote:
-> > > > > > > diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> > > > > > > index aab70355d64f3..13190d298c986 100644
-> > > > > > > --- a/include/linux/mmzone.h
-> > > > > > > +++ b/include/linux/mmzone.h
-> > > > > > > @@ -216,6 +216,7 @@ enum node_stat_item {
-> > > > > > >       NR_KERNEL_SCS_KB,       /* measured in KiB */
-> > > > > > >  #endif
-> > > > > > >       NR_PAGETABLE,           /* used for pagetables */
-> > > > > > > +     NR_SECONDARY_PAGETABLE, /* secondary pagetables, e.g. kvm shadow pagetables */
-> > > > > >
-> > > > > > Nit, s/kvm/KVM, and drop the "shadow", which might be misinterpreted as saying KVM
-> > > > > > pagetables are only accounted when KVM is using shadow paging.  KVM's usage of "shadow"
-> > > > > > is messy, so I totally understand why you included it, but in this case it's unnecessary
-> > > > > > and potentially confusing.
-> > > > > >
-> > > > > > And finally, something that's not a nit.  Should this be wrapped with CONFIG_KVM
-> > > > > > (using IS_ENABLED() because KVM can be built as a module)?  That could be removed
-> > > > > > if another non-KVM secondary MMU user comes along, but until then, #ifdeffery for
-> > > > > > stats the depend on a single feature seems to be the status quo for this code.
-> > > > > >
-> > > > >
-> > > > > I will #ifdef the stat, but I will emphasize in the docs that is
-> > > > > currently *only* used for KVM so that it makes sense if users without
-> > > > > KVM don't see the stat at all. I will also remove the stat from
-> > > > > show_free_areas() in mm/page_alloc.c as it seems like none of the
-> > > > > #ifdefed stats show up there.
+> > > > > If you want us to take your comments seriously Eric, you need to
+> > > > > provide the list with some constructive feedback that would allow
+> > > > > Frederick to move forward with a solution to the use case that has
+> > > > > been proposed.  You response above may be many things, but it is
+> > > > > certainly not that.
 > > > >
-> > > > It's might be worth getting someone from mm/ to weigh in before going through the
-> > > > trouble, my suggestion/question is based purely on the existing code.
+> > > > I did provide constructive feedback.  My feedback to his problem
+> > > > was to address the real problem of bugs in the kernel.
 > > >
-> > > Any mm folks with an opinion about this?
-> > >
-> > > Any preference on whether we should wrap NR_SECONDARY_PAGETABLE stats
-> > > with #ifdef CONFIG_KVM for now as it is currently the only source for
-> > > this stat?
+> > > We've heard from several people who have use cases which require
+> > > adding LSM-level access controls and observability to user namespace
+> > > creation.  This is the problem we are trying to solve here; if you do
+> > > not like the approach proposed in this patchset please suggest another
+> > > implementation that allows LSMs visibility into user namespace
+> > > creation.
 > >
-> > Any input here?
-> >
-> > Johannes, you have been involved in discussions in earlier versions of
-> > this series, any thoughts here?
->
-> No super strong feelings here. Most major distros have CONFIG_KVM=y/n,
-> so it'll be a common fixture anyway, and the ifdef is proooobably not
-> worth it for hiding it from people. OTOH, the ifdef is useful for
-> documenting the code.
->
-> If you've already ifdeffed it now, I'd say go ahead with
-> it. Otherwise, don't :) My 2c.
+> > Regarding the observability - can someone concisely lay out why just
+> > auditing userns creation would not suffice?  Userspace could decide
+> > what to report based on whether the creating user_ns == /proc/1/ns/user...
+> 
+> One of the selling points of the BPF LSM is that it allows for various
+> different ways of reporting and logging beyond audit.  However, even
+> if it was limited to just audit I believe that provides some useful
+> justification as auditing fork()/clone() isn't quite the same and
+> could be difficult to do at scale in some configurations.  I haven't
+> personally added a BPF LSM program to the kernel so I can't speak to
+> the details on what is possible, but I'm sure others on the To/CC line
+> could help provide more information if that is important to you.
+> 
+> > Regarding limiting the tweaking of otherwise-privileged code by
+> > unprivileged users, i wonder whether we could instead add smarts to
+> > ns_capable().
+> 
+> The existing security_capable() hook is eventually called by ns_capable():
+> 
+>   ns_capable()
+>     ns_capable_common()
+>       security_capable(const struct cred *cred,
+>                        struct user_namespace *ns,
+>                        int cap,
+>                        unsigned int opts);
+> 
+> ... I'm not sure what additional smarts would be useful here?
 
-Thanks a lot, Johannes! I haven't ifdeffed it yet so I'll send a v7
-with a few nits and collect ACKs. Andrew, would you prefer me to
-rebase on top of mm-unstable? Or will this go in through the kvm tree?
-(currently it's based on an old-ish kvm/queue).
+Oh - i wasn't necessarily thinking of an LSM.  I was picturing a
+sysctl next to unprivileged_userns_clone.  But you're right, looks
+like an LSM could already do this.  Of course, there's an issue early
+on in that the root user in the new namespace couldn't setuid, so
+the uid mapping is still limited.  So this idea probably isn't worth
+the characters we've typed about it so far, sorry.
+
+> [side note: SELinux does actually distinguish between capability
+> checks in the initial user namespace vs child namespaces]
+> 
+> > Point being, uid mapping would still work, but we'd
+> > break the "privileged against resources you own" part of user
+> > namespaces.  I would want it to default to allow, but then when a
+> > 0-day is found which requires reaching ns_capable() code, admins
+> > could easily prevent exploitation until reboot from a fixed kernel.
+> 
+> That assumes that everything you care about is behind a capability
+> check, which is probably going to be correct in a lot of the cases,
+> but I think it would be a mistake to assume that is always going to be
+> true.
+
+I might be thinking wrongly, but if it's not behind a capability check,
+then it seems to me it's not an exploit that can only be reached by
+becoming root in a user namespace, which means disabling user namespace
+creation by unprivileged users will not stop the attack.
