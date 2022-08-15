@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2175C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B48C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354817AbiHOXq2 (ORCPT
+        id S1354871AbiHOXqi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        Mon, 15 Aug 2022 19:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354324AbiHOXlx (ORCPT
+        with ESMTP id S1354321AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E7C2C66D;
-        Mon, 15 Aug 2022 13:12:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EEC2C65C;
+        Mon, 15 Aug 2022 13:12:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F43FB80EAD;
-        Mon, 15 Aug 2022 20:12:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85049C433C1;
-        Mon, 15 Aug 2022 20:12:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E3586077B;
+        Mon, 15 Aug 2022 20:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 172F1C433C1;
+        Mon, 15 Aug 2022 20:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594363;
-        bh=d/52b45doYg9s/2ntpneHgZYLVevpz6UYW9ck9AIykk=;
+        s=korg; t=1660594344;
+        bh=AUx0DyP1wpvcM7jw+zKjJqfB5eCKGEC5MqiBsClfykY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mm2mPEot3N7ZPij+qQfbRZbFFRwTOI12KpD6iup/Zlxqwy4lPrp9LqtfKLJjg6025
-         ZoxhzBqSB3IpFesL1ttqDV7AQj6RLBNIguifI6t7by2CgNomZsTp1lxUjZplFZpUYT
-         L71fcHxO6FSrm81nostQ7H94dcUfRG6Wtl5835Mc=
+        b=bB32JaJZn1KOdcNmZvHvW/+uYW9MiZy9jXMDOVM+zRamHpZY8vWRV3BqH50PAiep+
+         HS4S2Z81J1cJ1+Lu+blyxjP/gIyixFukdjlSLp1DoCg75UV1/nohiRhP9sadZPDLcf
+         d9URKVT7FaWzGGEXmQ8oyGi3yzlcNJQj1ChJ4A+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0422/1157] drm/vc4: hdmi: Force modeset when bpc or format changes
-Date:   Mon, 15 Aug 2022 19:56:18 +0200
-Message-Id: <20220815180456.543086316@linuxfoundation.org>
+Subject: [PATCH 5.19 0417/1157] drm/vc4: hdmi: Avoid full hdmi audio fifo writes
+Date:   Mon, 15 Aug 2022 19:56:13 +0200
+Message-Id: <20220815180456.329569159@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,75 +52,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dom Cobley <popcornmix@gmail.com>
 
-[ Upstream commit c94cd0620a922156c9ff9af9c3301b174b287677 ]
+[ Upstream commit 1c594eeccf92368177c2e22f1d3ee4933dfb8567 ]
 
-Whenever the maximum BPC is changed, vc4_hdmi_encoder_compute_config()
-might pick up a different BPC or format depending on the display
-capabilities.
+We are getting occasional VC4_HD_MAI_CTL_ERRORF in
+HDMI_MAI_CTL which seem to correspond with audio dropouts.
 
-That change will have a number of side effects, including the clock
-rates and whether the scrambling is enabled.
+Reduce the threshold where we deassert DREQ to avoid the fifo
+overfilling
 
-However, only drm_crtc_state.connectors_changed will be set to true,
-since that properly only affects the connector.
-
-This means that while drm_atomic_crtc_needs_modeset() will return true,
-and thus drm_atomic_helper_commit_modeset_enables() will call our
-encoder atomic_enable() hook, mode_changed will be false.
-
-So crtc_set_mode() will not call our encoder .atomic_mode_set() hook. We
-use this hook in vc4 to set the vc4_hdmi_connector_state.output_bpc (and
-output_format), and will then reuse the value in .atomic_enable() to select
-whether or not scrambling should be enabled.
-
-However, since our clock rate is pre-computed during .atomic_check(), we
-end up with the clocks properly configured, but the scrambling disabled,
-leading to a blank screen.
-
-Let's set mode_changed to true in our HDMI driver to force the update of
-output_bpc, and thus prevent the issue entirely.
-
-Fixes: ba8c0faebbb0 ("drm/vc4: hdmi: Enable 10/12 bpc output")
+Fixes: bb7d78568814 ("drm/vc4: Add HDMI audio support")
 Signed-off-by: Dom Cobley <popcornmix@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-32-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220613144800.326124-21-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 674bd29a7cf2..3829e13c8627 100644
+index ecd49214bd92..d0921f832f19 100644
 --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
 +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1620,9 +1620,14 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
- 					 struct drm_crtc_state *crtc_state,
- 					 struct drm_connector_state *conn_state)
- {
-+	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
-+	struct drm_connector *connector = &vc4_hdmi->connector;
-+	struct drm_connector_state *old_conn_state =
-+		drm_atomic_get_old_connector_state(conn_state->state, connector);
-+	struct vc4_hdmi_connector_state *old_vc4_state =
-+		conn_state_to_vc4_hdmi_conn_state(old_conn_state);
- 	struct vc4_hdmi_connector_state *vc4_state = conn_state_to_vc4_hdmi_conn_state(conn_state);
- 	struct drm_display_mode *mode = &crtc_state->adjusted_mode;
--	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
- 	unsigned long long tmds_char_rate = mode->clock * 1000;
- 	unsigned long long tmds_bit_rate;
- 	int ret;
-@@ -1651,6 +1656,11 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
- 	if (ret)
- 		return ret;
+@@ -1956,10 +1956,10 @@ static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
  
-+	/* vc4_hdmi_encoder_compute_config may have changed output_bpc and/or output_format */
-+	if (vc4_state->output_bpc != old_vc4_state->output_bpc ||
-+	    vc4_state->output_format != old_vc4_state->output_format)
-+		crtc_state->mode_changed = true;
-+
- 	return 0;
- }
+ 	/* Set the MAI threshold */
+ 	HDMI_WRITE(HDMI_MAI_THR,
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICHIGH) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICLOW) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQHIGH) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQLOW));
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICHIGH) |
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICLOW) |
++		   VC4_SET_FIELD(0x06, VC4_HD_MAI_THR_DREQHIGH) |
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_DREQLOW));
  
+ 	HDMI_WRITE(HDMI_MAI_CONFIG,
+ 		   VC4_HDMI_MAI_CONFIG_BIT_REVERSE |
 -- 
 2.35.1
 
