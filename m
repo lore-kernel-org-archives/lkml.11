@@ -2,46 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69272C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B740C25B0D
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347020AbiHPA5H (ORCPT
+        id S1347243AbiHPA5P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        Mon, 15 Aug 2022 20:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346693AbiHPAvN (ORCPT
+        with ESMTP id S1346568AbiHPAvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:51:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37446B69FC;
-        Mon, 15 Aug 2022 13:46:49 -0700 (PDT)
+        Mon, 15 Aug 2022 20:51:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AEE199B3C;
+        Mon, 15 Aug 2022 13:46:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8323761243;
-        Mon, 15 Aug 2022 20:46:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D6D3C433C1;
-        Mon, 15 Aug 2022 20:46:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D9C6B81197;
+        Mon, 15 Aug 2022 20:46:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C304AC433D6;
+        Mon, 15 Aug 2022 20:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596407;
-        bh=36XX2c9r7A8FI8w0hCoply89X3xjewEPw5zcTFeVF/g=;
+        s=korg; t=1660596414;
+        bh=UdYZI1riOsDbDH0atDWZkwjVT6LhIpkFlQ5M1a7XQrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FOuOEN950cKKE4sGWsn0Uw3HFA2/oyeyM8vqZ8uaRyvDsEzfNy2mqncY+bJADa6g7
-         4qXg8lR4cmjPBwvfxMNdcLyfhm7l6rt5JTMxRFHPOTYNv8ocXRy51viX1ApDfJGEuc
-         Xa82pDpDsPxrbZnnsol6mStfzKCjJFItFNbQ1Rlk=
+        b=fByKYwfpaimidRyhHM3aAsPiSCBiNwyjJ8D6mz1k4w4rVczWx3D2F0g5unzZCSBgW
+         akV58qOl2jqxNKywPYyb3hddmDrlFuejjEwxkO5mLAMj4Rv/U6QShvzDSFvk+Gr72u
+         gJ4SSY0UlqJ9lv2qt/rM4gAK37lTdIctWj9Aj9iE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Baoquan He <bhe@redhat.com>, Coiby Xu <coxu@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Peter Chen <peter.chen@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Bin Liu <b-liu@ti.com>,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        Sven Eckelmann <sven@narfation.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jim Cromie <jim.cromie@gmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1070/1157] kexec: clean up arch_kexec_kernel_verify_sig
-Date:   Mon, 15 Aug 2022 20:07:06 +0200
-Message-Id: <20220815180522.915710918@linuxfoundation.org>
+Subject: [PATCH 5.19 1072/1157] tracing/events: Add __vstring() and __assign_vstr() helper macros
+Date:   Mon, 15 Aug 2022 20:07:08 +0200
+Message-Id: <20220815180523.005866092@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,105 +74,194 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coiby Xu <coxu@redhat.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 689a71493bd2f31c024f8c0395f85a1fd4b2138e ]
+[ Upstream commit 0563231f93c6d1f582b168a47753b345c1e20d81 ]
 
-Before commit 105e10e2cf1c ("kexec_file: drop weak attribute from
-functions"), there was already no arch-specific implementation
-of arch_kexec_kernel_verify_sig. With weak attribute dropped by that
-commit, arch_kexec_kernel_verify_sig is completely useless. So clean it
-up.
+There's several places that open code the following logic:
 
-Note later patches are dependent on this patch so it should be backported
-to the stable tree as well.
+  TP_STRUCT__entry(__dynamic_array(char, msg, MSG_MAX)),
+  TP_fast_assign(vsnprintf(__get_str(msg), MSG_MAX, vaf->fmt, *vaf->va);)
 
-Cc: stable@vger.kernel.org
-Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
-Reviewed-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
-[zohar@linux.ibm.com: reworded patch description "Note"]
-Link: https://lore.kernel.org/linux-integrity/20220714134027.394370-1-coxu@redhat.com/
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+To load a string created by variable array va_list.
+
+The main issue with this approach is that "MSG_MAX" usage in the
+__dynamic_array() portion. That actually just reserves the MSG_MAX in the
+event, and even wastes space because there's dynamic meta data also saved
+in the event to denote the offset and size of the dynamic array. It would
+have been better to just use a static __array() field.
+
+Instead, create __vstring() and __assign_vstr() that work like __string
+and __assign_str() but instead of taking a destination string to copy,
+take a format string and a va_list pointer and fill in the values.
+
+It uses the helper:
+
+ #define __trace_event_vstr_len(fmt, va)		\
+ ({							\
+	va_list __ap;					\
+	int __ret;					\
+							\
+	va_copy(__ap, *(va));				\
+	__ret = vsnprintf(NULL, 0, fmt, __ap) + 1;	\
+	va_end(__ap);					\
+							\
+	min(__ret, TRACE_EVENT_STR_MAX);		\
+ })
+
+To figure out the length to store the string. It may be slightly slower as
+it needs to run the vsnprintf() twice, but it now saves space on the ring
+buffer.
+
+Link: https://lkml.kernel.org/r/20220705224749.053570613@goodmis.org
+
+Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Arend van Spriel <aspriel@gmail.com>
+Cc: Franky Lin <franky.lin@broadcom.com>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Cc: Peter Chen <peter.chen@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Mathias Nyman <mathias.nyman@intel.com>
+Cc: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc: Bin Liu <b-liu@ti.com>
+Cc: Marek Lindner <mareklindner@neomailbox.ch>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Antonio Quartulli <a@unstable.cc>
+Cc: Sven Eckelmann <sven@narfation.org>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Jim Cromie <jim.cromie@gmail.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kexec.h |  5 -----
- kernel/kexec_file.c   | 33 +++++++++++++--------------------
- 2 files changed, 13 insertions(+), 25 deletions(-)
+ include/linux/trace_events.h                 | 18 ++++++++++++++++++
+ include/trace/stages/stage1_struct_define.h  |  3 +++
+ include/trace/stages/stage2_data_offsets.h   |  3 +++
+ include/trace/stages/stage4_event_fields.h   |  3 +++
+ include/trace/stages/stage5_get_offsets.h    |  4 ++++
+ include/trace/stages/stage6_event_callback.h |  7 +++++++
+ 6 files changed, 38 insertions(+)
 
-diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-index 6958c6b471f4..6e7510f39368 100644
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -212,11 +212,6 @@ static inline void *arch_kexec_kernel_image_load(struct kimage *image)
- }
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index e6e95a9f07a5..b18759a673c6 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -916,6 +916,24 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
+ 
  #endif
  
--#ifdef CONFIG_KEXEC_SIG
--int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
--				 unsigned long buf_len);
--#endif
--
- extern int kexec_add_buffer(struct kexec_buf *kbuf);
- int kexec_locate_mem_hole(struct kexec_buf *kbuf);
++#define TRACE_EVENT_STR_MAX	512
++
++/*
++ * gcc warns that you can not use a va_list in an inlined
++ * function. But lets me make it into a macro :-/
++ */
++#define __trace_event_vstr_len(fmt, va)			\
++({							\
++	va_list __ap;					\
++	int __ret;					\
++							\
++	va_copy(__ap, *(va));				\
++	__ret = vsnprintf(NULL, 0, fmt, __ap) + 1;	\
++	va_end(__ap);					\
++							\
++	min(__ret, TRACE_EVENT_STR_MAX);		\
++})
++
+ #endif /* _LINUX_TRACE_EVENT_H */
  
-diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 0c27c81351ee..6dc1294c90fc 100644
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -81,24 +81,6 @@ int kexec_image_post_load_cleanup_default(struct kimage *image)
- 	return image->fops->cleanup(image->image_loader_data);
- }
- 
--#ifdef CONFIG_KEXEC_SIG
--static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
--					  unsigned long buf_len)
--{
--	if (!image->fops || !image->fops->verify_sig) {
--		pr_debug("kernel loader does not support signature verification.\n");
--		return -EKEYREJECTED;
--	}
--
--	return image->fops->verify_sig(buf, buf_len);
--}
--
--int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf, unsigned long buf_len)
--{
--	return kexec_image_verify_sig_default(image, buf, buf_len);
--}
--#endif
--
  /*
-  * Free up memory used by kernel, initrd, and command line. This is temporary
-  * memory allocation which is not needed any more after these buffers have
-@@ -141,13 +123,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
- }
+diff --git a/include/trace/stages/stage1_struct_define.h b/include/trace/stages/stage1_struct_define.h
+index a16783419687..1b7bab60434c 100644
+--- a/include/trace/stages/stage1_struct_define.h
++++ b/include/trace/stages/stage1_struct_define.h
+@@ -26,6 +26,9 @@
+ #undef __string_len
+ #define __string_len(item, src, len) __dynamic_array(char, item, -1)
  
- #ifdef CONFIG_KEXEC_SIG
-+static int kexec_image_verify_sig(struct kimage *image, void *buf,
-+				  unsigned long buf_len)
-+{
-+	if (!image->fops || !image->fops->verify_sig) {
-+		pr_debug("kernel loader does not support signature verification.\n");
-+		return -EKEYREJECTED;
-+	}
++#undef __vstring
++#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
 +
-+	return image->fops->verify_sig(buf, buf_len);
-+}
+ #undef __bitmask
+ #define __bitmask(item, nr_bits) __dynamic_array(char, item, -1)
+ 
+diff --git a/include/trace/stages/stage2_data_offsets.h b/include/trace/stages/stage2_data_offsets.h
+index 42fd1e8813ec..1b7a8f764fdd 100644
+--- a/include/trace/stages/stage2_data_offsets.h
++++ b/include/trace/stages/stage2_data_offsets.h
+@@ -32,6 +32,9 @@
+ #undef __string_len
+ #define __string_len(item, src, len) __dynamic_array(char, item, -1)
+ 
++#undef __vstring
++#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
 +
- static int
- kimage_validate_signature(struct kimage *image)
- {
- 	int ret;
+ #undef __bitmask
+ #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
  
--	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
--					   image->kernel_buf_len);
-+	ret = kexec_image_verify_sig(image, image->kernel_buf,
-+				     image->kernel_buf_len);
- 	if (ret) {
+diff --git a/include/trace/stages/stage4_event_fields.h b/include/trace/stages/stage4_event_fields.h
+index e80cdc397a43..c3790ec7a453 100644
+--- a/include/trace/stages/stage4_event_fields.h
++++ b/include/trace/stages/stage4_event_fields.h
+@@ -38,6 +38,9 @@
+ #undef __string_len
+ #define __string_len(item, src, len) __dynamic_array(char, item, -1)
  
- 		if (sig_enforce) {
++#undef __vstring
++#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
++
+ #undef __bitmask
+ #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
+ 
+diff --git a/include/trace/stages/stage5_get_offsets.h b/include/trace/stages/stage5_get_offsets.h
+index 7ee5931300e6..fba4c24ed9e6 100644
+--- a/include/trace/stages/stage5_get_offsets.h
++++ b/include/trace/stages/stage5_get_offsets.h
+@@ -39,6 +39,10 @@
+ #undef __string_len
+ #define __string_len(item, src, len) __dynamic_array(char, item, (len) + 1)
+ 
++#undef __vstring
++#define __vstring(item, fmt, ap) __dynamic_array(char, item,		\
++		      __trace_event_vstr_len(fmt, ap))
++
+ #undef __rel_dynamic_array
+ #define __rel_dynamic_array(type, item, len)				\
+ 	__item_length = (len) * sizeof(type);				\
+diff --git a/include/trace/stages/stage6_event_callback.h b/include/trace/stages/stage6_event_callback.h
+index e1724f73594b..0f51f6b3ab70 100644
+--- a/include/trace/stages/stage6_event_callback.h
++++ b/include/trace/stages/stage6_event_callback.h
+@@ -24,6 +24,9 @@
+ #undef __string_len
+ #define __string_len(item, src, len) __dynamic_array(char, item, -1)
+ 
++#undef __vstring
++#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
++
+ #undef __assign_str
+ #define __assign_str(dst, src)						\
+ 	strcpy(__get_str(dst), (src) ? (const char *)(src) : "(null)");
+@@ -35,6 +38,10 @@
+ 		__get_str(dst)[len] = '\0';				\
+ 	} while(0)
+ 
++#undef __assign_vstr
++#define __assign_vstr(dst, fmt, va)					\
++	vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, *(va))
++
+ #undef __bitmask
+ #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
+ 
 -- 
 2.35.1
 
