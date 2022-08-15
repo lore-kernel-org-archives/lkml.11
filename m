@@ -2,137 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D7BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0591C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348739AbiHOVid (ORCPT
+        id S1349055AbiHOVii (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        Mon, 15 Aug 2022 17:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348983AbiHOVgS (ORCPT
+        with ESMTP id S1349001AbiHOVg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:36:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E566CDABAB;
-        Mon, 15 Aug 2022 12:25:38 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 19:25:35 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660591536;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7WxA9uiQ39sdKNbelxIO0LjqYl7FWxhO+F1itecp19Y=;
-        b=eTyBT1ThA3tG/i2fA7Jkr7iapMQO+lq1OwXY3QxSzIbNLB7DWn74dpRRJnD7cu6BFu4ok4
-        fo9L5wOviwvvLqJDvkjF6IRV0LIPcvzTg+X64K1t6swfQq1tSD1rGf7oX6S572vXavIh91
-        3zL7Q+c5JvX4HUF8b4TVuT4xA1YrmI1CH6YrtRyH+Pr4TAG8MX4Y8gh3gAdj2KA6W2NadK
-        56tVNYYrKWDOETIEBqUCAvP+RnQWPZEj1xIZRQ0fE0irlaH5d9Pl3YrYe9ADpwShBn89fl
-        LrY9tbPNE3bqd1qX5bChAvDUinVM4RE6szaMzRjShy9C8wYegPK0JdOF8gsQug==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660591536;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7WxA9uiQ39sdKNbelxIO0LjqYl7FWxhO+F1itecp19Y=;
-        b=J4VVObtnm20YgBgL3FdFP1HmGYEnkRPMTtpQ+6wbN0r7o66osxfdq9gze0TGay/CjfjEQ6
-        hca3KWy3Fx3UegAQ==
-From:   "tip-bot2 for Jason Wang" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cleanups] x86: Fix various duplicate-word comment typos
-Cc:     Jason Wang <wangborong@cdjrlc.com>, Ingo Molnar <mingo@kernel.org>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220715044809.20572-1-wangborong@cdjrlc.com>
-References: <20220715044809.20572-1-wangborong@cdjrlc.com>
+        Mon, 15 Aug 2022 17:36:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B982E9FA;
+        Mon, 15 Aug 2022 12:25:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CB3A61089;
+        Mon, 15 Aug 2022 19:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D84C433D6;
+        Mon, 15 Aug 2022 19:25:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660591542;
+        bh=Cie5ZzNsVo95h6m7oSLL4Rw3+kDPsVt9/3cxcdnlirs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gQT2Yc7qCXJ2QFkXBNyEeg2mDXVryUspcIgEcrG9SBQmbSPMvrXNQ3h/Tf5FVHkTX
+         ZIAG5ZbF1t1qSRRw5LBOG0+Xvwpda+AJo+F6QxX0LXa0KQIwHJAQnUUPZunr/tR+0H
+         0AkvzcurEEEah7B0ToNZxuYD9A0xDMVZNhO7Jark=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0612/1095] iio: adc: ti-adc0832: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:11 +0200
+Message-Id: <20220815180454.823435439@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166059153501.401.8132753536840702808.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cleanups branch of tip:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Commit-ID:     3163600cab67ffd276a3bb97891404c59c8595a4
-Gitweb:        https://git.kernel.org/tip/3163600cab67ffd276a3bb97891404c59c8595a4
-Author:        Jason Wang <wangborong@cdjrlc.com>
-AuthorDate:    Fri, 15 Jul 2022 12:48:09 +08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 15 Aug 2022 19:17:52 +02:00
+[ Upstream commit 1e6bb81c23a84a078736a0f2a52bd765863e94ed ]
 
-x86: Fix various duplicate-word comment typos
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-  [ mingo: Consolidated 4 very similar patches into one, it's silly to spread this out. ]
-
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220715044809.20572-1-wangborong@cdjrlc.com
+Fixes: efc945fb729c ("iio: adc: add support for ADC0831/ADC0832/ADC0834/ADC0838 chips")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-29-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/amd_gart_64.c | 2 +-
- arch/x86/kernel/aperture_64.c | 2 +-
- arch/x86/kvm/vmx/nested.c     | 2 +-
- arch/x86/platform/efi/efi.c   | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/ti-adc0832.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index 194d54e..19a0207 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -53,7 +53,7 @@ static u32 *iommu_gatt_base;		/* Remapping table */
-  * of only flushing when an mapping is reused. With it true the GART is
-  * flushed for every mapping. Problem is that doing the lazy flush seems
-  * to trigger bugs with some popular PCI cards, in particular 3ware (but
-- * has been also also seen with Qlogic at least).
-+ * has been also seen with Qlogic at least).
-  */
- static int iommu_fullflush = 1;
- 
-diff --git a/arch/x86/kernel/aperture_64.c b/arch/x86/kernel/aperture_64.c
-index 7a5630d..4feaa67 100644
---- a/arch/x86/kernel/aperture_64.c
-+++ b/arch/x86/kernel/aperture_64.c
-@@ -36,7 +36,7 @@
- /*
-  * Using 512M as goal, in case kexec will load kernel_big
-  * that will do the on-position decompress, and could overlap with
-- * with the gart aperture that is used.
-+ * the gart aperture that is used.
-  * Sequence:
-  * kernel_small
-  * ==> kexec (with kdump trigger path or gart still enabled)
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index ddd4367..7eaf960 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -2570,7 +2570,7 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 	 * bits which we consider mandatory enabled.
- 	 * The CR0_READ_SHADOW is what L2 should have expected to read given
- 	 * the specifications by L1; It's not enough to take
--	 * vmcs12->cr0_read_shadow because on our cr0_guest_host_mask we we
-+	 * vmcs12->cr0_read_shadow because on our cr0_guest_host_mask we
- 	 * have more bits than L1 expected.
+diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
+index fb5e72600b96..b11ce555ba3b 100644
+--- a/drivers/iio/adc/ti-adc0832.c
++++ b/drivers/iio/adc/ti-adc0832.c
+@@ -36,7 +36,7 @@ struct adc0832 {
  	 */
- 	vmx_set_cr0(vcpu, vmcs12->guest_cr0);
-diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
-index 6e598bd..ebc98a6 100644
---- a/arch/x86/platform/efi/efi.c
-+++ b/arch/x86/platform/efi/efi.c
-@@ -169,7 +169,7 @@ static void __init do_add_efi_memmap(void)
- }
+ 	u8 data[24] __aligned(8);
  
- /*
-- * Given add_efi_memmap defaults to 0 and there there is no alternative
-+ * Given add_efi_memmap defaults to 0 and there is no alternative
-  * e820 mechanism for soft-reserved memory, import the full EFI memory
-  * map if soft reservations are present and enabled. Otherwise, the
-  * mechanism to disable the kernel's consideration of EFI_MEMORY_SP is
+-	u8 tx_buf[2] ____cacheline_aligned;
++	u8 tx_buf[2] __aligned(IIO_DMA_MINALIGN);
+ 	u8 rx_buf[2];
+ };
+ 
+-- 
+2.35.1
+
+
+
