@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E5FC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D47C282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbiHPE4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        id S233484AbiHPE4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbiHPEyJ (ORCPT
+        with ESMTP id S233995AbiHPEz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:54:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F37B958D;
-        Mon, 15 Aug 2022 13:50:24 -0700 (PDT)
+        Tue, 16 Aug 2022 00:55:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB95FE0A8;
+        Mon, 15 Aug 2022 13:51:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A05FA61283;
-        Mon, 15 Aug 2022 20:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5849C433C1;
-        Mon, 15 Aug 2022 20:50:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 324F3B811AE;
+        Mon, 15 Aug 2022 20:50:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75983C433D7;
+        Mon, 15 Aug 2022 20:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596617;
-        bh=xjwEAjQmDMvwXBghWtChvjHsn8c+SsVYe94+bRZyOQY=;
+        s=korg; t=1660596656;
+        bh=J0ycxpS4pz0mQ35m3dePt8F7dDXGXxiCq9z7Kw0TkRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tRoi35PzS8t00u7CjYXMzy6Nsu959O6vaK5cejy2/g0qkFtFrpjNvEU8bxinyVLHT
-         ahseQytLorxsbN5ZFOWtFWm3z/kMSzV+jdM+XUP6DaPGWv+4KWo7a+LkrkN0GILj6f
-         NghqfiaSXUjNB663yh8ityFqR3W7loSe4ZBP526Q=
+        b=b0woAm0BEy5+QQty13ps1WbC9cur/8ma0l+e4Xu82FFzDiFzjBgWQCKm0HwuvJJfI
+         1CDHl1jNOgxqKTpIPsG8CISwS+XM4s+lCNCuqYzqr/9zQlJorVRyPvHZa42zg8izn4
+         HQSI7pkw8hBw9lAG+7bu3ztuxmK083kdrPyGRYRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.19 1136/1157] powerpc: Fix eh field when calling lwarx on PPC32
-Date:   Mon, 15 Aug 2022 20:08:12 +0200
-Message-Id: <20220815180525.881777875@linuxfoundation.org>
+        syzbot+b4e9aa0f32ffd9902442@syzkaller.appspotmail.com,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.19 1148/1157] wifi: nl80211: hold wdev mutex for tid config
+Date:   Mon, 15 Aug 2022 20:08:24 +0200
+Message-Id: <20220815180526.445027831@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,98 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 18db466a9a306406dab3b134014d9f6ed642471c upstream.
+commit 206bbcf76121664e95a42e1c014c3fe168d07a3d upstream.
 
-Commit 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of
-PPC_LWARX/LDARX macros") properly handled the eh field of lwarx
-in asm/bitops.h but failed to clear it for PPC32 in
-asm/simple_spinlock.h
+We need wdev_chandef() in this code, which now requires
+the wdev mutex due to the per-link nature. Hold it here
+to make sure we can access the link.
 
-So, do as in arch_atomic_try_cmpxchg_lock(), set it to 1 if PPC64
-but set it to 0 if PPC32. For that use IS_ENABLED(CONFIG_PPC64) which
-returns 1 when CONFIG_PPC64 is set and 0 otherwise.
-
-Fixes: 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of PPC_LWARX/LDARX macros")
-Cc: stable@vger.kernel.org # v5.15+
-Reported-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Tested-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Use symbolic names, use 'n' constraint per Segher]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu
+Reported-by: syzbot+b4e9aa0f32ffd9902442@syzkaller.appspotmail.com
+Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/simple_spinlock.h |   15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ net/wireless/nl80211.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/powerpc/include/asm/simple_spinlock.h
-+++ b/arch/powerpc/include/asm/simple_spinlock.h
-@@ -48,10 +48,11 @@ static inline int arch_spin_is_locked(ar
- static inline unsigned long __arch_spin_trylock(arch_spinlock_t *lock)
- {
- 	unsigned long tmp, token;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -15285,6 +15285,8 @@ static int nl80211_set_tid_config(struct
+ 	if (info->attrs[NL80211_ATTR_MAC])
+ 		tid_config->peer = nla_data(info->attrs[NL80211_ATTR_MAC]);
  
- 	token = LOCK_TOKEN;
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%2,1\n\
-+"1:	lwarx		%0,0,%2,%[eh]\n\
- 	cmpwi		0,%0,0\n\
- 	bne-		2f\n\
- 	stwcx.		%1,0,%2\n\
-@@ -59,7 +60,7 @@ static inline unsigned long __arch_spin_
- 	PPC_ACQUIRE_BARRIER
- "2:"
- 	: "=&r" (tmp)
--	: "r" (token), "r" (&lock->slock)
-+	: "r" (token), "r" (&lock->slock), [eh] "n" (eh)
- 	: "cr0", "memory");
++	wdev_lock(dev->ieee80211_ptr);
++
+ 	nla_for_each_nested(tid, info->attrs[NL80211_ATTR_TID_CONFIG],
+ 			    rem_conf) {
+ 		ret = nla_parse_nested(attrs, NL80211_TID_CONFIG_ATTR_MAX,
+@@ -15306,6 +15308,7 @@ static int nl80211_set_tid_config(struct
  
- 	return tmp;
-@@ -156,9 +157,10 @@ static inline void arch_spin_unlock(arch
- static inline long __arch_read_trylock(arch_rwlock_t *rw)
- {
- 	long tmp;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+ bad_tid_conf:
+ 	kfree(tid_config);
++	wdev_unlock(dev->ieee80211_ptr);
+ 	return ret;
+ }
  
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%1,1\n"
-+"1:	lwarx		%0,0,%1,%[eh]\n"
- 	__DO_SIGN_EXTEND
- "	addic.		%0,%0,1\n\
- 	ble-		2f\n"
-@@ -166,7 +168,7 @@ static inline long __arch_read_trylock(a
- 	bne-		1b\n"
- 	PPC_ACQUIRE_BARRIER
- "2:"	: "=&r" (tmp)
--	: "r" (&rw->lock)
-+	: "r" (&rw->lock), [eh] "n" (eh)
- 	: "cr0", "xer", "memory");
- 
- 	return tmp;
-@@ -179,17 +181,18 @@ static inline long __arch_read_trylock(a
- static inline long __arch_write_trylock(arch_rwlock_t *rw)
- {
- 	long tmp, token;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
- 
- 	token = WRLOCK_TOKEN;
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%2,1\n\
-+"1:	lwarx		%0,0,%2,%[eh]\n\
- 	cmpwi		0,%0,0\n\
- 	bne-		2f\n"
- "	stwcx.		%1,0,%2\n\
- 	bne-		1b\n"
- 	PPC_ACQUIRE_BARRIER
- "2:"	: "=&r" (tmp)
--	: "r" (token), "r" (&rw->lock)
-+	: "r" (token), "r" (&rw->lock), [eh] "n" (eh)
- 	: "cr0", "memory");
- 
- 	return tmp;
 
 
