@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E120C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0384C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243428AbiHOVaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48560 "EHLO
+        id S1345462AbiHOVaO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348017AbiHOV0v (ORCPT
+        with ESMTP id S1348075AbiHOV0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:26:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F36E97C2;
-        Mon, 15 Aug 2022 12:22:48 -0700 (PDT)
+        Mon, 15 Aug 2022 17:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62F6E97D6;
+        Mon, 15 Aug 2022 12:22:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B50DBB810C6;
-        Mon, 15 Aug 2022 19:22:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF8D3C433C1;
-        Mon, 15 Aug 2022 19:22:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 582FD60EF0;
+        Mon, 15 Aug 2022 19:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413EDC433D7;
+        Mon, 15 Aug 2022 19:22:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591365;
-        bh=egGKbDqvXc1EvJ4PBDPmmMxMGc9KA8xbMp/xsy6gDFg=;
+        s=korg; t=1660591371;
+        bh=vMvWEIEo1oW/bGTWgeRjKxE+hvtQgXM/3X8UYsmh7Pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjBhLi35tXOzsTa5VyyzO5PHuosMAyVWonOZOXdwW9xNVk0bfYECKI9w3o5hJgCTO
-         W2ni+w45d+kneiVOv+nqQZGw1xZwnenVDtbtF9xpVbZynWQFGGjjOI0KTuJsKKOZzB
-         XvlY1kPL7PauZwYb5AoVt1hty/dyqmakcx5UKM3A=
+        b=XAgeCeBfc0rTFFYrh5ZG0GtzzYtyU3eQio6a4/SAzHZCBJhFwAnRfr3E6Bao58MKE
+         B/cUWaIFXizkwebHCKbecZVJdzYoSnZfu8i7QxXu5cTICLQ8KZdrxDyhqeR6fGYqIP
+         UOGbUZ/cWICvFvb6J1ikdcdWNpmqCXyB7z4sgc4g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
         Sean Christopherson <seanjc@google.com>,
-        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0556/1095] KVM: SVM: Unwind "speculative" RIP advancement if INTn injection "fails"
-Date:   Mon, 15 Aug 2022 19:59:15 +0200
-Message-Id: <20220815180452.559585831@linuxfoundation.org>
+Subject: [PATCH 5.18 0558/1095] KVM: x86/mmu: Drop RWX=0 SPTEs during ept_sync_page()
+Date:   Mon, 15 Aug 2022 19:59:17 +0200
+Message-Id: <20220815180452.641750171@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,81 +54,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit cd9e6da8048c5b40315ee2d929b6230ce1252c3c ]
+[ Upstream commit 9fb3565743d58352f00964bf47213b88aff4bb82 ]
 
-Unwind the RIP advancement done by svm_queue_exception() when injecting
-an INT3 ultimately "fails" due to the CPU encountering a VM-Exit while
-vectoring the injected event, even if the exception reported by the CPU
-isn't the same event that was injected.  If vectoring INT3 encounters an
-exception, e.g. #NP, and vectoring the #NP encounters an intercepted
-exception, e.g. #PF when KVM is using shadow paging, then the #NP will
-be reported as the event that was in-progress.
+All of sync_page()'s existing checks filter out only !PRESENT gPTE,
+because without execute-only, all upper levels are guaranteed to be at
+least READABLE.  However, if EPT with execute-only support is in use by
+L1, KVM can create an SPTE that is shadow-present but guest-inaccessible
+(RWX=0) if the upper level combined permissions are R (or RW) and
+the leaf EPTE is changed from R (or RW) to X.  Because the EPTE is
+considered present when viewed in isolation, and no reserved bits are set,
+FNAME(prefetch_invalid_gpte) will consider the GPTE valid, and cause a
+not-present SPTE to be created.
 
-Note, this is still imperfect, as it will get a false positive if the
-INT3 is cleanly injected, no VM-Exit occurs before the IRET from the INT3
-handler in the guest, the instruction following the INT3 generates an
-exception (directly or indirectly), _and_ vectoring that exception
-encounters an exception that is intercepted by KVM.  The false positives
-could theoretically be solved by further analyzing the vectoring event,
-e.g. by comparing the error code against the expected error code were an
-exception to occur when vectoring the original injected exception, but
-SVM without NRIPS is a complete disaster, trying to make it 100% correct
-is a waste of time.
+The SPTE is "correct": the guest translation is inaccessible because
+the combined protections of all levels yield RWX=0, and KVM will just
+redirect any vmexits to the guest.  If EPT A/D bits are disabled, KVM
+can mistake the SPTE for an access-tracked SPTE, but again such confusion
+isn't fatal, as the "saved" protections are also RWX=0.  However,
+creating a useless SPTE in general means that KVM messed up something,
+even if this particular goof didn't manifest as a functional bug.
+So, drop SPTEs whose new protections will yield a RWX=0 SPTE, and
+add a WARN in make_spte() to detect creation of SPTEs that will
+result in RWX=0 protections.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
+Fixes: d95c55687e11 ("kvm: mmu: track read permission explicitly for shadow EPT page tables")
+Cc: David Matlack <dmatlack@google.com>
+Cc: Ben Gardon <bgardon@google.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-Message-Id: <450133cf0a026cb9825a2ff55d02cb136a1cb111.1651440202.git.maciej.szmigiero@oracle.com>
+Message-Id: <20220513195000.99371-2-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ arch/x86/kvm/mmu/paging_tmpl.h | 9 ++++++++-
+ arch/x86/kvm/mmu/spte.c        | 2 ++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 2851d1e58cb8..e4c736d74fcb 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3613,6 +3613,18 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	vector = exitintinfo & SVM_EXITINTINFO_VEC_MASK;
- 	type = exitintinfo & SVM_EXITINTINFO_TYPE_MASK;
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index beb3ce8d94eb..43f6a882615f 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -1044,7 +1044,14 @@ static int FNAME(sync_page)(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp)
+ 		if (sync_mmio_spte(vcpu, &sp->spt[i], gfn, pte_access))
+ 			continue;
  
-+	/*
-+	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
-+	 * injecting the soft exception/interrupt.  That advancement needs to
-+	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
-+	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
-+	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
-+	 * be the reported vectored event, but RIP still needs to be unwound.
-+	 */
-+	if (int3_injected && type == SVM_EXITINTINFO_TYPE_EXEPT &&
-+	   kvm_is_linear_rip(vcpu, svm->int3_rip))
-+		kvm_rip_write(vcpu, kvm_rip_read(vcpu) - int3_injected);
-+
- 	switch (type) {
- 	case SVM_EXITINTINFO_TYPE_NMI:
- 		vcpu->arch.nmi_injected = true;
-@@ -3626,16 +3638,11 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+-		if (gfn != sp->gfns[i]) {
++		/*
++		 * Drop the SPTE if the new protections would result in a RWX=0
++		 * SPTE or if the gfn is changing.  The RWX=0 case only affects
++		 * EPT with execute-only support, i.e. EPT without an effective
++		 * "present" bit, as all other paging modes will create a
++		 * read-only SPTE if pte_access is zero.
++		 */
++		if ((!pte_access && !shadow_present_mask) || gfn != sp->gfns[i]) {
+ 			drop_spte(vcpu->kvm, &sp->spt[i]);
+ 			flush = true;
+ 			continue;
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index e5c0b6db6f2c..8223a80802e7 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -128,6 +128,8 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 	u64 spte = SPTE_MMU_PRESENT_MASK;
+ 	bool wrprot = false;
  
- 		/*
- 		 * In case of software exceptions, do not reinject the vector,
--		 * but re-execute the instruction instead. Rewind RIP first
--		 * if we emulated INT3 before.
-+		 * but re-execute the instruction instead.
- 		 */
--		if (kvm_exception_is_soft(vector)) {
--			if (vector == BP_VECTOR && int3_injected &&
--			    kvm_is_linear_rip(vcpu, svm->int3_rip))
--				kvm_rip_write(vcpu,
--					      kvm_rip_read(vcpu) - int3_injected);
-+		if (kvm_exception_is_soft(vector))
- 			break;
--		}
++	WARN_ON_ONCE(!pte_access && !shadow_present_mask);
 +
- 		if (exitintinfo & SVM_EXITINTINFO_VALID_ERR) {
- 			u32 err = svm->vmcb->control.exit_int_info_err;
- 			kvm_requeue_exception_e(vcpu, vector, err);
+ 	if (sp->role.ad_disabled)
+ 		spte |= SPTE_TDP_AD_DISABLED_MASK;
+ 	else if (kvm_mmu_page_ad_need_write_protect(sp))
 -- 
 2.35.1
 
