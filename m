@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77428C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAFDC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiHOTUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        id S244752AbiHOTUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344570AbiHOTRC (ORCPT
+        with ESMTP id S1344696AbiHOTRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:17:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325A454669;
-        Mon, 15 Aug 2022 11:38:31 -0700 (PDT)
+        Mon, 15 Aug 2022 15:17:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2DC54C9F;
+        Mon, 15 Aug 2022 11:38:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A41316113C;
-        Mon, 15 Aug 2022 18:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 716ADC433C1;
-        Mon, 15 Aug 2022 18:38:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8F93B80F99;
+        Mon, 15 Aug 2022 18:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B88DC433C1;
+        Mon, 15 Aug 2022 18:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588707;
-        bh=mccXJfaUGltowdpiIPhn0T+HvkdePsdRvpdZGS56ANw=;
+        s=korg; t=1660588716;
+        bh=j9cFBdaPFd8ff95OK8Y7irow2Itk18MHI9eSz8eZUic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoN0YsjsaQD2qEujmqTficc8eO4dMUlDxPXweL+h7tzsCghCM5aNBqePcB6Pgd9eC
-         4j2HSkJBa1hoc3Qr8y8rFpkb+QRfvS99UDbFjQ/Vcs/DSVK0x5+MDwnWwdS0BTsvf7
-         20EZwV5cuO0eYCSdpMnPl9iB4ZNOrPO7IXQ6lSQ4=
+        b=pb4Qm8nJRp2LiARQoGj89YTeDHCehwnW9YhSK0RL5RO/ODxNaXefwGDpCMPoZw5ut
+         kNQRzECyoewX9CK7fiVbMiGW5iXFZYXDmDieTCf/8R3rBYNdBb4HV5y1HDlb4Iebaa
+         6jRGq2IpuP11Sg5CMswSIEW15U49rAGpZMsp6Lt0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 459/779] PCI: dwc: Stop link on host_init errors and de-initialization
-Date:   Mon, 15 Aug 2022 20:01:43 +0200
-Message-Id: <20220815180356.903092606@linuxfoundation.org>
+Subject: [PATCH 5.15 462/779] PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
+Date:   Mon, 15 Aug 2022 20:01:46 +0200
+Message-Id: <20220815180357.050342804@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,18 +53,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 113fa857b74c947137d845e7e635afcf6a59c43a ]
+[ Upstream commit 777e7c3ab73036105e6fc4a67ed950179dbffbab ]
 
-It's logically correct to undo everything that was done when an error is
-discovered or in the corresponding cleanup counterpart. Otherwise the host
-controller will be left in an undetermined state. Since the link is set up
-in the host_init method, deactivate it there in the cleanup-on-error block
-and stop the link in the antagonistic routine - dw_pcie_host_deinit(). Link
-deactivation is platform-specific and should be implemented in
-dw_pcie_ops.stop_link().
+We program the 64-bit ATU limit address (in PCIE_ATU_LIMIT/
+PCIE_ATU_UPPER_LIMIT or PCIE_ATU_UNR_LOWER_LIMIT/PCIE_ATU_UNR_UPPER_LIMIT),
+but in addition, the PCIE_ATU_INCREASE_REGION_SIZE bit must be set if the
+upper 32 bits of the limit address differ from the upper 32 bits of the
+base address (see [1,2]).
 
-Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
-Link: https://lore.kernel.org/r/20220624143428.8334-2-Sergey.Semin@baikalelectronics.ru
+5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU") set
+PCIE_ATU_INCREASE_REGION_SIZE, but only when the *size* was greater than
+4GB.  It did not set it when a smaller region crossed a 4GB boundary, e.g.,
+[mem 0x0_f0000000-0x1_0fffffff].
+
+Set PCIE_ATU_INCREASE_REGION_SIZE whenever PCIE_ATU_UPPER_LIMIT is
+greater than PCIE_ATU_UPPER_BASE.
+
+[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v5.40a, March 2019, fig.3-36, p.175
+[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v5.40a, March 2019, fig.3-37, p.176
+
+[bhelgaas: commit log]
+Fixes: 5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU")
+Link: https://lore.kernel.org/r/20220624143428.8334-5-Sergey.Semin@baikalelectronics.ru
 Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
@@ -72,45 +84,64 @@ Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index bc0807fe3fc3..3200e906bcda 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -414,8 +414,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 	bridge->sysdata = pp;
- 
- 	ret = pci_host_probe(bridge);
--	if (!ret)
--		return 0;
-+	if (ret)
-+		goto err_stop_link;
-+
-+	return 0;
-+
-+err_stop_link:
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
- 
- err_free_msi:
- 	if (pp->has_msi_ctrl)
-@@ -426,8 +432,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
- 
- void dw_pcie_host_deinit(struct pcie_port *pp)
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index ff74ddf2cc35..e863cc2f1e1d 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -287,8 +287,8 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
+ 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_UPPER_TARGET,
+ 				 upper_32_bits(pci_addr));
+ 	val = type | PCIE_ATU_FUNC_NUM(func_no);
+-	val = upper_32_bits(size - 1) ?
+-		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
++	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
++		val |= PCIE_ATU_INCREASE_REGION_SIZE;
+ 	if (pci->version == 0x490A)
+ 		val = dw_pcie_enable_ecrc(val);
+ 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
+@@ -315,6 +315,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 					u64 pci_addr, u64 size)
  {
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+ 	u32 retries, val;
++	u64 limit_addr;
+ 
+ 	if (pci->ops && pci->ops->cpu_addr_fixup)
+ 		cpu_addr = pci->ops->cpu_addr_fixup(pci, cpu_addr);
+@@ -325,6 +326,8 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 		return;
+ 	}
+ 
++	limit_addr = cpu_addr + size - 1;
 +
- 	pci_stop_root_bus(pp->bridge->bus);
- 	pci_remove_root_bus(pp->bridge->bus);
-+
-+	if (pci->ops && pci->ops->stop_link)
-+		pci->ops->stop_link(pci);
-+
- 	if (pp->has_msi_ctrl)
- 		dw_pcie_free_msi(pp);
- }
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT,
+ 			   PCIE_ATU_REGION_OUTBOUND | index);
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_BASE,
+@@ -332,17 +335,18 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_BASE,
+ 			   upper_32_bits(cpu_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
+-			   lower_32_bits(cpu_addr + size - 1));
++			   lower_32_bits(limit_addr));
+ 	if (pci->version >= 0x460A)
+ 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
+-				   upper_32_bits(cpu_addr + size - 1));
++				   upper_32_bits(limit_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
+ 			   lower_32_bits(pci_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_TARGET,
+ 			   upper_32_bits(pci_addr));
+ 	val = type | PCIE_ATU_FUNC_NUM(func_no);
+-	val = ((upper_32_bits(size - 1)) && (pci->version >= 0x460A)) ?
+-		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
++	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
++	    pci->version >= 0x460A)
++		val |= PCIE_ATU_INCREASE_REGION_SIZE;
+ 	if (pci->version == 0x490A)
+ 		val = dw_pcie_enable_ecrc(val);
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
 -- 
 2.35.1
 
