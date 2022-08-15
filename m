@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9552C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD00C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237857AbiHOXWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        id S241411AbiHOXWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242510AbiHOXOo (ORCPT
+        with ESMTP id S1344623AbiHOXOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32A27C19B;
-        Mon, 15 Aug 2022 13:02:10 -0700 (PDT)
+        Mon, 15 Aug 2022 19:14:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2729C7C1AE;
+        Mon, 15 Aug 2022 13:02:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CF4FB80EAD;
-        Mon, 15 Aug 2022 20:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEF43C433C1;
-        Mon, 15 Aug 2022 20:02:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8D1C612D1;
+        Mon, 15 Aug 2022 20:02:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA18CC433C1;
+        Mon, 15 Aug 2022 20:02:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593728;
-        bh=BemgTh73EFokSEYvo9fSAFZ/Xw3eMO33zGf+eGqVfDM=;
+        s=korg; t=1660593734;
+        bh=eZjv2QW3Wa6lxZ0ISVmk17zgCgTv5Ti9ykhWuduw3qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4U/97X/e4oeOk2aJQ+tg9rzACj4zHMjjCakqa5LqNO3TJzbUVP3w+evRXelYsrnD
-         x3+PsoAwLUdK5NYxWYk5Cf9bTJq3F6uNuyldaNQItBe+IFpeaTc8V3AecyWcwFLEvo
-         NCirdZHVgRNOXMHeIMlhxs1X+oJzn2rwtifwNzU0=
+        b=RQ9mACCm6tAmcmbkWvNysgGUi6qvikmJBNjrEM/iBaMrbV0RgOhVem0FcXZ6AxQc9
+         v3wlHBPqfx1Pg3xCn2oxkHBZCuHP6V4HiZntO61xHEcfcYCG67iEha+fL6FOw8jSUy
+         rhwx6EesN94asRwK5DiUB6X32C2LDbanHKq8jTrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org,
+        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0997/1095] PCI: qcom: Power on PHY before IPQ8074 DBI register accesses
-Date:   Mon, 15 Aug 2022 20:06:36 +0200
-Message-Id: <20220815180510.361269733@linuxfoundation.org>
+Subject: [PATCH 5.19 0317/1157] ath11k: Init hw_params before setting up AHB resources
+Date:   Mon, 15 Aug 2022 19:54:33 +0200
+Message-Id: <20220815180452.334381459@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,109 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
 
-[ Upstream commit a0e43bb9973b06ce5c666f0901e104e2037c1b34 ]
+[ Upstream commit bebcfd2534a63ab7e7325f5337662bc84ca038b6 ]
 
-Currently the Gen2 port in IPQ8074 will cause the system to hang as it
-accesses DBI registers in qcom_pcie_init_2_3_3(), and those are only
-accesible after phy_power_on().
+As part of adding the support of WCN6750 to ath11k, bus_params
+were moved to hw_params and this regressed the initialization
+of WCN6750. By the time AHB resources are setup for WCN6750,
+hw_params will not be initialized and therefore initialization
+for WCN6750 will fail. This is applicable only for WCN6750,
+no other device is impacted.
 
-Move the DBI read/writes to a new qcom_pcie_post_init_2_3_3(), which is
-executed after phy_power_on().
+Fix this by moving the initialization of hw_params before
+setting up AHB resources.
 
-Link: https://lore.kernel.org/r/20220623155004.688090-1-robimarko@gmail.com
-Fixes: a0fd361db8e5 ("PCI: dwc: Move "dbi", "dbi2", and "addr_space" resource setup into common code")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: stable@vger.kernel.org	# v5.11+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Fixes: 00402f49d26f ("ath11k: Add support for WCN6750 device")
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220517055241.15885-1-quic_mpubbise@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 48 +++++++++++++++-----------
- 1 file changed, 28 insertions(+), 20 deletions(-)
+ drivers/net/wireless/ath/ath11k/ahb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index ab04818f6ed9..340542aab8a5 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1036,9 +1036,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
- 	struct qcom_pcie_resources_2_3_3 *res = &pcie->res.v2_3_3;
- 	struct dw_pcie *pci = pcie->pci;
- 	struct device *dev = pci->dev;
--	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
- 	int i, ret;
--	u32 val;
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index fa11807f48a9..d7d33d5cdfc5 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -976,11 +976,11 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
+ 	ab->hw_rev = hw_rev;
+ 	platform_set_drvdata(pdev, ab);
  
- 	for (i = 0; i < ARRAY_SIZE(res->rst); i++) {
- 		ret = reset_control_assert(res->rst[i]);
-@@ -1095,6 +1093,33 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
- 		goto err_clk_aux;
- 	}
+-	ret = ath11k_ahb_setup_resources(ab);
++	ret = ath11k_core_pre_init(ab);
+ 	if (ret)
+ 		goto err_core_free;
  
-+	return 0;
-+
-+err_clk_aux:
-+	clk_disable_unprepare(res->ahb_clk);
-+err_clk_ahb:
-+	clk_disable_unprepare(res->axi_s_clk);
-+err_clk_axi_s:
-+	clk_disable_unprepare(res->axi_m_clk);
-+err_clk_axi_m:
-+	clk_disable_unprepare(res->iface);
-+err_clk_iface:
-+	/*
-+	 * Not checking for failure, will anyway return
-+	 * the original failure in 'ret'.
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(res->rst); i++)
-+		reset_control_assert(res->rst[i]);
-+
-+	return ret;
-+}
-+
-+static int qcom_pcie_post_init_2_3_3(struct qcom_pcie *pcie)
-+{
-+	struct dw_pcie *pci = pcie->pci;
-+	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-+	u32 val;
-+
- 	writel(SLV_ADDR_SPACE_SZ,
- 		pcie->parf + PCIE20_v3_PARF_SLV_ADDR_SPACE_SIZE);
+-	ret = ath11k_core_pre_init(ab);
++	ret = ath11k_ahb_setup_resources(ab);
+ 	if (ret)
+ 		goto err_core_free;
  
-@@ -1122,24 +1147,6 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
- 		PCI_EXP_DEVCTL2);
- 
- 	return 0;
--
--err_clk_aux:
--	clk_disable_unprepare(res->ahb_clk);
--err_clk_ahb:
--	clk_disable_unprepare(res->axi_s_clk);
--err_clk_axi_s:
--	clk_disable_unprepare(res->axi_m_clk);
--err_clk_axi_m:
--	clk_disable_unprepare(res->iface);
--err_clk_iface:
--	/*
--	 * Not checking for failure, will anyway return
--	 * the original failure in 'ret'.
--	 */
--	for (i = 0; i < ARRAY_SIZE(res->rst); i++)
--		reset_control_assert(res->rst[i]);
--
--	return ret;
- }
- 
- static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
-@@ -1465,6 +1472,7 @@ static const struct qcom_pcie_ops ops_2_4_0 = {
- static const struct qcom_pcie_ops ops_2_3_3 = {
- 	.get_resources = qcom_pcie_get_resources_2_3_3,
- 	.init = qcom_pcie_init_2_3_3,
-+	.post_init = qcom_pcie_post_init_2_3_3,
- 	.deinit = qcom_pcie_deinit_2_3_3,
- 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
- };
 -- 
 2.35.1
 
