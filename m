@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B573C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69441C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351893AbiHOWtf (ORCPT
+        id S1351901AbiHOWto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        Mon, 15 Aug 2022 18:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352008AbiHOWrh (ORCPT
+        with ESMTP id S1352039AbiHOWrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:37 -0400
+        Mon, 15 Aug 2022 18:47:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2167D7CAB0;
-        Mon, 15 Aug 2022 12:53:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C26135AC9;
+        Mon, 15 Aug 2022 12:53:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CFA761178;
-        Mon, 15 Aug 2022 19:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134D3C433D6;
-        Mon, 15 Aug 2022 19:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA9160FB9;
+        Mon, 15 Aug 2022 19:53:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2549DC433C1;
+        Mon, 15 Aug 2022 19:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593193;
-        bh=ApGZls245OFaL4bZDd2zk1ckQldFOthVbDmUJI6iQH0=;
+        s=korg; t=1660593196;
+        bh=sZQQJBhKBqZz1oQBCZX4pRulQOQ09eGmJoa2eOxyBZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=itoHAB92MYakY6zfgcMcKWNEd9NXkF4touMs9mFdqBoIQlmnMzo0yk26+7XcXCRxA
-         iNlBEsTXjkEEgv8KOfJkp55BlPCnM9RkJfFL14UervrDzU363FMQO9kmg/Y7/xhNAh
-         FTT3jLnrWXmMw1C8QZfDr9VWIoHDfOj7AVsB6xQc=
+        b=WR9/5JmHNqP6g8X17EK5on5n0Gy71Ze8P2Q7hFNicPJLuYHUQImCEJWzYgs5uPHLj
+         pURokytHyBUBMwK74t8XYYmSrMzenzhmOjf1yDk2kKlyH20tgFEoC5ABimzMFp53t7
+         u7r01ve0G9iGQU17hO+dG8zQlJiuYHu6icqGYvRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Marek Beh=C3=BAn <kabel@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0228/1157] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
-Date:   Mon, 15 Aug 2022 19:53:04 +0200
-Message-Id: <20220815180448.695187206@linuxfoundation.org>
+Subject: [PATCH 5.18 0910/1095] watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
+Date:   Mon, 15 Aug 2022 20:05:09 +0200
+Message-Id: <20220815180506.932605582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
+[ Upstream commit 2d27e52841092e5831dd41f313028c668d816eb0 ]
 
-omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
-node. of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() in later error path and normal path.
+The function devm_ioremap() in armada_37xx_wdt_probe() can fail, so
+its return value should be checked.
 
-Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: 54e3d9b518c8a ("watchdog: Add support for Armada 37xx CPU watchdog")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220722030938.2925156-1-williamsukatube@163.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 2 ++
+ drivers/watchdog/armada_37xx_wdt.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index eb09a25e3b45..8d829f3dafe7 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
- 
- 	if (!pdev) {
- 		pr_err("Unable to find DSS platform device\n");
-+		of_node_put(node);
+diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
+index 1635f421ef2c..854b1cc723cb 100644
+--- a/drivers/watchdog/armada_37xx_wdt.c
++++ b/drivers/watchdog/armada_37xx_wdt.c
+@@ -274,6 +274,8 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
+ 	if (!res)
  		return -ENODEV;
- 	}
+ 	dev->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (!dev->reg)
++		return -ENOMEM;
  
- 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
- 	put_device(&pdev->dev);
-+	of_node_put(node);
- 	if (r) {
- 		pr_err("Unable to populate DSS submodule devices\n");
- 		return r;
+ 	/* init clock */
+ 	dev->clk = devm_clk_get(&pdev->dev, NULL);
 -- 
 2.35.1
 
