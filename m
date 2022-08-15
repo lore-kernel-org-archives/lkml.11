@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DF7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB5EC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241495AbiHOSX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        id S241449AbiHOSYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240497AbiHOSXU (ORCPT
+        with ESMTP id S240177AbiHOSXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:23:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32432DAB4;
-        Mon, 15 Aug 2022 11:17:43 -0700 (PDT)
+        Mon, 15 Aug 2022 14:23:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4A02E9F4;
+        Mon, 15 Aug 2022 11:17:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9751C60685;
-        Mon, 15 Aug 2022 18:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81006C433C1;
-        Mon, 15 Aug 2022 18:17:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EACBB81072;
+        Mon, 15 Aug 2022 18:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84E2C433D6;
+        Mon, 15 Aug 2022 18:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587463;
-        bh=FcXVIpsPD1m7e3h1Ko/SBA2xXRf9W5Pg4zZfDjvy3Eg=;
+        s=korg; t=1660587466;
+        bh=7pMGTLfm7+yf402Et0WC41HMCYeZJIfscGaDIL9XAwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmYojfomWWLr33MtZfhxxOnDT55BROJj54w82YMpcqs4A5KT0fPy4Dp7n1Hpveoh+
-         KZjRvhfjEfB/6oI0pnFaloeI+sJq+wnlhb6KJL/unG6taYY6blwJ/Mx56Lc0GPr7VE
-         DQnXfSn3L1ISKdLPsSmdpIOXtNSMGAdxjYufVsac=
+        b=nwWhYpjHB3LDlJoPW1OYwI5XnRHRy0PUymWYKjw8pgTDETVLpgH0jeY8HdthP+9U5
+         77l4F9nrj3c/3w0xEmeudY3ktGOtN+gbEqC4MvJc6pHRo+Y5vwggmDmVrMNrxl3K3v
+         J+DtTquH6xw5MMW9IutKJN+tf1jJuKswx5BYVQeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: [PATCH 5.15 061/779] drm/shmem-helper: Add missing vunmap on error
-Date:   Mon, 15 Aug 2022 19:55:05 +0200
-Message-Id: <20220815180339.865246410@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 052/779] parisc: io_pgetevents_time64() needs compat syscall in 32-bit compat mode
+Date:   Mon, 15 Aug 2022 19:54:56 +0200
+Message-Id: <20220815180339.493755603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,33 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Helge Deller <deller@gmx.de>
 
-commit df4aaf015775221dde8a51ee09edb919981f091e upstream.
+commit 6431e92fc827bdd2d28f79150d90415ba9ce0d21 upstream.
 
-The vmapping of dma-buf may succeed, but DRM SHMEM rejects the IOMEM
-mapping, and thus, drm_gem_shmem_vmap_locked() should unvmap the IOMEM
-before erroring out.
+For all syscalls in 32-bit compat mode on 64-bit kernels the upper
+32-bits of the 64-bit registers are zeroed out, so a negative 32-bit
+signed value will show up as positive 64-bit signed value.
 
-Cc: stable@vger.kernel.org
-Fixes: 49a3f51dfeee ("drm/gem: Use struct dma_buf_map in GEM vmap ops and convert GEM backends")
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220630200058.1883506-2-dmitry.osipenko@collabora.com
+This behaviour breaks the io_pgetevents_time64() syscall which expects
+signed 64-bit values for the "min_nr" and "nr" parameters.
+Fix this by switching to the compat_sys_io_pgetevents_time64() syscall,
+which uses "compat_long_t" types for those parameters.
+
+Cc: <stable@vger.kernel.org> # v5.1+
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_gem_shmem_helper.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/parisc/kernel/syscalls/syscall.tbl |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -275,6 +275,7 @@ static int drm_gem_shmem_vmap_locked(str
- 		ret = dma_buf_vmap(obj->import_attach->dmabuf, map);
- 		if (!ret) {
- 			if (WARN_ON(map->is_iomem)) {
-+				dma_buf_vunmap(obj->import_attach->dmabuf, map);
- 				ret = -EIO;
- 				goto err_put_pages;
- 			}
+--- a/arch/parisc/kernel/syscalls/syscall.tbl
++++ b/arch/parisc/kernel/syscalls/syscall.tbl
+@@ -413,7 +413,7 @@
+ 412	32	utimensat_time64		sys_utimensat			sys_utimensat
+ 413	32	pselect6_time64			sys_pselect6			compat_sys_pselect6_time64
+ 414	32	ppoll_time64			sys_ppoll			compat_sys_ppoll_time64
+-416	32	io_pgetevents_time64		sys_io_pgetevents		sys_io_pgetevents
++416	32	io_pgetevents_time64		sys_io_pgetevents		compat_sys_io_pgetevents_time64
+ 417	32	recvmmsg_time64			sys_recvmmsg			compat_sys_recvmmsg_time64
+ 418	32	mq_timedsend_time64		sys_mq_timedsend		sys_mq_timedsend
+ 419	32	mq_timedreceive_time64		sys_mq_timedreceive		sys_mq_timedreceive
 
 
