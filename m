@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF58C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D669C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiHOSVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S240860AbiHOSVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232271AbiHOSUX (ORCPT
+        with ESMTP id S240525AbiHOSUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:20:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21E52AE27;
-        Mon, 15 Aug 2022 11:16:40 -0700 (PDT)
+        Mon, 15 Aug 2022 14:20:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5372C649;
+        Mon, 15 Aug 2022 11:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 44FFACE125B;
-        Mon, 15 Aug 2022 18:16:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A171C433D6;
-        Mon, 15 Aug 2022 18:16:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 470CD612A8;
+        Mon, 15 Aug 2022 18:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E0E6C433D7;
+        Mon, 15 Aug 2022 18:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587397;
-        bh=90TsjMqOUNEM4+jK+tHM4C/XBOy4yWf55oPYVu5rl94=;
+        s=korg; t=1660587403;
+        bh=yeoemor4Uw73NOtS6LeNA/ED035gV3a0eFSZ4fQXmWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTTAmk6fW1n3bnvoLp3QTbd56Sg7hJQwbe/Wj64PQeu2U2n+MbMzUknGvsU9qoyiX
-         tFcP37X1GTp9zktFDdxOteC2hqHOLYt2pJTnOQP2tfs8+zE3Vt2gLHc2LVx3g4bmN1
-         DipenXouxP53bgosaKE5zP17lEAHAh6K7+wddqp0=
+        b=SodHEgrPNzSsMgDyLGPqUeRA23ATUSu5nOeGnK0aU0a3c/qB+fKuMHlqSEgeY5Dvf
+         N62X7/8YcS/PMbdpyOysTz/7fZ6OIdBhs3DxeLWr6sJKTVFaAMgzeu8xCRdvrEAjSs
+         thqmLRDj+AHuLKBWmqy364D7IuHtqXQI/Bf5WlTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 073/779] mtd: rawnand: arasan: Update NAND bus clock instead of system clock
-Date:   Mon, 15 Aug 2022 19:55:17 +0200
-Message-Id: <20220815180340.420762155@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 075/779] um: seed rng using host OS rng
+Date:   Mon, 15 Aug 2022 19:55:19 +0200
+Message-Id: <20220815180340.499355405@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,50 +49,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 7499bfeedb47efc1ee4dc793b92c610d46e6d6a6 upstream.
+commit 0b9ba6135d7f18b82f3d8bebb55ded725ba88e0e upstream.
 
-In current implementation the Arasan NAND driver is updating the
-system clock(i.e., anand->clk) in accordance to the timing modes
-(i.e., SDR or NVDDR). But as per the Arasan NAND controller spec the
-flash clock or the NAND bus clock(i.e., nfc->bus_clk), need to be
-updated instead. This patch keeps the system clock unchanged and updates
-the NAND bus clock as per the timing modes.
+UML generally does not provide access to special CPU instructions like
+RDRAND, and execution tends to be rather deterministic, with no real
+hardware interrupts, making good randomness really very hard, if not
+all together impossible. Not only is this a security eyebrow raiser, but
+it's also quite annoying when trying to do various pieces of UML-based
+automation that takes a long time to boot, if ever.
 
-Fixes: 197b88fecc50 ("mtd: rawnand: arasan: Add new Arasan NAND controller")
-CC: stable@vger.kernel.org # 5.8+
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220628154824.12222-2-amit.kumar-mahapatra@xilinx.com
+Fix this by trivially calling getrandom() in the host and using that
+seed as "bootloader randomness", which initializes the rng immediately
+at UML boot.
+
+The old behavior can be restored the same way as on any other arch, by
+way of CONFIG_TRUST_BOOTLOADER_RANDOMNESS=n or
+random.trust_bootloader=0. So seen from that perspective, this just
+makes UML act like other archs, which is positive in its own right.
+
+Additionally, wire up arch_get_random_{int,long}() in the same way, so
+that reseeds can also make use of the host RNG, controllable by
+CONFIG_TRUST_CPU_RANDOMNESS and random.trust_cpu, per usual.
+
+Cc: stable@vger.kernel.org
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/arasan-nand-controller.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/um/include/asm/archrandom.h |   30 ++++++++++++++++++++++++++++++
+ arch/um/include/shared/os.h      |    7 +++++++
+ arch/um/kernel/um_arch.c         |    8 ++++++++
+ arch/um/os-Linux/util.c          |    6 ++++++
+ 4 files changed, 51 insertions(+)
+ create mode 100644 arch/um/include/asm/archrandom.h
 
---- a/drivers/mtd/nand/raw/arasan-nand-controller.c
-+++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
-@@ -347,17 +347,17 @@ static int anfc_select_target(struct nan
+--- /dev/null
++++ b/arch/um/include/asm/archrandom.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_UM_ARCHRANDOM_H__
++#define __ASM_UM_ARCHRANDOM_H__
++
++#include <linux/types.h>
++
++/* This is from <os.h>, but better not to #include that in a global header here. */
++ssize_t os_getrandom(void *buf, size_t len, unsigned int flags);
++
++static inline bool __must_check arch_get_random_long(unsigned long *v)
++{
++	return os_getrandom(v, sizeof(*v), 0) == sizeof(*v);
++}
++
++static inline bool __must_check arch_get_random_int(unsigned int *v)
++{
++	return os_getrandom(v, sizeof(*v), 0) == sizeof(*v);
++}
++
++static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
++{
++	return false;
++}
++
++static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
++{
++	return false;
++}
++
++#endif
+--- a/arch/um/include/shared/os.h
++++ b/arch/um/include/shared/os.h
+@@ -11,6 +11,12 @@
+ #include <irq_user.h>
+ #include <longjmp.h>
+ #include <mm_id.h>
++/* This is to get size_t */
++#ifndef __UM_HOST__
++#include <linux/types.h>
++#else
++#include <sys/types.h>
++#endif
  
- 	/* Update clock frequency */
- 	if (nfc->cur_clk != anand->clk) {
--		clk_disable_unprepare(nfc->controller_clk);
--		ret = clk_set_rate(nfc->controller_clk, anand->clk);
-+		clk_disable_unprepare(nfc->bus_clk);
-+		ret = clk_set_rate(nfc->bus_clk, anand->clk);
- 		if (ret) {
- 			dev_err(nfc->dev, "Failed to change clock rate\n");
- 			return ret;
- 		}
+ #define CATCH_EINTR(expr) while ((errno = 0, ((expr) < 0)) && (errno == EINTR))
  
--		ret = clk_prepare_enable(nfc->controller_clk);
-+		ret = clk_prepare_enable(nfc->bus_clk);
- 		if (ret) {
- 			dev_err(nfc->dev,
--				"Failed to re-enable the controller clock\n");
-+				"Failed to re-enable the bus clock\n");
- 			return ret;
- 		}
+@@ -252,6 +258,7 @@ extern void stack_protections(unsigned l
+ extern int raw(int fd);
+ extern void setup_machinename(char *machine_out);
+ extern void setup_hostinfo(char *buf, int len);
++extern ssize_t os_getrandom(void *buf, size_t len, unsigned int flags);
+ extern void os_dump_core(void) __attribute__ ((noreturn));
+ extern void um_early_printk(const char *s, unsigned int n);
+ extern void os_fix_helper_signals(void);
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -16,6 +16,7 @@
+ #include <linux/sched/task.h>
+ #include <linux/kmsg_dump.h>
+ #include <linux/suspend.h>
++#include <linux/random.h>
  
+ #include <asm/processor.h>
+ #include <asm/cpufeature.h>
+@@ -404,6 +405,8 @@ int __init __weak read_initrd(void)
+ 
+ void __init setup_arch(char **cmdline_p)
+ {
++	u8 rng_seed[32];
++
+ 	stack_protections((unsigned long) &init_thread_info);
+ 	setup_physmem(uml_physmem, uml_reserved, physmem_size, highmem);
+ 	mem_total_pages(physmem_size, iomem_size, highmem);
+@@ -413,6 +416,11 @@ void __init setup_arch(char **cmdline_p)
+ 	strlcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+ 	setup_hostinfo(host_info, sizeof host_info);
++
++	if (os_getrandom(rng_seed, sizeof(rng_seed), 0) == sizeof(rng_seed)) {
++		add_bootloader_randomness(rng_seed, sizeof(rng_seed));
++		memzero_explicit(rng_seed, sizeof(rng_seed));
++	}
+ }
+ 
+ void __init check_bugs(void)
+--- a/arch/um/os-Linux/util.c
++++ b/arch/um/os-Linux/util.c
+@@ -14,6 +14,7 @@
+ #include <sys/wait.h>
+ #include <sys/mman.h>
+ #include <sys/utsname.h>
++#include <sys/random.h>
+ #include <init.h>
+ #include <os.h>
+ 
+@@ -96,6 +97,11 @@ static inline void __attribute__ ((noret
+ 			exit(127);
+ }
+ 
++ssize_t os_getrandom(void *buf, size_t len, unsigned int flags)
++{
++	return getrandom(buf, len, flags);
++}
++
+ /*
+  * UML helper threads must not handle SIGWINCH/INT/TERM
+  */
 
 
