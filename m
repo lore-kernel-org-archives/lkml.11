@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6621FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B573C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351859AbiHOWta (ORCPT
+        id S1351893AbiHOWtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52338 "EHLO
+        Mon, 15 Aug 2022 18:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351978AbiHOWr3 (ORCPT
+        with ESMTP id S1352008AbiHOWrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:29 -0400
+        Mon, 15 Aug 2022 18:47:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C2A7CA99;
-        Mon, 15 Aug 2022 12:53:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2167D7CAB0;
+        Mon, 15 Aug 2022 12:53:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEC3D6122B;
-        Mon, 15 Aug 2022 19:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAAFC43140;
-        Mon, 15 Aug 2022 19:53:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CFA761178;
+        Mon, 15 Aug 2022 19:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134D3C433D6;
+        Mon, 15 Aug 2022 19:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593190;
-        bh=UkexD9rfgmwaolcR9QQUHVrlFEriZt7CFdO7HMCyRRw=;
+        s=korg; t=1660593193;
+        bh=ApGZls245OFaL4bZDd2zk1ckQldFOthVbDmUJI6iQH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/cWFyzIb1MB447S3abr/n3ZlQvoXCGsYUljIcwd8uZUp7G9xY65wrEJJ11SL5D77
-         FMy5iSgwCZHXb6bC2p3sFypJiYy+9LAOEx3R7oJVk/xT1CaGDT3yCS8Qt28xBjy0r3
-         bKqK+Y1UutYJdpzzsDPavJAb1r3CO7z3mPM+7Afo=
+        b=itoHAB92MYakY6zfgcMcKWNEd9NXkF4touMs9mFdqBoIQlmnMzo0yk26+7XcXCRxA
+         iNlBEsTXjkEEgv8KOfJkp55BlPCnM9RkJfFL14UervrDzU363FMQO9kmg/Y7/xhNAh
+         FTT3jLnrWXmMw1C8QZfDr9VWIoHDfOj7AVsB6xQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jean Delvare <jdelvare@suse.de>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0909/1095] watchdog: sp5100_tco: Fix a memory leak of EFCH MMIO resource
-Date:   Mon, 15 Aug 2022 20:05:08 +0200
-Message-Id: <20220815180506.896913248@linuxfoundation.org>
+Subject: [PATCH 5.19 0228/1157] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
+Date:   Mon, 15 Aug 2022 19:53:04 +0200
+Message-Id: <20220815180448.695187206@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,40 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean Delvare <jdelvare@suse.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit c6d9c0798ed366a09a9e53d71edcd2266e34a6eb ]
+[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
 
-Unlike release_mem_region(), a call to release_resource() does not
-free the resource, so it has to be freed explicitly to avoid a memory
-leak.
+omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
+node. of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() in later error path and normal path.
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Fixes: 0578fff4aae5 ("Watchdog: sp5100_tco: Add initialization using EFCH MMIO")
-Cc: Terry Bowman <terry.bowman@amd.com>
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220621152840.420a0f4c@endymion.delvare
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/sp5100_tco.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap2/display.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
-index 86ffb58fbc85..ae54dd33e233 100644
---- a/drivers/watchdog/sp5100_tco.c
-+++ b/drivers/watchdog/sp5100_tco.c
-@@ -402,6 +402,7 @@ static int sp5100_tco_setupdevice_mmio(struct device *dev,
- 		iounmap(addr);
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index eb09a25e3b45..8d829f3dafe7 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
  
- 	release_resource(res);
-+	kfree(res);
+ 	if (!pdev) {
+ 		pr_err("Unable to find DSS platform device\n");
++		of_node_put(node);
+ 		return -ENODEV;
+ 	}
  
- 	return ret;
- }
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
+ 	put_device(&pdev->dev);
++	of_node_put(node);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+ 		return r;
 -- 
 2.35.1
 
