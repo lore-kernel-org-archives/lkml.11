@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49924C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C01E6C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244182AbiHOVsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        id S1349826AbiHOVsq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349217AbiHOVoj (ORCPT
+        with ESMTP id S1349290AbiHOVpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:44:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB80B1022BC;
-        Mon, 15 Aug 2022 12:29:57 -0700 (PDT)
+        Mon, 15 Aug 2022 17:45:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FCE8C9E91;
+        Mon, 15 Aug 2022 12:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03F2260EF0;
-        Mon, 15 Aug 2022 19:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06408C433D6;
-        Mon, 15 Aug 2022 19:29:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7ED1B81062;
+        Mon, 15 Aug 2022 19:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FC2C433C1;
+        Mon, 15 Aug 2022 19:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591796;
-        bh=OZMGZ+zAfhth2Zc71by5JTqmTKqavg8WiA85C9vKwW8=;
+        s=korg; t=1660591799;
+        bh=kQSvD+paUr+cZU1TDKWmkofASbgYNIP6QBT9xrztMWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJe+6YUW6eNZUpWNYHbhYbnbnyIxja2PYFhje/fsEh+CEk79xLop2KJWWdehJFamr
-         DqT82hEUuAaTURrywlc4uWBQPq7hG60AO9XPSYa18BMbHal0EcyMMKb2Zl0xdDoUOm
-         lSrodhsZxMFHRh2BJDxqaqh6oynnEjmOiix0Qdx4=
+        b=QmunClIVxO2c+TZJ7bv9Aim/mwwqUoXZEMD9wIFki4qqoLXxiXHqb6y/2nSRX4VK8
+         0IUxH/peA1Ye93K5s02AUXiw1UbTjWL6EaA7yWOEbuj+lMuCq1AfPLxUlG23Vbdx+r
+         GdTHDj0tkfzll2evXvGQfH8k1zwUpavf30V4KLrg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ivan Hasenkampf <ivan.hasenkampf@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 0010/1157] ALSA: hda/realtek: Add quirk for HP Spectre x360 15-eb0xxx
-Date:   Mon, 15 Aug 2022 19:49:26 +0200
-Message-Id: <20220815180439.871408375@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0683/1095] mm/memremap: fix memunmap_pages() race with get_dev_pagemap()
+Date:   Mon, 15 Aug 2022 20:01:22 +0200
+Message-Id: <20220815180457.629161015@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Hasenkampf <ivan.hasenkampf@gmail.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 24df5428ef9d1ca1edd54eca7eb667110f2dfae3 upstream.
+[ Upstream commit 1e57ffb6e3fd9583268c6462c4e3853575b21701 ]
 
-Fixes speaker output on HP Spectre x360 15-eb0xxx
+Think about the below scene:
 
-[ re-sorted in SSID order by tiwai ]
+ CPU1			CPU2
+ memunmap_pages
+   percpu_ref_exit
+     __percpu_ref_exit
+       free_percpu(percpu_count);
+         /* percpu_count is freed here! */
+			 get_dev_pagemap
+			   xa_load(&pgmap_array, PHYS_PFN(phys))
+			     /* pgmap still in the pgmap_array */
+			   percpu_ref_tryget_live(&pgmap->ref)
+			     if __ref_is_percpu
+			       /* __PERCPU_REF_ATOMIC_DEAD not set yet */
+			       this_cpu_inc(*percpu_count)
+			         /* access freed percpu_count here! */
+      ref->percpu_count_ptr = __PERCPU_REF_ATOMIC_DEAD;
+        /* too late... */
+   pageunmap_range
 
-Signed-off-by: Ivan Hasenkampf <ivan.hasenkampf@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220803164001.290394-1-ivan.hasenkampf@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To fix the issue, do percpu_ref_exit() after pgmap_array is emptied. So
+we won't do percpu_ref_tryget_live() against a being freed percpu_ref.
+
+Link: https://lkml.kernel.org/r/20220609121305.2508-1-linmiaohe@huawei.com
+Fixes: b7b3c01b1915 ("mm/memremap_pages: support multiple ranges per invocation")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    2 ++
- 1 file changed, 2 insertions(+)
+ mm/memremap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9044,6 +9044,8 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x861f, "HP Elite Dragonfly G1", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x869d, "HP", ALC236_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x86c7, "HP Envy AiO 32", ALC274_FIXUP_HP_ENVY_GPIO),
-+	SND_PCI_QUIRK(0x103c, 0x86e7, "HP Spectre x360 15-eb0xxx", ALC285_FIXUP_HP_SPECTRE_X360_EB1),
-+	SND_PCI_QUIRK(0x103c, 0x86e8, "HP Spectre x360 15-eb0xxx", ALC285_FIXUP_HP_SPECTRE_X360_EB1),
- 	SND_PCI_QUIRK(0x103c, 0x8716, "HP Elite Dragonfly G2 Notebook PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8720, "HP EliteBook x360 1040 G8 Notebook PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8724, "HP EliteBook 850 G7", ALC285_FIXUP_HP_GPIO_LED),
+diff --git a/mm/memremap.c b/mm/memremap.c
+index e11653fd348c..2c1130486d28 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -141,10 +141,10 @@ void memunmap_pages(struct dev_pagemap *pgmap)
+ 	for (i = 0; i < pgmap->nr_range; i++)
+ 		percpu_ref_put_many(&pgmap->ref, pfn_len(pgmap, i));
+ 	wait_for_completion(&pgmap->done);
+-	percpu_ref_exit(&pgmap->ref);
+ 
+ 	for (i = 0; i < pgmap->nr_range; i++)
+ 		pageunmap_range(pgmap, i);
++	percpu_ref_exit(&pgmap->ref);
+ 
+ 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
+ 	devmap_managed_enable_put(pgmap);
+-- 
+2.35.1
+
 
 
