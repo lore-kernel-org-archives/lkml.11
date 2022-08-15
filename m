@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AD2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2361C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242240AbiHOShg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        id S242796AbiHOShi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243892AbiHOSgC (ORCPT
+        with ESMTP id S243951AbiHOSgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:36:02 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BC23B97B
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:22:57 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id e8-20020a17090a280800b001f2fef7886eso7465229pjd.3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=+KQg9NwkJDEhNpI4KkBdWQF+H9IGvkQatKSH56aORTM=;
-        b=aW5T7Hd5uMAYJXCsCpBWdkbC0U2drOTIAyOdp3BpG0VKmoIKYFyV7tNa60PmPWnf3r
-         Po25dpeQTWpvOeXxlJ497OWOlArjUKE+VomPurTwGVsLimUJVnRShSwYsBsqW+6Gkorr
-         DO78OC7cEyyiuXHznxYvWSqcJknS3rZRTtP/Au8fejyCw3M6aq/9yf0EMy4syHXfZR8g
-         ddILZu7Kax8/Vejz7j2lxntUTkc/n5zBfYEGZQTcxmAR+GYj5E8GcpzCntFonW1ReVVX
-         5o8w8wqHyjmIb5S5cLAVkN24EAL6tWKaMvndI2bGmdhqB8eTBvMVqLVzVYS48Jt8P+Sh
-         yBvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=+KQg9NwkJDEhNpI4KkBdWQF+H9IGvkQatKSH56aORTM=;
-        b=X+MiEmGQLBVZ+NZy5kj+W+0FvxejmJawzSHfvH+AVGkqLIPxEU2CZ3ZJJ6pAQfXpv6
-         vZZtEpQUfbxvcitml7d/buaNzffe9adsEtEghrBCot9J0FaeSki7X+f+cvjr63W1iez2
-         cqYTAbcvW3UTCqaWoIkwaQPzq5KeYLvXW/+4vMNevMmIH3mPX6UEqzFM/b59OD2+ecCt
-         7itEATPflFjccLT6Z5/KMsvMZmn2a/mmiI4m9G/ZMQXyAZ2/VnsGP3gP+XIibOnRCN49
-         UMq4nrTLjMCYYT4GRratZzIth1bfcRvsSlVT5vd86EBdh4dzm/nChqK1BI4Ls0RFPeay
-         ojUg==
-X-Gm-Message-State: ACgBeo0D3DNGHRk/n9C499W+GJvxsBPQuC57gMAvp7Zamg2YVlxqv4tZ
-        LunQBZHLFkUK55opYd/Ir5HBZez/mHw=
-X-Google-Smtp-Source: AA6agR7zxgKldb8Y65I25WjWdI4OtEONC4BxsVFPzFe+b0ylIX3azuU3hz1hjMCVeMvb4z1GPZZiLA==
-X-Received: by 2002:a17:90b:3ecd:b0:1f5:6330:8295 with SMTP id rm13-20020a17090b3ecd00b001f563308295mr19253854pjb.174.1660587776259;
-        Mon, 15 Aug 2022 11:22:56 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id q19-20020aa79613000000b0052e78582aa2sm6804255pfg.181.2022.08.15.11.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 11:22:55 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 15 Aug 2022 11:22:54 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815182254.GA3241114@roeck-us.net>
-References: <20220814212610.GA3690074@roeck-us.net>
- <20220815054117-mutt-send-email-mst@kernel.org>
- <20220815154920.GA4027315@roeck-us.net>
- <20220815120007-mutt-send-email-mst@kernel.org>
+        Mon, 15 Aug 2022 14:36:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F0A2CDD6;
+        Mon, 15 Aug 2022 11:22:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 860326068D;
+        Mon, 15 Aug 2022 18:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B05C433D6;
+        Mon, 15 Aug 2022 18:22:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660587776;
+        bh=v4Z1h7wfywCJHIbiHuBe6xaT4pkVjjYSygQnkWebSFs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YDHPG5MgcdWU78/EEkAlD8Bo5NKl6/N/MBpolbSDCMtHtOJQm6+DYyDy+irtzuRrw
+         tEnGxbOccwYPYjNKoYKUmUMZ/iJZMUkYG7wvl2c09XgKyBWAPX137DrOUncaEBmBpR
+         PJy5VZNw6rG8pFtZtMGhhMTBsHyGn2jUgyNUPcPc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 160/779] ACPI: processor/idle: Annotate more functions to live in cpuidle section
+Date:   Mon, 15 Aug 2022 19:56:44 +0200
+Message-Id: <20220815180344.182433607@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815120007-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 12:01:56PM -0400, Michael S. Tsirkin wrote:
-> 
-> OK I think I will give it a day in next and then send it to Linus.
-> Would be nice to know before that - vacation next week so I'd like to be
-> reasonably sure things are nice and quiet and everyone can proceed with
-> testing.
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-I ended up publishing several of the syzkaller reports because I could
-not figure out how to test the proposed patch otherwise. Sorry for the
-noise on the mailing lists, but I just could not figure out how to
-trigger test runs without making the reports public. Various test runs
-are now queued. Hopefully we should get results soon.
+[ Upstream commit 409dfdcaffb266acfc1f33529a26b1443c9332d4 ]
 
-Guenter
+Commit 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+introduced a new text section called cpuidle; with that, we have a mechanism
+to add idling functions in such section and skip them from nmi_backtrace
+output, since they're useless and potentially flooding for such report.
+
+Happens that inlining might cause some real idle functions to end-up
+outside of such section; this is currently the case of ACPI processor_idle
+driver; the functions acpi_idle_enter_* do inline acpi_idle_do_entry(),
+hence they stay out of the cpuidle section.
+Fix that by marking such functions to also live in the cpuidle section.
+
+Fixes: 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/acpi/processor_idle.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
+index aedcb92491f2..dc880dad2ade 100644
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -604,7 +604,7 @@ static DEFINE_RAW_SPINLOCK(c3_lock);
+  * @cx: Target state context
+  * @index: index of target state
+  */
+-static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
++static int __cpuidle acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 			       struct acpi_processor *pr,
+ 			       struct acpi_processor_cx *cx,
+ 			       int index)
+@@ -661,7 +661,7 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 	return index;
+ }
+ 
+-static int acpi_idle_enter(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter(struct cpuidle_device *dev,
+ 			   struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+@@ -690,7 +690,7 @@ static int acpi_idle_enter(struct cpuidle_device *dev,
+ 	return index;
+ }
+ 
+-static int acpi_idle_enter_s2idle(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter_s2idle(struct cpuidle_device *dev,
+ 				  struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+-- 
+2.35.1
+
+
+
