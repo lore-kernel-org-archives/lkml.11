@@ -2,91 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC40C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC9CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347238AbiHOXFY (ORCPT
+        id S1344580AbiHOXFj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
+        Mon, 15 Aug 2022 19:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352556AbiHOXDP (ORCPT
+        with ESMTP id S1345590AbiHOXDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:03:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B99E86079;
-        Mon, 15 Aug 2022 12:58:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E82061299;
-        Mon, 15 Aug 2022 19:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91773C433D6;
-        Mon, 15 Aug 2022 19:58:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593502;
-        bh=T8AMqL1bI2nByzhLxcyPhAwx+e3draOCLCZ86QLTzuk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgIXnLy7FYoeYMmQiQKwo1HPEf0+qazu5SguwX/ar3mm6zFYbYQpDDYdfdAI9Dvj9
-         f2FRw29D3t2Aq3jlOknQhdQ36gJSRSYtOQoeeZu9UwMWsmA6P29yMO9KfqagChqUXK
-         QK//K8tVlJEOl9y7Cip+Hq7OmzlhJgfKC21ErpoE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0242/1157] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
-Date:   Mon, 15 Aug 2022 19:53:18 +0200
-Message-Id: <20220815180449.244074137@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 19:03:35 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002FB140383;
+        Mon, 15 Aug 2022 12:58:25 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-32a09b909f6so99762267b3.0;
+        Mon, 15 Aug 2022 12:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=SaKpW6zKf3J+BDdw7lydmtNN4p2oq5j0Q5VFDNof+pM=;
+        b=mClJbEgUZn7mid1IMN6JVxp3CUtP2f+GgqIus6vTR3wa/69syGLtTNMNumUfGQzXCp
+         uRDUujND1uBLSov9tLJdTrhBNK4B/ta9oo+peGB6mwcb8/kM4OmseN8nDM9YLPfiHgSu
+         RrtJxBtdwb6OC6Eu1qdUXMMnROTgoZ2W2e+6A3ATXr99NvzmM59FmVMYNT9KmeXOLaRD
+         C2C/byWulXxqj0E4VMlC2YXPNO9aDoJf4mHM1cueQC2FLe14+lm/ePG6cQFQPmcSWlOY
+         UKsBZAfBlelS45l7Cx7P5f2skan3K6PWshyYKKfIFbFtHx6ntkMKbYnO/pXNhZDRqzoe
+         HI7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=SaKpW6zKf3J+BDdw7lydmtNN4p2oq5j0Q5VFDNof+pM=;
+        b=EWkA1Y6h3hKyYblxQFVtr9CXuhHcLEAkGQs807hTsonqJPaNRBUOSdVN6XPS0WWCCE
+         p2Z7vI3sZgZk4lfdE40HiPJrXJgqt/UCqVTvg8V5R6LMSGQTShgh0cWXue3Hu7XkRdaE
+         vFyn3ycPS+wzwj8FrtOenZKs5htFWiSBjLirbSGyv9ySWz7O9gfRvJc2/13bEW6eOGlr
+         deDmFxD7jah2z/YP5jZSSY95ypKIBXxVVPnUg+NC6gDp4zTAxAIsOCV0HECuxB+piGpa
+         BLKzTdQatY3HzrF3ttC9E2YCnW/wr5XilJ/cfBTPd71LNmJNZsmlVA+dpO3jMHS5/m2N
+         +NWw==
+X-Gm-Message-State: ACgBeo2brk+cjwCUSeJJiCJfMdkEDlpUeLH9BmvgqKBMzhlm1wBhKzP2
+        qJ/tIT5p8tOsLxS8JFvGa5MhT08PN/QEKguw/ETF3AGFtkY=
+X-Google-Smtp-Source: AA6agR7YZhetSRriR3fxyVoEb45vvhBzsBWV2fXqw33tgHSOBo2R5O1+udwaFBShKA5Xahd/ARVynHtaGCyY7Ch4dU8=
+X-Received: by 2002:a25:2245:0:b0:67b:7758:808b with SMTP id
+ i66-20020a252245000000b0067b7758808bmr13450908ybi.279.1660593505118; Mon, 15
+ Aug 2022 12:58:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-5-prabhakar.mahadev-lad.rj@bp.renesas.com> <d9d0deef-92e1-05b4-a195-d2ca03801129@microchip.com>
+In-Reply-To: <d9d0deef-92e1-05b4-a195-d2ca03801129@microchip.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 15 Aug 2022 20:57:57 +0100
+Message-ID: <CA+V-a8utT6UE=rc62LPE=UoU0DTJ2dDt7KO9UJ1vAG9r80E2pg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/8] RISC-V: Kconfig.socs: Add Renesas RZ/Five SoC
+ kconfig option
+To:     Conor.Dooley@microchip.com
+Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hi Conor,
 
-[ Upstream commit e6e0951414a314e7db3e9e24fd924b3e15515288 ]
+Thank you for the review.
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference count of the previous node.
-When breaking early from a for_each_available_child_of_node() loop,
-we need to explicitly call of_node_put() on the child node.
-Add missing of_node_put() to avoid refcount leak.
-
-Fixes: 05589b30b21a ("soc: qcom: Extend AOSS QMP driver to support resources that are used to wake up the SoC.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220606064252.42595-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/qcom/qcom_aoss.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
-index a59bb34e5eba..18c856056475 100644
---- a/drivers/soc/qcom/qcom_aoss.c
-+++ b/drivers/soc/qcom/qcom_aoss.c
-@@ -399,8 +399,10 @@ static int qmp_cooling_devices_register(struct qmp *qmp)
- 			continue;
- 		ret = qmp_cooling_device_add(qmp, &qmp->cooling_devs[count++],
- 					     child);
--		if (ret)
-+		if (ret) {
-+			of_node_put(child);
- 			goto unroll;
-+		}
- 	}
- 
- 	if (!count)
--- 
-2.35.1
+On Mon, Aug 15, 2022 at 8:10 PM <Conor.Dooley@microchip.com> wrote:
+>
+> On 15/08/2022 16:14, Lad Prabhakar wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >
+> > Introduce SOC_RENESAS_RZFIVE config option to enable Renesas RZ/Five
+> > (R9A07G043) SoC, along side also add ARCH_RENESAS config option as most
+> > of the Renesas drivers depend on this config option.
+>
+> Hey Lad,
+>
+> I think I said something similar on v1, but I said it again
+> to Samuel today so I may as well repost here too:
+> "I think this and patch 12/12 with the defconfig changes should be
+patch 8/8.
 
 
+> deferred until post LPC (which still leaves plenty of time for
+> making the 6.1 merge window). We already have like 4 different
+> approaches between the existing SOC_FOO symbols & two more when
+> D1 stuff and the Renesas stuff is considered.
+>
+> Plan is to decide at LPC on one approach for what to do with
+> Kconfig.socs & to me it seems like a good idea to do what's being
+> done here - it's likely that further arm vendors will move and
+> keeping the common symbols makes a lot of sense to me..."
+>
+Sure not a problem. But delaying patch 4 and 8 will make RZ/Five SoC
+not buildable. Is that OK?
 
+> Also, for the sake of my OCD could you pick either riscv or
+> RISC-V and use it for the whole series? Pedantic I guess, but
+> /shrug
+>
+Sorry did you mean I add riscv/RISC-V in the subject?
+
+Cheers,
+Prabhakar
+
+
+> Thanks,
+> Conor.
+>
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> > v1->v2
+> > * No Change
+> > ---
+> >  arch/riscv/Kconfig.socs | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+> > index 69774bb362d6..91b7f38b77a8 100644
+> > --- a/arch/riscv/Kconfig.socs
+> > +++ b/arch/riscv/Kconfig.socs
+> > @@ -80,4 +80,18 @@ config SOC_CANAAN_K210_DTB_SOURCE
+> >
+> >  endif # SOC_CANAAN
+> >
+> > +config ARCH_RENESAS
+> > +       bool
+> > +       select GPIOLIB
+> > +       select PINCTRL
+> > +       select SOC_BUS
+> > +
+> > +config SOC_RENESAS_RZFIVE
+> > +       bool "Renesas RZ/Five SoC"
+> > +       select ARCH_R9A07G043
+> > +       select ARCH_RENESAS
+> > +       select RESET_CONTROLLER
+> > +       help
+> > +         This enables support for Renesas RZ/Five SoC.
+> > +
+> >  endmenu # "SoC selection"
+> > --
+> > 2.25.1
+> >
+>
