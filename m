@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384B8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91542C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241671AbiHOS1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
+        id S241705AbiHOS1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232750AbiHOSZN (ORCPT
+        with ESMTP id S242456AbiHOS0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:25:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31CA17074;
-        Mon, 15 Aug 2022 11:18:37 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24142FFDD;
+        Mon, 15 Aug 2022 11:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA5FB81071;
-        Mon, 15 Aug 2022 18:18:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A701DC433C1;
-        Mon, 15 Aug 2022 18:18:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3B73BCE125A;
+        Mon, 15 Aug 2022 18:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09517C433C1;
+        Mon, 15 Aug 2022 18:18:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587495;
-        bh=WKhP9fvoBVbhKnnC/6M6Uk1riJbubN2caMGm8tF5IXM=;
+        s=korg; t=1660587527;
+        bh=zn7mZIOUKopCQiK6wEEUIfGvCikAD5V+7KAuofMwnWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QrEUD9NnhVGgkGHETC1s8wBGCPJBGEjInSl//wsBsdYeNTOpJRLPdqU/KW9/nNAxk
-         OASP8tTZromsw3XUdZoeWYhy/iQFx55lIaxK7Wk2e4MlevL5fG2YOLQfojj8kN6zIC
-         bZ9oL39nEZi9HtGcWQGfWNgLUcGHxw+2ORdKKFMI=
+        b=Cu8+jNVCy0/EWo30Czx35oDLJyIJfctfe4PNKrqGiQ2GZx4kPtEHyh0boxjH4vilS
+         qNEEbeVRelndfHvbX0zQ7rCq6n+QzuVvcVqkok/RHDK/riQ3YpE/if1srnQ+m9nzfH
+         dLSp6DnojCubWtC+1eOCxKwncMB939KF3L3Dqv5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 103/779] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
-Date:   Mon, 15 Aug 2022 19:55:47 +0200
-Message-Id: <20220815180341.711918032@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 112/779] arch: make TRACE_IRQFLAGS_NMI_SUPPORT generic
+Date:   Mon, 15 Aug 2022 19:55:56 +0200
+Message-Id: <20220815180342.129998677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,72 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Mark Rutland <mark.rutland@arm.com>
 
-commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
+[ Upstream commit 4510bffb4d0246cdcc1f14c7367c026b807a862d ]
 
-The syzbot fuzzer found a race between uevent callbacks and gadget
-driver unregistration that can cause a use-after-free bug:
+On most architectures, IRQ flag tracing is disabled in NMI context, and
+architectures need to define and select TRACE_IRQFLAGS_NMI_SUPPORT in
+order to enable this.
 
----------------------------------------------------------------
-BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
-drivers/usb/gadget/udc/core.c:1732
-Read of size 8 at addr ffff888078ce2050 by task udevd/2968
+Commit:
 
-CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-06/29/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
- usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
- dev_uevent+0x290/0x770 drivers/base/core.c:2424
----------------------------------------------------------------
+  859d069ee1ddd878 ("lockdep: Prepare for NMI IRQ state tracking")
 
-The bug occurs because usb_udc_uevent() dereferences udc->driver but
-does so without acquiring the udc_lock mutex, which protects this
-field.  If the gadget driver is unbound from the udc concurrently with
-uevent processing, the driver structure may be accessed after it has
-been deallocated.
+Permitted IRQ flag tracing in NMI context, allowing lockdep to work in
+NMI context where an architecture had suitable entry logic. At the time,
+most architectures did not have such suitable entry logic, and this broke
+lockdep on such architectures. Thus, this was partially disabled in
+commit:
 
-To prevent the race, we make sure that the routine holds the mutex
-around the racing accesses.
+  ed00495333ccc80f ("locking/lockdep: Fix TRACE_IRQFLAGS vs. NMIs")
 
-Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
-CC: stable@vger.kernel.org # fc274c1e9973
-Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+... with architectures needing to select TRACE_IRQFLAGS_NMI_SUPPORT to
+enable IRQ flag tracing in NMI context.
+
+Currently TRACE_IRQFLAGS_NMI_SUPPORT is defined under
+arch/x86/Kconfig.debug. Move it to arch/Kconfig so architectures can
+select it without having to provide their own definition.
+
+Since the regular TRACE_IRQFLAGS_SUPPORT is selected by
+arch/x86/Kconfig, the select of TRACE_IRQFLAGS_NMI_SUPPORT is moved
+there too.
+
+There should be no functional change as a result of this patch.
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220511131733.4074499-2-mark.rutland@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/core.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/Kconfig           | 3 +++
+ arch/x86/Kconfig       | 1 +
+ arch/x86/Kconfig.debug | 3 ---
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1739,13 +1739,14 @@ static int usb_udc_uevent(struct device
- 		return ret;
- 	}
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 191589f26b1a..5987363b41c2 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -200,6 +200,9 @@ config HAVE_NMI
+ config TRACE_IRQFLAGS_SUPPORT
+ 	bool
  
--	if (udc->driver) {
-+	mutex_lock(&udc_lock);
-+	if (udc->driver)
- 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
- 				udc->driver->function);
--		if (ret) {
--			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
--			return ret;
--		}
-+	mutex_unlock(&udc_lock);
-+	if (ret) {
-+		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
-+		return ret;
- 	}
++config TRACE_IRQFLAGS_NMI_SUPPORT
++	bool
++
+ #
+ # An arch should select this if it provides all these things:
+ #
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index fe6981a38795..57f5e881791a 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -260,6 +260,7 @@ config X86
+ 	select SYSCTL_EXCEPTION_TRACE
+ 	select THREAD_INFO_IN_TASK
+ 	select TRACE_IRQFLAGS_SUPPORT
++	select TRACE_IRQFLAGS_NMI_SUPPORT
+ 	select USER_STACKTRACE_SUPPORT
+ 	select VIRT_TO_BUS
+ 	select HAVE_ARCH_KCSAN			if X86_64
+diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+index d3a6f74a94bd..d4d6db4dde22 100644
+--- a/arch/x86/Kconfig.debug
++++ b/arch/x86/Kconfig.debug
+@@ -1,8 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
  
- 	return 0;
+-config TRACE_IRQFLAGS_NMI_SUPPORT
+-	def_bool y
+-
+ config EARLY_PRINTK_USB
+ 	bool
+ 
+-- 
+2.35.1
+
 
 
