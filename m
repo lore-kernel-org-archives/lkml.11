@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA22C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D83C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357552AbiHPANu (ORCPT
+        id S1357649AbiHPAN7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        Mon, 15 Aug 2022 20:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357185AbiHPADx (ORCPT
+        with ESMTP id S1357247AbiHPAD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:03:53 -0400
+        Mon, 15 Aug 2022 20:03:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1399AFE3;
-        Mon, 15 Aug 2022 13:26:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BAF16F899;
+        Mon, 15 Aug 2022 13:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A81AB61072;
-        Mon, 15 Aug 2022 20:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D532C433D6;
-        Mon, 15 Aug 2022 20:26:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9B7660EE9;
+        Mon, 15 Aug 2022 20:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D852AC433D6;
+        Mon, 15 Aug 2022 20:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595161;
-        bh=jAo6yBPzsPxvurDhE/Wv2SdbcO75Px0lVoNRh1O4SwU=;
+        s=korg; t=1660595292;
+        bh=Ld/+h+6Y3JmehVI9m60Wd4KS1sk9c3Xu6SM3lKeK55E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyCVsYIdH9vfmYbGVXdLs3+32KuyYf1eGiEFuE/esMB1eZQW++wIgJnnyfTscHkt5
-         MaX17cvRuTpn8DUzTow3JBrHC1mV9lrtjfMZZty+o/Y/M9YrtZhi/DhPGSk4pH7XkI
-         HZDWxurxqcp6/vcctd3sHH1leXCwLhvNWGJBq5KQ=
+        b=Yb6rb4LTZz71kTp6SNfXFLbYmZQsTnTukhfgTko9ZJYxycX7AFqvcLwvXfx29now/
+         HLypM+Qz2N7vUj3c6HhhbW6r0qKbVpjHC3JvB0PeqzaEfZqsUtLFcadl7IX/LAu2fm
+         nBA93Us/Ippi7NdJvHVAnuaIHr4eQkXOQgmjxI1g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0676/1157] iio: dac: ad5504: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:32 +0200
-Message-Id: <20220815180506.725671223@linuxfoundation.org>
+Subject: [PATCH 5.19 0717/1157] iio: temp: ltc2983: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:13 +0200
+Message-Id: <20220815180508.193549352@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,35 +53,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 00b9737caa5aaed5cf45a7c7498edf5957efa3b2 ]
+[ Upstream commit 732f2cb2fbb51bd5bc03a114bd102ab3b2f537fe ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 0dbe59c7a788 ("iio:ad5504: Do not store transfer buffers on the stack")
+Fixes: f110f3188e56 ("iio: temperature: Add support for LTC2983")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-48-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-91-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad5504.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/temperature/ltc2983.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index a0817e799cc0..e6c5be728bb2 100644
---- a/drivers/iio/dac/ad5504.c
-+++ b/drivers/iio/dac/ad5504.c
-@@ -54,7 +54,7 @@ struct ad5504_state {
- 	unsigned			pwr_down_mask;
- 	unsigned			pwr_down_mode;
- 
--	__be16				data[2] ____cacheline_aligned;
-+	__be16				data[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 4fc654275155..4b7f2b8a9758 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -204,11 +204,11 @@ struct ltc2983_data {
+ 	u8 num_channels;
+ 	u8 iio_channels;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 * Holds the converted temperature
+ 	 */
+-	__be32 temp ____cacheline_aligned;
++	__be32 temp __aligned(IIO_DMA_MINALIGN);
  };
  
- /*
+ struct ltc2983_sensor {
 -- 
 2.35.1
 
