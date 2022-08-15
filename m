@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30211C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEAAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346515AbiHOXKU (ORCPT
+        id S1347825AbiHOXK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        Mon, 15 Aug 2022 19:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244999AbiHOXIK (ORCPT
+        with ESMTP id S1345372AbiHOXIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:08:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DD278BCB;
-        Mon, 15 Aug 2022 12:59:44 -0700 (PDT)
+        Mon, 15 Aug 2022 19:08:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C067968D;
+        Mon, 15 Aug 2022 12:59:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87A31B80EB1;
-        Mon, 15 Aug 2022 19:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF05EC433C1;
-        Mon, 15 Aug 2022 19:59:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8691361295;
+        Mon, 15 Aug 2022 19:59:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE2D2C433C1;
+        Mon, 15 Aug 2022 19:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593582;
-        bh=IKiFqsVBpkSCn9+EeYNF1YPmUb0OiOAXXHU+8G+n66w=;
+        s=korg; t=1660593585;
+        bh=eUGW2Is/pHYPEz+f+EhA8vgHM3cR2Z6ILuc72rM9470=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=omZMT/fnLrno4CqjH8qzCr5u7gxcUaVHKkzCDZ0pXk5M4GM7bzRK37cazlVm6bTu8
-         1HI5zaBwbGzfH+hmgV5nc/eZygWRl2AU14EKSfEhaHnKvKv0UwImntpgkd5s7IVaWw
-         wKFuKCR1ujXw0EXGbLtDWvFSa3iNpygCo3JigLcg=
+        b=HTr3f/4Pnw+7YMYztJH1ALdv0oOlfc1zb7q4+bpbfo2xolDwxr9c9lfGd7yNj7Xi1
+         5g5sG9eKTG26Tc2hDIWLMiOgWT/dIE76hkFDIvdn406rxiNclW57nk3QdoW8eCQBU0
+         oBw73nfp/mRtuF2jVgkKqFv3UzBdhSREqiQj2U3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.18 0971/1095] x86/bugs: Enable STIBP for IBPB mitigated RETBleed
-Date:   Mon, 15 Aug 2022 20:06:10 +0200
-Message-Id: <20220815180509.232916030@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0292/1157] x86/extable: Fix ex_handler_msr() print condition
+Date:   Mon, 15 Aug 2022 19:54:08 +0200
+Message-Id: <20220815180451.301170690@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,115 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit e6cfcdda8cbe81eaf821c897369a65fec987b404 upstream.
+[ Upstream commit a1a5482a2c6e38a3ebed32e571625c56a8cc41a6 ]
 
-AMD's "Technical Guidance for Mitigating Branch Type Confusion,
-Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
-Privileged Mode Entry / SMT Safety" says:
+On Fri, Jun 17, 2022 at 02:08:52PM +0300, Stephane Eranian wrote:
+> Some changes to the way invalid MSR accesses are reported by the
+> kernel is causing some problems with messages printed on the
+> console.
+>
+> We have seen several cases of ex_handler_msr() printing invalid MSR
+> accesses once but the callstack multiple times causing confusion on
+> the console.
 
-  Similar to the Jmp2Ret mitigation, if the code on the sibling thread
-  cannot be trusted, software should set STIBP to 1 or disable SMT to
-  ensure SMT safety when using this mitigation.
+> The problem here is that another earlier commit (5.13):
+>
+> a358f40600b3 ("once: implement DO_ONCE_LITE for non-fast-path "do once" functionality")
+>
+> Modifies all the pr_*_once() calls to always return true claiming
+> that no caller is ever checking the return value of the functions.
+>
+> This is why we are seeing the callstack printed without the
+> associated printk() msg.
 
-So, like already being done for retbleed=unret, and now also for
-retbleed=ibpb, force STIBP on machines that have it, and report its SMT
-vulnerability status accordingly.
+Extract the ONCE_IF(cond) part into __ONCE_LTE_IF() and use that to
+implement DO_ONCE_LITE_IF() and fix the extable code.
 
- [ bp: Remove the "we" and remove "[AMD]" applicability parameter which
-   doesn't work here. ]
-
-Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org # 5.10, 5.15, 5.19
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
-Link: https://lore.kernel.org/r/20220804192201.439596-1-kim.phillips@amd.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a358f40600b3 ("once: implement DO_ONCE_LITE for non-fast-path "do once" functionality")
+Reported-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Stephane Eranian <eranian@google.com>
+Link: https://lkml.kernel.org/r/YqyVFsbviKjVGGZ9@worktop.programming.kicks-ass.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   29 +++++++++++++++++-------
- arch/x86/kernel/cpu/bugs.c                      |   10 ++++----
- 2 files changed, 27 insertions(+), 12 deletions(-)
+ arch/x86/mm/extable.c     | 16 +++++++++-------
+ include/linux/once_lite.h | 20 ++++++++++++++++----
+ 2 files changed, 25 insertions(+), 11 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5130,20 +5130,33 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
- 
-+			AMD-based UNRET and IBPB mitigations alone do not stop
-+			sibling threads from influencing the predictions of other
-+			sibling threads. For that reason, STIBP is used on pro-
-+			cessors that support it, and mitigate SMT on processors
-+			that don't.
-+
- 			off          - no mitigation
- 			auto         - automatically select a migitation
- 			auto,nosmt   - automatically select a mitigation,
- 				       disabling SMT if necessary for
- 				       the full mitigation (only on Zen1
- 				       and older without STIBP).
--			ibpb	     - mitigate short speculation windows on
--				       basic block boundaries too. Safe, highest
--				       perf impact.
--			unret        - force enable untrained return thunks,
--				       only effective on AMD f15h-f17h
--				       based systems.
--			unret,nosmt  - like unret, will disable SMT when STIBP
--			               is not available.
-+			ibpb         - On AMD, mitigate short speculation
-+				       windows on basic block boundaries too.
-+				       Safe, highest perf impact. It also
-+				       enables STIBP if present. Not suitable
-+				       on Intel.
-+			ibpb,nosmt   - Like "ibpb" above but will disable SMT
-+				       when STIBP is not available. This is
-+				       the alternative for systems which do not
-+				       have STIBP.
-+			unret        - Force enable untrained return thunks,
-+				       only effective on AMD f15h-f17h based
-+				       systems.
-+			unret,nosmt  - Like unret, but will disable SMT when STIBP
-+				       is not available. This is the alternative for
-+				       systems which do not have STIBP.
- 
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -152,7 +152,7 @@ void __init check_bugs(void)
- 	/*
- 	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
--	 * forced for UNRET.
-+	 * forced for UNRET or IBPB.
- 	 */
- 	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
-@@ -1172,7 +1172,8 @@ spectre_v2_user_select_mitigation(void)
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 		if (mode != SPECTRE_V2_USER_STRICT &&
- 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
- 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
-@@ -2353,10 +2354,11 @@ static ssize_t srbds_show_state(char *bu
- 
- static ssize_t retbleed_show_state(char *buf)
+diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
+index dba2197c05c3..331310c29349 100644
+--- a/arch/x86/mm/extable.c
++++ b/arch/x86/mm/extable.c
+@@ -94,16 +94,18 @@ static bool ex_handler_copy(const struct exception_table_entry *fixup,
+ static bool ex_handler_msr(const struct exception_table_entry *fixup,
+ 			   struct pt_regs *regs, bool wrmsr, bool safe, int reg)
  {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
--		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
+-	if (!safe && wrmsr &&
+-	    pr_warn_once("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
+-			 (unsigned int)regs->cx, (unsigned int)regs->dx,
+-			 (unsigned int)regs->ax,  regs->ip, (void *)regs->ip))
++	if (__ONCE_LITE_IF(!safe && wrmsr)) {
++		pr_warn("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
++			(unsigned int)regs->cx, (unsigned int)regs->dx,
++			(unsigned int)regs->ax,  regs->ip, (void *)regs->ip);
+ 		show_stack_regs(regs);
++	}
  
- 	    return sprintf(buf, "%s; SMT %s\n",
- 			   retbleed_strings[retbleed_mitigation],
+-	if (!safe && !wrmsr &&
+-	    pr_warn_once("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
+-			 (unsigned int)regs->cx, regs->ip, (void *)regs->ip))
++	if (__ONCE_LITE_IF(!safe && !wrmsr)) {
++		pr_warn("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
++			(unsigned int)regs->cx, regs->ip, (void *)regs->ip);
+ 		show_stack_regs(regs);
++	}
+ 
+ 	if (!wrmsr) {
+ 		/* Pretend that the read succeeded and returned 0. */
+diff --git a/include/linux/once_lite.h b/include/linux/once_lite.h
+index 861e606b820f..b7bce4983638 100644
+--- a/include/linux/once_lite.h
++++ b/include/linux/once_lite.h
+@@ -9,15 +9,27 @@
+  */
+ #define DO_ONCE_LITE(func, ...)						\
+ 	DO_ONCE_LITE_IF(true, func, ##__VA_ARGS__)
+-#define DO_ONCE_LITE_IF(condition, func, ...)				\
++
++#define __ONCE_LITE_IF(condition)					\
+ 	({								\
+ 		static bool __section(".data.once") __already_done;	\
+-		bool __ret_do_once = !!(condition);			\
++		bool __ret_cond = !!(condition);			\
++		bool __ret_once = false;				\
+ 									\
+-		if (unlikely(__ret_do_once && !__already_done)) {	\
++		if (unlikely(__ret_cond && !__already_done)) {		\
+ 			__already_done = true;				\
+-			func(__VA_ARGS__);				\
++			__ret_once = true;				\
+ 		}							\
++		unlikely(__ret_once);					\
++	})
++
++#define DO_ONCE_LITE_IF(condition, func, ...)				\
++	({								\
++		bool __ret_do_once = !!(condition);			\
++									\
++		if (__ONCE_LITE_IF(__ret_do_once))			\
++			func(__VA_ARGS__);				\
++									\
+ 		unlikely(__ret_do_once);				\
+ 	})
+ 
+-- 
+2.35.1
+
 
 
