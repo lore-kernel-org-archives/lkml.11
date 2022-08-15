@@ -2,115 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1077DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64705C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbiHOLBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 07:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S241655AbiHOLB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 07:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241824AbiHOLAt (ORCPT
+        with ESMTP id S233539AbiHOLBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 07:00:49 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F566479;
-        Mon, 15 Aug 2022 04:00:48 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FAD2E0029408;
-        Mon, 15 Aug 2022 11:00:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=Z3aS594wlbhZKWisoOFso7+h9XZN3ISVE0QdwPxZcJY=;
- b=WRBbzsoENcdRq19Ujq2hw46Z6kxBNsWKO06VrzMF7SEyBencFrzeigFRF12ZLZzSkNXP
- 0EpHbA96kWD0/6PCPMHpwlmD6XJ7ClZ3C5J0WGdSg5JXWc9Ud2rNs8Qf6nXHbWIBXW4x
- gWYRwVNfT7Lhl/3UVd0ni1Y6x0pIV50SiGAEjrzAk8nZFYIlanb+8wvt+i7A/lqdQg5W
- asIyl83STQ/srrHqvga0Dt67TY8WH5+/g9gOnyPs8FgQLHvrvtroZa8ReMh/PFt7FTi7
- QFuJB9ip3HQeqiTnKYIf403tk/9/MHOcUHiWzhqP00mxAfE893BDU4FhNDb9Tr65HCCI Ug== 
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hx1aud5d9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 11:00:09 +0000
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-        by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27FB08Ov013879
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 11:00:08 GMT
-Received: from [10.216.30.233] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 15 Aug
- 2022 04:00:03 -0700
-Message-ID: <f584fecd-6ca4-4ab0-763d-2ed219009c61@quicinc.com>
-Date:   Mon, 15 Aug 2022 16:29:24 +0530
+        Mon, 15 Aug 2022 07:01:18 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5CD23160;
+        Mon, 15 Aug 2022 04:01:15 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M5rrt59fJzGpJF;
+        Mon, 15 Aug 2022 18:59:42 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 15 Aug 2022 19:01:13 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.36) by
+ dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 15 Aug 2022 19:01:12 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>
+CC:     <linux@armlinux.org.uk>, <arnd@arndb.de>,
+        <linus.walleij@linaro.org>, <ardb@kernel.org>,
+        <rmk+kernel@armlinux.org.uk>, <rostedt@goodmis.org>,
+        <nick.hawkins@hpe.com>, <john@phrozen.org>, <mhiramat@kernel.org>,
+        <chenzhongjin@huawei.com>
+Subject: [PATCH] x86/unwind/orc: Add 'unwind_debug' cmdline option
+Date:   Mon, 15 Aug 2022 18:58:08 +0800
+Message-ID: <20220815105808.17385-2-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220815105808.17385-1-chenzhongjin@huawei.com>
+References: <20220815105808.17385-1-chenzhongjin@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: Query regarding deadlock involving cgroup_threadgroup_rwsem and
- cpu_hotplug_lock
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Xuewen Yan <xuewen.yan94@gmail.com>
-CC:     Tejun Heo <tj@kernel.org>, Imran Khan <imran.f.khan@oracle.com>,
-        <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
-        <tglx@linutronix.de>, <steven.price@arm.com>,
-        <peterz@infradead.org>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Zhao Gongyi <zhaogongyi@huawei.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>
-References: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
- <26d0e4cc-be0e-2c12-6174-dfbb1edb1ed6@oracle.com>
- <bbc01477-231b-3dbb-3e09-9338f5413f06@oracle.com>
- <ba48eac5-8ef7-251b-11fe-8163bb7a2d54@quicinc.com>
- <224b19f3-912d-b858-7af4-185b8e55bc66@quicinc.com>
- <YthDz4BnfYHce1od@slm.duckdns.org> <YuGTBLkFerUboctl@slm.duckdns.org>
- <dc0cff0e-b744-9d5d-e727-70d1c31b2a74@quicinc.com>
- <20220815090556.GB27407@blackbody.suse.cz>
- <CAB8ipk90LxNNbq5OKamd-ArkqhEZjxS1fFZJXtnbQwGzyyJ3wQ@mail.gmail.com>
- <20220815093934.GA29323@blackbody.suse.cz>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220815093934.GA29323@blackbody.suse.cz>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: g09p5XzNTrHElQUZFQKcos2Wl2zs6yvx
-X-Proofpoint-ORIG-GUID: g09p5XzNTrHElQUZFQKcos2Wl2zs6yvx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_06,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
- adultscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0 mlxscore=0
- suspectscore=0 priorityscore=1501 clxscore=1011 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208150040
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.36]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
+Sometimes the one-line ORC unwinder warnings aren't very helpful.  Add a
+new 'unwind_debug' cmdline option which will dump the full stack
+contents of the current task when an error condition is encountered.
 
-On 8/15/2022 3:09 PM, Michal Koutný wrote:
-> On Mon, Aug 15, 2022 at 05:25:52PM +0800, Xuewen Yan <xuewen.yan94@gmail.com> wrote:
->> Your means is that the problem should be fixed by [1]+[2]'s revert ?
-> 
-> I understood that was already the combination you had tested.
-> You write in [T] that [1] alone causes (another) deadlock and therefore
-> the revert of [2] was suggested.
-> 
->> I just tested the case which reverted the [2]. Need I test with [1] and [2]?
-> 
-> It'd be better (unless you haven't already :-), my reasoning is for the
-> [1]+[2] combo.
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+---
+ .../admin-guide/kernel-parameters.txt         |  6 +++
+ arch/x86/kernel/unwind_orc.c                  | 46 +++++++++++++++++++
+ 2 files changed, 52 insertions(+)
 
-Feel free to add my
-
-Reported-and-tested-by: Mukesh Ojha <quic_mojha@quicinc.com>
-
--Mukesh
-> 
-> Thanks,
-> Michal
-> 
-> [T] https://lore.kernel.org/r/CAB8ipk_gCLtvEahsp2DvPJf4NxRsM8WCYmmH=yTd7zQE+81_Yg@mail.gmail.com/
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index cc3ea8febc62..85d48f6052fd 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6317,6 +6317,12 @@
+ 	unknown_nmi_panic
+ 			[X86] Cause panic on unknown NMI.
+ 
++	unwind_debug	[X86-64]
++			Enable unwinder debug output.  This can be
++			useful for debugging certain unwinder error
++			conditions, including corrupt stacks and
++			bad/missing unwinder metadata.
++
+ 	usbcore.authorized_default=
+ 			[USB] Default USB device authorization:
+ 			(default -1 = authorized except for wireless USB,
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 38185aedf7d1..c539ca39e9f4 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -13,8 +13,13 @@
+ 
+ #define orc_warn_current(args...)					\
+ ({									\
++	static bool dumped_before;
+ 	if (state->task == current && !state->error)			\
+ 		orc_warn(args);						\
++		if (unwind_debug && !dumped_before)			\
++			unwind_dump(state);				\
++		dumped_before = true;					\
++	}								\
+ })
+ 
+ extern int __start_orc_unwind_ip[];
+@@ -23,8 +28,49 @@ extern struct orc_entry __start_orc_unwind[];
+ extern struct orc_entry __stop_orc_unwind[];
+ 
+ static bool orc_init __ro_after_init;
++static bool unwind_debug __ro_after_init;
+ static unsigned int lookup_num_blocks __ro_after_init;
+ 
++static int __init unwind_debug_cmdline(char *str)
++{
++	unwind_debug = true;
++
++	return 0;
++}
++early_param("unwind_debug", unwind_debug_cmdline);
++
++static void unwind_dump(struct unwind_state *state)
++{
++	static bool dumped_before;
++	unsigned long word, *sp;
++	struct stack_info stack_info = {0};
++	unsigned long visit_mask = 0;
++
++	if (dumped_before)
++		return;
++
++	dumped_before = true;
++
++	printk_deferred("unwind stack type:%d next_sp:%p mask:0x%lx graph_idx:%d\n",
++			state->stack_info.type, state->stack_info.next_sp,
++			state->stack_mask, state->graph_idx);
++
++	for (sp = __builtin_frame_address(0); sp;
++	     sp = PTR_ALIGN(stack_info.next_sp, sizeof(long))) {
++		if (get_stack_info(sp, state->task, &stack_info, &visit_mask))
++			break;
++
++		for (; sp < stack_info.end; sp++) {
++
++			word = READ_ONCE_NOCHECK(*sp);
++
++			printk_deferred("%0*lx: %0*lx (%pB)\n", BITS_PER_LONG/4,
++					(unsigned long)sp, BITS_PER_LONG/4,
++					word, (void *)word);
++		}
++	}
++}
++
+ static inline unsigned long orc_ip(const int *ip)
+ {
+ 	return (unsigned long)ip + *ip;
