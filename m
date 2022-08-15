@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D279EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9294C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345806AbiHOUAD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
+        id S232917AbiHOUCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241858AbiHOT7G (ORCPT
+        with ESMTP id S1345945AbiHOUBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:59:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A317796B5;
-        Mon, 15 Aug 2022 11:53:11 -0700 (PDT)
+        Mon, 15 Aug 2022 16:01:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D008A7B7BA;
+        Mon, 15 Aug 2022 11:53:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 716D9B810A6;
-        Mon, 15 Aug 2022 18:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AD9C433C1;
-        Mon, 15 Aug 2022 18:53:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A924B810A2;
+        Mon, 15 Aug 2022 18:53:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D49C433C1;
+        Mon, 15 Aug 2022 18:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589588;
-        bh=WFP8opjL5wR21vO6sG4t40QfsjTNuVfWGHPP07Rlybo=;
+        s=korg; t=1660589616;
+        bh=ypcTEHAAN56lMkwcSW2kJ2Sjqa0FjUipNQmNtZq0vRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HtzVKsv/EIu50ovEQn3dS1UPbheZ2qYSZeHhJGWbv9NFg70W5hWRsTVgf874cVeee
-         uxQylTKNmtR6P2Hihvo72DzgeqnbfTu9Lwn71aSO6xH37PpL1f+5YCRu66sXvsNsUH
-         vgbtuHjBL5XIoc0wgAeoFoFogepf56MGBPSWsKX4=
+        b=Vu4BZZgAMZeyDKNUDDpYHvxGRlDoO8AXwvxq4wzjgYuMbmPGxHdLlWphziANjqWMc
+         v0gm4a6FIeJ2RoDtqUZCls6sAV4fPZsbykLyc3l/Cs+6uhW3Ps8qjNWsWpn9mNZDUH
+         RSvKu887ROlAse51yr9XTufGb0i5ANvAG7ZMYds4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 734/779] KVM: x86/pmu: Ignore pmu->global_ctrl check if vPMU doesnt support global_ctrl
-Date:   Mon, 15 Aug 2022 20:06:18 +0200
-Message-Id: <20220815180408.824384578@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.15 775/779] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Mon, 15 Aug 2022 20:06:59 +0200
+Message-Id: <20220815180410.517422014@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,39 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 98defd2e17803263f49548fea930cfc974d505aa ]
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-MSR_CORE_PERF_GLOBAL_CTRL is introduced as part of Architecture PMU V2,
-as indicated by Intel SDM 19.2.2 and the intel_is_valid_msr() function.
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-So in the absence of global_ctrl support, all PMCs are enabled as AMD does.
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
 
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20220509102204.62389-1-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index c66edf93e4a8..f9054e7ec89e 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -104,6 +104,9 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1970,11 +1970,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
  {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
  
-+	if (pmu->version < 2)
-+		return true;
-+
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
- }
+ 	read_lock(&chan_list_lock);
  
--- 
-2.35.1
-
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
+ 
+@@ -1993,11 +1993,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
+ 
+ 			/* Closest match */
 
 
