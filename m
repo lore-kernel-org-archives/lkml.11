@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770B2C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F217C2BB45
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355879AbiHPAGh (ORCPT
+        id S1355968AbiHPAGr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        Mon, 15 Aug 2022 20:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353754AbiHOX6s (ORCPT
+        with ESMTP id S1353774AbiHOX6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:58:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AF616570D;
-        Mon, 15 Aug 2022 13:20:51 -0700 (PDT)
+        Mon, 15 Aug 2022 19:58:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C1410B4;
+        Mon, 15 Aug 2022 13:22:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B44826104A;
-        Mon, 15 Aug 2022 20:20:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7457FC433C1;
-        Mon, 15 Aug 2022 20:20:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F1F861073;
+        Mon, 15 Aug 2022 20:22:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33931C433C1;
+        Mon, 15 Aug 2022 20:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594850;
-        bh=Y2YVxMxFUYn+u8NnVUBKFgPVl4Mn/bDpZE1Y3UP0Zr4=;
+        s=korg; t=1660594927;
+        bh=CXsiMlpxl/lPeiBhHDsWcyx72OmLP0Buq3FF1+bOVWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bDxv/jq90rwahH/v1UWCGFhaxcKcNkL81PrJy05e2Hqr/fiJbGJ8HBgNbG8WWYHmo
-         Km6JZ0dwKVwACJUsNNC7i25ZXJPz/zDy5TjJuYZl2Nk8HOsfQPeq/KzCTncHbYdaMy
-         RrjEw+8JWVvO1HN6d6NNiAvffoOHQPVVcVI4tr7s=
+        b=h3/hspFhrFmQ0BMlPcpjNeeqCpdxxlohtNpO1nl3N+ywrznB1aYqMAdJ+tQdCUMCq
+         8SneZ7q8YjT9r+CCy8+Ggsmrvrrml8eijTvSoSjZlKeK59NFHjrTd2w+kC7gT4UL0t
+         P21SYJC+VvFKuAFuub0N1epPuE/NBvG4KMNekWGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0577/1157] mtd: maps: Fix refcount leak in ap_flash_init
-Date:   Mon, 15 Aug 2022 19:58:53 +0200
-Message-Id: <20220815180502.720818621@linuxfoundation.org>
+Subject: [PATCH 5.19 0602/1157] mtd: spear_smi: Drop if with an always false condition
+Date:   Mon, 15 Aug 2022 19:59:18 +0200
+Message-Id: <20220815180503.745446258@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,36 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 77087a04c8fd554134bddcb8a9ff87b21f357926 ]
+[ Upstream commit 279d719be39d8edb37c9178c15e167a94c7bc0a0 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The remove callback is only called after probe completed successfully.
+In this case platform_set_drvdata() was called with a non-NULL argument
+and so dev is never NULL.
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+This is a preparation for making platform remove callbacks return void.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220523143255.4376-1-linmq006@gmail.com
+Link: https://lore.kernel.org/linux-mtd/20220603210758.148493-8-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/maps/physmap-versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mtd/devices/spear_smi.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
-index 297a50957356..a1b8b7b25f88 100644
---- a/drivers/mtd/maps/physmap-versatile.c
-+++ b/drivers/mtd/maps/physmap-versatile.c
-@@ -93,6 +93,7 @@ static int ap_flash_init(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 	ebi_base = of_iomap(ebi, 0);
-+	of_node_put(ebi);
- 	if (!ebi_base)
- 		return -ENODEV;
+diff --git a/drivers/mtd/devices/spear_smi.c b/drivers/mtd/devices/spear_smi.c
+index f6febe6662db..f58742486d3d 100644
+--- a/drivers/mtd/devices/spear_smi.c
++++ b/drivers/mtd/devices/spear_smi.c
+@@ -1048,10 +1048,6 @@ static int spear_smi_remove(struct platform_device *pdev)
+ 	int i;
  
+ 	dev = platform_get_drvdata(pdev);
+-	if (!dev) {
+-		dev_err(&pdev->dev, "dev is null\n");
+-		return -ENODEV;
+-	}
+ 
+ 	/* clean up for all nor flash */
+ 	for (i = 0; i < dev->num_flashes; i++) {
 -- 
 2.35.1
 
