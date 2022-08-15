@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE38C32764
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA41C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350466AbiHOW0s (ORCPT
+        id S1350672AbiHOW1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        Mon, 15 Aug 2022 18:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350884AbiHOWSr (ORCPT
+        with ESMTP id S233475AbiHOWTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C3F65835;
-        Mon, 15 Aug 2022 12:42:58 -0700 (PDT)
+        Mon, 15 Aug 2022 18:19:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0C86AA0F;
+        Mon, 15 Aug 2022 12:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 927D1611DD;
-        Mon, 15 Aug 2022 19:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80251C433D6;
-        Mon, 15 Aug 2022 19:42:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8A71B81141;
+        Mon, 15 Aug 2022 19:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAE6C433C1;
+        Mon, 15 Aug 2022 19:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592577;
-        bh=FU1YbE1E2NkvVleTcRnvyZW61eUHNYJXk19HtY0RX9A=;
+        s=korg; t=1660592592;
+        bh=yA9DHMFC1385fMRfRW8h8EJYiVdCQ+fwbnh7w5teX2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sx/BnN+s9oDXvrPMJzWNJeoVdTHZRFDUkE4rt3M70xWD7wUFJoj9yY5KByzaTHPOl
-         ccR5hulhgN+YCYn8MF387wtTiwd2fEmbR/mwViwecdK8EpqwHvz4Da0ZufT7eIFya5
-         Zo+mZBKpCCl7+s50Ceu9uudcO2PDGKye4/Q0VtaE=
+        b=0KYxtaO2yi62WhRVLMFdpG346LN2gaRjx+7E6HZeNWh5/2/SwutAtbZPOx3k/Ih7e
+         UYgXhiD6EMtPmqvv/Pkn2B5tx18lVGDotDVr50foos0KTHhCzQeBTen/da4TL8LIoh
+         tq7QIgcgCfbq/KR6JggCObW/2Fx/EsCxKj3DfJKY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Pham <quic_jackp@quicinc.com>,
-        Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.19 0132/1157] usb: typec: ucsi: Acknowledge the GET_ERROR_STATUS command completion
-Date:   Mon, 15 Aug 2022 19:51:28 +0200
-Message-Id: <20220815180444.903623677@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0795/1095] mtd: spi-nor: fix spi_nor_spimem_setup_op() call in spi_nor_erase_{sector,chip}()
+Date:   Mon, 15 Aug 2022 20:03:14 +0200
+Message-Id: <20220815180502.131812520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-commit a7dc438b5e446afcd1b3b6651da28271400722f2 upstream.
+[ Upstream commit f8cd9f632f4415b1e8838bdca8ab42cfb37a6584 ]
 
-We found PPM will not send any notification after it report error status
-and OPM issue GET_ERROR_STATUS command to read the details about error.
+For erase operations, reg_proto must be used as indicated in
+struct spi_nor description in spi-nor.h.
 
-According UCSI spec, PPM may clear the Error Status Data after the OPM
-has acknowledged the command completion.
+This issue was found when DT property spi-tx-bus-width is set to 4.
+In this case the spi_mem_op->addr.buswidth is set to 4 for erase command
+which is not correct.
 
-This change add operation to acknowledge the command completion from PPM.
+Tested on stm32mp157c-ev1 board with mx66l51235f spi-nor.
 
-Fixes: bdc62f2bae8f (usb: typec: ucsi: Simplified registration and I/O API)
-Cc: <stable@vger.kernel.org> # 5.10
-Signed-off-by: Jack Pham <quic_jackp@quicinc.com>
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1658817949-4632-1-git-send-email-quic_linyyuan@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0e30f47232ab ("mtd: spi-nor: add support for DTR protocol")
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+[ta: use nor->reg_proto in spi_nor_controller_ops_erase()]
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Tested-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Link: https://lore.kernel.org/r/20220629133013.3382393-1-patrice.chotard@foss.st.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/mtd/spi-nor/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -76,6 +76,10 @@ static int ucsi_read_error(struct ucsi *
- 	if (ret)
- 		return ret;
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index c1630131c734..170182eb431e 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -177,7 +177,7 @@ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
  
-+	ret = ucsi_acknowledge_command(ucsi);
-+	if (ret)
-+		return ret;
-+
- 	switch (error) {
- 	case UCSI_ERROR_INCOMPATIBLE_PARTNER:
+ static int spi_nor_controller_ops_erase(struct spi_nor *nor, loff_t offs)
+ {
+-	if (spi_nor_protocol_is_dtr(nor->write_proto))
++	if (spi_nor_protocol_is_dtr(nor->reg_proto))
  		return -EOPNOTSUPP;
+ 
+ 	return nor->controller_ops->erase(nor, offs);
+@@ -976,7 +976,7 @@ static int spi_nor_erase_chip(struct spi_nor *nor)
+ 				   SPI_MEM_OP_NO_DUMMY,
+ 				   SPI_MEM_OP_NO_DATA);
+ 
+-		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+@@ -1121,7 +1121,7 @@ int spi_nor_erase_sector(struct spi_nor *nor, u32 addr)
+ 				   SPI_MEM_OP_NO_DUMMY,
+ 				   SPI_MEM_OP_NO_DATA);
+ 
+-		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+ 
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	} else if (nor->controller_ops->erase) {
+-- 
+2.35.1
+
 
 
