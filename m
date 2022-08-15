@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD073C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4C2C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347992AbiHOWWl (ORCPT
+        id S1348169AbiHOWWt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
+        Mon, 15 Aug 2022 18:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350560AbiHOWSC (ORCPT
+        with ESMTP id S1350595AbiHOWSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F306740BCD;
-        Mon, 15 Aug 2022 12:41:08 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37AD1237B3;
+        Mon, 15 Aug 2022 12:41:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 734CFB80EA8;
-        Mon, 15 Aug 2022 19:41:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9810C433C1;
-        Mon, 15 Aug 2022 19:41:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A935D610A5;
+        Mon, 15 Aug 2022 19:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9648CC433C1;
+        Mon, 15 Aug 2022 19:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592467;
-        bh=qW6yXE9ud1P1tuP49WumpWs1UmmGtf+87D75l29Nzf0=;
+        s=korg; t=1660592470;
+        bh=ZtONQ8XSpOXOQxcmGuU/YXF7E00mNmKvlX58loiVN4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OdS3B07L7WuXKRt/Ii8MxGYa3F9JlI7E4MhioW+udR8ywo8rf5CTxx39f3KveWnbC
-         hxeAXaiMu6UNPDLx8KH6tsct2sq9nhszbOk7s08VikFdO3NGL9yRtm2oEckXPhnRm5
-         rrsXjnqPvwvHjO/INHVvVrpfUO7O3hZtUGUdgeNs=
+        b=J7hp62um7P6NeaU6Wmh/LOs2sTInCleG4IuMHxuv1iD9AL5moUYUE9IEX8w2fHCNN
+         5fp+a2t1R/6s+Qmdaz0AOfIga5dNKAkucmbvWUr5Q/GuXN/OFXBvyCW6TIxNUz44vU
+         KneytjrT/n4uvOfBCsdnar8Zt97mcZtZ+cLwUem8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.19 0114/1157] fuse: ioctl: translate ENOSYS
-Date:   Mon, 15 Aug 2022 19:51:10 +0200
-Message-Id: <20220815180444.187824796@linuxfoundation.org>
+        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0791/1095] PCI: tegra194: Fix link up retry sequence
+Date:   Mon, 15 Aug 2022 20:03:10 +0200
+Message-Id: <20220815180501.963824498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,81 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Vidya Sagar <vidyas@nvidia.com>
 
-commit 02c0cab8e7345b06f1c0838df444e2902e4138d3 upstream.
+[ Upstream commit e05fd6ae77c3e2cc0dba283005d24b6d56d2b1fa ]
 
-Overlayfs may fail to complete updates when a filesystem lacks
-fileattr/xattr syscall support and responds with an ENOSYS error code,
-resulting in an unexpected "Function not implemented" error.
+Add the missing DLF capability offset while clearing DL_FEATURE_EXCHANGE_EN
+bit during link up retry.
 
-This bug may occur with FUSE filesystems, such as davfs2.
-
-Steps to reproduce:
-
-  # install davfs2, e.g., apk add davfs2
-  mkdir /test mkdir /test/lower /test/upper /test/work /test/mnt
-  yes '' | mount -t davfs -o ro http://some-web-dav-server/path \
-    /test/lower
-  mount -t overlay -o upperdir=/test/upper,lowerdir=/test/lower \
-    -o workdir=/test/work overlay /test/mnt
-
-  # when "some-file" exists in the lowerdir, this fails with "Function
-  # not implemented", with dmesg showing "overlayfs: failed to retrieve
-  # lower fileattr (/some-file, err=-38)"
-  touch /test/mnt/some-file
-
-The underlying cause of this regresion is actually in FUSE, which fails to
-translate the ENOSYS error code returned by userspace filesystem (which
-means that the ioctl operation is not supported) to ENOTTY.
-
-Reported-by: Christian Kohlschütter <christian@kohlschutter.com>
-Fixes: 72db82115d2b ("ovl: copy up sync/noatime fileattr flags")
-Fixes: 59efec7b9039 ("fuse: implement ioctl support")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220721142052.25971-15-vidyas@nvidia.com
+Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/ioctl.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/fuse/ioctl.c
-+++ b/fs/fuse/ioctl.c
-@@ -9,6 +9,17 @@
- #include <linux/compat.h>
- #include <linux/fileattr.h>
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 85d405057ba8..a479e58cc8fb 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -978,7 +978,7 @@ static int tegra194_pcie_start_link(struct dw_pcie *pci)
+ 		offset = dw_pcie_find_ext_capability(pci, PCI_EXT_CAP_ID_DLF);
+ 		val = dw_pcie_readl_dbi(pci, offset + PCI_DLF_CAP);
+ 		val &= ~PCI_DLF_EXCHANGE_ENABLE;
+-		dw_pcie_writel_dbi(pci, offset, val);
++		dw_pcie_writel_dbi(pci, offset + PCI_DLF_CAP, val);
  
-+static ssize_t fuse_send_ioctl(struct fuse_mount *fm, struct fuse_args *args)
-+{
-+	ssize_t ret = fuse_simple_request(fm, args);
-+
-+	/* Translate ENOSYS, which shouldn't be returned from fs */
-+	if (ret == -ENOSYS)
-+		ret = -ENOTTY;
-+
-+	return ret;
-+}
-+
- /*
-  * CUSE servers compiled on 32bit broke on 64bit kernels because the
-  * ABI was defined to be 'struct iovec' which is different on 32bit
-@@ -259,7 +270,7 @@ long fuse_do_ioctl(struct file *file, un
- 	ap.args.out_pages = true;
- 	ap.args.out_argvar = true;
- 
--	transferred = fuse_simple_request(fm, &ap.args);
-+	transferred = fuse_send_ioctl(fm, &ap.args);
- 	err = transferred;
- 	if (transferred < 0)
- 		goto out;
-@@ -393,7 +404,7 @@ static int fuse_priv_ioctl(struct inode
- 	args.out_args[1].size = inarg.out_size;
- 	args.out_args[1].value = ptr;
- 
--	err = fuse_simple_request(fm, &args);
-+	err = fuse_send_ioctl(fm, &args);
- 	if (!err) {
- 		if (outarg.result < 0)
- 			err = outarg.result;
+ 		tegra194_pcie_host_init(pp);
+ 		dw_pcie_setup_rc(pp);
+-- 
+2.35.1
+
 
 
