@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEA8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB175C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345730AbiHOXMD (ORCPT
+        id S1344614AbiHOXMH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        Mon, 15 Aug 2022 19:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353162AbiHOXK6 (ORCPT
+        with ESMTP id S1353225AbiHOXLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:10:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10670144E0D;
-        Mon, 15 Aug 2022 13:00:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:11:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10C0144E01;
+        Mon, 15 Aug 2022 13:00:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 363F261226;
-        Mon, 15 Aug 2022 20:00:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BFD3C433C1;
-        Mon, 15 Aug 2022 20:00:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 164F3B8113E;
+        Mon, 15 Aug 2022 20:00:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7042DC433D6;
+        Mon, 15 Aug 2022 20:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593607;
-        bh=q7HeBn6uyB5qIMUcOE0UZOInjM7NHBYSfG82jh+373g=;
+        s=korg; t=1660593604;
+        bh=jmJ/cWdoNqwuJspvQKVz+/rZ/g7Jr+XVmirj3oU5Jls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENYNfEJYtewKl52hFCWiIAUHLe+tqFha4siR75V2csSFGVv00gyDdZifjMg+N6UDv
-         ROXcrqI3BotwkR24BMPnSMhAv9GebGS5yCt5rt/ZPGnZLoPS+e9VJ8+3hyNbNr/ut5
-         snoaF+1t8GnwVXb8/D26EriBv/DLSLi6na7f/G48=
+        b=xnuj4KLJZNYzRl24ADCByeIpe0iesxVkLQzEbZP9gCYVdnbOovIoHsBHhQkIvMfyh
+         XkwuQg6D79wD9WNASSHEDNyD6fXWccBzxU7Wiqy3Ub4CEv+/yYwFWpVTSvMW4bkWY3
+         RupgOkPhDrL3B2uS15pdb5QPM9Rv5/hjXhZYB/lI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0295/1157] io_uring: Dont require reinitable percpu_ref
-Date:   Mon, 15 Aug 2022 19:54:11 +0200
-Message-Id: <20220815180451.432936539@linuxfoundation.org>
+        stable@vger.kernel.org, Yu Kuai <yukuai1@huaweicloud.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0277/1157] dm writecache: count number of blocks read, not number of read bios
+Date:   Mon, 15 Aug 2022 19:53:53 +0200
+Message-Id: <20220815180450.690452582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,41 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Koutný <mkoutny@suse.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 48904229928d941ce1db181b991948387ab463cd ]
+[ Upstream commit 2c6e755b49d273243431f5f1184654e71221fc78 ]
 
-The commit 8bb649ee1da3 ("io_uring: remove ring quiesce for
-io_uring_register") removed the worklow relying on reinit/resurrection
-of the percpu_ref, hence, initialization with that requested is a relic.
+Change dm-writecache, so that it counts the number of blocks read
+instead of the number of read bios. Bios can be split and requeued
+using the dm_accept_partial_bio function, so counting bios caused
+inaccurate results.
 
-This is based on code review, this causes no real bug (and theoretically
-can't). Technically it's a revert of commit 214828962dea ("io_uring:
-initialize percpu refcounters using PERCU_REF_ALLOW_REINIT") but since
-the flag omission is now justified, I'm not making this a revert.
-
-Fixes: 8bb649ee1da3 ("io_uring: remove ring quiesce for io_uring_register")
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: e3a35d03407c ("dm writecache: add event counters")
+Reported-by: Yu Kuai <yukuai1@huaweicloud.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- io_uring/io_uring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/admin-guide/device-mapper/writecache.rst | 4 ++--
+ drivers/md/dm-writecache.c                             | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index f429b68d1fc2..27ce532c6c8d 100644
---- a/io_uring/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -1701,7 +1701,7 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
- 	ctx->dummy_ubuf->ubuf = -1UL;
+diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
+index 10429779a91a..7bead3b52690 100644
+--- a/Documentation/admin-guide/device-mapper/writecache.rst
++++ b/Documentation/admin-guide/device-mapper/writecache.rst
+@@ -78,8 +78,8 @@ Status:
+ 2. the number of blocks
+ 3. the number of free blocks
+ 4. the number of blocks under writeback
+-5. the number of read requests
+-6. the number of read requests that hit the cache
++5. the number of read blocks
++6. the number of read blocks that hit the cache
+ 7. the number of write requests
+ 8. the number of write requests that hit uncommitted block
+ 9. the number of write requests that hit committed block
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index e4753e8c46d3..b71efe08d809 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -1365,6 +1365,7 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
+ 		}
+ 	} else {
+ 		writecache_map_remap_origin(wc, bio, e);
++		wc->stats.reads += (bio->bi_iter.bi_size - wc->block_size) >> wc->block_size_bits;
+ 		map_op = WC_MAP_REMAP_ORIGIN;
+ 	}
  
- 	if (percpu_ref_init(&ctx->refs, io_ring_ctx_ref_free,
--			    PERCPU_REF_ALLOW_REINIT, GFP_KERNEL))
-+			    0, GFP_KERNEL))
- 		goto err;
- 
- 	ctx->flags = p->flags;
 -- 
 2.35.1
 
