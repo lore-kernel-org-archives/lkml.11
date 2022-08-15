@@ -2,113 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD33C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71209C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbiHOGhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        id S231230AbiHOGhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbiHOGg7 (ORCPT
+        with ESMTP id S231201AbiHOGhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:36:59 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66CD140C6
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:36:56 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id z19so5661907plb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:36:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=fENEN34IT/T7O956m7l86FcgYrM9sywQ94rNqD2QyzE=;
-        b=i98NnWxjozZ59t+dRaFmVAlXBybfgyFrZ5UnP4Yr7gkA/2bQ1+uLtDBF6WFexl6RqD
-         2V582Wf1NmC7A2NYhywly4bif+z7sse3dbSdr1iTEN0AqrNGb6DRPQtKsaUFi0s96OBt
-         0XV6q61uVbarfAPyAdAKtxxYhvTnuQpeIYGIw=
+        Mon, 15 Aug 2022 02:37:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 865A71AD8A
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660545423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jVlZ0reYHNN0XIh/eyo0CSGwsYdeKYABdhUvBkxwMO0=;
+        b=Xym2EeSvKL+S9lv2dIoqaKNvHhfSeO6bEQG815qriHXeINvwtbDNnfLLmnuIPAhMOLbJIr
+        s31kUYVrvCMbcsDp3X+zOPPSiP/fGaUSaxg1uBKBuvHYnUX3isQfCQ2DnQP3fAgXso70OC
+        9aPpMdL1IiHcAkjOyYjhTG95ueF5e7Q=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-221-cgmL5NtNN_aCp4WiZWaSKQ-1; Mon, 15 Aug 2022 02:37:01 -0400
+X-MC-Unique: cgmL5NtNN_aCp4WiZWaSKQ-1
+Received: by mail-ed1-f69.google.com with SMTP id b6-20020a056402278600b0043e686058feso4207041ede.10
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:37:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=fENEN34IT/T7O956m7l86FcgYrM9sywQ94rNqD2QyzE=;
-        b=zsfgT7b793DqEcdd9lpmCryDXiuYp041t+mclmKrXBdi0o3VSfIYTdcDSlsqvdI5K6
-         1t47xMVdKQhqBf+Fk0CSUnEnTlbuxvGAS3cFyE6NCSX8IHL3xPy7s3JboEctrgI8zoEk
-         Q5SdlDMxDji28ystY7RxgMlKZR68ddUuTvXCFmh6YtJc9ghBSz73IwVlhpO6NvvG75RA
-         pzLHpt5UdFB3NoFwYzVVw6Zh/Wk4iyxBa4CCmQJqdIbZjKuufLZC38irYO/1JQl6CT89
-         4wheDmKDAF5OBZXR+bctt4PrWJRX06bg9bUU2uIy1wenopFy/mkKLYYLSLpx1q2r/EkV
-         9E5A==
-X-Gm-Message-State: ACgBeo3zZSU1OzDQshyi7gbwxoHdrg7yNX77tS3HwRYwWja+KJc/3VzF
-        VXrnCtZtCwwgc2FyKzMBPrLTXAEF0JQ2oQ==
-X-Google-Smtp-Source: AA6agR7t8Co7+xGl827bxRP0nRPyfmh8nLZeu8WhuAZ10rNRrS8iohPRVc/KY9hpwLfxLeXsxxLVMA==
-X-Received: by 2002:a17:902:d551:b0:172:55a6:bd34 with SMTP id z17-20020a170902d55100b0017255a6bd34mr12173075plf.13.1660545416245;
-        Sun, 14 Aug 2022 23:36:56 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
-        by smtp.gmail.com with ESMTPSA id 200-20020a6214d1000000b0052db82ad8b2sm5988233pfu.123.2022.08.14.23.36.55
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=jVlZ0reYHNN0XIh/eyo0CSGwsYdeKYABdhUvBkxwMO0=;
+        b=poU3K7A66hCz5mEmUnniatFUIRNchhGblmp+G065rYS64m7iHjeT5zaShJE9V6Sfym
+         +pg84zg+cKm853BrE34VvFhMYC/snGGwjmFbHrQlylOmsHUD4R/OvDmOS1ddTOcbh3P/
+         1oI2vtEuY8Vbl15yfM5HNMMYYKa81soHAKjTHaKqXv2W/2dfG86+o6FXatSXn1H17BDM
+         YjM8b3BXlYkgZ2Lqofwt44tDLct5BWZ9vTq2i4CRoTv1uDHyF3kWx0Ipf3uR1yKLqlb/
+         Ci1CubBJndNQL4+7ZDMcIxG1ioUImBb1smXdwZvqkmcpW1E6y1IJ3cg2FqgthNAHsZEO
+         U0PQ==
+X-Gm-Message-State: ACgBeo0C8Dtt0+YHj1ynbK3DZ54HCcm42n21RXH8m19ZuSqGjVkalAKa
+        beuERZJv78lAcl3wqwL8NvY7jCgrSL7RAJq3MbzmyJCnxTODEP+PPR/zbMIifTneObCk+n5/O/u
+        /bwoTs1whUxC8CbvRCJaRA+x6
+X-Received: by 2002:a17:906:ef8c:b0:730:ebff:9e19 with SMTP id ze12-20020a170906ef8c00b00730ebff9e19mr9590750ejb.300.1660545420631;
+        Sun, 14 Aug 2022 23:37:00 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR44/VJTgS573LfEMfln/aWhTrhZWbvJbWEBy+nynu8A/VqNyZa6le9/dILqc3//t4be9FmZPQ==
+X-Received: by 2002:a17:906:ef8c:b0:730:ebff:9e19 with SMTP id ze12-20020a170906ef8c00b00730ebff9e19mr9590740ejb.300.1660545420379;
+        Sun, 14 Aug 2022 23:37:00 -0700 (PDT)
+Received: from redhat.com ([2.54.169.49])
+        by smtp.gmail.com with ESMTPSA id fd4-20020a1709072a0400b00722f069fd40sm3724940ejc.159.2022.08.14.23.36.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:36:55 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v5 0/7] platform/chrome: Type-C switch driver
-Date:   Mon, 15 Aug 2022 06:34:15 +0000
-Message-Id: <20220815063555.1384505-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+        Sun, 14 Aug 2022 23:36:59 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 02:36:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Andres Freund <andres@anarazel.de>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815022711-mutt-send-email-mst@kernel.org>
+References: <20220814212610.GA3690074@roeck-us.net>
+ <CAHk-=wgf2EfLHui6A5NbWoaVBB2f8t-XBUiOMkyjN2NU41t6eA@mail.gmail.com>
+ <20220814223743.26ebsbnrvrjien4f@awork3.anarazel.de>
+ <CAHk-=wi6raoJE-1cyRU0YxJ+9ReO1eXmOAq0FwKAyZS7nhvk9w@mail.gmail.com>
+ <1c057afa-92df-ee3c-5978-3731d3db9345@kernel.dk>
+ <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v4 of this series was originally merged to the USB maintainer tree, but
-there were dependencies from the chrome-platform tree which caused
-conflicts in the merge tree, so the chrome specific parts were
-reverted [1].
+On Sun, Aug 14, 2022 at 06:36:51PM -0700, Andres Freund wrote:
+> Hi,
+> 
+> On 2022-08-14 19:04:22 -0600, Jens Axboe wrote:
+> > I took a quick look and added more SCSI bits to my vm images, but
+> > haven't been able to hit it.
+> 
+> Didn't immediately hit anything locally in a vm either...
+> 
+> 
+> > Sounds like Andres is already bisecting this, so I guess we'll be wiser
+> > soon enough.
+> 
+> I started bisecting the network issue, as it occurred first, and who knows
+> what else it could affect. Will bisect the other range after.
+> 
+> Due to the serial console issue mentioned upthread it's pretty slow
+> going. Each iteration I create a new gcp snapshot and vm. Adds like ~10min.
+> Doesn't help if intermediary steps don't boot with different symptoms and
+> another doesn't immediately build...
 
-v5 is a resubmission of the series with the Chrome-only parts (since the
-USB framework parts were merged successfully).
+Just so we can stop pestering everyone, could you try
 
-[1] https://lore.kernel.org/lkml/YtadE201j+dt5jJx@kroah.com/
+git revert --no-edit 0b6fd46ec5f5..a335b33f4f35 ?
 
-Original cover letter (with parts relating to USB patches removed):
+Equivalently I pushed it here:
 
-This series introduces a retimer class to the USB Type-C framework,
-It also introduces a Chrome EC (Embedded Controller) switch driver which
-registers the aforementioned retimer switches as well as mode-switches.
-
-v4: https://lore.kernel.org/linux-usb/20220711072333.2064341-1-pmalani@chromium.org/
-
-Changes in v5:
-- Removed first 2 patches for retimer class support, since those were
-  merged in 5.20.
-- Added missing ACPI Kconfig to Patch 2/7.
-- Updated patches 3/7 and 4/7 to use new function name cros_ec_cmd().
-
-
-Prashant Malani (7):
-  platform/chrome: Add Type-C mux set command definitions
-  platform/chrome: cros_typec_switch: Add switch driver
-  platform/chrome: cros_typec_switch: Set EC retimer
-  platform/chrome: cros_typec_switch: Add event check
-  platform/chrome: cros_typec_switch: Register mode switches
-  platform/chrome: cros_ec_typec: Cleanup switch handle return paths
-  platform/chrome: cros_ec_typec: Get retimer handle
-
- MAINTAINERS                                   |   1 +
- drivers/platform/chrome/Kconfig               |  11 +
- drivers/platform/chrome/Makefile              |   1 +
- drivers/platform/chrome/cros_ec_typec.c       |  50 ++-
- drivers/platform/chrome/cros_typec_switch.c   | 332 ++++++++++++++++++
- .../linux/platform_data/cros_ec_commands.h    |  18 +
- 6 files changed, 406 insertions(+), 7 deletions(-)
- create mode 100644 drivers/platform/chrome/cros_typec_switch.c
+https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git test
 
 -- 
-2.37.1.595.g718a3a8f04-goog
+MST
 
