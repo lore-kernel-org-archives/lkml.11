@@ -2,86 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0856EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DA0C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiHPFoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        id S229914AbiHPFvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbiHPFnz (ORCPT
+        with ESMTP id S231522AbiHPFvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:43:55 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5644254A68;
-        Mon, 15 Aug 2022 15:33:00 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M68Dl4Xdzz4xcR;
-        Tue, 16 Aug 2022 08:32:55 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1660602775;
-        bh=Y1hgtDii/vNed4mKC6W7wNfhq2enxkj3lR421N7PvlI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=n6zenz19snzObCw+b25c3+TEbmd/ixqiPNDSRElRnSiAwX/H9NxoF2f6wg3QZF2bu
-         AooAl+Sa0g2Cwm46guPu5OZipVPzblv1+HypLTT+hUw3Q2MkEMUh8GtwWMPAcleX2/
-         mt/huH43Bb2FdjcwdTh+XEthsl9kSOt3sIJ54+zoX5IPHiBwGf3EYjphOFVnD7a93B
-         /fmSWoZdtsjTRPBT16WllT33EehWFSxz2o/Oqn2WiltZi6KXsMMBnpgT9OalHwRHeu
-         F2ox7ixSfnW7spi4nicsMaKWIANUCJ2AsvaRPO4WgeRpBvzahxxduM/DPy4/yBZhSY
-         0Z8H3XDUJXAxQ==
-Date:   Tue, 16 Aug 2022 08:32:38 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Hao Jia <jiahao.os@bytedance.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the cgroup tree
-Message-ID: <20220816083238.0aa28080@canb.auug.org.au>
+        Tue, 16 Aug 2022 01:51:18 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759F613790E
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:52:10 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id h78so1850519iof.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=3dmOD03BwYXBud0lxKQcHHjg16Ss2/ECnEAwc3JbiOU=;
+        b=NAyapcRJQGYTxs+U6LVEuGjzxrPfHm8EZ0ZM5HppHmscYE94CPP1HuwLjttVJY68Wo
+         ygzyarPH1oN10pyr3e3R2XQ03uwuJlnJ8Q5/JNuoK1PlpmItwg5bw7b8/Vv2i4IffBRE
+         cTGzAcOlwRbvcJDUro83ybc2zBGXjo6TklaY0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=3dmOD03BwYXBud0lxKQcHHjg16Ss2/ECnEAwc3JbiOU=;
+        b=4Ov3BgZrlW4PKZj+EufL0m+HMhNdqrC+rUK2tJ0wr+Q9otG4RE4Kh8B34LhvWmv0F+
+         0ObBDlIVOtFPny9XAJgzM4W9vrDQ+LubYImVEIGa2oWOjwWbllBVl5BcOWq2phm6k3Pb
+         RnrUzjKDlHKBe6+Tmz4uS/QvUhZTuxcR7rntCIhBzFSqlVBgNIs1PjItabfHp/f8oXMr
+         gEjOR63F9ORjjBjnrlsoMJwqHtnuZUjPTU1IG6SSuaMpBx6YDwK2Nvci/aWysPxqkkT3
+         xf8PpinOELX+MVA6u8a8TBGXSX50o/ymzGUx1wGaG8wm3rForw/THCAHnPczpM6lFPmx
+         jcvw==
+X-Gm-Message-State: ACgBeo0GJct04vK0IoTZoJkLeOQ7JE9WaROzhO+KToC6zKSCdwvR7loc
+        2+04zGQ1Ah7GVLeT0QpMvkQk3w==
+X-Google-Smtp-Source: AA6agR6UARi1oa+pE1di/e0n6PH8IX32F67Nis5Cu6bmxz46ZQ+1wfihHxQcWCedvvZE3s0pCXX1/A==
+X-Received: by 2002:a05:6602:148b:b0:657:c59b:f336 with SMTP id a11-20020a056602148b00b00657c59bf336mr7470342iow.141.1660603921283;
+        Mon, 15 Aug 2022 15:52:01 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id q55-20020a056638347700b00343617e8368sm3720770jav.99.2022.08.15.15.51.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 15:52:00 -0700 (PDT)
+Subject: Re: [PATCH v2] selftests/sgx: Ignore OpenSSL 3.0 deprecated functions
+ warning
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shuah Khan <shuah@kernel.org>, linux-sgx@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220812180714.566257-1-kristen@linux.intel.com>
+ <YvlLYtbmAM2Hrtds@kernel.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <deb34fb5-3620-a817-341e-b6ef601201c6@linuxfoundation.org>
+Date:   Mon, 15 Aug 2022 16:51:58 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/YSKHpO==7.b2z.qN0AXBYwg";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <YvlLYtbmAM2Hrtds@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/YSKHpO==7.b2z.qN0AXBYwg
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 8/14/22 1:22 PM, Jarkko Sakkinen wrote:
+> On Fri, Aug 12, 2022 at 11:07:13AM -0700, Kristen Carlson Accardi wrote:
+>> OpenSSL 3.0 deprecates some of the functions used in the SGX
+>> selftests, causing build errors on new distros. For now ignore
+>> the warnings until support for the functions is no longer
+>> available and mark FIXME so that it can be clear this should
+>> be removed at some point.
+>>
+>> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
+>> ---
+>>   tools/testing/selftests/sgx/sigstruct.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/sgx/sigstruct.c b/tools/testing/selftests/sgx/sigstruct.c
+>> index 50c5ab1aa6fa..a07896a46364 100644
+>> --- a/tools/testing/selftests/sgx/sigstruct.c
+>> +++ b/tools/testing/selftests/sgx/sigstruct.c
+>> @@ -17,6 +17,12 @@
+>>   #include "defines.h"
+>>   #include "main.h"
+>>   
+>> +/*
+>> + * FIXME: OpenSSL 3.0 has deprecated some functions. For now just ignore
+>> + * the warnings.
+>> + */
+>> +#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+>> +
+>>   struct q1q2_ctx {
+>>   	BN_CTX *bn_ctx;
+>>   	BIGNUM *m;
+>> -- 
+>> 2.36.1
+>>
+> 
+> Thank you.
+> 
+> 
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> 
+> BR, Jarkko
+> 
 
-Hi all,
+Thank you both.
 
-In commit
+Applied for rc2/3
 
-  6d73ba7928c0 ("sched/psi: Zero the memory of struct psi_group")
-
-Fixes tag
-
-  Fixes: commit 5f69a6577bc3 ("psi: dont alloc memory for psi by default")
-
-has these problem(s):
-
-  - leading word 'commit' unexpected.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/YSKHpO==7.b2z.qN0AXBYwg
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL6yYcACgkQAVBC80lX
-0GzR4gf9EWeEspws2yRCpYNBEMiSi5JdZRl6ESTbcQMV/Yfu8mx3MERI52HBWRu3
-fpqOlIsMTzaaHhVOmZ6uOggQsBjHK2zHFuGmqFvLV1y/bAriIuk4HiBKPzTiy0us
-IgMQcVnVy5/UMi5jxiEE/exsx/V+Cm4D1Xwl4RUR+PV/FeBWPTLJs2vsOL+jB5Mn
-5coKieEtTXQzOaYLxUSsGbQoXB3N9ZdPenWq9mk0KxPhhPNFAXreOJpLFTeOTyZo
-j9ubanjc2sQDRR63ZeVqXp1imsU3Jqan4CDxlPQ66dUBuwSq/q9ZrLVr0R4/ixQB
-yBgipwjOYale/ufSwaxCJvEqM8m6sw==
-=3w1i
------END PGP SIGNATURE-----
-
---Sig_/YSKHpO==7.b2z.qN0AXBYwg--
+thanks,
+-- Shuah
