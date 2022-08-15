@@ -2,252 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37719C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54B9C25B0F
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbiHPF0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
+        id S229558AbiHPF1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231923AbiHPF0b (ORCPT
+        with ESMTP id S232448AbiHPF0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:26:31 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9682113DEF
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:03:26 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id w18so1771055qki.8
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=ikVyv3Nj/OCfAyLRBroKSzO1rCNd6fD5hCL0P0dEi4w=;
-        b=WElxrXXwMY01hED9C3n34QZdS5lGbKgu51+mv/JViPAV4w25oBAWNZlUzKpz4douBe
-         PbtZuEhrb6DD5u3PFC5O4lJQlaX6Q2+zIDljN8gn2gcvSovaRtO+cKmntlpJ56HgcRRL
-         5lKSKd2bHBAY+P7wNJ9ySX+NECdgq/15WDADQJL6JLxhOdBx4AEjpdSAsc75rstZ+2AT
-         clwbswHEaakCW1hYYNWdZGenxOqQJdr8kB7IG3Dtuqsst6pcfeFX+mQJI/FaagEKbN1i
-         cJP6LiSW40aVSKcaG8lAUWD+srJtBO8dZcPeHTVlkCk3T9g4gY9YzHqaOaAwZc0aPkay
-         uKqw==
+        Tue, 16 Aug 2022 01:26:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AC7B1D7D38
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:00:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660600833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=n9xDuhV9iHcXHcEoNmD/7wsehe62kvIxVjlpcT9npdI=;
+        b=MZmIaBUQdi5Rl3gnoDq6yF9p1H+b1Cs4JBWXKhPzFJciTMChpIhO+qG5f+kl3xQVQ5a6E2
+        7Z6Z431EDgVUcMSAmeB9XAO9eK+c42J8ze0NesVqY5CjeEusMAS78V5xdi9kS5pyctjhKO
+        +kzcALKHtBKXoXUkApmy66+nRX5EdUk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-479-08GprhDrMZWez6DkREWulQ-1; Mon, 15 Aug 2022 18:00:32 -0400
+X-MC-Unique: 08GprhDrMZWez6DkREWulQ-1
+Received: by mail-wm1-f69.google.com with SMTP id r10-20020a1c440a000000b003a538a648a9so4058663wma.5
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:00:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=ikVyv3Nj/OCfAyLRBroKSzO1rCNd6fD5hCL0P0dEi4w=;
-        b=2geyE0njvReyv5YolhaeaARsyEFf/RShAPU0+1Eh477pszIUcRF3+F44yWJ9rQoVwZ
-         TljG40AgwLrAxP4oiD1SNEzpLMluoJQacEu2ZZ4lLbQ4wTVX9xlKzpIgdKoOcD5Ni3AM
-         d/su8dAc0SyixnkAYiRCxmYfJ7W+qU6cOWKxNuYZ5JmNmQEL8qRLnM3otuvNVha2rm2B
-         0pqh+B/GM3jd/qWkBrS3wkLmLG7NTz39PYg5ujNoz5HTsRVbgOk7zswQC2XTT2AgR9OU
-         k+kcOnqgi5QxvbXlST7wmvENBLw78wsSPWFGts9JL3yIoLBSewrIyZb6z0HTsOUwhbB4
-         XAxg==
-X-Gm-Message-State: ACgBeo1joy69yBncnCKG0snfKhqWqxEqxSDe8aV9oDrPqkf+CcFSiGyI
-        EnK+6I/sNz/llx+jgDB00yJaMA==
-X-Google-Smtp-Source: AA6agR7aFgUUiNSzVKx3EPZYfHModod2MDuo96s8nq0O3+F5wM8X0UjbCfH2Rd0mBkPoimTBsicvSg==
-X-Received: by 2002:a05:620a:4384:b0:6bb:268c:1c3c with SMTP id a4-20020a05620a438400b006bb268c1c3cmr5318691qkp.16.1660601005346;
-        Mon, 15 Aug 2022 15:03:25 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id gd24-20020a05622a5c1800b003445bb107basm3667300qtb.75.2022.08.15.15.03.23
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=n9xDuhV9iHcXHcEoNmD/7wsehe62kvIxVjlpcT9npdI=;
+        b=a72G3B6evNTRnbTr6HbCH7XK5EY8x0dcXDzk3BRF0SA7+V9V20a6x3Bw02iyrhDLZH
+         AL3wPnTNcxhGetoyfZj9xZYh+kFg3CGFf3u5bW6IQxME0nupxHLX5Gh4aPQz3vZdErv3
+         WsOxVhNYykBAQcIKGMkKFso/FliDil2lVP2X6NQX/Bv99fAOZFs92UEU7QohIMdvU6RG
+         SdInsWrsPk602V71Yb081Kfb1l/UwBwDSu9sFQDFL2aKz12HnQ27holE5cNKkGYhwPwU
+         inIF2UaV5KbCoW/Tq3BbPze76sWxoUEos+wXQ2hGHqcc3C31Q5TgAlPq/vMT6Gsmirqw
+         gnjw==
+X-Gm-Message-State: ACgBeo1kQoFSp5C0N+++TP8IcfB4hsfP3OO8Pggn0Anf5kojYeaDXs3o
+        gfElZQdNCWRlAKUFrCvW6DmkTFN4mHauKgSuTtePTc4kfikv0K2EjL9i+kJCI+aSSds/oBX1wgZ
+        ljZMAm2lU7tHsHEF0ZRzOdw2lb2lnMhY7nj14RFNyykJG4r3K5LbLXlbL+Lu8pcK7Zv5B/w==
+X-Received: by 2002:a7b:ca4c:0:b0:3a5:bbf1:9e3e with SMTP id m12-20020a7bca4c000000b003a5bbf19e3emr14637336wml.5.1660600831220;
+        Mon, 15 Aug 2022 15:00:31 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5Bz7ecWoSAdqTjZoSaLnsIBcnYvEBsZJ/ntr0GEW1j8H4nSMrvmqL9F4VFdixkoIGjxcxXWw==
+X-Received: by 2002:a7b:ca4c:0:b0:3a5:bbf1:9e3e with SMTP id m12-20020a7bca4c000000b003a5bbf19e3emr14637303wml.5.1660600830695;
+        Mon, 15 Aug 2022 15:00:30 -0700 (PDT)
+Received: from redhat.com ([2.55.43.215])
+        by smtp.gmail.com with ESMTPSA id l14-20020a05600c4f0e00b003a1980d55c4sm11285629wmq.47.2022.08.15.15.00.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 15:03:24 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Patrick Havelange <patrick.havelange@essensium.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kamel Bouhara <kamel.bouhara@bootlin.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        David Lechner <david@lechnology.com>
-Subject: [PATCH] counter: Move symbols into COUNTER namespace
-Date:   Mon, 15 Aug 2022 18:03:21 -0400
-Message-Id: <20220815220321.74161-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.2
+        Mon, 15 Aug 2022 15:00:30 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 18:00:25 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andres Freund <andres@anarazel.de>
+Subject: [PATCH v3 1/5] virtio_net: Revert "virtio_net: set the default max
+ ring size by find_vqs()"
+Message-ID: <20220815215938.154999-2-mst@redhat.com>
+References: <20220815215938.154999-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815215938.154999-1-mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Counter subsystem symbols are only relevant to counter drivers. A
-COUNTER namespace is created to control the availability of these
-symbols to modules that import this namespace explicitly.
+This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
 
-Cc: Patrick Havelange <patrick.havelange@essensium.com>
-Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc: Oleksij Rempel <linux@rempel-privat.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: David Lechner <david@lechnology.com>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+This has been reported to trip up guests on GCP (Google Cloud).
+The reason is that virtio_find_vqs_ctx_size is broken on legacy
+devices. We can in theory fix virtio_find_vqs_ctx_size but
+in fact the patch itself has several other issues:
+
+- It treats unknown speed as < 10G
+- It leaves userspace no way to find out the ring size set by hypervisor
+- It tests speed when link is down
+- It ignores the virtio spec advice:
+        Both \field{speed} and \field{duplex} can change, thus the driver
+        is expected to re-read these values after receiving a
+        configuration change notification.
+- It is not clear the performance impact has been tested properly
+
+Revert the patch for now.
+
+Reported-by: Andres Freund <andres@anarazel.de>
+Link: https://lore.kernel.org/r/20220814212610.GA3690074%40roeck-us.net
+Link: https://lore.kernel.org/r/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de
+Link: https://lore.kernel.org/r/3df6bb82-1951-455d-a768-e9e1513eb667%40www.fastmail.com
+Link: https://lore.kernel.org/r/FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE%40anarazel.de
+Fixes: 762faee5a267 ("virtio_net: set the default max ring size by find_vqs()")
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Tested-by: Andres Freund <andres@anarazel.de>
+Tested-by: From: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/counter/104-quad-8.c            |  1 +
- drivers/counter/counter-chrdev.c        |  2 +-
- drivers/counter/counter-core.c          | 14 +++++++-------
- drivers/counter/ftm-quaddec.c           |  1 +
- drivers/counter/intel-qep.c             |  1 +
- drivers/counter/interrupt-cnt.c         |  1 +
- drivers/counter/microchip-tcb-capture.c |  1 +
- drivers/counter/stm32-lptimer-cnt.c     |  1 +
- drivers/counter/stm32-timer-cnt.c       |  1 +
- drivers/counter/ti-eqep.c               |  1 +
- 10 files changed, 16 insertions(+), 8 deletions(-)
+ drivers/net/virtio_net.c | 42 ++++------------------------------------
+ 1 file changed, 4 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 62c2b7ac4339..1323edfbe40c 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -1241,3 +1241,4 @@ module_isa_driver(quad8_driver, num_quad8);
- MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
- MODULE_DESCRIPTION("ACCES 104-QUAD-8 driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
-index 69d340be9c93..4e71a19d7e6a 100644
---- a/drivers/counter/counter-chrdev.c
-+++ b/drivers/counter/counter-chrdev.c
-@@ -574,4 +574,4 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
- 	if (copied)
- 		wake_up_poll(&counter->events_wait, EPOLLIN);
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index d934774e9733..ece00b84e3a7 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3432,29 +3432,6 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
+ 		   (unsigned int)GOOD_PACKET_LEN);
  }
--EXPORT_SYMBOL_GPL(counter_push_event);
-+EXPORT_SYMBOL_NS_GPL(counter_push_event, COUNTER);
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 938651f9e9e0..09c77afb33ca 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -73,7 +73,7 @@ void *counter_priv(const struct counter_device *const counter)
  
- 	return &ch->privdata;
- }
--EXPORT_SYMBOL_GPL(counter_priv);
-+EXPORT_SYMBOL_NS_GPL(counter_priv, COUNTER);
- 
- /**
-  * counter_alloc - allocate a counter_device
-@@ -133,13 +133,13 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 
- 	return NULL;
- }
--EXPORT_SYMBOL_GPL(counter_alloc);
-+EXPORT_SYMBOL_NS_GPL(counter_alloc, COUNTER);
- 
- void counter_put(struct counter_device *counter)
+-static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
+-{
+-	u32 i, rx_size, tx_size;
+-
+-	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
+-		rx_size = 1024;
+-		tx_size = 1024;
+-
+-	} else if (vi->speed < SPEED_40000) {
+-		rx_size = 1024 * 4;
+-		tx_size = 1024 * 4;
+-
+-	} else {
+-		rx_size = 1024 * 8;
+-		tx_size = 1024 * 8;
+-	}
+-
+-	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		sizes[rxq2vq(i)] = rx_size;
+-		sizes[txq2vq(i)] = tx_size;
+-	}
+-}
+-
+ static int virtnet_find_vqs(struct virtnet_info *vi)
  {
- 	put_device(&counter->dev);
- }
--EXPORT_SYMBOL_GPL(counter_put);
-+EXPORT_SYMBOL_NS_GPL(counter_put, COUNTER);
+ 	vq_callback_t **callbacks;
+@@ -3462,7 +3439,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 	int ret = -ENOMEM;
+ 	int i, total_vqs;
+ 	const char **names;
+-	u32 *sizes;
+ 	bool *ctx;
  
- /**
-  * counter_add - complete registration of a counter
-@@ -166,7 +166,7 @@ int counter_add(struct counter_device *counter)
- 	/* implies device_add(dev) */
- 	return cdev_device_add(&counter->chrdev, dev);
- }
--EXPORT_SYMBOL_GPL(counter_add);
-+EXPORT_SYMBOL_NS_GPL(counter_add, COUNTER);
+ 	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
+@@ -3490,15 +3466,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 		ctx = NULL;
+ 	}
  
- /**
-  * counter_unregister - unregister Counter from the system
-@@ -188,7 +188,7 @@ void counter_unregister(struct counter_device *const counter)
+-	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
+-	if (!sizes)
+-		goto err_sizes;
+-
+ 	/* Parameters for control virtqueue, if any */
+ 	if (vi->has_cvq) {
+ 		callbacks[total_vqs - 1] = NULL;
+ 		names[total_vqs - 1] = "control";
+-		sizes[total_vqs - 1] = 64;
+ 	}
  
- 	mutex_unlock(&counter->ops_exist_lock);
- }
--EXPORT_SYMBOL_GPL(counter_unregister);
-+EXPORT_SYMBOL_NS_GPL(counter_unregister, COUNTER);
+ 	/* Allocate/initialize parameters for send/receive virtqueues */
+@@ -3513,10 +3484,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 			ctx[rxq2vq(i)] = true;
+ 	}
  
- static void devm_counter_release(void *counter)
- {
-@@ -223,7 +223,7 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
+-	virtnet_config_sizes(vi, sizes);
+-
+-	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
+-				       names, sizes, ctx, NULL);
++	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
++				  names, ctx, NULL);
+ 	if (ret)
+ 		goto err_find;
  
- 	return counter;
- }
--EXPORT_SYMBOL_GPL(devm_counter_alloc);
-+EXPORT_SYMBOL_NS_GPL(devm_counter_alloc, COUNTER);
+@@ -3536,8 +3505,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
  
- /**
-  * devm_counter_add - complete registration of a counter
-@@ -244,7 +244,7 @@ int devm_counter_add(struct device *dev,
  
- 	return devm_add_action_or_reset(dev, devm_counter_release, counter);
- }
--EXPORT_SYMBOL_GPL(devm_counter_add);
-+EXPORT_SYMBOL_NS_GPL(devm_counter_add, COUNTER);
+ err_find:
+-	kfree(sizes);
+-err_sizes:
+ 	kfree(ctx);
+ err_ctx:
+ 	kfree(names);
+@@ -3897,9 +3864,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		vi->curr_queue_pairs = num_online_cpus();
+ 	vi->max_queue_pairs = max_queue_pairs;
  
- #define COUNTER_DEV_MAX 256
+-	virtnet_init_settings(dev);
+-	virtnet_update_settings(vi);
+-
+ 	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -3912,6 +3876,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
+ 	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
  
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index 2a58582a9df4..aea6622a9b13 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -325,3 +325,4 @@ module_platform_driver(ftm_quaddec_driver);
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com>");
- MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com>");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index 47a6a9dfc9e8..af5942e66f7d 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -523,3 +523,4 @@ MODULE_AUTHOR("Jarkko Nikula <jarkko.nikula@linux.intel.com>");
- MODULE_AUTHOR("Raymond Tan <raymond.tan@intel.com>");
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Intel Quadrature Encoder Peripheral driver");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 3b13f56bbb11..5a11b65fc0e5 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -242,3 +242,4 @@ MODULE_ALIAS("platform:interrupt-counter");
- MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
- MODULE_DESCRIPTION("Interrupt counter driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-index 00844445143b..f9dee15d9777 100644
---- a/drivers/counter/microchip-tcb-capture.c
-+++ b/drivers/counter/microchip-tcb-capture.c
-@@ -394,3 +394,4 @@ module_platform_driver(mchp_tc_driver);
- MODULE_AUTHOR("Kamel Bouhara <kamel.bouhara@bootlin.com>");
- MODULE_DESCRIPTION("Microchip TCB Capture driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
-index 68031d93ce89..d6b80b6dfc28 100644
---- a/drivers/counter/stm32-lptimer-cnt.c
-+++ b/drivers/counter/stm32-lptimer-cnt.c
-@@ -520,3 +520,4 @@ MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
- MODULE_ALIAS("platform:stm32-lptimer-counter");
- MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM counter driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 5779ae7c73cf..9bf20a5d6bda 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -417,3 +417,4 @@ MODULE_AUTHOR("Benjamin Gaignard <benjamin.gaignard@st.com>");
- MODULE_ALIAS("platform:stm32-timer-counter");
- MODULE_DESCRIPTION("STMicroelectronics STM32 TIMER counter driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index 0489d26eb47c..b0f24cf3e891 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -456,3 +456,4 @@ module_platform_driver(ti_eqep_driver);
- MODULE_AUTHOR("David Lechner <david@lechnology.com>");
- MODULE_DESCRIPTION("TI eQEP counter driver");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(COUNTER);
-
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
++	virtnet_init_settings(dev);
++
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+ 		vi->failover = net_failover_create(vi->dev);
+ 		if (IS_ERR(vi->failover)) {
 -- 
-2.37.2
+MST
 
