@@ -2,105 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A11C32757
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E7EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348486AbiHPAwH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S231453AbiHPAwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349653AbiHPAqm (ORCPT
+        with ESMTP id S1349725AbiHPAqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:42 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D84D87F6;
-        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id ha11so7925146pjb.2;
-        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=XS5K4OzaHR63BIa1xws9D0ReOq3Svv2Wh4Lbm5YbAfM=;
-        b=POQ4Lda376BXN0B9b1jtVn5dk06uCU+dpZ0TVOwcNXMKz4thbYFRfKcbTZRu413o8T
-         joeFgGN35weFYtqnpQK0bxOorsyX2IoaQh8HFvWBT/pU8Rgg6U19N8K63aJ5xdrVPx1e
-         SAUAQ3qOPpIMIzPMdtk3n3Dpv7rKWuDRvcnWMTOxAFeiGUd39rD3fkovoFIg4QpAbLSb
-         xzyyCNrPDZsmdqII7ChdtrONVxQiXbqyAvjmUwRC/QwxbXSxSi93uZ690b4+QkfteDr/
-         1wBzjH901vu1iRNR39joY4Mg6o1vDcJR3SEKW37tqYsqJbiCLvc+UZpiEZpzbrhcLKaM
-         L38g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=XS5K4OzaHR63BIa1xws9D0ReOq3Svv2Wh4Lbm5YbAfM=;
-        b=nB5l36PIt7XEClDlGameqp/4JDCrkNci1d1Thl8yYGJGKnqxDhLSe3Ng1Cj6+w/yEN
-         C7vLxIw8sChKdPWZYAA3io/lNg9ekpGIYmWv666FU+73crlsJ1J6iMA17zXIrcrSFvNY
-         uLa4WXFpMl72W9A94ZBwc6xXicwqdXFl4p0S9YQsPNES4iF11UBywT9xaMtzBB6HnzYp
-         cfyBBcGsIfTSdGdCCEKOmSswDg2umBrbA+qTETAydI2agOqrzDUOIIgAptRPwb1PJ9+X
-         aFxhrRaIrpkRdyzXIwyP6yOvbQWW8e80zBmBj8yt8f2jGk5vrssiWV6LhZhT/FGY5Zfv
-         wxYg==
-X-Gm-Message-State: ACgBeo2VoytQoriU2gkA+6vpHbMjzv9nJ/nCdsqIeBuEDf8isrXHgTIk
-        HN533OR/De3w625Uj6oYNQw=
-X-Google-Smtp-Source: AA6agR5hpN5Jw5Lb8baKNCmKSASjXILStRaT2kte+VwGknYpI/t1N4jPKG7MFOa60MRd2+2GnQcNFg==
-X-Received: by 2002:a17:902:720b:b0:16d:2c4c:b52a with SMTP id ba11-20020a170902720b00b0016d2c4cb52amr18276430plb.155.1660596304001;
-        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id y11-20020a17090322cb00b0016c40f8cb58sm7386806plg.81.2022.08.15.13.45.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:45:03 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 15 Aug 2022 13:45:02 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Andres Freund <andres@anarazel.de>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815204502.GC509309@roeck-us.net>
-References: <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
- <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
- <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
- <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
+        Mon, 15 Aug 2022 20:46:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CC7D87FD;
+        Mon, 15 Aug 2022 13:45:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F5C3B811A6;
+        Mon, 15 Aug 2022 20:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4493C433D6;
+        Mon, 15 Aug 2022 20:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660596303;
+        bh=9/s9PwEz8qdZIEIq4LzwD7S4d3nxllJUbhvznSvycco=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1DI6AUl7mjT3xlANx7sKthfe07bNBeIM7Pc7xww6q6Uzl6tj33pIYI0dr4kBu3MNB
+         /xMQwXnPdK0n/LjdFYYjHIpOk8eI3QMHixRbFF92NcIroEIvc8CROisE3oLK2xrrGT
+         fUIC07M4jQNXw+Z4oiNettGt06YHW7tgLLcmiLNY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 1036/1157] scsi: qla2xxx: Fix discovery issues in FC-AL topology
+Date:   Mon, 15 Aug 2022 20:06:32 +0200
+Message-Id: <20220815180521.418220972@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815124748-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michael,
+From: Arun Easi <aeasi@marvell.com>
 
-On Mon, Aug 15, 2022 at 12:50:52PM -0400, Michael S. Tsirkin wrote:
-[ ...]
-> 
-> Okay! And just to be 100% sure, can you try the following on top of 5.19:
-> 
+commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
 
-You should now be able to test any patches using the syzkaller
-infrastructure. Pick any (or all) of the now-published syzkaller
-reports from the linux-kernel mailing list, reply with:
+A direct attach tape device, when gets swapped with another, was not
+discovered. Fix this by looking at loop map and reinitialize link if there
+are devices present.
 
-#syz test git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git v5.19
+Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
+Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reported-by: Tony Battersby <tonyb@cybernetics.com>
+Tested-by: Tony Battersby <tonyb@cybernetics.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
+ drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
+ drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
-and provide your patch as attachment.
+--- a/drivers/scsi/qla2xxx/qla_gbl.h
++++ b/drivers/scsi/qla2xxx/qla_gbl.h
+@@ -434,7 +434,8 @@ extern int
+ qla2x00_get_resource_cnts(scsi_qla_host_t *);
+ 
+ extern int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
++qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
++		u8 *num_entries);
+ 
+ extern int
+ qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5505,6 +5505,22 @@ static int qla2x00_configure_n2n_loop(sc
+ 	return QLA_FUNCTION_FAILED;
+ }
+ 
++static void
++qla_reinitialize_link(scsi_qla_host_t *vha)
++{
++	int rval;
++
++	atomic_set(&vha->loop_state, LOOP_DOWN);
++	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
++	rval = qla2x00_full_login_lip(vha);
++	if (rval == QLA_SUCCESS) {
++		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
++	} else {
++		ql_dbg(ql_dbg_disc, vha, 0xd051,
++			"Link reinitialization failed (%d)\n", rval);
++	}
++}
++
+ /*
+  * qla2x00_configure_local_loop
+  *	Updates Fibre Channel Device Database with local loop devices.
+@@ -5556,6 +5572,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
+ 		spin_unlock_irqrestore(&vha->work_lock, flags);
+ 
+ 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
++			u8 loop_map_entries = 0;
++			int rc;
++
++			rc = qla2x00_get_fcal_position_map(vha, NULL,
++						&loop_map_entries);
++			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
++				/*
++				 * There are devices that are still not logged
++				 * in. Reinitialize to give them a chance.
++				 */
++				qla_reinitialize_link(vha);
++				return QLA_FUNCTION_FAILED;
++			}
+ 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
+ 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -3068,7 +3068,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
+  *	Kernel context.
+  */
+ int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
++qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
++		u8 *num_entries)
+ {
+ 	int rval;
+ 	mbx_cmd_t mc;
+@@ -3108,6 +3109,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
+ 
+ 		if (pos_map)
+ 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
++		if (num_entries)
++			*num_entries = pmap[0];
+ 	}
+ 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
+ 
 
-Guenter
+
