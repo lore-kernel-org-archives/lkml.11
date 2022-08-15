@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1853BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F198C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245074AbiHOXYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53856 "EHLO
+        id S245123AbiHOXYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343624AbiHOXUl (ORCPT
+        with ESMTP id S1344767AbiHOXUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:20:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED9FB4E80;
-        Mon, 15 Aug 2022 13:04:14 -0700 (PDT)
+        Mon, 15 Aug 2022 19:20:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891F57E033;
+        Mon, 15 Aug 2022 13:04:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99CAD61226;
-        Mon, 15 Aug 2022 20:04:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84EEBC433B5;
-        Mon, 15 Aug 2022 20:04:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44F5FB80EA8;
+        Mon, 15 Aug 2022 20:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE59DC433C1;
+        Mon, 15 Aug 2022 20:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593853;
-        bh=jB0ttoGjb7G3INqAt6pTRAlPqBFKPCcILx++1gjZ16o=;
+        s=korg; t=1660593856;
+        bh=sFF/GLrtKkldifMSHkZh0cLIrumrBiRtQIFmzUP1GiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PpQ2WRJpdP2bFVxiNAmoMhsHZJWO6X4+7ndhW0RXuIvzRDra6KQM0bvMWXuKphdU6
-         FyncAfc+76mJYLX2GtXdToioYRQZiGwHYgiW4rKvRb5OJksrS7f7Rg27GBXrtjimEi
-         b2cAMq6qW8pd63gsu9oqAMMM282ooDUEuwBceR+k=
+        b=s7e2BMbtwsQqqUjS+6uTffCoR7lw/uiiXWzS/lOjMIvTtaZT/NK8sjVnpQuN/BwN3
+         a20Y/zGBOFqsDpTicQwhFBe+Mb9nyUsi3HvzsGy6Cuqmc7zEVLEd+63MLzq2SfyTcU
+         5DrsIef+a2rCvEObxLtG08RH9D+ja7lzhjqZffvc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1016/1095] btrfs: properly flag filesystem with BTRFS_FEATURE_INCOMPAT_BIG_METADATA
-Date:   Mon, 15 Aug 2022 20:06:55 +0200
-Message-Id: <20220815180511.125864340@linuxfoundation.org>
+Subject: [PATCH 5.19 0336/1157] drm/radeon: fix potential buffer overflow in ni_set_mc_special_registers()
+Date:   Mon, 15 Aug 2022 19:54:52 +0200
+Message-Id: <20220815180453.110296283@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolay Borisov <nborisov@suse.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit e26b04c4c91925dba57324db177a24e18e2d0013 ]
+[ Upstream commit 136f614931a2bb73616b292cf542da3a18daefd5 ]
 
-Commit 6f93e834fa7c seemingly inadvertently moved the code responsible
-for flagging the filesystem as having BIG_METADATA to a place where
-setting the flag was essentially lost. This means that
-filesystems created with kernels containing this bug (starting with 5.15)
-can potentially be mounted by older (pre-3.4) kernels. In reality
-chances for this happening are low because there are other incompat
-flags introduced in the mean time. Still the correct behavior is to set
-INCOMPAT_BIG_METADATA flag and persist this in the superblock.
+The last case label can write two buffers 'mc_reg_address[j]' and
+'mc_data[j]' with 'j' offset equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE
+since there are no checks for this value in both case labels after the
+last 'j++'.
 
-Fixes: 6f93e834fa7c ("btrfs: fix upper limit for max_inline for page size 64K")
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Nikolay Borisov <nborisov@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Instead of changing '>' to '>=' there, add the bounds check at the start
+of the second 'case' (the first one already has it).
+
+Also, remove redundant last checks for 'j' index bigger than array size.
+The expression is always false. Moreover, before or after the patch
+'table->last' can be equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE and it
+seems it can be a valid value.
+
+Detected using the static analysis tool - Svace.
+Fixes: 69e0b57a91ad ("drm/radeon/kms: add dpm support for cayman (v5)")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/radeon/ni_dpm.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index f45470798022..34cd57d799e4 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3577,16 +3577,6 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
- 	 */
- 	fs_info->compress_type = BTRFS_COMPRESS_ZLIB;
- 
--	/*
--	 * Flag our filesystem as having big metadata blocks if they are bigger
--	 * than the page size.
--	 */
--	if (btrfs_super_nodesize(disk_super) > PAGE_SIZE) {
--		if (!(features & BTRFS_FEATURE_INCOMPAT_BIG_METADATA))
--			btrfs_info(fs_info,
--				"flagging fs with big metadata feature");
--		features |= BTRFS_FEATURE_INCOMPAT_BIG_METADATA;
--	}
- 
- 	/* Set up fs_info before parsing mount options */
- 	nodesize = btrfs_super_nodesize(disk_super);
-@@ -3627,6 +3617,17 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
- 	if (features & BTRFS_FEATURE_INCOMPAT_SKINNY_METADATA)
- 		btrfs_info(fs_info, "has skinny extents");
- 
-+	/*
-+	 * Flag our filesystem as having big metadata blocks if they are bigger
-+	 * than the page size.
-+	 */
-+	if (btrfs_super_nodesize(disk_super) > PAGE_SIZE) {
-+		if (!(features & BTRFS_FEATURE_INCOMPAT_BIG_METADATA))
-+			btrfs_info(fs_info,
-+				"flagging fs with big metadata feature");
-+		features |= BTRFS_FEATURE_INCOMPAT_BIG_METADATA;
-+	}
-+
- 	/*
- 	 * mixed block groups end up with duplicate but slightly offset
- 	 * extent buffers for the same range.  It leads to corruptions
+diff --git a/drivers/gpu/drm/radeon/ni_dpm.c b/drivers/gpu/drm/radeon/ni_dpm.c
+index 769f666335ac..672d2239293e 100644
+--- a/drivers/gpu/drm/radeon/ni_dpm.c
++++ b/drivers/gpu/drm/radeon/ni_dpm.c
+@@ -2741,10 +2741,10 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					table->mc_reg_table_entry[k].mc_data[j] |= 0x100;
+ 			}
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		case MC_SEQ_RESERVE_M >> 2:
++			if (j >= SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
++				return -EINVAL;
+ 			temp_reg = RREG32(MC_PMG_CMD_MRS1);
+ 			table->mc_reg_address[j].s1 = MC_PMG_CMD_MRS1 >> 2;
+ 			table->mc_reg_address[j].s0 = MC_SEQ_PMG_CMD_MRS1_LP >> 2;
+@@ -2753,8 +2753,6 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					(temp_reg & 0xffff0000) |
+ 					(table->mc_reg_table_entry[k].mc_data[i] & 0x0000ffff);
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		default:
+ 			break;
 -- 
 2.35.1
 
