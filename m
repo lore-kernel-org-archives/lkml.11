@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D50C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1FF9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343772AbiHOUII (ORCPT
+        id S1345897AbiHOUIL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
+        Mon, 15 Aug 2022 16:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346304AbiHOUG0 (ORCPT
+        with ESMTP id S1346363AbiHOUGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:06:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935DA80F77;
-        Mon, 15 Aug 2022 11:55:08 -0700 (PDT)
+        Mon, 15 Aug 2022 16:06:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EA0DC3;
+        Mon, 15 Aug 2022 11:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 514B9611ED;
-        Mon, 15 Aug 2022 18:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF3FC433D6;
-        Mon, 15 Aug 2022 18:55:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1BBA6123D;
+        Mon, 15 Aug 2022 18:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B216CC433C1;
+        Mon, 15 Aug 2022 18:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589705;
-        bh=Midk8NCdapzF7mpuCT2GeB9SbLt2pycW50mobOPAZLk=;
+        s=korg; t=1660589715;
+        bh=jqCkmllESG5lVOy33f/raGcUAAs+RXsT2zDA2SMd8tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KCxe2JvPTYKbbRZ/tIO8nKi9DSao1464uaTPMdV+vfpigSCz5gtrRkVJN/2dZRc1N
-         UXe+P6V8z5FRXtbm+hvu9OU/LgNZyXr0fnwX8l7FBFtLSWBcPJGKFpv7h4EIzlC237
-         +ZpDVjKsq02v3S+AmzlKziyQM7WhH6vza623h68E=
+        b=R/WA7Z0nZiwaXJvNzzfTBN4sIFGNJT2sfd15bbtv7w59iz0Ar9AdzcSQTSqKe6M3k
+         RyHbiwycFZpO2wu1Ffs0j+5KsPd1ChMF5SKkNYFjN+q6l5dQ5pzmEHuHitvggLRKma
+         wuHfp4cTqBjvwHCy3B3yOuSdSYGl6pMdCIhIEG1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.18 0022/1095] HID: wacom: Dont register pad_input for touch switch
-Date:   Mon, 15 Aug 2022 19:50:21 +0200
-Message-Id: <20220815180430.271523309@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0025/1095] KVM: SVM: Dont BUG if userspace injects an interrupt with GIF=0
+Date:   Mon, 15 Aug 2022 19:50:24 +0200
+Message-Id: <20220815180430.395391433@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,107 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping Cheng <pinglinux@gmail.com>
+From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-commit d6b675687a4ab4dba684716d97c8c6f81bf10905 upstream.
+commit f17c31c48e5cde9895a491d91c424eeeada3e134 upstream.
 
-Touch switch state is received through WACOM_PAD_FIELD. However, it
-is reported by touch_input. Don't register pad_input if no other pad
-events require the interface.
+Don't BUG/WARN on interrupt injection due to GIF being cleared,
+since it's trivial for userspace to force the situation via
+KVM_SET_VCPU_EVENTS (even if having at least a WARN there would be correct
+for KVM internally generated injections).
 
+  kernel BUG at arch/x86/kvm/svm/svm.c:3386!
+  invalid opcode: 0000 [#1] SMP
+  CPU: 15 PID: 926 Comm: smm_test Not tainted 5.17.0-rc3+ #264
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:svm_inject_irq+0xab/0xb0 [kvm_amd]
+  Code: <0f> 0b 0f 1f 00 0f 1f 44 00 00 80 3d ac b3 01 00 00 55 48 89 f5 53
+  RSP: 0018:ffffc90000b37d88 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: ffff88810a234ac0 RCX: 0000000000000006
+  RDX: 0000000000000000 RSI: ffffc90000b37df7 RDI: ffff88810a234ac0
+  RBP: ffffc90000b37df7 R08: ffff88810a1fa410 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+  R13: ffff888109571000 R14: ffff88810a234ac0 R15: 0000000000000000
+  FS:  0000000001821380(0000) GS:ffff88846fdc0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f74fc550008 CR3: 000000010a6fe000 CR4: 0000000000350ea0
+  Call Trace:
+   <TASK>
+   inject_pending_event+0x2f7/0x4c0 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x791/0x17a0 [kvm]
+   kvm_vcpu_ioctl+0x26d/0x650 [kvm]
+   __x64_sys_ioctl+0x82/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+
+Fixes: 219b65dcf6c0 ("KVM: SVM: Improve nested interrupt injection")
 Cc: stable@vger.kernel.org
-Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
-Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Message-Id: <35426af6e123cbe91ec7ce5132ce72521f02b1b5.1651440202.git.maciej.szmigiero@oracle.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_sys.c |    2 +-
- drivers/hid/wacom_wac.c |   43 +++++++++++++++++++++++++------------------
- 2 files changed, 26 insertions(+), 19 deletions(-)
+ arch/x86/kvm/svm/svm.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/hid/wacom_sys.c
-+++ b/drivers/hid/wacom_sys.c
-@@ -2121,7 +2121,7 @@ static int wacom_register_inputs(struct
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3305,8 +3305,6 @@ static void svm_inject_irq(struct kvm_vc
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
- 	error = wacom_setup_pad_input_capabilities(pad_input_dev, wacom_wac);
- 	if (error) {
--		/* no pad in use on this interface */
-+		/* no pad events using this interface */
- 		input_free_device(pad_input_dev);
- 		wacom_wac->pad_input = NULL;
- 		pad_input_dev = NULL;
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2017,7 +2017,6 @@ static void wacom_wac_pad_usage_mapping(
- 		wacom_wac->has_mute_touch_switch = true;
- 		usage->type = EV_SW;
- 		usage->code = SW_MUTE_DEVICE;
--		features->device_type |= WACOM_DEVICETYPE_PAD;
- 		break;
- 	case WACOM_HID_WD_TOUCHSTRIP:
- 		wacom_map_usage(input, usage, field, EV_ABS, ABS_RX, 0);
-@@ -2097,6 +2096,30 @@ static void wacom_wac_pad_event(struct h
- 			wacom_wac->hid_data.inrange_state |= value;
- 	}
+-	BUG_ON(!(gif_set(svm)));
+-
+ 	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+ 	++vcpu->stat.irq_injections;
  
-+	/* Process touch switch state first since it is reported through touch interface,
-+	 * which is indepentent of pad interface. In the case when there are no other pad
-+	 * events, the pad interface will not even be created.
-+	 */
-+	if ((equivalent_usage == WACOM_HID_WD_MUTE_DEVICE) ||
-+	   (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)) {
-+		if (wacom_wac->shared->touch_input) {
-+			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
-+
-+			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
-+				*is_touch_on = !(*is_touch_on);
-+			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
-+				*is_touch_on = value;
-+
-+			input_report_switch(wacom_wac->shared->touch_input,
-+					    SW_MUTE_DEVICE, !(*is_touch_on));
-+			input_sync(wacom_wac->shared->touch_input);
-+		}
-+		return;
-+	}
-+
-+	if (!input)
-+		return;
-+
- 	switch (equivalent_usage) {
- 	case WACOM_HID_WD_TOUCHRING:
- 		/*
-@@ -2132,22 +2155,6 @@ static void wacom_wac_pad_event(struct h
- 			input_event(input, usage->type, usage->code, 0);
- 		break;
- 
--	case WACOM_HID_WD_MUTE_DEVICE:
--	case WACOM_HID_WD_TOUCHONOFF:
--		if (wacom_wac->shared->touch_input) {
--			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
--
--			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
--				*is_touch_on = !(*is_touch_on);
--			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
--				*is_touch_on = value;
--
--			input_report_switch(wacom_wac->shared->touch_input,
--					    SW_MUTE_DEVICE, !(*is_touch_on));
--			input_sync(wacom_wac->shared->touch_input);
--		}
--		break;
--
- 	case WACOM_HID_WD_MODE_CHANGE:
- 		if (wacom_wac->is_direct_mode != value) {
- 			wacom_wac->is_direct_mode = value;
-@@ -2808,7 +2815,7 @@ void wacom_wac_event(struct hid_device *
- 	/* usage tests must precede field tests */
- 	if (WACOM_BATTERY_USAGE(usage))
- 		wacom_wac_battery_event(hdev, field, usage, value);
--	else if (WACOM_PAD_FIELD(field) && wacom->wacom_wac.pad_input)
-+	else if (WACOM_PAD_FIELD(field))
- 		wacom_wac_pad_event(hdev, field, usage, value);
- 	else if (WACOM_PEN_FIELD(field) && wacom->wacom_wac.pen_input)
- 		wacom_wac_pen_event(hdev, field, usage, value);
 
 
