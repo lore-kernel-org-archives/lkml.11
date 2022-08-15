@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1748EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3202C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349184AbiHOVmd (ORCPT
+        id S1349213AbiHOVmh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        Mon, 15 Aug 2022 17:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348991AbiHOVi1 (ORCPT
+        with ESMTP id S231453AbiHOVi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:38:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAADB29CA7;
-        Mon, 15 Aug 2022 12:28:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790482A96C;
+        Mon, 15 Aug 2022 12:28:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55EFF610A1;
-        Mon, 15 Aug 2022 19:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45FDBC433D6;
-        Mon, 15 Aug 2022 19:27:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39452B81109;
+        Mon, 15 Aug 2022 19:28:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F16C433C1;
+        Mon, 15 Aug 2022 19:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591679;
-        bh=mHv6ngVvU2rDaW48u+G7k6U7y4oj2bzPh78/WkNmH8U=;
+        s=korg; t=1660591686;
+        bh=SKMP35W+5RYcCpTlONFWVCGGNxzI2fUXOAlmrPnng1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=htfEwjSUALQ2ib6cuSCKxfwNsVxM526HLU5/RzcmEaI6NjZ+EXB6nQzWS9ltFehAY
-         Bzn3mB+XhKz/xKS9CTzcKan2dpKIPGRrKueb3+3k6nM/xbWuNdKtqax5L/lcx0jeTz
-         YM9bWBmdek1Zl9/yGC5l0+i7Hwjhlr7GlKxT5QGY=
+        b=QV+n6GkbEdQNVlormvZWID8VzhMZOzCUE8ZXFuB5JjkTqn5XrzRldstvOnUZ0QHk3
+         PSrbX7N6Nu+dMK3pgVTG5xp9ShtuSS/VgOzuSCaw1Lv14Ae+flRrAeJy42jIOEXPUc
+         GAIh4tImnRKpGYIvvZgCqPhQL7ENZzyJTtJKEPD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0622/1095] iio: adc: ti-ads8688: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:21 +0200
-Message-Id: <20220815180455.199419913@linuxfoundation.org>
+Subject: [PATCH 5.18 0624/1095] iio: addac: ad74413r: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:23 +0200
+Message-Id: <20220815180455.270466619@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,34 +54,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit a2105d87eb8eb03591515df10102e04a1c9e0e46 ]
+[ Upstream commit 00eb2b8a077062557772234019ecd6045b8b6298 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 3e87e7838328 ("iio: adc: Add TI ADS8688")
+Update the comment to include 'may'.
+
+Fixes: fea251b6a5db ("iio: addac: add AD74413R driver")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Cosmin Tanislav <cosmin.tanislav@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-39-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-41-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-ads8688.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/addac/ad74413r.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 22c2583eedd0..7ee14c6d9f46 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -71,7 +71,7 @@ struct ads8688_state {
- 	union {
- 		__be32 d32;
- 		u8 d8[4];
--	} data[2] ____cacheline_aligned;
-+	} data[2] __aligned(IIO_DMA_MINALIGN);
- };
+diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
+index acd230a6af35..6a66d7a65db7 100644
+--- a/drivers/iio/addac/ad74413r.c
++++ b/drivers/iio/addac/ad74413r.c
+@@ -77,13 +77,13 @@ struct ad74413r_state {
+ 	struct spi_transfer	adc_samples_xfer[AD74413R_CHANNEL_MAX + 1];
  
- enum ads8688_id {
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 	struct {
+ 		u8 rx_buf[AD74413R_FRAME_SIZE * AD74413R_CHANNEL_MAX];
+ 		s64 timestamp;
+-	} adc_samples_buf ____cacheline_aligned;
++	} adc_samples_buf __aligned(IIO_DMA_MINALIGN);
+ 
+ 	u8	adc_samples_tx_buf[AD74413R_FRAME_SIZE * AD74413R_CHANNEL_MAX];
+ 	u8	reg_tx_buf[AD74413R_FRAME_SIZE];
 -- 
 2.35.1
 
