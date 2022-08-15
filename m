@@ -2,169 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCAFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181F8C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244381AbiHOSzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33204 "EHLO
+        id S244656AbiHOSzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244769AbiHOSvz (ORCPT
+        with ESMTP id S244778AbiHOSv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:51:55 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE70D98;
-        Mon, 15 Aug 2022 11:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660588182; x=1692124182;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uDIkIG90R71GgG9GXHgYkHB/M4grfjiKMxQjFHILMGk=;
-  b=FAGF17hKidPkhDrnHsCvh8CFgywL1xMsGKrIaPj9RWslqrZ6XGLvQwor
-   1OYTXi3XoDD5dOVQPYbUqmSycBmz1a0FwisAZTvFlagMl8fjkP0TitIp2
-   ppaXE43djSvmuSpQXpCI06Ke/RDDshkallr/RifKvn0F8/USwwbMOrYKu
-   raryGrXk9M0rqz6QOLV9R0AV7aRziYiwVO70JbJz5OWJSuaYAvWCS3oSV
-   5+4o9WB6QuFUt0yI6g+evGhbxUAfWc9sYs3JTMfLHYhEL+Q6na7n90ESc
-   Vm8s218XMzn5D1x7pw4rwMF/I8efyb8Lzlps+7rIB2TP5q96OgOptfPud
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="278991988"
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="278991988"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 11:29:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="606745713"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 15 Aug 2022 11:29:38 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNeqH-0001AF-3C;
-        Mon, 15 Aug 2022 18:29:37 +0000
-Date:   Tue, 16 Aug 2022 02:29:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@kernel.org>
-Cc:     kbuild-all@lists.01.org, loongarch@lists.linux.dev,
-        linux-arch@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] LoongArch: Use TLB for ioremap()
-Message-ID: <202208160215.TXzFu9Xd-lkp@intel.com>
-References: <20220815124612.3328670-1-chenhuacai@loongson.cn>
+        Mon, 15 Aug 2022 14:51:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422B2474FD;
+        Mon, 15 Aug 2022 11:29:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EA08B81085;
+        Mon, 15 Aug 2022 18:29:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7F2C433C1;
+        Mon, 15 Aug 2022 18:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588181;
+        bh=qJnDuBurTqdvBzjne3TDhA/1cOkjclrl2uNtQkxSvVs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MFNkw2KB0ESDRRXPAtMgwpcU7meaDjUQlGkGl+JOASUeNkgLWbVI4qPpVudp43LFd
+         MZtKyBJGphhc4hf56X2PO+c4gYTXamCOT9bJssG8vwWD8wIGJGsifgKIh2B0KxuimS
+         oaJpaJe9VQRIYmgaBt02WFCCcxKYxPbNZWRDoSJk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 319/779] net: hinic: avoid kernel hung in hinic_get_stats64()
+Date:   Mon, 15 Aug 2022 19:59:23 +0200
+Message-Id: <20220815180350.915194042@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815124612.3328670-1-chenhuacai@loongson.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Huacai,
+From: Qiao Ma <mqaio@linux.alibaba.com>
 
-I love your patch! Perhaps something to improve:
+[ Upstream commit 98f9fcdee35add80505b6c73f72de5f750d5c03c ]
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.0-rc1 next-20220815]
-[cannot apply to soc/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+When using hinic device as a bond slave device, and reading device stats
+of master bond device, the kernel may hung.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Huacai-Chen/LoongArch-Use-TLB-for-ioremap/20220815-204842
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-config: loongarch-allyesconfig (https://download.01.org/0day-ci/archive/20220816/202208160215.TXzFu9Xd-lkp@intel.com/config)
-compiler: loongarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0cdab71896d6b3b3b3f540f80d6f041a0c592e7a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Huacai-Chen/LoongArch-Use-TLB-for-ioremap/20220815-204842
-        git checkout 0cdab71896d6b3b3b3f540f80d6f041a0c592e7a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=loongarch SHELL=/bin/bash arch/loongarch/
+The kernel panic calltrace as follows:
+Kernel panic - not syncing: softlockup: hung tasks
+Call trace:
+  native_queued_spin_lock_slowpath+0x1ec/0x31c
+  dev_get_stats+0x60/0xcc
+  dev_seq_printf_stats+0x40/0x120
+  dev_seq_show+0x1c/0x40
+  seq_read_iter+0x3c8/0x4dc
+  seq_read+0xe0/0x130
+  proc_reg_read+0xa8/0xe0
+  vfs_read+0xb0/0x1d4
+  ksys_read+0x70/0xfc
+  __arm64_sys_read+0x20/0x30
+  el0_svc_common+0x88/0x234
+  do_el0_svc+0x2c/0x90
+  el0_svc+0x1c/0x30
+  el0_sync_handler+0xa8/0xb0
+  el0_sync+0x148/0x180
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+And the calltrace of task that actually caused kernel hungs as follows:
+  __switch_to+124
+  __schedule+548
+  schedule+72
+  schedule_timeout+348
+  __down_common+188
+  __down+24
+  down+104
+  hinic_get_stats64+44 [hinic]
+  dev_get_stats+92
+  bond_get_stats+172 [bonding]
+  dev_get_stats+92
+  dev_seq_printf_stats+60
+  dev_seq_show+24
+  seq_read_iter+964
+  seq_read+220
+  proc_reg_read+164
+  vfs_read+172
+  ksys_read+108
+  __arm64_sys_read+28
+  el0_svc_common+132
+  do_el0_svc+40
+  el0_svc+24
+  el0_sync_handler+164
+  el0_sync+324
 
-All warnings (new ones prefixed by >>):
+When getting device stats from bond, kernel will call bond_get_stats().
+It first holds the spinlock bond->stats_lock, and then call
+hinic_get_stats64() to collect hinic device's stats.
+However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
+protect its critical section, which may schedule current task out.
+And if system is under high pressure, the task cannot be woken up
+immediately, which eventually triggers kernel hung panic.
 
-   arch/loongarch/mm/init.c: In function 'fixmap_pte':
->> arch/loongarch/mm/init.c:171:24: warning: variable 'new' set but not used [-Wunused-but-set-variable]
-     171 |                 pud_t *new;
-         |                        ^~~
->> arch/loongarch/mm/init.c:187:26: warning: passing argument 1 of 'pmd_init' makes integer from pointer without a cast [-Wint-conversion]
-     187 |                 pmd_init(new);
-         |                          ^~~
-         |                          |
-         |                          pmd_t *
-   In file included from include/linux/pgtable.h:6,
-                    from include/linux/mm.h:29,
-                    from include/linux/pagemap.h:8,
-                    from arch/loongarch/mm/init.c:14:
-   arch/loongarch/include/asm/pgtable.h:245:36: note: expected 'long unsigned int' but argument is of type 'pmd_t *'
-     245 | extern void pmd_init(unsigned long page, unsigned long pagetable);
-         |                      ~~~~~~~~~~~~~~^~~~
-   arch/loongarch/mm/init.c:187:17: error: too few arguments to function 'pmd_init'
-     187 |                 pmd_init(new);
-         |                 ^~~~~~~~
-   In file included from arch/loongarch/mm/init.c:35:
-   arch/loongarch/include/asm/pgalloc.h:48:13: note: declared here
-      48 | extern void pmd_init(unsigned long page, unsigned long pagetable);
-         |             ^~~~~~~~
+Since previous patch has replaced hinic_dev.tx_stats/rx_stats with local
+variable in hinic_get_stats64(), there is nothing need to be protected
+by lock, so just removing down()/up() is ok.
 
+Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
+Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/huawei/hinic/hinic_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-vim +/new +171 arch/loongarch/mm/init.c
-
-   159	
-   160	static pte_t *fixmap_pte(unsigned long addr)
-   161	{
-   162		pgd_t *pgd;
-   163		p4d_t *p4d;
-   164		pud_t *pud;
-   165		pmd_t *pmd;
-   166	
-   167		pgd = pgd_offset_k(addr);
-   168		p4d = p4d_offset(pgd, addr);
-   169	
-   170		if (pgd_none(*pgd)) {
- > 171			pud_t *new;
-   172	
-   173			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
-   174			pgd_populate(&init_mm, pgd, new);
-   175	#ifndef __PAGETABLE_PUD_FOLDED
-   176			pud_init(new);
-   177	#endif
-   178		}
-   179	
-   180		pud = pud_offset(p4d, addr);
-   181		if (pud_none(*pud)) {
-   182			pmd_t *new;
-   183	
-   184			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
-   185			pud_populate(&init_mm, pud, new);
-   186	#ifndef __PAGETABLE_PMD_FOLDED
- > 187			pmd_init(new);
-   188	#endif
-   189		}
-   190	
-   191		pmd = pmd_offset(pud, addr);
-   192		if (pmd_none(*pmd)) {
-   193			pte_t *new;
-   194	
-   195			new = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
-   196			pmd_populate_kernel(&init_mm, pmd, new);
-   197		}
-   198	
-   199		return pte_offset_kernel(pmd, addr);
-   200	}
-   201	
-
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 909758367e7c..8c6ec7c25809 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -842,13 +842,9 @@ static void hinic_get_stats64(struct net_device *netdev,
+ 	struct hinic_rxq_stats nic_rx_stats = {};
+ 	struct hinic_txq_stats nic_tx_stats = {};
+ 
+-	down(&nic_dev->mgmt_lock);
+-
+ 	if (nic_dev->flags & HINIC_INTF_UP)
+ 		gather_nic_stats(nic_dev, &nic_rx_stats, &nic_tx_stats);
+ 
+-	up(&nic_dev->mgmt_lock);
+-
+ 	stats->rx_bytes   = nic_rx_stats.bytes;
+ 	stats->rx_packets = nic_rx_stats.pkts;
+ 	stats->rx_errors  = nic_rx_stats.errors;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
