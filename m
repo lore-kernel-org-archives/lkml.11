@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E87CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5B2C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245537AbiHOXCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
+        id S1345324AbiHOXCX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233204AbiHOXAm (ORCPT
+        with ESMTP id S1352677AbiHOXAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:00:42 -0400
+        Mon, 15 Aug 2022 19:00:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD345D10D;
-        Mon, 15 Aug 2022 12:57:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1645D12F;
+        Mon, 15 Aug 2022 12:57:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1640612A3;
-        Mon, 15 Aug 2022 19:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DC3C433D6;
-        Mon, 15 Aug 2022 19:57:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5DB0612AF;
+        Mon, 15 Aug 2022 19:57:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A5D7C433D6;
+        Mon, 15 Aug 2022 19:57:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593456;
-        bh=EHTqRDxAE6XI7DhbKyIDIwdWSDYQCC2Vet31YKcW/kI=;
+        s=korg; t=1660593459;
+        bh=xIKOzEbAHX9r+GH4VZhr1OOjANvkwjV7THn/VhsTL20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZTvEBX6X8PGIDMgE2NOGWR7zq1aLqZVULSDjDXqWuFMDRDF043aqgtOVxccKiLo2n
-         nfzaGrEKXeCjFqJhVIS8L/PN+E4pH0iw9vZSYa/uY/LnC+6g02SUh6QpEauMkMkXiF
-         Uc40sXIrcfTA0NUMIxlhYKDSRlW1+35rOaPgeDYI=
+        b=Du9fa77phHPBj7TG2pW4OzQQKLmm6V+aM9jAb1ZBE8ZDC8gsotVe1+ikpc7zs7iyX
+         zUAjvF+5TeY+JcVr41Wf5bfTQV8hiP2OMNKMJBJ+nYGR73+n+VL5CDgSLB5SCzFt7q
+         wg68cais4AO6yRl8t8RWBVjOVy+3Q4MdlDv/X0B0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0270/1157] spi: Fix simplification of devm_spi_register_controller
-Date:   Mon, 15 Aug 2022 19:53:46 +0200
-Message-Id: <20220815180450.412826860@linuxfoundation.org>
+Subject: [PATCH 5.18 0949/1095] tools/thermal: Fix possible path truncations
+Date:   Mon, 15 Aug 2022 20:05:48 +0200
+Message-Id: <20220815180508.378746706@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,70 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 43cc5a0afe4184a7fafe1eba32b5a11bb69c9ce0 ]
+[ Upstream commit 6c58cf40e3a1d2f47c09d3489857e9476316788a ]
 
-This reverts commit 59ebbe40fb51 ("spi: simplify
-devm_spi_register_controller").
+A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
 
-If devm_add_action() fails in devm_add_action_or_reset(),
-devm_spi_unregister() will be called, it decreases the
-refcount of 'ctlr->dev' to 0, then it will cause uaf in
-the drivers that calling spi_put_controller() in error path.
+sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
+  snprintf(filepath, 256, "%s/%s", path, filename);
+                              ^~
+Bump up the buffer to PATH_MAX which is the limit and account for all of
+the possible NUL and separators that could lead to exceeding the
+allocated buffer sizes.
 
-Fixes: 59ebbe40fb51 ("spi: simplify devm_spi_register_controller")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-Link: https://lore.kernel.org/r/20220712135504.1055688-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ tools/thermal/tmon/sysfs.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 62aa3f062f3d..2c616024f7c0 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -3050,9 +3050,9 @@ int spi_register_controller(struct spi_controller *ctlr)
- }
- EXPORT_SYMBOL_GPL(spi_register_controller);
- 
--static void devm_spi_unregister(void *ctlr)
-+static void devm_spi_unregister(struct device *dev, void *res)
+diff --git a/tools/thermal/tmon/sysfs.c b/tools/thermal/tmon/sysfs.c
+index b00b1bfd9d8e..cb1108bc9249 100644
+--- a/tools/thermal/tmon/sysfs.c
++++ b/tools/thermal/tmon/sysfs.c
+@@ -13,6 +13,7 @@
+ #include <stdint.h>
+ #include <dirent.h>
+ #include <libintl.h>
++#include <limits.h>
+ #include <ctype.h>
+ #include <time.h>
+ #include <syslog.h>
+@@ -33,9 +34,9 @@ int sysfs_set_ulong(char *path, char *filename, unsigned long val)
  {
--	spi_unregister_controller(ctlr);
-+	spi_unregister_controller(*(struct spi_controller **)res);
- }
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
  
- /**
-@@ -3071,13 +3071,22 @@ static void devm_spi_unregister(void *ctlr)
- int devm_spi_register_controller(struct device *dev,
- 				 struct spi_controller *ctlr)
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "w");
+ 	if (!fd) {
+@@ -57,9 +58,9 @@ static int sysfs_get_ulong(char *path, char *filename, unsigned long *p_ulong)
  {
-+	struct spi_controller **ptr;
- 	int ret;
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
  
-+	ptr = devres_alloc(devm_spi_unregister, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return -ENOMEM;
-+
- 	ret = spi_register_controller(ctlr);
--	if (ret)
--		return ret;
-+	if (!ret) {
-+		*ptr = ctlr;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
  
--	return devm_add_action_or_reset(dev, devm_spi_unregister, ctlr);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(devm_spi_register_controller);
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -76,9 +77,9 @@ static int sysfs_get_string(char *path, char *filename, char *str)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
  
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -199,8 +200,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ {
+ 	unsigned long trip_instance = 0;
+ 	char cdev_name_linked[256];
+-	char cdev_name[256];
+-	char cdev_trip_name[256];
++	char cdev_name[PATH_MAX];
++	char cdev_trip_name[PATH_MAX];
+ 	int cdev_id;
+ 
+ 	if (nl->d_type == DT_LNK) {
+@@ -213,7 +214,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			return -EINVAL;
+ 		}
+ 		/* find the link to real cooling device record binding */
+-		snprintf(cdev_name, 256, "%s/%s", tz_name, nl->d_name);
++		snprintf(cdev_name, sizeof(cdev_name) - 2, "%s/%s",
++			 tz_name, nl->d_name);
+ 		memset(cdev_name_linked, 0, sizeof(cdev_name_linked));
+ 		if (readlink(cdev_name, cdev_name_linked,
+ 				sizeof(cdev_name_linked) - 1) != -1) {
+@@ -226,8 +228,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			/* find the trip point in which the cdev is binded to
+ 			 * in this tzone
+ 			 */
+-			snprintf(cdev_trip_name, 256, "%s%s", nl->d_name,
+-				"_trip_point");
++			snprintf(cdev_trip_name, sizeof(cdev_trip_name) - 1,
++				"%s%s", nl->d_name, "_trip_point");
+ 			sysfs_get_ulong(tz_name, cdev_trip_name,
+ 					&trip_instance);
+ 			/* validate trip point range, e.g. trip could return -1
 -- 
 2.35.1
 
