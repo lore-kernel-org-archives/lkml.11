@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFB6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 023E5C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350250AbiHPA2x (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
+        id S244217AbiHPA3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357526AbiHPA1N (ORCPT
+        with ESMTP id S1357561AbiHPA1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:27:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C503E18057B;
-        Mon, 15 Aug 2022 13:34:50 -0700 (PDT)
+        Mon, 15 Aug 2022 20:27:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B91180B5E;
+        Mon, 15 Aug 2022 13:34:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E995AB811A1;
-        Mon, 15 Aug 2022 20:34:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2152EC433D6;
-        Mon, 15 Aug 2022 20:34:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DC698CE12C4;
+        Mon, 15 Aug 2022 20:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E924BC433C1;
+        Mon, 15 Aug 2022 20:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595682;
-        bh=0rSuf08xxpAs4juZrf9DdyilhYifmFUsrkyHzwVov84=;
+        s=korg; t=1660595653;
+        bh=4Qx3TpTzRNC8GP0eSyB6JcW988m841SDnRGg73iCp10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TGizhPjMgtZ7dyrrrGjOGQBhHC0GnUs0vx+REFFDBmAGLzRE1PMOPfDcWvd11sLoA
-         IWDpQ/sDcGJbB6Tg7y4JEt8cVjrU2AGt3g8PcGVXWxnizqNQotbK4omk7yJJTVr4sw
-         MDkw9dgItIpuX2ldTIteGEZS9gOfgVNFHwq45HXw=
+        b=yZZzifybzRxrYJ8U1l+2ZlthsMs9DYo6osGP/rYBubxxKT4rNIbSRaBghrEkGHiFA
+         0Dg4NTaSR32DmRtfCwD7IqcwXfdHJ8xngF44WboA4p2gTbZszP7/aJTdQYXhawhdIU
+         sMvDAI79eRRMKs86H71ei2VY1JRdrHOTojCRtgJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0842/1157] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
-Date:   Mon, 15 Aug 2022 20:03:18 +0200
-Message-Id: <20220815180513.170071651@linuxfoundation.org>
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.19 0800/1157] of: device: Fix missing of_node_put() in of_dma_set_restricted_buffer
+Date:   Mon, 15 Aug 2022 20:02:36 +0200
+Message-Id: <20220815180511.486332585@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,34 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
+[ Upstream commit d17e37c41b7ed38459957a5d2968ba61516fd5c2 ]
 
-In octeon_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+We should use of_node_put() for the reference 'node' returned by
+of_parse_phandle() which will increase the refcount.
 
-Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Fixes: fec9b625095f ("of: Add plumbing for restricted DMA pool")
+Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220702014449.263772-1-windhl@126.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-octeon.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/of/device.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
-index 2c4b2df52adb..12dca91a8ef6 100644
---- a/drivers/mmc/host/cavium-octeon.c
-+++ b/drivers/mmc/host/cavium-octeon.c
-@@ -277,6 +277,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "Error populating slots\n");
- 			octeon_mmc_set_shared_power(host, 0);
-+			of_node_put(cn);
- 			goto error;
- 		}
- 		i++;
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 874f031442dc..75b6cbffa755 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -81,8 +81,11 @@ of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
+ 		 * restricted-dma-pool region is allowed.
+ 		 */
+ 		if (of_device_is_compatible(node, "restricted-dma-pool") &&
+-		    of_device_is_available(node))
++		    of_device_is_available(node)) {
++			of_node_put(node);
+ 			break;
++		}
++		of_node_put(node);
+ 	}
+ 
+ 	/*
 -- 
 2.35.1
 
