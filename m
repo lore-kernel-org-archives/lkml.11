@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D07C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3745EC25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347057AbiHOXbF (ORCPT
+        id S1346681AbiHOXa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        Mon, 15 Aug 2022 19:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242854AbiHOXZ0 (ORCPT
+        with ESMTP id S245140AbiHOXZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:25:26 -0400
+        Mon, 15 Aug 2022 19:25:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC43C14C376;
-        Mon, 15 Aug 2022 13:05:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7BF14C364;
+        Mon, 15 Aug 2022 13:05:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EFA2B80EAB;
-        Mon, 15 Aug 2022 20:05:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3947C433C1;
-        Mon, 15 Aug 2022 20:05:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F4DFB80EAB;
+        Mon, 15 Aug 2022 20:05:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B82C433D6;
+        Mon, 15 Aug 2022 20:05:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593956;
-        bh=lEN1fCLC/6iKvx1k5nKAURL3pxUzJBCCafkLf8DB6jY=;
+        s=korg; t=1660593953;
+        bh=bwO1Mm4K1TDzi0Wmw7DeJjExMDBZD3OMknw3wAmxiZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gEdGA1wukE2NIGPL7JM6e3SN+pobzmKv5q+nIMm4RjvWZY9zJlsy75bYLWuoGVCuR
-         PLAXvoMc9lm0mRE2RhYFfi2V39Qn2h4imL0WofMUl9y9Zc1O003Z/qrhxaIWCxT2jl
-         Il2hK/36GF6z9bJnTcoazgTAQZi+L2eSPHr80QeE=
+        b=dfZdGd06xgRXzSOlMFHZ9dT9wgUBA0P1grKfSYFHhRfWy+dUw6j3KeHHv9p9Hwg2E
+         k5F6ik7eS/2MnISIiQM30vxJYaCd99sWfLzMdVQS05tIosi69sQOXTTIFQt5yjeLC0
+         J6cxdE3lX33AfFM19/PYWuU3gsCarmiZd8chK01c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1034/1095] ACPI: CPPC: Do not prevent CPPC from working in the future
-Date:   Mon, 15 Aug 2022 20:07:13 +0200
-Message-Id: <20220815180511.845105655@linuxfoundation.org>
+Subject: [PATCH 5.19 0340/1157] drm/meson: encoder_cvbs: Fix refcount leak in meson_encoder_cvbs_init
+Date:   Mon, 15 Aug 2022 19:54:56 +0200
+Message-Id: <20220815180453.279858424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,129 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 ]
+[ Upstream commit 7d255ddbbf679aa47e041cbf68520fd985ed2279 ]
 
-There is a problem with the current revision checks in
-is_cppc_supported() that they essentially prevent the CPPC support
-from working if a new _CPC package format revision being a proper
-superset of the v3 and only causing _CPC to return a package with more
-entries (while retaining the types and meaning of the entries defined by
-the v3) is introduced in the future and used by the platform firmware.
+of_graph_get_remote_node() returns remote device nodepointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-In that case, as long as the number of entries in the _CPC return
-package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
-use the v3 support code and disregard the additional package entries
-added by the new package format revision.
-
-For this reason, drop is_cppc_supported() altogether, put the revision
-checks directly into acpi_cppc_processor_probe() so they are easier to
-follow and rework them to take the case mentioned above into account.
-
-Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
-Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 318ba02cd8a8 ("drm/meson: encoder_cvbs: switch to bridge with ATTACH_NO_CONNECTOR")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220601033927.47814-2-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 54 ++++++++++++++++++----------------------
- include/acpi/cppc_acpi.h |  2 +-
- 2 files changed, 25 insertions(+), 31 deletions(-)
+ drivers/gpu/drm/meson/meson_encoder_cvbs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index b8e26b6b5523..35d894674eba 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -600,33 +600,6 @@ static int pcc_data_alloc(int pcc_ss_id)
- 	return 0;
- }
- 
--/* Check if CPPC revision + num_ent combination is supported */
--static bool is_cppc_supported(int revision, int num_ent)
--{
--	int expected_num_ent;
--
--	switch (revision) {
--	case CPPC_V2_REV:
--		expected_num_ent = CPPC_V2_NUM_ENT;
--		break;
--	case CPPC_V3_REV:
--		expected_num_ent = CPPC_V3_NUM_ENT;
--		break;
--	default:
--		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
--			revision);
--		return false;
--	}
--
--	if (expected_num_ent != num_ent) {
--		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
--			num_ent, expected_num_ent, revision);
--		return false;
--	}
--
--	return true;
--}
--
- /*
-  * An example CPC table looks like the following.
-  *
-@@ -715,7 +688,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 			 cpc_obj->type, pr->id);
- 		goto out_free;
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.c b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+index fd8db97ba8ba..8110a6e39320 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.c
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+@@ -238,6 +238,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
  	}
--	cpc_ptr->num_entries = num_ent;
  
- 	/* Second entry should be revision. */
- 	cpc_obj = &out_obj->package.elements[1];
-@@ -726,10 +698,32 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 			 cpc_obj->type, pr->id);
- 		goto out_free;
- 	}
--	cpc_ptr->version = cpc_rev;
- 
--	if (!is_cppc_supported(cpc_rev, num_ent))
-+	if (cpc_rev < CPPC_V2_REV) {
-+		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
-+			 pr->id);
-+		goto out_free;
-+	}
-+
-+	/*
-+	 * Disregard _CPC if the number of entries in the return pachage is not
-+	 * as expected, but support future revisions being proper supersets of
-+	 * the v3 and only causing more entries to be returned by _CPC.
-+	 */
-+	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
-+	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
-+	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
-+		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
-+			 num_ent, pr->id);
- 		goto out_free;
-+	}
-+	if (cpc_rev > CPPC_V3_REV) {
-+		num_ent = CPPC_V3_NUM_ENT;
-+		cpc_rev = CPPC_V3_REV;
-+	}
-+
-+	cpc_ptr->num_entries = num_ent;
-+	cpc_ptr->version = cpc_rev;
- 
- 	/* Iterate through remaining entries in _CPC */
- 	for (i = 2; i < num_ent; i++) {
-diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
-index 181907349b49..a76f8c6b732d 100644
---- a/include/acpi/cppc_acpi.h
-+++ b/include/acpi/cppc_acpi.h
-@@ -17,7 +17,7 @@
- #include <acpi/pcc.h>
- #include <acpi/processor.h>
- 
--/* Support CPPCv2 and CPPCv3  */
-+/* CPPCv2 and CPPCv3 support */
- #define CPPC_V2_REV	2
- #define CPPC_V3_REV	3
- #define CPPC_V2_NUM_ENT	21
+ 	meson_encoder_cvbs->next_bridge = of_drm_find_bridge(remote);
++	of_node_put(remote);
+ 	if (!meson_encoder_cvbs->next_bridge) {
+ 		dev_err(priv->dev, "Failed to find CVBS Connector bridge\n");
+ 		return -EPROBE_DEFER;
 -- 
 2.35.1
 
