@@ -2,86 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23A9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F5EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiHOStq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        id S244102AbiHOStx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233146AbiHOSoB (ORCPT
+        with ESMTP id S243526AbiHOSon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:44:01 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC632FFC3;
-        Mon, 15 Aug 2022 11:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=pQgnV2W+m6IHyd1sfXNyPuGcZpvyoD3dq7ndy9+1QWY=; b=nOms3/1Uq5YOF1bwlhQz39B/xq
-        lhJn4Xz+bgO4S+tzCDXYpLB8VrlkUqBdIrbUt95mBrUHdr683sUAqzaa2EL8z+RDmYP2StzlwdOJ2
-        dlu4xtB6GtZ7UapVk2WD/TlGptwIfUv0tciWlGulljYY9+Fcpo2ICJpMpb0BJvuXzzX0zDUpw9zyU
-        KyGPgpkB3lZyjCE3mM8iw+OX+wUW/BWlIlrIvAWaQoFKHxiKHBkFWxJrLM4RNSV+3QMORX/AlleaD
-        vpDR4/Jp7QyIvjl5gi8PPa6yPcN0ObjLRunLjv/8GqjUnNkTYLzal4MQ7zci7VkeymEdMAPpsPy07
-        le8oCyVA==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oNent-004kaQ-Ps;
-        Mon, 15 Aug 2022 18:27:10 +0000
-Date:   Mon, 15 Aug 2022 19:27:09 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-nilfs <linux-nilfs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiacheng Xu <stitch@zju.edu.cn>,
-        Mudong Liang <mudongliangabcd@gmail.com>
-Subject: Re: [PATCH] nilfs2: fix use-after-free bug in nilfs_mdt_destroy()
-Message-ID: <YvqP/f2P2YgIIO9U@ZenIV>
-References: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
+        Mon, 15 Aug 2022 14:44:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E0F2FFEB;
+        Mon, 15 Aug 2022 11:27:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCCC60691;
+        Mon, 15 Aug 2022 18:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91671C433D7;
+        Mon, 15 Aug 2022 18:27:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588041;
+        bh=fiSO3jBXEXqACFFwooF7XCH3mk6KVEXM0hjIHuOLFAY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KRMH/QD0757lpsEF8wifgF8lUFhkQ+5nSv1Zo3QFrDrvNa2NQkzWP/yAhQhWpNO2A
+         gA+DOwnMw7S2jpocRnuMN+prDQaCwFlIzTmRTdBKGiICdxeiBrG2n5LIqNuikHoIgP
+         jcpPPas2kGThICUf0z7cbS7Mmr5PkihvfrK1ucrI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 276/779] media: imx-jpeg: Support dynamic resolution change
+Date:   Mon, 15 Aug 2022 19:58:40 +0200
+Message-Id: <20220815180349.102600750@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 02:51:14AM +0900, Ryusuke Konishi wrote:
-> In alloc_inode(), inode_init_always() could return -ENOMEM if
-> security_inode_alloc() fails.  If this happens for nilfs2,
-> nilfs_free_inode() is called without initializing inode->i_private and
-> nilfs_free_inode() wrongly calls nilfs_mdt_destroy(), which frees
-> uninitialized inode->i_private and can trigger a crash.
-> 
-> Fix this bug by initializing inode->i_private in nilfs_alloc_inode().
-> 
-> Link: https://lkml.kernel.org/r/CAFcO6XOcf1Jj2SeGt=jJV59wmhESeSKpfR0omdFRq+J9nD1vfQ@mail.gmail.com
-> Link: https://lkml.kernel.org/r/20211011030956.2459172-1-mudongliangabcd@gmail.com
-> Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-> Reported-by: Hao Sun <sunhao.th@gmail.com>
-> Reported-by: Jiacheng Xu <stitch@zju.edu.cn>
-> Reported-by: Mudong Liang <mudongliangabcd@gmail.com>
-> Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> ---
->  fs/nilfs2/super.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/fs/nilfs2/super.c b/fs/nilfs2/super.c
-> index ba108f915391..aca5614f1b44 100644
-> --- a/fs/nilfs2/super.c
-> +++ b/fs/nilfs2/super.c
-> @@ -159,6 +159,7 @@ struct inode *nilfs_alloc_inode(struct super_block *sb)
->  	ii->i_cno = 0;
->  	ii->i_assoc_inode = NULL;
->  	ii->i_bmap = &ii->i_bmap_data;
-> +	ii->vfs_inode.i_private = NULL;
->  	return &ii->vfs_inode;
->  }
+From: Ming Qian <ming.qian@nxp.com>
 
-FWIW, I think it's better to deal with that in inode_init_always(), but
-not just moving ->i_private initialization up - we ought to move
-security_inode_alloc() to the very end.  No sense playing whack-a-mole
-with further possible bugs of that sort...
+[ Upstream commit b4e1fb8643daabba850e97df532191acffc23e6a ]
+
+To support dynamic resolution change,
+driver should meet the following conditions:
+1. the previous pictures are all decoded before source change event.
+2. prevent decoding new resolution pictures with incorrect capture
+   buffer, until user handle source change event and setup capture.
+3. report correct fmt and resolution during source change.
+
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 69 +++++++++++++++++-----
+ drivers/media/platform/imx-jpeg/mxc-jpeg.h |  2 +
+ 2 files changed, 55 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 6289fec6e2a0..52732fbb2664 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -919,13 +919,14 @@ static bool mxc_jpeg_source_change(struct mxc_jpeg_ctx *ctx,
+ {
+ 	struct device *dev = ctx->mxc_jpeg->dev;
+ 	struct mxc_jpeg_q_data *q_data_cap;
+-	bool src_chg = false;
+ 
+ 	if (!jpeg_src_buf->fmt)
+-		return src_chg;
++		return false;
+ 
+ 	q_data_cap = mxc_jpeg_get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
+-	if (q_data_cap->w != jpeg_src_buf->w || q_data_cap->h != jpeg_src_buf->h) {
++	if (q_data_cap->fmt != jpeg_src_buf->fmt ||
++	    q_data_cap->w != jpeg_src_buf->w ||
++	    q_data_cap->h != jpeg_src_buf->h) {
+ 		dev_dbg(dev, "Detected jpeg res=(%dx%d)->(%dx%d), pixfmt=%c%c%c%c\n",
+ 			q_data_cap->w, q_data_cap->h,
+ 			jpeg_src_buf->w, jpeg_src_buf->h,
+@@ -962,9 +963,16 @@ static bool mxc_jpeg_source_change(struct mxc_jpeg_ctx *ctx,
+ 		mxc_jpeg_bytesperline(q_data_cap, jpeg_src_buf->fmt->precision);
+ 		mxc_jpeg_sizeimage(q_data_cap);
+ 		notify_src_chg(ctx);
+-		src_chg = true;
++		ctx->source_change = 1;
+ 	}
+-	return src_chg;
++	return ctx->source_change ? true : false;
++}
++
++static int mxc_jpeg_job_ready(void *priv)
++{
++	struct mxc_jpeg_ctx *ctx = priv;
++
++	return ctx->source_change ? 0 : 1;
+ }
+ 
+ static void mxc_jpeg_device_run(void *priv)
+@@ -1014,6 +1022,13 @@ static void mxc_jpeg_device_run(void *priv)
+ 
+ 		return;
+ 	}
++	if (ctx->mxc_jpeg->mode == MXC_JPEG_DECODE) {
++		if (ctx->source_change || mxc_jpeg_source_change(ctx, jpeg_src_buf)) {
++			spin_unlock_irqrestore(&ctx->mxc_jpeg->hw_lock, flags);
++			v4l2_m2m_job_finish(jpeg->m2m_dev, ctx->fh.m2m_ctx);
++			return;
++		}
++	}
+ 
+ 	/*
+ 	 * TODO: this reset should be removed, once we figure out
+@@ -1065,6 +1080,7 @@ static void mxc_jpeg_set_last_buffer_dequeued(struct mxc_jpeg_ctx *ctx)
+ 	q->last_buffer_dequeued = true;
+ 	wake_up(&q->done_wq);
+ 	ctx->stopped = 0;
++	ctx->header_parsed = false;
+ }
+ 
+ static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
+@@ -1158,6 +1174,8 @@ static int mxc_jpeg_start_streaming(struct vb2_queue *q, unsigned int count)
+ 	struct mxc_jpeg_q_data *q_data = mxc_jpeg_get_q_data(ctx, q->type);
+ 	int ret;
+ 
++	if (ctx->mxc_jpeg->mode == MXC_JPEG_DECODE && V4L2_TYPE_IS_CAPTURE(q->type))
++		ctx->source_change = 0;
+ 	dev_dbg(ctx->mxc_jpeg->dev, "Start streaming ctx=%p", ctx);
+ 	q_data->sequence = 0;
+ 
+@@ -1336,16 +1354,15 @@ static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
+ 		dev_warn(dev, "Invalid user resolution 0x0");
+ 		dev_warn(dev, "Keeping resolution from JPEG: %dx%d",
+ 			 header.frame.width, header.frame.height);
+-		q_data_out->w = header.frame.width;
+-		q_data_out->h = header.frame.height;
+ 	} else if (header.frame.width != q_data_out->w ||
+ 		   header.frame.height != q_data_out->h) {
+ 		dev_err(dev,
+ 			"Resolution mismatch: %dx%d (JPEG) versus %dx%d(user)",
+ 			header.frame.width, header.frame.height,
+ 			q_data_out->w, q_data_out->h);
+-		return -EINVAL;
+ 	}
++	q_data_out->w = header.frame.width;
++	q_data_out->h = header.frame.height;
+ 	if (header.frame.width % 8 != 0 || header.frame.height % 8 != 0) {
+ 		dev_err(dev, "JPEG width or height not multiple of 8: %dx%d\n",
+ 			header.frame.width, header.frame.height);
+@@ -1381,8 +1398,10 @@ static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
+ 	jpeg_src_buf->fmt = mxc_jpeg_find_format(ctx, fourcc);
+ 	jpeg_src_buf->w = header.frame.width;
+ 	jpeg_src_buf->h = header.frame.height;
++	ctx->header_parsed = true;
+ 
+-	mxc_jpeg_source_change(ctx, jpeg_src_buf);
++	if (!v4l2_m2m_num_src_bufs_ready(ctx->fh.m2m_ctx))
++		mxc_jpeg_source_change(ctx, jpeg_src_buf);
+ 
+ 	return 0;
+ }
+@@ -1459,6 +1478,7 @@ static void mxc_jpeg_buf_finish(struct vb2_buffer *vb)
+ 	if (list_empty(&q->done_list)) {
+ 		vbuf->flags |= V4L2_BUF_FLAG_LAST;
+ 		ctx->stopped = 0;
++		ctx->header_parsed = false;
+ 	}
+ }
+ 
+@@ -1604,26 +1624,42 @@ static int mxc_jpeg_enum_fmt_vid_cap(struct file *file, void *priv,
+ 				     struct v4l2_fmtdesc *f)
+ {
+ 	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(priv);
++	struct mxc_jpeg_q_data *q_data = mxc_jpeg_get_q_data(ctx, f->type);
+ 
+-	if (ctx->mxc_jpeg->mode == MXC_JPEG_ENCODE)
++	if (ctx->mxc_jpeg->mode == MXC_JPEG_ENCODE) {
+ 		return enum_fmt(mxc_formats, MXC_JPEG_NUM_FORMATS, f,
+ 			MXC_JPEG_FMT_TYPE_ENC);
+-	else
++	} else if (!ctx->header_parsed) {
+ 		return enum_fmt(mxc_formats, MXC_JPEG_NUM_FORMATS, f,
+ 			MXC_JPEG_FMT_TYPE_RAW);
++	} else {
++		/* For the decoder CAPTURE queue, only enumerate the raw formats
++		 * supported for the format currently active on OUTPUT
++		 * (more precisely what was propagated on capture queue
++		 * after jpeg parse on the output buffer)
++		 */
++		if (f->index)
++			return -EINVAL;
++		f->pixelformat = q_data->fmt->fourcc;
++		strscpy(f->description, q_data->fmt->name, sizeof(f->description));
++		return 0;
++	}
+ }
+ 
+ static int mxc_jpeg_enum_fmt_vid_out(struct file *file, void *priv,
+ 				     struct v4l2_fmtdesc *f)
+ {
+ 	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(priv);
++	u32 type = ctx->mxc_jpeg->mode == MXC_JPEG_DECODE ?  MXC_JPEG_FMT_TYPE_ENC :
++							     MXC_JPEG_FMT_TYPE_RAW;
++	int ret;
+ 
++	ret = enum_fmt(mxc_formats, MXC_JPEG_NUM_FORMATS, f, type);
++	if (ret)
++		return ret;
+ 	if (ctx->mxc_jpeg->mode == MXC_JPEG_DECODE)
+-		return enum_fmt(mxc_formats, MXC_JPEG_NUM_FORMATS, f,
+-				MXC_JPEG_FMT_TYPE_ENC);
+-	else
+-		return enum_fmt(mxc_formats, MXC_JPEG_NUM_FORMATS, f,
+-				MXC_JPEG_FMT_TYPE_RAW);
++		f->flags = V4L2_FMT_FLAG_DYN_RESOLUTION;
++	return 0;
+ }
+ 
+ static int mxc_jpeg_try_fmt(struct v4l2_format *f, const struct mxc_jpeg_fmt *fmt,
+@@ -1981,6 +2017,7 @@ static const struct v4l2_file_operations mxc_jpeg_fops = {
+ };
+ 
+ static const struct v4l2_m2m_ops mxc_jpeg_m2m_ops = {
++	.job_ready      = mxc_jpeg_job_ready,
+ 	.device_run	= mxc_jpeg_device_run,
+ };
+ 
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+index 2b4b30d01e51..6913ae087e44 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.h
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+@@ -95,6 +95,8 @@ struct mxc_jpeg_ctx {
+ 	unsigned int			stopping;
+ 	unsigned int			stopped;
+ 	unsigned int			slot;
++	unsigned int			source_change;
++	bool				header_parsed;
+ };
+ 
+ struct mxc_jpeg_slot_data {
+-- 
+2.35.1
+
+
+
