@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F1CC25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50863C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245731AbiHOXUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+        id S1345539AbiHOXVF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353416AbiHOXQ2 (ORCPT
+        with ESMTP id S1353474AbiHOXQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:16:28 -0400
+        Mon, 15 Aug 2022 19:16:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774E81481E9;
-        Mon, 15 Aug 2022 13:03:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A391484E5;
+        Mon, 15 Aug 2022 13:03:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 544A3B81145;
-        Mon, 15 Aug 2022 20:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C24C433D6;
-        Mon, 15 Aug 2022 20:03:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62B38B81142;
+        Mon, 15 Aug 2022 20:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A51EDC433C1;
+        Mon, 15 Aug 2022 20:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593790;
-        bh=IlsTSu6kQK1W/fpZxKV4UfY/eYMvYpK9w43YyHcTS5o=;
+        s=korg; t=1660593799;
+        bh=VBA4o0Mb7y8Az4iYRvFH18ZYSc8JyfxdBkwdZbQ+Q28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t6Q8uDjzEJ1qy8TFVnewFKhaYMu0HHQAMJjHwzfGoiRq1tZuoVxcbEoB80yv8Eaav
-         DDyMxDyXWfuXPCbU5PgjIBjhAUDyZkkajYJCsEWYRgD3lyDrBXE1fixkxdN0Dk+tgG
-         cHaMd+PY3TaQeFXl4iU7gLDuI5ozABrtvSyEvliQ=
+        b=fHQr2UIIzKmFK6xp8m92rXfJQn8Eg8mgajLq2iPdk6Qo1dNM+sImHdgs8lU09fLVJ
+         kb1EA9LnptXG89CsJ4LlvrLNxKkq55Mx+jjQXGhmgVhL7Kn4e6X5T702D5JPrT6IWh
+         aATqMwjex6tVJEskTLOlgNOaDzIGDGPg7QdE89uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Yunhao Tian <t123yh.xyz@gmail.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0326/1157] ath11k: fix IRQ affinity warning on shutdown
-Date:   Mon, 15 Aug 2022 19:54:42 +0200
-Message-Id: <20220815180452.690231330@linuxfoundation.org>
+Subject: [PATCH 5.19 0327/1157] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
+Date:   Mon, 15 Aug 2022 19:54:43 +0200
+Message-Id: <20220815180452.735746838@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,39 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Yunhao Tian <t123yh.xyz@gmail.com>
 
-[ Upstream commit 3bd0c69653ac636eae8872aacdcd4156f772f928 ]
+[ Upstream commit 435c249008cba04ed6a7975e9411f3b934620204 ]
 
-Make sure to clear the IRQ affinity hint also on shutdown to avoid
-triggering a WARN_ON_ONCE() in __free_irq() when stopping MHI while
-using a single MSI vector.
+In __spi_validate, there's a validation that no partial transfers
+are accepted (xfer->len % w_size must be zero). When
+max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
+bpw = 16), the transfer will be rejected.
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
+so that no partial transfer will occur.
 
-Fixes: e94b07493da3 ("ath11k: Set IRQ affinity to CPU0 in case of one MSI vector")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220523143258.24818-1-johan+linaro@kernel.org
+Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
+
+Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
+Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220510030219.2486687-1-t123yh.xyz@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index dedf1b88ddf6..487a303b3077 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -920,7 +920,9 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
- static void ath11k_pci_shutdown(struct pci_dev *pdev)
- {
- 	struct ath11k_base *ab = pci_get_drvdata(pdev);
-+	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
+index 9314f2ead79f..09e4edb5a992 100644
+--- a/drivers/gpu/drm/drm_mipi_dbi.c
++++ b/drivers/gpu/drm/drm_mipi_dbi.c
+@@ -1199,6 +1199,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
+ 	size_t chunk;
+ 	int ret;
  
-+	ath11k_pci_set_irq_affinity_hint(ab_pci, NULL);
- 	ath11k_pci_power_down(ab);
- }
++	/* In __spi_validate, there's a validation that no partial transfers
++	 * are accepted (xfer->len % w_size must be zero).
++	 * Here we align max_chunk to multiple of 2 (16bits),
++	 * to prevent transfers from being rejected.
++	 */
++	max_chunk = ALIGN_DOWN(max_chunk, 2);
++
+ 	spi_message_init_with_transfers(&m, &tr, 1);
  
+ 	while (len) {
 -- 
 2.35.1
 
