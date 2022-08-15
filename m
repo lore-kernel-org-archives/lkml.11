@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF9BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F2AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243097AbiHOSbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S243145AbiHOSb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243255AbiHOSav (ORCPT
+        with ESMTP id S243360AbiHOSa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:30:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6448D326D4;
-        Mon, 15 Aug 2022 11:20:57 -0700 (PDT)
+        Mon, 15 Aug 2022 14:30:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2843326DD;
+        Mon, 15 Aug 2022 11:20:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D489460EDB;
-        Mon, 15 Aug 2022 18:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34D3C433C1;
-        Mon, 15 Aug 2022 18:20:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2292660EBB;
+        Mon, 15 Aug 2022 18:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2785FC433C1;
+        Mon, 15 Aug 2022 18:20:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587624;
-        bh=CRl5thBS3ZKwFT58v02G+ypacOiiUGNgiHmYuAwki8E=;
+        s=korg; t=1660587657;
+        bh=ai9n7In6AvAmJCXp8dgLUdN/R33ZQxYkQ1xdEtuRzyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2apRIq6YkfNxUKSvAGHuE5SiQ45nixp4yNw1udgrLqyBqe7vxrpmFCSguvsBnSjB6
-         FvYmr1IjDIEJHN+UTaf85Mz30BOhJbpT5CsNCuiWJybJVWup0XmbaFabijVAnDkcA4
-         FXONcWY/Xvt/YK+icdl4YNizmR8K8a2H3f2bNGTk=
+        b=p+F1Fuhm/fJTHMZTq9GhjLziD/CUAFsRdado6P1qgTeqJPNlWD+WktccTOyIBnHnT
+         b7sJl+5K5vEDBNeNtDjhNPXaE/Qs0+pUniFAD6TdwqZuJCaONthIQyzNTP2LNLCFGw
+         a+W8gvhYxa3y3YD+Rx2rexokXPxl7XeM1hX+UjSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/779] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
-Date:   Mon, 15 Aug 2022 19:56:26 +0200
-Message-Id: <20220815180343.394709586@linuxfoundation.org>
+Subject: [PATCH 5.15 152/779] powerpc/64s: Disable stack variable initialisation for prom_init
+Date:   Mon, 15 Aug 2022 19:56:36 +0200
+Message-Id: <20220815180343.809087800@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,35 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
+[ Upstream commit be640317a1d0b9cf42fedb2debc2887a7cfa38de ]
 
-"status" does not match any pattern in the gpio-leds binding. Rename the
-node to the preferred pattern. This fixes a `make dtbs_check` error.
+With GCC 12 allmodconfig prom_init fails to build:
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
+  Error: External symbol 'memset' referenced from prom_init.c
+  make[2]: *** [arch/powerpc/kernel/Makefile:204: arch/powerpc/kernel/prom_init_check] Error 1
+
+The allmodconfig build enables KASAN, so all calls to memset in
+prom_init should be converted to __memset by the #ifdefs in
+asm/string.h, because prom_init must use the non-KASAN instrumented
+versions.
+
+The build failure happens because there's a call to memset that hasn't
+been caught by the pre-processor and converted to __memset. Typically
+that's because it's a memset generated by the compiler itself, and that
+is the case here.
+
+With GCC 12, allmodconfig enables CONFIG_INIT_STACK_ALL_PATTERN, which
+causes the compiler to emit memset calls to initialise on-stack
+variables with a pattern.
+
+Because prom_init is non-user-facing boot-time only code, as a
+workaround just disable stack variable initialisation to unbreak the
+build.
+
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220718134418.354114-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-index 097a5511523a..09eee653d5ca 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-@@ -40,7 +40,7 @@ hdmi_con_in: endpoint {
- 	leds {
- 		compatible = "gpio-leds";
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index b1b23b4d56ba..ed91d5b9ffc6 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -20,6 +20,7 @@ CFLAGS_prom.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_prom_init.o += -fno-stack-protector
+ CFLAGS_prom_init.o += -DDISABLE_BRANCH_PROFILING
+ CFLAGS_prom_init.o += -ffreestanding
++CFLAGS_prom_init.o += $(call cc-option, -ftrivial-auto-var-init=uninitialized)
  
--		status {
-+		led-0 {
- 			label = "orangepi:green:status";
- 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
- 		};
+ ifdef CONFIG_FUNCTION_TRACER
+ # Do not trace early boot code
 -- 
 2.35.1
 
