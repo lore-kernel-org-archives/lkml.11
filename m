@@ -2,85 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41724C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9430C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbiHODiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
+        id S232808AbiHODiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbiHODiC (ORCPT
+        with ESMTP id S232766AbiHODiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:38:02 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1CD13EB4;
-        Sun, 14 Aug 2022 20:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660534681; x=1692070681;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/vQElSEN56HeDPn/ub86EWgbPJWslC5xOYifqsDS/VA=;
-  b=i4v/nLoxh940wbF7iQ0pQK7XTQ9m2/bqohv7dwrix5uJU5/T/k60gFkE
-   OZ/609dOpbqKiIhJnAyHigF/nCuq6Y/QgksgvmBXZ4t3hH3TlX1y4Cbep
-   s6+ZEj0ZaL09Zzgf2fRNiOyXMgNobvvMMUJt23GJUO5vci55MkwWriEmn
-   G6G6ATPk3+ihp+wTvzpPtHGVtLxynaw1GDlpFkMJCFUir8Zd191gtYKDv
-   T5A/fwOknAHYjrt3ViDgu9RLswxHwynsPTNxLKQC6KHjli5N7xkwvYwBC
-   ppvc2nENjLoxPJeLlp0si3daNPQtPDERjeOTPQN7l5D9nI7Wjye6eO0KC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="289452613"
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="289452613"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 20:38:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="709632239"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2022 20:37:58 -0700
-Date:   Mon, 15 Aug 2022 11:28:55 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fpga: microchip-spi: add missing module author entry
-Message-ID: <Yvm9dzhyj6k4+01g@yilunxu-OptiPlex-7050>
-References: <20220728075012.3136914-1-conor.dooley@microchip.com>
- <53f6e675-1fc5-fb17-ce6f-aa952d61132f@redhat.com>
+        Sun, 14 Aug 2022 23:38:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC7913EB4
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:38:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19812B80CF2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:38:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB18C433D6;
+        Mon, 15 Aug 2022 03:38:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660534683;
+        bh=VsYtEaLrultUzMYq2W9FqRUKe3E7Yctk9vn8SCRVUCs=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=EvOM/yGowHJ9MBWHDjna0JIomwNTVgijPeGdq6G3VY8JUttonvroTfsUwAvjQvCrw
+         Fqb2/qo2zTVQ8zbM+J6iY2T2cqj2svwY62g0ZZp4yRHDjmgvjitEbd8nX7hmpTifOV
+         DAUPbKubdiEl81nimPayRZ2jxXl0XCHpNEyK+7SasLXgZdTBPkrw0BNmIdNLnfG8JD
+         qmdkI6y1/s0wnfvCGBMzfVxMMLbPXst5buOxtVy7knkYE/I8LAU4Z+a298DvTmir/n
+         kakBEk/4l2qb4AFMFO3vo3GWk7NmLh2J50hDwgl2hhxONvlddVnj6DLFSpMN+HxgPp
+         OLhGcU2nwM7Fw==
+Message-ID: <f13d4881-820f-f6cd-4a70-c46ca3c5089f@kernel.org>
+Date:   Mon, 15 Aug 2022 11:38:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53f6e675-1fc5-fb17-ce6f-aa952d61132f@redhat.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [f2fs-dev] [PATCH] f2fs: zoned device does not support ATGC
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220811225454.2125297-1-jaegeuk@kernel.org>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220811225454.2125297-1-jaegeuk@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-28 at 05:29:48 -0700, Tom Rix wrote:
+On 2022/8/12 6:54, Jaegeuk Kim wrote:
+> ATGC is using SSR which violates zoned device. >
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+> ---
+>   fs/f2fs/super.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 > 
-> On 7/28/22 12:50 AM, Conor Dooley wrote:
-> > Add the missing MODULE_AUTHOR entry for the Microchip spi-slave FPGA
-> > programming driver.
-> > 
-> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> Reviewed-by: Tom Rix <trix@redhat.com>
+> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+> index 2451623c05a7..212ec2b4926b 100644
+> --- a/fs/f2fs/super.c
+> +++ b/fs/f2fs/super.c
+> @@ -1298,6 +1298,10 @@ static int parse_options(struct super_block *sb, char *options, bool is_remount)
+>   			F2FS_OPTION(sbi).discard_unit =
+>   					DISCARD_UNIT_SECTION;
+>   		}
+> +		if (test_opt(sbi, ATGC)) {
+> +			f2fs_err(sbi, "Zoned block device doesn't support ATGC.");
+> +			return -EINVAL;
+> +		}
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+ATGC is incompatible with LFS mode, we can check f2fs_lfs_mode() and ATGC
+mountoption instead, as zoned device depends on LFS mode.
 
-Applied to for-next
+Thanks,
 
-> > ---
-> >   drivers/fpga/microchip-spi.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
-> > index bd284c7b8dc9..7436976ea904 100644
-> > --- a/drivers/fpga/microchip-spi.c
-> > +++ b/drivers/fpga/microchip-spi.c
-> > @@ -395,4 +395,5 @@ static struct spi_driver mpf_driver = {
-> >   module_spi_driver(mpf_driver);
-> >   MODULE_DESCRIPTION("Microchip Polarfire SPI FPGA Manager");
-> > +MODULE_AUTHOR("Ivan Bornyakov <i.bornyakov@metrotek.ru>");
-> >   MODULE_LICENSE("GPL");
-> 
+>   	}
+>   
+>   #ifdef CONFIG_F2FS_FS_COMPRESSION
