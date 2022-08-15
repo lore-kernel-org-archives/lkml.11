@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8E5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70090C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348427AbiHOWXn (ORCPT
+        id S1348505AbiHOWXv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        Mon, 15 Aug 2022 18:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350768AbiHOWS3 (ORCPT
+        with ESMTP id S1350780AbiHOWSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553274198D;
-        Mon, 15 Aug 2022 12:41:26 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA89419AA;
+        Mon, 15 Aug 2022 12:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE38E61089;
-        Mon, 15 Aug 2022 19:41:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD6DDC433C1;
-        Mon, 15 Aug 2022 19:41:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A03AEB80EA9;
+        Mon, 15 Aug 2022 19:41:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1698C433C1;
+        Mon, 15 Aug 2022 19:41:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592485;
-        bh=imMcvGzzPpr3rWTwGM7Bb11ZJvZPVZIPQT6qdLY3okI=;
+        s=korg; t=1660592491;
+        bh=LDycKYnW6ye4o2A+N5sKquPsWFCQPRnl7ImjLXfcl90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhK17yXVuBDxC8btGuf57XAG4txiCajNNbOdd6tjVDvpR0430JrbwwaOzXLd8OKbo
-         59AZJk/czkjg9gaWyAU6+L2PpJyVa4fwnUZKRVR/SUg0Tqn76TBAffZSvJBJZCXhAO
-         P/EwCDQWoKxE3R75H9s22HSZ1JIpVJfInTmhisNo=
+        b=a/OhsFFxDuTB2vSbi4SpcnQOaO4Qlrh55oO7CuAgbo+9d87S/97zJiZLnx1p/w00b
+         Ixyfges4Mhnc8biuoBOJZWvjV4ICou7GxmHAQh/mWKRdzZjsalXzY8lyKwHEtFTmTb
+         JWl4wvloPxzgcA0EPAzp4zh8RZPpXB9xA7Wrt1A8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Serge Semin <fancer.lancer@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0759/1095] eeprom: idt_89hpesx: uninitialized data in idt_dbgfs_csr_write()
-Date:   Mon, 15 Aug 2022 20:02:38 +0200
-Message-Id: <20220815180500.682064472@linuxfoundation.org>
+Subject: [PATCH 5.18 0798/1095] tools/power/x86/intel-speed-select: Fix off by one check
+Date:   Mon, 15 Aug 2022 20:03:17 +0200
+Message-Id: <20220815180502.270345880@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,51 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 71d46f1ff2212ced4852c7e77c5176382a1bdcec ]
+[ Upstream commit d9f74d98bbec978edbf860f729b531281ba0d8ff ]
 
-The simple_write_to_buffer() function will return positive/success if it
-is able to write a single byte anywhere within the buffer.  However that
-potentially leaves a lot of the buffer uninitialized.
+Change > MAX_DIE_PER_PACKAGE to >= MAX_DIE_PER_PACKAGE to prevent
+accessing one element beyond the end of the array.
 
-In this code it's better to return 0 if the offset is non-zero.  This
-code is not written to support partial writes.  And then return -EFAULT
-if the buffer is not completely initialized.
-
-Fixes: cfad6425382e ("eeprom: Add IDT 89HPESx EEPROM/CSR driver")
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Fixes: 7fd786dfbd2c ("tools/power/x86/intel-speed-select: OOB daemon mode")
 Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/Ysg1Pu/nzSMe3r1q@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/eeprom/idt_89hpesx.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ tools/power/x86/intel-speed-select/isst-daemon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/eeprom/idt_89hpesx.c b/drivers/misc/eeprom/idt_89hpesx.c
-index b0cff4b152da..7f430742ce2b 100644
---- a/drivers/misc/eeprom/idt_89hpesx.c
-+++ b/drivers/misc/eeprom/idt_89hpesx.c
-@@ -909,14 +909,18 @@ static ssize_t idt_dbgfs_csr_write(struct file *filep, const char __user *ubuf,
- 	u32 csraddr, csrval;
- 	char *buf;
+diff --git a/tools/power/x86/intel-speed-select/isst-daemon.c b/tools/power/x86/intel-speed-select/isst-daemon.c
+index dd372924bc82..d0400c6684ba 100644
+--- a/tools/power/x86/intel-speed-select/isst-daemon.c
++++ b/tools/power/x86/intel-speed-select/isst-daemon.c
+@@ -41,7 +41,7 @@ void process_level_change(int cpu)
+ 	time_t tm;
+ 	int ret;
  
-+	if (*offp)
-+		return 0;
-+
- 	/* Copy data from User-space */
- 	buf = kmalloc(count + 1, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
- 
--	ret = simple_write_to_buffer(buf, count, offp, ubuf, count);
--	if (ret < 0)
-+	if (copy_from_user(buf, ubuf, count)) {
-+		ret = -EFAULT;
- 		goto free_buf;
-+	}
- 	buf[count] = 0;
- 
- 	/* Find position of colon in the buffer */
+-	if (pkg_id >= MAX_PACKAGE_COUNT || die_id > MAX_DIE_PER_PACKAGE) {
++	if (pkg_id >= MAX_PACKAGE_COUNT || die_id >= MAX_DIE_PER_PACKAGE) {
+ 		debug_printf("Invalid package/die info for cpu:%d\n", cpu);
+ 		return;
+ 	}
 -- 
 2.35.1
 
