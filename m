@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57A6C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE01C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345444AbiHOXns (ORCPT
+        id S1354209AbiHOXn4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        Mon, 15 Aug 2022 19:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354111AbiHOXlT (ORCPT
+        with ESMTP id S1354126AbiHOXl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:19 -0400
+        Mon, 15 Aug 2022 19:41:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788097695A;
-        Mon, 15 Aug 2022 13:10:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617C0B8A51;
+        Mon, 15 Aug 2022 13:10:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFED460025;
-        Mon, 15 Aug 2022 20:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA62C433D6;
-        Mon, 15 Aug 2022 20:10:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F33B260025;
+        Mon, 15 Aug 2022 20:10:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ADE0C433D6;
+        Mon, 15 Aug 2022 20:10:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594238;
-        bh=9l5a7uxFD4tC0+inbuqt5PluP2aZ1z05eFhVaLGUPFM=;
+        s=korg; t=1660594241;
+        bh=wrdV1fXSBKWOJtHJ7kC8djl55hFYUK2qDMkSXC92H5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RVRkhWpS3+WeUdCq2PQFIVhnwTmpohAriwjhNiDHdTy2rJpyQNLqsoSbDiRIezGL7
-         YYqomH6snkImuW8Kl2WA8R3rvVfgMgUruxAOxQeAYTtJEjkTfWv02cbRQRQHDgJ8W5
-         WdyCjwECgX1/o5qdd5eGCdAf6K9WLK0LuRrXNuMo=
+        b=kra0gckRklY9r7iD3KaeTZKDmLJqQ5njHdp24jb08Ex1v4l8m9YrOB4fNZhFbMfKy
+         fzI4/sszj7I2mci5nFzQCms6BOJ6FB5S6hcHjti7MrZeSCYnSBKOJ0G8d0+HZ466Cy
+         MV4SygCs3XEU4qWg/+tp6JFS90n91CPj9TCyZnTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0399/1157] media: v4l2-mem2mem: prevent pollerr when last_buffer_dequeued is set
-Date:   Mon, 15 Aug 2022 19:55:55 +0200
-Message-Id: <20220815180455.630760694@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 1077/1095] tcp: fix over estimation in sk_forced_mem_schedule()
+Date:   Mon, 15 Aug 2022 20:07:56 +0200
+Message-Id: <20220815180513.603052216@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit d4de27a9b1eadd33a2e40de87a646d1bf5fef756 ]
+commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
 
-If the last buffer was dequeued from the capture queue,
-signal userspace. DQBUF(CAPTURE) will return -EPIPE.
+sk_forced_mem_schedule() has a bug similar to ones fixed
+in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
+sk_rmem_schedule() errors")
 
-But if output queue is empty and capture queue is empty,
-v4l2_m2m_poll_for_data will return EPOLLERR,
-This is very easy to happen in drain.
+While this bug has little chance to trigger in old kernels,
+we need to fix it before the following patch.
 
-When last_buffer_dequeued is set, we shouldn't return EPOLLERR,
-but return EPOLLIN | EPOLLRDNORM.
-
-Fixes: 1698a7f151126 ("media: v4l2-mem2mem: simplify poll logic")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/v4l2-core/v4l2-mem2mem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_output.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/v4l2-core/v4l2-mem2mem.c b/drivers/media/v4l2-core/v4l2-mem2mem.c
-index 6469f9a25a4e..837e1855f94b 100644
---- a/drivers/media/v4l2-core/v4l2-mem2mem.c
-+++ b/drivers/media/v4l2-core/v4l2-mem2mem.c
-@@ -925,7 +925,7 @@ static __poll_t v4l2_m2m_poll_for_data(struct file *file,
- 	if ((!src_q->streaming || src_q->error ||
- 	     list_empty(&src_q->queued_list)) &&
- 	    (!dst_q->streaming || dst_q->error ||
--	     list_empty(&dst_q->queued_list)))
-+	     (list_empty(&dst_q->queued_list) && !dst_q->last_buffer_dequeued)))
- 		return EPOLLERR;
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3367,11 +3367,12 @@ void tcp_xmit_retransmit_queue(struct so
+  */
+ void sk_forced_mem_schedule(struct sock *sk, int size)
+ {
+-	int amt;
++	int delta, amt;
  
- 	spin_lock_irqsave(&src_q->done_lock, flags);
--- 
-2.35.1
-
+-	if (size <= sk->sk_forward_alloc)
++	delta = size - sk->sk_forward_alloc;
++	if (delta <= 0)
+ 		return;
+-	amt = sk_mem_pages(size);
++	amt = sk_mem_pages(delta);
+ 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
+ 	sk_memory_allocated_add(sk, amt);
+ 
 
 
