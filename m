@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A910EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1187C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbiHOSr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
+        id S243944AbiHOSsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242444AbiHOSmq (ORCPT
+        with ESMTP id S232907AbiHOSm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:42:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F287B2B634;
-        Mon, 15 Aug 2022 11:26:27 -0700 (PDT)
+        Mon, 15 Aug 2022 14:42:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F36B2A43A;
+        Mon, 15 Aug 2022 11:26:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F21460FA2;
-        Mon, 15 Aug 2022 18:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA21C433C1;
-        Mon, 15 Aug 2022 18:26:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E386060FC4;
+        Mon, 15 Aug 2022 18:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68ECC433C1;
+        Mon, 15 Aug 2022 18:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587987;
-        bh=vrIzN52GEEHh/T0R5cqvOZOYcnv5hQLjIKksDxnlmEo=;
+        s=korg; t=1660587993;
+        bh=phN+qSxQHO3xHdsp0Cmw0hMbLrUCSsjAQLXTncAvUFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uFT4n5HIyD1iEfXfdW7qihANasROOk9E2lZIaV0fxDawrn5DH2XLHQ3RF61050N0X
-         AMrKqUoBRRl4ZpriIJSlaXdhvD9dC3iKTRjJOivUjjqbyfTN4q+gkmm+V/nw+XJqrS
-         YfsL4qiIrTMpnz+XE3XWuI2T9vHV0v5AOtFbzOlI=
+        b=TFmr9amSxPdxyYlGXxCq/6XJ7CLHwVUOtJyUXOf6Eh4kY/e2k98OpMDmhnS8C7ceo
+         u+k4HupshKDw8HxzldgFUXpC1tDW9tTAtguylIfafghBmd2w3MRU4HGbCRNYvwQrN7
+         eOggriTU1w4FS+WTDyOoH+toP1cN3mEHYMudTi6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Emil Renner Berthing <emil.renner.berthing@canonical.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 228/779] pwm: sifive: Simplify offset calculation for PWMCMP registers
-Date:   Mon, 15 Aug 2022 19:57:52 +0200
-Message-Id: <20220815180347.042370561@linuxfoundation.org>
+Subject: [PATCH 5.15 230/779] pwm: sifive: Shut down hardware only after pwmchip_remove() completed
+Date:   Mon, 15 Aug 2022 19:57:54 +0200
+Message-Id: <20220815180347.131601780@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -54,67 +54,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 20550a61880fc55e68a0d290ad195b74729c0e7b ]
+[ Upstream commit 2375e964d541bb09158cd2dff67b5d74e8de61cd ]
 
-Instead of explicitly using PWM_SIFIVE_PWMCMP0 + pwm->hwpwm *
-PWM_SIFIVE_SIZE_PWMCMP for each access to one of the PWMCMP registers,
-introduce a macro that takes the hwpwm id as parameter.
+The PWMs are expected to be functional until pwmchip_remove() is called.
+So disable the clks only afterwards.
 
-For the register definition using a plain 4 instead of the cpp constant
-PWM_SIFIVE_SIZE_PWMCMP is easier to read, so define the offset macro
-without the constant. The latter can then be dropped as there are no
-users left.
-
+Fixes: 9e37a53eb051 ("pwm: sifive: Add a driver for SiFive SoC PWM")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-sifive.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index 253c4a17d255..a55f7345dc87 100644
+index 3936fda53366..58347fcd4812 100644
 --- a/drivers/pwm/pwm-sifive.c
 +++ b/drivers/pwm/pwm-sifive.c
-@@ -23,7 +23,7 @@
- #define PWM_SIFIVE_PWMCFG		0x0
- #define PWM_SIFIVE_PWMCOUNT		0x8
- #define PWM_SIFIVE_PWMS			0x10
--#define PWM_SIFIVE_PWMCMP0		0x20
-+#define PWM_SIFIVE_PWMCMP(i)		(0x20 + 4 * (i))
+@@ -321,6 +321,9 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	struct pwm_device *pwm;
+ 	int ch;
  
- /* PWMCFG fields */
- #define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
-@@ -36,8 +36,6 @@
- #define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
- #define PWM_SIFIVE_PWMCFG_IP		BIT(28)
- 
--/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX registers */
--#define PWM_SIFIVE_SIZE_PWMCMP		4
- #define PWM_SIFIVE_CMPWIDTH		16
- #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
- 
-@@ -112,8 +110,7 @@ static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
- 	u32 duty, val;
- 
--	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP0 +
--		     pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
- 
- 	state->enabled = duty > 0;
- 
-@@ -194,8 +191,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		pwm_sifive_update_clock(ddata, clk_get_rate(ddata->clk));
++	pwmchip_remove(&ddata->chip);
++	clk_notifier_unregister(ddata->clk, &ddata->notifier);
++
+ 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+ 		pwm = &ddata->chip.pwms[ch];
+ 		if (pwm->state.enabled)
+@@ -328,8 +331,6 @@ static int pwm_sifive_remove(struct platform_device *dev)
  	}
  
--	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP0 +
--	       pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
+ 	clk_unprepare(ddata->clk);
+-	pwmchip_remove(&ddata->chip);
+-	clk_notifier_unregister(ddata->clk, &ddata->notifier);
  
- 	if (state->enabled != enabled)
- 		pwm_sifive_enable(chip, state->enabled);
+ 	return 0;
+ }
 -- 
 2.35.1
 
