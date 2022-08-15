@@ -2,168 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F7BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6540C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345883AbiHOUpN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
+        id S233313AbiHOUpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347315AbiHOUmn (ORCPT
+        with ESMTP id S1347520AbiHOUmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:42:43 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBEAB2841;
-        Mon, 15 Aug 2022 12:07:53 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id t11so6220934qkt.6;
-        Mon, 15 Aug 2022 12:07:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
-        b=E5hSn4x/FyOrhwErFKwCPEo40cc9WtEGsbeeVaV9nMZJ1+j4BRemuUo9CBUdGhIPhz
-         53tLn/eI5vhAlajZV6LQbEOKfwhMDTadvCV4hSjF4z2kxFWRXhuqeOoVRNie4vpSPyG6
-         XYwcVUFDtwR1jH9Wdt+/eCMAut1YIqaWbo27CbsOXfTPG+/NoXX5nAVuY7gypUvWslVp
-         tooKDWR16OxzPkwhEHOPL7r51bz8YiynKxC+Ya7chnGb+jHmWrHA5sleEGDaY0JVUAp/
-         c4pr/TiRqcgqMdNJOxisU2+R7Alg1zdjSYxQJrzXzPT4MVl3CYz/7Dn7UiBD7taQg4Lj
-         jKHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
-        b=PoewzGwLZMZRNgUUAnWhni7TvuKPVmkDdwdvMu3BS+CEyflPpTz/RXruqHabhCrFeE
-         MQm8VBqdTqCU2nklsXob1DeI23XTfBAtZIhffReH/Z0Osj+BVHRMOmsJRlkDo7Lfnk11
-         BfpVYchjE1rXgxbT4MeTi/lYcKqrm4p4uzSiGHEfpgoYrSHblWYMbTS2CmsZx54b0MBT
-         7dW+QHQvK/dr7qOAc1q6IYt87F3cdgsLHXpApJNVDffmNkRl0m2pF33hpb++6W83NXFa
-         jvti2VkiGeUUZqGJYokWSIOItfl4UIgLTL0gk3OaUWYZVjNBDmKnGrGev2m3hzgDkVRT
-         /1fw==
-X-Gm-Message-State: ACgBeo1BgNvAtZn48EhH9JWHqE2x5VvyZRJMfoTIoCzsteoKi6qxNqSx
-        xEIqROhNTXa5de8TEyttY0UlwbwZDK8=
-X-Google-Smtp-Source: AA6agR5VoTu90ugZfLvHTUVoLW6a4nmf0qFxn/LPwfQGNz4x7026GRFC01AKDh44STznzxOxOhyJIQ==
-X-Received: by 2002:a05:620a:c55:b0:6a7:9e01:95c9 with SMTP id u21-20020a05620a0c5500b006a79e0195c9mr12404238qki.63.1660590471623;
-        Mon, 15 Aug 2022 12:07:51 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05620a294500b006b93fcc9604sm10226889qkp.108.2022.08.15.12.07.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 12:07:50 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] net: phy: broadcom: Implement suspend/resume for AC131 and BCM5241
-Date:   Mon, 15 Aug 2022 12:07:47 -0700
-Message-Id: <20220815190747.2749477-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 15 Aug 2022 16:42:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5E9B3B3C;
+        Mon, 15 Aug 2022 12:08:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5287B81107;
+        Mon, 15 Aug 2022 19:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BE3C433C1;
+        Mon, 15 Aug 2022 19:07:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590478;
+        bh=4fhb2oIdanX65ZK+ytJhPxGiRtvlMXTbF5uBC4SK5Cg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C7XWL34Ya64m5V1zRTULeSy18uHFlmp0/Jz8u6V1yLp2Ov7aUyAerHlhjgoHuiUob
+         uSELAWXcmt8BIKz27iMNEtMWeaKgnRMtzmPG3IE/GygKb9avY5X4EfB6Ib/GyVmWTo
+         9hYXSb+RohFcOvkQzpqzsvwpwG8deWXnydl1xq0w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Junichi Nomura <junichi.nomura@nec.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Mike Christie <michael.christie@oracle.com>,
+        Li Zefan <lizf@cn.fujitsu.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0273/1095] blktrace: Trace remapped requests correctly
+Date:   Mon, 15 Aug 2022 19:54:32 +0200
+Message-Id: <20220815180441.043539071@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement the suspend/resume procedure for the Broadcom AC131 and BCM5241 type
-of PHYs (10/100 only) by entering the standard power down followed by the
-proprietary standby mode in the auxiliary mode 4 shadow register. On resume,
-the PHY software reset is enough to make it come out of standby mode so we can
-utilize brcm_fet_config_init() as the resume hook.
+From: Bart Van Assche <bvanassche@acm.org>
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+[ Upstream commit 22c80aac882f712897b88b7ea8f5a74ea19019df ]
+
+Trace the remapped operation and its flags instead of only the data
+direction of remapped operations. This issue was detected by analyzing
+the warnings reported by sparse related to the new blk_opf_t type.
+
+Reviewed-by: Jun'ichi Nomura <junichi.nomura@nec.com>
+Cc: Mike Snitzer <snitzer@kernel.org>
+Cc: Mike Christie <michael.christie@oracle.com>
+Cc: Li Zefan <lizf@cn.fujitsu.com>
+Cc: Chaitanya Kulkarni <kch@nvidia.com>
+Fixes: 1b9a9ab78b0a ("blktrace: use op accessors")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Link: https://lore.kernel.org/r/20220714180729.1065367-11-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Changes in v2:
+ kernel/trace/blktrace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- utilize phy_modify() to write to MII_BRCM_FET_SHDW_AUXMODE4 (Russell)
-
- drivers/net/phy/broadcom.c | 39 ++++++++++++++++++++++++++++++++++++++
- include/linux/brcmphy.h    |  1 +
- 2 files changed, 40 insertions(+)
-
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 31fbcdddc9ad..ad71c88c87e7 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -766,6 +766,41 @@ static irqreturn_t brcm_fet_handle_interrupt(struct phy_device *phydev)
- 	return IRQ_HANDLED;
+diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
+index 4d5629196d01..f22219495541 100644
+--- a/kernel/trace/blktrace.c
++++ b/kernel/trace/blktrace.c
+@@ -1059,7 +1059,7 @@ static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
+ 	r.sector_from = cpu_to_be64(from);
+ 
+ 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
+-			rq_data_dir(rq), 0, BLK_TA_REMAP, 0,
++			req_op(rq), rq->cmd_flags, BLK_TA_REMAP, 0,
+ 			sizeof(r), &r, blk_trace_request_get_cgid(rq));
+ 	rcu_read_unlock();
  }
- 
-+static int brcm_fet_suspend(struct phy_device *phydev)
-+{
-+	int reg, err, err2, brcmtest;
-+
-+	/* We cannot use a read/modify/write here otherwise the PHY continues
-+	 * to drive LEDs which defeats the purpose of low power mode.
-+	 */
-+	err = phy_write(phydev, MII_BMCR, BMCR_PDOWN);
-+	if (err < 0)
-+		return err;
-+
-+	/* Enable shadow register access */
-+	brcmtest = phy_read(phydev, MII_BRCM_FET_BRCMTEST);
-+	if (brcmtest < 0)
-+		return brcmtest;
-+
-+	reg = brcmtest | MII_BRCM_FET_BT_SRE;
-+
-+	err = phy_write(phydev, MII_BRCM_FET_BRCMTEST, reg);
-+	if (err < 0)
-+		return err;
-+
-+	/* Set standby mode */
-+	err = phy_modify(phydev, MII_BRCM_FET_SHDW_AUXMODE4,
-+			 MII_BRCM_FET_SHDW_AM4_STANDBY,
-+			 MII_BRCM_FET_SHDW_AM4_STANDBY);
-+
-+	/* Disable shadow register access */
-+	err2 = phy_write(phydev, MII_BRCM_FET_BRCMTEST, brcmtest);
-+	if (!err)
-+		err = err2;
-+
-+	return err;
-+}
-+
- static int bcm54xx_phy_probe(struct phy_device *phydev)
- {
- 	struct bcm54xx_phy_priv *priv;
-@@ -1033,6 +1068,8 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= brcm_fet_config_init,
- 	.config_intr	= brcm_fet_config_intr,
- 	.handle_interrupt = brcm_fet_handle_interrupt,
-+	.suspend	= brcm_fet_suspend,
-+	.resume		= brcm_fet_config_init,
- }, {
- 	.phy_id		= PHY_ID_BCM5241,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -1041,6 +1078,8 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= brcm_fet_config_init,
- 	.config_intr	= brcm_fet_config_intr,
- 	.handle_interrupt = brcm_fet_handle_interrupt,
-+	.suspend	= brcm_fet_suspend,
-+	.resume		= brcm_fet_config_init,
- }, {
- 	.phy_id		= PHY_ID_BCM5395,
- 	.phy_id_mask	= 0xfffffff0,
-diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index 6ff567ece34a..9e77165f3ef6 100644
---- a/include/linux/brcmphy.h
-+++ b/include/linux/brcmphy.h
-@@ -293,6 +293,7 @@
- #define MII_BRCM_FET_SHDW_MC_FAME	0x4000	/* Force Auto MDIX enable */
- 
- #define MII_BRCM_FET_SHDW_AUXMODE4	0x1a	/* Auxiliary mode 4 */
-+#define MII_BRCM_FET_SHDW_AM4_STANDBY	0x0008	/* Standby enable */
- #define MII_BRCM_FET_SHDW_AM4_LED_MASK	0x0003
- #define MII_BRCM_FET_SHDW_AM4_LED_MODE1 0x0001
- 
 -- 
-2.25.1
+2.35.1
+
+
 
