@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B70FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D1DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232251AbiHOWwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        id S1352113AbiHOWw5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352247AbiHOWvO (ORCPT
+        with ESMTP id S1352263AbiHOWvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:51:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F217613793D;
-        Mon, 15 Aug 2022 12:54:09 -0700 (PDT)
+        Mon, 15 Aug 2022 18:51:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96DE57F094;
+        Mon, 15 Aug 2022 12:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFAB9B81142;
-        Mon, 15 Aug 2022 19:54:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38BAEC433D6;
-        Mon, 15 Aug 2022 19:54:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E0156113B;
+        Mon, 15 Aug 2022 19:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6151EC433C1;
+        Mon, 15 Aug 2022 19:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593246;
-        bh=Tc4WXDymJ2CTXI4iMTKoY3fQcpSHQK9LM9L2XSipGUk=;
+        s=korg; t=1660593250;
+        bh=1gm89znpul3M7Mq6PsQpbMptuNLADq3XNqrD31rIi4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VfY1fKP7yAkF0Lvc0oAvSDDajKaY30341en6KGTpd9CVO0HIhFjFhkLrzYhWjbG1c
-         wyNRD7kFYiSgDujc7NQ4Crt91npSOPc62+XaYOmPgO4ZZzag+M2OLaiqLna7cNTDb0
-         YuuKbN6NTvToKkNiEG1vAZGA2Ji/vOMznMR58eig=
+        b=FofJOu1Ky+iC5ximmm/Y7PkuhxZvrQYZXKN3eEOFniSQxD3AeyBLKrcHbftCur4yt
+         4CuTUlUh7ALbMcN9qY+YmLGTjUm26gYCuBdiOxGtvx6qLtx8ODCSfqDnNwgBMvxtjM
+         qLgGIuIHw5oRVfZbB5nMWvs527K6FAucweaPAA7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        Chris Paterson <chris.paterson2@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0917/1095] powerpc/32: Do not allow selection of e5500 or e6500 CPUs on PPC32
-Date:   Mon, 15 Aug 2022 20:05:16 +0200
-Message-Id: <20220815180507.213650069@linuxfoundation.org>
+Subject: [PATCH 5.19 0236/1157] arm64: dts: renesas: r9a07g054l2-smarc: Correct SoC name in comment
+Date:   Mon, 15 Aug 2022 19:53:12 +0200
+Message-Id: <20220815180449.006561795@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Chris Paterson <chris.paterson2@renesas.com>
 
-[ Upstream commit 9be013b2a9ecb29b5168e4b9db0e48ed53acf37c ]
+[ Upstream commit d1273f541ab409242e08da6bb836bb564021274c ]
 
-Commit 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
-enlarged the CPU selection logic to PPC32 by removing depend to
-PPC64, and failed to restrict that depend to E5500_CPU and E6500_CPU.
-Fortunately that got unnoticed because -mcpu=8540 will override the
--mcpu=e500mc64 or -mpcu=e6500 as they are ealier, but that's
-fragile and may no be right in the future.
+This dts is for the RZ/V2L SMARC EVK, not RZ/G2L.
 
-Add back the depend PPC64 on E5500_CPU and E6500_CPU.
-
-Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu
+Fixes: f91c4c74796a ("arm64: dts: renesas: Add initial device tree for RZ/V2L SMARC EVK")
+Signed-off-by: Chris Paterson <chris.paterson2@renesas.com>
+Link: https://lore.kernel.org/r/20220623103024.24222-1-chris.paterson2@renesas.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/Kconfig.cputype | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index e2e1fec91c6e..660309559bd8 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -173,11 +173,11 @@ config POWER9_CPU
- 
- config E5500_CPU
- 	bool "Freescale e5500"
--	depends on E500
-+	depends on PPC64 && E500
- 
- config E6500_CPU
- 	bool "Freescale e6500"
--	depends on E500
-+	depends on PPC64 && E500
- 
- config 860_CPU
- 	bool "8xx family"
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts b/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
+index 4e07e1a0fb66..3d01a4cf0fbe 100644
+--- a/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
++++ b/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /*
+- * Device Tree Source for the RZ/G2L SMARC EVK board
++ * Device Tree Source for the RZ/V2L SMARC EVK board
+  *
+  * Copyright (C) 2021 Renesas Electronics Corp.
+  */
 -- 
 2.35.1
 
