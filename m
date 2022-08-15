@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3F1C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AD8C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245335AbiHPAjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
+        id S1344490AbiHPAjT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351888AbiHPAge (ORCPT
+        with ESMTP id S1345133AbiHPAh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:36:34 -0400
+        Mon, 15 Aug 2022 20:37:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A554518A8F9;
-        Mon, 15 Aug 2022 13:37:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D9818B8A6;
+        Mon, 15 Aug 2022 13:38:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A70E261232;
-        Mon, 15 Aug 2022 20:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B9AC433C1;
-        Mon, 15 Aug 2022 20:37:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F26F26121F;
+        Mon, 15 Aug 2022 20:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E384CC433D6;
+        Mon, 15 Aug 2022 20:38:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595878;
-        bh=YTiMFhoSMMnGNTHiEsgFEmAmD1SPaL3yjJsXjV8eRAs=;
+        s=korg; t=1660595891;
+        bh=F2p/WEQeJi8ajn9AXc1MfaTPlgWmnAqr2FACq5qrus4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBWXYBV7enf5Z5dcD7IlmwH/qsvMKHvZ3xSZu984xtkFbWrqktPaYpddE1zGu3Ae6
-         UgXKnzVvurq6H9ss4hguc6sOV6GYvAeW2XBVeDBkbBtwfct6xSNq3xORcs70X6nze8
-         Qm2GXTMRpK1Q/xY3MTZuOZ1f8u9AB3Lff1AbKjA0=
+        b=WNYCpO6EPI/mplPxYXKVQV92PE+RjXA3+2rS3TEdB1fINXSoJklV84M/1irYYFr2q
+         WFgd36r8fhCYwuX5+glJhiL2W+zsYeEMQ2aPvDp/DKUkpkpibNuLxBidb26y2a+OA8
+         4GnShZrRUDF90Uq5M/pCo3AW/L1bXmcvbk4OJiOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        Juergen Gross <jgross@suse.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0871/1157] xen: dont require virtio with grants for non-PV guests
-Date:   Mon, 15 Aug 2022 20:03:47 +0200
-Message-Id: <20220815180514.310806817@linuxfoundation.org>
+Subject: [PATCH 5.19 0908/1157] rpmsg: mtk_rpmsg: Fix circular locking dependency
+Date:   Mon, 15 Aug 2022 20:04:24 +0200
+Message-Id: <20220815180515.773884086@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,212 +52,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit 251e90e7e346a23742b90e2c4db19d322e071d99 ]
+[ Upstream commit 353d9214682e65c55cdffad8c82139a3321c5f13 ]
 
-Commit fa1f57421e0b ("xen/virtio: Enable restricted memory access using
-Xen grant mappings") introduced a new requirement for using virtio
-devices: the backend now needs to support the VIRTIO_F_ACCESS_PLATFORM
-feature.
+During execution of the worker that's used to register rpmsg devices
+we are safely locking the channels mutex but, when creating a new
+endpoint for such devices, we are registering a IPI on the SCP, which
+then makes the SCP to trigger an interrupt, lock its own mutex and in
+turn register more subdevices.
+This creates a circular locking dependency situation, as the mtk_rpmsg
+channels_lock will then depend on the SCP IPI lock.
 
-This is an undue requirement for non-PV guests, as those can be operated
-with existing backends without any problem, as long as those backends
-are running in dom0.
+[   15.447736] ======================================================
+[   15.460158] WARNING: possible circular locking dependency detected
+[   15.460161] 5.17.0-next-20220324+ #399 Not tainted
+[   15.460165] ------------------------------------------------------
+[   15.460166] kworker/0:3/155 is trying to acquire lock:
+[   15.460170] ffff5b4d0eaf1308 (&scp->ipi_desc[i].lock){+.+.}-{4:4}, at: scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
+[   15.504958]
+[]                but task is already holding lock:
+[   15.504960] ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
+[   15.504978]
+[]                which lock already depends on the new lock.
 
-Per default allow virtio devices without grant support for non-PV
-guests.
+[   15.504980]
+[]                the existing dependency chain (in reverse order) is:
+[   15.504982]
+[]               -> #1 (&mtk_subdev->channels_lock){+.+.}-{4:4}:
+[   15.504990]        lock_acquire+0x68/0x84
+[   15.504999]        __mutex_lock+0xa4/0x3e0
+[   15.505007]        mutex_lock_nested+0x40/0x70
+[   15.505012]        mtk_rpmsg_ns_cb+0xe4/0x134 [mtk_rpmsg]
+[   15.641684]        mtk_rpmsg_ipi_handler+0x38/0x64 [mtk_rpmsg]
+[   15.641693]        scp_ipi_handler+0xbc/0x180 [mtk_scp]
+[   15.663905]        mt8192_scp_irq_handler+0x44/0xa4 [mtk_scp]
+[   15.663915]        scp_irq_handler+0x6c/0xa0 [mtk_scp]
+[   15.685779]        irq_thread_fn+0x34/0xa0
+[   15.685785]        irq_thread+0x18c/0x240
+[   15.685789]        kthread+0x104/0x110
+[   15.709579]        ret_from_fork+0x10/0x20
+[   15.709586]
+[]               -> #0 (&scp->ipi_desc[i].lock){+.+.}-{4:4}:
+[   15.731271]        __lock_acquire+0x11e4/0x1910
+[   15.740367]        lock_acquire.part.0+0xd8/0x220
+[   15.749813]        lock_acquire+0x68/0x84
+[   15.757861]        __mutex_lock+0xa4/0x3e0
+[   15.766084]        mutex_lock_nested+0x40/0x70
+[   15.775006]        scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
+[   15.785503]        scp_ipi_register+0x40/0xa4 [mtk_scp_ipi]
+[   15.796697]        scp_register_ipi+0x1c/0x30 [mtk_scp]
+[   15.807194]        mtk_rpmsg_create_ept+0xa0/0x108 [mtk_rpmsg]
+[   15.818912]        rpmsg_create_ept+0x44/0x60
+[   15.827660]        cros_ec_rpmsg_probe+0x15c/0x1f0
+[   15.837282]        rpmsg_dev_probe+0x128/0x1d0
+[   15.846203]        really_probe.part.0+0xa4/0x2a0
+[   15.855649]        __driver_probe_device+0xa0/0x150
+[   15.865443]        driver_probe_device+0x48/0x150
+[   15.877157]        __device_attach_driver+0xc0/0x12c
+[   15.889359]        bus_for_each_drv+0x80/0xe0
+[   15.900330]        __device_attach+0xe4/0x190
+[   15.911303]        device_initial_probe+0x1c/0x2c
+[   15.922969]        bus_probe_device+0xa8/0xb0
+[   15.933927]        device_add+0x3a8/0x8a0
+[   15.944193]        device_register+0x28/0x40
+[   15.954970]        rpmsg_register_device+0x5c/0xa0
+[   15.966782]        mtk_register_device_work_function+0x148/0x1cc [mtk_rpmsg]
+[   15.983146]        process_one_work+0x294/0x664
+[   15.994458]        worker_thread+0x7c/0x45c
+[   16.005069]        kthread+0x104/0x110
+[   16.014789]        ret_from_fork+0x10/0x20
+[   16.025201]
+[]               other info that might help us debug this:
 
-On Arm require VIRTIO_F_ACCESS_PLATFORM for devices having been listed
-in the device tree to use grants.
+[   16.047769]  Possible unsafe locking scenario:
 
-Add a new config item to always force use of grants for virtio.
+[   16.063942]        CPU0                    CPU1
+[   16.075166]        ----                    ----
+[   16.086376]   lock(&mtk_subdev->channels_lock);
+[   16.097592]                                lock(&scp->ipi_desc[i].lock);
+[   16.113188]                                lock(&mtk_subdev->channels_lock);
+[   16.129482]   lock(&scp->ipi_desc[i].lock);
+[   16.140020]
+[]                *** DEADLOCK ***
 
-Fixes: fa1f57421e0b ("xen/virtio: Enable restricted memory access using Xen grant mappings")
-Reported-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Tested-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com> # Arm64 guest using Xen
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-Link: https://lore.kernel.org/r/20220622063838.8854-4-jgross@suse.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+[   16.158282] 4 locks held by kworker/0:3/155:
+[   16.168978]  #0: ffff5b4d00008748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
+[   16.190017]  #1: ffff80000953bdc8 ((work_completion)(&mtk_subdev->register_work)){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
+[   16.215269]  #2: ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
+[   16.242131]  #3: ffff5b4d05964190 (&dev->mutex){....}-{4:4}, at: __device_attach+0x44/0x190
+
+To solve this, simply unlock the channels_lock mutex before calling
+mtk_rpmsg_register_device() and relock it right after, as safety is
+still ensured by the locking mechanism that happens right after
+through SCP.
+
+Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220525091201.14210-1-angelogioacchino.delregno@collabora.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/xen/enlighten.c     |  4 +++-
- arch/x86/xen/enlighten_hvm.c |  4 +++-
- arch/x86/xen/enlighten_pv.c  |  5 ++++-
- drivers/xen/Kconfig          |  9 +++++++++
- drivers/xen/grant-dma-ops.c  | 10 ++++++++++
- include/xen/xen-ops.h        |  9 +++++++++
- include/xen/xen.h            |  8 --------
- 7 files changed, 38 insertions(+), 11 deletions(-)
+ drivers/rpmsg/mtk_rpmsg.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
-index 1f9c3ba32833..93c8ccbf2982 100644
---- a/arch/arm/xen/enlighten.c
-+++ b/arch/arm/xen/enlighten.c
-@@ -34,6 +34,7 @@
- #include <linux/timekeeping.h>
- #include <linux/timekeeper_internal.h>
- #include <linux/acpi.h>
-+#include <linux/virtio_anchor.h>
+diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
+index 5b4404b8be4c..d1213c33da20 100644
+--- a/drivers/rpmsg/mtk_rpmsg.c
++++ b/drivers/rpmsg/mtk_rpmsg.c
+@@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
+ 		if (info->registered)
+ 			continue;
  
- #include <linux/mm.h>
- 
-@@ -443,7 +444,8 @@ static int __init xen_guest_init(void)
- 	if (!xen_domain())
- 		return 0;
- 
--	xen_set_restricted_virtio_memory_access();
-+	if (IS_ENABLED(CONFIG_XEN_VIRTIO))
-+		virtio_set_mem_acc_cb(xen_virtio_mem_acc);
- 
- 	if (!acpi_disabled)
- 		xen_acpi_guest_init();
-diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 8b71b1dd7639..28762f800596 100644
---- a/arch/x86/xen/enlighten_hvm.c
-+++ b/arch/x86/xen/enlighten_hvm.c
-@@ -4,6 +4,7 @@
- #include <linux/cpu.h>
- #include <linux/kexec.h>
- #include <linux/memblock.h>
-+#include <linux/virtio_anchor.h>
- 
- #include <xen/features.h>
- #include <xen/events.h>
-@@ -195,7 +196,8 @@ static void __init xen_hvm_guest_init(void)
- 	if (xen_pv_domain())
- 		return;
- 
--	xen_set_restricted_virtio_memory_access();
-+	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
-+		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
- 
- 	init_hvm_pv_info();
- 
-diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-index 70fb2ea85e90..0ed2e487a693 100644
---- a/arch/x86/xen/enlighten_pv.c
-+++ b/arch/x86/xen/enlighten_pv.c
-@@ -31,6 +31,7 @@
- #include <linux/gfp.h>
- #include <linux/edd.h>
- #include <linux/reboot.h>
-+#include <linux/virtio_anchor.h>
- 
- #include <xen/xen.h>
- #include <xen/events.h>
-@@ -109,7 +110,9 @@ static DEFINE_PER_CPU(struct tls_descs, shadow_tls_desc);
- 
- static void __init xen_pv_init_platform(void)
- {
--	xen_set_restricted_virtio_memory_access();
-+	/* PV guests can't operate virtio devices without grants. */
-+	if (IS_ENABLED(CONFIG_XEN_VIRTIO))
-+		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
- 
- 	populate_extra_pte(fix_to_virt(FIX_PARAVIRT_BOOTMAP));
- 
-diff --git a/drivers/xen/Kconfig b/drivers/xen/Kconfig
-index bfd5f4f706bc..a65bd92121a5 100644
---- a/drivers/xen/Kconfig
-+++ b/drivers/xen/Kconfig
-@@ -355,4 +355,13 @@ config XEN_VIRTIO
- 
- 	  If in doubt, say n.
- 
-+config XEN_VIRTIO_FORCE_GRANT
-+	bool "Require Xen virtio support to use grants"
-+	depends on XEN_VIRTIO
-+	help
-+	  Require virtio for Xen guests to use grant mappings.
-+	  This will avoid the need to give the backend the right to map all
-+	  of the guest memory. This will need support on the backend side
-+	  (e.g. qemu or kernel, depending on the virtio device types used).
-+
- endmenu
-diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
-index fc0142484001..8973fc1e9ccc 100644
---- a/drivers/xen/grant-dma-ops.c
-+++ b/drivers/xen/grant-dma-ops.c
-@@ -12,6 +12,8 @@
- #include <linux/of.h>
- #include <linux/pfn.h>
- #include <linux/xarray.h>
-+#include <linux/virtio_anchor.h>
-+#include <linux/virtio.h>
- #include <xen/xen.h>
- #include <xen/xen-ops.h>
- #include <xen/grant_table.h>
-@@ -287,6 +289,14 @@ bool xen_is_grant_dma_device(struct device *dev)
- 	return has_iommu;
- }
- 
-+bool xen_virtio_mem_acc(struct virtio_device *dev)
-+{
-+	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
-+		return true;
-+
-+	return xen_is_grant_dma_device(dev->dev.parent);
-+}
-+
- void xen_grant_setup_dma_ops(struct device *dev)
- {
- 	struct xen_grant_dma_data *data;
-diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 80546960f8b7..dae0f350c678 100644
---- a/include/xen/xen-ops.h
-+++ b/include/xen/xen-ops.h
-@@ -5,6 +5,7 @@
- #include <linux/percpu.h>
- #include <linux/notifier.h>
- #include <linux/efi.h>
-+#include <linux/virtio_anchor.h>
- #include <xen/features.h>
- #include <asm/xen/interface.h>
- #include <xen/interface/vcpu.h>
-@@ -217,6 +218,7 @@ static inline void xen_preemptible_hcall_end(void) { }
- #ifdef CONFIG_XEN_GRANT_DMA_OPS
- void xen_grant_setup_dma_ops(struct device *dev);
- bool xen_is_grant_dma_device(struct device *dev);
-+bool xen_virtio_mem_acc(struct virtio_device *dev);
- #else
- static inline void xen_grant_setup_dma_ops(struct device *dev)
- {
-@@ -225,6 +227,13 @@ static inline bool xen_is_grant_dma_device(struct device *dev)
- {
- 	return false;
- }
-+
-+struct virtio_device;
-+
-+static inline bool xen_virtio_mem_acc(struct virtio_device *dev)
-+{
-+	return false;
-+}
- #endif /* CONFIG_XEN_GRANT_DMA_OPS */
- 
- #endif /* INCLUDE_XEN_OPS_H */
-diff --git a/include/xen/xen.h b/include/xen/xen.h
-index ac5a144c6a65..a99bab817523 100644
---- a/include/xen/xen.h
-+++ b/include/xen/xen.h
-@@ -52,14 +52,6 @@ bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
- extern u64 xen_saved_max_mem_size;
- #endif
- 
--#include <linux/virtio_anchor.h>
--
--static inline void xen_set_restricted_virtio_memory_access(void)
--{
--	if (IS_ENABLED(CONFIG_XEN_VIRTIO) && xen_domain())
--		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
--}
--
- #ifdef CONFIG_XEN_UNPOPULATED_ALLOC
- int xen_alloc_unpopulated_pages(unsigned int nr_pages, struct page **pages);
- void xen_free_unpopulated_pages(unsigned int nr_pages, struct page **pages);
++		mutex_unlock(&subdev->channels_lock);
+ 		ret = mtk_rpmsg_register_device(subdev, &info->info);
++		mutex_lock(&subdev->channels_lock);
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
+ 			continue;
 -- 
 2.35.1
 
