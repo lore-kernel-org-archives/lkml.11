@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60741C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B35C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233084AbiHOQ0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 12:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41750 "EHLO
+        id S233106AbiHOQ0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 12:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232514AbiHOQZT (ORCPT
+        with ESMTP id S233125AbiHOQZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 12:25:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A706C25C7C;
-        Mon, 15 Aug 2022 09:23:13 -0700 (PDT)
+        Mon, 15 Aug 2022 12:25:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3686727145;
+        Mon, 15 Aug 2022 09:23:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63450B80EA5;
-        Mon, 15 Aug 2022 16:23:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C375FC433C1;
-        Mon, 15 Aug 2022 16:23:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7485611E7;
+        Mon, 15 Aug 2022 16:23:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4280CC433C1;
+        Mon, 15 Aug 2022 16:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660580591;
-        bh=LmpGns7c5wLoId8LSEZ+UEolch41Y3wjGy4mOteOmBE=;
+        s=k20201202; t=1660580595;
+        bh=klkdRZjVUCbKPYpLrXmZGgCw2bm0eoGm07/vH67fHm0=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=IMAiOSv3VHv6/nNPdcMyK5VmhwP5QuIWADxtgV9ax/xQb3nqmUS3h4QniqMkXpSAk
-         zXEiX5DngrWuz8mT+sNsut/FFBGEFRF+XmU3AfR++4P8+tM/Z0fOKPMDEXoolJz0Pv
-         EwII4+u6PoHS/3RuEX8PxT8iczF6n0jryTf5QDs2+Ram8ZhwtCnSyjNAVSEYjTUXtj
-         2zHH9rgAPb/yKy1rigi2YBN15XAUtn03PRNcPcBeh4LBdZZw5XMzMtEXX199GD8EFk
-         0CdfEgpXowpOP1EUVBlxqofhjrJRuc8HDlyDOiAiiCimlMxQAz1MQVDFSkRmTe91+I
-         MUVRnNpu73N3w==
+        b=BMdZqWCxmbAZX9JDyxke8qQpRlT4L+NPW1DcofI0qztzENni/UHoGA4svFEfyS8eW
+         RqXzeZb/7U98PyFyDzofA4055jKsxu6Hcwvo+nla/MLrvX61504i+UrtPpAF27M3/j
+         RnQdzNuauvgthRMCZij2EVvk3stf8NFty1+Iojwfrod7oHg5HMSoliBpVrzmi4e9ro
+         dL3rQJG+efXyn6eCW8dBDYL0GGoIs+ZWjsg9f9wDuZ2Q+/4IcJQJ6NAKIp5avGaoyI
+         POgTa3GKjiCzJraX0miXU5ZDd8NRAV/YqDR6VLYzpuDW8K+WJ3hz/TGaW9gJTxgnMD
+         F/Qkb+C00iJuw==
 From:   Mark Brown <broonie@kernel.org>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-In-Reply-To: <fb959b3bda689aa47e1fbe9948de957b77530b24.1659764734.git.christophe.jaillet@wanadoo.fr>
-References: <fb959b3bda689aa47e1fbe9948de957b77530b24.1659764734.git.christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] ASoC: sam9g20_wm8731: Simplify some error message
-Message-Id: <166058058851.769843.12342144572880656518.b4-ty@kernel.org>
-Date:   Mon, 15 Aug 2022 17:23:08 +0100
+To:     lgirdwood@gmail.com, Sameer Pujar <spujar@nvidia.com>,
+        robh+dt@kernel.org, tiwai@suse.com,
+        krzysztof.kozlowski+dt@linaro.org,
+        kuninori.morimoto.gx@renesas.com, perex@perex.cz
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
+References: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
+Subject: Re: [PATCH v3 0/3] DT binding for sample format conversion
+Message-Id: <166058059299.769843.16903933604865911201.b4-ty@kernel.org>
+Date:   Mon, 15 Aug 2022 17:23:12 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -55,12 +52,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 6 Aug 2022 07:45:48 +0200, Christophe JAILLET wrote:
-> dev_err_probe() already prints the error code in a human readable way, so
-> there is no need to duplicate it as a numerical value at the end of the
-> message.
+On Mon, 8 Aug 2022 10:57:29 +0530, Sameer Pujar wrote:
+> DT binding properties are available to fixup rate and channel
+> parameters of a DAI. This series extends this to sample format
+> conversion as well. With this now DAI PCM parameters (channels,
+> sample rate and sample format) can be fixed up as necessary in
+> an audio path.
 > 
+> Changelog:
+> ==========
+>   v2->v3:
+>   -------
+>     * Fix DT binding errors in simple-card.yaml
+>     * Drop simple-card binding changes from the series since
+>       there is no usage requirement. It can be extended later
+>       when necessary.
+>     * Use definitions instead of properties in the common schema
+>       and re-use this in audio-graph related bindings.
 > 
+> [...]
 
 Applied to
 
@@ -68,8 +78,12 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: sam9g20_wm8731: Simplify some error message
-      commit: 7d67657cb472a80d54457362bc421f2b57ee250b
+[1/3] ASoC: dt-bindings: Definitions for DAI params
+      commit: b79b6220a753995b80054916f1f8f037113d8d93
+[2/3] ASoC: dt-bindings: Add sample format conversion
+      commit: 955927873d82c5127e31e618703d804033a93e4f
+[3/3] ASoC: simple-card-utils: Fixup DAI sample format
+      commit: 047a05366f4bb2e32eabbd3c8990d1d91ab87c89
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
