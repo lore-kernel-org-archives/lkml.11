@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F92C282E7
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A042C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbiHPEbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S229662AbiHPEbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiHPEbR (ORCPT
+        with ESMTP id S230014AbiHPEbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:31:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCEF1665B0;
-        Mon, 15 Aug 2022 13:22:57 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991CD16658A;
+        Mon, 15 Aug 2022 13:22:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7D72B8119B;
-        Mon, 15 Aug 2022 20:22:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A201C433C1;
-        Mon, 15 Aug 2022 20:22:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5B312CE12DE;
+        Mon, 15 Aug 2022 20:22:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3059DC433C1;
+        Mon, 15 Aug 2022 20:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594974;
-        bh=zGsvOp9SRF/84WtIQLwTb+KtRGixmQm3FaS1JsCSYsM=;
+        s=korg; t=1660594968;
+        bh=2iiww0YZVx3IsAfXGgFTGknilWMD0Hkj0gj15HbjlMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k1nozzs7Z9xYU0ed7kmMHkkVOiMVhwTFl9FdNBwlFAvwFT95t9sgPMvzKnMrT12YS
-         gx/fyWhtOAQJXjPC+PjpEvws7fyRzeVCp0ZvZqboS++gVvHTmsAveMlerD4I4ySkqL
-         CdCj91SbSnSxXHdnyKxBxJhgd7rp64xHFsHp+DII=
+        b=ZdRcUG/Ec9MbF5GgK36iizLEzsdSEGWOptT35dtYmYr2xtNO7QiTbsi1GbEXQNwFN
+         USm+yZ2Y53Lpz/C/zMk5wl/Aw66DOR/k3Q4+oX41514TM5eqmdjq5A0BD981JKkk2b
+         A6U7i22HsROZXCg47K4aoFhoUimNijKsl7130AJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0586/1157] scsi: qla2xxx: edif: Synchronize NPIV deletion with authentication application
-Date:   Mon, 15 Aug 2022 19:59:02 +0200
-Message-Id: <20220815180503.105984621@linuxfoundation.org>
+Subject: [PATCH 5.19 0614/1157] usb: xhci: tegra: Fix error check
+Date:   Mon, 15 Aug 2022 19:59:30 +0200
+Message-Id: <20220815180504.209528033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,54 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Tang Bin <tangbin@cmss.chinamobile.com>
 
-[ Upstream commit cf79716e6636400ae38c37bc8a652b1e522abbba ]
+[ Upstream commit 18fc7c435be3f17ea26a21b2e2312fcb9088e01f ]
 
-Notify authentication application of a NPIV deletion event is about to
-occur. This allows app to perform cleanup.
+In the function tegra_xusb_powerdomain_init(),
+dev_pm_domain_attach_by_name() may return NULL in some cases,
+so IS_ERR() doesn't meet the requirements. Thus fix it.
 
-Link: https://lore.kernel.org/r/20220607044627.19563-7-njavali@marvell.com
-Fixes: 9efea843a906 ("scsi: qla2xxx: edif: Add detection of secure device")
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 6494a9ad86de ("usb: xhci: tegra: Add genpd support")
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+Link: https://lore.kernel.org/r/20220524121404.18376-1-tangbin@cmss.chinamobile.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif_bsg.h | 2 ++
- drivers/scsi/qla2xxx/qla_mid.c      | 6 +++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ drivers/usb/host/xhci-tegra.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif_bsg.h b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-index 110843b13767..0931f4e4e127 100644
---- a/drivers/scsi/qla2xxx/qla_edif_bsg.h
-+++ b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-@@ -253,4 +253,6 @@ struct aen_complete_cmd {
+diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
+index 996958a6565c..bdb776553826 100644
+--- a/drivers/usb/host/xhci-tegra.c
++++ b/drivers/usb/host/xhci-tegra.c
+@@ -1010,15 +1010,15 @@ static int tegra_xusb_powerdomain_init(struct device *dev,
+ 	int err;
  
- #define RX_DELAY_DELETE_TIMEOUT 20
+ 	tegra->genpd_dev_host = dev_pm_domain_attach_by_name(dev, "xusb_host");
+-	if (IS_ERR(tegra->genpd_dev_host)) {
+-		err = PTR_ERR(tegra->genpd_dev_host);
++	if (IS_ERR_OR_NULL(tegra->genpd_dev_host)) {
++		err = PTR_ERR(tegra->genpd_dev_host) ? : -ENODATA;
+ 		dev_err(dev, "failed to get host pm-domain: %d\n", err);
+ 		return err;
+ 	}
  
-+#define FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN  1
-+
- #endif	/* QLA_EDIF_BSG_H */
-diff --git a/drivers/scsi/qla2xxx/qla_mid.c b/drivers/scsi/qla2xxx/qla_mid.c
-index 346d47b61c07..16a9f22bb860 100644
---- a/drivers/scsi/qla2xxx/qla_mid.c
-+++ b/drivers/scsi/qla2xxx/qla_mid.c
-@@ -166,9 +166,13 @@ qla24xx_disable_vp(scsi_qla_host_t *vha)
- 	int ret = QLA_SUCCESS;
- 	fc_port_t *fcport;
- 
--	if (vha->hw->flags.edif_enabled)
-+	if (vha->hw->flags.edif_enabled) {
-+		if (DBELL_ACTIVE(vha))
-+			qla2x00_post_aen_work(vha, FCH_EVT_VENDOR_UNIQUE,
-+			    FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN);
- 		/* delete sessions and flush sa_indexes */
- 		qla2x00_wait_for_sess_deletion(vha);
-+	}
- 
- 	if (vha->hw->flags.fw_started)
- 		ret = qla24xx_control_vp(vha, VCE_COMMAND_DISABLE_VPS_LOGO_ALL);
+ 	tegra->genpd_dev_ss = dev_pm_domain_attach_by_name(dev, "xusb_ss");
+-	if (IS_ERR(tegra->genpd_dev_ss)) {
+-		err = PTR_ERR(tegra->genpd_dev_ss);
++	if (IS_ERR_OR_NULL(tegra->genpd_dev_ss)) {
++		err = PTR_ERR(tegra->genpd_dev_ss) ? : -ENODATA;
+ 		dev_err(dev, "failed to get superspeed pm-domain: %d\n", err);
+ 		return err;
+ 	}
 -- 
 2.35.1
 
