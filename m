@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBD1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FD8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350038AbiHOWfG (ORCPT
+        id S1349738AbiHOWfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
+        Mon, 15 Aug 2022 18:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351071AbiHOW1d (ORCPT
+        with ESMTP id S1351078AbiHOW1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CC8422CF;
-        Mon, 15 Aug 2022 12:46:54 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D817641D39;
+        Mon, 15 Aug 2022 12:47:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7342E6068D;
-        Mon, 15 Aug 2022 19:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C53AC433D6;
-        Mon, 15 Aug 2022 19:46:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94CBAB80EB2;
+        Mon, 15 Aug 2022 19:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38A5C433D7;
+        Mon, 15 Aug 2022 19:47:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592813;
-        bh=HopU/MPTRkH9+3zqqnsjOGCkMfvViXYpGAFABHbxMj4=;
+        s=korg; t=1660592823;
+        bh=ZcY8ootTVmsrvVa0ppEC/BOYMKO/1AIrNuHec3gCNc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ABJ2PsAE2BrZ4BSp4hhV9zTJy9j4cayxNfyaFW95fWjMqut/Nqf+uhHq3AtShz5zP
-         rFFPJrFsUVFIHtHxAfUHwMndEF37opGZMLxZghcZpeYbc7on+Y7Kciz5ufT+Fmw/TU
-         ouHpwaVCNq68JDKUsUVdysDKEBmtjKaUEtUW0HY4=
+        b=XF89TOx+3yg9qB3iOyReuI2VvefZxYKntM3o2qbiFriR4j1uL3d95qib0JN9lR7z9
+         IGsNPmA1/qZDwP5BMe/VggLQSiA/ViccbHPxBUWfDvWvdHia5WgNfnk+Dx/X36DWae
+         0oVKCIkoEsxXk56EnIiWfdPS2DlLjXrTPjbmk1Iw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0168/1157] ARM: dts: imx6ul: fix qspi node compatible
-Date:   Mon, 15 Aug 2022 19:52:04 +0200
-Message-Id: <20220815180446.441091529@linuxfoundation.org>
+Subject: [PATCH 5.18 0850/1095] ASoC: codecs: wsa881x: handle timeouts in resume path
+Date:   Mon, 15 Aug 2022 20:04:09 +0200
+Message-Id: <20220815180504.497172715@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
+[ Upstream commit cf6af24b54903f9f70c29b3e5b19cb72cc862d60 ]
 
-imx6ul is not compatible to imx6sx, both have different erratas.
-Fixes the dt_binding_check warning:
-spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
-Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
-'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
-'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
-'fsl,ls1021a-qspi' was expected
-'fsl,imx7d-qspi' was expected
+Currently we do not check if SoundWire slave initialization timeout
+expired before continuing to access its registers.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Its possible that the registers are not accessible if timeout is
+expired. Handle this by returning timeout in resume path.
+
+Reported-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Fixes: 8dd552458361 ("ASoC: codecs: wsa881x: add runtime pm support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220630130023.9308-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/wsa881x.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index bc6548058d8c..eca8bf89ab88 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -1029,7 +1029,7 @@ pxp: pxp@21cc000 {
- 			qspi: spi@21e0000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
--				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
-+				compatible = "fsl,imx6ul-qspi";
- 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
- 				reg-names = "QuadSPI", "QuadSPI-memory";
- 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/sound/soc/codecs/wsa881x.c b/sound/soc/codecs/wsa881x.c
+index 616b26c70c3b..649c7e73f774 100644
+--- a/sound/soc/codecs/wsa881x.c
++++ b/sound/soc/codecs/wsa881x.c
+@@ -1174,11 +1174,17 @@ static int __maybe_unused wsa881x_runtime_resume(struct device *dev)
+ 	struct sdw_slave *slave = dev_to_sdw_dev(dev);
+ 	struct regmap *regmap = dev_get_regmap(dev, NULL);
+ 	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
++	unsigned long time;
+ 
+ 	gpiod_direction_output(wsa881x->sd_n, 1);
+ 
+-	wait_for_completion_timeout(&slave->initialization_complete,
+-				    msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
++	time = wait_for_completion_timeout(&slave->initialization_complete,
++					   msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
++	if (!time) {
++		dev_err(dev, "Initialization not complete, timed out\n");
++		gpiod_direction_output(wsa881x->sd_n, 0);
++		return -ETIMEDOUT;
++	}
+ 
+ 	regcache_cache_only(regmap, false);
+ 	regcache_sync(regmap);
 -- 
 2.35.1
 
