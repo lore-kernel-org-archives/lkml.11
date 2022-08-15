@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08780C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990EDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbiHPExv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:53:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
+        id S233354AbiHPEx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233594AbiHPEvZ (ORCPT
+        with ESMTP id S233629AbiHPEv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:51:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B747A19F4BF;
-        Mon, 15 Aug 2022 13:48:46 -0700 (PDT)
+        Tue, 16 Aug 2022 00:51:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F016619F4AF;
+        Mon, 15 Aug 2022 13:48:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E106103F;
-        Mon, 15 Aug 2022 20:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4226C433C1;
-        Mon, 15 Aug 2022 20:48:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0670B811B1;
+        Mon, 15 Aug 2022 20:48:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B02C433D6;
+        Mon, 15 Aug 2022 20:48:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596525;
-        bh=65v5R84eOGAgGCGuIaLe2DkBsygBijgD/MYNP/um+EA=;
+        s=korg; t=1660596519;
+        bh=XxmABF0u3NEBxK3BSJQKWX6+1w0va72Kaaol6xISgKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vHbNEX2++Ig07j4Y0RvjCESs3rj0pC6Mqwx3NPjHfYdudy2yNASCte3DdBfdpgNGU
-         6FU5tYDOWlWotKRRJCnHzgnro5mS2TTndeEZWZTWGDNU+RjRGwrazfQkEWIOhZq5SS
-         nCyuWmUgmto+7nbJphWRrFAmLUUj6BCPk6EgluY8=
+        b=jzSFb4wUmJ0nLuG4BAy10umkVSPTMNKIdYQqv0USElgjdcT36Aa3La8Xv24vtP9cV
+         LScFUtxYB5x6bwGWjQFQSTLQjBdkoikERBfagARqUK0UK0qfa2uCeJ1GmXoDURAaqz
+         PwBWVwrTTbOx+swHbMvOuc7nVYXfYt1hg7ERMv74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1107/1157] KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
-Date:   Mon, 15 Aug 2022 20:07:43 +0200
-Message-Id: <20220815180524.564356605@linuxfoundation.org>
+Subject: [PATCH 5.19 1105/1157] KVM: x86/pmu: Accept 0 for absent PMU MSRs when host-initiated if !enable_pmu
+Date:   Mon, 15 Aug 2022 20:07:41 +0200
+Message-Id: <20220815180524.471198308@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,71 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Like Xu <likexu@tencent.com>
 
-[ Upstream commit b663f0b5f3d665c261256d1f76e98f077c6e56af ]
+[ Upstream commit 8e6a58e28b34e8d247e772159b8fa8f6bae39192 ]
 
-Add a helper to check of the guest PMU has PERF_GLOBAL_CTRL, which is
-unintuitive _and_ diverges from Intel's architecturally defined behavior.
-Even worse, KVM currently implements the check using two different (but
-equivalent) checks, _and_ there has been at least one attempt to add a
-_third_ flavor.
+Whenever an MSR is part of KVM_GET_MSR_INDEX_LIST, as is the case for
+MSR_K7_EVNTSEL0 or MSR_F15H_PERF_CTL0, it has to be always retrievable
+and settable with KVM_GET_MSR and KVM_SET_MSR.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220722224409.1336532-4-seanjc@google.com>
+Accept a zero value for these MSRs to obey the contract.
+
+Signed-off-by: Like Xu <likexu@tencent.com>
+Message-Id: <20220601031925.59693-1-likexu@tencent.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c |  4 ++--
- arch/x86/kvm/vmx/vmx.h       | 12 ++++++++++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ arch/x86/kvm/pmu.c     |  8 ++++++++
+ arch/x86/kvm/svm/pmu.c | 11 ++++++++++-
+ 2 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 8faac421171f..a9280ebf78f5 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -98,7 +98,7 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 3f868fed9114..2334ddfbbab2 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -433,11 +433,19 @@ static void kvm_pmu_mark_pmc_in_use(struct kvm_vcpu *vcpu, u32 msr)
+ 
+ int kvm_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 
--	if (pmu->version < 2)
-+	if (!intel_pmu_has_perf_global_ctrl(pmu))
- 		return true;
- 
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
-@@ -215,7 +215,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
- 	case MSR_CORE_PERF_GLOBAL_STATUS:
- 	case MSR_CORE_PERF_GLOBAL_CTRL:
- 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
--		ret = pmu->version > 1;
-+		return intel_pmu_has_perf_global_ctrl(pmu);
- 		break;
- 	default:
- 		ret = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0) ||
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 1e7f9453894b..93aa1f3ea01e 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -92,6 +92,18 @@ union vmx_exit_reason {
- 	u32 full;
- };
- 
-+static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
-+{
-+	/*
-+	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
-+	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
-+	 * greater than zero.  However, KVM only exposes and emulates the MSR
-+	 * to/for the guest if the guest PMU supports at least "Architectural
-+	 * Performance Monitoring Version 2".
-+	 */
-+	return pmu->version > 1;
-+}
++	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu) {
++		msr_info->data = 0;
++		return 0;
++	}
 +
- #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
- #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
+ 	return static_call(kvm_x86_pmu_get_msr)(vcpu, msr_info);
+ }
  
+ int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ {
++	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu)
++		return !!msr_info->data;
++
+ 	kvm_pmu_mark_pmc_in_use(vcpu, msr_info->index);
+ 	return static_call(kvm_x86_pmu_set_msr)(vcpu, msr_info);
+ }
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index 136039fc6d01..d93ecb25fe17 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -232,7 +232,16 @@ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
+ static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
+ {
+ 	/* All MSRs refer to exactly one PMC, so msr_idx_to_pmc is enough.  */
+-	return false;
++	if (!host_initiated)
++		return false;
++
++	switch (msr) {
++	case MSR_K7_EVNTSEL0 ... MSR_K7_PERFCTR3:
++	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
++		return true;
++	default:
++		return false;
++	}
+ }
+ 
+ static struct kvm_pmc *amd_msr_idx_to_pmc(struct kvm_vcpu *vcpu, u32 msr)
 -- 
 2.35.1
 
