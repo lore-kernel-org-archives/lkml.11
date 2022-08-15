@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D07C32768
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301F7C32765
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356305AbiHPACP (ORCPT
+        id S1356161AbiHPACE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54032 "EHLO
+        Mon, 15 Aug 2022 20:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356405AbiHOXyS (ORCPT
+        with ESMTP id S1356356AbiHOXyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:54:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868C916079E;
-        Mon, 15 Aug 2022 13:19:10 -0700 (PDT)
+        Mon, 15 Aug 2022 19:54:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD2160100;
+        Mon, 15 Aug 2022 13:18:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69849B81180;
-        Mon, 15 Aug 2022 20:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96203C433C1;
-        Mon, 15 Aug 2022 20:19:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE2260E73;
+        Mon, 15 Aug 2022 20:18:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F7CC433C1;
+        Mon, 15 Aug 2022 20:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594743;
-        bh=GuioARgipAjckdAdajthvc005UG73r+y/SYqcn3+24w=;
+        s=korg; t=1660594733;
+        bh=T1l5jLko//pl/xTkp40ct8rrtd6LACJ0z7ATcLqw1Cg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=phXskbN01fJqbTDmOIJwjCrHXbVWUV1CgXq7tUTN3iFii5bG0dXRs0VVtW3MBsBtd
-         /s/jqkoLjcrzSuzSp9ukZq4fNu5FR86UoP2xL0jLmTGemYCFB54a9Gr8Gi9rpyjQYJ
-         XU+dVYVA0ZjIsem6qCmi0bbzY8aRlbjloXjRcSbU=
+        b=2eOmbWJx/HnpAOhtsKK64LiOHQd3q4FFY3s6OY0z7y34U+9Y/pMV0uwhwfL6ccD8F
+         2TBita/VU/j8BWbFjjj6b7IO5EwD4uEV7D/Bj9Zvy537InfFC0L4wl1MnbcThi0GNi
+         K5QN8M1ecDhnN1ULa/073KTSSB/+fBP9x/pNe0Wo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0543/1157] wifi: libertas: Fix possible refcount leak in if_usb_probe()
-Date:   Mon, 15 Aug 2022 19:58:19 +0200
-Message-Id: <20220815180501.395329616@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel test robot <lkp@intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0541/1157] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+Date:   Mon, 15 Aug 2022 19:58:17 +0200
+Message-Id: <20220815180501.315274593@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,35 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 6fd57e1d120bf13d4dc6c200a7cf914e6347a316 ]
+[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
 
-usb_get_dev will be called before lbs_get_firmware_async which means that
-usb_put_dev need to be called when lbs_get_firmware_async fails.
+Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
+but it forgets to change the value to be returned that came from
+simple_write_to_buffer() call. It results in the following warning:
 
-Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220620092350.39960-1-hbh25y@gmail.com
-Link: https://lore.kernel.org/r/20220622113402.16969-1-colin.i.king@gmail.com
+  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
+
+Remove rc variable and just return the passed in length if the
+memdup_user() succeeds.
+
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
+Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
-index 5d6dc1dd050d..32fdc4150b60 100644
---- a/drivers/net/wireless/marvell/libertas/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas/if_usb.c
-@@ -287,6 +287,7 @@ static int if_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index fe84362718de..04d1aa0e2d35 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	void *cmd;
+ 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
+ 	u16 cmdid;
+-	int rc, rc1;
++	int rc1;
  
- err_get_fw:
-+	usb_put_dev(udev);
- 	lbs_remove_card(priv);
- err_add_card:
- 	if_usb_reset_device(cardp);
+ 	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
+@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 
+ 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+ 
+-	return rc;
++	return len;
+ }
+ 
+ static const struct file_operations fops_wmi = {
 -- 
 2.35.1
 
