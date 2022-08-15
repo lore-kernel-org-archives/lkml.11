@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA15FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120C3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242522AbiHOS3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
+        id S242844AbiHOS3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242438AbiHOS2m (ORCPT
+        with ESMTP id S233038AbiHOS2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:28:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBCFB9E;
-        Mon, 15 Aug 2022 11:20:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897B9C36;
+        Mon, 15 Aug 2022 11:20:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCF1660EF0;
-        Mon, 15 Aug 2022 18:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB46C433D7;
-        Mon, 15 Aug 2022 18:20:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D76E060ABC;
+        Mon, 15 Aug 2022 18:19:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD849C433C1;
+        Mon, 15 Aug 2022 18:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587615;
-        bh=h/3vNwF2fZo2vYAizALpNh0m0PgJAAUekHj5HiG8gUI=;
+        s=korg; t=1660587570;
+        bh=3C0nmz2bwUw/YhMXl/4vqecM80SkN232zvqvmAcwXbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K0fCkzWN+Z6VPjSjvCp3sMiwOxA9O2teIDZitw8MQ1bn+SXoN1aBlGZBWkWptDcxz
-         NQXBu/tHisYCn7sjW2PL0QEvQY4aB71L/h1CyOvnbrufaOZrVzkGhxDdMOF+TUx32Y
-         z95Dq7vbmH3yXnQFv4qo8qtvAIauXdnOINwL3sj4=
+        b=iDCTkh/1/E1uZc/tqou3A6rB2nStNdNkZlbjRl1yaqf7u1HW5kh896eV2bRuN4iTh
+         Z9hzE2CtP/OGQ/feMxVwbS4jkyyOiDN0EXJsx0lzCV5ozoa8Ld7gzQy+AIkRQBW+RM
+         /mwT1P3WmMe/VQjxkKBj3+4JaOB3a5N8e3dAesQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 139/779] ACPI: LPSS: Fix missing check in register_device_clock()
-Date:   Mon, 15 Aug 2022 19:56:23 +0200
-Message-Id: <20220815180343.249574416@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 095/779] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
+Date:   Mon, 15 Aug 2022 19:55:39 +0200
+Message-Id: <20220815180341.361786474@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,36 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit b4f1f61ed5928b1128e60e38d0dffa16966f06dc ]
+commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
 
-register_device_clock() misses a check for platform_device_register_simple().
-Add a check to fix it.
+On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
+for supervisor. As soon as one of the two bits is set, the page has
+to be display as RW. But the way it is implemented today requires both
+bits to be set in order to display it as RW.
 
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Instead of display RW when _PAGE_RW bits are set and R otherwise,
+reverse the logic and display R when _PAGE_RW bits are all 0 and
+RW otherwise.
+
+This change has no impact on other platforms as _PAGE_RW is a single
+bit on all of them.
+
+Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/acpi_lpss.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/powerpc/mm/ptdump/shared.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 30b1f511c2af..f609f9d62efd 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -403,6 +403,9 @@ static int register_device_clock(struct acpi_device *adev,
- 	if (!lpss_clk_dev)
- 		lpt_register_clock_device();
- 
-+	if (IS_ERR(lpss_clk_dev))
-+		return PTR_ERR(lpss_clk_dev);
-+
- 	clk_data = platform_get_drvdata(lpss_clk_dev);
- 	if (!clk_data)
- 		return -ENODEV;
--- 
-2.35.1
-
+--- a/arch/powerpc/mm/ptdump/shared.c
++++ b/arch/powerpc/mm/ptdump/shared.c
+@@ -17,9 +17,9 @@ static const struct flag_info flag_array
+ 		.clear	= "    ",
+ 	}, {
+ 		.mask	= _PAGE_RW,
+-		.val	= _PAGE_RW,
+-		.set	= "rw",
+-		.clear	= "r ",
++		.val	= 0,
++		.set	= "r ",
++		.clear	= "rw",
+ 	}, {
+ 		.mask	= _PAGE_EXEC,
+ 		.val	= _PAGE_EXEC,
 
 
