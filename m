@@ -2,105 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CA5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CCEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344911AbiHOUad (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
+        id S231721AbiHOUak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347335AbiHOUWS (ORCPT
+        with ESMTP id S1347331AbiHOUWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:22:18 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935C033E2E;
-        Mon, 15 Aug 2022 12:02:40 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id c19-20020a17090ae11300b001f2f94ed5c6so12221211pjz.1;
-        Mon, 15 Aug 2022 12:02:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc;
-        bh=Mfaz1LfXGr/UvNceveiY5fzXa9npXeyxxs1DRSGlQXM=;
-        b=TJdHQlV13t5HaX6d59FUc8yeKaJbrW/xMo+z1XHIGdY7INXEbXfmYAMK8eywuM6ZDL
-         viQ7G5tjLNHqug/kuwOV28/G71gB7DJhEQ+od6NH+H1cKKhAkwiQx8fP8GcNrjDcP4L7
-         qoWsKGYKoz9X7HQj593QzsA/DnCMhn8w3CqijHLm8bYWeQvGD1+nhWmSd+4MAXMPn1hi
-         p7ItCQDUWPLdrn5DYKcOkCgiDQpP8Sh54XWLTKCPFVT3Ayc/OzWHg4qOfTVPnAwlJ5EH
-         K9Vd5GrPag980at0QRUDL7piVmgD38pB2hGAZFSls1FyIFz/eYWxXb4CGTpmE1Z3NBRm
-         y8TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc;
-        bh=Mfaz1LfXGr/UvNceveiY5fzXa9npXeyxxs1DRSGlQXM=;
-        b=TWa4B+DbVsNEkd+/ufxBNQrg+xJjHA+sJLLIztTzB2GJQTaqPjBT07wwGT8SjO0HX1
-         LCQiYR8KvRNG9uxuVw7I9WoTkHirORrQgjXpJTzxjIQKqCBM9WyWPdnkdDnKZBWqt5rx
-         TfkgmiSHaR/3tsGBjEOYDe6sa8vbkg/yPfdU9Q6jQeiAEyKFlVumChJXTctrwv6TguKD
-         NIYW8WlgiubUybmoRMx//pAeD7gpPhP+DcaMuTDembscPBYjyT/0uoyESLTbCmVYG7N5
-         d7W6Jhnp6Ux2kUJumBaeuxss49liLU26j47d8dO0KV1345exshnmB6CUZW/0CGRtoy7E
-         WbxQ==
-X-Gm-Message-State: ACgBeo0R614fqF4xpMmgZgq6cR+64FIYc/GTnSI/bZRAJ16ose150BNx
-        WbAjYl/EiOBJksgozVnoS3kqR8G5Wc04JQ==
-X-Google-Smtp-Source: AA6agR40RmTIFkna2ofomi+uvVaNt6zWBUj5/bra+glY6LQazm5zkKj+fzOFrggoGaTxiIwUA4OLCg==
-X-Received: by 2002:a17:902:c406:b0:16e:df76:5267 with SMTP id k6-20020a170902c40600b0016edf765267mr18295281plk.8.1660590159240;
-        Mon, 15 Aug 2022 12:02:39 -0700 (PDT)
-Received: from youngsil.svl.corp.google.com ([2620:15c:2d4:203:df3e:22e0:b905:822b])
-        by smtp.gmail.com with ESMTPSA id q13-20020a170902a3cd00b0016a4db13429sm7266926plb.192.2022.08.15.12.01.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 12:01:25 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH 0/4] perf tools: Support reading PERF_FORMAT_LOST
-Date:   Mon, 15 Aug 2022 12:01:02 -0700
-Message-Id: <20220815190106.1293082-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854922CCBF;
+        Mon, 15 Aug 2022 12:02:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C9D9B81062;
+        Mon, 15 Aug 2022 19:02:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B30FC433C1;
+        Mon, 15 Aug 2022 19:02:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590156;
+        bh=IO9ap3hmjMTu+JcV3hDkZ5Y3LMiXumCCUXgCjw5opXg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PlMewoO6S0orSvri4aj63cNOfxLRNtco1KmUbrETGIDFuBivshjftTLjZRK1mXc7H
+         JIt57GWcQuQeIun8ATv2D+MQqZNuPz/CTEjLvmw8WsSkIn5wfip2jOtoGgTCay4pF8
+         pz4Qn7ix19FbFAkDfXrZWHAd68yYnyUWiO0dW4vA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
+Subject: [PATCH 5.18 0127/1095] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
+Date:   Mon, 15 Aug 2022 19:52:06 +0200
+Message-Id: <20220815180434.838639592@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Alan Stern <stern@rowland.harvard.edu>
 
-The kernel v6.0 added PERF_FORMAT_LOST which can read a number of lost
-samples for the given event.  As it can change the output format of
-read(2) and perf sample data, it needs to access them carefully.
+commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
 
-You can get the code from 'perf/read-lost-v1' brach on
+The syzbot fuzzer found a race between uevent callbacks and gadget
+driver unregistration that can cause a use-after-free bug:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
+---------------------------------------------------------------
+BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
+drivers/usb/gadget/udc/core.c:1732
+Read of size 8 at addr ffff888078ce2050 by task udevd/2968
 
-Thanks,
-Namhyung
+CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
+06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+ usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
+ dev_uevent+0x290/0x770 drivers/base/core.c:2424
+---------------------------------------------------------------
 
+The bug occurs because usb_udc_uevent() dereferences udc->driver but
+does so without acquiring the udc_lock mutex, which protects this
+field.  If the gadget driver is unbound from the udc concurrently with
+uevent processing, the driver structure may be accessed after it has
+been deallocated.
 
-Namhyung Kim (4):
-  tools headers UAPI: Sync linux/perf_event.h with the kernel sources
-  tools lib perf: Handle read format in perf_evsel__read()
-  tools lib perf: Add a test case for read formats
-  perf tools: Support reading PERF_FORMAT_LOST
+To prevent the race, we make sure that the routine holds the mutex
+around the racing accesses.
 
- tools/include/uapi/linux/perf_event.h         |   5 +-
- tools/lib/perf/evsel.c                        |  72 ++++++++
- tools/lib/perf/include/perf/event.h           |   3 +-
- tools/lib/perf/include/perf/evsel.h           |   4 +-
- tools/lib/perf/tests/test-evsel.c             | 161 ++++++++++++++++++
- tools/perf/tests/sample-parsing.c             |  14 +-
- tools/perf/util/event.h                       |  18 +-
- tools/perf/util/evsel.c                       |  33 +++-
- .../scripting-engines/trace-event-python.c    |  16 +-
- tools/perf/util/session.c                     |  32 ++--
- tools/perf/util/synthetic-events.c            |  34 +++-
- 11 files changed, 354 insertions(+), 38 deletions(-)
+Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
+CC: stable@vger.kernel.org # fc274c1e9973
+Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/gadget/udc/core.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1745,13 +1745,14 @@ static int usb_udc_uevent(struct device
+ 		return ret;
+ 	}
+ 
+-	if (udc->driver) {
++	mutex_lock(&udc_lock);
++	if (udc->driver)
+ 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
+ 				udc->driver->function);
+-		if (ret) {
+-			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
+-			return ret;
+-		}
++	mutex_unlock(&udc_lock);
++	if (ret) {
++		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
++		return ret;
+ 	}
+ 
+ 	return 0;
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.37.1.595.g718a3a8f04-goog
 
