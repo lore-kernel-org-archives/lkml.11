@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10441C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB26C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347253AbiHOWNo (ORCPT
+        id S1343536AbiHOWNz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
+        Mon, 15 Aug 2022 18:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349475AbiHOWLa (ORCPT
+        with ESMTP id S1349541AbiHOWLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:11:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272EA11BB13;
-        Mon, 15 Aug 2022 12:38:48 -0700 (PDT)
+        Mon, 15 Aug 2022 18:11:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D34011B4F3;
+        Mon, 15 Aug 2022 12:38:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FD07611F6;
-        Mon, 15 Aug 2022 19:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBF0C4314A;
-        Mon, 15 Aug 2022 19:38:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1CFD60FB9;
+        Mon, 15 Aug 2022 19:38:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFA23C433C1;
+        Mon, 15 Aug 2022 19:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592306;
-        bh=Dc4YOQQ6zjvzDoMoV0wOA2bk8tMQqRdubB3LBNCpDCo=;
+        s=korg; t=1660592322;
+        bh=lVE6si0vEtraGgGv0n6yqWBROaRF84v5MFZZ0BLmqaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kHxIJjuyaVslfGNdJJyj2mmsYnVxg4O9aYiEXHFCpaUAtCKLtnO98hoXuHEhN1Dcp
-         tw23I8ICLN++eW0ii6CSqkmiWN8XTX4qO7/xX3ls24UUtjgXzX0lamcd313hsI/AZ+
-         /tLuNIirj0emS7nppiEpcoE4mjCtDmV/emIkr1Ng=
+        b=QBBvZXY18a7RN8p3AdGYto241JUo21aZ89m6SwCH+P1blzWte/Kp1zU/dANYBEX4a
+         Ww3mKDiD6xxgBxB7EsZur/R3j/TOUvFl9fPr2xj1vckqt2Cdya6a6TqycDlj7batWG
+         TXNiY6t3sYZLaznaFK5DAP2w/bv+DzRjV4usc9Ko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 5.19 0091/1157] drm/nouveau/acpi: Dont print error when we get -EINPROGRESS from pm_runtime
-Date:   Mon, 15 Aug 2022 19:50:47 +0200
-Message-Id: <20220815180443.225904772@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.19 0093/1157] drm/tegra: Fix vmapping of prime buffers
+Date:   Mon, 15 Aug 2022 19:50:49 +0200
+Message-Id: <20220815180443.314575317@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,32 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-commit 53c26181950ddc3c8ace3c0939c89e9c4d8deeb9 upstream.
+commit c7860cbee9989882d2908682526a5ef617523cfe upstream.
 
-Since this isn't actually a failure.
+The code assumes that Tegra GEM is permanently vmapped, which is not
+true for the scattered buffers. After converting Tegra video decoder
+driver to V4L API, we're now getting a BUG_ON from dma-buf core on playing
+video using libvdpau-tegra on T30+ because tegra_gem_prime_vmap() sets
+vaddr to NULL. Older pre-V4L video decoder driver wasn't vmapping dma-bufs.
+Fix it by actually vmapping the exported GEMs.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: 79e765ad665d ("drm/nouveau/drm/nouveau: Prevent handling ACPI HPD events too early")
-Cc: <stable@vger.kernel.org> # v4.19+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-2-lyude@redhat.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/tegra/gem.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_display.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_display.c
-@@ -537,7 +537,7 @@ nouveau_display_acpi_ntfy(struct notifie
- 				 * it's own hotplug events.
- 				 */
- 				pm_runtime_put_autosuspend(drm->dev->dev);
--			} else if (ret == 0) {
-+			} else if (ret == 0 || ret == -EINPROGRESS) {
- 				/* We've started resuming the GPU already, so
- 				 * it will handle scheduling a full reprobe
- 				 * itself
+--- a/drivers/gpu/drm/tegra/gem.c
++++ b/drivers/gpu/drm/tegra/gem.c
+@@ -704,14 +704,23 @@ static int tegra_gem_prime_vmap(struct d
+ {
+ 	struct drm_gem_object *gem = buf->priv;
+ 	struct tegra_bo *bo = to_tegra_bo(gem);
++	void *vaddr;
+ 
+-	iosys_map_set_vaddr(map, bo->vaddr);
++	vaddr = tegra_bo_mmap(&bo->base);
++	if (IS_ERR(vaddr))
++		return PTR_ERR(vaddr);
++
++	iosys_map_set_vaddr(map, vaddr);
+ 
+ 	return 0;
+ }
+ 
+ static void tegra_gem_prime_vunmap(struct dma_buf *buf, struct iosys_map *map)
+ {
++	struct drm_gem_object *gem = buf->priv;
++	struct tegra_bo *bo = to_tegra_bo(gem);
++
++	tegra_bo_munmap(&bo->base, map->vaddr);
+ }
+ 
+ static const struct dma_buf_ops tegra_gem_prime_dmabuf_ops = {
 
 
