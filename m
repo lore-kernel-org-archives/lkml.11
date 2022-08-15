@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5141C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 878BCC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353234AbiHPAU4 (ORCPT
+        id S1353480AbiHPAVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32896 "EHLO
+        Mon, 15 Aug 2022 20:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350194AbiHPAOJ (ORCPT
+        with ESMTP id S1348939AbiHPAOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:14:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A04FCD782;
-        Mon, 15 Aug 2022 13:30:37 -0700 (PDT)
+        Mon, 15 Aug 2022 20:14:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FCDA1A6F;
+        Mon, 15 Aug 2022 13:30:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FBF5611CA;
-        Mon, 15 Aug 2022 20:30:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0528C43143;
-        Mon, 15 Aug 2022 20:30:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 901FD60EE9;
+        Mon, 15 Aug 2022 20:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97752C433D6;
+        Mon, 15 Aug 2022 20:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595436;
-        bh=dU3Yp/V+6qpGDMr3f9HjjrsK2rxqAXzqXy9P4nzRVnc=;
+        s=korg; t=1660595430;
+        bh=sUYHBipSOEdGPK0bzVoiieG+BjNTS4qmLJDmSZz66vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MVesqC1SyUgOS/4/Cdeun9qXmzEvIb4YM8Evmjw6Ol+zPaPDZ0Pa51VNrUDVWP+/1
-         1iedxom5eWY7bYUXGPH/zqKSQrE16sBajNOdgziQoGRwfpC3Fj8YDiBAsGO3kX70GY
-         EHCbd6WcbZ/8U3FuI0S+AJx8AbuqMm5pR+4qKVI0=
+        b=ij9VvMN7+g2eNQd/1Grv6fJqMgVqVRntMZPV8A3moUWXvR4Us05pI8zyGu6QXQNXK
+         WTEAOsLs0puuVoRtolVu3zKQLabQdknogRoriftB7NcTgbFqMxRTeQ6ROg98O/kDT4
+         ROzlF51yrCr3fNHSsyW/gve/n84ErqQriGlvKCpo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0731/1157] KVM: selftests: Use vm_create_with_vcpus() in max_guest_memory_test
-Date:   Mon, 15 Aug 2022 20:01:27 +0200
-Message-Id: <20220815180508.703859658@linuxfoundation.org>
+Subject: [PATCH 5.19 0729/1157] KVM: Dont set Accessed/Dirty bits for ZERO_PAGE
+Date:   Mon, 15 Aug 2022 20:01:25 +0200
+Message-Id: <20220815180508.628828885@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,101 +52,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 3468fd7d883110e481dfb8c8c7b802dc252ab186 ]
+[ Upstream commit a1040b0d42acf69bb4f6dbdc54c2dcd78eea1de5 ]
 
-Use vm_create_with_vcpus() in max_guest_memory_test and reference vCPUs
-by their 'struct kvm_vcpu' object instead of their ID.
+Don't set Accessed/Dirty bits for a struct page with PG_reserved set,
+i.e. don't set A/D bits for the ZERO_PAGE.  The ZERO_PAGE (or pages
+depending on the architecture) should obviously never be written, and
+similarly there's no point in marking it accessed as the page will never
+be swapped out or reclaimed.  The comment in page-flags.h is quite clear
+that PG_reserved pages should be managed only by their owner, and
+strictly following that mandate also simplifies KVM's logic.
 
+Fixes: 7df003c85218 ("KVM: fix overflow of zero page refcount with ksm running")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429010416.2788472-4-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/kvm/max_guest_memory_test.c     | 26 ++++++++++++-------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+ virt/kvm/kvm_main.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/max_guest_memory_test.c b/tools/testing/selftests/kvm/max_guest_memory_test.c
-index 15f046e19cb2..d59918d5cbe2 100644
---- a/tools/testing/selftests/kvm/max_guest_memory_test.c
-+++ b/tools/testing/selftests/kvm/max_guest_memory_test.c
-@@ -28,8 +28,7 @@ static void guest_code(uint64_t start_gpa, uint64_t end_gpa, uint64_t stride)
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 28126ee221b5..98246f3dea87 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -2853,16 +2853,28 @@ void kvm_release_pfn_dirty(kvm_pfn_t pfn)
  }
+ EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
  
- struct vcpu_info {
--	struct kvm_vm *vm;
--	uint32_t id;
-+	struct kvm_vcpu *vcpu;
- 	uint64_t start_gpa;
- 	uint64_t end_gpa;
- };
-@@ -60,12 +59,13 @@ static void run_vcpu(struct kvm_vm *vm, uint32_t vcpu_id)
- 
- static void *vcpu_worker(void *data)
++static bool kvm_is_ad_tracked_pfn(kvm_pfn_t pfn)
++{
++	if (!pfn_valid(pfn))
++		return false;
++
++	/*
++	 * Per page-flags.h, pages tagged PG_reserved "should in general not be
++	 * touched (e.g. set dirty) except by its owner".
++	 */
++	return !PageReserved(pfn_to_page(pfn));
++}
++
+ void kvm_set_pfn_dirty(kvm_pfn_t pfn)
  {
--	struct vcpu_info *vcpu = data;
-+	struct vcpu_info *info = data;
-+	struct kvm_vcpu *vcpu = info->vcpu;
- 	struct kvm_vm *vm = vcpu->vm;
- 	struct kvm_sregs sregs;
- 	struct kvm_regs regs;
- 
--	vcpu_args_set(vm, vcpu->id, 3, vcpu->start_gpa, vcpu->end_gpa,
-+	vcpu_args_set(vm, vcpu->id, 3, info->start_gpa, info->end_gpa,
- 		      vm_get_page_size(vm));
- 
- 	/* Snapshot regs before the first run. */
-@@ -89,8 +89,8 @@ static void *vcpu_worker(void *data)
- 	return NULL;
+-	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
++	if (kvm_is_ad_tracked_pfn(pfn))
+ 		SetPageDirty(pfn_to_page(pfn));
  }
+ EXPORT_SYMBOL_GPL(kvm_set_pfn_dirty);
  
--static pthread_t *spawn_workers(struct kvm_vm *vm, uint64_t start_gpa,
--				uint64_t end_gpa)
-+static pthread_t *spawn_workers(struct kvm_vm *vm, struct kvm_vcpu **vcpus,
-+				uint64_t start_gpa, uint64_t end_gpa)
+ void kvm_set_pfn_accessed(kvm_pfn_t pfn)
  {
- 	struct vcpu_info *info;
- 	uint64_t gpa, nr_bytes;
-@@ -108,8 +108,7 @@ static pthread_t *spawn_workers(struct kvm_vm *vm, uint64_t start_gpa,
- 	TEST_ASSERT(nr_bytes, "C'mon, no way you have %d CPUs", nr_vcpus);
- 
- 	for (i = 0, gpa = start_gpa; i < nr_vcpus; i++, gpa += nr_bytes) {
--		info[i].vm = vm;
--		info[i].id = i;
-+		info[i].vcpu = vcpus[i];
- 		info[i].start_gpa = gpa;
- 		info[i].end_gpa = gpa + nr_bytes;
- 		pthread_create(&threads[i], NULL, vcpu_worker, &info[i]);
-@@ -172,6 +171,7 @@ int main(int argc, char *argv[])
- 	uint64_t max_gpa, gpa, slot_size, max_mem, i;
- 	int max_slots, slot, opt, fd;
- 	bool hugepages = false;
-+	struct kvm_vcpu **vcpus;
- 	pthread_t *threads;
- 	struct kvm_vm *vm;
- 	void *mem;
-@@ -215,7 +215,10 @@ int main(int argc, char *argv[])
- 		}
- 	}
- 
--	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
-+	vcpus = malloc(nr_vcpus * sizeof(*vcpus));
-+	TEST_ASSERT(vcpus, "Failed to allocate vCPU array");
-+
-+	vm = vm_create_with_vcpus(nr_vcpus, guest_code, vcpus);
- 
- 	max_gpa = vm_get_max_gfn(vm) << vm_get_page_shift(vm);
- 	TEST_ASSERT(max_gpa > (4 * slot_size), "MAXPHYADDR <4gb ");
-@@ -252,7 +255,10 @@ int main(int argc, char *argv[])
- 	}
- 
- 	atomic_set(&rendezvous, nr_vcpus + 1);
--	threads = spawn_workers(vm, start_gpa, gpa);
-+	threads = spawn_workers(vm, vcpus, start_gpa, gpa);
-+
-+	free(vcpus);
-+	vcpus = NULL;
- 
- 	pr_info("Running with %lugb of guest memory and %u vCPUs\n",
- 		(gpa - start_gpa) / size_1gb, nr_vcpus);
+-	if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
++	if (kvm_is_ad_tracked_pfn(pfn))
+ 		mark_page_accessed(pfn_to_page(pfn));
+ }
+ EXPORT_SYMBOL_GPL(kvm_set_pfn_accessed);
 -- 
 2.35.1
 
