@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD74C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B088C28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353749AbiHOXgM (ORCPT
+        id S1353782AbiHOXg1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
+        Mon, 15 Aug 2022 19:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353489AbiHOX2Q (ORCPT
+        with ESMTP id S1353433AbiHOXbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:28:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839D414EC8D;
-        Mon, 15 Aug 2022 13:07:44 -0700 (PDT)
+        Mon, 15 Aug 2022 19:31:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919F214F97C;
+        Mon, 15 Aug 2022 13:08:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38092B80EA8;
-        Mon, 15 Aug 2022 20:07:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77507C433D6;
-        Mon, 15 Aug 2022 20:07:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CB0160B6E;
+        Mon, 15 Aug 2022 20:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97F19C433C1;
+        Mon, 15 Aug 2022 20:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594061;
-        bh=uxd7EsReGra/kxKK0MUI8FhFK70UAPwYm5or0x5vyGU=;
+        s=korg; t=1660594093;
+        bh=qbzUrqN7cH0JP7uC2Tl4OalEZ7Wbjp6GiUMN+PORSdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dRFHwtetQADb+N/0Dx/lD4xyA5lldub/nCjISAhZBRGagzy0ktGg+orYgqqRw7dzd
-         PLPlq5HiGQUA5E3v7kusZlA0aoArEB3lJPaBwFP+OgEqqwTs+kYKTlaZaSY1jywPot
-         YDd5Qm+5BH7r/IUVY9oSpeE746EstcYDnShkD1kc=
+        b=zGJsLcPEu4VGkYlSlCo2vlCPEIdfOsRSexEd8ljeM3DkD6YNUa7zqb1Z/iYjynFR+
+         98ioYc8UedVte2xhp/a3Bw2SSNhuCXS199yOqPa7S+awO54vKAahVRR9S9n0d/HYsR
+         RneL7NgOFoCVJmO6r+RfbzhmYBjR5pmp3LFnrywc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1049/1095] ksmbd: smbd: change prototypes of RDMA read/write related functions
-Date:   Mon, 15 Aug 2022 20:07:28 +0200
-Message-Id: <20220815180512.469753235@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Eric Whitney <enwlinux@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1055/1095] ext4: fix extent status tree race in writeback error recovery path
+Date:   Mon, 15 Aug 2022 20:07:34 +0200
+Message-Id: <20220815180512.700807649@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,256 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Eric Whitney <enwlinux@gmail.com>
 
-[ Upstream commit 1807abcf8778bcbbf584fe54da9ccbe9029c49bb ]
+[ Upstream commit 7f0d8e1d607c1a4fa9a27362a108921d82230874 ]
 
-Change the prototypes of RDMA read/write
-operations to accept a pointer and length
-of buffer descriptors.
+A race can occur in the unlikely event ext4 is unable to allocate a
+physical cluster for a delayed allocation in a bigalloc file system
+during writeback.  Failure to allocate a cluster forces error recovery
+that includes a call to mpage_release_unused_pages().  That function
+removes any corresponding delayed allocated blocks from the extent
+status tree.  If a new delayed write is in progress on the same cluster
+simultaneously, resulting in the addition of an new extent containing
+one or more blocks in that cluster to the extent status tree, delayed
+block accounting can be thrown off if that delayed write then encounters
+a similar cluster allocation failure during future writeback.
 
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Write lock the i_data_sem in mpage_release_unused_pages() to fix this
+problem.  Ext4's block/cluster accounting code for bigalloc relies on
+i_data_sem for mutual exclusion, as is found in the delayed write path,
+and the locking in mpage_release_unused_pages() is missing.
+
+Cc: stable@kernel.org
+Reported-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Eric Whitney <enwlinux@gmail.com>
+Link: https://lore.kernel.org/r/20220615160530.1928801-1-enwlinux@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/connection.c     | 20 ++++++++++----------
- fs/ksmbd/connection.h     | 27 ++++++++++++++++-----------
- fs/ksmbd/smb2pdu.c        | 23 ++++++++---------------
- fs/ksmbd/transport_rdma.c | 30 +++++++++++++++++-------------
- 4 files changed, 51 insertions(+), 49 deletions(-)
+ fs/ext4/inode.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/ksmbd/connection.c b/fs/ksmbd/connection.c
-index bc6050b67256..e8f476c5f189 100644
---- a/fs/ksmbd/connection.c
-+++ b/fs/ksmbd/connection.c
-@@ -205,31 +205,31 @@ int ksmbd_conn_write(struct ksmbd_work *work)
- 	return 0;
- }
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index beed9e32571c..826e2deb10f8 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1559,7 +1559,14 @@ static void mpage_release_unused_pages(struct mpage_da_data *mpd,
+ 		ext4_lblk_t start, last;
+ 		start = index << (PAGE_SHIFT - inode->i_blkbits);
+ 		last = end << (PAGE_SHIFT - inode->i_blkbits);
++
++		/*
++		 * avoid racing with extent status tree scans made by
++		 * ext4_insert_delayed_block()
++		 */
++		down_write(&EXT4_I(inode)->i_data_sem);
+ 		ext4_es_remove_extent(inode, start, last - start + 1);
++		up_write(&EXT4_I(inode)->i_data_sem);
+ 	}
  
--int ksmbd_conn_rdma_read(struct ksmbd_conn *conn, void *buf,
--			 unsigned int buflen, u32 remote_key, u64 remote_offset,
--			 u32 remote_len)
-+int ksmbd_conn_rdma_read(struct ksmbd_conn *conn,
-+			 void *buf, unsigned int buflen,
-+			 struct smb2_buffer_desc_v1 *desc,
-+			 unsigned int desc_len)
- {
- 	int ret = -EINVAL;
- 
- 	if (conn->transport->ops->rdma_read)
- 		ret = conn->transport->ops->rdma_read(conn->transport,
- 						      buf, buflen,
--						      remote_key, remote_offset,
--						      remote_len);
-+						      desc, desc_len);
- 	return ret;
- }
- 
--int ksmbd_conn_rdma_write(struct ksmbd_conn *conn, void *buf,
--			  unsigned int buflen, u32 remote_key,
--			  u64 remote_offset, u32 remote_len)
-+int ksmbd_conn_rdma_write(struct ksmbd_conn *conn,
-+			  void *buf, unsigned int buflen,
-+			  struct smb2_buffer_desc_v1 *desc,
-+			  unsigned int desc_len)
- {
- 	int ret = -EINVAL;
- 
- 	if (conn->transport->ops->rdma_write)
- 		ret = conn->transport->ops->rdma_write(conn->transport,
- 						       buf, buflen,
--						       remote_key, remote_offset,
--						       remote_len);
-+						       desc, desc_len);
- 	return ret;
- }
- 
-diff --git a/fs/ksmbd/connection.h b/fs/ksmbd/connection.h
-index 7a59aacb5daa..98c1cbe45ec9 100644
---- a/fs/ksmbd/connection.h
-+++ b/fs/ksmbd/connection.h
-@@ -122,11 +122,14 @@ struct ksmbd_transport_ops {
- 	int (*writev)(struct ksmbd_transport *t, struct kvec *iovs, int niov,
- 		      int size, bool need_invalidate_rkey,
- 		      unsigned int remote_key);
--	int (*rdma_read)(struct ksmbd_transport *t, void *buf, unsigned int len,
--			 u32 remote_key, u64 remote_offset, u32 remote_len);
--	int (*rdma_write)(struct ksmbd_transport *t, void *buf,
--			  unsigned int len, u32 remote_key, u64 remote_offset,
--			  u32 remote_len);
-+	int (*rdma_read)(struct ksmbd_transport *t,
-+			 void *buf, unsigned int len,
-+			 struct smb2_buffer_desc_v1 *desc,
-+			 unsigned int desc_len);
-+	int (*rdma_write)(struct ksmbd_transport *t,
-+			  void *buf, unsigned int len,
-+			  struct smb2_buffer_desc_v1 *desc,
-+			  unsigned int desc_len);
- };
- 
- struct ksmbd_transport {
-@@ -148,12 +151,14 @@ struct ksmbd_conn *ksmbd_conn_alloc(void);
- void ksmbd_conn_free(struct ksmbd_conn *conn);
- bool ksmbd_conn_lookup_dialect(struct ksmbd_conn *c);
- int ksmbd_conn_write(struct ksmbd_work *work);
--int ksmbd_conn_rdma_read(struct ksmbd_conn *conn, void *buf,
--			 unsigned int buflen, u32 remote_key, u64 remote_offset,
--			 u32 remote_len);
--int ksmbd_conn_rdma_write(struct ksmbd_conn *conn, void *buf,
--			  unsigned int buflen, u32 remote_key, u64 remote_offset,
--			  u32 remote_len);
-+int ksmbd_conn_rdma_read(struct ksmbd_conn *conn,
-+			 void *buf, unsigned int buflen,
-+			 struct smb2_buffer_desc_v1 *desc,
-+			 unsigned int desc_len);
-+int ksmbd_conn_rdma_write(struct ksmbd_conn *conn,
-+			  void *buf, unsigned int buflen,
-+			  struct smb2_buffer_desc_v1 *desc,
-+			  unsigned int desc_len);
- void ksmbd_conn_enqueue_request(struct ksmbd_work *work);
- int ksmbd_conn_try_dequeue_request(struct ksmbd_work *work);
- void ksmbd_conn_init_server_callbacks(struct ksmbd_conn_ops *ops);
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 5df87fe18905..8f86b8d6765f 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -6132,7 +6132,6 @@ static noinline int smb2_read_pipe(struct ksmbd_work *work)
- static int smb2_set_remote_key_for_rdma(struct ksmbd_work *work,
- 					struct smb2_buffer_desc_v1 *desc,
- 					__le32 Channel,
--					__le16 ChannelInfoOffset,
- 					__le16 ChannelInfoLength)
- {
- 	unsigned int i, ch_count;
-@@ -6158,7 +6157,8 @@ static int smb2_set_remote_key_for_rdma(struct ksmbd_work *work,
- 
- 	work->need_invalidate_rkey =
- 		(Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE);
--	work->remote_key = le32_to_cpu(desc->token);
-+	if (Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE)
-+		work->remote_key = le32_to_cpu(desc->token);
- 	return 0;
- }
- 
-@@ -6166,14 +6166,12 @@ static ssize_t smb2_read_rdma_channel(struct ksmbd_work *work,
- 				      struct smb2_read_req *req, void *data_buf,
- 				      size_t length)
- {
--	struct smb2_buffer_desc_v1 *desc =
--		(struct smb2_buffer_desc_v1 *)&req->Buffer[0];
- 	int err;
- 
- 	err = ksmbd_conn_rdma_write(work->conn, data_buf, length,
--				    le32_to_cpu(desc->token),
--				    le64_to_cpu(desc->offset),
--				    le32_to_cpu(desc->length));
-+				    (struct smb2_buffer_desc_v1 *)
-+				    ((char *)req + le16_to_cpu(req->ReadChannelInfoOffset)),
-+				    le16_to_cpu(req->ReadChannelInfoLength));
- 	if (err)
- 		return err;
- 
-@@ -6217,7 +6215,6 @@ int smb2_read(struct ksmbd_work *work)
- 						   (struct smb2_buffer_desc_v1 *)
- 						   ((char *)req + ch_offset),
- 						   req->Channel,
--						   req->ReadChannelInfoOffset,
- 						   req->ReadChannelInfoLength);
- 		if (err)
- 			goto out;
-@@ -6395,21 +6392,18 @@ static ssize_t smb2_write_rdma_channel(struct ksmbd_work *work,
- 				       struct ksmbd_file *fp,
- 				       loff_t offset, size_t length, bool sync)
- {
--	struct smb2_buffer_desc_v1 *desc;
- 	char *data_buf;
- 	int ret;
- 	ssize_t nbytes;
- 
--	desc = (struct smb2_buffer_desc_v1 *)&req->Buffer[0];
--
- 	data_buf = kvmalloc(length, GFP_KERNEL | __GFP_ZERO);
- 	if (!data_buf)
- 		return -ENOMEM;
- 
- 	ret = ksmbd_conn_rdma_read(work->conn, data_buf, length,
--				   le32_to_cpu(desc->token),
--				   le64_to_cpu(desc->offset),
--				   le32_to_cpu(desc->length));
-+				   (struct smb2_buffer_desc_v1 *)
-+				   ((char *)req + le16_to_cpu(req->WriteChannelInfoOffset)),
-+				   le16_to_cpu(req->WriteChannelInfoLength));
- 	if (ret < 0) {
- 		kvfree(data_buf);
- 		return ret;
-@@ -6461,7 +6455,6 @@ int smb2_write(struct ksmbd_work *work)
- 						   (struct smb2_buffer_desc_v1 *)
- 						   ((char *)req + ch_offset),
- 						   req->Channel,
--						   req->WriteChannelInfoOffset,
- 						   req->WriteChannelInfoLength);
- 		if (err)
- 			goto out;
-diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
-index 3f5d13571694..479d279ee146 100644
---- a/fs/ksmbd/transport_rdma.c
-+++ b/fs/ksmbd/transport_rdma.c
-@@ -1352,14 +1352,18 @@ static void write_done(struct ib_cq *cq, struct ib_wc *wc)
- 	read_write_done(cq, wc, DMA_TO_DEVICE);
- }
- 
--static int smb_direct_rdma_xmit(struct smb_direct_transport *t, void *buf,
--				int buf_len, u32 remote_key, u64 remote_offset,
--				u32 remote_len, bool is_read)
-+static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
-+				void *buf, int buf_len,
-+				struct smb2_buffer_desc_v1 *desc,
-+				unsigned int desc_len,
-+				bool is_read)
- {
- 	struct smb_direct_rdma_rw_msg *msg;
- 	int ret;
- 	DECLARE_COMPLETION_ONSTACK(completion);
- 	struct ib_send_wr *first_wr = NULL;
-+	u32 remote_key = le32_to_cpu(desc[0].token);
-+	u64 remote_offset = le64_to_cpu(desc[0].offset);
- 
- 	ret = wait_for_credits(t, &t->wait_rw_avail_ops, &t->rw_avail_ops);
- 	if (ret < 0)
-@@ -1424,22 +1428,22 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t, void *buf,
- 	return ret;
- }
- 
--static int smb_direct_rdma_write(struct ksmbd_transport *t, void *buf,
--				 unsigned int buflen, u32 remote_key,
--				 u64 remote_offset, u32 remote_len)
-+static int smb_direct_rdma_write(struct ksmbd_transport *t,
-+				 void *buf, unsigned int buflen,
-+				 struct smb2_buffer_desc_v1 *desc,
-+				 unsigned int desc_len)
- {
- 	return smb_direct_rdma_xmit(smb_trans_direct_transfort(t), buf, buflen,
--				    remote_key, remote_offset,
--				    remote_len, false);
-+				    desc, desc_len, false);
- }
- 
--static int smb_direct_rdma_read(struct ksmbd_transport *t, void *buf,
--				unsigned int buflen, u32 remote_key,
--				u64 remote_offset, u32 remote_len)
-+static int smb_direct_rdma_read(struct ksmbd_transport *t,
-+				void *buf, unsigned int buflen,
-+				struct smb2_buffer_desc_v1 *desc,
-+				unsigned int desc_len)
- {
- 	return smb_direct_rdma_xmit(smb_trans_direct_transfort(t), buf, buflen,
--				    remote_key, remote_offset,
--				    remote_len, true);
-+				    desc, desc_len, true);
- }
- 
- static void smb_direct_disconnect(struct ksmbd_transport *t)
+ 	pagevec_init(&pvec);
 -- 
 2.35.1
 
