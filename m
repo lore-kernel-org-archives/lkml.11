@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C56C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACE1C32765
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350765AbiHOW1L (ORCPT
+        id S1350607AbiHOW1A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
+        Mon, 15 Aug 2022 18:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347284AbiHOWTX (ORCPT
+        with ESMTP id S1350931AbiHOWSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:19:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6036AA30;
-        Mon, 15 Aug 2022 12:43:18 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B5366A7B;
+        Mon, 15 Aug 2022 12:43:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6287B80EAB;
-        Mon, 15 Aug 2022 19:43:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27582C433C1;
-        Mon, 15 Aug 2022 19:43:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D00A9611DD;
+        Mon, 15 Aug 2022 19:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC056C433C1;
+        Mon, 15 Aug 2022 19:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592595;
-        bh=+mp64Pr/EQHtTObpXJCI/YKDDO+OrIRtCHdSi07jgfw=;
+        s=korg; t=1660592583;
+        bh=fhXmri8Qjp0EzDtGXhrJdIiFlwZJ7xvylvHa/3A9hao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRv+ou73clbv2kF5coHX0LeUUSbnDsfgrpoGx/Vbxc5S/abIx/cohGbZz2kQAsW91
-         1/YmKkzGIg4s6o3tzKMDcQ2aFQRrMCkXesz1Vz94q88CP/plmoxP6hFn/bgEab0P2W
-         RUQ3jjHKrN6dhIA4pPhWCzd15mcXRW9XVeO+Zbvo=
+        b=MkTLKfjWdFy/IIlGqqY7gLA3vG1r8aBAvKjWEIxW6OSiGnZ/cLtGQgcJkU7BugvZX
+         NUpX+SrzR3ToH16Sevvq/yj6K5QFjouVWuIVWkRLa6b2xAappgyuLCQAIdwn1aRuPA
+         F3djA6v/Fo6+XnzsmhM7e83Uj9Z2wG1PwNUdwxXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Aveksis <itayav@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0813/1095] RDMA/mlx5: Add missing check for return value in get namespace flow
-Date:   Mon, 15 Aug 2022 20:03:32 +0200
-Message-Id: <20220815180502.902176457@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH 5.19 0133/1157] USB: HCD: Fix URB giveback issue in tasklet function
+Date:   Mon, 15 Aug 2022 19:51:29 +0200
+Message-Id: <20220815180444.953808499@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +50,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-[ Upstream commit c9776457bd5eaad4ce4ecb17af8d8f3cc6957c0b ]
+commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
 
-Add missing check for return value when calling to
-mlx5_ib_ft_type_to_namespace, even though it can't really fail in this
-specific call.
+Usb core introduce the mechanism of giveback of URB in tasklet context to
+reduce hardware interrupt handling time. On some test situation(such as
+FIO with 4KB block size), when tasklet callback function called to
+giveback URB, interrupt handler add URB node to the bh->head list also.
+If check bh->head list again after finish all URB giveback of local_list,
+then it may introduce a "dynamic balance" between giveback URB and add URB
+to bh->head list. This tasklet callback function may not exit for a long
+time, which will cause other tasklet function calls to be delayed. Some
+real-time applications(such as KB and Mouse) will see noticeable lag.
 
-Fixes: 52438be44112 ("RDMA/mlx5: Allow inserting a steering rule to the FDB")
-Link: https://lore.kernel.org/r/7b9ceda217d9368a51dc47a46b769bad4af9ac92.1659256069.git.leonro@nvidia.com
-Reviewed-by: Itay Aveksis <itayav@nvidia.com>
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In order to prevent the tasklet function from occupying the cpu for a long
+time at a time, new URBS will not be added to the local_list even though
+the bh->head list is not empty. But also need to ensure the left URB
+giveback to be processed in time, so add a member high_prio for structure
+giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
+bh->head list is not empty.
+
+At the same time, we are able to prioritize tasklet through structure
+member high_prio. So, replace the local high_prio_bh variable with this
+structure member in usb_hcd_giveback_urb.
+
+Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/mlx5/fs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
+ include/linux/usb/hcd.h |    1 +
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index 661ed2b44508..6092118de672 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -2265,12 +2265,10 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
- 		if (err)
- 			return err;
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1691,7 +1691,6 @@ static void usb_giveback_urb_bh(struct t
  
--		if (flags) {
--			mlx5_ib_ft_type_to_namespace(
-+		if (flags)
-+			return mlx5_ib_ft_type_to_namespace(
- 				MLX5_IB_UAPI_FLOW_TABLE_TYPE_NIC_TX,
- 				&obj->ns_type);
--			return 0;
--		}
+ 	spin_lock_irq(&bh->lock);
+ 	bh->running = true;
+- restart:
+ 	list_replace_init(&bh->head, &local_list);
+ 	spin_unlock_irq(&bh->lock);
+ 
+@@ -1705,10 +1704,17 @@ static void usb_giveback_urb_bh(struct t
+ 		bh->completing_ep = NULL;
  	}
  
- 	obj->ns_type = MLX5_FLOW_NAMESPACE_BYPASS;
--- 
-2.35.1
-
+-	/* check if there are new URBs to giveback */
++	/*
++	 * giveback new URBs next time to prevent this function
++	 * from not exiting for a long time.
++	 */
+ 	spin_lock_irq(&bh->lock);
+-	if (!list_empty(&bh->head))
+-		goto restart;
++	if (!list_empty(&bh->head)) {
++		if (bh->high_prio)
++			tasklet_hi_schedule(&bh->bh);
++		else
++			tasklet_schedule(&bh->bh);
++	}
+ 	bh->running = false;
+ 	spin_unlock_irq(&bh->lock);
+ }
+@@ -1737,7 +1743,7 @@ static void usb_giveback_urb_bh(struct t
+ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ {
+ 	struct giveback_urb_bh *bh;
+-	bool running, high_prio_bh;
++	bool running;
+ 
+ 	/* pass status to tasklet via unlinked */
+ 	if (likely(!urb->unlinked))
+@@ -1748,13 +1754,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 		return;
+ 	}
+ 
+-	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
++	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
+ 		bh = &hcd->high_prio_bh;
+-		high_prio_bh = true;
+-	} else {
++	else
+ 		bh = &hcd->low_prio_bh;
+-		high_prio_bh = false;
+-	}
+ 
+ 	spin_lock(&bh->lock);
+ 	list_add_tail(&urb->urb_list, &bh->head);
+@@ -1763,7 +1766,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 
+ 	if (running)
+ 		;
+-	else if (high_prio_bh)
++	else if (bh->high_prio)
+ 		tasklet_hi_schedule(&bh->bh);
+ 	else
+ 		tasklet_schedule(&bh->bh);
+@@ -2959,6 +2962,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 
+ 	/* initialize tasklets */
+ 	init_giveback_urb_bh(&hcd->high_prio_bh);
++	hcd->high_prio_bh.high_prio = true;
+ 	init_giveback_urb_bh(&hcd->low_prio_bh);
+ 
+ 	/* enable irqs just before we start the controller,
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -66,6 +66,7 @@
+ 
+ struct giveback_urb_bh {
+ 	bool running;
++	bool high_prio;
+ 	spinlock_t lock;
+ 	struct list_head  head;
+ 	struct tasklet_struct bh;
 
 
