@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F36C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A708C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343766AbiHOTM5 (ORCPT
+        id S1343795AbiHOTNA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
+        Mon, 15 Aug 2022 15:13:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343597AbiHOTJH (ORCPT
+        with ESMTP id S1343647AbiHOTJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:09:07 -0400
+        Mon, 15 Aug 2022 15:09:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B83440BDD;
-        Mon, 15 Aug 2022 11:35:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD1B3AE43;
+        Mon, 15 Aug 2022 11:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A17460FB8;
-        Mon, 15 Aug 2022 18:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8692FC433C1;
-        Mon, 15 Aug 2022 18:35:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA3E261024;
+        Mon, 15 Aug 2022 18:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF8F9C433C1;
+        Mon, 15 Aug 2022 18:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588556;
-        bh=hTRS1tqejUoIqcG1ti54Lman6PjQTp4st0trKhr/PfE=;
+        s=korg; t=1660588565;
+        bh=wtp6p6RMN1MZpTJuYtBu272z3ieJ8QwXzu/VzXe3Qcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ji2ocTmXyjsK6i4uYsRXOtTdo/zUkMY8PZCzXDrMkztOfXbZM9i2z1cwL+amL+jtQ
-         qNXcLKTT6AU9hOyv8+Fpdhav83MDoCNCdimiXCOS5EpGFcCLUmjvD0mtQGG+8Je08w
-         ef+rc7Jg4tf4N0p5oB+S0D1FxN7JuQJwlDcUxpQI=
+        b=udD5nvO1FSDPcLLgHJTCKNHIgVzu4CU/yuTW5hy3tNb/It8XgMxfcqmleaS8Rc8rW
+         pCKJ2f9HO7ocizvGYpox2LOHhMukpB4dnwrQPruYS7LdtOI+LyEO9uPDNbdPlQVkjr
+         13OiVduCg6tE9RCXJ+cx9blGXBcXpm6RHCrNYXrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 424/779] scsi: qla2xxx: edif: Fix no logout on delete for N2N
-Date:   Mon, 15 Aug 2022 20:01:08 +0200
-Message-Id: <20220815180355.383340875@linuxfoundation.org>
+Subject: [PATCH 5.15 444/779] clk: qcom: gcc-msm8939: Add missing SYSTEM_MM_NOC_BFDCD_CLK_SRC
+Date:   Mon, 15 Aug 2022 20:01:28 +0200
+Message-Id: <20220815180356.249628154@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,41 +54,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit ec538eb838f334453b10e7e9b260f0c358018a37 ]
+[ Upstream commit 07e7fcf1714c5f9930ad27613fea940aedba68da ]
 
-The driver failed to send implicit logout on session delete. For edif, this
-failed to flush any lingering SA index in FW.
+When adding in the indexes for this clock-controller we missed
+SYSTEM_MM_NOC_BFDCD_CLK_SRC.
 
-Set a flag to turn on implicit logout early in the session recovery to make
-sure the logout will go out in case of error.
+Add it in now.
 
-Link: https://lore.kernel.org/r/20220608115849.16693-8-njavali@marvell.com
-Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 4c71d6abc4fc ("clk: qcom: Add DT bindings for MSM8939 GCC")
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-2-bryan.odonoghue@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_iocb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/dt-bindings/clock/qcom,gcc-msm8939.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/qla2xxx/qla_iocb.c b/drivers/scsi/qla2xxx/qla_iocb.c
-index 46c879923da1..42ce4e1fe744 100644
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2882,6 +2882,9 @@ static void qla2x00_els_dcmd2_sp_done(srb_t *sp, int res)
- 	    sp->name, res, sp->handle, fcport->d_id.b24, fcport->port_name);
+diff --git a/include/dt-bindings/clock/qcom,gcc-msm8939.h b/include/dt-bindings/clock/qcom,gcc-msm8939.h
+index 0634467c4ce5..2d545ed0d35a 100644
+--- a/include/dt-bindings/clock/qcom,gcc-msm8939.h
++++ b/include/dt-bindings/clock/qcom,gcc-msm8939.h
+@@ -192,6 +192,7 @@
+ #define GCC_VENUS0_CORE0_VCODEC0_CLK		183
+ #define GCC_VENUS0_CORE1_VCODEC0_CLK		184
+ #define GCC_OXILI_TIMER_CLK			185
++#define SYSTEM_MM_NOC_BFDCD_CLK_SRC		186
  
- 	fcport->flags &= ~(FCF_ASYNC_SENT|FCF_ASYNC_ACTIVE);
-+	/* For edif, set logout on delete to ensure any residual key from FW is flushed.*/
-+	fcport->logout_on_delete = 1;
-+	fcport->chip_reset = vha->hw->base_qpair->chip_reset;
- 
- 	if (sp->flags & SRB_WAKEUP_ON_COMP)
- 		complete(&lio->u.els_plogi.comp);
+ /* Indexes for GDSCs */
+ #define BIMC_GDSC				0
 -- 
 2.35.1
 
