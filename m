@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399DAC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09ABC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354018AbiHOXoh (ORCPT
+        id S1354073AbiHOXoq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35658 "EHLO
+        Mon, 15 Aug 2022 19:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354172AbiHOXle (ORCPT
+        with ESMTP id S1354188AbiHOXlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EB7155CAC;
-        Mon, 15 Aug 2022 13:10:57 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7052B83F33;
+        Mon, 15 Aug 2022 13:11:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A91560F0C;
-        Mon, 15 Aug 2022 20:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640E7C433D6;
-        Mon, 15 Aug 2022 20:10:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2016EB80EA9;
+        Mon, 15 Aug 2022 20:11:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC8FC433C1;
+        Mon, 15 Aug 2022 20:11:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594256;
-        bh=uw//HsiRMHBa899GZSRbrnUZcOQGxjsDm5ULzHnOqJM=;
+        s=korg; t=1660594262;
+        bh=iYfeC75j6U9orOtsHn0ahFpgAnuaEkZWkuIbvo+iqNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQwqYYEWiRNsEofHxse2jRC0GEN1EYRgEox+7NPYTY/mULlThaZlA5Vdyg5itsIgY
-         xTBzFdiCIIY06H5CgDjk+5ies0QrnY9tjvJR557tIK5pvCeqV317n3/jdNCL8U0Dnr
-         vLoOLUstNXGIF9G9soJrbI6CNJYVXktrPBkqCHag=
+        b=u64gb0jRgJoe0w7lPzZ388S6+U4QUaZQ/R13i9ixk+lIGyFmnPOFuPWGAW2EfgZeV
+         yUczRPdpnMT3+rhCfZkmC8styx/pFF8AMrwjllGsmXKFGlYkOZ1CAKCFYzwwTHeSGL
+         QDEz00Vd4R8p27pwkEpW0Tlo3EMBUAG00mYmRLx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0402/1157] media: mediatek: vcodec: Skip SOURCE_CHANGE & EOS events for stateless
-Date:   Mon, 15 Aug 2022 19:55:58 +0200
-Message-Id: <20220815180455.755899657@linuxfoundation.org>
+        stable@vger.kernel.org, John Sperbeck <jsperbeck@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 1080/1095] raw: fix a typo in raw_icmp_error()
+Date:   Mon, 15 Aug 2022 20:07:59 +0200
+Message-Id: <20220815180513.710889691@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,49 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit e13ca460e20ed42fe57a3845b0bb9a82f81f05cd ]
+commit 97a4d46b1516250d640c1ae0c9e7129d160d6a1c upstream.
 
-The stateless decoder API does not specify the usage of SOURCE_CHANGE
-and EOF events. These events are used by stateful decoders to signal
-changes in the bitstream. They do not make sense for stateless decoders.
+I accidentally broke IPv4 traceroute, by swapping iph->saddr
+and iph->daddr.
 
-Do not handle subscription for these two types of events for stateless
-decoder instances. This fixes the last v4l2-compliance error:
+Probably because raw_icmp_error() and raw_v4_input()
+use different order for iph->saddr and iph->daddr.
 
-Control ioctls:
-		fail: v4l2-test-controls.cpp(946): have_source_change || have_eos
-	test VIDIOC_(UN)SUBSCRIBE_EVENT/DQEVENT: FAIL
-
-Fixes: 8cdc3794b2e3 ("media: mtk-vcodec: vdec: support stateless API")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
+Reported-by: John Sperbeck <jsperbeck@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220623193540.2851799-1-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/ipv4/raw.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index 50cfb18f85ae..01836a1c7d3f 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -196,6 +196,11 @@ static int vidioc_vdec_querycap(struct file *file, void *priv,
- static int vidioc_vdec_subscribe_evt(struct v4l2_fh *fh,
- 				     const struct v4l2_event_subscription *sub)
- {
-+	struct mtk_vcodec_ctx *ctx = fh_to_ctx(fh);
-+
-+	if (ctx->dev->vdec_pdata->uses_stateless_api)
-+		return v4l2_ctrl_subscribe_event(fh, sub);
-+
- 	switch (sub->type) {
- 	case V4L2_EVENT_EOS:
- 		return v4l2_event_subscribe(fh, sub, 2, NULL);
--- 
-2.35.1
-
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -278,7 +278,7 @@ void raw_icmp_error(struct sk_buff *skb,
+ 	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		iph = (const struct iphdr *)skb->data;
+ 		if (!raw_v4_match(net, sk, iph->protocol,
+-				  iph->saddr, iph->daddr, dif, sdif))
++				  iph->daddr, iph->saddr, dif, sdif))
+ 			continue;
+ 		raw_err(sk, skb, info);
+ 	}
 
 
