@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEF9C2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC532C2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347618AbiHOU0R (ORCPT
+        id S1347684AbiHOU0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        Mon, 15 Aug 2022 16:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343928AbiHOUTY (ORCPT
+        with ESMTP id S1346490AbiHOUUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:19:24 -0400
+        Mon, 15 Aug 2022 16:20:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD85780516;
-        Mon, 15 Aug 2022 12:00:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0396C979E8;
+        Mon, 15 Aug 2022 12:00:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F022EB81106;
-        Mon, 15 Aug 2022 19:00:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE71C433D6;
-        Mon, 15 Aug 2022 19:00:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40621B8105C;
+        Mon, 15 Aug 2022 19:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98324C433C1;
+        Mon, 15 Aug 2022 19:00:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590037;
-        bh=bqOWLUEtmJFZwXCw3UqJncyrYlm7mOE2OSE/xVhMHtg=;
+        s=korg; t=1660590050;
+        bh=lg2+YsXQQBrsQ6BLKQMFy06zfZHh2gbqSTZ/yvTb1h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NqZaVyJzBqvjBFJeKFM9jOemJHD9cqZkrfvG1G+V0SonLdB/SRBTgApPrtcacAiSA
-         w29w/h9eIVZIhdCYaOS6RIIxuZjdMiScUb+77qoghAW3TvodKnpmFbmdQ+szWob+a3
-         O5Gm0yzZNj+fE32rq7jSI+Ref9VfE4jICt2I1utQ=
+        b=h3/CIWrBJiGGYCHnzeq9G3ivdPTXTr6ri1R4IENQMbmg55APL+zWWk+KLhew7IKFM
+         +aS2DtqT6xdZCPMk7uMz57i6ncnjLp2BW3XkviF6noMsYXmVq8p/rZ9M+palZLKHRc
+         gfkiKbda2C4GsBeEVkuQh+kyNoPP5hDEY5a2XQx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        zdi-disclosures@trendmicro.com
-Subject: [PATCH 5.18 0100/1095] ksmbd: prevent out of bound read for SMB2_TREE_CONNNECT
-Date:   Mon, 15 Aug 2022 19:51:39 +0200
-Message-Id: <20220815180433.689786833@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 0094/1095] scsi: lpfc: Remove extra atomic_inc on cmd_pending in queuecommand after VMID
+Date:   Mon, 15 Aug 2022 19:51:33 +0200
+Message-Id: <20220815180433.431250368@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,69 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: James Smart <jsmart2021@gmail.com>
 
-commit 824d4f64c20093275f72fc8101394d75ff6a249e upstream.
+commit 0948a9c5386095baae4012190a6b65aba684a907 upstream.
 
-if Status is not 0 and PathLength is long,
-smb_strndup_from_utf16 could make out of bound
-read in smb2_tree_connnect.
+VMID introduced an extra increment of cmd_pending, causing double-counting
+of the I/O. The normal increment ios performed in lpfc_get_scsi_buf.
 
-This bug can lead an oops looking something like:
-
-[ 1553.882047] BUG: KASAN: slab-out-of-bounds in smb_strndup_from_utf16+0x469/0x4c0 [ksmbd]
-[ 1553.882064] Read of size 2 at addr ffff88802c4eda04 by task kworker/0:2/42805
-...
-[ 1553.882095] Call Trace:
-[ 1553.882098]  <TASK>
-[ 1553.882101]  dump_stack_lvl+0x49/0x5f
-[ 1553.882107]  print_report.cold+0x5e/0x5cf
-[ 1553.882112]  ? smb_strndup_from_utf16+0x469/0x4c0 [ksmbd]
-[ 1553.882122]  kasan_report+0xaa/0x120
-[ 1553.882128]  ? smb_strndup_from_utf16+0x469/0x4c0 [ksmbd]
-[ 1553.882139]  __asan_report_load_n_noabort+0xf/0x20
-[ 1553.882143]  smb_strndup_from_utf16+0x469/0x4c0 [ksmbd]
-[ 1553.882155]  ? smb_strtoUTF16+0x3b0/0x3b0 [ksmbd]
-[ 1553.882166]  ? __kmalloc_node+0x185/0x430
-[ 1553.882171]  smb2_tree_connect+0x140/0xab0 [ksmbd]
-[ 1553.882185]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
-[ 1553.882197]  process_one_work+0x778/0x11c0
-[ 1553.882201]  ? _raw_spin_lock_irq+0x8e/0xe0
-[ 1553.882206]  worker_thread+0x544/0x1180
-[ 1553.882209]  ? __cpuidle_text_end+0x4/0x4
-[ 1553.882214]  kthread+0x282/0x320
-[ 1553.882218]  ? process_one_work+0x11c0/0x11c0
-[ 1553.882221]  ? kthread_complete_and_exit+0x30/0x30
-[ 1553.882225]  ret_from_fork+0x1f/0x30
-[ 1553.882231]  </TASK>
-
-There is no need to check error request validation in server.
-This check allow invalid requests not to validate message.
-
-Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
-Cc: stable@vger.kernel.org
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17818
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Link: https://lore.kernel.org/r/20220701211425.2708-5-jsmart2021@gmail.com
+Fixes: 33c79741deaf ("scsi: lpfc: vmid: Introduce VMID in I/O path")
+Cc: <stable@vger.kernel.org> # v5.14+
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2misc.c |    5 -----
- 1 file changed, 5 deletions(-)
+ drivers/scsi/lpfc/lpfc_scsi.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/ksmbd/smb2misc.c
-+++ b/fs/ksmbd/smb2misc.c
-@@ -90,11 +90,6 @@ static int smb2_get_data_area_len(unsign
- 	*off = 0;
- 	*len = 0;
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -5710,7 +5710,6 @@ lpfc_queuecommand(struct Scsi_Host *shos
+ 				cur_iocbq->cmd_flag |= LPFC_IO_VMID;
+ 		}
+ 	}
+-	atomic_inc(&ndlp->cmd_pending);
  
--	/* error reqeusts do not have data area */
--	if (hdr->Status && hdr->Status != STATUS_MORE_PROCESSING_REQUIRED &&
--	    (((struct smb2_err_rsp *)hdr)->StructureSize) == SMB2_ERROR_STRUCTURE_SIZE2_LE)
--		return ret;
--
- 	/*
- 	 * Following commands have data areas so we have to get the location
- 	 * of the data buffer offset and data buffer length for the particular
+ #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
+ 	if (unlikely(phba->hdwqstat_on & LPFC_CHECK_SCSI_IO))
 
 
