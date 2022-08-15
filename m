@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B3EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEA8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345590AbiHOXL5 (ORCPT
+        id S1345730AbiHOXMD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
+        Mon, 15 Aug 2022 19:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353068AbiHOXKr (ORCPT
+        with ESMTP id S1353162AbiHOXK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:10:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A805379A55;
-        Mon, 15 Aug 2022 13:00:04 -0700 (PDT)
+        Mon, 15 Aug 2022 19:10:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10670144E0D;
+        Mon, 15 Aug 2022 13:00:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 275E2B80EA8;
-        Mon, 15 Aug 2022 20:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F22EC433C1;
-        Mon, 15 Aug 2022 20:00:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 363F261226;
+        Mon, 15 Aug 2022 20:00:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BFD3C433C1;
+        Mon, 15 Aug 2022 20:00:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593601;
-        bh=StjgcR6nA87Jhlh+ZwYMvS8/tCMtuZEn7F+G7iUqQg8=;
+        s=korg; t=1660593607;
+        bh=q7HeBn6uyB5qIMUcOE0UZOInjM7NHBYSfG82jh+373g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RujZWniObrL4LjPtnXPjATjxxJsxRZtPMyYZlf0qslmBjIqS1gC144qEt7uFXmRuX
-         oe/4hCFkllsHD24gN5A/0Oxzkj1S6kTRlb0SD7xS1BiIjk4FB3GGn8+bS8mIi73f7w
-         +M5eVlw3rvXOH7ClYxyI4g68xo64SX94GexlMUqQ=
+        b=ENYNfEJYtewKl52hFCWiIAUHLe+tqFha4siR75V2csSFGVv00gyDdZifjMg+N6UDv
+         ROXcrqI3BotwkR24BMPnSMhAv9GebGS5yCt5rt/ZPGnZLoPS+e9VJ8+3hyNbNr/ut5
+         snoaF+1t8GnwVXb8/D26EriBv/DLSLi6na7f/G48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 5.18 0974/1095] x86/olpc: fix logical not is only applied to the left hand side
-Date:   Mon, 15 Aug 2022 20:06:13 +0200
-Message-Id: <20220815180509.382223212@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0295/1157] io_uring: Dont require reinitable percpu_ref
+Date:   Mon, 15 Aug 2022 19:54:11 +0200
+Message-Id: <20220815180451.432936539@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Michal Koutný <mkoutny@suse.com>
 
-commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
+[ Upstream commit 48904229928d941ce1db181b991948387ab463cd ]
 
-The bitops compile-time optimization series revealed one more
-problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
-warnings:
+The commit 8bb649ee1da3 ("io_uring: remove ring quiesce for
+io_uring_register") removed the worklow relying on reinit/resurrection
+of the percpu_ref, hence, initialization with that requested is a relic.
 
-arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
-   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-      |                                                               ^~
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
+This is based on code review, this causes no real bug (and theoretically
+can't). Technically it's a revert of commit 214828962dea ("io_uring:
+initialize percpu refcounters using PERCU_REF_ALLOW_REINIT") but since
+the flag omission is now justified, I'm not making this a revert.
 
-Despite this code working as intended, this redundant double
-negation of boolean value, together with comparing to `char`
-with no explicit conversion to bool, makes compilers think
-the author made some unintentional logical mistakes here.
-Make it the other way around and negate the char instead
-to silence the warnings.
-
-Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
-Cc: stable@vger.kernel.org # 3.5+
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8bb649ee1da3 ("io_uring: remove ring quiesce for io_uring_register")
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
+ io_uring/io_uring.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-@@ -80,7 +80,7 @@ static void send_ebook_state(void)
- 		return;
- 	}
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index f429b68d1fc2..27ce532c6c8d 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -1701,7 +1701,7 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
+ 	ctx->dummy_ubuf->ubuf = -1UL;
  
--	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-+	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
- 		return; /* Nothing new to report. */
+ 	if (percpu_ref_init(&ctx->refs, io_ring_ctx_ref_free,
+-			    PERCPU_REF_ALLOW_REINIT, GFP_KERNEL))
++			    0, GFP_KERNEL))
+ 		goto err;
  
- 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
+ 	ctx->flags = p->flags;
+-- 
+2.35.1
+
 
 
