@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F08B2C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3385C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345794AbiHPAor (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        id S244090AbiHPAow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350450AbiHPAls (ORCPT
+        with ESMTP id S1350696AbiHPAl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:41:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490CA1907F8;
-        Mon, 15 Aug 2022 13:40:01 -0700 (PDT)
+        Mon, 15 Aug 2022 20:41:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6951907CF;
+        Mon, 15 Aug 2022 13:39:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1E46B80EA8;
-        Mon, 15 Aug 2022 20:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D384C433D6;
-        Mon, 15 Aug 2022 20:39:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 04E41CE12C3;
+        Mon, 15 Aug 2022 20:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE26C433C1;
+        Mon, 15 Aug 2022 20:39:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595998;
-        bh=VNrgWDWeGuoXAxyxWEQ/kH7r5U6avZqdm5orjP6BqDY=;
+        s=korg; t=1660595986;
+        bh=STzebAMGS8YaWORs9LTZ5121krjgl6i4VyUyXVdzzak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zhZoPzmuoppCjDE6Gw83ZchqzW4vih1z2Ifw8br9N9lLlWyrVAsewP5EucSLXcnPA
-         arK50OcmGYEh5xLoRu6nNvPHZhifkKBjfz5bHBB8fUYft0q0fsLnAMhzfq4jj3iVLX
-         vU37SGPeSBtnkrV7QAgz1Do7k7kFl6HsgYhBP05E=
+        b=MoLYuJVysTY4SsexEq+y4lnABHjolJJ08AkuLmaCfrJZ/UPhv7hejaM5qY1iRPPw/
+         8Oz6Vam4zrgNzVSDPVixhlrGOBssgcMbTbIvlnF2Umanlpa9dvjsipjiEUq2gC+JIA
+         p8aghMNo+XUUVStO038xp5PhJaUVdxsD22u9XogA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.19 0934/1157] ASoC: qcom: Fix missing of_node_put() in asoc_qcom_lpass_cpu_platform_probe()
-Date:   Mon, 15 Aug 2022 20:04:50 +0200
-Message-Id: <20220815180516.857958534@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0904/1157] ASoC: codecs: msm8916-wcd-digital: move gains from SX_TLV to S8_TLV
+Date:   Mon, 15 Aug 2022 20:04:20 +0200
+Message-Id: <20220815180515.627434422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,34 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit f507c0c67dac57d2bcd5dcae4b6139b0305d8957 ]
+[ Upstream commit 5babb012c847beb6c8c7108fd78f650b7a2c6054 ]
 
-We should call of_node_put() for the reference 'dsp_of_node' returned by
-of_parse_phandle() which will increase the refcount.
+move all the digital gains form using SX_TLV to S8_TLV, these gains are
+actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
 
-Fixes: 9bae4880acee ("ASoC: qcom: move ipq806x specific bits out of lpass driver.")
-Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220702020109.263980-1-windhl@126.com
+rest of the Qualcomm wcd codecs uses these properly.
+
+Fixes: ef8a4757a6db ("ASoC: msm8916-wcd-digital: Add sidetone support")
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220609111901.318047-2-srinivas.kandagatla@linaro.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/lpass-cpu.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/msm8916-wcd-digital.c | 46 +++++++++++++-------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
-index e6846ad2b5fa..964eb07f46d6 100644
---- a/sound/soc/qcom/lpass-cpu.c
-+++ b/sound/soc/qcom/lpass-cpu.c
-@@ -1090,6 +1090,7 @@ int asoc_qcom_lpass_cpu_platform_probe(struct platform_device *pdev)
- 	dsp_of_node = of_parse_phandle(pdev->dev.of_node, "qcom,adsp", 0);
- 	if (dsp_of_node) {
- 		dev_err(dev, "DSP exists and holds audio resources\n");
-+		of_node_put(dsp_of_node);
- 		return -EBUSY;
- 	}
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index 20a07c92b2fc..098a58990f07 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -328,8 +328,8 @@ static const struct snd_kcontrol_new rx1_mix2_inp1_mux = SOC_DAPM_ENUM(
+ static const struct snd_kcontrol_new rx2_mix2_inp1_mux = SOC_DAPM_ENUM(
+ 				"RX2 MIX2 INP1 Mux", rx2_mix2_inp1_chain_enum);
+ 
+-/* Digital Gain control -38.4 dB to +38.4 dB in 0.3 dB steps */
+-static const DECLARE_TLV_DB_SCALE(digital_gain, -3840, 30, 0);
++/* Digital Gain control -84 dB to +40 dB in 1 dB steps */
++static const DECLARE_TLV_DB_SCALE(digital_gain, -8400, 100, -8400);
+ 
+ /* Cutoff Freq for High Pass Filter at -3dB */
+ static const char * const hpf_cutoff_text[] = {
+@@ -510,15 +510,15 @@ static int wcd_iir_filter_info(struct snd_kcontrol *kcontrol,
+ 
+ static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
+ 	SOC_SINGLE_S8_TLV("RX1 Digital Volume", LPASS_CDC_RX1_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("RX2 Digital Volume", LPASS_CDC_RX2_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("RX3 Digital Volume", LPASS_CDC_RX3_VOL_CTL_B2_CTL,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("TX1 Digital Volume", LPASS_CDC_TX1_VOL_CTL_GAIN,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_SINGLE_S8_TLV("TX2 Digital Volume", LPASS_CDC_TX2_VOL_CTL_GAIN,
+-			  -128, 127, digital_gain),
++			-84, 40, digital_gain),
+ 	SOC_ENUM("TX1 HPF Cutoff", tx1_hpf_cutoff_enum),
+ 	SOC_ENUM("TX2 HPF Cutoff", tx2_hpf_cutoff_enum),
+ 	SOC_SINGLE("TX1 HPF Switch", LPASS_CDC_TX1_MUX_CTL, 3, 1, 0),
+@@ -553,22 +553,22 @@ static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
+ 	WCD_IIR_FILTER_CTL("IIR2 Band3", IIR2, BAND3),
+ 	WCD_IIR_FILTER_CTL("IIR2 Band4", IIR2, BAND4),
+ 	WCD_IIR_FILTER_CTL("IIR2 Band5", IIR2, BAND5),
+-	SOC_SINGLE_SX_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
+-			0,  -84,	40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
+-			0,  -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
+-			0,  -84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
++			-84, 40, digital_gain),
+ 
+ };
  
 -- 
 2.35.1
