@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADE3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F36C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343747AbiHOTMw (ORCPT
+        id S1343766AbiHOTM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        Mon, 15 Aug 2022 15:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240959AbiHOTI7 (ORCPT
+        with ESMTP id S1343597AbiHOTJH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:08:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC18C6443;
-        Mon, 15 Aug 2022 11:35:53 -0700 (PDT)
+        Mon, 15 Aug 2022 15:09:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B83440BDD;
+        Mon, 15 Aug 2022 11:35:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88F3961024;
-        Mon, 15 Aug 2022 18:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EDAC433D6;
-        Mon, 15 Aug 2022 18:35:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A17460FB8;
+        Mon, 15 Aug 2022 18:35:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8692FC433C1;
+        Mon, 15 Aug 2022 18:35:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588552;
-        bh=BxLSowCUd+gDlvDoIK2xP9edGBiTg8HchpI/r7K7JdA=;
+        s=korg; t=1660588556;
+        bh=hTRS1tqejUoIqcG1ti54Lman6PjQTp4st0trKhr/PfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FWrSeIKm1DRs8AQfMPDZFylEMsohmwA/LY7ySUj/qaHtUNyg4FgeU0IPsSkYEP5bF
-         +7WoxbP56Fqoby85OK740ehx1Ftu1gIVLbMBSNV9jKiZrVK7YGZKs5+8Ddi9d6Zqyl
-         VzvdLHmbTx+TDqTryH0d336pQD7RNqq7Unayl6es=
+        b=ji2ocTmXyjsK6i4uYsRXOtTdo/zUkMY8PZCzXDrMkztOfXbZM9i2z1cwL+amL+jtQ
+         qNXcLKTT6AU9hOyv8+Fpdhav83MDoCNCdimiXCOS5EpGFcCLUmjvD0mtQGG+8Je08w
+         ef+rc7Jg4tf4N0p5oB+S0D1FxN7JuQJwlDcUxpQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 441/779] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
-Date:   Mon, 15 Aug 2022 20:01:25 +0200
-Message-Id: <20220815180356.115558709@linuxfoundation.org>
+Subject: [PATCH 5.15 424/779] scsi: qla2xxx: edif: Fix no logout on delete for N2N
+Date:   Mon, 15 Aug 2022 20:01:08 +0200
+Message-Id: <20220815180355.383340875@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,49 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
+[ Upstream commit ec538eb838f334453b10e7e9b260f0c358018a37 ]
 
-If an error occurs after a successful idr_alloc() call, the corresponding
-resource must be released with idr_remove() as already done in the .remove
-function.
+The driver failed to send implicit logout on session delete. For edif, this
+failed to flush any lingering SA index in FW.
 
-Update the error handling path to add the missing idr_remove() call.
+Set a flag to turn on implicit logout early in the session recovery to make
+sure the logout will go out in case of error.
 
-Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220608115849.16693-8-njavali@marvell.com
+Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_pcr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_iocb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
-index 5121edb0d9ef..62fdbbd55e74 100644
---- a/drivers/misc/cardreader/rtsx_pcr.c
-+++ b/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1581,7 +1581,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 	pcr->remap_addr = ioremap(base, len);
- 	if (!pcr->remap_addr) {
- 		ret = -ENOMEM;
--		goto free_handle;
-+		goto free_idr;
- 	}
+diff --git a/drivers/scsi/qla2xxx/qla_iocb.c b/drivers/scsi/qla2xxx/qla_iocb.c
+index 46c879923da1..42ce4e1fe744 100644
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2882,6 +2882,9 @@ static void qla2x00_els_dcmd2_sp_done(srb_t *sp, int res)
+ 	    sp->name, res, sp->handle, fcport->d_id.b24, fcport->port_name);
  
- 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
-@@ -1651,6 +1651,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
- unmap:
- 	iounmap(pcr->remap_addr);
-+free_idr:
-+	spin_lock(&rtsx_pci_lock);
-+	idr_remove(&rtsx_pci_idr, pcr->id);
-+	spin_unlock(&rtsx_pci_lock);
- free_handle:
- 	kfree(handle);
- free_pcr:
+ 	fcport->flags &= ~(FCF_ASYNC_SENT|FCF_ASYNC_ACTIVE);
++	/* For edif, set logout on delete to ensure any residual key from FW is flushed.*/
++	fcport->logout_on_delete = 1;
++	fcport->chip_reset = vha->hw->base_qpair->chip_reset;
+ 
+ 	if (sp->flags & SRB_WAKEUP_ON_COMP)
+ 		complete(&lio->u.els_plogi.comp);
 -- 
 2.35.1
 
