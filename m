@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4481C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375E6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354492AbiHOXsX (ORCPT
+        id S1354528AbiHOXsa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        Mon, 15 Aug 2022 19:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354216AbiHOXlj (ORCPT
+        with ESMTP id S1354232AbiHOXll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C6DE81;
-        Mon, 15 Aug 2022 13:11:14 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E4E614A;
+        Mon, 15 Aug 2022 13:11:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A484B80EA8;
-        Mon, 15 Aug 2022 20:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A931C433D6;
-        Mon, 15 Aug 2022 20:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 786796077B;
+        Mon, 15 Aug 2022 20:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63E5AC433C1;
+        Mon, 15 Aug 2022 20:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594271;
-        bh=igCe9XD8FLq279pDxbTi5slTHMaSC9V0gxCxATN22HI=;
+        s=korg; t=1660594277;
+        bh=ECYLy6ZnFKRuF+2gIewQOS7C8kcMwJoNV5HEHpGO02I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l3HXW8Bqoa+h/0h7/7Zk2TmODA/AjNNTOfJ6ZZhKpsjbujXUDeO2K9U6t0kxmOvlJ
-         4i0NkPq6D46daBiMc4OhVzqvtSN+yNbQsXhIH6bEYZ/SKkcNvO3/blFmZda2P8cDQP
-         sCWz9zl2qEsjc4P9aRg4bnuCTVeNOnSfPu/Y4MPA=
+        b=oIbewXdUyfAcOZNuwzEBddBydJ1oW4G7l1IuZfpd5YkHs0mEBVL4xBB8JSlFehD2M
+         Otu0v7gG1pgIwlYaXS1SeFKKuRq1cjsxYiAmI+AQcUyuii5c5h2JRW8f9jHFRGLVgB
+         uCwvKE5+str4VFLe1OKhlTRqYVHyXJ7nhb6M9xBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0404/1157] media: tw686x: Fix memory leak in tw686x_video_init
-Date:   Mon, 15 Aug 2022 19:56:00 +0200
-Message-Id: <20220815180455.834135546@linuxfoundation.org>
+Subject: [PATCH 5.18 1054/1095] ext4: update s_overhead_clusters in the superblock during an on-line resize
+Date:   Mon, 15 Aug 2022 20:07:33 +0200
+Message-Id: <20220815180512.668476663@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-[ Upstream commit e0b212ec9d8177d6f7c404315293f6a085d6ee42 ]
+[ Upstream commit de394a86658ffe4e89e5328fd4993abfe41b7435 ]
 
-video_device_alloc() allocates memory for vdev,
-when video_register_device() fails, it doesn't release the memory and
-leads to memory leak, call video_device_release() to fix this.
+When doing an online resize, the on-disk superblock on-disk wasn't
+updated.  This means that when the file system is unmounted and
+remounted, and the on-disk overhead value is non-zero, this would
+result in the results of statfs(2) to be incorrect.
 
-Fixes: 704a84ccdbf1 ("[media] media: Support Intersil/Techwell TW686x-based video capture cards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
+calculation to account for the reserved gdt blocks"), 85d825dbf489
+("ext4: force overhead calculation if the s_overhead_cluster makes no
+sense"), and eb7054212eac ("ext4: update the cached overhead value in
+the superblock").
+
+However, since it was too expensive to forcibly recalculate the
+overhead for bigalloc file systems at every mount, this didn't fix the
+problem for bigalloc file systems.  This commit should address the
+problem when resizing file systems with the bigalloc feature enabled.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/tw686x/tw686x-video.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/resize.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/pci/tw686x/tw686x-video.c b/drivers/media/pci/tw686x/tw686x-video.c
-index 6344a479119f..3ebf7a2c95f0 100644
---- a/drivers/media/pci/tw686x/tw686x-video.c
-+++ b/drivers/media/pci/tw686x/tw686x-video.c
-@@ -1280,8 +1280,10 @@ int tw686x_video_init(struct tw686x_dev *dev)
- 		video_set_drvdata(vdev, vc);
+diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
+index 8b70a4701293..e5c2713aa11a 100644
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1484,6 +1484,7 @@ static void ext4_update_super(struct super_block *sb,
+ 	 * Update the fs overhead information
+ 	 */
+ 	ext4_calculate_overhead(sb);
++	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
  
- 		err = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
--		if (err < 0)
-+		if (err < 0) {
-+			video_device_release(vdev);
- 			goto error;
-+		}
- 		vc->num = vdev->num;
- 	}
- 
+ 	if (test_opt(sb, DEBUG))
+ 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
 -- 
 2.35.1
 
