@@ -2,137 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CC0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE42C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232943AbiHOOm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        id S230430AbiHOOpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiHOOmY (ORCPT
+        with ESMTP id S229445AbiHOOpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:42:24 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79B71572D
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 07:42:23 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id t5so9826005edc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 07:42:23 -0700 (PDT)
+        Mon, 15 Aug 2022 10:45:33 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7AF25D5;
+        Mon, 15 Aug 2022 07:45:29 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id y3so9855701eda.6;
+        Mon, 15 Aug 2022 07:45:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=jof2N1iEfYV37LDrPYxrY/5EEQHPjeHoyCRHq5VfC5Y=;
-        b=mpFtgAILA8kt5KRom+uJfi10GVXDXshLvnbM927dyX9LZx2Fx6wyB+t4jaxV5GaF9l
-         0hOb9Jza9cqMXO7fjZAZVLg3iCclMkphv+sC1afIiD7ev2kgDkuaHPOQHR8NV1n+TIBz
-         s3Ond8NPtbCP3gHnfwGDCwj2lTL1txPQzvZ9004RkOGqo2vA5IZKT+SBqwgX17rRKwT1
-         NEMAAjSHJq/bV5GySyPsKC1E5h1W7kD99dd7URzsUhZteYRhrl2xUlezQXh0vgTJ4/yf
-         gMJqyfOda9AmujvEyNztK3JKUfbdK3UgA0LegYEEHtaNsHgaD2/KSR4FNFTBB8sHUUBh
-         pGFw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=2r6NzV5K6JWHUt1ICx2UuX4Y6Ch+fw7Dtg6Kfge6QGc=;
+        b=GbLvWxDIxgFLq5piP6F2dgRYWQ7rxguDDupe74SrAo+hBy5g3C1mk2+YmJ0k+PTxMQ
+         PL/jU34GR/M47O/iNmJg77vJxUJcZUPo0CyVNv/hL+A+XM9D9ci6LI79UjLt9Scwc/8V
+         Ru6Bds+2ciVWKzxnWXuIHak+rf47n2Hjw+zTz9JEZTyvH11eoEiS+BbTehbWr/9x6E2Y
+         bKatp+ABbIJ3XeAADXbpVBk5aoyFHe6Znbudn5TZapQexuNE6skwj3xkl2eZ8Asrn7Tl
+         JcmmSsWLqGcfrSOH+YpMQQpaSZt72DWQsvafSlK7vSuw0gzoGoqdhLm91dXRnMlIHQT8
+         vL3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=jof2N1iEfYV37LDrPYxrY/5EEQHPjeHoyCRHq5VfC5Y=;
-        b=isxF4iZZVHxld22pFecoVKfSlOHjmiB7Ybmc+Y1Uv8nH6ck6F5djK2CFs83e0u/S1F
-         3ocXkVvtPl5j4aDts4qNJl0bt5810XFmY+4nl63fHV7Pzpd2keHFnfX3BdyCngoJ23HS
-         +gVVMS+mSq6MVdRmvvgvA5qASryVxSv50pokPScnuZMEQfgPQBPjdwKFUCKvKRgKUu/q
-         GypgLhO+N1E/ZQyYLE546EEmeTi/rbz1gPxaRsVPDFRD30CnIdpCavGh7DQjJJcto8e5
-         RWdozKPmpNRIj68jn/sLePbSNPgIZXd5VMf9D9Cm3nhnkvBmOIrD1H80+nCCEBMCjTdx
-         HYsw==
-X-Gm-Message-State: ACgBeo12Pz/zvMfzKLoS3rSR8zlQvHNht0C1gIjQBtZxdG9/VkoZkWzV
-        E0vQBvx248Ksw07ytHmqOjY=
-X-Google-Smtp-Source: AA6agR7bd/zGLA4ALKllKHzRtAchu874EwVSeNFi/lTGp5/Hqq/FSE+pkXIVmaHF4BvAFSS+xkPgNw==
-X-Received: by 2002:a05:6402:50cb:b0:440:87d4:3ad2 with SMTP id h11-20020a05640250cb00b0044087d43ad2mr14875248edb.219.1660574542520;
-        Mon, 15 Aug 2022 07:42:22 -0700 (PDT)
-Received: from opensuse.localnet (host-95-250-231-56.retail.telecomitalia.it. [95.250.231.56])
-        by smtp.gmail.com with ESMTPSA id d20-20020aa7d5d4000000b0043c92c44c53sm6651235eds.93.2022.08.15.07.42.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 07:42:21 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     dhowells@redhat.com, marc.dionne@auristor.com,
-        zhaoxiao <zhaoxiao@uniontech.com>
-Cc:     linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        zhaoxiao <zhaoxiao@uniontech.com>, ira.weiny@intel.com
-Subject: Re: [PATCH] afs: convert kmap() to kmap_local_page() in mntpt.c
-Date:   Mon, 15 Aug 2022 16:42:19 +0200
-Message-ID: <1752846.TLkxdtWsSY@opensuse>
-In-Reply-To: <20220812080432.14909-1-zhaoxiao@uniontech.com>
-References: <20220812080432.14909-1-zhaoxiao@uniontech.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=2r6NzV5K6JWHUt1ICx2UuX4Y6Ch+fw7Dtg6Kfge6QGc=;
+        b=rFVUZR5kwK2BSVn9mIuScrhFmsUpADFpjELiHrjLnf3vfBEBVTv5966NF4VxdA1o0G
+         EODqsPILm6p/M8cuVEHEoBHnrQVcZwit7VfOmHp7YU24CrmCIAOr2Y//Jf+2F9fOfJo9
+         rHB9/9aQ0JfT833N6ECkyz9ZZISIxMzxseKk2lSIW9gKCj2BGwtJVe1Mvv17Hd2Yz5YU
+         aBFozAuTI7tKMVDKzgihZDgyjqiOuOMTXzdVAXALdu1D4yYhI0oVA3tBE2tQYsrOnRmo
+         /1ItVg3HeQ5X8h+qw8hNEFvv+hif/DJ9uQ1XgyiERsvj8yKarz32WtLRoZpHlsw3HZCT
+         h0Tg==
+X-Gm-Message-State: ACgBeo16xEkt94tgkCnR82vB0qFE3Q8VT2eDg7fTD9K/naYtpIt5wPdI
+        y27nmrdyG6NdEwo/jylDQESgAGhsNd6UrePKA7Q=
+X-Google-Smtp-Source: AA6agR6sEWTbe+AyeLWfPPx+Mli/Iunqsj4kcwNNs+U3AAwcbcjUBRp3ZwsZF65gr3elWP/aT3KIeEXR6DWqUi1Ibt8=
+X-Received: by 2002:a05:6402:28cb:b0:43b:c6d7:ef92 with SMTP id
+ ef11-20020a05640228cb00b0043bc6d7ef92mr15211708edb.333.1660574728199; Mon, 15
+ Aug 2022 07:45:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+References: <20220722122548.2db543ca@gandalf.local.home> <YtsRD1Po3qJy3w3t@krava>
+ <20220722174120.688768a3@gandalf.local.home> <YtxqjxJVbw3RD4jt@krava>
+ <YvbDlwJCTDWQ9uJj@krava> <20220813150252.5aa63650@rorschach.local.home>
+ <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net> <YvoVgMzMuQbAEayk@krava>
+ <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net> <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
+ <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
+In-Reply-To: <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 15 Aug 2022 07:45:16 -0700
+Message-ID: <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On venerd=C3=AC 12 agosto 2022 10:04:32 CEST zhaoxiao wrote:
-> kmap() is being deprecated in favor of kmap_local_page().
->=20
-> There are two main problems with kmap(): (1) It comes with an overhead as
-> mapping space is restricted and protected by a global lock for
-> synchronization and (2) it also requires global TLB invalidation when the
-> kmap's pool wraps and it might block when the mapping space is fully
-> utilized until a slot becomes available.
->=20
-> With kmap_local_page() the mappings are per thread, CPU local, can take
-> page faults, and can be called from any context (including interrupts).
-> It is faster than kmap() in kernels with HIGHMEM enabled.  Furthermore,
-> the tasks can be preempted and, when they are scheduled to run again, the
-> kernel virtual addresses are restored and are still valid.
->=20
-> Since its use in mntpt.c is safe everywhere, it should be preferred.
->=20
-> Therefore, replace kmap() with kmap_local_page() in mntpt.c.
->=20
-> Tested in a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel with
-> HIGHMEM64GB enabled.
->=20
-> Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
-> ---
->  fs/afs/mntpt.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/fs/afs/mntpt.c b/fs/afs/mntpt.c
-> index 97f50e9fd9eb..7e3cacb11780 100644
-> --- a/fs/afs/mntpt.c
-> +++ b/fs/afs/mntpt.c
-> @@ -132,11 +132,11 @@ static int afs_mntpt_set_params(struct fs_context *=
-fc,
-> struct dentry *mntpt) if (IS_ERR(page))
->  			return PTR_ERR(page);
->=20
-> -		buf =3D kmap(page);
-> +		buf =3D kmap_local_page(page);
->  		ret =3D -EINVAL;
->  		if (buf[size - 1] =3D=3D '.')
->  			ret =3D vfs_parse_fs_string(fc, "source", buf,=20
-size - 1);
-> -		kunmap(page);
-> +		kunmap_local(buf);
->  		put_page(page);
->  		if (ret < 0)
->  			return ret;
-> --
-> 2.20.1
+On Mon, Aug 15, 2022 at 7:33 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Aug 15, 2022 at 07:25:24AM -0700, Alexei Starovoitov wrote:
+> > On Mon, Aug 15, 2022 at 5:37 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > >
+> > > On Mon, Aug 15, 2022 at 11:44:32AM +0200, Jiri Olsa wrote:
+> > > > On Mon, Aug 15, 2022 at 10:03:17AM +0200, Peter Zijlstra wrote:
+> > > > > On Sat, Aug 13, 2022 at 03:02:52PM -0400, Steven Rostedt wrote:
+> > > > > > On Fri, 12 Aug 2022 23:18:15 +0200
+> > > > > > Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > > > >
+> > > > > > > the patch below moves the bpf function into sepatate object and switches
+> > > > > > > off the -mrecord-mcount for it.. so the function gets profile call
+> > > > > > > generated but it's not visible to ftrace
+> > > > >
+> > > > > Why ?!?
+> > > >
+> > > > there's bpf dispatcher code that updates bpf_dispatcher_xdp_func
+> > > > function with bpf_arch_text_poke and that can race with ftrace update
+> > > > if the function is traced
+> > >
+> > > I thought bpf_arch_text_poke() wasn't allowed to touch kernel code and
+> > > ftrace is in full control of it ?
+> >
+> > ftrace is not in "full control" of nop5 and must not be.
+>
+> It is in full control of the 'call __fentry__'. Absolute full NAK on you
+> trying to make it otherwise.
 
-I doubt that zhaoxiao is your legal name.
-If I'm not wrong, can you please submit a v2 with the name that you use to=
-=20
-sign documents with legal value? Otherwise, please discard this warning.
+Don't mix 'call fentry' generated by the compiler with nop5 inserted
+by macroses or JITs.
 
-Aside from the above, this conversion looks good to me, so feel free to=20
-forward my tag to next version...
+> > Soon we will have nop5 in the middle of the function.
+> > ftrace must not touch it.
+>
+> How are you generating that NOP and what for?
 
-Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-
-Thanks,
-
-=46abio
-
-P.S.: I'm adding Ira to the list of recipients. Ira and I have been
-working through converting kmap() calls to kmap_local_page(). Please let Ir=
-a=20
-or me know if you plan on tacking more conversions so we can mark it
-off the list and avoid duplicate works.
-
-
+We're generating nop5-s in JITed code to further
+attach to. For example when one bpf prog is being replaced by another.
+Currently it's in the func prologue only.
+In the future it will be anywhere in the body.
