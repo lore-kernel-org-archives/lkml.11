@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D38CCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D70C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344496AbiHOXIJ (ORCPT
+        id S1344850AbiHOXIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
+        Mon, 15 Aug 2022 19:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240571AbiHOXEo (ORCPT
+        with ESMTP id S233875AbiHOXFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:04:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566BF140C83;
-        Mon, 15 Aug 2022 12:58:38 -0700 (PDT)
+        Mon, 15 Aug 2022 19:05:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8805E140CA7;
+        Mon, 15 Aug 2022 12:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DFB760FB5;
-        Mon, 15 Aug 2022 19:58:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E15BC433D6;
-        Mon, 15 Aug 2022 19:58:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11FA4B81142;
+        Mon, 15 Aug 2022 19:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA2BC433D6;
+        Mon, 15 Aug 2022 19:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593516;
-        bh=H4/hsVFJqPIVHOEuLSJ+W+AOG4ouYb+3A7WRi0QKwP4=;
+        s=korg; t=1660593519;
+        bh=Nfsy3Ni0nd3SiaJLy0+AxqHSuNFUPdD9hfLOcDmCCw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xmhlj9szUeru1QfeDntycxOXscEuabPgzeJ2hFZOE4WgdFuGi0ha/dyB0bgndwhQP
-         mRTY88VB9Z4s3HMmZfBEV5IfN1S0fpRAkC2LuC+K6orx980BtSihUPsHBrHPtzyMT+
-         eWumq8Q1cg9RTIdznWz3bybnuw/Vf1i5QJsO9Ldo=
+        b=VqyHZFZrA2EKu6Mgm/07v9JREey1unufsyH9Hb3/5IW+teLcWfbZBIOlJ4gs6AtTZ
+         2Px//jJQC0k0NQh9bdlS6x5dt8cEgmbMOCWoDmzp6aEXSOamXqJkfNw3DbBVsB7zwQ
+         adDhM0bnzfvzmQ0bqmTcwYO3fQhQIJuNAhIMZRG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 0961/1095] scsi: qla2xxx: Fix imbalance vha->vref_count
-Date:   Mon, 15 Aug 2022 20:06:00 +0200
-Message-Id: <20220815180508.839080213@linuxfoundation.org>
+        Parikshit Pareek <quic_ppareek@quicinc.com>,
+        Eric Chanudet <echanude@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0282/1157] soc: qcom: socinfo: Fix the id of SA8540P SoC
+Date:   Mon, 15 Aug 2022 19:53:58 +0200
+Message-Id: <20220815180450.880204639@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,56 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Parikshit Pareek <quic_ppareek@quicinc.com>
 
-commit 63fa7f2644b4b48e1913af33092c044bf48e9321 upstream.
+[ Upstream commit 5bed21af0005cc7d8bb05d2c4a63afbcede23382 ]
 
-vref_count took an extra decrement in the task management path.  Add an
-extra ref count to compensate the imbalance.
+Change the id of SA8540P to its correct value, i.e., 461.
+Also, map the id 460 to its correct values, i.e. SA8295P.
 
-Link: https://lore.kernel.org/r/20220713052045.10683-7-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 76ee15ae1b13 ("soc: qcom: socinfo: Add some more PMICs and SoCs")
+Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+Reviewed-by: Eric Chanudet <echanude@redhat.com>
+Tested-by: Eric Chanudet <echanude@redhat.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220711083957.12091-1-quic_ppareek@quicinc.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/soc/qcom/socinfo.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -161,6 +161,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_s
- 	struct srb_iocb *abt_iocb;
- 	srb_t *sp;
- 	int rval = QLA_FUNCTION_FAILED;
-+	uint8_t bail;
- 
- 	/* ref: INIT for ABTS command */
- 	sp = qla2xxx_get_qpair_sp(cmd_sp->vha, cmd_sp->qpair, cmd_sp->fcport,
-@@ -168,6 +169,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_s
- 	if (!sp)
- 		return QLA_MEMORY_ALLOC_FAILED;
- 
-+	QLA_VHA_MARK_BUSY(vha, bail);
- 	abt_iocb = &sp->u.iocb_cmd;
- 	sp->type = SRB_ABT_CMD;
- 	sp->name = "abort";
-@@ -2007,12 +2009,14 @@ qla2x00_async_tm_cmd(fc_port_t *fcport,
- 	struct srb_iocb *tm_iocb;
- 	srb_t *sp;
- 	int rval = QLA_FUNCTION_FAILED;
-+	uint8_t bail;
- 
- 	/* ref: INIT */
- 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
- 	if (!sp)
- 		goto done;
- 
-+	QLA_VHA_MARK_BUSY(vha, bail);
- 	sp->type = SRB_TM_CMD;
- 	sp->name = "tmf";
- 	qla2x00_init_async_sp(sp, qla2x00_get_async_timeout(vha),
+diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+index cee579a267a6..3af195b8583a 100644
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -328,7 +328,8 @@ static const struct soc_id soc_id[] = {
+ 	{ 455, "QRB5165" },
+ 	{ 457, "SM8450" },
+ 	{ 459, "SM7225" },
+-	{ 460, "SA8540P" },
++	{ 460, "SA8295P" },
++	{ 461, "SA8540P" },
+ 	{ 480, "SM8450" },
+ 	{ 482, "SM8450" },
+ 	{ 487, "SC7280" },
+-- 
+2.35.1
+
 
 
