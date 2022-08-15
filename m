@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC16C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E812DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349483AbiHOVsD (ORCPT
+        id S1349558AbiHOVsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
+        Mon, 15 Aug 2022 17:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349333AbiHOVnO (ORCPT
+        with ESMTP id S1349348AbiHOVnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:43:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EE6C57BE;
-        Mon, 15 Aug 2022 12:29:43 -0700 (PDT)
+        Mon, 15 Aug 2022 17:43:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFCB102288;
+        Mon, 15 Aug 2022 12:29:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F6C1B810C6;
-        Mon, 15 Aug 2022 19:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5750FC433C1;
-        Mon, 15 Aug 2022 19:29:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 707B660FBE;
+        Mon, 15 Aug 2022 19:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B05AC433D6;
+        Mon, 15 Aug 2022 19:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591780;
-        bh=jOFUmOin2soedTIGfZkBJaD3YTlBujDsu4f/pQUr+Tk=;
+        s=korg; t=1660591783;
+        bh=bIhvwJ0cO3l3RJdTOuGmzssh9wbYGfWA10vvMIuUm+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiHFntFVpbyz75+bJnwn85mFWMkPYz57/oAuh83gIMV5kfaq2Uh30W2+9BcWlQwAm
-         D4i9D6/2B9byTbUDUStGo9BjfGaYapdedPzHIo1r/3wzpIH7XgJdywVDL8/Vyd1zDZ
-         k8eVhF+XIom6eAqDfj/XWYlwv7CVev8qvyVcakYY=
+        b=D+MzKyRwi5mw0h3YpBHzmn81muehnjaJIjbPZ/udZ2OJmgVoSRxWrhofTGDpRksLv
+         x8Hy6N1ktXEt29Lhwacv3hxt/VUoHCb5v4QT/hmahKRXl5MXsri+AfoghNRGzxWeze
+         ash3RexjTiBi3a9AgqQV8ZfkPSXGsfiT6EaJ4bVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Jacky Bai <ping.bai@nxp.com>, Abel Vesa <abel.vesa@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0680/1095] clk: imx: clk-fracn-gppll: correct rdiv
-Date:   Mon, 15 Aug 2022 20:01:19 +0200
-Message-Id: <20220815180457.505796844@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 0008/1157] ALSA: bcd2000: Fix a UAF bug on the error path of probing
+Date:   Mon, 15 Aug 2022 19:49:24 +0200
+Message-Id: <20220815180439.801019337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit f300cb7fccf69ba1835b983c76d70deb818ad194 ]
+commit ffb2759df7efbc00187bfd9d1072434a13a54139 upstream.
 
-According to Reference Manual:
- 000b - Divide by 1
- 001b - Divide by 1
- 010b - Divide by 2
- 011b - Divide by 3
- 100b - Divide by 4
- 101b - Divide by 5
- 110b - Divide by 6
- 111b - Divide by 7
+When the driver fails in snd_card_register() at probe time, it will free
+the 'bcd2k->midi_out_urb' before killing it, which may cause a UAF bug.
 
-So only need increase rdiv by 1 when the register value is 0.
+The following log can reveal it:
 
-Fixes: 1b26cb8a77a4 ("clk: imx: support fracn gppll")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Jacky Bai <ping.bai@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-7-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[   50.727020] BUG: KASAN: use-after-free in bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+[   50.727623] Read of size 8 at addr ffff88810fab0e88 by task swapper/4/0
+[   50.729530] Call Trace:
+[   50.732899]  bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+
+Fix this by adding usb_kill_urb() before usb_free_urb().
+
+Fixes: b47a22290d58 ("ALSA: MIDI driver for Behringer BCD2000 USB device")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220715010515.2087925-1-zheyuma97@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/imx/clk-fracn-gppll.c | 3 ++-
+ sound/usb/bcd2000/bcd2000.c |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/imx/clk-fracn-gppll.c b/drivers/clk/imx/clk-fracn-gppll.c
-index cb06b0045e9e..025b73229cdd 100644
---- a/drivers/clk/imx/clk-fracn-gppll.c
-+++ b/drivers/clk/imx/clk-fracn-gppll.c
-@@ -149,7 +149,8 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
- 	if (rate)
- 		return (unsigned long)rate;
+--- a/sound/usb/bcd2000/bcd2000.c
++++ b/sound/usb/bcd2000/bcd2000.c
+@@ -348,7 +348,8 @@ static int bcd2000_init_midi(struct bcd2
+ static void bcd2000_free_usb_related_resources(struct bcd2000 *bcd2k,
+ 						struct usb_interface *interface)
+ {
+-	/* usb_kill_urb not necessary, urb is aborted automatically */
++	usb_kill_urb(bcd2k->midi_out_urb);
++	usb_kill_urb(bcd2k->midi_in_urb);
  
--	rdiv = rdiv + 1;
-+	if (!rdiv)
-+		rdiv = rdiv + 1;
- 
- 	switch (odiv) {
- 	case 0:
--- 
-2.35.1
-
+ 	usb_free_urb(bcd2k->midi_out_urb);
+ 	usb_free_urb(bcd2k->midi_in_urb);
 
 
