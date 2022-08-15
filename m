@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D75D7C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B95C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245144AbiHOTBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
+        id S245063AbiHOTBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245135AbiHOS4t (ORCPT
+        with ESMTP id S245124AbiHOS4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:56:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2557D32D83;
-        Mon, 15 Aug 2022 11:31:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE0432BA1;
+        Mon, 15 Aug 2022 11:31:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B610060EEB;
-        Mon, 15 Aug 2022 18:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DD3C433C1;
-        Mon, 15 Aug 2022 18:31:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1A6160F7A;
+        Mon, 15 Aug 2022 18:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D1EC433D7;
+        Mon, 15 Aug 2022 18:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588309;
-        bh=lXmSoEFvjXAkURKNKmyiZ+4nCTy+7MrPzpLlojqoji4=;
+        s=korg; t=1660588306;
+        bh=TJX1OypiKOTJzTAK+LPMVpM8lfOZsNWrL6SA6rnT1x8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQINk7EnmIyBP4JCnkvhvFRPq8DVY3qvhxNVBtr6H0oMIhHa2rzaWdxLCJLGWE0p2
-         8GPegJdsAT5sAux8dFwEUPJw75/lqpqVLfboNdOOUX+eU3Dg4RIigBIhvI7Z+7p5H/
-         G28SCm6MVXhvTIX3InxfLS6Sy+g4NBVReaR/uMRQ=
+        b=0TJg91EqMDytPLBMWzVsqXU3LVcVmlb6fyo1su+DQkdXyE1sl6tIlPyagSB6xxGw7
+         ckdsvjVKnh5tx0Azrfr/cW/Q8nXOAhV4tunzSfJUxSLZzIhvbUrkeSkLThLUskb6yO
+         AW704UruKBxLOuWBns29cw5enC+HNutydbmA6lkw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 331/779] mediatek: mt76: mac80211: Fix missing of_node_put() in mt76_led_init()
-Date:   Mon, 15 Aug 2022 19:59:35 +0200
-Message-Id: <20220815180351.441197342@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ming Yen Hsieh <mingyen.hsieh@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 330/779] mt76: mt7921: enlarge maximum VHT MPDU length to 11454
+Date:   Mon, 15 Aug 2022 19:59:34 +0200
+Message-Id: <20220815180351.395809915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,33 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 0a14c1d0113f121151edf34333cdf212dd209190 ]
+[ Upstream commit 31f3248a75932b111bc90c66b1f6c7d89eedca8e ]
 
-We should use of_node_put() for the reference 'np' returned by
-of_get_child_by_name() which will increase the refcount.
+Enlarge maximum MPDU length to 11454 that both mt7921/mt7922 can support.
+After this fixing, we can get better performance.
 
-Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chipsets")
-Signed-off-by: Liang He <windhl@126.com>
+Fixes: 5c14a5f944b9 ("mt76: mt7921: introduce mt7921e support")
+Tested-by: Ming Yen Hsieh <mingyen.hsieh@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mac80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
-index 029599d68ca7..028519a739fd 100644
---- a/drivers/net/wireless/mediatek/mt76/mac80211.c
-+++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
-@@ -123,6 +123,7 @@ static int mt76_led_init(struct mt76_dev *dev)
- 		if (!of_property_read_u32(np, "led-sources", &led_pin))
- 			dev->led_pin = led_pin;
- 		dev->led_al = of_property_read_bool(np, "led-active-low");
-+		of_node_put(np);
- 	}
- 
- 	return led_classdev_register(dev->dev, &dev->led_cdev);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+index a8998e6bfb6f..c059cb419efd 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+@@ -219,7 +219,7 @@ int mt7921_register_device(struct mt7921_dev *dev)
+ 			IEEE80211_HT_CAP_LDPC_CODING |
+ 			IEEE80211_HT_CAP_MAX_AMSDU;
+ 	dev->mphy.sband_5g.sband.vht_cap.cap |=
+-			IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_7991 |
++			IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
+ 			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK |
+ 			IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE |
+ 			IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE |
 -- 
 2.35.1
 
