@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193F6C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AAAC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354129AbiHOXnT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        id S245001AbiHOXnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354075AbiHOXlI (ORCPT
+        with ESMTP id S1354091AbiHOXlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792E798CA4;
-        Mon, 15 Aug 2022 13:10:28 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49859103C5A;
+        Mon, 15 Aug 2022 13:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28718B80EA8;
-        Mon, 15 Aug 2022 20:10:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 945C4C433D6;
-        Mon, 15 Aug 2022 20:10:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 75E24CE12E7;
+        Mon, 15 Aug 2022 20:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B79EC433D6;
+        Mon, 15 Aug 2022 20:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594225;
-        bh=HvlymAI/0v47dl1gQMbakE7KNs6h3AoSjWfLIO/fnk0=;
+        s=korg; t=1660594231;
+        bh=a31WYOj3u0YxhhWWPGE8uaQmFHl6yu7OQLekdTH58ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gZXlovj8z8PoC1/eONEo0CSPISDQvWw/Hi0tGZ6Wc9vXCJTvTMjPCjZ4JVoQwvtT+
-         RGUHnm5hPyUX9myxbeu58o+8q8OgTgaytZS1VxVEAdZUJpNyL0zJNv/cyhiomnt1gz
-         wzfX8mqCUfBAwO+u/JdZ58hYEvA4qP9ea9It37rg=
+        b=sopqvlTKODPpyJkTHgXP/fl7IGbcrb6q+p5rZTM9t4mqaQs8PI6CG6MD1YeuJk9V7
+         lUOmi9MXRzEVMt69g+ra3pEgrr0PepBItuY5bxejPh/lwc72PcxhU386dIiE/rKkaX
+         cGd5CECUIQjcCP+qb9o98PMdOpq5rlgdxzRJBoHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0375/1157] media: Hantro: Correct G2 init qp field
-Date:   Mon, 15 Aug 2022 19:55:31 +0200
-Message-Id: <20220815180454.727301911@linuxfoundation.org>
+Subject: [PATCH 5.19 0398/1157] media: hdpvr: fix error value returns in hdpvr_read
+Date:   Mon, 15 Aug 2022 19:55:54 +0200
+Message-Id: <20220815180455.590092009@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,40 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 300065f966d30baa59a13849753305aac8c320c3 ]
+[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
 
-Documentation said that g2 init_qp field use bits 24 to 30 of
-the 8th register.
-Change the field mask to be able to set 7 bits and not only 6 of them.
+Error return values are supposed to be negative in hdpvr_read. Most
+error returns are currently handled via an unsigned integer "ret". When
+setting a negative error value to "ret", the value actually becomes a
+large positive value, because "ret" is unsigned. Later on, the "ret"
+value is returned. But as ssize_t is a 64-bit signed number, the error
+return value stays a large positive integer instead of a negative
+integer. This can cause an error value to be interpreted as the read
+size, which can cause a buffer overread for applications relying on the
+returned size.
 
-Conformance test INITQP_B_Main10_Sony_1 decoding is OK with this
-patch.
-
-Fixes: cb5dd5a0fa518 ("media: hantro: Introduce G2/HEVC decoder")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_regs.h | 2 +-
+ drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_regs.h b/drivers/staging/media/hantro/hantro_g2_regs.h
-index 877d663a8181..82606783591a 100644
---- a/drivers/staging/media/hantro/hantro_g2_regs.h
-+++ b/drivers/staging/media/hantro/hantro_g2_regs.h
-@@ -107,7 +107,7 @@
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 60e57e0f1927..fd7d2a9d0449 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -409,7 +409,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
+ 	struct hdpvr_device *dev = video_drvdata(file);
+ 	struct hdpvr_buffer *buf = NULL;
+ 	struct urb *urb;
+-	unsigned int ret = 0;
++	int ret = 0;
+ 	int rem, cnt;
  
- #define g2_start_code_e		G2_DEC_REG(10, 31, 0x1)
- #define g2_init_qp_old		G2_DEC_REG(10, 25, 0x3f)
--#define g2_init_qp		G2_DEC_REG(10, 24, 0x3f)
-+#define g2_init_qp		G2_DEC_REG(10, 24, 0x7f)
- #define g2_num_tile_cols_old	G2_DEC_REG(10, 20, 0x1f)
- #define g2_num_tile_cols	G2_DEC_REG(10, 19, 0x1f)
- #define g2_num_tile_rows_old	G2_DEC_REG(10, 15, 0x1f)
+ 	if (*pos)
 -- 
 2.35.1
 
