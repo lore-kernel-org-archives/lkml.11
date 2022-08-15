@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8464C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F54FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245496AbiHOThX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
+        id S245584AbiHOTh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344561AbiHOTbg (ORCPT
+        with ESMTP id S245740AbiHOT30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:31:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285152F640;
-        Mon, 15 Aug 2022 11:44:44 -0700 (PDT)
+        Mon, 15 Aug 2022 15:29:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F505E324;
+        Mon, 15 Aug 2022 11:44:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 471CD6113D;
-        Mon, 15 Aug 2022 18:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FDC8C433D6;
-        Mon, 15 Aug 2022 18:44:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DE11ACE126A;
+        Mon, 15 Aug 2022 18:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF5FC433C1;
+        Mon, 15 Aug 2022 18:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589082;
-        bh=f1yBoZdlxrrj+e56t5SpYyY3+I6Cwa8ohg4maem5XqM=;
+        s=korg; t=1660589040;
+        bh=pqbpWM0ovuucZKEV5C40+B3/2rDpOTNZlRfpRdD2Tu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqH34xeb9Ol+4s4K6/JLdFSA2tGyNJioNQ3mkELhx8JxhQGfY3nB9fYbS1YkUaRWH
-         OkLwI9dbt2RMlvypJ7ycC2lMsO2GQF7jdoZ3uYQYd8MUMKEO24jYOlpqVG+kM1zA85
-         eD4A5FmIchuIbQzQicHP6LBKDDUHrsmwljFbl1gk=
+        b=YFOhygoVRTUUevZ1PQyqt+Uj3mkNc/beDgC/4vC74CL9U6U6On7/1tfiozkCc8gnN
+         dAs4Yg5Tt3UvNWGB2IraH47rfr86s37djDr8Q2fiFii01U4xubGu9uBVLny84t8amL
+         HB0Ecjeo/skQQ6eHOAZ92Od0FJOXxKCPGxLOzKmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 608/779] MIPS: Fixed __debug_virt_addr_valid()
-Date:   Mon, 15 Aug 2022 20:04:12 +0200
-Message-Id: <20220815180403.346888369@linuxfoundation.org>
+Subject: [PATCH 5.15 562/779] ASoC: samsung: Fix error handling in aries_audio_probe
+Date:   Mon, 15 Aug 2022 20:03:26 +0200
+Message-Id: <20220815180401.347902834@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,70 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8a2b456665d1e797123669581524cbb095fb003b ]
+[ Upstream commit 3e2649c5e8643bea0867bb1dd970fedadb0eb7f3 ]
 
-It is permissible for kernel code to call virt_to_phys() against virtual
-addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
-types. Rewrite the test condition to ensure that the kernel virtual
-addresses are above PAGE_OFFSET which they must be, and below KSEG2
-where the non-linear mapping starts.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+This function is missing of_node_put(cpu) in the error path.
+Fix this by goto out label. of_node_put() will check NULL pointer.
 
-For EVA, there is not much that we can do given the linear address range
-that is offered, so just return any virtual address as being valid.
-
-Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
-to be valid as well.
-
-Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220603130640.37624-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/physaddr.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ sound/soc/samsung/aries_wm8994.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
-index a1ced5e44951..f9b8c85e9843 100644
---- a/arch/mips/mm/physaddr.c
-+++ b/arch/mips/mm/physaddr.c
-@@ -5,6 +5,7 @@
- #include <linux/mmdebug.h>
- #include <linux/mm.h>
+diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
+index 83acbe57b248..a0825da9fff9 100644
+--- a/sound/soc/samsung/aries_wm8994.c
++++ b/sound/soc/samsung/aries_wm8994.c
+@@ -628,8 +628,10 @@ static int aries_audio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  
-+#include <asm/addrspace.h>
- #include <asm/sections.h>
- #include <asm/io.h>
- #include <asm/page.h>
-@@ -12,15 +13,6 @@
+ 	codec = of_get_child_by_name(dev->of_node, "codec");
+-	if (!codec)
+-		return -EINVAL;
++	if (!codec) {
++		ret = -EINVAL;
++		goto out;
++	}
  
- static inline bool __debug_virt_addr_valid(unsigned long x)
- {
--	/* high_memory does not get immediately defined, and there
--	 * are early callers of __pa() against PAGE_OFFSET
--	 */
--	if (!high_memory && x >= PAGE_OFFSET)
--		return true;
--
--	if (high_memory && x >= PAGE_OFFSET && x < (unsigned long)high_memory)
--		return true;
--
- 	/*
- 	 * MAX_DMA_ADDRESS is a virtual address that may not correspond to an
- 	 * actual physical address. Enough code relies on
-@@ -30,7 +22,9 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
- 	if (x == MAX_DMA_ADDRESS)
- 		return true;
- 
--	return false;
-+	return x >= PAGE_OFFSET && (KSEGX(x) < KSEG2 ||
-+	       IS_ENABLED(CONFIG_EVA) ||
-+	       !IS_ENABLED(CONFIG_HIGHMEM));
- }
- 
- phys_addr_t __virt_to_phys(volatile const void *x)
+ 	for_each_card_prelinks(card, i, dai_link) {
+ 		dai_link->codecs->of_node = of_parse_phandle(codec,
 -- 
 2.35.1
 
