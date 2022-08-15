@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B435C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44039C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244904AbiHOXRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
+        id S1343890AbiHOXRi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346380AbiHOXO0 (ORCPT
+        with ESMTP id S1345701AbiHOXO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:14:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A3079A72;
-        Mon, 15 Aug 2022 13:01:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEE579EFB;
+        Mon, 15 Aug 2022 13:01:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD1BC612B9;
-        Mon, 15 Aug 2022 20:01:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A48C433D7;
-        Mon, 15 Aug 2022 20:01:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87BF5612B9;
+        Mon, 15 Aug 2022 20:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AEDC433C1;
+        Mon, 15 Aug 2022 20:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593690;
-        bh=XSbGAAKBx6WpXWobFza0TGpTgiFN3vMeX8OvdglASHw=;
+        s=korg; t=1660593693;
+        bh=abu+AWRH5S6uTZkEhznvw+0Ogzufh67MHgGaXOOZzbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vv1i0sNl6GyoL2SbyCk+7UjqyN0GWJFeMMT60n/vP2vHnieO4oPxi6FoqgDEdSTou
-         W2J0O5wbSX3MoVRvZNxIp2YR112iqDT25TA1AGpo4LGXGsyCjcOLKaA696RKt0oU0I
-         HFsJriP8FmTsXNrspbCdaJwSk29+RRz5LZcaX9h8=
+        b=1oDmmkCbXl8yvNsUtxuLcM/bXPXmmqW26StG52cGK6pZGupQT8ImlS+wpgb0eCvrj
+         MVW45KMvcw4lJEg3pYH1AcuUzgIkP9NHb87M1vQNcTbmK7dXLytuhcNP6mAKcyu6lt
+         B8zQcy0TB1+ltEvEwM9FlVISZCWP52sM3idMbY5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0279/1157] dm writecache: count number of blocks discarded, not number of discard bios
-Date:   Mon, 15 Aug 2022 19:53:55 +0200
-Message-Id: <20220815180450.772707980@linuxfoundation.org>
+        stable@vger.kernel.org, Stanley Chu <stanley.chu@mediatek.com>,
+        Peter Wang <peter.wang@mediatek.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 0959/1095] scsi: ufs: core: Correct ufshcd_shutdown() flow
+Date:   Mon, 15 Aug 2022 20:05:58 +0200
+Message-Id: <20220815180508.745559584@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,52 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Peter Wang <peter.wang@mediatek.com>
 
-[ Upstream commit 2ee73ef60db4d79b9f9b8cd501e8188b5179449f ]
+commit 00511d2abf5708ad05dd5d1c36adb2468d274698 upstream.
 
-Change dm-writecache, so that it counts the number of blocks discarded
-instead of the number of discard bios. Make it consistent with the
-read and write statistics counters that were changed to count the
-number of blocks instead of bios.
+After ufshcd_wl_shutdown() set device power off and link off,
+ufshcd_shutdown() could turn off clock/power. Also remove
+pm_runtime_get_sync.
 
-Fixes: e3a35d03407c ("dm writecache: add event counters")
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The reason why it is safe to remove pm_runtime_get_sync() is because:
+
+ - ufshcd_wl_shutdown() -> pm_runtime_get_sync() will resume hba->dev too.
+
+ - device resume(turn on clk/power) is not required, even if device is in
+   RPM_SUSPENDED.
+
+Link: https://lore.kernel.org/r/20220727030526.31022-1-peter.wang@mediatek.com
+Fixes: b294ff3e3449 ("scsi: ufs: core: Enable power management for wlun")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Peter Wang <peter.wang@mediatek.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/device-mapper/writecache.rst | 2 +-
- drivers/md/dm-writecache.c                             | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/ufs/ufshcd.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
-index 6c9a2c74df8a..724e028d1858 100644
---- a/Documentation/admin-guide/device-mapper/writecache.rst
-+++ b/Documentation/admin-guide/device-mapper/writecache.rst
-@@ -87,7 +87,7 @@ Status:
- 11. the number of write blocks that are allocated in the cache
- 12. the number of write requests that are blocked on the freelist
- 13. the number of flush requests
--14. the number of discard requests
-+14. the number of discarded blocks
- 
- Messages:
- 	flush
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index d1dca8f44028..b4d5bab8d68b 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1514,7 +1514,7 @@ static enum wc_map_op writecache_map_flush(struct dm_writecache *wc, struct bio
- 
- static enum wc_map_op writecache_map_discard(struct dm_writecache *wc, struct bio *bio)
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -9500,12 +9500,8 @@ EXPORT_SYMBOL(ufshcd_runtime_resume);
+ int ufshcd_shutdown(struct ufs_hba *hba)
  {
--	wc->stats.discards++;
-+	wc->stats.discards += bio->bi_iter.bi_size >> wc->block_size_bits;
+ 	if (ufshcd_is_ufs_dev_poweroff(hba) && ufshcd_is_link_off(hba))
+-		goto out;
++		ufshcd_suspend(hba);
  
- 	if (writecache_has_error(wc))
- 		return WC_MAP_ERROR;
--- 
-2.35.1
-
+-	pm_runtime_get_sync(hba->dev);
+-
+-	ufshcd_suspend(hba);
+-out:
+ 	hba->is_powered = false;
+ 	/* allow force shutdown even in case of errors */
+ 	return 0;
 
 
