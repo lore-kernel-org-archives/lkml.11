@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1374BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C925C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350053AbiHOVt5 (ORCPT
+        id S1350064AbiHOVuD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        Mon, 15 Aug 2022 17:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350047AbiHOVrG (ORCPT
+        with ESMTP id S1350074AbiHOVrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:06 -0400
+        Mon, 15 Aug 2022 17:47:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5589574364;
-        Mon, 15 Aug 2022 12:30:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08EF5E33B;
+        Mon, 15 Aug 2022 12:30:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C331DB8107A;
-        Mon, 15 Aug 2022 19:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD9CC433D6;
-        Mon, 15 Aug 2022 19:30:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8442B81126;
+        Mon, 15 Aug 2022 19:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F9DC433D6;
+        Mon, 15 Aug 2022 19:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591849;
-        bh=qpyjHBlNmvh5qz8ZjsmPzt6EGeEiWMCvxwoRJDS94vo=;
+        s=korg; t=1660591852;
+        bh=0n30SQV2oTUexFgmstOps5qTzO9d1a9NzMVVVLjrvdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGYuF48P3MEqJ5w9iu6mAJJiEweInGgl73TDA6UhZpVk1nCAkPgoc4+61qBTNLO4B
-         qJcNq/UewZjir7P9GKUSjUcGzYf7QDQu+DVWOzfwsSVIfx5Fk4A3kMVzodtFhn3Yle
-         tQIhTAH+yw54JzXUVzE4lpAA4VFhMHcJwZONPCMQ=
+        b=szpve99RwVC20m01gVfm66m+gXoRhQub4LZmNmd9KGTLLivUOkvvSWj/ViJwcn55r
+         mKodYzOyjV2+YMA/YNpCkf5HGbJcpoA13CQt/YUkGwj0jepRNKLcAk7HaS4CQptKfo
+         VELCHyJBIxhz9FuvqIPzgtjWD7aPIolHVE0CTDzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.19 0017/1157] add barriers to buffer_uptodate and set_buffer_uptodate
-Date:   Mon, 15 Aug 2022 19:49:33 +0200
-Message-Id: <20220815180440.140926483@linuxfoundation.org>
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Peter Xu <peterx@redhat.com>, Ben Gardon <bgardon@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0690/1095] KVM: x86: Fix errant brace in KVM capability handling
+Date:   Mon, 15 Aug 2022 20:01:29 +0200
+Message-Id: <20220815180457.924813944@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,77 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Ben Gardon <bgardon@google.com>
 
-commit d4252071b97d2027d246f6a82cbee4d52f618b47 upstream.
+[ Upstream commit 1c4dc57328bf218e999951824dce75c6125c4f3c ]
 
-Let's have a look at this piece of code in __bread_slow:
+The braces around the KVM_CAP_XSAVE2 block also surround the
+KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
+move the curly brace back to where it belongs.
 
-	get_bh(bh);
-	bh->b_end_io = end_buffer_read_sync;
-	submit_bh(REQ_OP_READ, 0, bh);
-	wait_on_buffer(bh);
-	if (buffer_uptodate(bh))
-		return bh;
+Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
 
-Neither wait_on_buffer nor buffer_uptodate contain any memory barrier.
-Consequently, if someone calls sb_bread and then reads the buffer data,
-the read of buffer data may be executed before wait_on_buffer(bh) on
-architectures with weak memory ordering and it may return invalid data.
-
-Fix this bug by adding a memory barrier to set_buffer_uptodate and an
-acquire barrier to buffer_uptodate (in a similar way as
-folio_test_uptodate and folio_mark_uptodate).
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+Message-Id: <20220613212523.3436117-8-bgardon@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/buffer_head.h |   25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/buffer_head.h
-+++ b/include/linux/buffer_head.h
-@@ -117,7 +117,6 @@ static __always_inline int test_clear_bu
-  * of the form "mark_buffer_foo()".  These are higher-level functions which
-  * do something in addition to setting a b_state bit.
-  */
--BUFFER_FNS(Uptodate, uptodate)
- BUFFER_FNS(Dirty, dirty)
- TAS_BUFFER_FNS(Dirty, dirty)
- BUFFER_FNS(Lock, locked)
-@@ -135,6 +134,30 @@ BUFFER_FNS(Meta, meta)
- BUFFER_FNS(Prio, prio)
- BUFFER_FNS(Defer_Completion, defer_completion)
- 
-+static __always_inline void set_buffer_uptodate(struct buffer_head *bh)
-+{
-+	/*
-+	 * make it consistent with folio_mark_uptodate
-+	 * pairs with smp_load_acquire in buffer_uptodate
-+	 */
-+	smp_mb__before_atomic();
-+	set_bit(BH_Uptodate, &bh->b_state);
-+}
-+
-+static __always_inline void clear_buffer_uptodate(struct buffer_head *bh)
-+{
-+	clear_bit(BH_Uptodate, &bh->b_state);
-+}
-+
-+static __always_inline int buffer_uptodate(const struct buffer_head *bh)
-+{
-+	/*
-+	 * make it consistent with folio_test_uptodate
-+	 * pairs with smp_mb__before_atomic in set_buffer_uptodate
-+	 */
-+	return (smp_load_acquire(&bh->b_state) & (1UL << BH_Uptodate)) != 0;
-+}
-+
- #define bh_offset(bh)		((unsigned long)(bh)->b_data & ~PAGE_MASK)
- 
- /* If we *know* page->private refers to buffer_heads */
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index cc2c89c08d85..767a61e29f51 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4377,10 +4377,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		if (r < sizeof(struct kvm_xsave))
+ 			r = sizeof(struct kvm_xsave);
+ 		break;
++	}
+ 	case KVM_CAP_PMU_CAPABILITY:
+ 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
+ 		break;
+-	}
+ 	case KVM_CAP_DISABLE_QUIRKS2:
+ 		r = KVM_X86_VALID_QUIRKS;
+ 		break;
+-- 
+2.35.1
+
 
 
