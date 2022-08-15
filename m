@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A84FCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6780C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349752AbiHOWf1 (ORCPT
+        id S1350052AbiHOWfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
+        Mon, 15 Aug 2022 18:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351093AbiHOW1f (ORCPT
+        with ESMTP id S1351090AbiHOW1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8E36D57F;
-        Mon, 15 Aug 2022 12:47:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282BF422E6;
+        Mon, 15 Aug 2022 12:47:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C44F61206;
-        Mon, 15 Aug 2022 19:47:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C35AC433C1;
-        Mon, 15 Aug 2022 19:47:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2769B80EB2;
+        Mon, 15 Aug 2022 19:47:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE37C433D6;
+        Mon, 15 Aug 2022 19:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592832;
-        bh=FBaTAHb0GzBnCauJyhCdmmS9bjHyhSpV9lskJm3Xp3w=;
+        s=korg; t=1660592829;
+        bh=ZYta0xWaaaX3NVY+blxrrshyWYllF3ppbUR9PCuCCpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOcYtE896RzQuyAkUr9D4+X4uOFeRRPqmAiBa4Tm7TLJpAeiipArGN+/E6CKIm/7r
-         IoPUhN7fw1wpckTqbTkrKbZYKDncF0wPdWQ37q1jp5Xwsufgenhf8z+rWfZaUhVS9p
-         03iDPZyIR9kkK7iDohYqMgBokeXtIsSxKZUgGr1E=
+        b=S02tSGYNebssgymk4QypzxyqCjNls6S6kgVGDY5i1hfDZ753LyHrfDw/fg5nz5EyQ
+         mJA+6gDZ70nDYJL9UU/ZUYwfOgc4L834EpTqoMOZrBfWKOGQg9mptdZ3Duk4zeirtU
+         LQKAui8bV1rn6lWYMMSrkK/N2BsV3l517naeUQJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yishai Hadas <yishaih@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0851/1095] net/mlx5: Expose mlx5_sriov_blocking_notifier_register / unregister APIs
-Date:   Mon, 15 Aug 2022 20:04:10 +0200
-Message-Id: <20220815180504.535928600@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0148/1157] arch: make TRACE_IRQFLAGS_NMI_SUPPORT generic
+Date:   Mon, 15 Aug 2022 19:51:44 +0200
+Message-Id: <20220815180445.581946288@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,172 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yishai Hadas <yishaih@nvidia.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 846e437387e74c44ddc9f3eeec472fd37ca3cdb9 ]
+[ Upstream commit 4510bffb4d0246cdcc1f14c7367c026b807a862d ]
 
-Expose mlx5_sriov_blocking_notifier_register / unregister APIs to let a
-VF register to be notified for its enablement / disablement by the PF.
+On most architectures, IRQ flag tracing is disabled in NMI context, and
+architectures need to define and select TRACE_IRQFLAGS_NMI_SUPPORT in
+order to enable this.
 
-Upon VF probe it will call mlx5_sriov_blocking_notifier_register() with
-its notifier block and upon VF remove it will call
-mlx5_sriov_blocking_notifier_unregister() to drop its registration.
+Commit:
 
-This can give a VF the ability to clean some resources upon disable
-before that the command interface goes down and on the other hand sets
-some stuff before that it's enabled.
+  859d069ee1ddd878 ("lockdep: Prepare for NMI IRQ state tracking")
 
-This may be used by a VF which is migration capable in few cases.(e.g.
-PF load/unload upon an health recovery).
+Permitted IRQ flag tracing in NMI context, allowing lockdep to work in
+NMI context where an architecture had suitable entry logic. At the time,
+most architectures did not have such suitable entry logic, and this broke
+lockdep on such architectures. Thus, this was partially disabled in
+commit:
 
-Link: https://lore.kernel.org/r/20220510090206.90374-2-yishaih@nvidia.com
-Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+  ed00495333ccc80f ("locking/lockdep: Fix TRACE_IRQFLAGS vs. NMIs")
+
+... with architectures needing to select TRACE_IRQFLAGS_NMI_SUPPORT to
+enable IRQ flag tracing in NMI context.
+
+Currently TRACE_IRQFLAGS_NMI_SUPPORT is defined under
+arch/x86/Kconfig.debug. Move it to arch/Kconfig so architectures can
+select it without having to provide their own definition.
+
+Since the regular TRACE_IRQFLAGS_SUPPORT is selected by
+arch/x86/Kconfig, the select of TRACE_IRQFLAGS_NMI_SUPPORT is moved
+there too.
+
+There should be no functional change as a result of this patch.
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220511131733.4074499-2-mark.rutland@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/sriov.c   | 65 ++++++++++++++++++-
- include/linux/mlx5/driver.h                   | 12 ++++
- 2 files changed, 76 insertions(+), 1 deletion(-)
+ arch/Kconfig           | 3 +++
+ arch/x86/Kconfig       | 1 +
+ arch/x86/Kconfig.debug | 3 ---
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-index 887ee0f729d1..2935614f6fa9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-@@ -87,6 +87,11 @@ static int mlx5_device_enable_sriov(struct mlx5_core_dev *dev, int num_vfs)
- enable_vfs_hca:
- 	num_msix_count = mlx5_get_default_msix_vec_count(dev, num_vfs);
- 	for (vf = 0; vf < num_vfs; vf++) {
-+		/* Notify the VF before its enablement to let it set
-+		 * some stuff.
-+		 */
-+		blocking_notifier_call_chain(&sriov->vfs_ctx[vf].notifier,
-+					     MLX5_PF_NOTIFY_ENABLE_VF, dev);
- 		err = mlx5_core_enable_hca(dev, vf + 1);
- 		if (err) {
- 			mlx5_core_warn(dev, "failed to enable VF %d (%d)\n", vf, err);
-@@ -127,6 +132,11 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf)
- 	for (vf = num_vfs - 1; vf >= 0; vf--) {
- 		if (!sriov->vfs_ctx[vf].enabled)
- 			continue;
-+		/* Notify the VF before its disablement to let it clean
-+		 * some resources.
-+		 */
-+		blocking_notifier_call_chain(&sriov->vfs_ctx[vf].notifier,
-+					     MLX5_PF_NOTIFY_DISABLE_VF, dev);
- 		err = mlx5_core_disable_hca(dev, vf + 1);
- 		if (err) {
- 			mlx5_core_warn(dev, "failed to disable VF %d\n", vf);
-@@ -257,7 +267,7 @@ int mlx5_sriov_init(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_core_sriov *sriov = &dev->priv.sriov;
- 	struct pci_dev *pdev = dev->pdev;
--	int total_vfs;
-+	int total_vfs, i;
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 71b9272acb28..5ea3e3838c21 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -223,6 +223,9 @@ config HAVE_FUNCTION_DESCRIPTORS
+ config TRACE_IRQFLAGS_SUPPORT
+ 	bool
  
- 	if (!mlx5_core_is_pf(dev))
- 		return 0;
-@@ -269,6 +279,9 @@ int mlx5_sriov_init(struct mlx5_core_dev *dev)
- 	if (!sriov->vfs_ctx)
- 		return -ENOMEM;
++config TRACE_IRQFLAGS_NMI_SUPPORT
++	bool
++
+ #
+ # An arch should select this if it provides all these things:
+ #
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 52a7f91527fe..25e2b8b75e40 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -278,6 +278,7 @@ config X86
+ 	select SYSCTL_EXCEPTION_TRACE
+ 	select THREAD_INFO_IN_TASK
+ 	select TRACE_IRQFLAGS_SUPPORT
++	select TRACE_IRQFLAGS_NMI_SUPPORT
+ 	select USER_STACKTRACE_SUPPORT
+ 	select VIRT_TO_BUS
+ 	select HAVE_ARCH_KCSAN			if X86_64
+diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+index 340399f69954..bdfe08f1a930 100644
+--- a/arch/x86/Kconfig.debug
++++ b/arch/x86/Kconfig.debug
+@@ -1,8 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
  
-+	for (i = 0; i < total_vfs; i++)
-+		BLOCKING_INIT_NOTIFIER_HEAD(&sriov->vfs_ctx[i].notifier);
-+
- 	return 0;
- }
+-config TRACE_IRQFLAGS_NMI_SUPPORT
+-	def_bool y
+-
+ config EARLY_PRINTK_USB
+ 	bool
  
-@@ -281,3 +294,53 @@ void mlx5_sriov_cleanup(struct mlx5_core_dev *dev)
- 
- 	kfree(sriov->vfs_ctx);
- }
-+
-+/**
-+ * mlx5_sriov_blocking_notifier_unregister - Unregister a VF from
-+ * a notification block chain.
-+ *
-+ * @mdev: The mlx5 core device.
-+ * @vf_id: The VF id.
-+ * @nb: The notifier block to be unregistered.
-+ */
-+void mlx5_sriov_blocking_notifier_unregister(struct mlx5_core_dev *mdev,
-+					     int vf_id,
-+					     struct notifier_block *nb)
-+{
-+	struct mlx5_vf_context *vfs_ctx;
-+	struct mlx5_core_sriov *sriov;
-+
-+	sriov = &mdev->priv.sriov;
-+	if (WARN_ON(vf_id < 0 || vf_id >= sriov->num_vfs))
-+		return;
-+
-+	vfs_ctx = &sriov->vfs_ctx[vf_id];
-+	blocking_notifier_chain_unregister(&vfs_ctx->notifier, nb);
-+}
-+EXPORT_SYMBOL(mlx5_sriov_blocking_notifier_unregister);
-+
-+/**
-+ * mlx5_sriov_blocking_notifier_register - Register a VF notification
-+ * block chain.
-+ *
-+ * @mdev: The mlx5 core device.
-+ * @vf_id: The VF id.
-+ * @nb: The notifier block to be called upon the VF events.
-+ *
-+ * Returns 0 on success or an error code.
-+ */
-+int mlx5_sriov_blocking_notifier_register(struct mlx5_core_dev *mdev,
-+					  int vf_id,
-+					  struct notifier_block *nb)
-+{
-+	struct mlx5_vf_context *vfs_ctx;
-+	struct mlx5_core_sriov *sriov;
-+
-+	sriov = &mdev->priv.sriov;
-+	if (vf_id < 0 || vf_id >= sriov->num_vfs)
-+		return -EINVAL;
-+
-+	vfs_ctx = &sriov->vfs_ctx[vf_id];
-+	return blocking_notifier_chain_register(&vfs_ctx->notifier, nb);
-+}
-+EXPORT_SYMBOL(mlx5_sriov_blocking_notifier_register);
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 9424503eb8d3..3d1594bad4ec 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -445,6 +445,11 @@ struct mlx5_qp_table {
- 	struct radix_tree_root	tree;
- };
- 
-+enum {
-+	MLX5_PF_NOTIFY_DISABLE_VF,
-+	MLX5_PF_NOTIFY_ENABLE_VF,
-+};
-+
- struct mlx5_vf_context {
- 	int	enabled;
- 	u64	port_guid;
-@@ -455,6 +460,7 @@ struct mlx5_vf_context {
- 	u8	port_guid_valid:1;
- 	u8	node_guid_valid:1;
- 	enum port_state_policy	policy;
-+	struct blocking_notifier_head notifier;
- };
- 
- struct mlx5_core_sriov {
-@@ -1155,6 +1161,12 @@ int mlx5_dm_sw_icm_dealloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type
- struct mlx5_core_dev *mlx5_vf_get_core_dev(struct pci_dev *pdev);
- void mlx5_vf_put_core_dev(struct mlx5_core_dev *mdev);
- 
-+int mlx5_sriov_blocking_notifier_register(struct mlx5_core_dev *mdev,
-+					  int vf_id,
-+					  struct notifier_block *nb);
-+void mlx5_sriov_blocking_notifier_unregister(struct mlx5_core_dev *mdev,
-+					     int vf_id,
-+					     struct notifier_block *nb);
- #ifdef CONFIG_MLX5_CORE_IPOIB
- struct net_device *mlx5_rdma_netdev_alloc(struct mlx5_core_dev *mdev,
- 					  struct ib_device *ibdev,
 -- 
 2.35.1
 
