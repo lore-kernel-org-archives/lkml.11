@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E65C282E7
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C3DC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiHPEfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S230448AbiHPEfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiHPEeY (ORCPT
+        with ESMTP id S230105AbiHPEe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:34:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CC7CAC9C;
-        Mon, 15 Aug 2022 13:27:56 -0700 (PDT)
+        Tue, 16 Aug 2022 00:34:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E459FA86;
+        Mon, 15 Aug 2022 13:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B134B80EB1;
-        Mon, 15 Aug 2022 20:27:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56744C433C1;
-        Mon, 15 Aug 2022 20:27:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C20BE61135;
+        Mon, 15 Aug 2022 20:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFDAC433D7;
+        Mon, 15 Aug 2022 20:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595273;
-        bh=Qb7NOxQ2HvEjpwNTGYPuGuO+GJE36F0ManhVFQhhL4o=;
+        s=korg; t=1660595280;
+        bh=GTIZkC3zKQWu+Bct/VE1yaL9YF7rpRhed2b2ZCRgiOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FERSIb06auR34ggk0dZwr4nfIyy/F7qcqDBvk9TwGMsx5dq515tX3s/4fCDyY2bXM
-         FqMh1KXORyvMtzt0Z4CBC4Q3+Bep4orVos1cl58bba9nK/Ht/X4DhZ4LN/2eBGZ6Zv
-         2F7l9CTyY9OTXa5HJm+KJPMYNqWwfPZeQYdDS2DY=
+        b=zHKEaECCmG6nenCjcBHLLZHkE9Q89baBxjArUQ8bNcvz2nu9+lC8RPTJhrQLetEbT
+         OkLj3df01Mh7JbjkiS3C/mnUzeJtN8PZXlWNmDYa5dS/0vg1+gNgww+B3PRgEVXFaK
+         xsCydfhtvWor39/AhjMBphGFTfRPi8X6EMANyAZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Matt Ranostay <mranostay@gmail.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0712/1157] iio: potentiometer: mcp41010: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:01:08 +0200
-Message-Id: <20220815180508.017051417@linuxfoundation.org>
+Subject: [PATCH 5.19 0714/1157] iio: proximity: as3935: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:10 +0200
+Message-Id: <20220815180508.089123176@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,34 +53,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit c5f78f4d2168ba21324095b0d46d4353c2eace4d ]
+[ Upstream commit 2386c0f8c5b740873a4b9126c3706601b127fe22 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 092cb71a604e ("iio: potentiometer: Add driver for Microchip MCP41xxx/42xxx")
+Fixes: 24ddb0e4bba4 ("iio: Add AS3935 lightning sensor support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Matt Ranostay <mranostay@gmail.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-84-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-87-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/potentiometer/mcp41010.c | 2 +-
+ drivers/iio/proximity/as3935.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/potentiometer/mcp41010.c b/drivers/iio/potentiometer/mcp41010.c
-index 30a4594d4e11..2b73c7540209 100644
---- a/drivers/iio/potentiometer/mcp41010.c
-+++ b/drivers/iio/potentiometer/mcp41010.c
-@@ -60,7 +60,7 @@ struct mcp41010_data {
- 	const struct mcp41010_cfg *cfg;
- 	struct mutex lock; /* Protect write sequences */
- 	unsigned int value[MCP41010_MAX_WIPERS]; /* Cache wiper values */
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index 67891ce2bd09..ebc95cf8f5f4 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -65,7 +65,7 @@ struct as3935_state {
+ 		u8 chan;
+ 		s64 timestamp __aligned(8);
+ 	} scan;
 -	u8 buf[2] ____cacheline_aligned;
 +	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- #define MCP41010_CHANNEL(ch) {					\
+ static const struct iio_chan_spec as3935_channels[] = {
 -- 
 2.35.1
 
