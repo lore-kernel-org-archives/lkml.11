@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB39C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0DBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347597AbiHOV6B (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
+        id S244845AbiHOV6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350466AbiHOV4T (ORCPT
+        with ESMTP id S1350570AbiHOV4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:56:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12CC10A774;
-        Mon, 15 Aug 2022 12:34:04 -0700 (PDT)
+        Mon, 15 Aug 2022 17:56:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D67610AE21;
+        Mon, 15 Aug 2022 12:34:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D60561184;
-        Mon, 15 Aug 2022 19:34:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B213C433D6;
-        Mon, 15 Aug 2022 19:34:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6868EB80EA8;
+        Mon, 15 Aug 2022 19:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5202C433D6;
+        Mon, 15 Aug 2022 19:34:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592043;
-        bh=ecmKP+DYRKqfBr6/umZkZvg2tAeCCDhHa8GE40xc3nA=;
+        s=korg; t=1660592046;
+        bh=qRMw4Z/Z0VGv9wZhXzljXtFElEfvcInrNKvviqV8PLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XNUgoq+ctHR0uBsIKxvuM+wPtvRx4gjPEWvkR4LjEESeSTrW1pFJ/70h2P5su5hu+
-         mThEorXNFS+e07xN6vvLn7XZ+xMEDR8M1uJvPF7pj32iFmyUFymvwkdxLBzL1vrzit
-         wFRDJzhRZvuHnzYX8JGXfYKBviHE6T5g6Xb02aT0=
+        b=ufg6Tp7qDUL44QPDgBilw3sfCb5Vu0VriLbVnJC56bbzBjFoNkzFgRTzON5KjJ878
+         DWXaMyoAkl/UtnQh8dz3+ltqnsJruKTRlZuRCgjyvGShxrohxWlkrHh1mQJAIw7Aq0
+         fE+xg3s1J32+gR+5IeIcW0koqGUeOJcjdsoOsEvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0722/1095] PCI: dwc: Add unroll iATU space support to dw_pcie_disable_atu()
-Date:   Mon, 15 Aug 2022 20:02:01 +0200
-Message-Id: <20220815180459.262093671@linuxfoundation.org>
+        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 0049/1157] ALSA: hda/realtek: Add a quirk for HP OMEN 15 (8786) mute LED
+Date:   Mon, 15 Aug 2022 19:50:05 +0200
+Message-Id: <20220815180441.421922862@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,71 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Bedant Patnaik <bedant.patnaik@gmail.com>
 
-[ Upstream commit d1cf738f2b65a5640234e1da90a68d3523fbed83 ]
+commit 30267718fe2d4dbea49015b022f6f1fe16ca31ab upstream.
 
-dw_pcie_disable_atu() was introduced by f8aed6ec624f ("PCI: dwc:
-designware: Add EP mode support") and supported only the viewport version
-of the iATU CSRs.
+Board ID 8786 seems to be another variant of the Omen 15 that needs
+ALC285_FIXUP_HP_MUTE_LED for working mute LED.
 
-DW PCIe IP cores v4.80a and newer also support unrolled iATU/eDMA space.
-Callers of dw_pcie_disable_atu(), including pci_epc_ops.clear_bar(),
-pci_epc_ops.unmap_addr(), and dw_pcie_setup_rc(), don't work correctly when
-it is enabled.
-
-Add dw_pcie_disable_atu() support for controllers with unrolled iATU CSRs
-enabled.
-
-[bhelgaas: commit log]
-Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
-Link: https://lore.kernel.org/r/20220624143428.8334-3-Sergey.Semin@baikalelectronics.ru
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220809142455.6473-1-bedant.patnaik@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index d92c8a25094f..84fef21efdbc 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -491,7 +491,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
- void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
- 			 enum dw_pcie_region_type type)
- {
--	int region;
-+	u32 region;
- 
- 	switch (type) {
- 	case DW_PCIE_REGION_INBOUND:
-@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
- 		return;
- 	}
- 
--	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
--	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
-+	if (pci->iatu_unroll_enabled) {
-+		if (region == PCIE_ATU_REGION_INBOUND) {
-+			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-+						 ~(u32)PCIE_ATU_ENABLE);
-+		} else {
-+			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-+						 ~(u32)PCIE_ATU_ENABLE);
-+		}
-+	} else {
-+		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
-+		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
-+	}
- }
- 
- int dw_pcie_wait_for_link(struct dw_pcie *pci)
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9178,6 +9178,7 @@ static const struct snd_pci_quirk alc269
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
+ 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
++	SND_PCI_QUIRK(0x103c, 0x8786, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
 
 
