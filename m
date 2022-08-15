@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A1C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F92C282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiHPEbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
+        id S230046AbiHPEbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiHPEbN (ORCPT
+        with ESMTP id S230012AbiHPEbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:31:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B30164436;
-        Mon, 15 Aug 2022 13:20:23 -0700 (PDT)
+        Tue, 16 Aug 2022 00:31:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCEF1665B0;
+        Mon, 15 Aug 2022 13:22:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7478D6106F;
-        Mon, 15 Aug 2022 20:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C781C433C1;
-        Mon, 15 Aug 2022 20:20:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7D72B8119B;
+        Mon, 15 Aug 2022 20:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A201C433C1;
+        Mon, 15 Aug 2022 20:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594821;
-        bh=O35wFFqh39gsj4H7AeSsF+t8oAXaVBPzARFRk7JtuG8=;
+        s=korg; t=1660594974;
+        bh=zGsvOp9SRF/84WtIQLwTb+KtRGixmQm3FaS1JsCSYsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O5jofGKxy42moUoSo1gigrVnIqM5GfWStb1E0l0taSRazE/PbxVMmzr/OmGNiowYn
-         3UJjiRWCi95/WjEH50i5PAOfWQLKVUbEH51OZuS3Bf+Qy/gPhncKWXBBwPj+NDgGlk
-         v3PvhtuuvP9cDA4y4D1CTInuYJ9dmocFSrz9roYM=
+        b=k1nozzs7Z9xYU0ed7kmMHkkVOiMVhwTFl9FdNBwlFAvwFT95t9sgPMvzKnMrT12YS
+         gx/fyWhtOAQJXjPC+PjpEvws7fyRzeVCp0ZvZqboS++gVvHTmsAveMlerD4I4ySkqL
+         CdCj91SbSnSxXHdnyKxBxJhgd7rp64xHFsHp+DII=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0569/1157] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
-Date:   Mon, 15 Aug 2022 19:58:45 +0200
-Message-Id: <20220815180502.381578729@linuxfoundation.org>
+Subject: [PATCH 5.19 0586/1157] scsi: qla2xxx: edif: Synchronize NPIV deletion with authentication application
+Date:   Mon, 15 Aug 2022 19:59:02 +0200
+Message-Id: <20220815180503.105984621@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,68 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
+[ Upstream commit cf79716e6636400ae38c37bc8a652b1e522abbba ]
 
-In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
-will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
-released before sock_alloc_send_skb and then relocked after
-sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
-to add skb to an already full sk_write_queue:
+Notify authentication application of a NPIV deletion event is about to
+occur. This allows app to perform cleanup.
 
-thread1--->lock
-thread1--->dccp_qpolicy_full: queue is full. drop a skb
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
-thread2--->unlock
-thread1--->lock
-thread1--->dccp_qpolicy_push: add a skb. queue is full.
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_push: add a skb!
-thread2--->unlock
-
-Fix this by moving dccp_qpolicy_full.
-
-Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220607044627.19563-7-njavali@marvell.com
+Fixes: 9efea843a906 ("scsi: qla2xxx: edif: Add detection of secure device")
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dccp/proto.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/scsi/qla2xxx/qla_edif_bsg.h | 2 ++
+ drivers/scsi/qla2xxx/qla_mid.c      | 6 +++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index eb8e128e43e8..e13641c65f88 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -736,11 +736,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+diff --git a/drivers/scsi/qla2xxx/qla_edif_bsg.h b/drivers/scsi/qla2xxx/qla_edif_bsg.h
+index 110843b13767..0931f4e4e127 100644
+--- a/drivers/scsi/qla2xxx/qla_edif_bsg.h
++++ b/drivers/scsi/qla2xxx/qla_edif_bsg.h
+@@ -253,4 +253,6 @@ struct aen_complete_cmd {
  
- 	lock_sock(sk);
+ #define RX_DELAY_DELETE_TIMEOUT 20
  
--	if (dccp_qpolicy_full(sk)) {
--		rc = -EAGAIN;
--		goto out_release;
--	}
--
- 	timeo = sock_sndtimeo(sk, noblock);
- 
- 	/*
-@@ -759,6 +754,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if (skb == NULL)
- 		goto out_release;
- 
-+	if (dccp_qpolicy_full(sk)) {
-+		rc = -EAGAIN;
-+		goto out_discard;
-+	}
++#define FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN  1
 +
- 	if (sk->sk_state == DCCP_CLOSED) {
- 		rc = -ENOTCONN;
- 		goto out_discard;
+ #endif	/* QLA_EDIF_BSG_H */
+diff --git a/drivers/scsi/qla2xxx/qla_mid.c b/drivers/scsi/qla2xxx/qla_mid.c
+index 346d47b61c07..16a9f22bb860 100644
+--- a/drivers/scsi/qla2xxx/qla_mid.c
++++ b/drivers/scsi/qla2xxx/qla_mid.c
+@@ -166,9 +166,13 @@ qla24xx_disable_vp(scsi_qla_host_t *vha)
+ 	int ret = QLA_SUCCESS;
+ 	fc_port_t *fcport;
+ 
+-	if (vha->hw->flags.edif_enabled)
++	if (vha->hw->flags.edif_enabled) {
++		if (DBELL_ACTIVE(vha))
++			qla2x00_post_aen_work(vha, FCH_EVT_VENDOR_UNIQUE,
++			    FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN);
+ 		/* delete sessions and flush sa_indexes */
+ 		qla2x00_wait_for_sess_deletion(vha);
++	}
+ 
+ 	if (vha->hw->flags.fw_started)
+ 		ret = qla24xx_control_vp(vha, VCE_COMMAND_DISABLE_VPS_LOGO_ALL);
 -- 
 2.35.1
 
