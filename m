@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5739DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34875C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245503AbiHOTHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
+        id S245559AbiHOTHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245699AbiHOTCh (ORCPT
+        with ESMTP id S245707AbiHOTCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:02:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487FD357DE;
-        Mon, 15 Aug 2022 11:33:46 -0700 (PDT)
+        Mon, 15 Aug 2022 15:02:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC8A3718D;
+        Mon, 15 Aug 2022 11:33:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB415B8106C;
-        Mon, 15 Aug 2022 18:33:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5750CC433D6;
-        Mon, 15 Aug 2022 18:33:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57AA260F7A;
+        Mon, 15 Aug 2022 18:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 600BDC433D6;
+        Mon, 15 Aug 2022 18:33:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588423;
-        bh=xfN3aMUT72GVuYA0umVk3VuFaMgbIjj+rzjPO5QTWwk=;
+        s=korg; t=1660588429;
+        bh=b1vhEVSzLT806KV0vZY9uvNMldcF7FVJvXU+LO0wV90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5Ggvkf4lIJuQH8ZrftclfNj+Hir2PXCA+j4+167GUuVVsGoHPeefyqvv/46uDMjO
-         kGujbaptCYG5/GDwLfi5gBWpE2f2/xG4iX1BOdOO83eMbezow+xhyCL3g6J7PshTMs
-         PftPoRyoNUAXrolULPCtftLolbSnTd01GYx8brpc=
+        b=pDP2R12R+TLQCdb7+TbwM6YgeVwZft9KyuxLI3Bgq3b3t4460Hwif9T/7lKD2magi
+         H7u7X9q1FIkFbvMEcjEDSC0dp1vqBPY4yD1AbyeO8LX082bJ0kOyGG7HHUN0Fwc7ji
+         M7hEn4C15YHRAePn2fEma8mFMNGQ9Tyq+Ld2/7iM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 399/779] scsi: qla2xxx: edif: Add retry for ELS passthrough
-Date:   Mon, 15 Aug 2022 20:00:43 +0200
-Message-Id: <20220815180354.323284746@linuxfoundation.org>
+Subject: [PATCH 5.15 401/779] scsi: qla2xxx: edif: Fix n2n login retry for secure device
+Date:   Mon, 15 Aug 2022 20:00:45 +0200
+Message-Id: <20220815180354.412093581@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,138 +52,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 0b3f3143d473b489a7aa0779c43bcdb344bd3014 ]
+[ Upstream commit aec55325ddec975216119da000092cb8664a3399 ]
 
-Relating to EDIF, when sending IKE message, updating key or deleting key,
-driver can encounter IOCB queue full. Add additional retries to reduce
-higher level recovery.
+After initiator has burned up all login retries, target authentication
+application begins to run. This triggers a link bounce on target side.
+Initiator will attempt another login. Due to N2N, the PRLI [nvme | fcp] can
+fail because of the mode mismatch with target. This patch add a few more
+login retries to revive the connection.
 
-Link: https://lore.kernel.org/r/20220607044627.19563-8-njavali@marvell.com
-Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
+Link: https://lore.kernel.org/r/20220607044627.19563-11-njavali@marvell.com
+Fixes: 4de067e5df12 ("scsi: qla2xxx: edif: Add N2N support for EDIF")
 Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c | 52 +++++++++++++++++++++++----------
- drivers/scsi/qla2xxx/qla_os.c   |  2 +-
- 2 files changed, 38 insertions(+), 16 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index bdcc38bd955a..ee8e1ae2c300 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -1274,6 +1274,8 @@ qla24xx_check_sadb_avail_slot(struct bsg_job *bsg_job, fc_port_t *fcport,
- 
- #define QLA_SA_UPDATE_FLAGS_RX_KEY      0x0
- #define QLA_SA_UPDATE_FLAGS_TX_KEY      0x2
-+#define EDIF_MSLEEP_INTERVAL 100
-+#define EDIF_RETRY_COUNT  50
- 
- int
- qla24xx_sadb_update(struct bsg_job *bsg_job)
-@@ -1286,7 +1288,7 @@ qla24xx_sadb_update(struct bsg_job *bsg_job)
- 	struct edif_list_entry *edif_entry = NULL;
- 	int			found = 0;
- 	int			rval = 0;
--	int result = 0;
-+	int result = 0, cnt;
- 	struct qla_sa_update_frame sa_frame;
- 	struct srb_iocb *iocb_cmd;
- 	port_id_t portid;
-@@ -1527,11 +1529,23 @@ qla24xx_sadb_update(struct bsg_job *bsg_job)
- 	sp->done = qla2x00_bsg_job_done;
- 	iocb_cmd = &sp->u.iocb_cmd;
- 	iocb_cmd->u.sa_update.sa_frame  = sa_frame;
--
-+	cnt = 0;
-+retry:
- 	rval = qla2x00_start_sp(sp);
--	if (rval != QLA_SUCCESS) {
-+	switch (rval) {
-+	case QLA_SUCCESS:
-+		break;
-+	case EAGAIN:
-+		msleep(EDIF_MSLEEP_INTERVAL);
-+		cnt++;
-+		if (cnt < EDIF_RETRY_COUNT)
-+			goto retry;
-+
-+		fallthrough;
-+	default:
- 		ql_log(ql_dbg_edif, vha, 0x70e3,
--		    "qla2x00_start_sp failed=%d.\n", rval);
-+		       "%s qla2x00_start_sp failed=%d.\n",
-+		       __func__, rval);
- 
- 		qla2x00_rel_sp(sp);
- 		rval = -EIO;
-@@ -2254,7 +2268,6 @@ qla24xx_issue_sa_replace_iocb(scsi_qla_host_t *vha, struct qla_work_evt *e)
- 	rval = qla2x00_start_sp(sp);
- 
- 	if (rval != QLA_SUCCESS) {
--		rval = QLA_FUNCTION_FAILED;
- 		goto done_free_sp;
- 	}
- 
-@@ -3383,7 +3396,7 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	fc_port_t *fcport = NULL;
- 	struct qla_hw_data *ha = vha->hw;
- 	srb_t *sp;
--	int rval =  (DID_ERROR << 16);
-+	int rval =  (DID_ERROR << 16), cnt;
- 	port_id_t d_id;
- 	struct qla_bsg_auth_els_request *p =
- 	    (struct qla_bsg_auth_els_request *)bsg_job->request;
-@@ -3474,17 +3487,26 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	sp->free = qla2x00_bsg_sp_free;
- 	sp->done = qla2x00_bsg_job_done;
- 
-+	cnt = 0;
-+retry:
- 	rval = qla2x00_start_sp(sp);
--
--	ql_dbg(ql_dbg_edif, vha, 0x700a,
--	    "%s %s %8phN xchg %x ctlflag %x hdl %x reqlen %xh bsg ptr %p\n",
--	    __func__, sc_to_str(p->e.sub_cmd), fcport->port_name,
--	    p->e.extra_rx_xchg_address, p->e.extra_control_flags,
--	    sp->handle, sp->remap.req.len, bsg_job);
--
--	if (rval != QLA_SUCCESS) {
-+	switch (rval) {
-+	case QLA_SUCCESS:
-+		ql_dbg(ql_dbg_edif, vha, 0x700a,
-+		       "%s %s %8phN xchg %x ctlflag %x hdl %x reqlen %xh bsg ptr %p\n",
-+		       __func__, sc_to_str(p->e.sub_cmd), fcport->port_name,
-+		       p->e.extra_rx_xchg_address, p->e.extra_control_flags,
-+		       sp->handle, sp->remap.req.len, bsg_job);
-+		break;
-+	case EAGAIN:
-+		msleep(EDIF_MSLEEP_INTERVAL);
-+		cnt++;
-+		if (cnt < EDIF_RETRY_COUNT)
-+			goto retry;
-+		fallthrough;
-+	default:
- 		ql_log(ql_log_warn, vha, 0x700e,
--		    "qla2x00_start_sp failed = %d\n", rval);
-+		    "%s qla2x00_start_sp failed = %d\n", __func__, rval);
- 		SET_DID_STATUS(bsg_reply->result, DID_IMM_RETRY);
- 		rval = -EIO;
- 		goto done_free_remap_rsp;
-diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index e683b1c01c9f..e87ad7e0dc94 100644
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -5466,7 +5466,7 @@ qla2x00_do_work(struct scsi_qla_host *vha)
- 			    e->u.fcport.fcport, false);
- 			break;
- 		case QLA_EVT_SA_REPLACE:
--			qla24xx_issue_sa_replace_iocb(vha, e);
-+			rc = qla24xx_issue_sa_replace_iocb(vha, e);
- 			break;
+diff --git a/drivers/scsi/qla2xxx/qla_init.c b/drivers/scsi/qla2xxx/qla_init.c
+index 2bed5050bcaf..49cfe8c9f3bb 100644
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -2125,6 +2125,13 @@ qla24xx_handle_prli_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
  		}
  
+ 		if (N2N_TOPO(vha->hw)) {
++			if (ea->fcport->n2n_link_reset_cnt ==
++			    vha->hw->login_retry_count &&
++			    ea->fcport->flags & FCF_FCSP_DEVICE) {
++				/* remote authentication app just started */
++				ea->fcport->n2n_link_reset_cnt = 0;
++			}
++
+ 			if (ea->fcport->n2n_link_reset_cnt <
+ 			    vha->hw->login_retry_count) {
+ 				ea->fcport->n2n_link_reset_cnt++;
 -- 
 2.35.1
 
