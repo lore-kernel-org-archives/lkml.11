@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D55CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74EAC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245402AbiHOT3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S245656AbiHOT3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245158AbiHOTZq (ORCPT
+        with ESMTP id S245400AbiHOTZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:25:46 -0400
+        Mon, 15 Aug 2022 15:25:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4583DF17;
-        Mon, 15 Aug 2022 11:41:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EEE5A2F5;
+        Mon, 15 Aug 2022 11:41:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FF42B81084;
-        Mon, 15 Aug 2022 18:41:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B526DC433D6;
-        Mon, 15 Aug 2022 18:41:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 683E7B8105C;
+        Mon, 15 Aug 2022 18:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B053C433D6;
+        Mon, 15 Aug 2022 18:41:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588871;
-        bh=0rSuf08xxpAs4juZrf9DdyilhYifmFUsrkyHzwVov84=;
+        s=korg; t=1660588878;
+        bh=uSXCGKyWfEZEfMx7t2fOTKn70UCFSbJkruLUw78RvUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t+wrWl8B69DrdwxxvJ7hZDxYWd2fEM78hHJDJZbGr1THXLbRJqGWtuOmFmxGlrfM6
-         3fjjxDf8+xRGbka6Cen0+3xWvTyxE8ZQLuJZI6hJ+T/177HU15K0iDzB3LOC/h1/Xr
-         sCKBYplpabkko6qTi2KIf5BNkUvN173MCN9xJY+0=
+        b=I62mynV8yP5AtXABpqGDTeSoPBtDXXG9uKr9Cgy7dDlKvr4kwyiog0MXzp205EcMd
+         NiAxQ9sKSWLyt+gctFB+iLyiBspmX7PWRzAf3k8EnXC8kNNH5fkvffoSA3JmSILxM1
+         1lRc5QHgBaernsQAgbdZp4FZnhF+U30sl1Jwq3DE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Itay Aveksis <itayav@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 524/779] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
-Date:   Mon, 15 Aug 2022 20:02:48 +0200
-Message-Id: <20220815180359.662011987@linuxfoundation.org>
+Subject: [PATCH 5.15 543/779] RDMA/mlx5: Add missing check for return value in get namespace flow
+Date:   Mon, 15 Aug 2022 20:03:07 +0200
+Message-Id: <20220815180400.514895853@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,36 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
+[ Upstream commit c9776457bd5eaad4ce4ecb17af8d8f3cc6957c0b ]
 
-In octeon_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+Add missing check for return value when calling to
+mlx5_ib_ft_type_to_namespace, even though it can't really fail in this
+specific call.
 
-Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 52438be44112 ("RDMA/mlx5: Allow inserting a steering rule to the FDB")
+Link: https://lore.kernel.org/r/7b9ceda217d9368a51dc47a46b769bad4af9ac92.1659256069.git.leonro@nvidia.com
+Reviewed-by: Itay Aveksis <itayav@nvidia.com>
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-octeon.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/hw/mlx5/fs.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
-index 2c4b2df52adb..12dca91a8ef6 100644
---- a/drivers/mmc/host/cavium-octeon.c
-+++ b/drivers/mmc/host/cavium-octeon.c
-@@ -277,6 +277,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "Error populating slots\n");
- 			octeon_mmc_set_shared_power(host, 0);
-+			of_node_put(cn);
- 			goto error;
- 		}
- 		i++;
+diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
+index 5fbc0a8454b9..8a7e182af530 100644
+--- a/drivers/infiniband/hw/mlx5/fs.c
++++ b/drivers/infiniband/hw/mlx5/fs.c
+@@ -2078,12 +2078,10 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
+ 		if (err)
+ 			return err;
+ 
+-		if (flags) {
+-			mlx5_ib_ft_type_to_namespace(
++		if (flags)
++			return mlx5_ib_ft_type_to_namespace(
+ 				MLX5_IB_UAPI_FLOW_TABLE_TYPE_NIC_TX,
+ 				&obj->ns_type);
+-			return 0;
+-		}
+ 	}
+ 
+ 	obj->ns_type = MLX5_FLOW_NAMESPACE_BYPASS;
 -- 
 2.35.1
 
