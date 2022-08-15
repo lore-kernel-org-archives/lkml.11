@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A75C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 518BFC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239180AbiHPAxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
+        id S231368AbiHPAx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347593AbiHPAp7 (ORCPT
+        with ESMTP id S1350124AbiHPAqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0926FADCC4;
-        Mon, 15 Aug 2022 13:41:52 -0700 (PDT)
+        Mon, 15 Aug 2022 20:46:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6EDD8E32;
+        Mon, 15 Aug 2022 13:45:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C9DA611FA;
-        Mon, 15 Aug 2022 20:41:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F481C433C1;
-        Mon, 15 Aug 2022 20:41:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6105BB80EAD;
+        Mon, 15 Aug 2022 20:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34C8C433D7;
+        Mon, 15 Aug 2022 20:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596111;
-        bh=5UhoXcEIbPk8Dp4swVKTZKdyP4ZLu19tMH5KXU4pwBw=;
+        s=korg; t=1660596339;
+        bh=oYX06H7Q/VqhynFigD32O2XLFCsEWftHbR1tJ5BP51Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gm+WxyFou2i7m7pxvfJtQzmu9gv/6wTyRk/CUUMAEPbQmKSNWr8aW6KqpXHNlBBsG
-         V3O3IGJQf0ETxDZ8SV4LBmhG0Krdb91BOw33CZ7IZupbLXltgcoiF4S81VrBekYU4q
-         LsREale882QC4Hqe3ZCG/3bHiMdeFsxyYFeT/oUY=
+        b=rbLzHBeCeAjco07WDk3jweT0Zu4jb3ctpccvWPn/fI/hG4Sfw+mT/gS8wdhN992jq
+         5CmS1COOaEhfXyrCdrT7aksAy7pJ8hSCexzf5vqMr/qiZrL3YCd1GMdKiY4gpWYbIV
+         /BO7cgWvPBOf9ZDiAVvnlbSS2/NNAN1TsHcw76oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0941/1157] ASoC: audio-graph-card2.c: use of_property_read_u32() for rate
-Date:   Mon, 15 Aug 2022 20:04:57 +0200
-Message-Id: <20220815180517.175223922@linuxfoundation.org>
+Subject: [PATCH 5.19 1015/1157] x86/bus_lock: Dont assume the init value of DEBUGCTLMSR.BUS_LOCK_DETECT to be zero
+Date:   Mon, 15 Aug 2022 20:06:11 +0200
+Message-Id: <20220815180520.475236950@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,46 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Chenyi Qiang <chenyi.qiang@intel.com>
 
-[ Upstream commit 817a62108dfacebd548e38451bf0e7eee023e97f ]
+[ Upstream commit ffa6482e461ff550325356ae705b79e256702ea9 ]
 
-Audio Graph Card2 is using of_get_property(), but it should use
-of_property_read_u32() to getting rate. Otherwise the setting will be
-strange value. This patch fixup it.
+It's possible that this kernel has been kexec'd from a kernel that
+enabled bus lock detection, or (hypothetically) BIOS/firmware has set
+DEBUGCTLMSR_BUS_LOCK_DETECT.
 
-Fixes: c3a15c92a67b701 ("ASoC: audio-graph-card2: add Codec2Codec support")
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87h741s961.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Disable bus lock detection explicitly if not wanted.
+
+Fixes: ebb1064e7c2e ("x86/traps: Handle #DB for bus lock")
+Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/20220802033206.21333-1-chenyi.qiang@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card2.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/kernel/cpu/intel.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index d34b29a49268..8e0628e6f2a0 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -856,7 +856,7 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
- 	struct device_node *port0, *port1, *ports;
- 	struct device_node *codec0_port, *codec1_port;
- 	struct device_node *ep0, *ep1;
--	u32 val;
-+	u32 val = 0;
- 	int ret = -EINVAL;
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index fd5dead8371c..cb796ca6eff5 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -1216,22 +1216,23 @@ static void bus_lock_init(void)
+ {
+ 	u64 val;
  
- 	/*
-@@ -880,7 +880,8 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
- 	ports = of_get_parent(port0);
- 	port1 = of_get_next_child(ports, lnk);
+-	/*
+-	 * Warn and fatal are handled by #AC for split lock if #AC for
+-	 * split lock is supported.
+-	 */
+-	if (!boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT) ||
+-	    (boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT) &&
+-	    (sld_state == sld_warn || sld_state == sld_fatal)) ||
+-	    sld_state == sld_off)
++	if (!boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT))
+ 		return;
  
--	if (!of_get_property(ports, "rate", &val)) {
-+	of_property_read_u32(ports, "rate", &val);
-+	if (!val) {
- 		struct device *dev = simple_priv_to_dev(priv);
+-	/*
+-	 * Enable #DB for bus lock. All bus locks are handled in #DB except
+-	 * split locks are handled in #AC in the fatal case.
+-	 */
+ 	rdmsrl(MSR_IA32_DEBUGCTLMSR, val);
+-	val |= DEBUGCTLMSR_BUS_LOCK_DETECT;
++
++	if ((boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT) &&
++	    (sld_state == sld_warn || sld_state == sld_fatal)) ||
++	    sld_state == sld_off) {
++		/*
++		 * Warn and fatal are handled by #AC for split lock if #AC for
++		 * split lock is supported.
++		 */
++		val &= ~DEBUGCTLMSR_BUS_LOCK_DETECT;
++	} else {
++		val |= DEBUGCTLMSR_BUS_LOCK_DETECT;
++	}
++
+ 	wrmsrl(MSR_IA32_DEBUGCTLMSR, val);
+ }
  
- 		dev_err(dev, "Codec2Codec needs rate settings\n");
 -- 
 2.35.1
 
