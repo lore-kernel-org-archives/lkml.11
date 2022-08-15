@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BD8C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D67C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244370AbiHOUdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S1345648AbiHOUdu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347112AbiHOU1R (ORCPT
+        with ESMTP id S1347390AbiHOU1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:27:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED77CA00E3;
-        Mon, 15 Aug 2022 12:04:05 -0700 (PDT)
+        Mon, 15 Aug 2022 16:27:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F81A0608;
+        Mon, 15 Aug 2022 12:04:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F99EB81062;
-        Mon, 15 Aug 2022 19:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6F5CC433D6;
-        Mon, 15 Aug 2022 19:04:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 474A961299;
+        Mon, 15 Aug 2022 19:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B17DC433C1;
+        Mon, 15 Aug 2022 19:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590244;
-        bh=PT+al3/X/j0Hg/eZTwUwoGO/zO2403tlyPrSpTLoZ2I=;
+        s=korg; t=1660590234;
+        bh=5H4tar8fnHRgidQpmaez/5zo8Yhc3S0NY+XkZsD8nr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QOmNc5PclooqDcj1TElGjNXbiJTIyMYBV6IOwRn1Ov/LVT8pVkCCsCcavWnqxmT2x
-         hNzp8ug/0RUOWKnE/nv0GjB2Rba+UooJ43rtp96rhkooqT/lhJ4h3Mo8fUfJeemxlN
-         18LAC1pzaSHXb2e60v5W/yuDdUMY/sbLVLutu5ZU=
+        b=pUyo0bgjO5a7IH1TQIunDGqbCWlAegPgs8uuOGaYWG2QJ4Byehjr7SIxalPyaCj03
+         xwihzFo0/AFP6fD0rWiuxEHXBVekQ5AGq3JenvSyan9M2oICh/rFRFlKCOlc4PGalL
+         kpDxkQBLf4IxxpSgiKY2G7Ihd3z0773mq0uIH1lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Renesas Vietnam via Yoshihiro Shimoda 
+        <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0168/1095] ARM: dts: qcom: sdx55: Fix the IRQ trigger type for UART
-Date:   Mon, 15 Aug 2022 19:52:47 +0200
-Message-Id: <20220815180436.560138832@linuxfoundation.org>
+Subject: [PATCH 5.18 0194/1095] soc: renesas: r8a779a0-sysc: Fix A2DP1 and A2CV[2357] PDR values
+Date:   Mon, 15 Aug 2022 19:53:13 +0200
+Message-Id: <20220815180437.654258777@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,33 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit ae500b351ab0006d933d804a2b7507fe1e98cecc ]
+[ Upstream commit bccceabb92ce8eb78bbf2de08308e2cc2761a2e5 ]
 
-The trigger type should be LEVEL_HIGH. So fix it!
+The PDR values for the A2DP1 and A2CV[2357] power areas on R-Car V3U are
+incorrect (copied-and-pasted from A2DP0 and A2CV[0146]).
+Fix them.
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220530080842.37024-2-manivannan.sadhasivam@linaro.org
+Reported-by: Renesas Vietnam via Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Fixes: 1b4298f000064cc2 ("soc: renesas: r8a779a0-sysc: Add r8a779a0 support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/87bc2e70ba4082970cf8c65871beae4be3503189.1654696188.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/renesas/r8a779a0-sysc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index d455795da44c..b75e672c239d 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -206,7 +206,7 @@ gcc: clock-controller@100000 {
- 		blsp1_uart3: serial@831000 {
- 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
- 			reg = <0x00831000 0x200>;
--			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_LOW>;
-+			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&gcc 30>,
- 				 <&gcc 9>;
- 			clock-names = "core", "iface";
+diff --git a/drivers/soc/renesas/r8a779a0-sysc.c b/drivers/soc/renesas/r8a779a0-sysc.c
+index fdfc857df334..04f1bc322ae7 100644
+--- a/drivers/soc/renesas/r8a779a0-sysc.c
++++ b/drivers/soc/renesas/r8a779a0-sysc.c
+@@ -57,11 +57,11 @@ static struct rcar_gen4_sysc_area r8a779a0_areas[] __initdata = {
+ 	{ "a2cv6",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
+ 	{ "a2cn2",	R8A779A0_PD_A2CN2, R8A779A0_PD_A3IR },
+ 	{ "a2imp23",	R8A779A0_PD_A2IMP23, R8A779A0_PD_A3IR },
+-	{ "a2dp1",	R8A779A0_PD_A2DP0, R8A779A0_PD_A3IR },
+-	{ "a2cv2",	R8A779A0_PD_A2CV0, R8A779A0_PD_A3IR },
+-	{ "a2cv3",	R8A779A0_PD_A2CV1, R8A779A0_PD_A3IR },
+-	{ "a2cv5",	R8A779A0_PD_A2CV4, R8A779A0_PD_A3IR },
+-	{ "a2cv7",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
++	{ "a2dp1",	R8A779A0_PD_A2DP1, R8A779A0_PD_A3IR },
++	{ "a2cv2",	R8A779A0_PD_A2CV2, R8A779A0_PD_A3IR },
++	{ "a2cv3",	R8A779A0_PD_A2CV3, R8A779A0_PD_A3IR },
++	{ "a2cv5",	R8A779A0_PD_A2CV5, R8A779A0_PD_A3IR },
++	{ "a2cv7",	R8A779A0_PD_A2CV7, R8A779A0_PD_A3IR },
+ 	{ "a2cn1",	R8A779A0_PD_A2CN1, R8A779A0_PD_A3IR },
+ 	{ "a1cnn0",	R8A779A0_PD_A1CNN0, R8A779A0_PD_A2CN0 },
+ 	{ "a1cnn2",	R8A779A0_PD_A1CNN2, R8A779A0_PD_A2CN2 },
 -- 
 2.35.1
 
