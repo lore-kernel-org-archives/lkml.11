@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 648FBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D9FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354281AbiHOXoL (ORCPT
+        id S1353968AbiHOXo0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        Mon, 15 Aug 2022 19:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354177AbiHOXlf (ORCPT
+        with ESMTP id S1354171AbiHOXle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED87155CB0;
-        Mon, 15 Aug 2022 13:11:00 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2A1BC9;
+        Mon, 15 Aug 2022 13:10:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9307860F0C;
-        Mon, 15 Aug 2022 20:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADB8C433D6;
-        Mon, 15 Aug 2022 20:10:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08283B80EA9;
+        Mon, 15 Aug 2022 20:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC45C433C1;
+        Mon, 15 Aug 2022 20:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594259;
-        bh=fURGpxVz5I525vPI7qpZ0McbgzYcZ8ZMftWrLfsrvYs=;
+        s=korg; t=1660594253;
+        bh=RZ1/XKi6ZZB/5Yh58YWyGEnCsTUCnClIq0g2pJhdLjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gOJFRRYoMCL9PZNfXio41LVYwX/GgTfJAolmpsLVQMx8j/c5K1b8x9SNi+E5cpGs8
-         /Q6ROxIZuf7ifJW3JiWgSjGYC00ku0jxqyb+PHs9jPopgccoTB8rklqFJY9KynNOzk
-         ZeY11MF6ccVOGDG40DQSnPiuw+yx3AuJQuBuFk4Q=
+        b=KeFuE6cyAuR343bBVOsTpoR83IXVLUUshFvzyFyeeD/nLOl1MsxvLf3mEUUtE3RAD
+         OhlWpWBA3mj/PMLP2L8eslkhUnmubTZSIi2sJlvi46LWzrCmw/PJE/AhGel6iYtOlJ
+         QMWbuuBeK4NAtlxHUW9UfI9MX/WbWUO36TTzTs7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, zdi-disclosures@trendmicro.com
-Subject: [PATCH 5.18 1053/1095] ksmbd: prevent out of bound read for SMB2_WRITE
-Date:   Mon, 15 Aug 2022 20:07:32 +0200
-Message-Id: <20220815180512.627050344@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 1079/1095] raw: remove unused variables from raw6_icmp_error()
+Date:   Mon, 15 Aug 2022 20:07:58 +0200
+Message-Id: <20220815180513.671224904@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,128 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit ac60778b87e45576d7bfdbd6f53df902654e6f09 ]
+commit c4fceb46add65481ef0dfb79cad24c3c269b4cad upstream.
 
-OOB read memory can be written to a file,
-if DataOffset is 0 and Length is too large
-in SMB2_WRITE request of compound request.
+saddr and daddr are set but not used.
 
-To prevent this, when checking the length of
-the data area of SMB2_WRITE in smb2_get_data_area_len(),
-let the minimum of DataOffset be the size of
-SMB2 header + the size of SMB2_WRITE header.
-
-This bug can lead an oops looking something like:
-
-[  798.008715] BUG: KASAN: slab-out-of-bounds in copy_page_from_iter_atomic+0xd3d/0x14b0
-[  798.008724] Read of size 252 at addr ffff88800f863e90 by task kworker/0:2/2859
-...
-[  798.008754] Call Trace:
-[  798.008756]  <TASK>
-[  798.008759]  dump_stack_lvl+0x49/0x5f
-[  798.008764]  print_report.cold+0x5e/0x5cf
-[  798.008768]  ? __filemap_get_folio+0x285/0x6d0
-[  798.008774]  ? copy_page_from_iter_atomic+0xd3d/0x14b0
-[  798.008777]  kasan_report+0xaa/0x120
-[  798.008781]  ? copy_page_from_iter_atomic+0xd3d/0x14b0
-[  798.008784]  kasan_check_range+0x100/0x1e0
-[  798.008788]  memcpy+0x24/0x60
-[  798.008792]  copy_page_from_iter_atomic+0xd3d/0x14b0
-[  798.008795]  ? pagecache_get_page+0x53/0x160
-[  798.008799]  ? iov_iter_get_pages_alloc+0x1590/0x1590
-[  798.008803]  ? ext4_write_begin+0xfc0/0xfc0
-[  798.008807]  ? current_time+0x72/0x210
-[  798.008811]  generic_perform_write+0x2c8/0x530
-[  798.008816]  ? filemap_fdatawrite_wbc+0x180/0x180
-[  798.008820]  ? down_write+0xb4/0x120
-[  798.008824]  ? down_write_killable+0x130/0x130
-[  798.008829]  ext4_buffered_write_iter+0x137/0x2c0
-[  798.008833]  ext4_file_write_iter+0x40b/0x1490
-[  798.008837]  ? __fsnotify_parent+0x275/0xb20
-[  798.008842]  ? __fsnotify_update_child_dentry_flags+0x2c0/0x2c0
-[  798.008846]  ? ext4_buffered_write_iter+0x2c0/0x2c0
-[  798.008851]  __kernel_write+0x3a1/0xa70
-[  798.008855]  ? __x64_sys_preadv2+0x160/0x160
-[  798.008860]  ? security_file_permission+0x4a/0xa0
-[  798.008865]  kernel_write+0xbb/0x360
-[  798.008869]  ksmbd_vfs_write+0x27e/0xb90 [ksmbd]
-[  798.008881]  ? ksmbd_vfs_read+0x830/0x830 [ksmbd]
-[  798.008892]  ? _raw_read_unlock+0x2a/0x50
-[  798.008896]  smb2_write+0xb45/0x14e0 [ksmbd]
-[  798.008909]  ? __kasan_check_write+0x14/0x20
-[  798.008912]  ? _raw_spin_lock_bh+0xd0/0xe0
-[  798.008916]  ? smb2_read+0x15e0/0x15e0 [ksmbd]
-[  798.008927]  ? memcpy+0x4e/0x60
-[  798.008931]  ? _raw_spin_unlock+0x19/0x30
-[  798.008934]  ? ksmbd_smb2_check_message+0x16af/0x2350 [ksmbd]
-[  798.008946]  ? _raw_spin_lock_bh+0xe0/0xe0
-[  798.008950]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
-[  798.008962]  process_one_work+0x778/0x11c0
-[  798.008966]  ? _raw_spin_lock_irq+0x8e/0xe0
-[  798.008970]  worker_thread+0x544/0x1180
-[  798.008973]  ? __cpuidle_text_end+0x4/0x4
-[  798.008977]  kthread+0x282/0x320
-[  798.008982]  ? process_one_work+0x11c0/0x11c0
-[  798.008985]  ? kthread_complete_and_exit+0x30/0x30
-[  798.008989]  ret_from_fork+0x1f/0x30
-[  798.008995]  </TASK>
-
-Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
-Cc: stable@vger.kernel.org
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17817
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Link: https://lore.kernel.org/r/20220622032303.159394-1-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2misc.c | 7 +++++--
- fs/ksmbd/smb2pdu.c  | 8 +++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ net/ipv6/raw.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/fs/ksmbd/smb2misc.c b/fs/ksmbd/smb2misc.c
-index 03bcd7ce0c75..6e25ace36568 100644
---- a/fs/ksmbd/smb2misc.c
-+++ b/fs/ksmbd/smb2misc.c
-@@ -131,8 +131,11 @@ static int smb2_get_data_area_len(unsigned int *off, unsigned int *len,
- 		*len = le16_to_cpu(((struct smb2_read_req *)hdr)->ReadChannelInfoLength);
- 		break;
- 	case SMB2_WRITE:
--		if (((struct smb2_write_req *)hdr)->DataOffset) {
--			*off = le16_to_cpu(((struct smb2_write_req *)hdr)->DataOffset);
-+		if (((struct smb2_write_req *)hdr)->DataOffset ||
-+		    ((struct smb2_write_req *)hdr)->Length) {
-+			*off = max_t(unsigned int,
-+				     le16_to_cpu(((struct smb2_write_req *)hdr)->DataOffset),
-+				     offsetof(struct smb2_write_req, Buffer));
- 			*len = le32_to_cpu(((struct smb2_write_req *)hdr)->Length);
- 			break;
- 		}
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 6c8dd718b5db..85a9ed7156ea 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -6505,14 +6505,12 @@ int smb2_write(struct ksmbd_work *work)
- 		writethrough = true;
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -332,7 +332,6 @@ static void rawv6_err(struct sock *sk, s
+ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+ 		u8 type, u8 code, int inner_offset, __be32 info)
+ {
+-	const struct in6_addr *saddr, *daddr;
+ 	struct net *net = dev_net(skb->dev);
+ 	struct hlist_nulls_head *hlist;
+ 	struct hlist_nulls_node *hnode;
+@@ -345,8 +344,6 @@ void raw6_icmp_error(struct sk_buff *skb
+ 	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
+ 		/* Note: ipv6_hdr(skb) != skb->data */
+ 		const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
+-		saddr = &ip6h->saddr;
+-		daddr = &ip6h->daddr;
  
- 	if (is_rdma_channel == false) {
--		if ((u64)le16_to_cpu(req->DataOffset) + length >
--		    get_rfc1002_len(work->request_buf)) {
--			pr_err("invalid write data offset %u, smb_len %u\n",
--			       le16_to_cpu(req->DataOffset),
--			       get_rfc1002_len(work->request_buf));
-+		if (le16_to_cpu(req->DataOffset) <
-+		    offsetof(struct smb2_write_req, Buffer)) {
- 			err = -EINVAL;
- 			goto out;
- 		}
-+
- 		data_buf = (char *)(((char *)&req->hdr.ProtocolId) +
- 				    le16_to_cpu(req->DataOffset));
- 
--- 
-2.35.1
-
+ 		if (!raw_v6_match(net, sk, nexthdr, &ip6h->saddr, &ip6h->daddr,
+ 				  inet6_iif(skb), inet6_iif(skb)))
 
 
