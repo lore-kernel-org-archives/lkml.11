@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADE2C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DEBC28B2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357619AbiHPAN4 (ORCPT
+        id S1356699AbiHPAMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        Mon, 15 Aug 2022 20:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357224AbiHPAD4 (ORCPT
+        with ESMTP id S1356647AbiHPACn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:03:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4728C168A7A;
-        Mon, 15 Aug 2022 13:28:04 -0700 (PDT)
+        Mon, 15 Aug 2022 20:02:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F62169C6B;
+        Mon, 15 Aug 2022 13:24:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2E6C61135;
-        Mon, 15 Aug 2022 20:28:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6348C433D6;
-        Mon, 15 Aug 2022 20:28:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5048DB8119A;
+        Mon, 15 Aug 2022 20:24:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E701C433D7;
+        Mon, 15 Aug 2022 20:24:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595283;
-        bh=Fz0Od070cEnkqYN5WQgTtuDbh/fruRSQCiM/ni+h/wg=;
+        s=korg; t=1660595042;
+        bh=lsmzj/AJNxpW82MJ0n7UhPVJrrdtR21WmrkW9gz57Pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IHd1e4coJ7OoQOdv+omKNQ/iIzK/e05qZMUTcD2ZgIj/tpfKu9UgI9MGhgXbGwzxz
-         OGD7nWPepsIouUAKx1Bfnokn1MNwgsWbhBnM3zKshuIGq56WLhezJsg6BztrCs7rvd
-         tnaEUNL/pwwH0rPOdUR5tNtc0BL2jM+x6txKxKBo=
+        b=1QaLmzDPas2Z4rNg2QvXsBVM8iIndZoVWKEQLB9eiUFmbL0ZLVmt2duyba0x6P0PE
+         AiIOR03//2e+oSYwRHOKuKfIqarX5SUCmElmrP0HdxwTWPDFQLWpQ4sqhX/uEga1zC
+         bNfJrffK9jHBN/unG/5Lu5etTCXOlw0uELsb1Ups=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0715/1157] iio: resolver: ad2s1200: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:01:11 +0200
-Message-Id: <20220815180508.128391647@linuxfoundation.org>
+Subject: [PATCH 5.19 0638/1157] iio: adc: ad7266: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 19:59:54 +0200
+Message-Id: <20220815180505.228977864@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,37 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 37882314d3bdc2ae775ebb9fa8ed7a94cd1aad61 ]
+[ Upstream commit b990cdfe7536a8da7e134d516350402981300016 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes tag is probably not where the issue was first introduced, but
-is likely to be as far as anyone considers backporting this fix.
+Update the comment to reflect that DMA safety 'may' require separate
+cachelines.
 
-Fixes: 0bd3d338f61b ("staging: iio: ad2s1200: Improve readability with be16_to_cpup")
+Fixes: 54e018da3141 ("iio:ad7266: Mark transfer buffer as __be16")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-89-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-10-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/resolver/ad2s1200.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ad7266.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
-index 9746bd935628..9d95241bdf8f 100644
---- a/drivers/iio/resolver/ad2s1200.c
-+++ b/drivers/iio/resolver/ad2s1200.c
-@@ -41,7 +41,7 @@ struct ad2s1200_state {
- 	struct spi_device *sdev;
- 	struct gpio_desc *sample;
- 	struct gpio_desc *rdvel;
--	__be16 rx ____cacheline_aligned;
-+	__be16 rx __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+index f20d39f0bc01..468c2656d2be 100644
+--- a/drivers/iio/adc/ad7266.c
++++ b/drivers/iio/adc/ad7266.c
+@@ -37,7 +37,7 @@ struct ad7266_state {
+ 	struct gpio_desc	*gpios[3];
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 * The buffer needs to be large enough to hold two samples (4 bytes) and
+ 	 * the naturally aligned timestamp (8 bytes).
+@@ -45,7 +45,7 @@ struct ad7266_state {
+ 	struct {
+ 		__be16 sample[2];
+ 		s64 timestamp;
+-	} data ____cacheline_aligned;
++	} data __aligned(IIO_DMA_MINALIGN);
  };
  
- static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ static int ad7266_wakeup(struct ad7266_state *st)
 -- 
 2.35.1
 
