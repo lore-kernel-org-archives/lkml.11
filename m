@@ -2,87 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A3DC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24391C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbiHODg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S232486AbiHODhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiHODgz (ORCPT
+        with ESMTP id S230342AbiHODhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:36:55 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CF71180E;
-        Sun, 14 Aug 2022 20:36:54 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M5fy643rpz1M88V;
-        Mon, 15 Aug 2022 11:33:34 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 11:36:52 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600010.china.huawei.com
- (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
- 2022 11:36:51 +0800
-From:   Sun Ke <sunke32@huawei.com>
-To:     <xiang@kernel.org>, <chao@kernel.org>
-CC:     <linux-erofs@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <yinxin.x@bytedance.com>,
-        <sunke32@huawei.com>
-Subject: [PATCH] erofs: fix error return code in erofs_fscache_meta_read_folio and erofs_fscache_read_folio
-Date:   Mon, 15 Aug 2022 11:48:29 +0800
-Message-ID: <20220815034829.3940803-1-sunke32@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 14 Aug 2022 23:37:07 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32DA13F00;
+        Sun, 14 Aug 2022 20:37:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660534626; x=1692070626;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1lNOF+yYCyzR8glGvzWhXgR1l2ZGMz4pJFP8Rea6CDI=;
+  b=SDxZ9m0/d47r9RU2OOAMbYlsTTfzm+q+r/A55LlITefJtHRcFivsk7wh
+   ckreDJJ3Cwo1VeTdClElysXS4pHsRNEeayINQHMa7/FMV+LufPee7K/nf
+   foBwHC7iCEJTFhY6Nh6Dsc4fPuNbdRy38AgxP9LBc+9qfr6bEkNd6zbK+
+   CBi0jgKcVAuCLkFtdkIxWmr9KRoQGc9x7ytd84mHvGltlk6kVlOL6RStl
+   EZ5G3KiBdg/4GBuMyf1iWZG6Md+lLhD9UJv9Zyy1woCnr6oPyWs2HafHi
+   1WHQIOVM+eSw9v8bku8oU67Mn8OHni4L/9ctddQdjT+pqCBDhV25FxRmv
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="278841180"
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="278841180"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 20:37:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="609800470"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga007.fm.intel.com with ESMTP; 14 Aug 2022 20:37:02 -0700
+Date:   Mon, 15 Aug 2022 11:27:59 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, Marco Pagani <marpagan@redhat.com>
+Subject: Re: [PATCH v4] fpga: dfl-pci: Add IDs for Intel N6000, N6001 and
+ C6100 cards
+Message-ID: <Yvm9PxYxEI9lGauT@yilunxu-OptiPlex-7050>
+References: <20220719145644.242481-1-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719145644.242481-1-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If erofs_fscache_alloc_request fail and then goto out, it will return 0.
-it should return a negative error code instead of 0.
+On 2022-07-19 at 07:56:44 -0700, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Add pci_dev_table entries supporting the Intel N6000, N6001
+> and C6100 cards to the dfl-pci driver.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+> Tested-by: Marco Pagani <marpagan@redhat.com>
+> Reviewed-by: Tom Rix <trix@redhat.com>
+> Acked-by: Wu Hao <hao.wu@intel.com>
 
-Fixes: d435d53228dd ("erofs: change to use asynchronous io for fscache readpage/readahead")
-Signed-off-by: Sun Ke <sunke32@huawei.com>
----
- fs/erofs/fscache.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 8e01d89c3319..b5fd9d71e67f 100644
---- a/fs/erofs/fscache.c
-+++ b/fs/erofs/fscache.c
-@@ -222,8 +222,10 @@ static int erofs_fscache_meta_read_folio(struct file *data, struct folio *folio)
- 
- 	rreq = erofs_fscache_alloc_request(folio_mapping(folio),
- 				folio_pos(folio), folio_size(folio));
--	if (IS_ERR(rreq))
-+	if (IS_ERR(rreq)) {
-+		ret = PTR_ERR(rreq);
- 		goto out;
-+	}
- 
- 	return erofs_fscache_read_folios_async(mdev.m_fscache->cookie,
- 				rreq, mdev.m_pa);
-@@ -301,8 +303,10 @@ static int erofs_fscache_read_folio(struct file *file, struct folio *folio)
- 
- 	rreq = erofs_fscache_alloc_request(folio_mapping(folio),
- 				folio_pos(folio), folio_size(folio));
--	if (IS_ERR(rreq))
-+	if (IS_ERR(rreq)) {
-+		ret = PTR_ERR(rreq);
- 		goto out_unlock;
-+	}
- 
- 	pstart = mdev.m_pa + (pos - map.m_la);
- 	return erofs_fscache_read_folios_async(mdev.m_fscache->cookie,
--- 
-2.31.1
+Applied to for-next
 
+> ---
+> v4: moved subdevice ids next to respective device id
+> 
+> v3: added necessary subdevice ids
+>     removed 'drivers: ' from title
+> 
+> v2: changed names from INTEL_OFS to INTEL_DFL
+> ---
+>  drivers/fpga/dfl-pci.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
+> index fd1fa55c9113..0914e7328b1a 100644
+> --- a/drivers/fpga/dfl-pci.c
+> +++ b/drivers/fpga/dfl-pci.c
+> @@ -77,12 +77,18 @@ static void cci_pci_free_irq(struct pci_dev *pcidev)
+>  #define PCIE_DEVICE_ID_INTEL_PAC_D5005		0x0B2B
+>  #define PCIE_DEVICE_ID_SILICOM_PAC_N5010	0x1000
+>  #define PCIE_DEVICE_ID_SILICOM_PAC_N5011	0x1001
+> +#define PCIE_DEVICE_ID_INTEL_DFL		0xbcce
+> +/* PCI Subdevice ID for PCIE_DEVICE_ID_INTEL_DFL */
+> +#define PCIE_SUBDEVICE_ID_INTEL_N6000		0x1770
+> +#define PCIE_SUBDEVICE_ID_INTEL_N6001		0x1771
+> +#define PCIE_SUBDEVICE_ID_INTEL_C6100		0x17d4
+>  
+>  /* VF Device */
+>  #define PCIE_DEVICE_ID_VF_INT_5_X		0xBCBF
+>  #define PCIE_DEVICE_ID_VF_INT_6_X		0xBCC1
+>  #define PCIE_DEVICE_ID_VF_DSC_1_X		0x09C5
+>  #define PCIE_DEVICE_ID_INTEL_PAC_D5005_VF	0x0B2C
+> +#define PCIE_DEVICE_ID_INTEL_DFL_VF		0xbccf
+>  
+>  static struct pci_device_id cci_pcie_id_tbl[] = {
+>  	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_PF_INT_5_X),},
+> @@ -96,6 +102,18 @@ static struct pci_device_id cci_pcie_id_tbl[] = {
+>  	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_PAC_D5005_VF),},
+>  	{PCI_DEVICE(PCI_VENDOR_ID_SILICOM_DENMARK, PCIE_DEVICE_ID_SILICOM_PAC_N5010),},
+>  	{PCI_DEVICE(PCI_VENDOR_ID_SILICOM_DENMARK, PCIE_DEVICE_ID_SILICOM_PAC_N5011),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_N6000),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL_VF,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_N6000),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_N6001),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL_VF,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_N6001),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_C6100),},
+> +	{PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_DFL_VF,
+> +			PCI_VENDOR_ID_INTEL, PCIE_SUBDEVICE_ID_INTEL_C6100),},
+>  	{0,}
+>  };
+>  MODULE_DEVICE_TABLE(pci, cci_pcie_id_tbl);
+> -- 
+> 2.25.1
+> 
