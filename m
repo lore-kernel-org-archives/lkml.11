@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E010AC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 365DAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241472AbiHOS1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
+        id S241551AbiHOS1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbiHOSZM (ORCPT
+        with ESMTP id S241963AbiHOSZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:25:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5322A1571B;
-        Mon, 15 Aug 2022 11:18:37 -0700 (PDT)
+        Mon, 15 Aug 2022 14:25:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735072B193;
+        Mon, 15 Aug 2022 11:18:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1C1DB81077;
-        Mon, 15 Aug 2022 18:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3880C433D6;
-        Mon, 15 Aug 2022 18:18:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8CB10CE125C;
+        Mon, 15 Aug 2022 18:18:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7569FC433C1;
+        Mon, 15 Aug 2022 18:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587514;
-        bh=NjQPoxHwTrsneS3IuPBx0bmFi8CQW1N40CwpddqCxyc=;
+        s=korg; t=1660587507;
+        bh=MTPNmHz9GGC+2k+8p97JNSJcsEQhKpEKHIE/J6vWr4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bqgmv8RT5HhjzNKben5k4PRl0O3LY6oQMnGaWKDh0MdHRlamoqFlYT2A572SaTRwy
-         MAYxxvjwgumpHH7dt0J4cd+jGGGtToD2iMzsySR7pxPBvwg1R+gCNWW34Xk8MzFJoo
-         IywLfFQCK+L1XgSgdu0eh3urPKWpZakKSKF+6fSk=
+        b=ugCTuwydAET275RyQ96EZRyyNdx23RztM/+Agp51+AfQ1BdN28BlNE7NEoYG4WC4W
+         qwID3vQRkMX8exrJE161GQ6mu2prpE3n0Z/kKDgPv6mkyh95pDfM/37OMFPG3XbZsA
+         TVTit87cpSXOvCqllvjXUxY+qbQ4wAudNRjLcTS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 108/779] netfilter: nf_tables: do not allow RULE_ID to refer to another chain
-Date:   Mon, 15 Aug 2022 19:55:52 +0200
-Message-Id: <20220815180341.942721612@linuxfoundation.org>
+Subject: [PATCH 5.15 106/779] netfilter: nf_tables: do not allow SET_ID to refer to another table
+Date:   Mon, 15 Aug 2022 19:55:50 +0200
+Message-Id: <20220815180341.851846272@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,71 +51,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit 36d5b2913219ac853908b0f1c664345e04313856 upstream.
+commit 470ee20e069a6d05ae549f7d0ef2bdbcee6a81b2 upstream.
 
-When doing lookups for rules on the same batch by using its ID, a rule from
-a different chain can be used. If a rule is added to a chain but tries to
-be positioned next to a rule from a different chain, it will be linked to
-chain2, but the use counter on chain1 would be the one to be incremented.
+When doing lookups for sets on the same batch by using its ID, a set from a
+different table can be used.
 
-When looking for rules by ID, use the chain that was used for the lookup by
-name. The chain used in the context copied to the transaction needs to
-match that same chain. That way, struct nft_rule does not need to get
-enlarged with another member.
+Then, when the table is removed, a reference to the set may be kept after
+the set is freed, leading to a potential use-after-free.
 
-Fixes: 1a94e38d254b ("netfilter: nf_tables: add NFTA_RULE_ID attribute")
-Fixes: 75dd48e2e420 ("netfilter: nf_tables: Support RULE_ID reference in new rule")
+When looking for sets by ID, use the table that was used for the lookup by
+name, and only return sets belonging to that same table.
+
+This fixes CVE-2022-2586, also reported as ZDI-CAN-17470.
+
+Reported-by: Team Orca of Sea Security (@seasecresponse)
+Fixes: 958bee14d071 ("netfilter: nf_tables: use new transaction infrastructure to handle sets")
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -3276,6 +3276,7 @@ static int nft_table_validate(struct net
+@@ -3745,6 +3745,7 @@ static struct nft_set *nft_set_lookup_by
  }
  
- static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
-+					     const struct nft_chain *chain,
- 					     const struct nlattr *nla);
- 
- #define NFT_RULE_MAXEXPRS	128
-@@ -3364,7 +3365,7 @@ static int nf_tables_newrule(struct sk_b
- 				return PTR_ERR(old_rule);
- 			}
- 		} else if (nla[NFTA_RULE_POSITION_ID]) {
--			old_rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_POSITION_ID]);
-+			old_rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_POSITION_ID]);
- 			if (IS_ERR(old_rule)) {
- 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_POSITION_ID]);
- 				return PTR_ERR(old_rule);
-@@ -3509,6 +3510,7 @@ err_release_expr:
- }
- 
- static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
-+					     const struct nft_chain *chain,
- 					     const struct nlattr *nla)
+ static struct nft_set *nft_set_lookup_byid(const struct net *net,
++					   const struct nft_table *table,
+ 					   const struct nlattr *nla, u8 genmask)
  {
  	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -3519,6 +3521,7 @@ static struct nft_rule *nft_rule_lookup_
- 		struct nft_rule *rule = nft_trans_rule(trans);
+@@ -3756,6 +3757,7 @@ static struct nft_set *nft_set_lookup_by
+ 			struct nft_set *set = nft_trans_set(trans);
  
- 		if (trans->msg_type == NFT_MSG_NEWRULE &&
-+		    trans->ctx.chain == chain &&
- 		    id == nft_trans_rule_id(trans))
- 			return rule;
+ 			if (id == nft_trans_set_id(trans) &&
++			    set->table == table &&
+ 			    nft_active_genmask(set, genmask))
+ 				return set;
+ 		}
+@@ -3776,7 +3778,7 @@ struct nft_set *nft_set_lookup_global(co
+ 		if (!nla_set_id)
+ 			return set;
+ 
+-		set = nft_set_lookup_byid(net, nla_set_id, genmask);
++		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
  	}
-@@ -3568,7 +3571,7 @@ static int nf_tables_delrule(struct sk_b
- 
- 			err = nft_delrule(&ctx, rule);
- 		} else if (nla[NFTA_RULE_ID]) {
--			rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_ID]);
-+			rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_ID]);
- 			if (IS_ERR(rule)) {
- 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_ID]);
- 				return PTR_ERR(rule);
+ 	return set;
+ }
 
 
