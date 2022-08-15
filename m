@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D96C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F35C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344276AbiHOVR0 (ORCPT
+        id S1344435AbiHOVR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        Mon, 15 Aug 2022 17:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348086AbiHOVIF (ORCPT
+        with ESMTP id S1348114AbiHOVIJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:08:05 -0400
+        Mon, 15 Aug 2022 17:08:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEAD3C8FF;
-        Mon, 15 Aug 2022 12:18:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B9052E61;
+        Mon, 15 Aug 2022 12:18:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E92F060F6A;
-        Mon, 15 Aug 2022 19:18:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCFEDC433C1;
-        Mon, 15 Aug 2022 19:18:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 152EA60F6A;
+        Mon, 15 Aug 2022 19:18:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02AEAC433C1;
+        Mon, 15 Aug 2022 19:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591099;
-        bh=kecoAhspe8ZOIjQtbaMol+JU8+XTX0SpoPNFUJlo3Vg=;
+        s=korg; t=1660591105;
+        bh=RQC04sJGMjT6XKh3t5k+vlRJIMq7XS4wkzF/QxCzlZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TS/XgkOgx0UGs5BmjV6xIJDki6KSnOXsqTQSJ/YvQlHOTIqmPf9OGwWbTux28nYFo
-         XyCGrEQRgKa4j07iO3fLlu70eeY2i81wRitcFoUDybgbpgeSXkRKp9FH/qoymcEa4A
-         pmqJFscHVGmVFFaFqm2Wz1Ita/lHeM5QAyXFezu4=
+        b=tevvKICWnMaeU/LeLgfJs3eg+X41mgYO1q0uElQF10i0hRwD6IaLX6otkrKrr01rQ
+         5c30psAhyNQYyxhevlw01JdKu4LbYxOUMTlA1RlahEwRJoz+qF3FVU7T0PuMM0ikF2
+         P2sa7F02s7OAYHHoYDgnlg2KAtvrILqQjLy2S4zw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Shashank Sharma <shashank.sharma@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0472/1095] drm/amdgpu: cleanup ctx implementation
-Date:   Mon, 15 Aug 2022 19:57:51 +0200
-Message-Id: <20220815180449.100544012@linuxfoundation.org>
+Subject: [PATCH 5.18 0474/1095] bpf: Make btf_find_field more generic
+Date:   Mon, 15 Aug 2022 19:57:53 +0200
+Message-Id: <20220815180449.194539098@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,237 +51,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-[ Upstream commit 69493c034d2455204dfcd370de8c4dc204374a94 ]
+[ Upstream commit 42ba1308074d9046386d58b56e793604be48ce22 ]
 
-Let each context have a pointer to the ctx manager and properly
-initialize the adev pointer inside the context manager.
+Next commit introduces field type 'kptr' whose kind will not be struct,
+but pointer, and it will not be limited to one offset, but multiple
+ones. Make existing btf_find_struct_field and btf_find_datasec_var
+functions amenable to use for finding kptrs in map value, by moving
+spin_lock and timer specific checks into their own function.
 
-Reduce the BUG_ON() in amdgpu_ctx_add_fence() into a WARN_ON() and
-directly return the sequence number instead of writing into a parmeter.
+The alignment, and name are checked before the function is called, so it
+is the last point where we can skip field or return an error before the
+next loop iteration happens. Size of the field and type is meant to be
+checked inside the function.
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Shashank Sharma <shashank.sharma@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220415160354.1050687-2-memxor@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c  |  2 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c | 46 ++++++++++++-------------
- drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.h | 11 +++---
- drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c |  2 +-
- 4 files changed, 30 insertions(+), 31 deletions(-)
+ kernel/bpf/btf.c | 120 +++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 89 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index 2019622191b5..ee0cbc6ccbfb 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -1260,7 +1260,7 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
- 
- 	p->fence = dma_fence_get(&job->base.s_fence->finished);
- 
--	amdgpu_ctx_add_fence(p->ctx, entity, p->fence, &seq);
-+	seq = amdgpu_ctx_add_fence(p->ctx, entity, p->fence);
- 	amdgpu_cs_post_dependencies(p);
- 
- 	if ((job->preamble_status & AMDGPU_PREAMBLE_IB_PRESENT) &&
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-index c317078d1afd..a61e4c83a545 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
-@@ -135,9 +135,9 @@ static enum amdgpu_ring_priority_level amdgpu_ctx_sched_prio_to_ring_prio(int32_
- 
- static unsigned int amdgpu_ctx_get_hw_prio(struct amdgpu_ctx *ctx, u32 hw_ip)
- {
--	struct amdgpu_device *adev = ctx->adev;
--	int32_t ctx_prio;
-+	struct amdgpu_device *adev = ctx->mgr->adev;
- 	unsigned int hw_prio;
-+	int32_t ctx_prio;
- 
- 	ctx_prio = (ctx->override_priority == AMDGPU_CTX_PRIORITY_UNSET) ?
- 			ctx->init_priority : ctx->override_priority;
-@@ -166,7 +166,7 @@ static unsigned int amdgpu_ctx_get_hw_prio(struct amdgpu_ctx *ctx, u32 hw_ip)
- static int amdgpu_ctx_init_entity(struct amdgpu_ctx *ctx, u32 hw_ip,
- 				  const u32 ring)
- {
--	struct amdgpu_device *adev = ctx->adev;
-+	struct amdgpu_device *adev = ctx->mgr->adev;
- 	struct amdgpu_ctx_entity *entity;
- 	struct drm_gpu_scheduler **scheds = NULL, *sched = NULL;
- 	unsigned num_scheds = 0;
-@@ -220,10 +220,8 @@ static int amdgpu_ctx_init_entity(struct amdgpu_ctx *ctx, u32 hw_ip,
- 	return r;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index feef799884d1..1fd8400bda06 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3163,24 +3163,44 @@ static void btf_struct_log(struct btf_verifier_env *env,
+ 	btf_verifier_log(env, "size=%u vlen=%u", t->size, btf_type_vlen(t));
  }
  
--static int amdgpu_ctx_init(struct amdgpu_device *adev,
--			   int32_t priority,
--			   struct drm_file *filp,
--			   struct amdgpu_ctx *ctx)
-+static int amdgpu_ctx_init(struct amdgpu_ctx_mgr *mgr, int32_t priority,
-+			   struct drm_file *filp, struct amdgpu_ctx *ctx)
++enum btf_field_type {
++	BTF_FIELD_SPIN_LOCK,
++	BTF_FIELD_TIMER,
++};
++
++struct btf_field_info {
++	u32 off;
++};
++
++static int btf_find_struct(const struct btf *btf, const struct btf_type *t,
++			   u32 off, int sz, struct btf_field_info *info)
++{
++	if (!__btf_type_is_struct(t))
++		return 0;
++	if (t->size != sz)
++		return 0;
++	if (info->off != -ENOENT)
++		/* only one such field is allowed */
++		return -E2BIG;
++	info->off = off;
++	return 0;
++}
++
+ static int btf_find_struct_field(const struct btf *btf, const struct btf_type *t,
+-				 const char *name, int sz, int align)
++				 const char *name, int sz, int align,
++				 enum btf_field_type field_type,
++				 struct btf_field_info *info)
  {
- 	int r;
+ 	const struct btf_member *member;
+-	u32 i, off = -ENOENT;
++	u32 i, off;
  
-@@ -233,15 +231,14 @@ static int amdgpu_ctx_init(struct amdgpu_device *adev,
- 
- 	memset(ctx, 0, sizeof(*ctx));
- 
--	ctx->adev = adev;
--
- 	kref_init(&ctx->refcount);
-+	ctx->mgr = mgr;
- 	spin_lock_init(&ctx->ring_lock);
- 	mutex_init(&ctx->lock);
- 
--	ctx->reset_counter = atomic_read(&adev->gpu_reset_counter);
-+	ctx->reset_counter = atomic_read(&mgr->adev->gpu_reset_counter);
- 	ctx->reset_counter_query = ctx->reset_counter;
--	ctx->vram_lost_counter = atomic_read(&adev->vram_lost_counter);
-+	ctx->vram_lost_counter = atomic_read(&mgr->adev->vram_lost_counter);
- 	ctx->init_priority = priority;
- 	ctx->override_priority = AMDGPU_CTX_PRIORITY_UNSET;
- 	ctx->stable_pstate = AMDGPU_CTX_STABLE_PSTATE_NONE;
-@@ -266,7 +263,7 @@ static void amdgpu_ctx_fini_entity(struct amdgpu_ctx_entity *entity)
- static int amdgpu_ctx_get_stable_pstate(struct amdgpu_ctx *ctx,
- 					u32 *stable_pstate)
- {
--	struct amdgpu_device *adev = ctx->adev;
-+	struct amdgpu_device *adev = ctx->mgr->adev;
- 	enum amd_dpm_forced_level current_level;
- 
- 	current_level = amdgpu_dpm_get_performance_level(adev);
-@@ -294,7 +291,7 @@ static int amdgpu_ctx_get_stable_pstate(struct amdgpu_ctx *ctx,
- static int amdgpu_ctx_set_stable_pstate(struct amdgpu_ctx *ctx,
- 					u32 stable_pstate)
- {
--	struct amdgpu_device *adev = ctx->adev;
-+	struct amdgpu_device *adev = ctx->mgr->adev;
- 	enum amd_dpm_forced_level level;
- 	u32 current_stable_pstate;
- 	int r;
-@@ -345,7 +342,8 @@ static int amdgpu_ctx_set_stable_pstate(struct amdgpu_ctx *ctx,
- static void amdgpu_ctx_fini(struct kref *ref)
- {
- 	struct amdgpu_ctx *ctx = container_of(ref, struct amdgpu_ctx, refcount);
--	struct amdgpu_device *adev = ctx->adev;
-+	struct amdgpu_ctx_mgr *mgr = ctx->mgr;
-+	struct amdgpu_device *adev = mgr->adev;
- 	unsigned i, j, idx;
- 
- 	if (!adev)
-@@ -421,7 +419,7 @@ static int amdgpu_ctx_alloc(struct amdgpu_device *adev,
+ 	for_each_member(i, t, member) {
+ 		const struct btf_type *member_type = btf_type_by_id(btf,
+ 								    member->type);
+-		if (!__btf_type_is_struct(member_type))
+-			continue;
+-		if (member_type->size != sz)
+-			continue;
++
+ 		if (strcmp(__btf_name_by_offset(btf, member_type->name_off), name))
+ 			continue;
+-		if (off != -ENOENT)
+-			/* only one such field is allowed */
+-			return -E2BIG;
++
+ 		off = __btf_member_bit_offset(t, member);
+ 		if (off % 8)
+ 			/* valid C code cannot generate such BTF */
+@@ -3188,46 +3208,76 @@ static int btf_find_struct_field(const struct btf *btf, const struct btf_type *t
+ 		off /= 8;
+ 		if (off % align)
+ 			return -EINVAL;
++
++		switch (field_type) {
++		case BTF_FIELD_SPIN_LOCK:
++		case BTF_FIELD_TIMER:
++			return btf_find_struct(btf, member_type, off, sz, info);
++		default:
++			return -EFAULT;
++		}
  	}
- 
- 	*id = (uint32_t)r;
--	r = amdgpu_ctx_init(adev, priority, filp, ctx);
-+	r = amdgpu_ctx_init(mgr, priority, filp, ctx);
- 	if (r) {
- 		idr_remove(&mgr->ctx_handles, *id);
- 		*id = 0;
-@@ -671,9 +669,9 @@ int amdgpu_ctx_put(struct amdgpu_ctx *ctx)
- 	return 0;
+-	return off;
++	return 0;
  }
  
--void amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
--			  struct drm_sched_entity *entity,
--			  struct dma_fence *fence, uint64_t *handle)
-+uint64_t amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
-+			      struct drm_sched_entity *entity,
-+			      struct dma_fence *fence)
+ static int btf_find_datasec_var(const struct btf *btf, const struct btf_type *t,
+-				const char *name, int sz, int align)
++				const char *name, int sz, int align,
++				enum btf_field_type field_type,
++				struct btf_field_info *info)
  {
- 	struct amdgpu_ctx_entity *centity = to_amdgpu_ctx_entity(entity);
- 	uint64_t seq = centity->sequence;
-@@ -682,8 +680,7 @@ void amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
+ 	const struct btf_var_secinfo *vsi;
+-	u32 i, off = -ENOENT;
++	u32 i, off;
  
- 	idx = seq & (amdgpu_sched_jobs - 1);
- 	other = centity->fences[idx];
--	if (other)
--		BUG_ON(!dma_fence_is_signaled(other));
-+	WARN_ON(other && !dma_fence_is_signaled(other));
+ 	for_each_vsi(i, t, vsi) {
+ 		const struct btf_type *var = btf_type_by_id(btf, vsi->type);
+ 		const struct btf_type *var_type = btf_type_by_id(btf, var->type);
  
- 	dma_fence_get(fence);
- 
-@@ -693,8 +690,7 @@ void amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
- 	spin_unlock(&ctx->ring_lock);
- 
- 	dma_fence_put(other);
--	if (handle)
--		*handle = seq;
-+	return seq;
+-		if (!__btf_type_is_struct(var_type))
+-			continue;
+-		if (var_type->size != sz)
++		off = vsi->offset;
++
++		if (strcmp(__btf_name_by_offset(btf, var_type->name_off), name))
+ 			continue;
+ 		if (vsi->size != sz)
+ 			continue;
+-		if (strcmp(__btf_name_by_offset(btf, var_type->name_off), name))
+-			continue;
+-		if (off != -ENOENT)
+-			/* only one such field is allowed */
+-			return -E2BIG;
+-		off = vsi->offset;
+ 		if (off % align)
+ 			return -EINVAL;
++
++		switch (field_type) {
++		case BTF_FIELD_SPIN_LOCK:
++		case BTF_FIELD_TIMER:
++			return btf_find_struct(btf, var_type, off, sz, info);
++		default:
++			return -EFAULT;
++		}
+ 	}
+-	return off;
++	return 0;
  }
  
- struct dma_fence *amdgpu_ctx_get_fence(struct amdgpu_ctx *ctx,
-@@ -731,7 +727,7 @@ static void amdgpu_ctx_set_entity_priority(struct amdgpu_ctx *ctx,
- 					   int hw_ip,
- 					   int32_t priority)
+ static int btf_find_field(const struct btf *btf, const struct btf_type *t,
+-			  const char *name, int sz, int align)
++			  enum btf_field_type field_type,
++			  struct btf_field_info *info)
  {
--	struct amdgpu_device *adev = ctx->adev;
-+	struct amdgpu_device *adev = ctx->mgr->adev;
- 	unsigned int hw_prio;
- 	struct drm_gpu_scheduler **scheds = NULL;
- 	unsigned num_scheds;
-@@ -796,8 +792,10 @@ int amdgpu_ctx_wait_prev_fence(struct amdgpu_ctx *ctx,
- 	return r;
++	const char *name;
++	int sz, align;
++
++	switch (field_type) {
++	case BTF_FIELD_SPIN_LOCK:
++		name = "bpf_spin_lock";
++		sz = sizeof(struct bpf_spin_lock);
++		align = __alignof__(struct bpf_spin_lock);
++		break;
++	case BTF_FIELD_TIMER:
++		name = "bpf_timer";
++		sz = sizeof(struct bpf_timer);
++		align = __alignof__(struct bpf_timer);
++		break;
++	default:
++		return -EFAULT;
++	}
+ 
+ 	if (__btf_type_is_struct(t))
+-		return btf_find_struct_field(btf, t, name, sz, align);
++		return btf_find_struct_field(btf, t, name, sz, align, field_type, info);
+ 	else if (btf_type_is_datasec(t))
+-		return btf_find_datasec_var(btf, t, name, sz, align);
++		return btf_find_datasec_var(btf, t, name, sz, align, field_type, info);
+ 	return -EINVAL;
  }
  
--void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr)
-+void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr,
-+			 struct amdgpu_device *adev)
+@@ -3237,16 +3287,24 @@ static int btf_find_field(const struct btf *btf, const struct btf_type *t,
+  */
+ int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t)
  {
-+	mgr->adev = adev;
- 	mutex_init(&mgr->lock);
- 	idr_init(&mgr->ctx_handles);
+-	return btf_find_field(btf, t, "bpf_spin_lock",
+-			      sizeof(struct bpf_spin_lock),
+-			      __alignof__(struct bpf_spin_lock));
++	struct btf_field_info info = { .off = -ENOENT };
++	int ret;
++
++	ret = btf_find_field(btf, t, BTF_FIELD_SPIN_LOCK, &info);
++	if (ret < 0)
++		return ret;
++	return info.off;
  }
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.h b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.h
-index 142f2f87d44c..681050bc828c 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.h
-@@ -40,7 +40,7 @@ struct amdgpu_ctx_entity {
  
- struct amdgpu_ctx {
- 	struct kref			refcount;
--	struct amdgpu_device		*adev;
-+	struct amdgpu_ctx_mgr		*mgr;
- 	unsigned			reset_counter;
- 	unsigned			reset_counter_query;
- 	uint32_t			vram_lost_counter;
-@@ -70,9 +70,9 @@ int amdgpu_ctx_put(struct amdgpu_ctx *ctx);
+ int btf_find_timer(const struct btf *btf, const struct btf_type *t)
+ {
+-	return btf_find_field(btf, t, "bpf_timer",
+-			      sizeof(struct bpf_timer),
+-			      __alignof__(struct bpf_timer));
++	struct btf_field_info info = { .off = -ENOENT };
++	int ret;
++
++	ret = btf_find_field(btf, t, BTF_FIELD_TIMER, &info);
++	if (ret < 0)
++		return ret;
++	return info.off;
+ }
  
- int amdgpu_ctx_get_entity(struct amdgpu_ctx *ctx, u32 hw_ip, u32 instance,
- 			  u32 ring, struct drm_sched_entity **entity);
--void amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
--			  struct drm_sched_entity *entity,
--			  struct dma_fence *fence, uint64_t *seq);
-+uint64_t amdgpu_ctx_add_fence(struct amdgpu_ctx *ctx,
-+			      struct drm_sched_entity *entity,
-+			      struct dma_fence *fence);
- struct dma_fence *amdgpu_ctx_get_fence(struct amdgpu_ctx *ctx,
- 				       struct drm_sched_entity *entity,
- 				       uint64_t seq);
-@@ -85,7 +85,8 @@ int amdgpu_ctx_ioctl(struct drm_device *dev, void *data,
- int amdgpu_ctx_wait_prev_fence(struct amdgpu_ctx *ctx,
- 			       struct drm_sched_entity *entity);
- 
--void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr);
-+void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr,
-+			 struct amdgpu_device *adev);
- void amdgpu_ctx_mgr_entity_fini(struct amdgpu_ctx_mgr *mgr);
- long amdgpu_ctx_mgr_entity_flush(struct amdgpu_ctx_mgr *mgr, long timeout);
- void amdgpu_ctx_mgr_fini(struct amdgpu_ctx_mgr *mgr);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-index 49c55d82cba8..20a432a774c1 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-@@ -1142,7 +1142,7 @@ int amdgpu_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- 	mutex_init(&fpriv->bo_list_lock);
- 	idr_init(&fpriv->bo_list_handles);
- 
--	amdgpu_ctx_mgr_init(&fpriv->ctx_mgr);
-+	amdgpu_ctx_mgr_init(&fpriv->ctx_mgr, adev);
- 
- 	file_priv->driver_priv = fpriv;
- 	goto out_suspend;
+ static void __btf_struct_show(const struct btf *btf, const struct btf_type *t,
 -- 
 2.35.1
 
