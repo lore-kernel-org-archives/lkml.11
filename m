@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D0DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBE2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232488AbiHOSb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        id S240609AbiHOSjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242913AbiHOSaR (ORCPT
+        with ESMTP id S243970AbiHOSgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56047F5B1;
-        Mon, 15 Aug 2022 11:20:41 -0700 (PDT)
+        Mon, 15 Aug 2022 14:36:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5553C141;
+        Mon, 15 Aug 2022 11:23:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 037CBB81072;
-        Mon, 15 Aug 2022 18:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C81C433C1;
-        Mon, 15 Aug 2022 18:20:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC0BD606A1;
+        Mon, 15 Aug 2022 18:23:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1260C433D6;
+        Mon, 15 Aug 2022 18:22:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587636;
-        bh=4pNbcfBY7sSXixtKDEXaS8TRXL9OvdOoDNaQXO+z7ao=;
+        s=korg; t=1660587780;
+        bh=lwen1EgOL0WIJxndcyGGj6vv0zvik1mBKliZtD3eSSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OCdt8kkcSM0oIq91A2XsJCtjegCbHdXznNsTauq72ClB3Q63mf/d0eK9LlIpi3lf1
-         giN4uEKejcVJWqoS5C9Fj7imcRw9W/D2JWw1w28P3kZxC1v2NKYHfkQPplSrN+Mvq4
-         Trs1CxY0tDUrjI9TBoWFpobplfsMj2XUuJKVbqVc=
+        b=lqAMFYrLTS21/vaNGcd0+jCwJfFBl6rS7MZotvBO81kz5bGmMxQxovKgNTpIjgezA
+         O6j6TGUu2e6XM4jWxT+D75J92wgO4VzJGSpU7tnrRv2OhYIouv6D5jrBSl3/D4nn9y
+         VAfq7SiHdX3n81cOPwS0WdZZAbENbKudJ+tq6EZA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Guenter Roeck <linux@roeck-us.net>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 146/779] hwmon: (sht15) Fix wrong assumptions in device remove callback
-Date:   Mon, 15 Aug 2022 19:56:30 +0200
-Message-Id: <20220815180343.568855910@linuxfoundation.org>
+Subject: [PATCH 5.15 161/779] ARM: dts: imx7d-colibri-emmc: add cpu1 supply
+Date:   Mon, 15 Aug 2022 19:56:45 +0200
+Message-Id: <20220815180344.217106397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,73 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-[ Upstream commit 7d4edccc9bbfe1dcdff641343f7b0c6763fbe774 ]
+[ Upstream commit ba28db60d34271e8a3cf4d7158d71607e8b1e57f ]
 
-Taking a lock at the beginning of .remove() doesn't prevent new readers.
-With the existing approach it can happen, that a read occurs just when
-the lock was taken blocking the reader until the lock is released at the
-end of the remove callback which then accessed *data that is already
-freed then.
+Each cpu-core is supposed to list its supply separately, add supply for
+cpu1.
 
-To actually fix this problem the hwmon core needs some adaption. Until
-this is implemented take the optimistic approach of assuming that all
-readers are gone after hwmon_device_unregister() and
-sysfs_remove_group() as most other drivers do. (And once the core
-implements that, taking the lock would deadlock.)
-
-So drop the lock, move the reset to after device unregistration to keep
-the device in a workable state until it's deregistered. Also add a error
-message in case the reset fails and return 0 anyhow. (Returning an error
-code, doesn't stop the platform device unregistration and only results
-in a little helpful error message before the devm cleanup handlers are
-called.)
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220725194344.150098-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 2d7401f8632f ("ARM: dts: imx7d: Add cpu1 supply")
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/sht15.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ arch/arm/boot/dts/imx7d-colibri-emmc.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
-index 7f4a63959730..ae4d14257a11 100644
---- a/drivers/hwmon/sht15.c
-+++ b/drivers/hwmon/sht15.c
-@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
- static int sht15_remove(struct platform_device *pdev)
- {
- 	struct sht15_data *data = platform_get_drvdata(pdev);
-+	int ret;
+diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+index af39e5370fa1..045e4413d339 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
++++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+@@ -13,6 +13,10 @@ memory@80000000 {
+ 	};
+ };
  
--	/*
--	 * Make sure any reads from the device are done and
--	 * prevent new ones beginning
--	 */
--	mutex_lock(&data->read_lock);
--	if (sht15_soft_reset(data)) {
--		mutex_unlock(&data->read_lock);
--		return -EFAULT;
--	}
- 	hwmon_device_unregister(data->hwmon_dev);
- 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++&cpu1 {
++	cpu-supply = <&reg_DCDC2>;
++};
 +
-+	ret = sht15_soft_reset(data);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
-+
- 	if (!IS_ERR(data->reg)) {
- 		regulator_unregister_notifier(data->reg, &data->nb);
- 		regulator_disable(data->reg);
- 	}
- 
--	mutex_unlock(&data->read_lock);
--
- 	return 0;
- }
- 
+ &gpio6 {
+ 	gpio-line-names = "",
+ 			  "",
 -- 
 2.35.1
 
