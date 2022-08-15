@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EA2C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C267C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244779AbiHPBAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
+        id S245382AbiHPBAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348732AbiHPAwL (ORCPT
+        with ESMTP id S1348832AbiHPAwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:52:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F8EDA3F2;
-        Mon, 15 Aug 2022 13:47:20 -0700 (PDT)
+        Mon, 15 Aug 2022 20:52:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9914919C9E9;
+        Mon, 15 Aug 2022 13:47:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 693EDB8119A;
-        Mon, 15 Aug 2022 20:47:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21A9C433D6;
-        Mon, 15 Aug 2022 20:47:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ABA8B811A1;
+        Mon, 15 Aug 2022 20:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E8FC4315C;
+        Mon, 15 Aug 2022 20:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596437;
-        bh=TMmzHK51a8LMOalsWtaa64q5yITVcLUp7g/QUp43HQw=;
+        s=korg; t=1660596462;
+        bh=/SbU5TgNUUjW574cJkQIC7C8/S1kgwxyehokC/ht1GA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qg07RO6FYOu4G4SxfmRYOavmyKUgTejH3RpbPd3iCSXj27CGvuOBXpLI7qvKcjEFu
-         hkyovVjT+HIKd4fMYb//caLYojAC+K2exqnjRancP/C7su/MMCaOIBUXPU+uW2ZV+3
-         1yAHahWx36o+vBvhu52hS3H+kNN9Ow63gxkp/kVU=
+        b=xRVirIbOJ23kkvgnPjjeljVjypRqUlSqCC5hnAe28jKeGNDEJ5Y5Im8uApHTebkK9
+         pm81iACjXFxS5HM095W8BbRmYK7HpuWyhfmJST53qIwmsmfbv1oiXKvbYcGQGSChvL
+         MLFmLBXKTCnUumQQIJxnObgc5DHyLoGoEHSj2JJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jinke Han <hanjinke.666@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1078/1157] block: dont allow the same type rq_qos add more than once
-Date:   Mon, 15 Aug 2022 20:07:14 +0200
-Message-Id: <20220815180523.265538828@linuxfoundation.org>
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 1043/1157] scsi: qla2xxx: Fix losing target when it reappears during delete
+Date:   Mon, 15 Aug 2022 20:06:39 +0200
+Message-Id: <20220815180521.741682878@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,199 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinke Han <hanjinke.666@bytedance.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit 14a6e2eb7df5c7897c15b109cba29ab0c4a791b6 ]
+commit 118b0c863c8f5629cc5271fc24d72d926e0715d9 upstream.
 
-In our test of iocost, we encountered some list add/del corruptions of
-inner_walk list in ioc_timer_fn.
+FC target disappeared during port perturbation tests due to a race that
+tramples target state.  Fix the issue by adding state checks before
+proceeding.
 
-The reason can be described as follows:
-
-cpu 0					cpu 1
-ioc_qos_write				ioc_qos_write
-
-ioc = q_to_ioc(queue);
-if (!ioc) {
-        ioc = kzalloc();
-					ioc = q_to_ioc(queue);
-					if (!ioc) {
-						ioc = kzalloc();
-						...
-						rq_qos_add(q, rqos);
-					}
-        ...
-        rq_qos_add(q, rqos);
-        ...
-}
-
-When the io.cost.qos file is written by two cpus concurrently, rq_qos may
-be added to one disk twice. In that case, there will be two iocs enabled
-and running on one disk. They own different iocgs on their active list. In
-the ioc_timer_fn function, because of the iocgs from two iocs have the
-same root iocg, the root iocg's walk_list may be overwritten by each other
-and this leads to list add/del corruptions in building or destroying the
-inner_walk list.
-
-And so far, the blk-rq-qos framework works in case that one instance for
-one type rq_qos per queue by default. This patch make this explicit and
-also fix the crash above.
-
-Signed-off-by: Jinke Han <hanjinke.666@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220720093616.70584-1-hanjinke.666@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-8-njavali@marvell.com
+Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-iocost.c    | 20 +++++++++++++-------
- block/blk-iolatency.c | 18 +++++++++++-------
- block/blk-rq-qos.h    | 11 ++++++++++-
- block/blk-wbt.c       | 12 +++++++++++-
- 4 files changed, 45 insertions(+), 16 deletions(-)
+ drivers/scsi/qla2xxx/qla_attr.c |   24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-index 33a11ba971ea..c6181357e545 100644
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -2886,15 +2886,21 @@ static int blk_iocost_init(struct request_queue *q)
- 	 * called before policy activation completion, can't assume that the
- 	 * target bio has an iocg associated and need to test for NULL iocg.
- 	 */
--	rq_qos_add(q, rqos);
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free_ioc;
+--- a/drivers/scsi/qla2xxx/qla_attr.c
++++ b/drivers/scsi/qla2xxx/qla_attr.c
+@@ -2716,17 +2716,24 @@ qla2x00_dev_loss_tmo_callbk(struct fc_rp
+ 	if (!fcport)
+ 		return;
+ 
+-	/* Now that the rport has been deleted, set the fcport state to
+-	   FCS_DEVICE_DEAD */
+-	qla2x00_set_fcport_state(fcport, FCS_DEVICE_DEAD);
 +
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iocost);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		free_percpu(ioc->pcpu_stat);
--		kfree(ioc);
--		return ret;
--	}
-+	if (ret)
-+		goto err_del_qos;
- 	return 0;
-+
-+err_del_qos:
-+	rq_qos_del(q, rqos);
-+err_free_ioc:
-+	free_percpu(ioc->pcpu_stat);
-+	kfree(ioc);
-+	return ret;
- }
++	/*
++	 * Now that the rport has been deleted, set the fcport state to
++	 * FCS_DEVICE_DEAD, if the fcport is still lost.
++	 */
++	if (fcport->scan_state != QLA_FCPORT_FOUND)
++		qla2x00_set_fcport_state(fcport, FCS_DEVICE_DEAD);
  
- static struct blkcg_policy_data *ioc_cpd_alloc(gfp_t gfp)
-diff --git a/block/blk-iolatency.c b/block/blk-iolatency.c
-index 9568bf8dfe82..7845dca5fcfd 100644
---- a/block/blk-iolatency.c
-+++ b/block/blk-iolatency.c
-@@ -773,19 +773,23 @@ int blk_iolatency_init(struct request_queue *q)
- 	rqos->ops = &blkcg_iolatency_ops;
- 	rqos->q = q;
- 
--	rq_qos_add(q, rqos);
--
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free;
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iolatency);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		kfree(blkiolat);
--		return ret;
--	}
-+	if (ret)
-+		goto err_qos_del;
- 
- 	timer_setup(&blkiolat->timer, blkiolatency_timer_fn, 0);
- 	INIT_WORK(&blkiolat->enable_work, blkiolatency_enable_work_fn);
- 
- 	return 0;
-+
-+err_qos_del:
-+	rq_qos_del(q, rqos);
-+err_free:
-+	kfree(blkiolat);
-+	return ret;
- }
- 
- static void iolatency_set_min_lat_nsec(struct blkcg_gq *blkg, u64 val)
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index 0e46052b018a..08b856570ad1 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -86,7 +86,7 @@ static inline void rq_wait_init(struct rq_wait *rq_wait)
- 	init_waitqueue_head(&rq_wait->wait);
- }
- 
--static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
-+static inline int rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- {
  	/*
- 	 * No IO can be in-flight when adding rqos, so freeze queue, which
-@@ -98,6 +98,8 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 	blk_mq_freeze_queue(q);
+ 	 * Transport has effectively 'deleted' the rport, clear
+ 	 * all local references.
+ 	 */
+ 	spin_lock_irqsave(host->host_lock, flags);
+-	fcport->rport = fcport->drport = NULL;
+-	*((fc_port_t **)rport->dd_data) = NULL;
++	/* Confirm port has not reappeared before clearing pointers. */
++	if (rport->port_state != FC_PORTSTATE_ONLINE) {
++		fcport->rport = fcport->drport = NULL;
++		*((fc_port_t **)rport->dd_data) = NULL;
++	}
+ 	spin_unlock_irqrestore(host->host_lock, flags);
  
- 	spin_lock_irq(&q->queue_lock);
-+	if (rq_qos_id(q, rqos->id))
-+		goto ebusy;
- 	rqos->next = q->rq_qos;
- 	q->rq_qos = rqos;
- 	spin_unlock_irq(&q->queue_lock);
-@@ -109,6 +111,13 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 		blk_mq_debugfs_register_rqos(rqos);
- 		mutex_unlock(&q->debugfs_mutex);
+ 	if (test_bit(ABORT_ISP_ACTIVE, &fcport->vha->dpc_flags))
+@@ -2759,9 +2766,12 @@ qla2x00_terminate_rport_io(struct fc_rpo
+ 	/*
+ 	 * At this point all fcport's software-states are cleared.  Perform any
+ 	 * final cleanup of firmware resources (PCBs and XCBs).
++	 *
++	 * Attempt to cleanup only lost devices.
+ 	 */
+ 	if (fcport->loop_id != FC_NO_LOOP_ID) {
+-		if (IS_FWI2_CAPABLE(fcport->vha->hw)) {
++		if (IS_FWI2_CAPABLE(fcport->vha->hw) &&
++		    fcport->scan_state != QLA_FCPORT_FOUND) {
+ 			if (fcport->loop_id != FC_NO_LOOP_ID)
+ 				fcport->logout_on_delete = 1;
+ 
+@@ -2771,7 +2781,7 @@ qla2x00_terminate_rport_io(struct fc_rpo
+ 				       __LINE__);
+ 				qlt_schedule_sess_for_deletion(fcport);
+ 			}
+-		} else {
++		} else if (!IS_FWI2_CAPABLE(fcport->vha->hw)) {
+ 			qla2x00_port_logout(fcport->vha, fcport);
+ 		}
  	}
-+
-+	return 0;
-+ebusy:
-+	spin_unlock_irq(&q->queue_lock);
-+	blk_mq_unfreeze_queue(q);
-+	return -EBUSY;
-+
- }
- 
- static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
-diff --git a/block/blk-wbt.c b/block/blk-wbt.c
-index 0c119be0e813..ae6ea0b54579 100644
---- a/block/blk-wbt.c
-+++ b/block/blk-wbt.c
-@@ -820,6 +820,7 @@ int wbt_init(struct request_queue *q)
- {
- 	struct rq_wb *rwb;
- 	int i;
-+	int ret;
- 
- 	rwb = kzalloc(sizeof(*rwb), GFP_KERNEL);
- 	if (!rwb)
-@@ -846,7 +847,10 @@ int wbt_init(struct request_queue *q)
- 	/*
- 	 * Assign rwb and add the stats callback.
- 	 */
--	rq_qos_add(q, &rwb->rqos);
-+	ret = rq_qos_add(q, &rwb->rqos);
-+	if (ret)
-+		goto err_free;
-+
- 	blk_stat_add_callback(q, rwb->cb);
- 
- 	rwb->min_lat_nsec = wbt_default_latency_nsec(q);
-@@ -855,4 +859,10 @@ int wbt_init(struct request_queue *q)
- 	wbt_set_write_cache(q, test_bit(QUEUE_FLAG_WC, &q->queue_flags));
- 
- 	return 0;
-+
-+err_free:
-+	blk_stat_free_callback(rwb->cb);
-+	kfree(rwb);
-+	return ret;
-+
- }
--- 
-2.35.1
-
 
 
