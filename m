@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B01D1C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAD6C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243505AbiHPAye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S244249AbiHPAyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242350AbiHPArF (ORCPT
+        with ESMTP id S243215AbiHPArH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:47:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DD7197B88;
-        Mon, 15 Aug 2022 13:45:44 -0700 (PDT)
+        Mon, 15 Aug 2022 20:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F286197BA1;
+        Mon, 15 Aug 2022 13:45:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 652C3B811A0;
-        Mon, 15 Aug 2022 20:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB004C433C1;
-        Mon, 15 Aug 2022 20:45:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C742E61255;
+        Mon, 15 Aug 2022 20:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B720BC433D6;
+        Mon, 15 Aug 2022 20:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596342;
-        bh=s1VU8Oz7bh5fv2iQebK9iNjwCoHIbzx+5W1iUloCXxk=;
+        s=korg; t=1660596348;
+        bh=XSZt3y04SiP8tLE10pIGsc79AdnnvDgeIIf2BR6p02M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DyJ9GGwudT/O+vNtyeMrfuuSDfBXPO4ZaEJbRAjeG+sz132+5naPmaL5TviCgs8EZ
-         RDv0r8/ckUnH0LmpS/d4B7AKsiv8NG1EDBVP4qAYnEEOlT3SvemlOTGCHO7bxA5LwW
-         TQgjrTkU8jxsrUk2roGp0cGr1hWgks+/Ql+rrA2M=
+        b=qUYio/RSP9l/6Y/nuG2jI98XnwcT6RGVyDh3xybNftbYpLEoHCiuFuIawnNB/HZrv
+         YJHkMbKGYkSzwoD++yqiaIbuMpgCcI/rT65DqhKLEhSBTxD7a6fqAT32W8eq/fbMHT
+         JQUyL6JaKGYKYyFQ2Jds/lhPKaLvJJwV5IKdkf7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1016/1157] powerpc/pci: Fix PHB numbering when using opal-phbid
-Date:   Mon, 15 Aug 2022 20:06:12 +0200
-Message-Id: <20220815180520.517075068@linuxfoundation.org>
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 1044/1157] scsi: qla2xxx: Fix losing FCP-2 targets during port perturbation tests
+Date:   Mon, 15 Aug 2022 20:06:40 +0200
+Message-Id: <20220815180521.784380847@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,58 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit f4b39e88b42d13366b831270306326b5c20971ca ]
+commit 58d1c124cd79ea686b512043c5bd515590b2ed95 upstream.
 
-The recent change to the PHB numbering logic has a logic error in the
-handling of "ibm,opal-phbid".
+When a mix of FCP-2 (tape) and non-FCP-2 targets are present, FCP-2 target
+state was incorrectly transitioned when both of the targets were gone. Fix
+this by ignoring state transition for FCP-2 targets.
 
-When an "ibm,opal-phbid" property is present, &prop is written to and
-ret is set to zero.
-
-The following call to of_alias_get_id() is skipped because ret == 0.
-
-But then the if (ret >= 0) is true, and the body of that if statement
-sets prop = ret which throws away the value that was just read from
-"ibm,opal-phbid".
-
-Fix the logic by only doing the ret >= 0 check in the of_alias_get_id()
-case.
-
-Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220802105723.1055178-1-mpe@ellerman.id.au
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-7-njavali@marvell.com
+Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/pci-common.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/scsi/qla2xxx/qla_gs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index b2b12ce44b5f..c787df126ada 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -90,11 +90,13 @@ static int get_phb_number(struct device_node *dn)
- 	}
- 	if (ret)
- 		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
--	if (ret)
-+
-+	if (ret) {
- 		ret = of_alias_get_id(dn, "pci");
--	if (ret >= 0) {
--		prop = ret;
--		ret = 0;
-+		if (ret >= 0) {
-+			prop = ret;
-+			ret = 0;
-+		}
- 	}
- 	if (ret) {
- 		u32 prop_32;
--- 
-2.35.1
-
+--- a/drivers/scsi/qla2xxx/qla_gs.c
++++ b/drivers/scsi/qla2xxx/qla_gs.c
+@@ -3629,7 +3629,7 @@ login_logout:
+ 				do_delete) {
+ 				if (fcport->loop_id != FC_NO_LOOP_ID) {
+ 					if (fcport->flags & FCF_FCP2_DEVICE)
+-						fcport->logout_on_delete = 0;
++						continue;
+ 
+ 					ql_log(ql_log_warn, vha, 0x20f0,
+ 					       "%s %d %8phC post del sess\n",
 
 
