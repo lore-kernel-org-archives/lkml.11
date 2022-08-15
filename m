@@ -2,527 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F0DC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3122DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242544AbiHOMa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
+        id S241894AbiHOMbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242201AbiHOMau (ORCPT
+        with ESMTP id S242525AbiHOMa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:30:50 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88856402;
-        Mon, 15 Aug 2022 05:30:47 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 2C468320094A;
-        Mon, 15 Aug 2022 08:30:46 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 08:30:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660566644; x=1660653044; bh=cv5+ERoN6T
-        Yoti2zJz1zD407RAX8NoikXtca5DAyxCw=; b=cSjplW+EgdoDQfm7y3u+DNjMeA
-        0ndj8BgM4s//VYU5kx+fSVWlrTxAHw+9X+Rom1nxreUY7VRu1OnM/NfZl4dzKYL9
-        ni0w5IcPYdAIhttxjPYOQPuUT/rPsv7BmyYSnRdepWvB1sS5Y4DtktpLK+gJS/8r
-        IWOiwuKMqmwHF68nqkCTT61WIDqF3zK3cLZCQbB5agU7hFgpEteBwDm8kzoGNMKh
-        4Cg5htRj5l2eTmzJCt1RwBEbezyyy/Nxw5Gn8Kb6LVBPcV8IV2SXrJYsZNEL20gK
-        E2qnmXmSc6lEOoyNtvuAYOucYL8Kh4U7hE9OA3UEUBvCBG0kJLn7R4qb43CQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660566644; x=
-        1660653044; bh=cv5+ERoN6TYoti2zJz1zD407RAX8NoikXtca5DAyxCw=; b=Q
-        PPFX3TmwAeKPOGG3+BI02urDhlp4T9zX0DBlkfpxBiCPMp9xa9iUlKxqnk1Xgqk3
-        oudLYsHOdMoYAvXjD9YrWGkonoTzhObMKkPX2k7P1SD8UzgGrzAjqKYOXEpM9w6E
-        jkkJgNjMw7o5Mrx0AKo16gfowD/sXT8FPv2wE5jW3+A6BTWwKd5/HJt1+8P0YhD0
-        LDV19IEymDoADCoifPUEucKYfZs7Dk/nWfI15zEJtRbHYYLJ/7VZGuw7N6uEPyrf
-        Pea5wTf6rveELQv4P0UJELvVpHdyFX3Sqn5nhc0z0Ba60Y2SsE3liMliult6xIjN
-        kHL2Jj1TYRnfg9pjLkAvg==
-X-ME-Sender: <xms:dDz6YrIxWpfImpfnXIM9aUg3YFV6_dO5CXrzx7gVLOJchfN7bPqyyw>
-    <xme:dDz6YvIwG-7p0QNABNyM-rUKXqQVfQbPvm0SnfS9R6umuH6ONcWrVZ_24x-N2Y8Xb
-    E1jp6yKTJ164RGjJA>
-X-ME-Received: <xmr:dDz6YjubBcIIOm9H8K-exgwPpvH4gmemaC-Jxo3hqKK93Zop8KA9LvM1ZEpWWfW0ki77-iVU8lx9NXyR_QvZrJPeX0vUpgs7NCk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgheefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfgggtgfesth
-    ekredtredtjeenucfhrhhomhepvfhomhcuhfhithiihhgvnhhrhicuoehtohhmsehtohhm
-    qdhfihhtiihhvghnrhihrdhmvgdruhhkqeenucggtffrrghtthgvrhhnpefgkeehudeife
-    egkeekueelheeggfevhffgjeeffeetieduieeguddugfeigfeuueenucffohhmrghinhep
-    phhinhgvieegrdhorhhgpdhgihhtlhgrsgdrtghomhdpmhgvghhouhhsrdgtohhmnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepthhomhesthho
-    mhdqfhhithiihhgvnhhrhidrmhgvrdhukh
-X-ME-Proxy: <xmx:dDz6YkaGIS9wr13vay1rmiFxFcpSX0jpW5f2dhwmHI1efQXl81c2Yg>
-    <xmx:dDz6YibUtOj1DP4wjaWSdl9fQ1prvjUZADiPiP5YtZtLF0A_l-RC-w>
-    <xmx:dDz6YoAUh5NFEb08ZVySaGwe1V9EnMCbGLYEB3KiGta_bLvWkPnefw>
-    <xmx:dDz6YoyqHi6FoRrRaNB4KrOPMGrJ8ghjRsrLneLfut8_ZX-FQ99tcw>
-Feedback-ID: iefc945ae:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 08:30:40 -0400 (EDT)
-From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        heiko@sntech.de
-Cc:     martijn@brixit.nl, ayufan@ayufan.eu, megi@xff.cz,
-        tom@tom-fitzhenry.me.uk, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, phone-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] arm64: dts: rockchip: Add initial support for Pine64 PinePhone Pro
-Date:   Mon, 15 Aug 2022 22:30:04 +1000
-Message-Id: <20220815123004.252014-3-tom@tom-fitzhenry.me.uk>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815123004.252014-1-tom@tom-fitzhenry.me.uk>
-References: <20220815123004.252014-1-tom@tom-fitzhenry.me.uk>
+        Mon, 15 Aug 2022 08:30:56 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8651F6544;
+        Mon, 15 Aug 2022 05:30:54 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id k14so6539119pfh.0;
+        Mon, 15 Aug 2022 05:30:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=8N0tZJ261i5HWc8SMb6PjhSY6p7VWzYFeTIP4nzrRk8=;
+        b=b1VEzYtVLOWAkOAKzwtxHu0/dhDervAoBVp+iDeFrqBqqYvQgea5BC9AleuQ7U6n83
+         pFbAzPEp4GiLFrrCVvV4qFxOhbUlQ4WMDyCuzCqOOwxwljV/c9auB3Tkj8eoW8aOTyys
+         vIE6Th4LpTQMdHdli/19h0T4vFhtYAoSmEskq/n/QZh7rhaRwxKe0nRbciC21MvB8S/2
+         HWlWBwS1b3GYCeQ6fw1ptUyJcXq1BYZVi2plVVIZbN95g/4usQEerhG3FCsEr8EgAbTV
+         eWYKn2umZVbwM3L+EvzsLxrUXsrwfyznDHa75rdFrMXWVHrtc3uD5VaYEZFoU60hl99w
+         LpeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=8N0tZJ261i5HWc8SMb6PjhSY6p7VWzYFeTIP4nzrRk8=;
+        b=gFhfDY7M70X55w3udF3eiKx1ta5n9QFjGxvn4ACYNqRdHX/76UVa0V6GdDMjJ/kGmD
+         2w8alHkQGNtG/lC5Etm8nMLJxTYqVJA+7h/089R8MVBLWya+hMULQVssHLsiwtqQFNZp
+         h5i1ObfwMJJV23eikDQzVSdQ4miaRon9J3nknrza9rRNUdACkiq3zu1nX4k4eQ7+IeCt
+         b816f/v4PIvcph5YYHaBq6D9etp0ay4y2eaSMmMfjWt5ktzEWD8C3twyhT/S3zzCzF8X
+         hQZ7zGfgZp9kzgjorgTPwd4RkHqisEKM9MCL29gQTSmlzdti62/DPAjXI5LPavzC+iYo
+         sAEw==
+X-Gm-Message-State: ACgBeo3pMq2EauqeGIn2wy5GHR4+4QUrAuQFtkkmA2uY7vKXfAGRKuA0
+        KOrDPBRUU5OhMqF6sRv5sGA=
+X-Google-Smtp-Source: AA6agR6n+V5MTGdGpk2hwvi18leQKPRw9rMleuhjBbyrOaibWzPzTsNiVU8zXcFHe6aFt9r5FDsqRQ==
+X-Received: by 2002:a05:6a00:c96:b0:52e:979c:dd63 with SMTP id a22-20020a056a000c9600b0052e979cdd63mr16400289pfv.50.1660566653967;
+        Mon, 15 Aug 2022 05:30:53 -0700 (PDT)
+Received: from [192.168.0.110] ([103.159.189.152])
+        by smtp.gmail.com with ESMTPSA id z25-20020a656659000000b00419b66846fcsm5726173pgv.91.2022.08.15.05.30.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 05:30:53 -0700 (PDT)
+Message-ID: <9b993aa6-f432-89f6-9195-05b584398df2@gmail.com>
+Date:   Mon, 15 Aug 2022 18:30:44 +0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH] Soundwire: Initialize multi_link with fwnode props
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Len Brown <lenb@kernel.org>
+References: <20220814080416.7531-1-khalid.masum.92@gmail.com>
+ <YvjEIjXg7KxtTT/0@kroah.com> <cc6560c3-98c2-bdb5-cfc3-b39d3675382e@gmail.com>
+ <YvnpuK8phVyF7053@kroah.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+In-Reply-To: <YvnpuK8phVyF7053@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martijn Braam <martijn@brixit.nl>
+On 8/15/22 12:37, Greg KH wrote:
+> On Mon, Aug 15, 2022 at 10:08:07AM +0600, Khalid Masum wrote:
+>> On 8/14/22 15:45, Greg KH wrote:
+>>> On Sun, Aug 14, 2022 at 02:04:15PM +0600, Khalid Masum wrote:
+>>>> According to the TODO, In sw_bus_master_add, bus->multi_link is to be
+>>>> populated with properties from FW node props. Make this happen by
+>>>> creating a new fwnode_handle flag FWNODE_FLAG_MULTI_LINKED and use
+>>>> the flag to store the multi_link value from intel_link_startup. Use
+>>>> this flag to initialize bus->multi_link.
+>>>>
+>>>> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+>>>> ---
+>>>> I do not think adding a new flag for fwnode_handle is a good idea.
+>>>> So, what would be the best way to initialize bus->multilink with
+>>>> fwnode props?
+>>>>
+>>>>     -- Khalid Masum
+>>>>
+>>>>    drivers/soundwire/bus.c   | 4 ++--
+>>>>    drivers/soundwire/intel.c | 1 +
+>>>>    include/linux/fwnode.h    | 1 +
+>>>>    3 files changed, 4 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
+>>>> index a2bfb0434a67..80df1672c60b 100644
+>>>> --- a/drivers/soundwire/bus.c
+>>>> +++ b/drivers/soundwire/bus.c
+>>>> @@ -74,9 +74,9 @@ int sdw_bus_master_add(struct sdw_bus *bus, struct device *parent,
+>>>>    	/*
+>>>>    	 * Initialize multi_link flag
+>>>> -	 * TODO: populate this flag by reading property from FW node
+>>>>    	 */
+>>>> -	bus->multi_link = false;
+>>>> +	bus->multi_link = (fwnode->flags & FWNODE_FLAG_MULTI_LINKED)
+>>>> +		== FWNODE_FLAG_MULTI_LINKED;
+> 
+> I missed that this was an if statement here, please write this to be
+> more obvious and readable.
+> 
+>>>>    	if (bus->ops->read_prop) {
+>>>>    		ret = bus->ops->read_prop(bus);
+>>>>    		if (ret < 0) {
+>>>> diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+>>>> index 505c5ef061e3..034d1c523ddf 100644
+>>>> --- a/drivers/soundwire/intel.c
+>>>> +++ b/drivers/soundwire/intel.c
+>>>> @@ -1347,6 +1347,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
+>>>>    		 */
+>>>>    		bus->multi_link = true;
+>>>>    		bus->hw_sync_min_links = 1;
+>>>> +		dev->fwnode->flags |= FWNODE_FLAG_MULTI_LINKED;
+>>>>    	}
+>>>>    	/* Initialize shim, controller */
+>>>> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+>>>> index 9a81c4410b9f..446a52744953 100644
+>>>> --- a/include/linux/fwnode.h
+>>>> +++ b/include/linux/fwnode.h
+>>>> @@ -32,6 +32,7 @@ struct device;
+>>>>    #define FWNODE_FLAG_NOT_DEVICE			BIT(1)
+>>>>    #define FWNODE_FLAG_INITIALIZED			BIT(2)
+>>>>    #define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD	BIT(3)
+>>>> +#define FWNODE_FLAG_MULTI_LINKED		BIT(4)
+>>>
+>>> What does this commit actually change?
+>>
+>> The new flag will lets us save if the device has multilink in fwnode_handle
+>> whenever needed.
+>> Then for soundwire/intel, save the multi_link flag into fwnode during
+>> startup.
+>> Later at master_add, as written in todo, initialize the multilink flag with
+>> fwnode's flag property.
+> 
+> And what does that allow to happen?  What changes with all of this?
 
-This is a basic DT containing regulators and UART, intended to be a
-base that myself and others can add additional nodes in future patches.
+As suggested by Pierre-Louis Bossart these changes are not necessary and 
+the TODO is to be removed. Earlier my intention was to create a new flag 
+that lets us know whether multi_link is to be read from 
+sdw_bus_master_add just as instructed in TODO.
 
-Tested to work: booting from eMMC, output over UART.
+I shall send another patch, that removes the TODO, as suggested by 
+Pierre-Louis Bossart.
+> 
+> thanks,
+> 
+> greg k-h
 
-https://wiki.pine64.org/wiki/PinePhone_Pro
-
-This is derived from
-https://gitlab.com/pine64-org/linux/-/commit/261d3b5f8ac503f97da810986d1d6422430c8531
-with fixes from https://megous.com/git/linux.
-
-Signed-off-by: Martijn Braam <martijn@brixit.nl>
-Co-developed-by: Kamil Trzciński <ayufan@ayufan.eu>
-[no SoB, but Kamil is happy for this patch to be submitted]
-Co-developed-by: Ondrej Jirman <megi@xff.cz>
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
-Co-developed-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
----
- arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../dts/rockchip/rk3399-pinephone-pro.dts     | 394 ++++++++++++++++++
- 2 files changed, 395 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-
-diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index ef79a672804a1..cb42e0a15808e 100644
---- a/arch/arm64/boot/dts/rockchip/Makefile
-+++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -42,6 +42,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinephone-pro.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-puma-haikou.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc-mezzanine.dtb
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-new file mode 100644
-index 0000000000000..f9f1dcd4f6494
---- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-@@ -0,0 +1,394 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) 2020 Martijn Braam <martijn@brixit.nl>
-+ * Copyright (c) 2021 Kamil Trzciński <ayufan@ayufan.eu>
-+ */
-+
-+/* PinePhone Pro datasheet:
-+ * https://files.pine64.org/doc/PinePhonePro/PinephonePro-Schematic-V1.0-20211127.pdf
-+ */
-+
-+/dts-v1/;
-+#include <dt-bindings/input/linux-event-codes.h>
-+#include "rk3399.dtsi"
-+#include "rk3399-opp.dtsi"
-+
-+/ {
-+	model = "Pine64 PinePhonePro";
-+	compatible = "pine64,pinephone-pro", "rockchip,rk3399";
-+	chassis-type = "handset";
-+
-+	aliases {
-+		mmc0 = &sdio0;
-+		mmc1 = &sdmmc;
-+		mmc2 = &sdhci;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial2:115200n8";
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwrbtn_pin>;
-+
-+		power {
-+			debounce-interval = <20>;
-+			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
-+			label = "Power";
-+			linux,code = <KEY_POWER>;
-+			wakeup-source;
-+		};
-+	};
-+
-+	vcc_sysin: vcc-sysin-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_sysin";
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	vcc3v3_sys: vcc3v3-sys-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_sys";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&vcc_sysin>;
-+	};
-+
-+	vcca1v8_s3: vcc1v8-s3-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcca1v8_s3";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		vin-supply = <&vcc3v3_sys>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+};
-+
-+&cpu_l0 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l1 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l2 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l3 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_b0 {
-+	cpu-supply = <&vdd_cpu_b>;
-+};
-+
-+&cpu_b1 {
-+	cpu-supply = <&vdd_cpu_b>;
-+};
-+
-+&emmc_phy {
-+	status = "okay";
-+};
-+
-+&i2c0 {
-+	clock-frequency = <400000>;
-+	i2c-scl-rising-time-ns = <168>;
-+	i2c-scl-falling-time-ns = <4>;
-+	status = "okay";
-+
-+	rk818: pmic@1c {
-+		compatible = "rockchip,rk818";
-+		reg = <0x1c>;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <RK_PC5 IRQ_TYPE_LEVEL_LOW>;
-+		#clock-cells = <1>;
-+		clock-output-names = "xin32k", "rk808-clkout2";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pmic_int_l>;
-+		rockchip,system-power-controller;
-+		wakeup-source;
-+
-+		vcc1-supply = <&vcc_sysin>;
-+		vcc2-supply = <&vcc_sysin>;
-+		vcc3-supply = <&vcc_sysin>;
-+		vcc4-supply = <&vcc_sysin>;
-+		vcc6-supply = <&vcc_sysin>;
-+		vcc7-supply = <&vcc3v3_sys>;
-+		vcc8-supply = <&vcc_sysin>;
-+		vcc9-supply = <&vcc3v3_sys>;
-+
-+		regulators {
-+			vdd_cpu_l: DCDC_REG1 {
-+				regulator-name = "vdd_cpu_l";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <1350000>;
-+				regulator-ramp-delay = <6001>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vdd_center: DCDC_REG2 {
-+				regulator-name = "vdd_center";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <1350000>;
-+				regulator-ramp-delay = <6001>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vcc_ddr: DCDC_REG3 {
-+				regulator-name = "vcc_ddr";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_1v8: vcc_wl: DCDC_REG4 {
-+				regulator-name = "vcc_1v8";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcca3v0_codec: LDO_REG1 {
-+				regulator-name = "vcca3v0_codec";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc3v0_touch: LDO_REG2 {
-+				regulator-name = "vcc3v0_touch";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vcca1v8_codec: LDO_REG3 {
-+				regulator-name = "vcca1v8_codec";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_power_on: LDO_REG4 {
-+				regulator-name = "vcc_power_on";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_3v0: LDO_REG5 {
-+				regulator-name = "vcc_3v0";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_1v5: LDO_REG6 {
-+				regulator-name = "vcc_1v5";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1500000>;
-+				regulator-max-microvolt = <1500000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc1v8_dvp: LDO_REG7 {
-+				regulator-name = "vcc1v8_dvp";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+			};
-+
-+			vcc3v3_s3: LDO_REG8 {
-+				regulator-name = "vcc3v3_s3";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vccio_sd: LDO_REG9 {
-+				regulator-name = "vccio_sd";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+			};
-+
-+			vcc3v3_s0: SWITCH_REG {
-+				regulator-name = "vcc3v3_s0";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+		};
-+	};
-+
-+	vdd_cpu_b: regulator@40 {
-+		compatible = "silergy,syr827";
-+		reg = <0x40>;
-+		fcs,suspend-voltage-selector = <1>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vsel1_pin>;
-+		regulator-name = "vdd_cpu_b";
-+		regulator-min-microvolt = <712500>;
-+		regulator-max-microvolt = <1500000>;
-+		regulator-ramp-delay = <1000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+
-+		regulator-state-mem {
-+			regulator-off-in-suspend;
-+		};
-+	};
-+
-+	vdd_gpu: regulator@41 {
-+		compatible = "silergy,syr828";
-+		reg = <0x41>;
-+		fcs,suspend-voltage-selector = <1>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vsel2_pin>;
-+		regulator-name = "vdd_gpu";
-+		regulator-min-microvolt = <712500>;
-+		regulator-max-microvolt = <1500000>;
-+		regulator-ramp-delay = <1000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+
-+		regulator-state-mem {
-+			regulator-off-in-suspend;
-+		};
-+	};
-+};
-+
-+&cluster0_opp {
-+	opp04 {
-+		status = "disabled";
-+	};
-+
-+	opp05 {
-+		status = "disabled";
-+	};
-+};
-+
-+&cluster1_opp {
-+	opp06 {
-+		status = "disabled";
-+	};
-+
-+	opp07 {
-+		status = "disabled";
-+	};
-+};
-+
-+&io_domains {
-+	status = "okay";
-+
-+	bt656-supply = <&vcc1v8_dvp>;
-+	audio-supply = <&vcca1v8_codec>;
-+	sdmmc-supply = <&vccio_sd>;
-+	gpio1830-supply = <&vcc_3v0>;
-+};
-+
-+&pmu_io_domains {
-+	pmu1830-supply = <&vcc_1v8>;
-+	status = "okay";
-+};
-+
-+&pinctrl {
-+	buttons {
-+		pwrbtn_pin: pwrbtn-pin {
-+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+	};
-+
-+	pmic {
-+		pmic_int_l: pmic-int-l {
-+			rockchip,pins = <1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+
-+		vsel1_pin: vsel1-pin {
-+			rockchip,pins = <1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
-+		};
-+
-+		vsel2_pin: vsel2-pin {
-+			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
-+		};
-+	};
-+};
-+
-+&sdmmc {
-+	bus-width = <4>;
-+	cap-sd-highspeed;
-+	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
-+	disable-wp;
-+	max-frequency = <150000000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
-+	vmmc-supply = <&vcc3v3_sys>;
-+	vqmmc-supply = <&vccio_sd>;
-+	status = "okay";
-+};
-+
-+&sdhci {
-+	bus-width = <8>;
-+	mmc-hs200-1_8v;
-+	non-removable;
-+	status = "okay";
-+};
-+
-+&tsadc {
-+	rockchip,hw-tshut-mode = <1>;
-+	rockchip,hw-tshut-polarity = <1>;
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	status = "okay";
-+};
--- 
-2.37.1
+thanks,
+   -- Khalid Masum
 
