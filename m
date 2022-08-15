@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 634A2C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1851C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232819AbiHPAeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S1345921AbiHPAel (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354147AbiHPAbd (ORCPT
+        with ESMTP id S1354169AbiHPAbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:31:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D470831ECA;
-        Mon, 15 Aug 2022 13:36:34 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583B21863C2;
+        Mon, 15 Aug 2022 13:36:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E58CB80EA8;
-        Mon, 15 Aug 2022 20:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57AFC433C1;
-        Mon, 15 Aug 2022 20:36:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B53A2B8119A;
+        Mon, 15 Aug 2022 20:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DDAC433D6;
+        Mon, 15 Aug 2022 20:36:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595792;
-        bh=g53U7Pc7vbbQYGqZ6XvGCvWrGBN/w1B36+hSTLtR6IM=;
+        s=korg; t=1660595775;
+        bh=S7d4yGC4YTeNiuyO44KxFCfnQFLrUfkWQP1/fk0L3Wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rMoVZRJ7a8QA9wrM6dwDZkVbJ+R1r0DVwIm/N55GjOkmADXnSlJd6Ckzo/cB1yMpY
-         xfhFsWvanst2GFMusl7P+dICIy9pNpnMVEjNfT8YxnKCXtxyYAN+7vYBAeMVsY/EEE
-         LVWGVmnW5YM9oQ61Gen1o6bnlrnxGdzzbUfFmerI=
+        b=tnMRMwyEeWVxEAvU8gCyIapXc4M5RJ+niv3dhaRfFHecdrTVZG/8mbecn9c8Rw5C+
+         Cawnbckk2A4ifhrL8O2Ye7b7aZjAwk/CHd0AyMMiLnAy5l7jffOz+ir7Lru2bON49e
+         +k+3wZVyvaJeoRqlZwsNd/s4pmpQ6P5yPWtLbnRM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0877/1157] null_blk: fix ida error handling in null_add_dev()
-Date:   Mon, 15 Aug 2022 20:03:53 +0200
-Message-Id: <20220815180514.530110453@linuxfoundation.org>
+        stable@vger.kernel.org, Andrei Vagin <avagin@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0872/1157] selftests: kvm: set rax before vmcall
+Date:   Mon, 15 Aug 2022 20:03:48 +0200
+Message-Id: <20220815180514.342264801@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,61 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Andrei Vagin <avagin@google.com>
 
-[ Upstream commit ee452a8d984f94fa8e894f003a52e776e4572881 ]
+[ Upstream commit 281106f938d3daaea6f8b6723a8217a2a1ef6936 ]
 
-There needs to be some error checking if ida_simple_get() fails.
-Also call ida_free() if there are errors later.
+kvm_hypercall has to place the hypercall number in rax.
 
-Fixes: 94bc02e30fb8 ("nullb: use ida to manage index")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/YtEhXsr6vJeoiYhd@kili
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Trace events show that kvm_pv_test doesn't work properly:
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+
+With this change, it starts working as expected:
+     kvm_pv_test-54285: kvm_hypercall: nr 0x5 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-54285: kvm_hypercall: nr 0xa a0 0x0 a1 0x0 a2 0x0 a3 0x0
+     kvm_pv_test-54285: kvm_hypercall: nr 0xb a0 0x0 a1 0x0 a2 0x0 a3 0x0
+
+Signed-off-by: Andrei Vagin <avagin@google.com>
+Message-Id: <20220722230241.1944655-5-avagin@google.com>
+Fixes: ac4a4d6de22e ("selftests: kvm: test enforcement of paravirtual cpuid features")
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/null_blk/main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ tools/testing/selftests/kvm/lib/x86_64/processor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
-index 6b67088f4ea7..c0a0474be574 100644
---- a/drivers/block/null_blk/main.c
-+++ b/drivers/block/null_blk/main.c
-@@ -2043,8 +2043,13 @@ static int null_add_dev(struct nullb_device *dev)
- 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, nullb->q);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index ead7011ee8f6..5d85e1c021da 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -1422,7 +1422,7 @@ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
  
- 	mutex_lock(&lock);
--	nullb->index = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
--	dev->index = nullb->index;
-+	rv = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
-+	if (rv < 0) {
-+		mutex_unlock(&lock);
-+		goto out_cleanup_zone;
-+	}
-+	nullb->index = rv;
-+	dev->index = rv;
- 	mutex_unlock(&lock);
+ 	asm volatile("vmcall"
+ 		     : "=a"(r)
+-		     : "b"(a0), "c"(a1), "d"(a2), "S"(a3));
++		     : "a"(nr), "b"(a0), "c"(a1), "d"(a2), "S"(a3));
+ 	return r;
+ }
  
- 	blk_queue_logical_block_size(nullb->q, dev->blocksize);
-@@ -2070,7 +2075,7 @@ static int null_add_dev(struct nullb_device *dev)
- 
- 	rv = null_gendisk_register(nullb);
- 	if (rv)
--		goto out_cleanup_zone;
-+		goto out_ida_free;
- 
- 	mutex_lock(&lock);
- 	list_add_tail(&nullb->list, &nullb_list);
-@@ -2079,6 +2084,9 @@ static int null_add_dev(struct nullb_device *dev)
- 	pr_info("disk %s created\n", nullb->disk_name);
- 
- 	return 0;
-+
-+out_ida_free:
-+	ida_free(&nullb_indexes, nullb->index);
- out_cleanup_zone:
- 	null_free_zoned_dev(dev);
- out_cleanup_disk:
 -- 
 2.35.1
 
