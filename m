@@ -2,62 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC78C48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD45C2BB41
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244425AbiHOSvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
+        id S244487AbiHOSvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244090AbiHOSqb (ORCPT
+        with ESMTP id S244116AbiHOSqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:46:31 -0400
+        Mon, 15 Aug 2022 14:46:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1A1402F7
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FFA40BD6;
+        Mon, 15 Aug 2022 11:28:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EA2960EEB
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 18:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3F4C433C1;
-        Mon, 15 Aug 2022 18:28:04 +0000 (UTC)
-Date:   Mon, 15 Aug 2022 14:28:10 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kent Overstreet <kent.overstreet@linux.dev>
-Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH 07/11] tracing: trace_events_synth: Convert to printbuf
-Message-ID: <20220815142810.3f4e03a6@gandalf.local.home>
-In-Reply-To: <20220815175830.pndfli32u5lfa4ww@moria.home.lan>
-References: <20220815172613.621627-1-kent.overstreet@linux.dev>
-        <20220815172613.621627-8-kent.overstreet@linux.dev>
-        <20220815134314.32f3d3fc@gandalf.local.home>
-        <20220815175830.pndfli32u5lfa4ww@moria.home.lan>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79D8460FEE;
+        Mon, 15 Aug 2022 18:28:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BEEC433C1;
+        Mon, 15 Aug 2022 18:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588089;
+        bh=KH+LbbLmVGf4w93XlXej3XCKb8SjTDmLrLAJpeWu4S8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wfOGI8xTpfZyfD7pDdgREuYahR2W+cAuKjFIYW8GMUx/bp1DYhmHXeaH71whnR9Pa
+         jBCw9oxnWlLg30qqV0fc7HeIlI2nuI8BlXNuoQyddMC4Wpve0tB9oyaEnpxqHb5xRM
+         woTHdaV5qNMvmMI0YCQp0zFKJlUwY2nrxmCFKVOs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 260/779] crypto: sun8i-ss - fix error codes in allocate_flows()
+Date:   Mon, 15 Aug 2022 19:58:24 +0200
+Message-Id: <20220815180348.460484140@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 13:58:30 -0400
-Kent Overstreet <kent.overstreet@linux.dev> wrote:
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-> You specified the other tracing patch, you did not specify this one.
+[ Upstream commit d2765e1b9ac4b2d5a5d5bf17f468c9b3566c3770 ]
 
-I said: "As I said. Feel free to move seq_buf.c back into the tracing directory (but
-         still need to keep seq_buf.h in include/linux), and feel free to convert
-         all the other users besides tracing, to printbuf."
+These failure paths should return -ENOMEM.  Currently they return
+success.
 
-This is one of the tracing patches.
+Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
+Fixes: 8eec4563f152 ("crypto: sun8i-ss - do not allocate memory when handling hash requests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../crypto/allwinner/sun8i-ss/sun8i-ss-core.c    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-> 
-> Andrew, I just reran the tracing tests with this patch dropped - you can just
-> drop it, no other fixups are required.
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+index 786b6f5cf300..47b5828e35c3 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+@@ -476,25 +476,33 @@ static int allocate_flows(struct sun8i_ss_dev *ss)
+ 
+ 		ss->flows[i].biv = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].biv)
++		if (!ss->flows[i].biv) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 
+ 		for (j = 0; j < MAX_SG; j++) {
+ 			ss->flows[i].iv[j] = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 							  GFP_KERNEL | GFP_DMA);
+-			if (!ss->flows[i].iv[j])
++			if (!ss->flows[i].iv[j]) {
++				err = -ENOMEM;
+ 				goto error_engine;
++			}
+ 		}
+ 
+ 		/* the padding could be up to two block. */
+ 		ss->flows[i].pad = devm_kmalloc(ss->dev, SHA256_BLOCK_SIZE * 2,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].pad)
++		if (!ss->flows[i].pad) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 		ss->flows[i].result = devm_kmalloc(ss->dev, SHA256_DIGEST_SIZE,
+ 						   GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].result)
++		if (!ss->flows[i].result) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 
+ 		ss->flows[i].engine = crypto_engine_alloc_init(ss->dev, true);
+ 		if (!ss->flows[i].engine) {
+-- 
+2.35.1
 
-Thanks,
 
--- Steve
+
