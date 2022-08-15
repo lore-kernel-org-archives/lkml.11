@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0B3C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62099C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiHPEgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34310 "EHLO
+        id S229716AbiHPEg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbiHPEgE (ORCPT
+        with ESMTP id S230523AbiHPEgQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:36:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5DC168141;
-        Mon, 15 Aug 2022 13:27:32 -0700 (PDT)
+        Tue, 16 Aug 2022 00:36:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4C89C51F;
+        Mon, 15 Aug 2022 13:26:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2EB961135;
-        Mon, 15 Aug 2022 20:27:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E28DFC433D7;
-        Mon, 15 Aug 2022 20:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18E9AB8119B;
+        Mon, 15 Aug 2022 20:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F24EC433C1;
+        Mon, 15 Aug 2022 20:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595251;
-        bh=f0Y2ZsGdh78QdS44CPibR4Lziv2kKW+UdddkPXcdlQo=;
+        s=korg; t=1660595185;
+        bh=hV6Frwkr598I9q+vasMT+TjrxpsQwchMtgkxbByYxAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B5pUX7a1MSfEEy85vd7dNJ8rho9Jwsk1QNhW41dhWVyM2pIm0OZSN1kyohsoJImA1
-         299fpHsgHPq8ddWvahWepT/JadrtAVGG8pxFK5AvzT2i+eLdLZXxcA3qAf1+VaMcSj
-         2U/kZ8BB9LAGENQmvsSz8TtxrX6Ndf1wlIuyu+Eo=
+        b=rnozZs8/vOlPQ3BuJy4gC1L/30Pg/Jq4I2lUDcLUAm+gXtYJn4oeAfUapeeVNIHRL
+         HDpq/Ggw/0UHjvLiaZx42IL9u/rPMDiapcrWB4Zq4dJgesetCPV2Ir6YAFk6Ax2O7R
+         BKjxtcPP4wYOQmVQG4xSBNmox08Xg21wzjgMjLnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0688/1157] iio: dac: ltc2688: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:44 +0200
-Message-Id: <20220815180507.149798602@linuxfoundation.org>
+Subject: [PATCH 5.19 0683/1157] iio: dac: ad5770r: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:39 +0200
+Message-Id: <20220815180506.975723454@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,40 +53,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 2030708377a219b548a9a36da57d3852382baf1d ]
+[ Upstream commit 27f2261d16d01858b8e5baca5a1a515b040429c4 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
-
-Fixes: 832cb9eeb931 ("iio: dac: add support for ltc2688")
+Fixes: cbbb819837f6 ("iio: dac: ad5770r: Add AD5770R support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-60-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-55-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ltc2688.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5770r.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
-index 937b0d25a11c..28bdde2d3088 100644
---- a/drivers/iio/dac/ltc2688.c
-+++ b/drivers/iio/dac/ltc2688.c
-@@ -91,10 +91,10 @@ struct ltc2688_state {
- 	struct mutex lock;
- 	int vref;
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	u8 tx_data[6] ____cacheline_aligned;
-+	u8 tx_data[6] __aligned(IIO_DMA_MINALIGN);
- 	u8 rx_data[3];
+diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
+index 7e2fd32e993a..f66d67402e43 100644
+--- a/drivers/iio/dac/ad5770r.c
++++ b/drivers/iio/dac/ad5770r.c
+@@ -140,7 +140,7 @@ struct ad5770r_state {
+ 	bool				ch_pwr_down[AD5770R_MAX_CHANNELS];
+ 	bool				internal_ref;
+ 	bool				external_res;
+-	u8				transf_buf[2] ____cacheline_aligned;
++	u8				transf_buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
+ static const struct regmap_config ad5770r_spi_regmap_config = {
 -- 
 2.35.1
 
