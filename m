@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C00C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D8FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353218AbiHOX6q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        id S231893AbiHOX6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355444AbiHOXwJ (ORCPT
+        with ESMTP id S1355363AbiHOXv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:52:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D811695AE2;
-        Mon, 15 Aug 2022 13:17:00 -0700 (PDT)
+        Mon, 15 Aug 2022 19:51:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE38923F9;
+        Mon, 15 Aug 2022 13:16:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D501E60F9F;
-        Mon, 15 Aug 2022 20:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5CFBC433C1;
-        Mon, 15 Aug 2022 20:16:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4012B8115B;
+        Mon, 15 Aug 2022 20:16:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A72C433C1;
+        Mon, 15 Aug 2022 20:16:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594619;
-        bh=TMDXt7jtDWdicJEzEyNkxrX+6SxG2YI30o1x7P3pwRI=;
+        s=korg; t=1660594596;
+        bh=PS1CEPi4D0XfEoJqZTUTPxUsMO7CgGty1wu9A4YK6Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sWAgvWB0X2Mq08kSaMemthiYQ/ywv4MLea8moKrfrFG47YWj9cRsbpXkvqQCCMMgx
-         Od/qUEiQV0sHZTxbyDsH+IERjyHF1LYySX2mgv14at/i6CStpY2GgKNanjspJ7HaKa
-         AZ2/J/Z4sBEaztezUaTuICj2g7EmscQLE60cwxqk=
+        b=XEjg2Xbb18uJQWnoZUoEx4/b4Xy7InDR65YH/WVpp7qxzecF3gYXj1efzB0wqgzO0
+         A9I+Bru8rHa7uivSH+kxWxJDPAlKaTdPjf1om+kc9nClmMsp/4oeW9DJ6GvaxAQC8N
+         IiAh4WtDx6rik0hpJfp8cx7Hy5zvt2k29SAjPHj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0505/1157] media: cedrus: h265: Fix logic for not low delay flag
-Date:   Mon, 15 Aug 2022 19:57:41 +0200
-Message-Id: <20220815180459.897601855@linuxfoundation.org>
+Subject: [PATCH 5.19 0498/1157] bpf: Fix subprog names in stack traces.
+Date:   Mon, 15 Aug 2022 19:57:34 +0200
+Message-Id: <20220815180459.596420397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,74 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-[ Upstream commit f1a413902aa71044b6ec41265e5e28ebaf29a9ce ]
+[ Upstream commit 9c7c48d6a1e2eb5192ad5294c1c4dbd42a88e88b ]
 
-Now that we know real purpose of "not low delay" flag, logic for
-applying this flag should be fixed too. According to vendor and
-reference implementation, low delay is signaled when POC of current
-frame is lower than POC of at least one reference of a slice.
+The commit 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+accidently made bpf_prog_ksym_set_name() conservative for bpf subprograms.
+Fixed it so instead of "bpf_prog_tag_F" the stack traces print "bpf_prog_tag_full_subprog_name".
 
-Implement mentioned logic and invert it to conform to flag meaning. Also
-don't apply flag for I frames. They don't have any reference.
-
-This fixes decoding of 3 reference bitstreams.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+Reported-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220714211637.17150-1-alexei.starovoitov@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/sunxi/cedrus/cedrus_h265.c  | 27 ++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ kernel/bpf/verifier.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index c26e515d64c9..2f6404fccd5a 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -301,6 +301,31 @@ static void cedrus_h265_write_scaling_list(struct cedrus_ctx *ctx,
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 602366bc230f..e91d2faef160 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13526,6 +13526,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 		/* Below members will be freed only at prog->aux */
+ 		func[i]->aux->btf = prog->aux->btf;
+ 		func[i]->aux->func_info = prog->aux->func_info;
++		func[i]->aux->func_info_cnt = prog->aux->func_info_cnt;
+ 		func[i]->aux->poke_tab = prog->aux->poke_tab;
+ 		func[i]->aux->size_poke_tab = prog->aux->size_poke_tab;
+ 
+@@ -13538,9 +13539,6 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 				poke->aux = func[i]->aux;
  		}
- }
  
-+static int cedrus_h265_is_low_delay(struct cedrus_run *run)
-+{
-+	const struct v4l2_ctrl_hevc_slice_params *slice_params;
-+	const struct v4l2_hevc_dpb_entry *dpb;
-+	s32 poc;
-+	int i;
-+
-+	slice_params = run->h265.slice_params;
-+	poc = run->h265.decode_params->pic_order_cnt_val;
-+	dpb = run->h265.decode_params->dpb;
-+
-+	for (i = 0; i < slice_params->num_ref_idx_l0_active_minus1 + 1; i++)
-+		if (dpb[slice_params->ref_idx_l0[i]].pic_order_cnt_val > poc)
-+			return 1;
-+
-+	if (slice_params->slice_type != V4L2_HEVC_SLICE_TYPE_B)
-+		return 0;
-+
-+	for (i = 0; i < slice_params->num_ref_idx_l1_active_minus1 + 1; i++)
-+		if (dpb[slice_params->ref_idx_l1[i]].pic_order_cnt_val > poc)
-+			return 1;
-+
-+	return 0;
-+}
-+
- static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 			      struct cedrus_run *run)
- {
-@@ -571,7 +596,7 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 				V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED,
- 				slice_params->flags);
- 
--	if (decode_params->num_poc_st_curr_after == 0)
-+	if (slice_params->slice_type != V4L2_HEVC_SLICE_TYPE_I && !cedrus_h265_is_low_delay(run))
- 		reg |= VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY;
- 
- 	cedrus_write(dev, VE_DEC_H265_DEC_SLICE_HDR_INFO1, reg);
+-		/* Use bpf_prog_F_tag to indicate functions in stack traces.
+-		 * Long term would need debug info to populate names
+-		 */
+ 		func[i]->aux->name[0] = 'F';
+ 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
+ 		func[i]->jit_requested = 1;
 -- 
 2.35.1
 
