@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D72EC282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD12C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348153AbiHOUcL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        id S243625AbiHOUcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347754AbiHOU0f (ORCPT
+        with ESMTP id S1347942AbiHOU06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:26:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C329DFB4;
-        Mon, 15 Aug 2022 12:03:41 -0700 (PDT)
+        Mon, 15 Aug 2022 16:26:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3299F0FD;
+        Mon, 15 Aug 2022 12:03:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01704612A5;
-        Mon, 15 Aug 2022 19:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF945C433C1;
-        Mon, 15 Aug 2022 19:03:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B4BCB81062;
+        Mon, 15 Aug 2022 19:03:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4124BC433C1;
+        Mon, 15 Aug 2022 19:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590219;
-        bh=trG8oyJvYdJGnFL4oAnns9pnq+hwSnbarSZgSlzOSAQ=;
+        s=korg; t=1660590228;
+        bh=mpaC7JTvOmrNnf3T/xWqblB2Q03w8cm7v5oJam1g27I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1XOta/xmxjPe8h6fNm88wGdhbzhjyoF/aWql8YfX/lBIJgUx90XHerl2Ekaa1xmU
-         zXA5X0Gk4VG1WJv17fiI3Sec2spxxscmSK+TzwjKM+UF5fZAadmQxi4QQd+JmNKWQU
-         beqvr99cTetQe2lyPzx2K7WR6E1AJj6acuchBMsM=
+        b=Ow3VRmYYj3JtGEPKiXsTRyro6f1EY0iDKrx+U/R7ckRkM0ptXOQ9VXzuWtgYXw9IO
+         B3A1zed6991BvVdalzSxxGB8GSj1FphsNOpTwvKum4dICFWgMpPhEwEsgO17QgzqX9
+         nZB3LO6H3n+EOKsezhufaB0K7ISJlGyTgg/okaqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mark Brown <broonie@kernel.org>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0190/1095] spi: spi-altera-dfl: Fix an error handling path
-Date:   Mon, 15 Aug 2022 19:53:09 +0200
-Message-Id: <20220815180437.492814629@linuxfoundation.org>
+Subject: [PATCH 5.18 0192/1095] ACPI: processor/idle: Annotate more functions to live in cpuidle section
+Date:   Mon, 15 Aug 2022 19:53:11 +0200
+Message-Id: <20220815180437.570682105@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,66 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-[ Upstream commit 8e3ca32f46994e74b7f43c57731150b2aedb2630 ]
+[ Upstream commit 409dfdcaffb266acfc1f33529a26b1443c9332d4 ]
 
-The spi_alloc_master() call is not undone in all error handling paths.
-Moreover, there is no .remove function to release the allocated memory.
+Commit 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+introduced a new text section called cpuidle; with that, we have a mechanism
+to add idling functions in such section and skip them from nmi_backtrace
+output, since they're useless and potentially flooding for such report.
 
-In order to fix both this issues, switch to devm_spi_alloc_master().
+Happens that inlining might cause some real idle functions to end-up
+outside of such section; this is currently the case of ACPI processor_idle
+driver; the functions acpi_idle_enter_* do inline acpi_idle_do_entry(),
+hence they stay out of the cpuidle section.
+Fix that by marking such functions to also live in the cpuidle section.
 
-This allows further simplification of the probe.
-
-Fixes: ba2fc167e944 ("spi: altera: Add DFL bus driver for Altera API Controller")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0607bb59f4073f86abe5c585d35245aef0b045c6.1653805901.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-altera-dfl.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/acpi/processor_idle.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-altera-dfl.c b/drivers/spi/spi-altera-dfl.c
-index ca40923258af..596e181ae136 100644
---- a/drivers/spi/spi-altera-dfl.c
-+++ b/drivers/spi/spi-altera-dfl.c
-@@ -128,9 +128,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
- 	struct spi_master *master;
- 	struct altera_spi *hw;
- 	void __iomem *base;
--	int err = -ENODEV;
-+	int err;
- 
--	master = spi_alloc_master(dev, sizeof(struct altera_spi));
-+	master = devm_spi_alloc_master(dev, sizeof(struct altera_spi));
- 	if (!master)
- 		return -ENOMEM;
- 
-@@ -159,10 +159,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
- 	altera_spi_init_master(master);
- 
- 	err = devm_spi_register_master(dev, master);
--	if (err) {
--		dev_err(dev, "%s failed to register spi master %d\n", __func__, err);
--		goto exit;
--	}
-+	if (err)
-+		return dev_err_probe(dev, err, "%s failed to register spi master\n",
-+				     __func__);
- 
- 	if (dfl_dev->revision == FME_FEATURE_REV_MAX10_SPI_N5010)
- 		strscpy(board_info.modalias, "m10-n5010", SPI_NAME_SIZE);
-@@ -179,9 +178,6 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
- 	}
- 
- 	return 0;
--exit:
--	spi_master_put(master);
--	return err;
+diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
+index eb95e188d62b..573ba7f617e8 100644
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -602,7 +602,7 @@ static DEFINE_RAW_SPINLOCK(c3_lock);
+  * @cx: Target state context
+  * @index: index of target state
+  */
+-static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
++static int __cpuidle acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 			       struct acpi_processor *pr,
+ 			       struct acpi_processor_cx *cx,
+ 			       int index)
+@@ -659,7 +659,7 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 	return index;
  }
  
- static const struct dfl_device_id dfl_spi_altera_ids[] = {
+-static int acpi_idle_enter(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter(struct cpuidle_device *dev,
+ 			   struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+@@ -688,7 +688,7 @@ static int acpi_idle_enter(struct cpuidle_device *dev,
+ 	return index;
+ }
+ 
+-static int acpi_idle_enter_s2idle(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter_s2idle(struct cpuidle_device *dev,
+ 				  struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
 -- 
 2.35.1
 
