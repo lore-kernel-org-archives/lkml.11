@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1054C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F077CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243888AbiHOVyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S1347231AbiHOVy2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350505AbiHOVva (ORCPT
+        with ESMTP id S1350093AbiHOVuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8461910650A;
-        Mon, 15 Aug 2022 12:32:51 -0700 (PDT)
+        Mon, 15 Aug 2022 17:50:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16155BD154;
+        Mon, 15 Aug 2022 12:32:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B971C60FB9;
-        Mon, 15 Aug 2022 19:32:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB774C433C1;
-        Mon, 15 Aug 2022 19:32:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37E96B80FD3;
+        Mon, 15 Aug 2022 19:32:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677C1C433C1;
+        Mon, 15 Aug 2022 19:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591970;
-        bh=F+IUHW4HbX9SiRh8h0ul58D2aCwIe0rryQCeCZm0uYg=;
+        s=korg; t=1660591932;
+        bh=EIFqnLnUM23Nz1J6+mXn0fbS1tnry5gPG/oOFxiGxUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vR0eogViHFZEpdDJMOT31uJWc3dDkpgT7EbJVgAkb5O1UOWme1eY3NZitLJ1dc/6Q
-         ecwLH7wYscnU6ALN/BkEgZtwVqGtNTTvpjBRO9u4CWYG6v59BYay98+nN71rhUlfgr
-         BQbO7Ttr4+eR3vw4rTGYi3RHepfVOWa9YnZhBCUI=
+        b=rS3cUN29VnD9w2I/vSymQavVLN192Y0PKWX5ur5JLgHBZ0WH0W1JVx05K/H41cQM+
+         KkpOEX+Xre4zmz/mepUeCmY1te7zfFNeH7U1i0sT0CK2KFePZfyO8mpmSNanhFw1nm
+         HyxNaMfSOhN89AXkiVvJn/8JEhX8JRIbnZTNaSYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0038/1157] KVM: x86/mmu: Treat NX as a valid SPTE bit for NPT
-Date:   Mon, 15 Aug 2022 19:49:54 +0200
-Message-Id: <20220815180440.965453015@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0706/1095] clk: qcom: ipq8074: fix NSS core PLL-s
+Date:   Mon, 15 Aug 2022 20:01:45 +0200
+Message-Id: <20220815180458.594771040@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,65 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Robert Marko <robimarko@gmail.com>
 
-commit 6c6ab524cfae0799e55c82b2c1d61f1af0156f8d upstream.
+[ Upstream commit ca41ec1b30434636c56c5600b24a8d964d359d9c ]
 
-Treat the NX bit as valid when using NPT, as KVM will set the NX bit when
-the NX huge page mitigation is enabled (mindblowing) and trigger the WARN
-that fires on reserved SPTE bits being set.
+Like in IPQ6018 the NSS related Alpha PLL-s require initial configuration
+to work.
 
-KVM has required NX support for SVM since commit b26a71a1a5b9 ("KVM: SVM:
-Refuse to load kvm_amd if NX support is not available") for exactly this
-reason, but apparently it never occurred to anyone to actually test NPT
-with the mitigation enabled.
+So, obtain the regmap that is required for the Alpha PLL configuration
+and thus utilize the qcom_cc_really_probe() as we already have the regmap.
+Then utilize the Alpha PLL configs from the downstream QCA 5.4 based
+kernel to configure them.
 
-  ------------[ cut here ]------------
-  spte = 0x800000018a600ee7, level = 2, rsvd bits = 0x800f0000001fe000
-  WARNING: CPU: 152 PID: 15966 at arch/x86/kvm/mmu/spte.c:215 make_spte+0x327/0x340 [kvm]
-  Hardware name: Google, Inc. Arcadia_IT_80/Arcadia_IT_80, BIOS 10.48.0 01/27/2022
-  RIP: 0010:make_spte+0x327/0x340 [kvm]
-  Call Trace:
-   <TASK>
-   tdp_mmu_map_handle_target_level+0xc3/0x230 [kvm]
-   kvm_tdp_mmu_map+0x343/0x3b0 [kvm]
-   direct_page_fault+0x1ae/0x2a0 [kvm]
-   kvm_tdp_page_fault+0x7d/0x90 [kvm]
-   kvm_mmu_page_fault+0xfb/0x2e0 [kvm]
-   npf_interception+0x55/0x90 [kvm_amd]
-   svm_invoke_exit_handler+0x31/0xf0 [kvm_amd]
-   svm_handle_exit+0xf6/0x1d0 [kvm_amd]
-   vcpu_enter_guest+0xb6d/0xee0 [kvm]
-   ? kvm_pmu_trigger_event+0x6d/0x230 [kvm]
-   vcpu_run+0x65/0x2c0 [kvm]
-   kvm_arch_vcpu_ioctl_run+0x355/0x610 [kvm]
-   kvm_vcpu_ioctl+0x551/0x610 [kvm]
-   __se_sys_ioctl+0x77/0xc0
-   __x64_sys_ioctl+0x1d/0x20
-   do_syscall_64+0x44/0xa0
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-   </TASK>
-  ---[ end trace 0000000000000000 ]---
+This fixes the UBI32 and NSS crypto PLL-s failing to get enabled by the
+kernel.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220723013029.1753623-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b8e7e519625f ("clk: qcom: ipq8074: add remaining PLL’s")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-1-robimarko@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/mmu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 39 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4567,7 +4567,7 @@ reset_tdp_shadow_zero_bits_mask(struct k
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 541016db3c4b..1a5141da7e23 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -4371,6 +4371,33 @@ static struct clk_branch gcc_pcie0_axi_s_bridge_clk = {
+ 	},
+ };
  
- 	if (boot_cpu_is_amd())
- 		__reset_rsvds_bits_mask(shadow_zero_check, reserved_hpa_bits(),
--					context->root_role.level, false,
-+					context->root_role.level, true,
- 					boot_cpu_has(X86_FEATURE_GBPAGES),
- 					false, true);
- 	else
++static const struct alpha_pll_config ubi32_pll_config = {
++	.l = 0x4e,
++	.config_ctl_val = 0x200d4aa8,
++	.config_ctl_hi_val = 0x3c2,
++	.main_output_mask = BIT(0),
++	.aux_output_mask = BIT(1),
++	.pre_div_val = 0x0,
++	.pre_div_mask = BIT(12),
++	.post_div_val = 0x0,
++	.post_div_mask = GENMASK(9, 8),
++};
++
++static const struct alpha_pll_config nss_crypto_pll_config = {
++	.l = 0x3e,
++	.alpha = 0x0,
++	.alpha_hi = 0x80,
++	.config_ctl_val = 0x4001055b,
++	.main_output_mask = BIT(0),
++	.pre_div_val = 0x0,
++	.pre_div_mask = GENMASK(14, 12),
++	.post_div_val = 0x1 << 8,
++	.post_div_mask = GENMASK(11, 8),
++	.vco_mask = GENMASK(21, 20),
++	.vco_val = 0x0,
++	.alpha_en_mask = BIT(24),
++};
++
+ static struct clk_hw *gcc_ipq8074_hws[] = {
+ 	&gpll0_out_main_div2.hw,
+ 	&gpll6_out_main_div2.hw,
+@@ -4772,7 +4799,17 @@ static const struct qcom_cc_desc gcc_ipq8074_desc = {
+ 
+ static int gcc_ipq8074_probe(struct platform_device *pdev)
+ {
+-	return qcom_cc_probe(pdev, &gcc_ipq8074_desc);
++	struct regmap *regmap;
++
++	regmap = qcom_cc_map(pdev, &gcc_ipq8074_desc);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
++	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
++				&nss_crypto_pll_config);
++
++	return qcom_cc_really_probe(pdev, &gcc_ipq8074_desc, regmap);
+ }
+ 
+ static struct platform_driver gcc_ipq8074_driver = {
+-- 
+2.35.1
+
 
 
