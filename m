@@ -2,120 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81C8C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A490FC2BB43
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbiHPEy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S233137AbiHPE4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiHPEw5 (ORCPT
+        with ESMTP id S233885AbiHPEzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:52:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74922DC5FB;
-        Mon, 15 Aug 2022 13:50:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07751B811AE;
-        Mon, 15 Aug 2022 20:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E3E5C433D6;
-        Mon, 15 Aug 2022 20:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596609;
-        bh=MsEhOj8Qw2f+7dwtLKYlVGPmwlVQcICvLjrC7CX41Bk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h+e/yz03ViA4rEr5TBgdQ+/pRnt+ghgsPuHyjJeI8P0eYjyh4ZZZ4QU4YjjJSycdR
-         9Mt164je++yS+QW/BG7Q2PcVBkIVz48mXLGpxoLS4z4UFAvMjHtyl6YwEYMsNQP/0h
-         AGxtCkX/7Re3mO2CaiUhTSHVla+ebyIK7q0uFuxA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
-        Maximilian Heyne <mheyne@amazon.de>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.19 1135/1157] xen-blkfront: Apply feature_persistent parameter when connect
-Date:   Mon, 15 Aug 2022 20:08:11 +0200
-Message-Id: <20220815180525.838444350@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 16 Aug 2022 00:55:45 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758D11A6246
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:52:53 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id r69so7490931pgr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc;
+        bh=c+KhdgocO4zsjTWrfEV5k5L4Uxolaa6Gk/jRei7Y/Oc=;
+        b=TS0+ZzP9+U3VDMoCF/KWdxpkXkeK9XBjuv9Qdin0izW547qxfmT/bA8xx8wwbmRPMm
+         YyFvlXPDcb6xeyzuuSZDKfFQKR10Ww7hlSNSuWjku2HbH5tCvGdTad7S0zdd/exgT3Kp
+         DkK4/aWC25K2HvXNWn8tHyUzcfbT+pB+7idD9/9SgIxfRJ5pHqTz9Jo8n+NT0fyVGIgw
+         QYuKP8CDazls33bgYYwojsdwRcP+pKigDbNeoXK9tC0bRsPLjSnXrv5j0leIwJrCMiUk
+         4jQvMS6q3J3P2CwxlMjJH/k948lSu4TjZYlZXfrN5CQEgANr0UvLmqB7qtsyUPvvrNr9
+         cUYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
+        bh=c+KhdgocO4zsjTWrfEV5k5L4Uxolaa6Gk/jRei7Y/Oc=;
+        b=MO2Fx7OJrDxJQl958OzLF8LqRwvTofQWIk6Ia+R/dQ9KpDQxOzHQ/MCH9tTRSxDwgV
+         gY+w+jAubIXcNkxX0VIiAkSBoEcvyrzHAFsNPerBNLrTxqR8XWTsAtW4pR9CSQEulnUC
+         SqlXEYc1A/N0FQMZgMK2E5xPE4Ky89N0WUWzr/mnL0BcrGqR2mAHCOMJ5hsdWTzP8OSk
+         C+XpOy8qVQU+cCPV+487TsgTsJvHlC10IgYfg6xcUbtZalsOCCwAht1kbGZhdnyzXYVw
+         HLaPGaV6NifAhqT/kurMTOdbWjOZ8ef0SUj4XLgiDXoFMmN8BzOWoe6xXp2rxP1ElMfa
+         5FQQ==
+X-Gm-Message-State: ACgBeo0nCMeTb8GRYI3JZ5OSqJLtAvu9qp54BhWCz6b2ra8FFCnC7Ltt
+        /ba66Snln0l67rNw0NficcI=
+X-Google-Smtp-Source: AA6agR7rwQ+jhfuSVG+xP3HP1o2g8wJCiy47OwluqMsTQl2gJNobuOXBh1yf09JSr8vzaFu8WioaYA==
+X-Received: by 2002:a63:cf0d:0:b0:429:983d:272a with SMTP id j13-20020a63cf0d000000b00429983d272amr1746473pgg.209.1660596772468;
+        Mon, 15 Aug 2022 13:52:52 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902f78200b0016d1f474653sm7437465pln.52.2022.08.15.13.52.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Aug 2022 13:52:51 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH v3 5/7] mm: Remember young/dirty bit for page migrations
+From:   Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <YvqcGq44oonHNyCO@xz-m1.local>
+Date:   Mon, 15 Aug 2022 13:52:49 -0700
+Cc:     "Huang, Ying" <ying.huang@intel.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andi Kleen <andi.kleen@intel.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5B21352C-2BE6-4070-BB6B-C1B7A5D4D225@gmail.com>
+References: <20220809220100.20033-1-peterx@redhat.com>
+ <20220809220100.20033-6-peterx@redhat.com> <YvUeB0jc6clz59z5@xz-m1.local>
+ <87pmh6dwdr.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <YvqcGq44oonHNyCO@xz-m1.local>
+To:     Peter Xu <peterx@redhat.com>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: SeongJae Park <sj@kernel.org>
+On Aug 15, 2022, at 12:18 PM, Peter Xu <peterx@redhat.com> wrote:
 
-commit 402c43ea6b34a1b371ffeed9adf907402569eaf5 upstream.
+> On Fri, Aug 12, 2022 at 10:32:48AM +0800, Huang, Ying wrote:
+>> Peter Xu <peterx@redhat.com> writes:
+>>=20
+>>> On Tue, Aug 09, 2022 at 06:00:58PM -0400, Peter Xu wrote:
+>>>> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+>>>> index 27fb37d65476..699f821b8443 100644
+>>>> --- a/mm/migrate_device.c
+>>>> +++ b/mm/migrate_device.c
+>>>> @@ -221,6 +221,10 @@ static int migrate_vma_collect_pmd(pmd_t =
+*pmdp,
+>>>> 			else
+>>>> 				entry =3D make_readable_migration_entry(
+>>>> 							=
+page_to_pfn(page));
+>>>> +			if (pte_young(pte))
+>>>> +				entry =3D =
+make_migration_entry_young(entry);
+>>>> +			if (pte_dirty(pte))
+>>>> +				entry =3D =
+make_migration_entry_dirty(entry);
+>>>> 			swp_pte =3D swp_entry_to_pte(entry);
+>>>> 			if (pte_present(pte)) {
+>>>> 				if (pte_soft_dirty(pte))
+>>>=20
+>>> This change needs to be wrapped with pte_present() at least..
+>>>=20
+>>> I also just noticed that this change probably won't help anyway =
+because:
+>>>=20
+>>>  (1) When ram->device, the pte will finally be replaced with a =
+device
+>>>      private entry, and device private entry does not yet support =
+A/D, it
+>>>      means A/D will be dropped again,
+>>>=20
+>>>  (2) When device->ram, we are missing information on either A/D =
+bits, or
+>>>      even if device private entries start to suport A/D, it's still =
+not
+>>>      clear whether we should take device read/write into =
+considerations
+>>>      too on the page A/D bits to be accurate.
+>>>=20
+>>> I think I'll probably keep the code there for completeness, but I =
+think it
+>>> won't really help much until more things are done.
+>>=20
+>> It appears that there are more issues.  Between "pte =3D *ptep" and =
+pte
+>> clear, CPU may set A/D bit in PTE, so we may need to update pte when
+>> clearing PTE.
+>=20
+> Agreed, I didn't see it a huge problem with current code, but it =
+should be
+> better in that way.
+>=20
+>> And I don't find the TLB is flushed in some cases after PTE is =
+cleared.
+>=20
+> I think it's okay to not flush tlb if pte not present.  But maybe =
+you're
+> talking about something else?
 
-In some use cases[1], the backend is created while the frontend doesn't
-support the persistent grants feature, but later the frontend can be
-changed to support the feature and reconnect.  In the past, 'blkback'
-enabled the persistent grants feature since it unconditionally checked
-if frontend supports the persistent grants feature for every connect
-('connect_ring()') and decided whether it should use persistent grans or
-not.
+I think Huang refers to situation in which the PTE is cleared, still not
+flushed, and then A/D is being set by the hardware.
 
-However, commit aac8a70db24b ("xen-blkback: add a parameter for
-disabling of persistent grants") has mistakenly changed the behavior.
-It made the frontend feature support check to not be repeated once it
-shown the 'feature_persistent' as 'false', or the frontend doesn't
-support persistent grants.
+At least on x86, the hardware is not supposed to do so. The only case I
+remember (and sometimes misremembers) is with KNL erratum, which perhaps
+needs to be considered:
 
-Similar behavioral change has made on 'blkfront' by commit 74a852479c68
-("xen-blkfront: add a parameter for disabling of persistent grants").
-This commit changes the behavior of the parameter to make effect for
-every connect, so that the previous behavior of 'blkfront' can be
-restored.
-
-[1] https://lore.kernel.org/xen-devel/CAJwUmVB6H3iTs-C+U=v-pwJB7-_ZRHPxHzKRJZ22xEPW7z8a=g@mail.gmail.com/
-
-Fixes: 74a852479c68 ("xen-blkfront: add a parameter for disabling of persistent grants")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: SeongJae Park <sj@kernel.org>
-Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220715225108.193398-4-sj@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/ABI/testing/sysfs-driver-xen-blkfront |    2 +-
- drivers/block/xen-blkfront.c                        |    4 +---
- 2 files changed, 2 insertions(+), 4 deletions(-)
-
---- a/Documentation/ABI/testing/sysfs-driver-xen-blkfront
-+++ b/Documentation/ABI/testing/sysfs-driver-xen-blkfront
-@@ -15,5 +15,5 @@ KernelVersion:  5.10
- Contact:        Maximilian Heyne <mheyne@amazon.de>
- Description:
-                 Whether to enable the persistent grants feature or not.  Note
--                that this option only takes effect on newly created frontends.
-+                that this option only takes effect on newly connected frontends.
-                 The default is Y (enable).
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -1988,8 +1988,6 @@ static int blkfront_probe(struct xenbus_
- 	info->vdevice = vdevice;
- 	info->connected = BLKIF_STATE_DISCONNECTED;
- 
--	info->feature_persistent = feature_persistent;
--
- 	/* Front end dir is a number, which is used as the id. */
- 	info->handle = simple_strtoul(strrchr(dev->nodename, '/')+1, NULL, 0);
- 	dev_set_drvdata(&dev->dev, info);
-@@ -2283,7 +2281,7 @@ static void blkfront_gather_backend_feat
- 	if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
- 		blkfront_setup_discard(info);
- 
--	if (info->feature_persistent)
-+	if (feature_persistent)
- 		info->feature_persistent =
- 			!!xenbus_read_unsigned(info->xbdev->otherend,
- 					       "feature-persistent", 0);
-
+https://lore.kernel.org/all/20160708001911.9A3FD2B6@viggo.jf.intel.com/
 
