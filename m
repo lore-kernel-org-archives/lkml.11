@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3D4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E60FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348310AbiHOWZW (ORCPT
+        id S1348409AbiHOWZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        Mon, 15 Aug 2022 18:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350805AbiHOWSg (ORCPT
+        with ESMTP id S1350806AbiHOWSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:18:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B13565661;
-        Mon, 15 Aug 2022 12:42:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5608A3FA23;
+        Mon, 15 Aug 2022 12:42:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF8260FB9;
-        Mon, 15 Aug 2022 19:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB1FC433C1;
-        Mon, 15 Aug 2022 19:42:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E775E610A3;
+        Mon, 15 Aug 2022 19:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4CA6C433D6;
+        Mon, 15 Aug 2022 19:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592533;
-        bh=5tQcWzGBH9Zfsy2940dlc+C27COTT4bscnlNFqRCDGo=;
+        s=korg; t=1660592536;
+        bh=OggAWeCjBbOVAOvprMgUN8UYloEZQLkYuRLZdxCUCV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMGfvnQDCSpqHLFIojp0Pt7yPLKS7vNm3uC4U0RI9hXf9glSvDR0/oS6WIq/D+TXS
-         IZd8l2BAoVQ0yyWM+j3d9fhRoAKumo0rARYQwF3aQ6BNBXdTPwkcgze8suHyDfOVhe
-         989BEZjLOXEzYPZ4eXiUgU0CAGJ+BjZBYXzXkpXY=
+        b=s1yw+Cz8UZLmszdteRROVKaDaKKaJ3DD3PexnTJ5OaYohuVk3LvjZjtIqX6eBGI2p
+         B0+ER0xlAtHJf1NuG+byWAntHyJW5Va/w8KWXBppRLNra66yJtgFNBGAPHQeAugoc4
+         SnpzAtPtA+sn88eQPiCWnmKDuxhDo6W/CCcUEezs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li Zhijian <lizhijian@fujitsu.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0804/1095] RDMA/srpt: Fix a use-after-free
-Date:   Mon, 15 Aug 2022 20:03:23 +0200
-Message-Id: <20220815180502.534981419@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.19 0126/1157] powerpc/64e: Fix early TLB miss with KUAP
+Date:   Mon, 15 Aug 2022 19:51:22 +0200
+Message-Id: <20220815180444.659154606@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,306 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit b5605148e6ce36bb21020d49010b617693933128 ]
+commit 09317643117ade87c03158341e87466413fa8f1a upstream.
 
-Change the LIO port members inside struct srpt_port from regular members
-into pointers. Allocate the LIO port data structures from inside
-srpt_make_tport() and free these from inside srpt_make_tport(). Keep
-struct srpt_device as long as either an RDMA port or a LIO target port is
-associated with it. This patch decouples the lifetime of struct srpt_port
-(controlled by the RDMA core) and struct srpt_port_id (controlled by LIO).
-This patch fixes the following KASAN complaint:
+With KUAP, the TLB miss handler bails out when an access to user
+memory is performed with a nul TID.
 
-  BUG: KASAN: use-after-free in srpt_enable_tpg+0x31/0x70 [ib_srpt]
-  Read of size 8 at addr ffff888141cc34b8 by task check/5093
+But the normal TLB miss routine which is only used early during boot
+does the check regardless for all memory areas, not only user memory.
 
-  Call Trace:
-   <TASK>
-   show_stack+0x4e/0x53
-   dump_stack_lvl+0x51/0x66
-   print_address_description.constprop.0.cold+0xea/0x41e
-   print_report.cold+0x90/0x205
-   kasan_report+0xb9/0xf0
-   __asan_load8+0x69/0x90
-   srpt_enable_tpg+0x31/0x70 [ib_srpt]
-   target_fabric_tpg_base_enable_store+0xe2/0x140 [target_core_mod]
-   configfs_write_iter+0x18b/0x210
-   new_sync_write+0x1f2/0x2f0
-   vfs_write+0x3e3/0x540
-   ksys_write+0xbb/0x140
-   __x64_sys_write+0x42/0x50
-   do_syscall_64+0x34/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-   </TASK>
+By chance there is no early IO or vmalloc access, but when KASAN
+come we will start having early TLB misses.
 
-Link: https://lore.kernel.org/r/20220727193415.1583860-4-bvanassche@acm.org
-Reported-by: Li Zhijian <lizhijian@fujitsu.com>
-Tested-by: Li Zhijian <lizhijian@fujitsu.com>
-Fixes: a42d985bd5b2 ("ib_srpt: Initial SRP Target merge for v3.3-rc1")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix it by creating a special branch for user accesses similar to the
+one in the 'bolted' TLB miss handlers. Unfortunately SPRN_MAS1 is
+now read too early and there are no registers available to preserve
+it so it will be read a second time.
+
+Fixes: 57bc963837f5 ("powerpc/kuap: Wire-up KUAP on book3e/64")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/8d6c5859a45935d6e1a336da4dc20be421e8cea7.1656427701.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/ulp/srpt/ib_srpt.c | 130 ++++++++++++++++++--------
- drivers/infiniband/ulp/srpt/ib_srpt.h |  10 +-
- 2 files changed, 94 insertions(+), 46 deletions(-)
+ arch/powerpc/mm/nohash/tlb_low_64e.S |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
-index 1fbce9225424..c3036aeac89e 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.c
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
-@@ -565,18 +565,12 @@ static int srpt_refresh_port(struct srpt_port *sport)
- 	if (ret)
- 		return ret;
+--- a/arch/powerpc/mm/nohash/tlb_low_64e.S
++++ b/arch/powerpc/mm/nohash/tlb_low_64e.S
+@@ -583,7 +583,7 @@ itlb_miss_fault_e6500:
+ 	 */
+ 	rlwimi	r11,r14,32-19,27,27
+ 	rlwimi	r11,r14,32-16,19,19
+-	beq	normal_tlb_miss
++	beq	normal_tlb_miss_user
+ 	/* XXX replace the RMW cycles with immediate loads + writes */
+ 1:	mfspr	r10,SPRN_MAS1
+ 	cmpldi	cr0,r15,8		/* Check for vmalloc region */
+@@ -626,7 +626,7 @@ itlb_miss_fault_e6500:
  
--	sport->port_guid_id.wwn.priv = sport;
- 	srpt_format_guid(sport->guid_name, ARRAY_SIZE(sport->guid_name),
- 			 &sport->gid.global.interface_id);
--	memcpy(sport->port_guid_id.name, sport->guid_name,
--	       ARRAY_SIZE(sport->guid_name));
--	sport->port_gid_id.wwn.priv = sport;
- 	snprintf(sport->gid_name, ARRAY_SIZE(sport->gid_name),
- 		 "0x%016llx%016llx",
- 		 be64_to_cpu(sport->gid.global.subnet_prefix),
- 		 be64_to_cpu(sport->gid.global.interface_id));
--	memcpy(sport->port_gid_id.name, sport->gid_name,
--	       ARRAY_SIZE(sport->gid_name));
+ 	cmpldi	cr0,r15,0			/* Check for user region */
+ 	std	r14,EX_TLB_ESR(r12)		/* write crazy -1 to frame */
+-	beq	normal_tlb_miss
++	beq	normal_tlb_miss_user
  
- 	if (rdma_protocol_iwarp(sport->sdev->device, sport->port))
- 		return 0;
-@@ -2317,31 +2311,35 @@ static int srpt_cm_req_recv(struct srpt_device *const sdev,
- 	tag_num = ch->rq_size;
- 	tag_size = 1; /* ib_srpt does not use se_sess->sess_cmd_map */
- 
--	mutex_lock(&sport->port_guid_id.mutex);
--	list_for_each_entry(stpg, &sport->port_guid_id.tpg_list, entry) {
--		if (!IS_ERR_OR_NULL(ch->sess))
--			break;
--		ch->sess = target_setup_session(&stpg->tpg, tag_num,
-+	if (sport->guid_id) {
-+		mutex_lock(&sport->guid_id->mutex);
-+		list_for_each_entry(stpg, &sport->guid_id->tpg_list, entry) {
-+			if (!IS_ERR_OR_NULL(ch->sess))
-+				break;
-+			ch->sess = target_setup_session(&stpg->tpg, tag_num,
- 						tag_size, TARGET_PROT_NORMAL,
- 						ch->sess_name, ch, NULL);
-+		}
-+		mutex_unlock(&sport->guid_id->mutex);
- 	}
--	mutex_unlock(&sport->port_guid_id.mutex);
- 
--	mutex_lock(&sport->port_gid_id.mutex);
--	list_for_each_entry(stpg, &sport->port_gid_id.tpg_list, entry) {
--		if (!IS_ERR_OR_NULL(ch->sess))
--			break;
--		ch->sess = target_setup_session(&stpg->tpg, tag_num,
-+	if (sport->gid_id) {
-+		mutex_lock(&sport->gid_id->mutex);
-+		list_for_each_entry(stpg, &sport->gid_id->tpg_list, entry) {
-+			if (!IS_ERR_OR_NULL(ch->sess))
-+				break;
-+			ch->sess = target_setup_session(&stpg->tpg, tag_num,
- 					tag_size, TARGET_PROT_NORMAL, i_port_id,
- 					ch, NULL);
--		if (!IS_ERR_OR_NULL(ch->sess))
--			break;
--		/* Retry without leading "0x" */
--		ch->sess = target_setup_session(&stpg->tpg, tag_num,
-+			if (!IS_ERR_OR_NULL(ch->sess))
-+				break;
-+			/* Retry without leading "0x" */
-+			ch->sess = target_setup_session(&stpg->tpg, tag_num,
- 						tag_size, TARGET_PROT_NORMAL,
- 						i_port_id + 2, ch, NULL);
-+		}
-+		mutex_unlock(&sport->gid_id->mutex);
- 	}
--	mutex_unlock(&sport->port_gid_id.mutex);
- 
- 	if (IS_ERR_OR_NULL(ch->sess)) {
- 		WARN_ON_ONCE(ch->sess == NULL);
-@@ -2986,7 +2984,12 @@ static int srpt_release_sport(struct srpt_port *sport)
- 	return 0;
- }
- 
--static struct se_wwn *__srpt_lookup_wwn(const char *name)
-+struct port_and_port_id {
-+	struct srpt_port *sport;
-+	struct srpt_port_id **port_id;
-+};
-+
-+static struct port_and_port_id __srpt_lookup_port(const char *name)
- {
- 	struct ib_device *dev;
- 	struct srpt_device *sdev;
-@@ -3001,25 +3004,38 @@ static struct se_wwn *__srpt_lookup_wwn(const char *name)
- 		for (i = 0; i < dev->phys_port_cnt; i++) {
- 			sport = &sdev->port[i];
- 
--			if (strcmp(sport->port_guid_id.name, name) == 0)
--				return &sport->port_guid_id.wwn;
--			if (strcmp(sport->port_gid_id.name, name) == 0)
--				return &sport->port_gid_id.wwn;
-+			if (strcmp(sport->guid_name, name) == 0) {
-+				kref_get(&sdev->refcnt);
-+				return (struct port_and_port_id){
-+					sport, &sport->guid_id};
-+			}
-+			if (strcmp(sport->gid_name, name) == 0) {
-+				kref_get(&sdev->refcnt);
-+				return (struct port_and_port_id){
-+					sport, &sport->gid_id};
-+			}
- 		}
- 	}
- 
--	return NULL;
-+	return (struct port_and_port_id){};
- }
- 
--static struct se_wwn *srpt_lookup_wwn(const char *name)
-+/**
-+ * srpt_lookup_port() - Look up an RDMA port by name
-+ * @name: ASCII port name
-+ *
-+ * Increments the RDMA port reference count if an RDMA port pointer is returned.
-+ * The caller must drop that reference count by calling srpt_port_put_ref().
-+ */
-+static struct port_and_port_id srpt_lookup_port(const char *name)
- {
--	struct se_wwn *wwn;
-+	struct port_and_port_id papi;
- 
- 	spin_lock(&srpt_dev_lock);
--	wwn = __srpt_lookup_wwn(name);
-+	papi = __srpt_lookup_port(name);
- 	spin_unlock(&srpt_dev_lock);
- 
--	return wwn;
-+	return papi;
- }
- 
- static void srpt_free_srq(struct srpt_device *sdev)
-@@ -3198,10 +3214,6 @@ static int srpt_add_one(struct ib_device *device)
- 		sport->port_attrib.srp_sq_size = DEF_SRPT_SQ_SIZE;
- 		sport->port_attrib.use_srq = false;
- 		INIT_WORK(&sport->work, srpt_refresh_port_work);
--		mutex_init(&sport->port_guid_id.mutex);
--		INIT_LIST_HEAD(&sport->port_guid_id.tpg_list);
--		mutex_init(&sport->port_gid_id.mutex);
--		INIT_LIST_HEAD(&sport->port_gid_id.tpg_list);
- 
- 		ret = srpt_refresh_port(sport);
- 		if (ret) {
-@@ -3302,10 +3314,10 @@ static struct srpt_port_id *srpt_wwn_to_sport_id(struct se_wwn *wwn)
- {
- 	struct srpt_port *sport = wwn->priv;
- 
--	if (wwn == &sport->port_guid_id.wwn)
--		return &sport->port_guid_id;
--	if (wwn == &sport->port_gid_id.wwn)
--		return &sport->port_gid_id;
-+	if (sport->guid_id && &sport->guid_id->wwn == wwn)
-+		return sport->guid_id;
-+	if (sport->gid_id && &sport->gid_id->wwn == wwn)
-+		return sport->gid_id;
- 	WARN_ON_ONCE(true);
- 	return NULL;
- }
-@@ -3790,7 +3802,31 @@ static struct se_wwn *srpt_make_tport(struct target_fabric_configfs *tf,
- 				      struct config_group *group,
- 				      const char *name)
- {
--	return srpt_lookup_wwn(name) ? : ERR_PTR(-EINVAL);
-+	struct port_and_port_id papi = srpt_lookup_port(name);
-+	struct srpt_port *sport = papi.sport;
-+	struct srpt_port_id *port_id;
-+
-+	if (!papi.port_id)
-+		return ERR_PTR(-EINVAL);
-+	if (*papi.port_id) {
-+		/* Attempt to create a directory that already exists. */
-+		WARN_ON_ONCE(true);
-+		return &(*papi.port_id)->wwn;
-+	}
-+	port_id = kzalloc(sizeof(*port_id), GFP_KERNEL);
-+	if (!port_id) {
-+		srpt_sdev_put(sport->sdev);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+	mutex_init(&port_id->mutex);
-+	INIT_LIST_HEAD(&port_id->tpg_list);
-+	port_id->wwn.priv = sport;
-+	memcpy(port_id->name, port_id == sport->guid_id ? sport->guid_name :
-+	       sport->gid_name, ARRAY_SIZE(port_id->name));
-+
-+	*papi.port_id = port_id;
-+
-+	return &port_id->wwn;
- }
- 
- /**
-@@ -3799,6 +3835,18 @@ static struct se_wwn *srpt_make_tport(struct target_fabric_configfs *tf,
+ 	li	r11,_PAGE_PRESENT|_PAGE_BAP_SX	/* Base perm */
+ 	oris	r11,r11,_PAGE_ACCESSED@h
+@@ -653,6 +653,12 @@ itlb_miss_fault_e6500:
+  * r11 = PTE permission mask
+  * r10 = crap (free to use)
   */
- static void srpt_drop_tport(struct se_wwn *wwn)
- {
-+	struct srpt_port_id *port_id = container_of(wwn, typeof(*port_id), wwn);
-+	struct srpt_port *sport = wwn->priv;
-+
-+	if (sport->guid_id == port_id)
-+		sport->guid_id = NULL;
-+	else if (sport->gid_id == port_id)
-+		sport->gid_id = NULL;
-+	else
-+		WARN_ON_ONCE(true);
-+
-+	srpt_sdev_put(sport->sdev);
-+	kfree(port_id);
- }
++normal_tlb_miss_user:
++#ifdef CONFIG_PPC_KUAP
++	mfspr	r14,SPRN_MAS1
++	rlwinm.	r14,r14,0,0x3fff0000
++	beq-	normal_tlb_miss_access_fault /* KUAP fault */
++#endif
+ normal_tlb_miss:
+ 	/* So we first construct the page table address. We do that by
+ 	 * shifting the bottom of the address (not the region ID) by
+@@ -683,11 +689,6 @@ finish_normal_tlb_miss:
+ 	/* Check if required permissions are met */
+ 	andc.	r15,r11,r14
+ 	bne-	normal_tlb_miss_access_fault
+-#ifdef CONFIG_PPC_KUAP
+-	mfspr	r11,SPRN_MAS1
+-	rlwinm.	r10,r11,0,0x3fff0000
+-	beq-	normal_tlb_miss_access_fault /* KUAP fault */
+-#endif
  
- static ssize_t srpt_wwn_version_show(struct config_item *item, char *buf)
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
-index 0cb867d580f1..4c46b301eea1 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.h
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
-@@ -393,7 +393,7 @@ struct srpt_port_id {
- };
- 
- /**
-- * struct srpt_port - information associated by SRPT with a single IB port
-+ * struct srpt_port - SRPT RDMA port information
-  * @sdev:      backpointer to the HCA information.
-  * @mad_agent: per-port management datagram processing information.
-  * @enabled:   Whether or not this target port is enabled.
-@@ -403,9 +403,9 @@ struct srpt_port_id {
-  * @gid:       cached value of the port's gid.
-  * @work:      work structure for refreshing the aforementioned cached values.
-  * @guid_name: port name in GUID format.
-- * @port_guid_id: LIO target port information for the port name in GUID format.
-+ * @guid_id:   LIO target port information for the port name in GUID format.
-  * @gid_name:  port name in GID format.
-- * @port_gid_id: LIO target port information for the port name in GID format.
-+ * @gid_id:    LIO target port information for the port name in GID format.
-  * @port_attrib:   Port attributes that can be accessed through configfs.
-  * @refcount:	   Number of objects associated with this port.
-  * @freed_channels: Completion that will be signaled once @refcount becomes 0.
-@@ -422,9 +422,9 @@ struct srpt_port {
- 	union ib_gid		gid;
- 	struct work_struct	work;
- 	char			guid_name[64];
--	struct srpt_port_id	port_guid_id;
-+	struct srpt_port_id	*guid_id;
- 	char			gid_name[64];
--	struct srpt_port_id	port_gid_id;
-+	struct srpt_port_id	*gid_id;
- 	struct srpt_port_attrib port_attrib;
- 	atomic_t		refcount;
- 	struct completion	*freed_channels;
--- 
-2.35.1
-
+ 	/* Now we build the MAS:
+ 	 *
+@@ -709,9 +710,7 @@ finish_normal_tlb_miss:
+ 	rldicl	r10,r14,64-8,64-8
+ 	cmpldi	cr0,r10,BOOK3E_PAGESZ_4K
+ 	beq-	1f
+-#ifndef CONFIG_PPC_KUAP
+ 	mfspr	r11,SPRN_MAS1
+-#endif
+ 	rlwimi	r11,r14,31,21,24
+ 	rlwinm	r11,r11,0,21,19
+ 	mtspr	SPRN_MAS1,r11
 
 
