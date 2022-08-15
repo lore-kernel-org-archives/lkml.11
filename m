@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0F8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56257C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbiHOTS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
+        id S244830AbiHOTTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344307AbiHOTQU (ORCPT
+        with ESMTP id S1344319AbiHOTQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:16:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A54752FD5;
-        Mon, 15 Aug 2022 11:38:07 -0700 (PDT)
+        Mon, 15 Aug 2022 15:16:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01CD52DFB;
+        Mon, 15 Aug 2022 11:37:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B972161143;
-        Mon, 15 Aug 2022 18:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFC6C433D6;
-        Mon, 15 Aug 2022 18:38:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCDC3B81085;
+        Mon, 15 Aug 2022 18:37:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D3DFC433D6;
+        Mon, 15 Aug 2022 18:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588685;
-        bh=drjjw1OcmSZKyXWnDea21kgHQ4W665P0NdF114hFKv8=;
+        s=korg; t=1660588672;
+        bh=6mHqTLvsLe9gEjJsECa4NskXIAM/yP00pb612SforuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K+8nLpS3NJEymhs4GQb7goDIIG1z7kYnGfMSVwqNoGKLC52L3Mrdz65TzM/WqUXdZ
-         9/avVJUHR080yk3ZdLQErnOx2bMCT0QmKSO3SqpJdkv18CY+J+pzZ5Bl3nnzt/nI4T
-         riPracJA9cfjLv5JYif2JIS/u6LZi0HHWTBTFx78=
+        b=xwty51L+3TcJnmwUMFzWp5y4HfEyu2Wis/PRfB35jfo4fhdBvG0KMzo+6ZYEXYNNW
+         ldmpLVyiy8uMRuqpI7RoXTZ6w06VYku2A3Uf7yUIFAP5Hu40RlJFDYfIljhO9QGSVV
+         jCMQgT0qqN63J9qw63EnNpIIiFwsArYvvYKXEdew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.15 482/779] of: device: Fix missing of_node_put() in of_dma_set_restricted_buffer
-Date:   Mon, 15 Aug 2022 20:02:06 +0200
-Message-Id: <20220815180357.856053649@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 478/779] mmc: renesas_sdhi: Get the reset handle early in the probe
+Date:   Mon, 15 Aug 2022 20:02:02 +0200
+Message-Id: <20220815180357.702831259@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,40 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit d17e37c41b7ed38459957a5d2968ba61516fd5c2 ]
+[ Upstream commit 0dac1e498f8130fdacfdd5289e3a7ac87ec1b9ad ]
 
-We should use of_node_put() for the reference 'node' returned by
-of_parse_phandle() which will increase the refcount.
+In case of devm_reset_control_get_optional_exclusive() failure we returned
+directly instead of jumping to the error path to roll back initialization.
 
-Fixes: fec9b625095f ("of: Add plumbing for restricted DMA pool")
-Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220702014449.263772-1-windhl@126.com
+This patch moves devm_reset_control_get_optional_exclusive() early in the
+probe so that we have the reset handle prior to initialization of the
+hardware.
+
+Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Link: https://lore.kernel.org/r/20220624181438.4355-2-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/device.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mmc/host/renesas_sdhi_core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index b0800c260f64..45335fe523f7 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -81,8 +81,11 @@ of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
- 		 * restricted-dma-pool region is allowed.
- 		 */
- 		if (of_device_is_compatible(node, "restricted-dma-pool") &&
--		    of_device_is_available(node))
-+		    of_device_is_available(node)) {
-+			of_node_put(node);
- 			break;
-+		}
-+		of_node_put(node);
- 	}
+diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
+index ae689bf54686..791e180a0617 100644
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -925,6 +925,10 @@ int renesas_sdhi_probe(struct platform_device *pdev,
+ 	if (IS_ERR(priv->clk_cd))
+ 		priv->clk_cd = NULL;
  
- 	/*
++	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
++	if (IS_ERR(priv->rstc))
++		return PTR_ERR(priv->rstc);
++
+ 	priv->pinctrl = devm_pinctrl_get(&pdev->dev);
+ 	if (!IS_ERR(priv->pinctrl)) {
+ 		priv->pins_default = pinctrl_lookup_state(priv->pinctrl,
+@@ -1013,10 +1017,6 @@ int renesas_sdhi_probe(struct platform_device *pdev,
+ 	if (ret)
+ 		goto efree;
+ 
+-	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+-	if (IS_ERR(priv->rstc))
+-		return PTR_ERR(priv->rstc);
+-
+ 	ver = sd_ctrl_read16(host, CTL_VERSION);
+ 	/* GEN2_SDR104 is first known SDHI to use 32bit block count */
+ 	if (ver < SDHI_VER_GEN2_SDR104 && mmc_data->max_blk_count > U16_MAX)
 -- 
 2.35.1
 
