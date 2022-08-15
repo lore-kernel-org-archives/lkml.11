@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16584C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B624C2BBC5
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245277AbiHOVFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
+        id S245681AbiHOVFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245501AbiHOVDN (ORCPT
+        with ESMTP id S242801AbiHOVDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:03:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7596D51439;
-        Mon, 15 Aug 2022 12:14:24 -0700 (PDT)
+        Mon, 15 Aug 2022 17:03:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12A9D2EA4;
+        Mon, 15 Aug 2022 12:14:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C70F2B81115;
-        Mon, 15 Aug 2022 19:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D18C433D6;
-        Mon, 15 Aug 2022 19:14:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E81A1B81109;
+        Mon, 15 Aug 2022 19:14:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B33DC433C1;
+        Mon, 15 Aug 2022 19:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590861;
-        bh=ezz1QrZMZah4z8XFs+tXhhTISclPhpkXp32xMw1dyyI=;
+        s=korg; t=1660590867;
+        bh=Axapi9ZUMEYfwtt328vt8/8TF7uU1uOdwcal1zqH1e8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JygA0IXLX3e8KrO6mAcd4PQ5Uufe9DnlnfNHenBDGkJyQ3iFp0YqRg1LirhlYN+vI
-         WJOKf6RceeEySfhz16in0qH6+XqFdbaRUZ7ww2X0nnB7DYlchzUIdTCwh+2wHCwD20
-         3meTnIwMlGyxsXiOkz+BnvpI/gxthUVF6xPD8HM8=
+        b=AnJY/e4inu3ooTbQPwuyLgZtqYEAOqNiyVxej2bEVY9pB/DGwNkCbojy3qSirpECg
+         8uMG33YhIP3dSnsmvqVeJ/aDwzQxgrQvr7oEm17+QS+7CEjut1X1Tkehmie4NX+24x
+         XESva6ZmxktbYsZAaaCO4taLEbDs2L++gfna9bLM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0393/1095] drm/vc4: hdmi: Clear unused infoframe packet RAM registers
-Date:   Mon, 15 Aug 2022 19:56:32 +0200
-Message-Id: <20220815180445.956193355@linuxfoundation.org>
+Subject: [PATCH 5.18 0365/1095] rcutorture: Make kvm.sh allow more memory for --kasan runs
+Date:   Mon, 15 Aug 2022 19:56:04 +0200
+Message-Id: <20220815180444.817283309@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,56 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dom Cobley <popcornmix@gmail.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit b6079d1578dc4b4b8050d613a5449a63def7d1dd ]
+[ Upstream commit 31015625768e6d8bc808a892b221b69afaaa8d07 ]
 
-Using a hdmi analyser the bytes in packet ram
-registers beyond the length were visible in the
-infoframes and it flagged the checksum as invalid.
+KASAN allots significant memory to track allocation state, and the amount
+of memory has increased recently, which results in frequent OOMs on a
+few of the rcutorture scenarios.  This commit therefore provides 2G of
+memory for --kasan runs, up from the 512M default.
 
-Zeroing unused words of packet RAM avoids this
-
-Fixes: 21317b3fba54 ("drm/vc4: Set up the AVI and SPD infoframes.")
-Signed-off-by: Dom Cobley <popcornmix@gmail.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-20-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ tools/testing/selftests/rcutorture/bin/kvm.sh | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 2ff53482d5d1..0fe04b1f9782 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -439,9 +439,11 @@ static void vc4_hdmi_write_infoframe(struct drm_encoder *encoder,
- 	const struct vc4_hdmi_register *ram_packet_start =
- 		&vc4_hdmi->variant->registers[HDMI_RAM_PACKET_START];
- 	u32 packet_reg = ram_packet_start->offset + VC4_HDMI_PACKET_STRIDE * packet_id;
-+	u32 packet_reg_next = ram_packet_start->offset +
-+		VC4_HDMI_PACKET_STRIDE * (packet_id + 1);
- 	void __iomem *base = __vc4_hdmi_get_field_base(vc4_hdmi,
- 						       ram_packet_start->reg);
--	uint8_t buffer[VC4_HDMI_PACKET_STRIDE];
-+	uint8_t buffer[VC4_HDMI_PACKET_STRIDE] = {};
- 	unsigned long flags;
- 	ssize_t len, i;
- 	int ret;
-@@ -477,6 +479,13 @@ static void vc4_hdmi_write_infoframe(struct drm_encoder *encoder,
- 		packet_reg += 4;
- 	}
- 
-+	/*
-+	 * clear remainder of packet ram as it's included in the
-+	 * infoframe and triggers a checksum error on hdmi analyser
-+	 */
-+	for (; packet_reg < packet_reg_next; packet_reg += 4)
-+		writel(0, base + packet_reg);
-+
- 	HDMI_WRITE(HDMI_RAM_PACKET_CONFIG,
- 		   HDMI_READ(HDMI_RAM_PACKET_CONFIG) | BIT(packet_id));
- 
+diff --git a/tools/testing/selftests/rcutorture/bin/kvm.sh b/tools/testing/selftests/rcutorture/bin/kvm.sh
+index 55b2c1533282..b9f4d41da30e 100755
+--- a/tools/testing/selftests/rcutorture/bin/kvm.sh
++++ b/tools/testing/selftests/rcutorture/bin/kvm.sh
+@@ -44,6 +44,7 @@ TORTURE_KCONFIG_KASAN_ARG=""
+ TORTURE_KCONFIG_KCSAN_ARG=""
+ TORTURE_KMAKE_ARG=""
+ TORTURE_QEMU_MEM=512
++torture_qemu_mem_default=1
+ TORTURE_REMOTE=
+ TORTURE_SHUTDOWN_GRACE=180
+ TORTURE_SUITE=rcu
+@@ -180,6 +181,10 @@ do
+ 		;;
+ 	--kasan)
+ 		TORTURE_KCONFIG_KASAN_ARG="CONFIG_DEBUG_INFO=y CONFIG_KASAN=y"; export TORTURE_KCONFIG_KASAN_ARG
++		if test -n "$torture_qemu_mem_default"
++		then
++			TORTURE_QEMU_MEM=2G
++		fi
+ 		;;
+ 	--kconfig|--kconfigs)
+ 		checkarg --kconfig "(Kconfig options)" $# "$2" '^CONFIG_[A-Z0-9_]\+=\([ynm]\|[0-9]\+\)\( CONFIG_[A-Z0-9_]\+=\([ynm]\|[0-9]\+\)\)*$' '^error$'
+@@ -202,6 +207,7 @@ do
+ 	--memory)
+ 		checkarg --memory "(memory size)" $# "$2" '^[0-9]\+[MG]\?$' error
+ 		TORTURE_QEMU_MEM=$2
++		torture_qemu_mem_default=
+ 		shift
+ 		;;
+ 	--no-initrd)
 -- 
 2.35.1
 
