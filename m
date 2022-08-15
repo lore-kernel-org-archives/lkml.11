@@ -2,103 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD42C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4567C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbiHOIsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 04:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41152 "EHLO
+        id S232881AbiHOItL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 04:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbiHOIsT (ORCPT
+        with ESMTP id S229740AbiHOItI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 04:48:19 -0400
+        Mon, 15 Aug 2022 04:49:08 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F420201BD;
-        Mon, 15 Aug 2022 01:48:18 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 08:48:14 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83707205CE;
+        Mon, 15 Aug 2022 01:49:07 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 08:49:04 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660553295;
+        s=2020; t=1660553346;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IQWaK8qY9Rujxh5W8uD3V8R2QS0vMhGEuhjPCTuRwls=;
-        b=CFnq38Jv4Tv7DdZXatgSSbvmXgToh6MDdUX2c12W0K20KA+khqiM9npOUq532h9tUywYQe
-        SaLXjHFKahEsvLHs/bylDHaZUc1NB5P9Sm8xFZf4COkFck2Hcmn0/5e4KPNAwUpvccDOfd
-        2mnj1fE+S0UkDTRXZFtge/EkxULjjvtEBv2OAMWK3GHXg9wNnX4IlbwVTvHqGJ7Y5zyfUn
-        B1z0ZZatqB5+uMJQVIIIHP9BcD0rJLWu2QrlYv2sj7rYR9+S6kK3jdSqYCTnnW0cYmJnbz
-        nyG8ExWyzNDHsdm550Jr4sdumT6Y2JIKU7Dm2V54FkwUY8PXeO6M1PwDUje1Yw==
+        bh=Z8I9Ib2HD91ZLaQDYmOiASkWK12fL+yNfPzlPFzIKBk=;
+        b=pr8soAWvnDImRgNgAEnVzeOYfvI1tMHuC9ufw1Kfj7NvQEyhhCraY9IpcC82v3ZcZJ5Pva
+        ao+TM2xOdkX2Tk6K9GQjVyKMJsTTAxd1QN2AHT9JYKi8rcTEjZHK7QETB3TC0DnGek3Oz/
+        J/lp266vKSRjsFOlwCOpaNg3YzJUfwNDEG2J9BKRqTebmG8LRNGcmhAR+1/OXxff7ybSyD
+        lP+wPEcj+FdTciOkyEN1rPVjxnPMnGupW5/elXQ0q3vwkR3T1a0xuAktcdKOotLiyeZs7i
+        YJvON7Qe1myI3lWriJxe97zzM7KY+u6AR9GPuIjVgVs/SN4Y/3/4BN3Rd2JLTg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660553295;
+        s=2020e; t=1660553346;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IQWaK8qY9Rujxh5W8uD3V8R2QS0vMhGEuhjPCTuRwls=;
-        b=Uimj+IhKe/i5RBJFtwJv1o1V+LRKQs2OnOwtNmReyYwZsG5m8KukOKlTRXz9gAOx8//7iq
-        0oXBlCVtGFCsTICg==
-From:   "tip-bot2 for Nadav Amit" <tip-bot2@linutronix.de>
+        bh=Z8I9Ib2HD91ZLaQDYmOiASkWK12fL+yNfPzlPFzIKBk=;
+        b=4gpovY5rdbFznpnJi6+bT2LCabeo0a91EOTAYW0CeOAzb0676oVbz421SWmhT7xH2+X12B
+        ur2yZl2QnpNq5ECg==
+From:   tip-bot2 for Mateusz =?utf-8?q?Jo=C5=84czyk?= 
+        <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] x86/kprobes: Fix JNG/JNLE emulation
-Cc:     Nadav Amit <namit@vmware.com>, Ingo Molnar <mingo@kernel.org>,
-        stable@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220813225943.143767-1-namit@vmware.com>
-References: <20220813225943.143767-1-namit@vmware.com>
+Subject: [tip: x86/timers] x86/rtc: Rewrite & simplify mach_get_cmos_time() by
+ deleting duplicated functionality
+Cc:     mat.jonczyk@o2.pl, Ingo Molnar <mingo@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220813131034.768527-1-mat.jonczyk@o2.pl>
+References: <20220813131034.768527-1-mat.jonczyk@o2.pl>
 MIME-Version: 1.0
-Message-ID: <166055329407.401.4288744100235226056.tip-bot2@tip-bot2>
+Message-ID: <166055334489.401.11112157644462774552.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+The following commit has been merged into the x86/timers branch of tip:
 
-Commit-ID:     8924779df820c53875abaeb10c648e9cb75b46d4
-Gitweb:        https://git.kernel.org/tip/8924779df820c53875abaeb10c648e9cb75b46d4
-Author:        Nadav Amit <namit@vmware.com>
-AuthorDate:    Sat, 13 Aug 2022 15:59:43 -07:00
+Commit-ID:     fc04b2ccf0edc49e53d2e1251d122e40285233e6
+Gitweb:        https://git.kernel.org/tip/fc04b2ccf0edc49e53d2e1251d122e40285=
+233e6
+Author:        Mateusz Jo=C5=84czyk <mat.jonczyk@o2.pl>
+AuthorDate:    Sat, 13 Aug 2022 15:10:33 +02:00
 Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Sun, 14 Aug 2022 11:27:17 +02:00
+CommitterDate: Sun, 14 Aug 2022 11:24:08 +02:00
 
-x86/kprobes: Fix JNG/JNLE emulation
+x86/rtc: Rewrite & simplify mach_get_cmos_time() by deleting duplicated funct=
+ionality
 
-When kprobes emulates JNG/JNLE instructions on x86 it uses the wrong
-condition. For JNG (opcode: 0F 8E), according to Intel SDM, the jump is
-performed if (ZF == 1 or SF != OF). However the kernel emulation
-currently uses 'and' instead of 'or'.
+There are functions in drivers/rtc/rtc-mc146818-lib.c that handle
+reading from / writing to the CMOS RTC clock. mach_get_cmos_time() in
+arch/x86/kernel/rtc.c did not use them and was mostly a duplicate of
+mc146818_get_time(). Modify mach_get_cmos_time() to use
+mc146818_get_time() and remove the duplicated functionality.
 
-As a result, setting a kprobe on JNG/JNLE might cause the kernel to
-behave incorrectly whenever the kprobe is hit.
+mach_get_cmos_time() used a different algorithm than
+mc146818_get_time(), but these functions are equivalent. The major
+differences are:
 
-Fix by changing the 'and' to 'or'.
+- mc146818_get_time() is better refined and handles various edge
+  conditions,
 
-Fixes: 6256e668b7af ("x86/kprobes: Use int3 instead of debug trap for single-step")
-Signed-off-by: Nadav Amit <namit@vmware.com>
+- when the UIP ("Update in progress") bit of the RTC is set,
+  mach_get_cmos_time() was busy waiting with cpu_relax() while
+  mc146818_get_time() is using mdelay(1) in every loop iteration.
+  (However, there is my commit merged for Linux 5.20 / 6.0 to decrease
+  this period to 100us:
+    commit d2a632a8a117 ("rtc: mc146818-lib: reduce RTC_UIP polling period")
+  ),
+
+- mach_get_cmos_time() assumed that the RTC year is >=3D 2000, which
+  may not be true on some old boxes with a dead battery,
+
+- mach_get_cmos_time() was holding the rtc_lock for a long time
+  and could hang if the RTC is broken or not present.
+
+The RTC writing counterpart, mach_set_rtc_mmss() is already using
+mc146818_get_time() from drivers/rtc. This was done in
+        commit 3195ef59cb42 ("x86: Do full rtc synchronization with ntp")
+It appears that mach_get_cmos_time() was simply forgotten.
+
+mach_get_cmos_time() is really used only in read_persistent_clock64(),
+which is called only in a few places in kernel/time/timekeeping.c .
+
+[ mingo: These changes are not supposed to change behavior, but they are
+         not identity transformations either, as mc146818_get_time() is a
+	 better but different implementation of the same logic - so
+	 regressions are possible in principle. ]
+
+Signed-off-by: Mateusz Jo=C5=84czyk <mat.jonczyk@o2.pl>
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220813225943.143767-1-namit@vmware.com
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220813131034.768527-1-mat.jonczyk@o2.pl
 ---
- arch/x86/kernel/kprobes/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/rtc.c | 59 ++++--------------------------------------
+ 1 file changed, 7 insertions(+), 52 deletions(-)
 
-diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
-index 74167dc..4c3c27b 100644
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -505,7 +505,7 @@ static void kprobe_emulate_jcc(struct kprobe *p, struct pt_regs *regs)
- 		match = ((regs->flags & X86_EFLAGS_SF) >> X86_EFLAGS_SF_BIT) ^
- 			((regs->flags & X86_EFLAGS_OF) >> X86_EFLAGS_OF_BIT);
- 		if (p->ainsn.jcc.type >= 0xe)
--			match = match && (regs->flags & X86_EFLAGS_ZF);
-+			match = match || (regs->flags & X86_EFLAGS_ZF);
+diff --git a/arch/x86/kernel/rtc.c b/arch/x86/kernel/rtc.c
+index 586f718..1cadc8a 100644
+--- a/arch/x86/kernel/rtc.c
++++ b/arch/x86/kernel/rtc.c
+@@ -4,11 +4,8 @@
+  */
+ #include <linux/platform_device.h>
+ #include <linux/mc146818rtc.h>
+-#include <linux/acpi.h>
+-#include <linux/bcd.h>
+ #include <linux/export.h>
+ #include <linux/pnp.h>
+-#include <linux/of.h>
+=20
+ #include <asm/vsyscall.h>
+ #include <asm/x86_init.h>
+@@ -20,15 +17,12 @@
+ /*
+  * This is a special lock that is owned by the CPU and holds the index
+  * register we are working with.  It is required for NMI access to the
+- * CMOS/RTC registers.  See include/asm-i386/mc146818rtc.h for details.
++ * CMOS/RTC registers.  See arch/x86/include/asm/mc146818rtc.h for details.
+  */
+ volatile unsigned long cmos_lock;
+ EXPORT_SYMBOL(cmos_lock);
+ #endif /* CONFIG_X86_32 */
+=20
+-/* For two digit years assume time is always after that */
+-#define CMOS_YEARS_OFFS 2000
+-
+ DEFINE_SPINLOCK(rtc_lock);
+ EXPORT_SYMBOL(rtc_lock);
+=20
+@@ -62,8 +56,7 @@ int mach_set_rtc_mmss(const struct timespec64 *now)
+=20
+ void mach_get_cmos_time(struct timespec64 *now)
+ {
+-	unsigned int status, year, mon, day, hour, min, sec, century =3D 0;
+-	unsigned long flags;
++	struct rtc_time tm;
+=20
+ 	/*
+ 	 * If pm_trace abused the RTC as storage, set the timespec to 0,
+@@ -74,51 +67,13 @@ void mach_get_cmos_time(struct timespec64 *now)
+ 		return;
  	}
- 	__kprobe_emulate_jmp(p, regs, (match && !invert) || (!match && invert));
+=20
+-	spin_lock_irqsave(&rtc_lock, flags);
+-
+-	/*
+-	 * If UIP is clear, then we have >=3D 244 microseconds before
+-	 * RTC registers will be updated.  Spec sheet says that this
+-	 * is the reliable way to read RTC - registers. If UIP is set
+-	 * then the register access might be invalid.
+-	 */
+-	while ((CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP))
+-		cpu_relax();
+-
+-	sec =3D CMOS_READ(RTC_SECONDS);
+-	min =3D CMOS_READ(RTC_MINUTES);
+-	hour =3D CMOS_READ(RTC_HOURS);
+-	day =3D CMOS_READ(RTC_DAY_OF_MONTH);
+-	mon =3D CMOS_READ(RTC_MONTH);
+-	year =3D CMOS_READ(RTC_YEAR);
+-
+-#ifdef CONFIG_ACPI
+-	if (acpi_gbl_FADT.header.revision >=3D FADT2_REVISION_ID &&
+-	    acpi_gbl_FADT.century)
+-		century =3D CMOS_READ(acpi_gbl_FADT.century);
+-#endif
+-
+-	status =3D CMOS_READ(RTC_CONTROL);
+-	WARN_ON_ONCE(RTC_ALWAYS_BCD && (status & RTC_DM_BINARY));
+-
+-	spin_unlock_irqrestore(&rtc_lock, flags);
+-
+-	if (RTC_ALWAYS_BCD || !(status & RTC_DM_BINARY)) {
+-		sec =3D bcd2bin(sec);
+-		min =3D bcd2bin(min);
+-		hour =3D bcd2bin(hour);
+-		day =3D bcd2bin(day);
+-		mon =3D bcd2bin(mon);
+-		year =3D bcd2bin(year);
++	if (mc146818_get_time(&tm)) {
++		pr_err("Unable to read current time from RTC\n");
++		now->tv_sec =3D now->tv_nsec =3D 0;
++		return;
+ 	}
+=20
+-	if (century) {
+-		century =3D bcd2bin(century);
+-		year +=3D century * 100;
+-	} else
+-		year +=3D CMOS_YEARS_OFFS;
+-
+-	now->tv_sec =3D mktime64(year, mon, day, hour, min, sec);
++	now->tv_sec =3D rtc_tm_to_time64(&tm);
+ 	now->tv_nsec =3D 0;
  }
+=20
