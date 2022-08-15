@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB60C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16F3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351520AbiHOWon (ORCPT
+        id S1351525AbiHOWow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
+        Mon, 15 Aug 2022 18:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350552AbiHOWjs (ORCPT
+        with ESMTP id S1350628AbiHOWkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF354DB25;
-        Mon, 15 Aug 2022 12:51:35 -0700 (PDT)
+        Mon, 15 Aug 2022 18:40:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2CED92;
+        Mon, 15 Aug 2022 12:51:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0793B61206;
-        Mon, 15 Aug 2022 19:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9EE4C433C1;
-        Mon, 15 Aug 2022 19:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8810A6122B;
+        Mon, 15 Aug 2022 19:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 752E1C433D6;
+        Mon, 15 Aug 2022 19:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593094;
-        bh=w8+zR29nLfSfbW01P7TliFKqHJpE7i6L9aCfrauck+I=;
+        s=korg; t=1660593103;
+        bh=1nxUEJqdGrmDbqMzj+vb/mQeqj5KZSqrH9pIU4WSL2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OR2T0I9Ax8kUh+t38KNm5H83vQgzZk5XYv+Qr1/SHzSwOfCcU30xn5abPtkYWdLwJ
-         2FsYLNesXn2mVgnTZUOvt3yo9cRAvWkM36/ofxL1dG5ifLmhUnzFZTjGpqNfrPkAhc
-         9pQPHMHHKHvxxre9kUcHQ7r1gjoGWmhS1OTO2twI=
+        b=op7xY8D1OoI7mSRj9cJhgPMy8CY4Ss9vDeKTNFe3ngP/lGcQ8V2/iAmPDZ3CpSU0y
+         D5dscJFFbTihqR6Ucqccti1RTrhpzL68FHVXz0ZlL4+U6V0F+3loPI6H+a08gSb+PM
+         ojNWWRc+wnUMSSRI6sdC042qyCrm1uKZcA0Cj8WI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        kvm@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0183/1157] arm64: dts: qcom: add missing AOSS QMP compatible fallback
-Date:   Mon, 15 Aug 2022 19:52:19 +0200
-Message-Id: <20220815180447.062492775@linuxfoundation.org>
+Subject: [PATCH 5.18 0896/1095] perf tools: Fix dso_id inode generation comparison
+Date:   Mon, 15 Aug 2022 20:04:55 +0200
+Message-Id: <20220815180506.372132821@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,93 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 6ba93ba9f63fbc44c3a6af7fe6f2536d009cfd5a ]
+[ Upstream commit 68566a7cf56bf3148797c218ed45a9de078ef47c ]
 
-The AOSS QMP bindings expect all compatibles to be followed by fallback
-"qcom,aoss-qmp" because all of these are actually compatible with each
-other.  This fixes dtbs_check warnings like:
+Synthesized MMAP events have zero ino_generation, so do not compare
+them to DSOs with a real ino_generation otherwise we end up with a DSO
+without a build id.
 
-  sm8250-hdk.dtb: power-controller@c300000: compatible: ['qcom,sm8250-aoss-qmp'] is too short
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504131923.214367-6-krzysztof.kozlowski@linaro.org
+Fixes: 0e3149f86b99ddab ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: kvm@vger.kernel.org
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220711093218.10967-2-adrian.hunter@intel.com
+[ Added clarification to the comment from Ian + more detailed explanation from Adrian ]
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ tools/perf/util/dsos.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index 2006f416e3e2..8769ad30f1c7 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -3215,7 +3215,7 @@ aoss_reset: reset-controller@c2a0000 {
- 		};
+diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
+index b97366f77bbf..2bd23e4cf19e 100644
+--- a/tools/perf/util/dsos.c
++++ b/tools/perf/util/dsos.c
+@@ -23,8 +23,19 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
+ 	if (a->ino > b->ino) return -1;
+ 	if (a->ino < b->ino) return 1;
  
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sc7180-aoss-qmp";
-+			compatible = "qcom,sc7180-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts = <GIC_SPI 389 IRQ_TYPE_EDGE_RISING>;
- 			mboxes = <&apss_shared 0>;
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index a7b128186b65..d22405658f13 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3843,7 +3843,7 @@ aoss_reset: reset-controller@c2a0000 {
- 		};
+-	if (a->ino_generation > b->ino_generation) return -1;
+-	if (a->ino_generation < b->ino_generation) return 1;
++	/*
++	 * Synthesized MMAP events have zero ino_generation, avoid comparing
++	 * them with MMAP events with actual ino_generation.
++	 *
++	 * I found it harmful because the mismatch resulted in a new
++	 * dso that did not have a build ID whereas the original dso did have a
++	 * build ID. The build ID was essential because the object was not found
++	 * otherwise. - Adrian
++	 */
++	if (a->ino_generation && b->ino_generation) {
++		if (a->ino_generation > b->ino_generation) return -1;
++		if (a->ino_generation < b->ino_generation) return 1;
++	}
  
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sc7280-aoss-qmp";
-+			compatible = "qcom,sc7280-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP
- 						     IPCC_MPROC_SIGNAL_GLINK_QMP
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index 592be9945cb8..8abaa28cebbc 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -3718,7 +3718,7 @@ pdc: interrupt-controller@b220000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8150-aoss-qmp";
-+			compatible = "qcom,sm8150-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0x0 0x0c300000 0x0 0x400>;
- 			interrupts = <GIC_SPI 389 IRQ_TYPE_EDGE_RISING>;
- 			mboxes = <&apss_shared 0>;
-diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-index 5dae1b8469a2..d0760e6ec942 100644
---- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-@@ -3734,7 +3734,7 @@ tsens1: thermal-sensor@c265000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8250-aoss-qmp";
-+			compatible = "qcom,sm8250-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP
- 						     IPCC_MPROC_SIGNAL_GLINK_QMP
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index 2b80d8f89d18..3293f76478df 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -1718,7 +1718,7 @@ tsens1: thermal-sensor@c265000 {
- 		};
- 
- 		aoss_qmp: power-controller@c300000 {
--			compatible = "qcom,sm8350-aoss-qmp";
-+			compatible = "qcom,sm8350-aoss-qmp", "qcom,aoss-qmp";
- 			reg = <0 0x0c300000 0 0x400>;
- 			interrupts-extended = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP
- 						     IRQ_TYPE_EDGE_RISING>;
+ 	return 0;
+ }
 -- 
 2.35.1
 
