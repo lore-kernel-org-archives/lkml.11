@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 083BFC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A82CAC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239464AbiHOUTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S241928AbiHOUTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346983AbiHOUMn (ORCPT
+        with ESMTP id S1346206AbiHOULD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7553B89914;
-        Mon, 15 Aug 2022 11:58:43 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5829AAE4D;
+        Mon, 15 Aug 2022 11:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F112B8109E;
-        Mon, 15 Aug 2022 18:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B4EAC433D7;
-        Mon, 15 Aug 2022 18:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AE961268;
+        Mon, 15 Aug 2022 18:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA03FC433B5;
+        Mon, 15 Aug 2022 18:56:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589920;
-        bh=AG+Uiec8voQAxe4xbm6dYZ5iaa1ZLFeWAYPNJDAg5og=;
+        s=korg; t=1660589820;
+        bh=uIHdBK00fuRJ0+kcdtpWQyECMj7ez0aq6V3wiv+dffw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PuCNnrSiZPSVQpD9Ssf528fKP+CTepLhKvVFMcpbUMBlSVDcXdLCFgzGUUtroaSP2
-         q0a2DnOt/QBwcltrt41+jID0tjFhNtZn4x4bbRbV80ZJVmhamDPHK+eXghOXLF4ebq
-         KU8nnPo8PBW2TsdS3lyMZLlyuBujq7lk5/XqjOVM=
+        b=LPlFhqbXAa65bSBD3qkEBiFV3DV6gmfPMZFXCP7xbm5tcgWsoJX9j9SYyXv2A2vzU
+         au1sAAKnWv9jWl8y0OmG2WgEF3AoDkPiYyeKtwTCPcapcUIg31y5sN5s9rikI3xZex
+         L4Q1ai3g0tUuGYcJ1D7T7TqjgWSj/CbF+vDu6i5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 0064/1095] RISC-V: cpu_ops_spinwait.c should include head.h
-Date:   Mon, 15 Aug 2022 19:51:03 +0200
-Message-Id: <20220815180432.143299948@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 5.18 0057/1095] parisc: Drop pa_swapper_pg_lock spinlock
+Date:   Mon, 15 Aug 2022 19:50:56 +0200
+Message-Id: <20220815180431.831310995@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -48,36 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@sifive.com>
+From: Helge Deller <deller@gmx.de>
 
-commit e4aa991c05aedc3ead92d1352af86db74090dc3c upstream.
+commit 3fbc9a7de0564c55d8a9584c9cd2c9dfe6bd6d43 upstream.
 
-Running sparse shows cpu_ops_spinwait.c is missing two definitions
-found in head.h, so include it to stop the following warnings:
+This spinlock was dropped with commit b7795074a046 ("parisc: Optimize
+per-pagetable spinlocks") in kernel v5.12.
 
-arch/riscv/kernel/cpu_ops_spinwait.c:15:6: warning: symbol '__cpu_spinwait_stack_pointer' was not declared. Should it be static?
-arch/riscv/kernel/cpu_ops_spinwait.c:16:6: warning: symbol '__cpu_spinwait_task_pointer' was not declared. Should it be static?
+Remove it to silence a sparse warning.
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Link: https://lore.kernel.org/r/20220713215306.94675-1-ben.dooks@sifive.com
-Fixes: c78f94f35cf6 ("RISC-V: Use __cpu_up_stack/task_pointer only for spinwait method")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: <stable@vger.kernel.org> # v5.12+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/cpu_ops_spinwait.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/parisc/kernel/cache.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/arch/riscv/kernel/cpu_ops_spinwait.c
-+++ b/arch/riscv/kernel/cpu_ops_spinwait.c
-@@ -11,6 +11,8 @@
- #include <asm/sbi.h>
- #include <asm/smp.h>
+--- a/arch/parisc/kernel/cache.c
++++ b/arch/parisc/kernel/cache.c
+@@ -50,9 +50,6 @@ void flush_instruction_cache_local(void)
+  */
+ DEFINE_SPINLOCK(pa_tlb_flush_lock);
  
-+#include "head.h"
-+
- const struct cpu_operations cpu_ops_spinwait;
- void *__cpu_spinwait_stack_pointer[NR_CPUS] __section(".data");
- void *__cpu_spinwait_task_pointer[NR_CPUS] __section(".data");
+-/* Swapper page setup lock. */
+-DEFINE_SPINLOCK(pa_swapper_pg_lock);
+-
+ #if defined(CONFIG_64BIT) && defined(CONFIG_SMP)
+ int pa_serialize_tlb_flushes __ro_after_init;
+ #endif
 
 
