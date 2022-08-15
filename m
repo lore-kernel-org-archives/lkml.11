@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 111B5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBA2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242647AbiHOShm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
+        id S243362AbiHOShr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244017AbiHOSgS (ORCPT
+        with ESMTP id S244054AbiHOSgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:36:18 -0400
+        Mon, 15 Aug 2022 14:36:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6AB3C15B;
-        Mon, 15 Aug 2022 11:23:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FC02D1D4;
+        Mon, 15 Aug 2022 11:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87F0EB81071;
-        Mon, 15 Aug 2022 18:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5398C433C1;
-        Mon, 15 Aug 2022 18:23:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE1DAB81062;
+        Mon, 15 Aug 2022 18:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF3BC433D6;
+        Mon, 15 Aug 2022 18:23:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587786;
-        bh=PYfW4qUNcV0ql8wYHgPWd/Nrk4am9nAFnFvDd23OFxw=;
+        s=korg; t=1660587789;
+        bh=xF4ZESeti/WorROBW8Be43lu84T42KyEAFY2zI+iyTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYQJGFI4InGsrqLZLWkkVEauqo4Q8hCXIcQatIxMq7xbCqH411lcuxyB4dSZ1pmqa
-         bWhd99veAqatGPeV7OwGHqLcn3PlxJvgX4pdGumY/Q6gHJYK5AeifwSwff1z9WLI4J
-         mGHW9JOGce+Bsh0QMubx8vUwSXExKhgJgiwvNBD0=
+        b=vM2jt4fNenvvSdtgRJcGhk9LLpCD1b6c8jjEjgumrptnyXiqaXezU/0PHgY4O4ARO
+         WCxNRa9l6YKu9+86dgK573EXoSO4V7zKp/BEAw4wO52tdnfQFewEhV2VaLpwY7eHLy
+         y4X/d6cYWOOauz0OH/vTCQ/aYwP48ZA454zXFMiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Omar Avelar <omar.avelar@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 153/779] spi: spi-rspi: Fix PIO fallback on RZ platforms
-Date:   Mon, 15 Aug 2022 19:56:37 +0200
-Message-Id: <20220815180343.858223258@linuxfoundation.org>
+Subject: [PATCH 5.15 188/779] ACPI: APEI: Fix _EINJ vs EFI_MEMORY_SP
+Date:   Mon, 15 Aug 2022 19:57:12 +0200
+Message-Id: <20220815180345.290854764@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,45 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit b620aa3a7be346f04ae7789b165937615c6ee8d3 ]
+[ Upstream commit b13a3e5fd40b7d1b394c5ecbb5eb301a4c38e7b2 ]
 
-RSPI IP on RZ/{A, G2L} SoC's has the same signal for both interrupt
-and DMA transfer request. Setting DMARS register for DMA transfer
-makes the signal to work as a DMA transfer request signal and
-subsequent interrupt requests to the interrupt controller
-are masked.
+When a platform marks a memory range as "special purpose" it is not
+onlined as System RAM by default. However, it is still suitable for
+error injection. Add IORES_DESC_SOFT_RESERVED to einj_error_inject() as
+a permissible memory type in the sanity checking of the arguments to
+_EINJ.
 
-PIO fallback does not work as interrupt signal is disabled.
-
-This patch fixes this issue by re-enabling the interrupts by
-calling dmaengine_synchronize().
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220721143449.879257-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 262b45ae3ab4 ("x86/efi: EFI soft reservation to E820 enumeration")
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reported-by: Omar Avelar <omar.avelar@intel.com>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rspi.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/acpi/apei/einj.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
-index d575c935e9f0..f634a405382c 100644
---- a/drivers/spi/spi-rspi.c
-+++ b/drivers/spi/spi-rspi.c
-@@ -612,6 +612,10 @@ static int rspi_dma_transfer(struct rspi_data *rspi, struct sg_table *tx,
- 					       rspi->dma_callbacked, HZ);
- 	if (ret > 0 && rspi->dma_callbacked) {
- 		ret = 0;
-+		if (tx)
-+			dmaengine_synchronize(rspi->ctlr->dma_tx);
-+		if (rx)
-+			dmaengine_synchronize(rspi->ctlr->dma_rx);
- 	} else {
- 		if (!ret) {
- 			dev_err(&rspi->ctlr->dev, "DMA timeout\n");
+diff --git a/drivers/acpi/apei/einj.c b/drivers/acpi/apei/einj.c
+index 2882450c443e..2e0ab898cce3 100644
+--- a/drivers/acpi/apei/einj.c
++++ b/drivers/acpi/apei/einj.c
+@@ -544,6 +544,8 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
+ 	    ((region_intersects(base_addr, size, IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE)
+ 				!= REGION_INTERSECTS) &&
+ 	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_PERSISTENT_MEMORY)
++				!= REGION_INTERSECTS) &&
++	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_SOFT_RESERVED)
+ 				!= REGION_INTERSECTS)))
+ 		return -EINVAL;
+ 
 -- 
 2.35.1
 
