@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAD0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23603C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353741AbiHOXi0 (ORCPT
+        id S1353818AbiHOXi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
+        Mon, 15 Aug 2022 19:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347644AbiHOXd5 (ORCPT
+        with ESMTP id S1346510AbiHOXdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:33:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B9612D1E;
-        Mon, 15 Aug 2022 13:08:43 -0700 (PDT)
+        Mon, 15 Aug 2022 19:33:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E687141D22;
+        Mon, 15 Aug 2022 13:08:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43ADFB80EAB;
-        Mon, 15 Aug 2022 20:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80DF3C433C1;
-        Mon, 15 Aug 2022 20:08:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 786C760B6E;
+        Mon, 15 Aug 2022 20:08:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 683D2C433C1;
+        Mon, 15 Aug 2022 20:08:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594121;
-        bh=HDljj8CcBWlocdOKTe6crOSfnVL33XDHdc/F8wmSatE=;
+        s=korg; t=1660594133;
+        bh=MocSc+kjVl31gpAfXFOr29Q2CZ+U55YySsFzpGjechA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wa9eJCpPQYGRQlp2ZkJgnBoadILOxj4NJWdUBr3epv6zy3sI32NBu0GsIgx3tPjl2
-         lCQjVSzweahfN2dQSeUK/6e/g8TRoBH9x2pDKg+p/CMGYkCWTxu1/A7hLXNkWP0qAR
-         VF1gSnKtXzc1ZIQ/RnEjJHBmCxysLIzd4sccq/J8=
+        b=rAWTmoBeQTPvMTjlWFba/ovARp0RB6FH4sXzT5ebRE0LCkZ2tCQRSkJW++ydn8/4f
+         WMKWOK8tlGwykSHFGc4vPDCoOoJi8ZrU24dd+v8eh1HX5e1aUqLUIYnYj2WxtuOfqI
+         pqC0dwDayb72yYa6Mus7D0rFX5XmbodTClvg4iMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0382/1157] wifi: mac80211: set STA deflink addresses
-Date:   Mon, 15 Aug 2022 19:55:38 +0200
-Message-Id: <20220815180455.016801284@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1061/1095] ext4: check if directory block is within i_size
+Date:   Mon, 15 Aug 2022 20:07:40 +0200
+Message-Id: <20220815180512.921755458@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Lukas Czerner <lczerner@redhat.com>
 
-[ Upstream commit 630c7e4621763220d23789fbb036e0cf227e0b22 ]
+[ Upstream commit 65f8ea4cd57dbd46ea13b41dc8bac03176b04233 ]
 
-We should set the STA deflink addresses in case no
-link is really added.
+Currently ext4 directory handling code implicitly assumes that the
+directory blocks are always within the i_size. In fact ext4_append()
+will attempt to allocate next directory block based solely on i_size and
+the i_size is then appropriately increased after a successful
+allocation.
 
-Fixes: 046d2e7c50e3 ("mac80211: prepare sta handling for MLO support")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+However, for this to work it requires i_size to be correct. If, for any
+reason, the directory inode i_size is corrupted in a way that the
+directory tree refers to a valid directory block past i_size, we could
+end up corrupting parts of the directory tree structure by overwriting
+already used directory blocks when modifying the directory.
+
+Fix it by catching the corruption early in __ext4_read_dirblock().
+
+Addresses Red-Hat-Bugzilla: #2070205
+CVE: CVE-2022-1184
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-1-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/sta_info.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ext4/namei.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index e04a0905e941..8b192cf7d446 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -373,6 +373,8 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index 4f0420b1ff3e..2bc3e4b27204 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -110,6 +110,13 @@ static struct buffer_head *__ext4_read_dirblock(struct inode *inode,
+ 	struct ext4_dir_entry *dirent;
+ 	int is_dx_block = 0;
  
- 	memcpy(sta->addr, addr, ETH_ALEN);
- 	memcpy(sta->sta.addr, addr, ETH_ALEN);
-+	memcpy(sta->deflink.addr, addr, ETH_ALEN);
-+	memcpy(sta->sta.deflink.addr, addr, ETH_ALEN);
- 	sta->sta.max_rx_aggregation_subframes =
- 		local->hw.max_rx_aggregation_subframes;
- 
++	if (block >= inode->i_size) {
++		ext4_error_inode(inode, func, line, block,
++		       "Attempting to read directory block (%u) that is past i_size (%llu)",
++		       block, inode->i_size);
++		return ERR_PTR(-EFSCORRUPTED);
++	}
++
+ 	if (ext4_simulate_fail(inode->i_sb, EXT4_SIM_DIRBLOCK_EIO))
+ 		bh = ERR_PTR(-EIO);
+ 	else
 -- 
 2.35.1
 
