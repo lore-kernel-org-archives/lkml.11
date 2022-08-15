@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE86C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D72EC282E7
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347895AbiHOUbt (ORCPT
+        id S1348153AbiHOUcL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:31:49 -0400
+        Mon, 15 Aug 2022 16:32:11 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347497AbiHOUZx (ORCPT
+        with ESMTP id S1347754AbiHOU0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:25:53 -0400
+        Mon, 15 Aug 2022 16:26:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBDA9C2FA;
-        Mon, 15 Aug 2022 12:03:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C329DFB4;
+        Mon, 15 Aug 2022 12:03:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D76061299;
-        Mon, 15 Aug 2022 19:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26387C433D6;
-        Mon, 15 Aug 2022 19:03:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01704612A5;
+        Mon, 15 Aug 2022 19:03:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF945C433C1;
+        Mon, 15 Aug 2022 19:03:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590198;
-        bh=8TuZYBANaANy8tBI2NDEhOSwYzvW/85ai8F71UZsmK0=;
+        s=korg; t=1660590219;
+        bh=trG8oyJvYdJGnFL4oAnns9pnq+hwSnbarSZgSlzOSAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WRk/3aWfd19oT+8svzQTErB7sNeTlSmbjYbgcI/zylUmooPpxp7p5+U9U8e0FLP6t
-         ktFVN6OO/WP/wQtQq+TRFzYc6LNkRw5UNVCfr67dGgvd7uubCJvatIDjoX8PrRAXho
-         /RU1oMgPk5S8NNb0mTFNDhIhNG4nirfTlE5kBW10=
+        b=A1XOta/xmxjPe8h6fNm88wGdhbzhjyoF/aWql8YfX/lBIJgUx90XHerl2Ekaa1xmU
+         zXA5X0Gk4VG1WJv17fiI3Sec2spxxscmSK+TzwjKM+UF5fZAadmQxi4QQd+JmNKWQU
+         beqvr99cTetQe2lyPzx2K7WR6E1AJj6acuchBMsM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0183/1095] powerpc/64s: Disable stack variable initialisation for prom_init
-Date:   Mon, 15 Aug 2022 19:53:02 +0200
-Message-Id: <20220815180437.214375030@linuxfoundation.org>
+Subject: [PATCH 5.18 0190/1095] spi: spi-altera-dfl: Fix an error handling path
+Date:   Mon, 15 Aug 2022 19:53:09 +0200
+Message-Id: <20220815180437.492814629@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,53 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit be640317a1d0b9cf42fedb2debc2887a7cfa38de ]
+[ Upstream commit 8e3ca32f46994e74b7f43c57731150b2aedb2630 ]
 
-With GCC 12 allmodconfig prom_init fails to build:
+The spi_alloc_master() call is not undone in all error handling paths.
+Moreover, there is no .remove function to release the allocated memory.
 
-  Error: External symbol 'memset' referenced from prom_init.c
-  make[2]: *** [arch/powerpc/kernel/Makefile:204: arch/powerpc/kernel/prom_init_check] Error 1
+In order to fix both this issues, switch to devm_spi_alloc_master().
 
-The allmodconfig build enables KASAN, so all calls to memset in
-prom_init should be converted to __memset by the #ifdefs in
-asm/string.h, because prom_init must use the non-KASAN instrumented
-versions.
+This allows further simplification of the probe.
 
-The build failure happens because there's a call to memset that hasn't
-been caught by the pre-processor and converted to __memset. Typically
-that's because it's a memset generated by the compiler itself, and that
-is the case here.
-
-With GCC 12, allmodconfig enables CONFIG_INIT_STACK_ALL_PATTERN, which
-causes the compiler to emit memset calls to initialise on-stack
-variables with a pattern.
-
-Because prom_init is non-user-facing boot-time only code, as a
-workaround just disable stack variable initialisation to unbreak the
-build.
-
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220718134418.354114-1-mpe@ellerman.id.au
+Fixes: ba2fc167e944 ("spi: altera: Add DFL bus driver for Altera API Controller")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/0607bb59f4073f86abe5c585d35245aef0b045c6.1653805901.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-altera-dfl.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-index 4ddd161aef32..63c384c3e6d4 100644
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -20,6 +20,7 @@ CFLAGS_prom.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += -fno-stack-protector
- CFLAGS_prom_init.o += -DDISABLE_BRANCH_PROFILING
- CFLAGS_prom_init.o += -ffreestanding
-+CFLAGS_prom_init.o += $(call cc-option, -ftrivial-auto-var-init=uninitialized)
+diff --git a/drivers/spi/spi-altera-dfl.c b/drivers/spi/spi-altera-dfl.c
+index ca40923258af..596e181ae136 100644
+--- a/drivers/spi/spi-altera-dfl.c
++++ b/drivers/spi/spi-altera-dfl.c
+@@ -128,9 +128,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	struct spi_master *master;
+ 	struct altera_spi *hw;
+ 	void __iomem *base;
+-	int err = -ENODEV;
++	int err;
  
- ifdef CONFIG_FUNCTION_TRACER
- # Do not trace early boot code
+-	master = spi_alloc_master(dev, sizeof(struct altera_spi));
++	master = devm_spi_alloc_master(dev, sizeof(struct altera_spi));
+ 	if (!master)
+ 		return -ENOMEM;
+ 
+@@ -159,10 +159,9 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	altera_spi_init_master(master);
+ 
+ 	err = devm_spi_register_master(dev, master);
+-	if (err) {
+-		dev_err(dev, "%s failed to register spi master %d\n", __func__, err);
+-		goto exit;
+-	}
++	if (err)
++		return dev_err_probe(dev, err, "%s failed to register spi master\n",
++				     __func__);
+ 
+ 	if (dfl_dev->revision == FME_FEATURE_REV_MAX10_SPI_N5010)
+ 		strscpy(board_info.modalias, "m10-n5010", SPI_NAME_SIZE);
+@@ -179,9 +178,6 @@ static int dfl_spi_altera_probe(struct dfl_device *dfl_dev)
+ 	}
+ 
+ 	return 0;
+-exit:
+-	spi_master_put(master);
+-	return err;
+ }
+ 
+ static const struct dfl_device_id dfl_spi_altera_ids[] = {
 -- 
 2.35.1
 
