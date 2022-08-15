@@ -2,91 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3248C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC02C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349454AbiHOVnt (ORCPT
+        id S1348591AbiHOVn6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        Mon, 15 Aug 2022 17:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349223AbiHOVka (ORCPT
+        with ESMTP id S1349129AbiHOVkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:40:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886873F33B;
-        Mon, 15 Aug 2022 12:28:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF98610A1;
-        Mon, 15 Aug 2022 19:28:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B5ACC433D6;
-        Mon, 15 Aug 2022 19:28:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591720;
-        bh=ASbyxEyP1dD5hh8u1Hr7eG+52grw381N4ggEoI0bqnY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0xNhWYX/wiWiTWmnsmATCDNsf+tkdGDUFvzC8zE2kEybbf6eeRwFU4o+IUGR8oZ/
-         R4hwXQoQVCIOyx8NbEf7bRNSbgO3gmtzJey8iayWrzaCO/3mPMTsK+Lo4Au48CS5u2
-         ZHW1jwDsQL4D8eAXb/lEf3Nphh/xiVZOtI8cqxhg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0671/1095] iio: resolver: ad2s90: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:01:10 +0200
-Message-Id: <20220815180457.145009781@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 17:40:31 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4F33FA04
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:28:42 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id t11so6264172qkt.6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:28:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=NximbAMOoMV20R4H+Pt+opb8nW2ZuY7oXM4yWpuLhS8=;
+        b=h69ATRcL92gXuQ6VGM5MF1MRckXXYFUojd/X3wntMkRCO3chXdd6R0J13elRRuSG5M
+         /IKB9JK7j1cnkCX0NxuPxXBwQyGvl5SoM+Ec/Pv/V8Rb1ZnfyhBmJhJybowcYi4HU14/
+         m5c5hHMhJ+vmu0F4QWCHk8vdJc9L49juEqx+8bC7HJ4b2HDgtwr2japRfh3HAPVBPxYr
+         SpOBMe0XPQg/HA84zlYCdh852ON4z4Iw2kWeboRqhRtdgmUqMoMFOvRakUbdpQRHgPXX
+         Qi8jx3NcDR6pZfA919bR9dr0IgzSM3JU0lUt6p2z8VB5WNUbJ7ol1pSTCHgceNvru5Cz
+         jhOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=NximbAMOoMV20R4H+Pt+opb8nW2ZuY7oXM4yWpuLhS8=;
+        b=dNKyPVYTxj4X84XHPtj4RamWVoX5XMehO/8PXvrhLfaDumDiHtjh1cye64xCK18UHb
+         hz1WLcSm8V6IRZUsvwG+fX3YDmOjVM2iARcF9wWyH2E064+b0F5rQ8lsijC+etDNTwJu
+         CMemcxFXRSifwq9w5gCKECNuWPJ38Pqc2IaJ202rOaZ7UmOpulg7PwEFvfYrdTJsvtfC
+         c0R0fT8GzuTphQNvu0P4X8o3jqXO1EIjY9WJxexCh2jjpABiuVcf7W0/tjZryzLbf6LC
+         f7ncM/MyueT4eewCfHXcrpAATs2JE9coT4KQXvPafbvElOto9L/61q8uQ4N1x5fUvoEf
+         CUJw==
+X-Gm-Message-State: ACgBeo1lGYdWC5J3PM39Yq1S385bJFL300qjzwQfzrbyLQKG3vpPRKVy
+        KGdkmbbiXO0QvlUw/TCQKdVkgUqwwon1G+aAdEUQrNSYEmk=
+X-Google-Smtp-Source: AA6agR7RR9PHyXS+ooHk7q57vjZve0AGDs+KUrltHP2eBtC31D8TGtGTk8FRbvS5JJYiG5509m5H38LLW5fZmDHsWJM=
+X-Received: by 2002:a05:620a:2901:b0:6b5:dfe8:2ea3 with SMTP id
+ m1-20020a05620a290100b006b5dfe82ea3mr12465178qkp.328.1660591721008; Mon, 15
+ Aug 2022 12:28:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220712144917.4497-1-ubizjak@gmail.com> <20220814184823.c6ca2c396db0d8817e518ef9@linux-foundation.org>
+ <CAFULd4YuYhNmhx3tBwBeR=ascfy=BZfZKk4e7vMq6gy06zk41Q@mail.gmail.com>
+In-Reply-To: <CAFULd4YuYhNmhx3tBwBeR=ascfy=BZfZKk4e7vMq6gy06zk41Q@mail.gmail.com>
+From:   Uros Bizjak <ubizjak@gmail.com>
+Date:   Mon, 15 Aug 2022 21:28:29 +0200
+Message-ID: <CAFULd4Ydo2BR3-kvHPeabzyHExW2GM3pfLiWa2uStrLDW52buA@mail.gmail.com>
+Subject: Re: [PATCH] llist: Use try_cmpxchg in llist_add_batch and llist_del_first
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Mon, Aug 15, 2022 at 9:20 PM Uros Bizjak <ubizjak@gmail.com> wrote:
+>
+> On Mon, Aug 15, 2022 at 3:48 AM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Tue, 12 Jul 2022 16:49:17 +0200 Uros Bizjak <ubizjak@gmail.com> wrote:
+> >
+> > > Use try_cmpxchg instead of cmpxchg (*ptr, old, new) == old in
+> > > llist_add_batch and llist_del_first. x86 CMPXCHG instruction returns
+> > > success in ZF flag, so this change saves a compare after cmpxchg.
+> > >
+> > > Also, try_cmpxchg implicitly assigns old *ptr value to "old" when
+> > > cmpxchg fails, enabling further code simplifications.
+> > >
+> > > No functional change intended.
+> >
+> > Well this is strange.  Your innocuous little patch:
+>
+> [...]
+>
+> > Does this:
+> >
+> > x1:/usr/src/25> size lib/llist.o-before lib/llist.o-after
+> >    text    data     bss     dec     hex filename
+> >     541      24       0     565     235 lib/llist.o-before
+> >     940      24       0     964     3c4 lib/llist.o-after
+> >
+> > with x86_64 allmodconfig, gcc-11.1.0.
+> >
+> > No change with allnoconfig, some bloat with defconfig.
+> >
+> > I was too lazy to figure out why this happened, but it'd be great if
+> > someone could investigate.  Something has gone wrong somewhere.
+>
+> Sanitizer is detecting a comparison with a constant and emits:
+>
+>  132:    f0 48 0f b1 2b           lock cmpxchg %rbp,(%rbx)
+>  137:    41 0f 94 c6              sete   %r14b
+>  13b:    31 ff                    xor    %edi,%edi
+>  13d:    44 89 f6                 mov    %r14d,%esi
+>  140:    e8 00 00 00 00           call   145 <llist_add_batch+0xc5>
+>             141: R_X86_64_PLT32    __sanitizer_cov_trace_const_cmp1-0x4
+>
+> Since a new call is inserted, the compiler has to save all
+> call-clobbered variables around the call, this triggers another call
+> to __kasan_check_write. Finally, stack checking is emitted for patched
 
-[ Upstream commit faa05ecb1349070d874810e161b653c2220e0006 ]
+Actually, this second __kasan_check_write is for the write in case of
+cmpxchg failure.
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
-
-Fixes tag is probably not where the issue was first introduced, but
-is likely to be far beyond the point where anyone considers
-backporting this fix.
-
-Fixes: 58f08b0af857 ("staging:iio:resolver:ad2s90 general cleanup")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-90-jic23@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/resolver/ad2s90.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/resolver/ad2s90.c b/drivers/iio/resolver/ad2s90.c
-index d6a91f137e13..be6836e55376 100644
---- a/drivers/iio/resolver/ad2s90.c
-+++ b/drivers/iio/resolver/ad2s90.c
-@@ -24,7 +24,7 @@
- struct ad2s90_state {
- 	struct mutex lock; /* lock to protect rx buffer */
- 	struct spi_device *sdev;
--	u8 rx[2] ____cacheline_aligned;
-+	u8 rx[2] __aligned(IIO_DMA_MINALIGN);
- };
- 
- static int ad2s90_read_raw(struct iio_dev *indio_dev,
--- 
-2.35.1
-
-
-
+Uros.
