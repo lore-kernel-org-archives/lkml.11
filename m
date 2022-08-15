@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F217C2BB45
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46005C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355968AbiHPAGr (ORCPT
+        id S1356012AbiHPAGv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
+        Mon, 15 Aug 2022 20:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353774AbiHOX6u (ORCPT
+        with ESMTP id S1354040AbiHOX6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:58:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C1410B4;
-        Mon, 15 Aug 2022 13:22:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:58:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2104F804AD;
+        Mon, 15 Aug 2022 13:20:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F1F861073;
-        Mon, 15 Aug 2022 20:22:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33931C433C1;
-        Mon, 15 Aug 2022 20:22:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B08DA61007;
+        Mon, 15 Aug 2022 20:20:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB8F3C433C1;
+        Mon, 15 Aug 2022 20:20:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594927;
-        bh=CXsiMlpxl/lPeiBhHDsWcyx72OmLP0Buq3FF1+bOVWY=;
+        s=korg; t=1660594856;
+        bh=aRQIsfM1DlDmmnhgQS9E3HmvnGvp5qyhm8dCDWeSy6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3/hspFhrFmQ0BMlPcpjNeeqCpdxxlohtNpO1nl3N+ywrznB1aYqMAdJ+tQdCUMCq
-         8SneZ7q8YjT9r+CCy8+Ggsmrvrrml8eijTvSoSjZlKeK59NFHjrTd2w+kC7gT4UL0t
-         P21SYJC+VvFKuAFuub0N1epPuE/NBvG4KMNekWGY=
+        b=OH8OuCkXIE2u9Qz6AgsTFDMpJ5KKOYgtUQdgsWRfwPfEhMFyHXFVz5dPnqzZXyczn
+         822sFr11dM6v6wMIlOo2hMsDbqPJg4XzJBtvWY3VgOAg7Q0cG+lVegULNqhVS6tYQ3
+         CPqO7GhoKinp2RCdhc81lZtSFFBONI066GMqd62E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0602/1157] mtd: spear_smi: Drop if with an always false condition
-Date:   Mon, 15 Aug 2022 19:59:18 +0200
-Message-Id: <20220815180503.745446258@linuxfoundation.org>
+Subject: [PATCH 5.19 0579/1157] clk: renesas: rzg2l: Fix reset status function
+Date:   Mon, 15 Aug 2022 19:58:55 +0200
+Message-Id: <20220815180502.808916209@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,39 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 279d719be39d8edb37c9178c15e167a94c7bc0a0 ]
+[ Upstream commit 02c96ed9e4cd1f47bfcd10296fec6b0b69d6b3c6 ]
 
-The remove callback is only called after probe completed successfully.
-In this case platform_set_drvdata() was called with a non-NULL argument
-and so dev is never NULL.
+As per RZ/G2L HW(Rev.1.10) manual, reset monitor register value 0 means
+reset signal is not applied (deassert state) and 1 means reset signal
+is applied (assert state).
 
-This is a preparation for making platform remove callbacks return void.
+reset_control_status() expects a positive value if the reset line is
+asserted. But rzg2l_cpg_status function returns zero for asserted
+state.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220603210758.148493-8-u.kleine-koenig@pengutronix.de
+This patch fixes the issue by adding double inverted logic, so that
+reset_control_status returns a positive value if the reset line is
+asserted.
+
+Fixes: ef3c613ccd68 ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220531071657.104121-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/devices/spear_smi.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/clk/renesas/rzg2l-cpg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/devices/spear_smi.c b/drivers/mtd/devices/spear_smi.c
-index f6febe6662db..f58742486d3d 100644
---- a/drivers/mtd/devices/spear_smi.c
-+++ b/drivers/mtd/devices/spear_smi.c
-@@ -1048,10 +1048,6 @@ static int spear_smi_remove(struct platform_device *pdev)
- 	int i;
+diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
+index e2999ab2b53c..3ff6ecd61756 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.c
++++ b/drivers/clk/renesas/rzg2l-cpg.c
+@@ -1180,7 +1180,7 @@ static int rzg2l_cpg_status(struct reset_controller_dev *rcdev,
+ 	s8 monbit = info->resets[id].monbit;
  
- 	dev = platform_get_drvdata(pdev);
--	if (!dev) {
--		dev_err(&pdev->dev, "dev is null\n");
--		return -ENODEV;
--	}
+ 	if (info->has_clk_mon_regs) {
+-		return !(readl(priv->base + CLK_MRST_R(reg)) & bitmask);
++		return !!(readl(priv->base + CLK_MRST_R(reg)) & bitmask);
+ 	} else if (monbit >= 0) {
+ 		u32 monbitmask = BIT(monbit);
  
- 	/* clean up for all nor flash */
- 	for (i = 0; i < dev->num_flashes; i++) {
 -- 
 2.35.1
 
