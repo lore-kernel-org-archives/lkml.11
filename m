@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C72FC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0886C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350931AbiHPAYk (ORCPT
+        id S1353088AbiHPAYu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        Mon, 15 Aug 2022 20:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357429AbiHPAWj (ORCPT
+        with ESMTP id S1346164AbiHPAW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:22:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8674A17CF81;
-        Mon, 15 Aug 2022 13:33:52 -0700 (PDT)
+        Mon, 15 Aug 2022 20:22:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEDBD292C;
+        Mon, 15 Aug 2022 13:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B938B81197;
-        Mon, 15 Aug 2022 20:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7E2C43470;
-        Mon, 15 Aug 2022 20:33:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 698A3B80EA8;
+        Mon, 15 Aug 2022 20:33:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B86AEC433D6;
+        Mon, 15 Aug 2022 20:33:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595618;
-        bh=SY2E2wXYD56yvEtvgGm7t9vW1KbZ8dTo7tvk4SOguHQ=;
+        s=korg; t=1660595625;
+        bh=a6wrct/1vSDzdFquYxq7riEPjS5BzhdSsMye/0NyqSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEACWF9pR9EW/kcyc0GV+a6Qvm/BHGwWfq2DCfeJ3II369EFg4Frx3CApN/U6z+nU
-         wv+IdEXmRjnAk+Ez41eWxASeEwMwEIXNi8U2KfFIhvHn8Bmc3Fwyw7J7GO/PaCXc8C
-         6Ayvb9c1Cfd4kIDFBVtlTQig+sl9mG8fPGdV+iEs=
+        b=2ZDtsXlfvSUO28VfjnKMmtPzgM7oS5Wr8PCz2d+36pTLpW5Jr3U8S24NwsK/Z7cgH
+         bvzNC3pZ6oPdFb92VSac24wJ9B7LqfMHBjr/1ABO5iPopNpK5GOfl/jThvuyrIgmVx
+         xpiC5rQqlb6z6EUAKYFe/gpDE74ToYmHtLD9DGd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0794/1157] mmc: sdhci-of-esdhc: Fix refcount leak in esdhc_signal_voltage_switch
-Date:   Mon, 15 Aug 2022 20:02:30 +0200
-Message-Id: <20220815180511.245407404@linuxfoundation.org>
+Subject: [PATCH 5.19 0822/1157] RDMA/irdma: Fix setting of QP context err_rq_idx_valid field
+Date:   Mon, 15 Aug 2022 20:02:58 +0200
+Message-Id: <20220815180512.375371344@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,36 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-[ Upstream commit b5899a3e2f783a27b268e38d37f9b24c71bddf45 ]
+[ Upstream commit 3a844596ed71b7c12ac602f6f6b7b0f17e4d6a90 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() checks null pointer.
+Setting err_rq_idx_valid field in QP context when the AE source of the
+AEQE is not associated with an RQ causes the firmware flush to fail.
 
-Fixes: ea35645a3c66 ("mmc: sdhci-of-esdhc: add support for signal voltage switch")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220523144255.10310-1-linmq006@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Set err_rq_idx_valid field in QP context only if it is associated with an
+RQ. Additionally, cleanup the redundant setting of this field in
+irdma_process_aeq.
+
+Fixes: 44d9e52977a1 ("RDMA/irdma: Implement device initialization definitions")
+Link: https://lore.kernel.org/r/20220705230815.265-8-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-esdhc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/hw/irdma/hw.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
-index d9dc41143bb3..8b3d8119f388 100644
---- a/drivers/mmc/host/sdhci-of-esdhc.c
-+++ b/drivers/mmc/host/sdhci-of-esdhc.c
-@@ -904,6 +904,7 @@ static int esdhc_signal_voltage_switch(struct mmc_host *mmc,
- 		scfg_node = of_find_matching_node(NULL, scfg_device_ids);
- 		if (scfg_node)
- 			scfg_base = of_iomap(scfg_node, 0);
-+		of_node_put(scfg_node);
- 		if (scfg_base) {
- 			sdhciovselcr = SDHCIOVSELCR_TGLEN |
- 				       SDHCIOVSELCR_VSELVAL;
+diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
+index dd3943d22dc6..6bba1335993a 100644
+--- a/drivers/infiniband/hw/irdma/hw.c
++++ b/drivers/infiniband/hw/irdma/hw.c
+@@ -257,10 +257,6 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
+ 				iwqp->last_aeq = info->ae_id;
+ 			spin_unlock_irqrestore(&iwqp->lock, flags);
+ 			ctx_info = &iwqp->ctx_info;
+-			if (rdma_protocol_roce(&iwqp->iwdev->ibdev, 1))
+-				ctx_info->roce_info->err_rq_idx_valid = true;
+-			else
+-				ctx_info->iwarp_info->err_rq_idx_valid = true;
+ 		} else {
+ 			if (info->ae_id != IRDMA_AE_CQ_OPERATION_ERROR)
+ 				continue;
+@@ -370,16 +366,12 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
+ 		case IRDMA_AE_LCE_FUNCTION_CATASTROPHIC:
+ 		case IRDMA_AE_LCE_CQ_CATASTROPHIC:
+ 		case IRDMA_AE_UDA_XMIT_DGRAM_TOO_LONG:
+-			if (rdma_protocol_roce(&iwdev->ibdev, 1))
+-				ctx_info->roce_info->err_rq_idx_valid = false;
+-			else
+-				ctx_info->iwarp_info->err_rq_idx_valid = false;
+-			fallthrough;
+ 		default:
+ 			ibdev_err(&iwdev->ibdev, "abnormal ae_id = 0x%x bool qp=%d qp_id = %d\n",
+ 				  info->ae_id, info->qp, info->qp_cq_id);
+ 			if (rdma_protocol_roce(&iwdev->ibdev, 1)) {
+-				if (!info->sq && ctx_info->roce_info->err_rq_idx_valid) {
++				ctx_info->roce_info->err_rq_idx_valid = info->rq;
++				if (info->rq) {
+ 					ctx_info->roce_info->err_rq_idx = info->wqe_idx;
+ 					irdma_sc_qp_setctx_roce(&iwqp->sc_qp, iwqp->host_ctx.va,
+ 								ctx_info);
+@@ -388,7 +380,8 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
+ 				irdma_cm_disconn(iwqp);
+ 				break;
+ 			}
+-			if (!info->sq && ctx_info->iwarp_info->err_rq_idx_valid) {
++			ctx_info->iwarp_info->err_rq_idx_valid = info->rq;
++			if (info->rq) {
+ 				ctx_info->iwarp_info->err_rq_idx = info->wqe_idx;
+ 				ctx_info->tcp_info_valid = false;
+ 				ctx_info->iwarp_info_valid = true;
 -- 
 2.35.1
 
