@@ -2,256 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC0EC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F77DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241364AbiHOHQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
+        id S241476AbiHOHQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241462AbiHOHPI (ORCPT
+        with ESMTP id S241509AbiHOHPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 03:15:08 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82B61D325;
-        Mon, 15 Aug 2022 00:14:36 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so6082166pjl.0;
-        Mon, 15 Aug 2022 00:14:36 -0700 (PDT)
+Received: from mail-il1-x14a.google.com (mail-il1-x14a.google.com [IPv6:2607:f8b0:4864:20::14a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2671D315
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:14:35 -0700 (PDT)
+Received: by mail-il1-x14a.google.com with SMTP id h25-20020a056e021d9900b002e069b96119so4568355ila.14
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:14:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=DTMT8hoLjJB/orrtWMlqwT6cn7CDgzNtrQnAm9ijTQg=;
-        b=JKPUll07EKwOwZpZ+xuSWHHTA9Q/FAIIEApg5y/br8C6061slymiseOGFUaOhAtjqG
-         MlhPgAAyeSXcjAnLKd3LdbtL8OEWr/EcEJOh39RwMNjI8EY/Uz4iYFdKBs2a2oGrzJj9
-         bdIQpufHw6l9zOqUQeb8BbWAONVuWWxxBZ4dWELZ21cdxrgmqa44e5pvCmTapr0LZaJ7
-         gVaiaHWaZfF+NI73BLrCkj3G2+yoQhEwXD2xU2JJHryv1RBwaqWsU5w1VYhx1M8bNlIJ
-         qZ551UrRxuAGhzhSFfXf3gpEkPPriVPvF0VjKNTtV1NyESZ4JqWv7MEJ/0ap9fkFcjKo
-         XBjw==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:from:subject:references
+         :mime-version:message-id:in-reply-to:date:from:to:cc;
+        bh=BAVTVhb7gZgl1iJYc7ztfS+MVBtiYqa44fDrm6wk918=;
+        b=E/KUjz9qYl5rnMdSSLuhyWa6ezzUzs5F747sC2n3ZLk4NZ1K4I+2aqX8tyiv6Y2O34
+         niUFKfAw3PWXxuhjO6t4PtT8rhIc0c4LX6k+zTfHtLRplp/gVH7J9aZHIFkHQScdZYJD
+         9i1WEeqO5cHoWdL6vv0kHzonp3t9GjsDDoOBZoK53o9m6gvHprVfq9CjGSPyj95kq/Fa
+         8QSVAhDBMeMgn8if1R9Gjjcr4+4DCvgXuJaUoaoPR6OZfH6+wISYzRwhpryA0dy+7Yj8
+         mm5s6dORoIWXYBYsvf81TqsfRU0l388ncxBkC85oBu12oVxHx3dYMd08CHvJKOSh53uT
+         1EbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=DTMT8hoLjJB/orrtWMlqwT6cn7CDgzNtrQnAm9ijTQg=;
-        b=nS0EFh4Lo3oyZnC+JMr/zBcHiRVJEXeaBlciGpppKSxBglSGaeMlKZrEmqJy4fH+BU
-         LWs4eQP0XbIKI00aCViiz+p9oTwtuedRKsTPjfhkgMNbOuq5qWlVDU10jzSySoAulPSz
-         hu9KoMi5kcu2kj5cMl1Xl6NjHj7VqIW7qyguA0dLLX6672vyPwwe9MW2Ct7X0IhS0NRX
-         +tiMIiDcPEYbDgt8xr5uGrXF5saNhY7XrHJiGAxfUp+pzKMyULvTNhYZaHP/L6hQnqyK
-         qjwNkJ1HyfS1Hr7x0UACrPfxgivsxTjqeYmed+4SmtmhbhW+yKbfQof3MMVHdjoCyMYE
-         ZZBQ==
-X-Gm-Message-State: ACgBeo0bA7HGBDmgSu4JpCiGssYfUYIndnHYbDhZMCy7B/52NPlrfCJP
-        U1l/RL5tT9GpGKGQ1Iexqt8=
-X-Google-Smtp-Source: AA6agR4scsuaEt80ywtS9mg6M5jLafTWgBa9vOO9V2ztaIu1rJYKs9L+TG73N4VBawcF+LkHcraaXg==
-X-Received: by 2002:a17:90b:3558:b0:1fa:7d01:4e04 with SMTP id lt24-20020a17090b355800b001fa7d014e04mr3632978pjb.5.1660547676359;
-        Mon, 15 Aug 2022 00:14:36 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m13-20020a62a20d000000b0052e82671a57sm6039527pff.73.2022.08.15.00.14.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 00:14:35 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     bsingharora@gmail.com, akpm@linux-foundation.org,
-        iamjoonsoo.kim@lge.com
-Cc:     mingo@redhat.com, bristot@redhat.com, vschneid@redhat.com,
-        willy@infradead.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        CGEL ZTE <cgel.zte@gmail.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>
-Subject: [PATCH v2 1/2] delayacct: support re-entrance detection of thrashing accounting
-Date:   Mon, 15 Aug 2022 07:11:35 +0000
-Message-Id: <20220815071134.74551-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=content-transfer-encoding:cc:to:from:subject:references
+         :mime-version:message-id:in-reply-to:date:x-gm-message-state:from:to
+         :cc;
+        bh=BAVTVhb7gZgl1iJYc7ztfS+MVBtiYqa44fDrm6wk918=;
+        b=kHLGn6rvv+lx0EdCXOv34fqrvtVyhgCddR5+LwOI88Z9RNbDAqDD2oFSGK9xOwDDhr
+         xF/pI1oHo5zygA7VfYAk1Iw8oBGpFIq3J43d5hdZx1f7ERBsZzyA/fOcRXY0BkB260qF
+         uoasjEtUhXNOpHK2/XS7j7eNVDkdfzIi0fsioBczbnz/mgnPnjDlhKPfIAwcaRLS7yT5
+         520XMEAiz+fTvZmS4Is99QLcpqIZm5D7xmB+6LMEoOFmnqIwXH88gVmZOCAE80kz8CPx
+         Jr394g9Vem7euPZGNRzGEsSJZ5se3sjhFRG4HVdZb4z/a4rppKd5DBckp4K78+7OXXFn
+         SPCg==
+X-Gm-Message-State: ACgBeo2DR3HhuO2mvQFHTVQMKu/jBrY3NVY6xlwVblza1EhQLZfsGrDr
+        wQQtp3dbLrMYf/JgD+4X1B95UDKoM2U=
+X-Google-Smtp-Source: AA6agR45YmGv57iGGSwbRHn5bhHV9M7sMkBfSANjxbeOHlLP3SVMZ8GvTTIVy18fahMG/UrA1b5pCZAIRtg=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:d91:5887:ac93:ddf0])
+ (user=yuzhao job=sendgmr) by 2002:a92:c544:0:b0:2e5:cfa1:286a with SMTP id
+ a4-20020a92c544000000b002e5cfa1286amr848343ilj.296.1660547674147; Mon, 15 Aug
+ 2022 00:14:34 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 01:13:33 -0600
+In-Reply-To: <20220815071332.627393-1-yuzhao@google.com>
+Message-Id: <20220815071332.627393-15-yuzhao@google.com>
+Mime-Version: 1.0
+References: <20220815071332.627393-1-yuzhao@google.com>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v14 14/14] mm: multi-gen LRU: design doc
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
+        page-reclaim@google.com, Yu Zhao <yuzhao@google.com>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+Add a design doc.
 
-Once upon a time, we only support accounting thrashing of page cache.
-Then Joonsoo introduced workingset detection for anonymous pages and
-we gained the ability to account thrashing of them[1].
-
-For page cache thrashing accounting, there is no suitable place to do
-it in fs level likes swap_readpage(). So we have to do it in
-folio_wait_bit_common().
-
-Then for anonymous pages thrashing accounting, we have to do it in
-both swap_readpage() and folio_wait_bit_common(). This likes PSI,
-so we should let thrashing accounting supports re-entrance detection.
-
-This patch is to prepare complete thrashing accounting, and is based
-on patch "filemap: make the accounting of thrashing more consistent".
-
-[1] commit aae466b0052e ("mm/swap: implement workingset detection for anonymous LRU")
-
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Reviewed-by: wangyong <wang.yong12@zte.com.cn>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Acked-by: Brian Geffon <bgeffon@google.com>
+Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Acked-by: Steven Barrett <steven@liquorix.net>
+Acked-by: Suleiman Souhlal <suleiman@google.com>
+Tested-by: Daniel Byrne <djbyrne@mtu.edu>
+Tested-by: Donald Carr <d@chaos-reins.com>
+Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
+Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
 ---
-Change for v2:
- - use bool *in_thrashing instead of unsigned long *flags
----
- include/linux/delayacct.h | 16 ++++++++--------
- include/linux/sched.h     |  4 ++++
- kernel/delayacct.c        | 13 +++++++++++--
- mm/filemap.c              | 10 ++++++----
- 4 files changed, 29 insertions(+), 14 deletions(-)
+ Documentation/mm/index.rst        |   1 +
+ Documentation/mm/multigen_lru.rst | 159 ++++++++++++++++++++++++++++++
+ 2 files changed, 160 insertions(+)
+ create mode 100644 Documentation/mm/multigen_lru.rst
 
-diff --git a/include/linux/delayacct.h b/include/linux/delayacct.h
-index 58aea2d7385c..0da97dba9ef8 100644
---- a/include/linux/delayacct.h
-+++ b/include/linux/delayacct.h
-@@ -73,8 +73,8 @@ extern int delayacct_add_tsk(struct taskstats *, struct task_struct *);
- extern __u64 __delayacct_blkio_ticks(struct task_struct *);
- extern void __delayacct_freepages_start(void);
- extern void __delayacct_freepages_end(void);
--extern void __delayacct_thrashing_start(void);
--extern void __delayacct_thrashing_end(void);
-+extern void __delayacct_thrashing_start(bool *in_thrashing);
-+extern void __delayacct_thrashing_end(bool *in_thrashing);
- extern void __delayacct_swapin_start(void);
- extern void __delayacct_swapin_end(void);
- extern void __delayacct_compact_start(void);
-@@ -143,22 +143,22 @@ static inline void delayacct_freepages_end(void)
- 		__delayacct_freepages_end();
- }
- 
--static inline void delayacct_thrashing_start(void)
-+static inline void delayacct_thrashing_start(bool *in_thrashing)
- {
- 	if (!static_branch_unlikely(&delayacct_key))
- 		return;
- 
- 	if (current->delays)
--		__delayacct_thrashing_start();
-+		__delayacct_thrashing_start(in_thrashing);
- }
- 
--static inline void delayacct_thrashing_end(void)
-+static inline void delayacct_thrashing_end(bool *in_thrashing)
- {
- 	if (!static_branch_unlikely(&delayacct_key))
- 		return;
- 
- 	if (current->delays)
--		__delayacct_thrashing_end();
-+		__delayacct_thrashing_end(in_thrashing);
- }
- 
- static inline void delayacct_swapin_start(void)
-@@ -237,9 +237,9 @@ static inline void delayacct_freepages_start(void)
- {}
- static inline void delayacct_freepages_end(void)
- {}
--static inline void delayacct_thrashing_start(void)
-+static inline void delayacct_thrashing_start(bool *in_thrashing)
- {}
--static inline void delayacct_thrashing_end(void)
-+static inline void delayacct_thrashing_end(bool *in_thrashing)
- {}
- static inline void delayacct_swapin_start(void)
- {}
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index d6b0866c71ed..5fb942e29583 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -943,6 +943,10 @@ struct task_struct {
- #ifdef	CONFIG_CPU_SUP_INTEL
- 	unsigned			reported_split_lock:1;
- #endif
-+#ifdef CONFIG_TASK_DELAY_ACCT
-+	/* delay due to memory thrashing */
-+	unsigned                        in_thrashing:1;
-+#endif
- 
- 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
- 
-diff --git a/kernel/delayacct.c b/kernel/delayacct.c
-index 164ed9ef77a3..e39cb696cfbd 100644
---- a/kernel/delayacct.c
-+++ b/kernel/delayacct.c
-@@ -214,13 +214,22 @@ void __delayacct_freepages_end(void)
- 		      &current->delays->freepages_count);
- }
- 
--void __delayacct_thrashing_start(void)
-+void __delayacct_thrashing_start(bool *in_thrashing)
- {
-+	*in_thrashing = !!current->in_thrashing;
-+	if (*in_thrashing)
-+		return;
+diff --git a/Documentation/mm/index.rst b/Documentation/mm/index.rst
+index 575ccd40e30c..4aa12b8be278 100644
+--- a/Documentation/mm/index.rst
++++ b/Documentation/mm/index.rst
+@@ -51,6 +51,7 @@ above structured documentation, or deleted if it has serv=
+ed its purpose.
+    ksm
+    memory-model
+    mmu_notifier
++   multigen_lru
+    numa
+    overcommit-accounting
+    page_migration
+diff --git a/Documentation/mm/multigen_lru.rst b/Documentation/mm/multigen_=
+lru.rst
+new file mode 100644
+index 000000000000..d7062c6a8946
+--- /dev/null
++++ b/Documentation/mm/multigen_lru.rst
+@@ -0,0 +1,159 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+	current->in_thrashing = 1;
- 	current->delays->thrashing_start = local_clock();
- }
- 
--void __delayacct_thrashing_end(void)
-+void __delayacct_thrashing_end(bool *in_thrashing)
- {
-+	if (*in_thrashing)
-+		return;
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Multi-Gen LRU
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++The multi-gen LRU is an alternative LRU implementation that optimizes
++page reclaim and improves performance under memory pressure. Page
++reclaim decides the kernel's caching policy and ability to overcommit
++memory. It directly impacts the kswapd CPU usage and RAM efficiency.
 +
-+	current->in_thrashing = 0;
- 	delayacct_end(&current->delays->lock,
- 		      &current->delays->thrashing_start,
- 		      &current->delays->thrashing_delay,
-diff --git a/mm/filemap.c b/mm/filemap.c
-index cfe15e89b3c2..bc37a93bb29a 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -1222,10 +1222,11 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
- 	wait_queue_entry_t *wait = &wait_page.wait;
- 	bool thrashing = false;
- 	unsigned long pflags;
-+	bool in_thrashing;
- 
- 	if (bit_nr == PG_locked &&
- 	    !folio_test_uptodate(folio) && folio_test_workingset(folio)) {
--		delayacct_thrashing_start();
-+		delayacct_thrashing_start(&in_thrashing);
- 		psi_memstall_enter(&pflags);
- 		thrashing = true;
- 	}
-@@ -1325,7 +1326,7 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
- 	finish_wait(q, wait);
- 
- 	if (thrashing) {
--		delayacct_thrashing_end();
-+		delayacct_thrashing_end(&in_thrashing);
- 		psi_memstall_leave(&pflags);
- 	}
- 
-@@ -1374,12 +1375,13 @@ void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
- 	wait_queue_entry_t *wait = &wait_page.wait;
- 	bool thrashing = false;
- 	unsigned long pflags;
-+	bool in_thrashing;
- 	wait_queue_head_t *q;
- 	struct folio *folio = page_folio(pfn_swap_entry_to_page(entry));
- 
- 	q = folio_waitqueue(folio);
- 	if (!folio_test_uptodate(folio) && folio_test_workingset(folio)) {
--		delayacct_thrashing_start();
-+		delayacct_thrashing_start(&in_thrashing);
- 		psi_memstall_enter(&pflags);
- 		thrashing = true;
- 	}
-@@ -1426,7 +1428,7 @@ void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
- 	finish_wait(q, wait);
- 
- 	if (thrashing) {
--		delayacct_thrashing_end();
-+		delayacct_thrashing_end(&in_thrashing);
- 		psi_memstall_leave(&pflags);
- 	}
- }
--- 
-2.25.1
++Design overview
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Objectives
++----------
++The design objectives are:
++
++* Good representation of access recency
++* Try to profit from spatial locality
++* Fast paths to make obvious choices
++* Simple self-correcting heuristics
++
++The representation of access recency is at the core of all LRU
++implementations. In the multi-gen LRU, each generation represents a
++group of pages with similar access recency. Generations establish a
++(time-based) common frame of reference and therefore help make better
++choices, e.g., between different memcgs on a computer or different
++computers in a data center (for job scheduling).
++
++Exploiting spatial locality improves efficiency when gathering the
++accessed bit. A rmap walk targets a single page and does not try to
++profit from discovering a young PTE. A page table walk can sweep all
++the young PTEs in an address space, but the address space can be too
++sparse to make a profit. The key is to optimize both methods and use
++them in combination.
++
++Fast paths reduce code complexity and runtime overhead. Unmapped pages
++do not require TLB flushes; clean pages do not require writeback.
++These facts are only helpful when other conditions, e.g., access
++recency, are similar. With generations as a common frame of reference,
++additional factors stand out. But obvious choices might not be good
++choices; thus self-correction is necessary.
++
++The benefits of simple self-correcting heuristics are self-evident.
++Again, with generations as a common frame of reference, this becomes
++attainable. Specifically, pages in the same generation can be
++categorized based on additional factors, and a feedback loop can
++statistically compare the refault percentages across those categories
++and infer which of them are better choices.
++
++Assumptions
++-----------
++The protection of hot pages and the selection of cold pages are based
++on page access channels and patterns. There are two access channels:
++
++* Accesses through page tables
++* Accesses through file descriptors
++
++The protection of the former channel is by design stronger because:
++
++1. The uncertainty in determining the access patterns of the former
++   channel is higher due to the approximation of the accessed bit.
++2. The cost of evicting the former channel is higher due to the TLB
++   flushes required and the likelihood of encountering the dirty bit.
++3. The penalty of underprotecting the former channel is higher because
++   applications usually do not prepare themselves for major page
++   faults like they do for blocked I/O. E.g., GUI applications
++   commonly use dedicated I/O threads to avoid blocking rendering
++   threads.
++
++There are also two access patterns:
++
++* Accesses exhibiting temporal locality
++* Accesses not exhibiting temporal locality
++
++For the reasons listed above, the former channel is assumed to follow
++the former pattern unless ``VM_SEQ_READ`` or ``VM_RAND_READ`` is
++present, and the latter channel is assumed to follow the latter
++pattern unless outlying refaults have been observed.
++
++Workflow overview
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Evictable pages are divided into multiple generations for each
++``lruvec``. The youngest generation number is stored in
++``lrugen->max_seq`` for both anon and file types as they are aged on
++an equal footing. The oldest generation numbers are stored in
++``lrugen->min_seq[]`` separately for anon and file types as clean file
++pages can be evicted regardless of swap constraints. These three
++variables are monotonically increasing.
++
++Generation numbers are truncated into ``order_base_2(MAX_NR_GENS+1)``
++bits in order to fit into the gen counter in ``folio->flags``. Each
++truncated generation number is an index to ``lrugen->lists[]``. The
++sliding window technique is used to track at least ``MIN_NR_GENS`` and
++at most ``MAX_NR_GENS`` generations. The gen counter stores a value
++within ``[1, MAX_NR_GENS]`` while a page is on one of
++``lrugen->lists[]``; otherwise it stores zero.
++
++Each generation is divided into multiple tiers. A page accessed ``N``
++times through file descriptors is in tier ``order_base_2(N)``. Unlike
++generations, tiers do not have dedicated ``lrugen->lists[]``. In
++contrast to moving across generations, which requires the LRU lock,
++moving across tiers only involves atomic operations on
++``folio->flags`` and therefore has a negligible cost. A feedback loop
++modeled after the PID controller monitors refaults over all the tiers
++from anon and file types and decides which tiers from which types to
++evict or protect.
++
++There are two conceptually independent procedures: the aging and the
++eviction. They form a closed-loop system, i.e., the page reclaim.
++
++Aging
++-----
++The aging produces young generations. Given an ``lruvec``, it
++increments ``max_seq`` when ``max_seq-min_seq+1`` approaches
++``MIN_NR_GENS``. The aging promotes hot pages to the youngest
++generation when it finds them accessed through page tables; the
++demotion of cold pages happens consequently when it increments
++``max_seq``. The aging uses page table walks and rmap walks to find
++young PTEs. For the former, it iterates ``lruvec_memcg()->mm_list``
++and calls ``walk_page_range()`` with each ``mm_struct`` on this list
++to scan PTEs, and after each iteration, it increments ``max_seq``. For
++the latter, when the eviction walks the rmap and finds a young PTE,
++the aging scans the adjacent PTEs. For both, on finding a young PTE,
++the aging clears the accessed bit and updates the gen counter of the
++page mapped by this PTE to ``(max_seq%MAX_NR_GENS)+1``.
++
++Eviction
++--------
++The eviction consumes old generations. Given an ``lruvec``, it
++increments ``min_seq`` when ``lrugen->lists[]`` indexed by
++``min_seq%MAX_NR_GENS`` becomes empty. To select a type and a tier to
++evict from, it first compares ``min_seq[]`` to select the older type.
++If both types are equally old, it selects the one whose first tier has
++a lower refault percentage. The first tier contains single-use
++unmapped clean pages, which are the best bet. The eviction sorts a
++page according to its gen counter if the aging has found this page
++accessed through page tables and updated its gen counter. It also
++moves a page to the next generation, i.e., ``min_seq+1``, if this page
++was accessed multiple times through file descriptors and the feedback
++loop has detected outlying refaults from the tier this page is in. To
++this end, the feedback loop uses the first tier as the baseline, for
++the reason stated earlier.
++
++Summary
++-------
++The multi-gen LRU can be disassembled into the following parts:
++
++* Generations
++* Rmap walks
++* Page table walks
++* Bloom filters
++* PID controller
++
++The aging and the eviction form a producer-consumer model;
++specifically, the latter drives the former by the sliding window over
++generations. Within the aging, rmap walks drive page table walks by
++inserting hot densely populated page tables to the Bloom filters.
++Within the eviction, the PID controller uses refaults as the feedback
++to select types to evict and tiers to protect.
+--=20
+2.37.1.595.g718a3a8f04-goog
 
