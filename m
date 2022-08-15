@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBB3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BBAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345304AbiHOV2Y (ORCPT
+        id S1346429AbiHOV2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
+        Mon, 15 Aug 2022 17:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243679AbiHOVTw (ORCPT
+        with ESMTP id S244967AbiHOVUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:19:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1996DE3C3F;
-        Mon, 15 Aug 2022 12:22:07 -0700 (PDT)
+        Mon, 15 Aug 2022 17:20:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD6EE42E7;
+        Mon, 15 Aug 2022 12:22:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8A79B81062;
-        Mon, 15 Aug 2022 19:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B05C433D6;
-        Mon, 15 Aug 2022 19:22:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 632CA60EF0;
+        Mon, 15 Aug 2022 19:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18E4CC433D6;
+        Mon, 15 Aug 2022 19:22:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591324;
-        bh=JDV9LBwF5joWK8HGi4wBwjEykNxNVY96ePmNBMJjcug=;
+        s=korg; t=1660591330;
+        bh=COkNRrEX6w4UbdnjU7Ri0CSOfhCU3mGHHhJ6+4yGcDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wg+yhhq2w4AKqu+K+Kh242wNg6Hc9jhmoTY0azcSb3kTGh9qE+SvEudj2PJ/gE4Ks
-         aiYelVkGMeI3QRzv4LZlMcA16ZuFa/SrHdcCrLf4ILXkdfDOSjlwiHbLQ8Mx2/DKs9
-         JsePeO4C8aMxPZQHfekuFConOHQg3B2K0w4KuwsM=
+        b=Il49eU3aS3PL4347rvBqoAxpWTpg5pBbupvVA+Jgw5eMBRktSiUkVVDnc6zl1eiDT
+         hV530UGeH/bUHRuVa9oZwvLv93kP4kWa0cIlaPSMMRzcP3S+HDui0wm1oXUOUBGu7i
+         tqg6MhjmI/e+au+yveuXs9Md2HG8ZaTTq7Qzs2CU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        Prakhar Srivastava <prsriva@linux.microsoft.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Rob Herring <robh@kernel.org>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0544/1095] mtd: rawnand: meson: Fix a potential double free issue
-Date:   Mon, 15 Aug 2022 19:59:03 +0200
-Message-Id: <20220815180452.050529873@linuxfoundation.org>
+Subject: [PATCH 5.18 0546/1095] of: check previous kernels ima-kexec-buffer against memory bounds
+Date:   Mon, 15 Aug 2022 19:59:05 +0200
+Message-Id: <20220815180452.139243461@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,44 +56,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Vaibhav Jain <vaibhav@linux.ibm.com>
 
-[ Upstream commit ec0da06337751b18f6dee06b6526e0f0d6e80369 ]
+[ Upstream commit cbf9c4b9617b6767886a913705ca14b7600c77db ]
 
-When meson_nfc_nand_chip_cleanup() is called, it will call:
-	meson_nfc_free_buffer(&meson_chip->nand);
-	nand_cleanup(&meson_chip->nand);
+Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
+ima-kexec-buffer lies outside the addressable memory range. This can result
+in a kernel panic if the new kernel is booted with 'mem=X' arg and the
+ima-kexec-buffer was allocated beyond that range by the previous kernel.
+The panic is usually of the form below:
 
-nand_cleanup() in turn will call nand_detach() which calls the
-.detach_chip() which is here meson_nand_detach_chip().
+$ sudo kexec --initrd initrd vmlinux --append='mem=16G'
 
-meson_nand_detach_chip() already calls meson_nfc_free_buffer(), so we
-could double free some memory.
+<snip>
+ BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
+ Faulting instruction address: 0xc000000000837974
+ Oops: Kernel access of bad area, sig: 11 [#1]
+<snip>
+ NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
+ LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+ Call Trace:
+ [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+ [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
+ [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
+ [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
+ [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
+ [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
+ [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
+ Instruction dump:
+ f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
+ 7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
+ ---[ end trace 0000000000000000 ]---
 
-Fix it by removing the unneeded explicit call to meson_nfc_free_buffer().
+Fix this issue by checking returned PFN range of previous kernel's
+ima-kexec-buffer with page_is_ram() to ensure correct memory bounds.
 
-Fixes: 8fae856c5350 ("mtd: rawnand: meson: add support for Amlogic NAND flash controller")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Liang Yang <liang.yang@amlogic.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/ec15c358b8063f7c50ff4cd628cf0d2e14e43f49.1653064877.git.christophe.jaillet@wanadoo.fr
+Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
+Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
+Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Ritesh Harjani <ritesh.list@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220531041446.3334259-1-vaibhav@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/meson_nand.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/of/kexec.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-index ac3be92872d0..032180183339 100644
---- a/drivers/mtd/nand/raw/meson_nand.c
-+++ b/drivers/mtd/nand/raw/meson_nand.c
-@@ -1307,7 +1307,6 @@ static int meson_nfc_nand_chip_cleanup(struct meson_nfc *nfc)
- 		if (ret)
- 			return ret;
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 8d374cc552be..91b04b04eec4 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -126,6 +126,7 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+ {
+ 	int ret, len;
+ 	unsigned long tmp_addr;
++	unsigned long start_pfn, end_pfn;
+ 	size_t tmp_size;
+ 	const void *prop;
  
--		meson_nfc_free_buffer(&meson_chip->nand);
- 		nand_cleanup(&meson_chip->nand);
- 		list_del(&meson_chip->node);
- 	}
+@@ -140,6 +141,22 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Do some sanity on the returned size for the ima-kexec buffer */
++	if (!tmp_size)
++		return -ENOENT;
++
++	/*
++	 * Calculate the PFNs for the buffer and ensure
++	 * they are with in addressable memory.
++	 */
++	start_pfn = PHYS_PFN(tmp_addr);
++	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
++	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
++		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
++			tmp_addr, tmp_size);
++		return -EINVAL;
++	}
++
+ 	*addr = __va(tmp_addr);
+ 	*size = tmp_size;
+ 
 -- 
 2.35.1
 
