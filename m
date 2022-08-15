@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1F0C32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD1FC32764
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348757AbiHOWVT (ORCPT
+        id S1348627AbiHOWVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        Mon, 15 Aug 2022 18:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349634AbiHOWRK (ORCPT
+        with ESMTP id S1349628AbiHOWRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:17:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7192C115;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1372BB37;
         Mon, 15 Aug 2022 12:40:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6BC86120F;
-        Mon, 15 Aug 2022 19:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A404DC433D6;
-        Mon, 15 Aug 2022 19:40:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C6F60BC2;
+        Mon, 15 Aug 2022 19:40:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C89C43470;
+        Mon, 15 Aug 2022 19:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592420;
-        bh=OBgG/fVVKPQLvqHzjSlNXO7UyFxMhf3DO59n0ZEWzTY=;
+        s=korg; t=1660592426;
+        bh=YaFyEq5TNnM0erthFu+YMa+BtPUKxaeMZE5sVwUj5uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cRh8mQfu4PVUA2i2hk8g8fdTPVsrUeZWEmH5GFARgsKS89cyiP9+4CXMNidAHztyJ
-         gjy+VLed2jojJmNLutfHcrTDyU5ik37163Qkb3NujxEIG91riXILIHBR7kUNPYzlmX
-         4vvs/mpXbAJNg9tCiUwUFCRD0ESna6BmWk3FGK68=
+        b=2PjpCIzrjoTKHpCJbDk322kk0gUew7TyjJZHxueV6KLYiAZANlKPUc/APnPDMi/uU
+         mGUxeepO4YoAENfg9oCTSKmE5U1RefnSCmCRtcDFEFN8e3k89HH1nP6dsvVSzR0ZHk
+         iqUoRy2fQGeT2gkvhjZd3AT5tbKAcU/ZTuRDSsEw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0784/1095] mmc: core: quirks: Add of_node_put() when breaking out of loop
-Date:   Mon, 15 Aug 2022 20:03:03 +0200
-Message-Id: <20220815180501.696161709@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        zdi-disclosures@trendmicro.com
+Subject: [PATCH 5.19 0108/1157] ksmbd: fix memory leak in smb2_handle_negotiate
+Date:   Mon, 15 Aug 2022 19:51:04 +0200
+Message-Id: <20220815180443.954277531@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 883c1d6fa4368a63cae2d6ae2d9c91141c60e233 ]
+commit aa7253c2393f6dcd6a1468b0792f6da76edad917 upstream.
 
-In mmc_fixup_of_compatible_match(), we should call of_node_put()
-when breaking out of for_each_child_of_node() which will increase
-and decrease the refcount during one iteration.
+The allocated memory didn't free under an error
+path in smb2_handle_negotiate().
 
-Fixes: b360b1102670 ("mmc: core: allow to match the device tree to apply quirks")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220719091051.1210806-1-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
+Cc: stable@vger.kernel.org
+Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17815
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/quirks.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ksmbd/smb2pdu.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/mmc/core/quirks.h b/drivers/mmc/core/quirks.h
-index f879dc63d936..be4393988086 100644
---- a/drivers/mmc/core/quirks.h
-+++ b/drivers/mmc/core/quirks.h
-@@ -163,8 +163,10 @@ static inline bool mmc_fixup_of_compatible_match(struct mmc_card *card,
- 	struct device_node *np;
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -1139,12 +1139,16 @@ int smb2_handle_negotiate(struct ksmbd_w
+ 			       status);
+ 			rsp->hdr.Status = status;
+ 			rc = -EINVAL;
++			kfree(conn->preauth_info);
++			conn->preauth_info = NULL;
+ 			goto err_out;
+ 		}
  
- 	for_each_child_of_node(mmc_dev(card->host)->of_node, np) {
--		if (of_device_is_compatible(np, compatible))
-+		if (of_device_is_compatible(np, compatible)) {
-+			of_node_put(np);
- 			return true;
-+		}
- 	}
+ 		rc = init_smb3_11_server(conn);
+ 		if (rc < 0) {
+ 			rsp->hdr.Status = STATUS_INVALID_PARAMETER;
++			kfree(conn->preauth_info);
++			conn->preauth_info = NULL;
+ 			goto err_out;
+ 		}
  
- 	return false;
--- 
-2.35.1
-
 
 
