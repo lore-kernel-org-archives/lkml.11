@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A0CC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3E6C28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344893AbiHOTpn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
+        id S229488AbiHOTrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345026AbiHOTmJ (ORCPT
+        with ESMTP id S1345039AbiHOTqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:42:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2EC6A499;
-        Mon, 15 Aug 2022 11:47:56 -0700 (PDT)
+        Mon, 15 Aug 2022 15:46:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3116D9E0;
+        Mon, 15 Aug 2022 11:48:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C401DCE1278;
-        Mon, 15 Aug 2022 18:47:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C946C433D6;
-        Mon, 15 Aug 2022 18:47:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1134611CA;
+        Mon, 15 Aug 2022 18:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD66EC433D6;
+        Mon, 15 Aug 2022 18:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589272;
-        bh=0pZNiys6EeeQjDyQBEPKfm5W/loToFEP2OhpcPkhyts=;
+        s=korg; t=1660589327;
+        bh=k0u/vGeggDbZwt1WBxF9FGs6XocuAMYXyNIzJIgT5zg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bFyk5y/IupakqImUtJXcGGb29UlFvHTJx1a/4rJUKFkLShRADmCmJRsLOYh/CpHcy
-         VCpV0/TAVq7aIYsathWmO7/x29RLaAAb34vSF6cID2k689ROC200+7uLaxmi+X7BBh
-         5wXBT63SfGst7iDAlUwwBBQwlSmKwv+ojW/vlyco=
+        b=MwkJ/MjsuIQXQQMoNXPBeYW5Gy/V/2cPWsyzAKTuqbqTVERVAs9H8qlFsBns19vVP
+         VmbjDtgmFTHc5/gCij2oTNcXtrgvi0XCfoZrhmfL11hmPzuGIw0jPLyVYnIRN/6L2P
+         RXFlsDcJCGrkYrt3VujVS9rvsygtvGkaM7iQoZmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 635/779] powerpc/32: Call mmu_mark_initmem_nx() regardless of data block mapping.
-Date:   Mon, 15 Aug 2022 20:04:39 +0200
-Message-Id: <20220815180404.482517916@linuxfoundation.org>
+        =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: [PATCH 5.15 683/779] x86/kprobes: Update kcb status flag after singlestepping
+Date:   Mon, 15 Aug 2022 20:05:27 +0200
+Message-Id: <20220815180406.548277051@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,77 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-[ Upstream commit 980bbf7ca72012d317617fcdbfabe8708e4cef29 ]
+commit dec8784c9088b131a1523f582c2194cfc8107dc0 upstream.
 
-mark_initmem_nx() calls either mmu_mark_initmem_nx() or
-set_memory_attr() based on return from v_block_mapped()
-of _sinittext.
+Fix kprobes to update kcb (kprobes control block) status flag to
+KPROBE_HIT_SSDONE even if the kp->post_handler is not set.
 
-But we can now handle text and data independently, so that
-text may be mapped by block even when data is mapped by pages.
+This bug may cause a kernel panic if another INT3 user runs right
+after kprobes because kprobe_int3_handler() misunderstands the
+INT3 is kprobe's single stepping INT3.
 
-On the 8xx for instance, at startup 32Mbytes of memory are
-pinned in TLB. So the pinned entries need to go away for sinittext.
-
-In next patch a BAT will be set to also covers sinittext on book3s/32.
-So it will also be needed to call mmu_mark_initmem_nx() even when
-data above sinittext is not mapped with BATs.
-
-As this is highly dependent on the platform, call mmu_mark_initmem_nx()
-regardless of data block mapping. Then the platform will know what to
-do.
-
-Modify 8xx mmu_mark_initmem_nx() so that inittext mapping is modified
-only when pagealloc debug and kfence are not active, otherwise inittext
-is mapped with standard pages. And don't do anything on kernel text
-which is already mapped with PAGE_KERNEL_TEXT.
-
-Fixes: da1adea07576 ("powerpc/8xx: Allow STRICT_KERNEL_RwX with pinned TLB")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/db3fc14f3bfa6215b0786ef58a6e2bc1e1f964d7.1655202804.git.christophe.leroy@csgroup.eu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6256e668b7af ("x86/kprobes: Use int3 instead of debug trap for single-step")
+Reported-by: Daniel Müller <deso@posteo.net>
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Tested-by: Daniel Müller <deso@posteo.net>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/20220727210136.jjgc3lpqeq42yr3m@muellerd-fedora-PC2BDTX9
+Link: https://lore.kernel.org/r/165942025658.342061.12452378391879093249.stgit@devnote2
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/nohash/8xx.c | 4 ++--
- arch/powerpc/mm/pgtable_32.c | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ arch/x86/kernel/kprobes/core.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/arch/powerpc/mm/nohash/8xx.c b/arch/powerpc/mm/nohash/8xx.c
-index 0df9fe29dd56..5348e1f9eb94 100644
---- a/arch/powerpc/mm/nohash/8xx.c
-+++ b/arch/powerpc/mm/nohash/8xx.c
-@@ -183,8 +183,8 @@ void mmu_mark_initmem_nx(void)
- 	unsigned long boundary = strict_kernel_rwx_enabled() ? sinittext : etext8;
- 	unsigned long einittext8 = ALIGN(__pa(_einittext), SZ_8M);
- 
--	mmu_mapin_ram_chunk(0, boundary, PAGE_KERNEL_TEXT, false);
--	mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
-+	if (!debug_pagealloc_enabled_or_kfence())
-+		mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
- 
- 	mmu_pin_tlb(block_mapped_ram, false);
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -816,16 +816,20 @@ NOKPROBE_SYMBOL(arch_prepare_kretprobe);
+ static void kprobe_post_process(struct kprobe *cur, struct pt_regs *regs,
+ 			       struct kprobe_ctlblk *kcb)
+ {
+-	if ((kcb->kprobe_status != KPROBE_REENTER) && cur->post_handler) {
+-		kcb->kprobe_status = KPROBE_HIT_SSDONE;
+-		cur->post_handler(cur, regs, 0);
+-	}
+-
+ 	/* Restore back the original saved kprobes variables and continue. */
+-	if (kcb->kprobe_status == KPROBE_REENTER)
++	if (kcb->kprobe_status == KPROBE_REENTER) {
++		/* This will restore both kcb and current_kprobe */
+ 		restore_previous_kprobe(kcb);
+-	else
++	} else {
++		/*
++		 * Always update the kcb status because
++		 * reset_curent_kprobe() doesn't update kcb.
++		 */
++		kcb->kprobe_status = KPROBE_HIT_SSDONE;
++		if (cur->post_handler)
++			cur->post_handler(cur, regs, 0);
+ 		reset_current_kprobe();
++	}
  }
-diff --git a/arch/powerpc/mm/pgtable_32.c b/arch/powerpc/mm/pgtable_32.c
-index f28859771440..502e3d3d1dbf 100644
---- a/arch/powerpc/mm/pgtable_32.c
-+++ b/arch/powerpc/mm/pgtable_32.c
-@@ -138,9 +138,9 @@ void mark_initmem_nx(void)
- 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
- 				 PFN_DOWN((unsigned long)_sinittext);
+ NOKPROBE_SYMBOL(kprobe_post_process);
  
--	if (v_block_mapped((unsigned long)_sinittext)) {
--		mmu_mark_initmem_nx();
--	} else {
-+	mmu_mark_initmem_nx();
-+
-+	if (!v_block_mapped((unsigned long)_sinittext)) {
- 		set_memory_nx((unsigned long)_sinittext, numpages);
- 		set_memory_rw((unsigned long)_sinittext, numpages);
- 	}
--- 
-2.35.1
-
 
 
