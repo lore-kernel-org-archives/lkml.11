@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F4BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08AAC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345345AbiHOUtt (ORCPT
+        id S1346265AbiHOUuG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        Mon, 15 Aug 2022 16:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346151AbiHOUtC (ORCPT
+        with ESMTP id S1346250AbiHOUtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:49:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D705B81E0;
-        Mon, 15 Aug 2022 12:09:09 -0700 (PDT)
+        Mon, 15 Aug 2022 16:49:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1926B8F01;
+        Mon, 15 Aug 2022 12:09:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 627646069E;
-        Mon, 15 Aug 2022 19:09:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A63AC433C1;
-        Mon, 15 Aug 2022 19:09:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9B1B60A52;
+        Mon, 15 Aug 2022 19:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D16FAC433C1;
+        Mon, 15 Aug 2022 19:09:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590548;
-        bh=+iw9H9HE5DC6fgpz+aGX4rOtBTIwTitF/Aqy17elXPg=;
+        s=korg; t=1660590552;
+        bh=kuSPsuod3nFFBwRzP14Dq+MMwRDfrosp/7NOt14u+p4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mnh3u/gqYL36Y3vsVffq/sZwf28uprhqXEe2TJD5VWIyCZZb8n5o5Gb6rwIOC3Iao
-         i9n1DNHbVP4EyBdgiCrX6ga4ojg8eo3hlRqixw1/+7oATLYp+ozlCazlZH4sYNK/hR
-         TqND1JJ8Q8YUoAxieKO19WNULeiWa7yNZT7PlyiI=
+        b=L09ghtYh5RaLjXMthYB/9GHF8azEJL9YIPE+iiErTqJ56ylsa1lNHfX9REhP0IVMH
+         6y4BqhjEPQLElFoLI2GdItUh6efEnYC+ooADw+BT+EOUgLhV+/HCb4B5MSPlQ8t8w2
+         IOqiyAeGHp4UFR7K1RMFTHa6ZttA0K50XHuUZC+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Liu Jinbao <liujinbao1@xiaomi.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0293/1095] arm64: Expand ESR_ELx_WFx_ISS_TI to match its ARMv8.7 definition
-Date:   Mon, 15 Aug 2022 19:54:52 +0200
-Message-Id: <20220815180441.903354670@linuxfoundation.org>
+Subject: [PATCH 5.18 0265/1095] erofs: avoid consecutive detection for Highmem memory
+Date:   Mon, 15 Aug 2022 19:54:24 +0200
+Message-Id: <20220815180440.711719977@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,51 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-[ Upstream commit 6a437208cb942a2dd98f7e1c3fd347ed3d425ffc ]
+[ Upstream commit 448b5a1548d87c246c3d0c3df8480d3c6eb6c11a ]
 
-Starting with FEAT_WFXT in ARMv8.7, the TI field in the ISS
-that is reported on a WFx trap is expanded by one bit to
-allow the description of WFET and WFIT.
+Currently, vmap()s are avoided if physical addresses are
+consecutive for decompressed buffers.
 
-Special care is taken to exclude the WFxT bit from the mask
-used to match WFI so that it also matches WFIT when trapped from
-EL0.
+I observed that is very common for 4KiB pclusters since the
+numbers of decompressed pages are almost 2 or 3.
 
-Reviewed-by: Joey Gouly <joey.gouly@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220419182755.601427-2-maz@kernel.org
+However, such detection doesn't work for Highmem pages on
+32-bit machines, let's fix it now.
+
+Reported-by: Liu Jinbao <liujinbao1@xiaomi.com>
+Fixes: 7fc45dbc938a ("staging: erofs: introduce generic decompression backend")
+Link: https://lore.kernel.org/r/20220708101001.21242-1-hsiangkao@linux.alibaba.com
+Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/esr.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/erofs/decompressor.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/include/asm/esr.h b/arch/arm64/include/asm/esr.h
-index d52a0b269ee8..65c2201b11b2 100644
---- a/arch/arm64/include/asm/esr.h
-+++ b/arch/arm64/include/asm/esr.h
-@@ -133,7 +133,8 @@
- #define ESR_ELx_CV		(UL(1) << 24)
- #define ESR_ELx_COND_SHIFT	(20)
- #define ESR_ELx_COND_MASK	(UL(0xF) << ESR_ELx_COND_SHIFT)
--#define ESR_ELx_WFx_ISS_TI	(UL(1) << 0)
-+#define ESR_ELx_WFx_ISS_TI	(UL(3) << 0)
-+#define ESR_ELx_WFx_ISS_WFxT	(UL(2) << 0)
- #define ESR_ELx_WFx_ISS_WFI	(UL(0) << 0)
- #define ESR_ELx_WFx_ISS_WFE	(UL(1) << 0)
- #define ESR_ELx_xVC_IMM_MASK	((1UL << 16) - 1)
-@@ -146,7 +147,8 @@
- #define DISR_EL1_ESR_MASK	(ESR_ELx_AET | ESR_ELx_EA | ESR_ELx_FSC)
+diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
+index 0e0d1fc0f130..9bbd9a59426b 100644
+--- a/fs/erofs/decompressor.c
++++ b/fs/erofs/decompressor.c
+@@ -93,14 +93,18 @@ static int z_erofs_lz4_prepare_dstpages(struct z_erofs_lz4_decompress_ctx *ctx,
  
- /* ESR value templates for specific events */
--#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK | ESR_ELx_WFx_ISS_TI)
-+#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK |			\
-+				 (ESR_ELx_WFx_ISS_TI & ~ESR_ELx_WFx_ISS_WFxT))
- #define ESR_ELx_WFx_WFI_VAL	((ESR_ELx_EC_WFx << ESR_ELx_EC_SHIFT) |	\
- 				 ESR_ELx_WFx_ISS_WFI)
- 
+ 		if (page) {
+ 			__clear_bit(j, bounced);
+-			if (kaddr) {
+-				if (kaddr + PAGE_SIZE == page_address(page))
++			if (!PageHighMem(page)) {
++				if (!i) {
++					kaddr = page_address(page);
++					continue;
++				}
++				if (kaddr &&
++				    kaddr + PAGE_SIZE == page_address(page)) {
+ 					kaddr += PAGE_SIZE;
+-				else
+-					kaddr = NULL;
+-			} else if (!i) {
+-				kaddr = page_address(page);
++					continue;
++				}
+ 			}
++			kaddr = NULL;
+ 			continue;
+ 		}
+ 		kaddr = NULL;
 -- 
 2.35.1
 
