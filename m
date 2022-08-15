@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8765DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7291CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352206AbiHOWxR (ORCPT
+        id S1352228AbiHOWxW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
+        Mon, 15 Aug 2022 18:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352398AbiHOWvo (ORCPT
+        with ESMTP id S1352428AbiHOWvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:51:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D7D7F0B2;
-        Mon, 15 Aug 2022 12:54:24 -0700 (PDT)
+        Mon, 15 Aug 2022 18:51:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2BE1394C4;
+        Mon, 15 Aug 2022 12:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B2E6113B;
-        Mon, 15 Aug 2022 19:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC1EC433C1;
-        Mon, 15 Aug 2022 19:54:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CB63B80EAD;
+        Mon, 15 Aug 2022 19:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29F3C433D6;
+        Mon, 15 Aug 2022 19:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593263;
-        bh=luJq0rhnS1tOZpDK/MobD+pecUceV/cKAkDXwD7RAbI=;
+        s=korg; t=1660593266;
+        bh=CM7F2rOUBmfcXUgNZhY9n4+a8WWv8wo3ROGfc/dqlQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOTnehircC3h5GKHpk4hT7L1wMPfjZl6OQFDMpALEvZ3dXrr7tbhKZimM+6UM2kzM
-         8j2Vw+8xEd6eYNhN2QcIFOYL1+XozHmzM9gJ7OOtE6BwRuTDC9lhb9+DFE3M8Yi8RS
-         wI2kQuPBZBoKrWtKULtq9YjKkj2DuhhLwYN6tgLQ=
+        b=cvuPv5vVf+Dnn6imBD68MUdYsSap3IZwqiHj/30lVoQBXKYwR/IhspWhvmQ41VW7i
+         PC7xj4gRboc5XBV4/98p5E8VOjO2AOpNBKNeFK8SlPNkSZs3ufWBjEfo99xMrXBYA3
+         CwhTdgbubTJ6gItPlITSNEBvbsEm48UbtsrMiq50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Omar Avelar <omar.avelar@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0238/1157] ACPI: APEI: Fix _EINJ vs EFI_MEMORY_SP
-Date:   Mon, 15 Aug 2022 19:53:14 +0200
-Message-Id: <20220815180449.086857452@linuxfoundation.org>
+Subject: [PATCH 5.18 0920/1095] powerpc/iommu: Fix iommu_table_in_use for a small default DMA window case
+Date:   Mon, 15 Aug 2022 20:05:19 +0200
+Message-Id: <20220815180507.336070485@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit b13a3e5fd40b7d1b394c5ecbb5eb301a4c38e7b2 ]
+[ Upstream commit d80f6de9d601c30b53c17f00cb7cfe3169f2ddad ]
 
-When a platform marks a memory range as "special purpose" it is not
-onlined as System RAM by default. However, it is still suitable for
-error injection. Add IORES_DESC_SOFT_RESERVED to einj_error_inject() as
-a permissible memory type in the sanity checking of the arguments to
-_EINJ.
+The existing iommu_table_in_use() helper checks if the kernel is using
+any of TCEs. There are some reserved TCEs:
+1) the very first one if DMA window starts from 0 to avoid having a zero
+but still valid DMA handle;
+2) it_reserved_start..it_reserved_end to exclude MMIO32 window in case
+the default window spans across that - this is the default for the first
+DMA window on PowerNV.
 
-Fixes: 262b45ae3ab4 ("x86/efi: EFI soft reservation to E820 enumeration")
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Reported-by: Omar Avelar <omar.avelar@intel.com>
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+When 1) is the case and 2) is not the helper does not skip 1) and returns
+wrong status.
+
+This only seems occurring when passing through a PCI device to a nested
+guest (not something we support really well) so it has not been seen
+before.
+
+This fixes the bug by adding a special case for no MMIO32 reservation.
+
+Fixes: 3c33066a2190 ("powerpc/kernel/iommu: Add new iommu_table_in_use() helper")
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220714081119.3714605-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/einj.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/kernel/iommu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/acpi/apei/einj.c b/drivers/acpi/apei/einj.c
-index d4326ec12d29..6b583373c58a 100644
---- a/drivers/acpi/apei/einj.c
-+++ b/drivers/acpi/apei/einj.c
-@@ -546,6 +546,8 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
- 				!= REGION_INTERSECTS) &&
- 	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_PERSISTENT_MEMORY)
- 				!= REGION_INTERSECTS) &&
-+	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_SOFT_RESERVED)
-+				!= REGION_INTERSECTS) &&
- 	     !arch_is_platform_page(base_addr)))
- 		return -EINVAL;
- 
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index 07093b7cdcb9..a67fd54ccc57 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -776,6 +776,11 @@ bool iommu_table_in_use(struct iommu_table *tbl)
+ 	/* ignore reserved bit0 */
+ 	if (tbl->it_offset == 0)
+ 		start = 1;
++
++	/* Simple case with no reserved MMIO32 region */
++	if (!tbl->it_reserved_start && !tbl->it_reserved_end)
++		return find_next_bit(tbl->it_map, tbl->it_size, start) != tbl->it_size;
++
+ 	end = tbl->it_reserved_start - tbl->it_offset;
+ 	if (find_next_bit(tbl->it_map, end, start) != end)
+ 		return true;
 -- 
 2.35.1
 
