@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAB2C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AC1C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244825AbiHPAkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        id S243971AbiHPAmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242180AbiHPAjm (ORCPT
+        with ESMTP id S244919AbiHPAjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:39:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCADABF21;
-        Mon, 15 Aug 2022 13:38:35 -0700 (PDT)
+        Mon, 15 Aug 2022 20:39:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31CAD34F9;
+        Mon, 15 Aug 2022 13:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA650B8114A;
-        Mon, 15 Aug 2022 20:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D047C433D7;
-        Mon, 15 Aug 2022 20:38:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C6898CE12C6;
+        Mon, 15 Aug 2022 20:38:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EE5C433C1;
+        Mon, 15 Aug 2022 20:38:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595913;
-        bh=WX3GrhU3cMELvExJ8uFidpuIGUve/uH3dcx+G+aVKes=;
+        s=korg; t=1660595920;
+        bh=wiCUhAHDhxGJi4ufS9Hr7pAE+pr7JKbHhtWjygcB68g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXYbo1oh4nW+C25t5ur0+knSPBKMNev6U53lYj4gVkkQrDuVKItjblJalXaDnO76r
-         qZ7ZeGXqeyrC9KE257zkxGjPTr0hWFQuv8c4ErAyZb5Zx9UPQiSy5RrvRKSw3nlqVN
-         F87ZStORtkLO+Pna+7q5kut2dw+CYFTLqVJDi1CI=
+        b=MTyNcYHoAvXzX4Xb6P/G5omJcdat1toIjRbjvzAnEw6tR1k7NFzfBmxSP5g9tsoZH
+         iBKuLkwhGrwtN5awWwifJ82p0OPESw73EuQlLlkjL5qh30Wp4DtvDgP+NsQicHoNH0
+         6YHmm2xQtSg3LVoiD/6+6Aq/sOs1b8vTlei0hCN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0915/1157] selftests/powerpc: Skip energy_scale_info test on older firmware
-Date:   Mon, 15 Aug 2022 20:04:31 +0200
-Message-Id: <20220815180516.053020540@linuxfoundation.org>
+Subject: [PATCH 5.19 0899/1157] serial: 8250: Create serial_lsr_in()
+Date:   Mon, 15 Aug 2022 20:04:15 +0200
+Message-Id: <20220815180515.413383265@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,102 +50,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 4228a996b072d36f3baafb4afdc2d2d66d2cbadf ]
+[ Upstream commit bdb70c424df1543bc02ee2639aecebd20318c599 ]
 
-Older machines don't have the firmware feature that enables the code
-this test is testing. Skip the test if the sysfs directory doesn't
-exist. Also use the FAIL_IF() macro to provide more verbose error
-reporting if an error is encountered.
+LSR register readers need to be careful in order to not lose bits that
+are not preserved across reads. Create a helper that takes care of
+storing the non-preserved bits into lsr_save_flags.
 
-Fixes: 57201d657eb7 ("selftest/powerpc: Add PAPR sysfs attributes sniff test")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220619233103.2666171-1-mpe@ellerman.id.au
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220608095431.18376-3-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../powerpc/papr_attributes/attr_test.c       | 30 +++++++++++--------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+ drivers/tty/serial/8250/8250.h      | 20 ++++++++++++++++++++
+ drivers/tty/serial/8250/8250_core.c |  3 +--
+ drivers/tty/serial/8250/8250_port.c | 15 ++++-----------
+ 3 files changed, 25 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-index bab0dc06e90b..9b655be641c9 100644
---- a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-+++ b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-@@ -7,6 +7,7 @@
-  * Copyright 2022, Pratik Rajesh Sampat, IBM Corp.
-  */
- 
-+#include <errno.h>
- #include <stdio.h>
- #include <string.h>
- #include <dirent.h>
-@@ -32,7 +33,7 @@ enum type {
- 	NUM_VAL
- };
- 
--int value_type(int id)
-+static int value_type(int id)
- {
- 	int val_type;
- 
-@@ -54,15 +55,21 @@ int value_type(int id)
- 	return val_type;
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 696030cfcb09..c89cb881d9b0 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -123,6 +123,26 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
+ 	up->port.serial_out(&up->port, offset, value);
  }
  
--int verify_energy_info(void)
-+static int verify_energy_info(void)
- {
- 	const char *path = "/sys/firmware/papr/energy_scale_info";
- 	struct dirent *entry;
- 	struct stat s;
- 	DIR *dirp;
- 
--	if (stat(path, &s) || !S_ISDIR(s.st_mode))
--		return -1;
-+	errno = 0;
-+	if (stat(path, &s)) {
-+		SKIP_IF(errno == ENOENT);
-+		FAIL_IF(errno);
-+	}
++/**
++ *	serial_lsr_in - Read LSR register and preserve flags across reads
++ *	@up:	uart 8250 port
++ *
++ *	Read LSR register and handle saving non-preserved flags across reads.
++ *	The flags that are not preserved across reads are stored into
++ *	up->lsr_saved_flags.
++ *
++ *	Returns LSR value or'ed with the preserved flags (if any).
++ */
++static inline unsigned int serial_lsr_in(struct uart_8250_port *up)
++{
++	unsigned int lsr = up->lsr_saved_flags;
 +
-+	FAIL_IF(!S_ISDIR(s.st_mode));
++	lsr |= serial_in(up, UART_LSR);
++	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
 +
- 	dirp = opendir(path);
++	return lsr;
++}
++
+ /*
+  * For the 16C950
+  */
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 3f56dbc9432b..82726cda6066 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -277,8 +277,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
+ 	 * the "Diva" UART used on the management processor on many HP
+ 	 * ia64 and parisc boxes.
+ 	 */
+-	lsr = serial_in(up, UART_LSR);
+-	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++	lsr = serial_lsr_in(up);
+ 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
+ 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
+ 	    (lsr & UART_LSR_THRE)) {
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 3c36a06a20b0..c9d8c0de56e5 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1514,11 +1514,9 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 	struct uart_8250_em485 *em485 = p->em485;
  
- 	while ((entry = readdir(dirp)) != NULL) {
-@@ -76,25 +83,24 @@ int verify_energy_info(void)
+ 	if (em485) {
+-		unsigned char lsr = serial_in(p, UART_LSR);
++		unsigned char lsr = serial_lsr_in(p);
+ 		u64 stop_delay = 0;
  
- 		id = atoi(entry->d_name);
- 		attr_type = value_type(id);
--		if (attr_type == INVALID)
--			return -1;
-+		FAIL_IF(attr_type == INVALID);
+-		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-
+ 		if (!(lsr & UART_LSR_THRE))
+ 			return;
+ 		/*
+@@ -1573,10 +1571,8 @@ static inline void __start_tx(struct uart_port *port)
  
- 		/* Check if the files exist and have data in them */
- 		sprintf(file_name, "%s/%d/desc", path, id);
- 		f = fopen(file_name, "r");
--		if (!f || fgetc(f) == EOF)
--			return -1;
-+		FAIL_IF(!f);
-+		FAIL_IF(fgetc(f) == EOF);
+ 	if (serial8250_set_THRI(up)) {
+ 		if (up->bugs & UART_BUG_TXEN) {
+-			unsigned char lsr;
++			unsigned char lsr = serial_lsr_in(up);
  
- 		sprintf(file_name, "%s/%d/value", path, id);
- 		f = fopen(file_name, "r");
--		if (!f || fgetc(f) == EOF)
--			return -1;
-+		FAIL_IF(!f);
-+		FAIL_IF(fgetc(f) == EOF);
- 
- 		if (attr_type == STR_VAL) {
- 			sprintf(file_name, "%s/%d/value_desc", path, id);
- 			f = fopen(file_name, "r");
--			if (!f || fgetc(f) == EOF)
--				return -1;
-+			FAIL_IF(!f);
-+			FAIL_IF(fgetc(f) == EOF);
+-			lsr = serial_in(up, UART_LSR);
+-			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+ 			if (lsr & UART_LSR_THRE)
+ 				serial8250_tx_chars(up);
  		}
- 	}
+@@ -2007,8 +2003,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
+ 	serial8250_rpm_get(up);
  
+ 	spin_lock_irqsave(&port->lock, flags);
+-	lsr = serial_port_in(port, UART_LSR);
+-	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++	lsr = serial_lsr_in(up);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	serial8250_rpm_put(up);
+@@ -2084,9 +2079,7 @@ static void wait_for_lsr(struct uart_8250_port *up, int bits)
+ 
+ 	/* Wait up to 10ms for the character(s) to be sent. */
+ 	for (;;) {
+-		status = serial_in(up, UART_LSR);
+-
+-		up->lsr_saved_flags |= status & LSR_SAVE_FLAGS;
++		status = serial_lsr_in(up);
+ 
+ 		if ((status & bits) == bits)
+ 			break;
 -- 
 2.35.1
 
