@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12747C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD240C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347740AbiHOWUL (ORCPT
+        id S1347844AbiHOWUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52096 "EHLO
+        Mon, 15 Aug 2022 18:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347522AbiHOWP6 (ORCPT
+        with ESMTP id S1348013AbiHOWQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:15:58 -0400
+        Mon, 15 Aug 2022 18:16:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53F4120A84;
-        Mon, 15 Aug 2022 12:39:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9EE120A99;
+        Mon, 15 Aug 2022 12:40:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9D88B80EA7;
-        Mon, 15 Aug 2022 19:39:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3577CC433D6;
-        Mon, 15 Aug 2022 19:39:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EB6AB80EAB;
+        Mon, 15 Aug 2022 19:39:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D27C433B5;
+        Mon, 15 Aug 2022 19:39:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592378;
-        bh=09RnNxg19SQJ4cNTRE294GN7J1KK248eGE8198Ys4xk=;
+        s=korg; t=1660592381;
+        bh=72iw2wQ65KIGB4P3ShPzgBQnjxHwzejp/XEhvwJNXXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cCQ6pOgRr7QTGYAmZ8JNSsRI/5fAGBzAhPvC/eWhxWcZNtMcSzgBmTwOUfGkeYd+t
-         ZvfsQuKauPFHaSfQBsGLG5wukNe87iNiTrDV+Eb6ezS9/tIgVgQLnmI49U/zjBXTD7
-         WL8qc7Q4wB5G9exSELvhIN8S2g3Rj9NYIEuM7AcE=
+        b=wR5DHqA0R9g7yGqrBlHHJMJ2SJCf8iNscgi/laj3+aoz7Ad1izALc7nSzEQoXGZdV
+         hCbwXu+3fa1oyTUvVecly0XR+fu0MwYd7/RptfGv0MRqLXWrf0HX6LXRge9KF6Yiys
+         AwjkiXLbE1TtbAD0ubzGO5r7ufAPlBI5skp6laL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0778/1095] iio: adc: max1027: unlock on error path in max1027_read_single_value()
-Date:   Mon, 15 Aug 2022 20:02:57 +0200
-Message-Id: <20220815180501.444960645@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.19 0102/1157] iio: light: isl29028: Fix the warning in isl29028_remove()
+Date:   Mon, 15 Aug 2022 19:50:58 +0200
+Message-Id: <20220815180443.708771400@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 06ee60eb507f00fb3643876ec05318c63332dc88 ]
+commit 06674fc7c003b9d0aa1d37fef7ab2c24802cc6ad upstream.
 
-If max1027_wait_eoc() fails then call iio_device_release_direct_mode()
-before returning.
+The driver use the non-managed form of the register function in
+isl29028_remove(). To keep the release order as mirroring the ordering
+in probe, the driver should use non-managed form in probe, too.
 
-Fixes: a0e831653ef9 ("iio: adc: max1027: Introduce an end of conversion helper")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/YsbztVuAXnau2cIZ@kili
+The following log reveals it:
+
+[   32.374955] isl29028 0-0010: remove
+[   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
+[   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+[   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
+[   32.385461] Call Trace:
+[   32.385807]  sysfs_unmerge_group+0x59/0x110
+[   32.386110]  dpm_sysfs_remove+0x58/0xc0
+[   32.386391]  device_del+0x296/0xe50
+[   32.386959]  cdev_device_del+0x1d/0xd0
+[   32.387231]  devm_iio_device_unreg+0x27/0xb0
+[   32.387542]  devres_release_group+0x319/0x3d0
+[   32.388162]  i2c_device_remove+0x93/0x1f0
+
+Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220717004241.2281028-1-zheyuma97@gmail.com
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/max1027.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/light/isl29028.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index b725d012625c..136fcf753837 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -349,8 +349,7 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+--- a/drivers/iio/light/isl29028.c
++++ b/drivers/iio/light/isl29028.c
+@@ -625,7 +625,7 @@ static int isl29028_probe(struct i2c_cli
+ 					 ISL29028_POWER_OFF_DELAY_MS);
+ 	pm_runtime_use_autosuspend(&client->dev);
+ 
+-	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
++	ret = iio_device_register(indio_dev);
  	if (ret < 0) {
- 		dev_err(&indio_dev->dev,
- 			"Failed to configure conversion register\n");
--		iio_device_release_direct_mode(indio_dev);
--		return ret;
-+		goto release;
- 	}
- 
- 	/*
-@@ -360,11 +359,12 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
- 	 */
- 	ret = max1027_wait_eoc(indio_dev);
- 	if (ret)
--		return ret;
-+		goto release;
- 
- 	/* Read result */
- 	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
- 
-+release:
- 	iio_device_release_direct_mode(indio_dev);
- 
- 	if (ret < 0)
--- 
-2.35.1
-
+ 		dev_err(&client->dev,
+ 			"%s(): iio registration failed with error %d\n",
 
 
