@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E4FC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D414C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348921AbiHOWZv (ORCPT
+        id S1349780AbiHOW0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        Mon, 15 Aug 2022 18:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350822AbiHOWSi (ORCPT
+        with ESMTP id S1350833AbiHOWSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:38 -0400
+        Mon, 15 Aug 2022 18:18:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3966A65669;
-        Mon, 15 Aug 2022 12:42:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1C36566C;
+        Mon, 15 Aug 2022 12:42:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD2A960FB9;
-        Mon, 15 Aug 2022 19:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3920C433C1;
-        Mon, 15 Aug 2022 19:42:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D8BB6068D;
+        Mon, 15 Aug 2022 19:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15C21C433C1;
+        Mon, 15 Aug 2022 19:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592549;
-        bh=3C0nmz2bwUw/YhMXl/4vqecM80SkN232zvqvmAcwXbw=;
+        s=korg; t=1660592558;
+        bh=bc9aM3xEe7Z2hNZa6nlp6Nn4q+qo2aKGf8HRiK9p9oA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKeKnmXMMDMM5Mgx1KDQXSTW8DgbSE7Ctjg9zYORye4ld3ZOoGY9UV6t3juw3wimX
-         77GP8FNZnDMJE9rUhutzB8ccSZfDV3frODfFU8UZuCfgIL5/G2k+JDdltA5yESbUiS
-         ++1rSM+h3IXNVjsBQPWLLIxP0zy+7c/cmAJfyAhs=
+        b=s3WTBvrfIxpDtlqaHC4V2otm+QDgs/DHk5YPJdQ8zcmqxjm/zpvPxR7mbX/wzLqhl
+         cNazPxZG7r3zKIWIotE8i9FG/TrYQNw3AkomEyNqbOuUvWWN5RoarVdkaSd7GmkUhh
+         VfK8ktDSGDJ/21zuVj960xEQ43XRXHveg8gkCXY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.19 0128/1157] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-Date:   Mon, 15 Aug 2022 19:51:24 +0200
-Message-Id: <20220815180444.734962124@linuxfoundation.org>
+        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.19 0116/1157] fuse: fix deadlock between atomic O_TRUNC and page invalidation
+Date:   Mon, 15 Aug 2022 19:51:12 +0200
+Message-Id: <20220815180444.262490024@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,46 +50,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
+commit 2fdbb8dd01556e1501132b5ad3826e8f71e24a8b upstream.
 
-On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
-for supervisor. As soon as one of the two bits is set, the page has
-to be display as RW. But the way it is implemented today requires both
-bits to be set in order to display it as RW.
+fuse_finish_open() will be called with FUSE_NOWRITE set in case of atomic
+O_TRUNC open(), so commit 76224355db75 ("fuse: truncate pagecache on
+atomic_o_trunc") replaced invalidate_inode_pages2() by truncate_pagecache()
+in such a case to avoid the A-A deadlock. However, we found another A-B-B-A
+deadlock related to the case above, which will cause the xfstests
+generic/464 testcase hung in our virtio-fs test environment.
 
-Instead of display RW when _PAGE_RW bits are set and R otherwise,
-reverse the logic and display R when _PAGE_RW bits are all 0 and
-RW otherwise.
+For example, consider two processes concurrently open one same file, one
+with O_TRUNC and another without O_TRUNC. The deadlock case is described
+below, if open(O_TRUNC) is already set_nowrite(acquired A), and is trying
+to lock a page (acquiring B), open() could have held the page lock
+(acquired B), and waiting on the page writeback (acquiring A). This would
+lead to deadlocks.
 
-This change has no impact on other platforms as _PAGE_RW is a single
-bit on all of them.
+open(O_TRUNC)
+----------------------------------------------------------------
+fuse_open_common
+  inode_lock            [C acquire]
+  fuse_set_nowrite      [A acquire]
 
-Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
+  fuse_finish_open
+    truncate_pagecache
+      lock_page         [B acquire]
+      truncate_inode_page
+      unlock_page       [B release]
+
+  fuse_release_nowrite  [A release]
+  inode_unlock          [C release]
+----------------------------------------------------------------
+
+open()
+----------------------------------------------------------------
+fuse_open_common
+  fuse_finish_open
+    invalidate_inode_pages2
+      lock_page         [B acquire]
+        fuse_launder_page
+          fuse_wait_on_page_writeback [A acquire & release]
+      unlock_page       [B release]
+----------------------------------------------------------------
+
+Besides this case, all calls of invalidate_inode_pages2() and
+invalidate_inode_pages2_range() in fuse code also can deadlock with
+open(O_TRUNC).
+
+Fix by moving the truncate_pagecache() call outside the nowrite protected
+region.  The nowrite protection is only for delayed writeback
+(writeback_cache) case, where inode lock does not protect against
+truncation racing with writes on the server.  Write syscalls racing with
+page cache truncation still get the inode lock protection.
+
+This patch also changes the order of filemap_invalidate_lock()
+vs. fuse_set_nowrite() in fuse_open_common().  This new order matches the
+order found in fuse_file_fallocate() and fuse_do_setattr().
+
+Reported-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Tested-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Fixes: e4648309b85a ("fuse: truncate pending writes on O_TRUNC")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/ptdump/shared.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/fuse/dir.c  |    7 ++++++-
+ fs/fuse/file.c |   30 +++++++++++++++++-------------
+ 2 files changed, 23 insertions(+), 14 deletions(-)
 
---- a/arch/powerpc/mm/ptdump/shared.c
-+++ b/arch/powerpc/mm/ptdump/shared.c
-@@ -17,9 +17,9 @@ static const struct flag_info flag_array
- 		.clear	= "    ",
- 	}, {
- 		.mask	= _PAGE_RW,
--		.val	= _PAGE_RW,
--		.set	= "rw",
--		.clear	= "r ",
-+		.val	= 0,
-+		.set	= "r ",
-+		.clear	= "rw",
- 	}, {
- 		.mask	= _PAGE_EXEC,
- 		.val	= _PAGE_EXEC,
+--- a/fs/fuse/dir.c
++++ b/fs/fuse/dir.c
+@@ -537,6 +537,7 @@ static int fuse_create_open(struct inode
+ 	struct fuse_file *ff;
+ 	void *security_ctx = NULL;
+ 	u32 security_ctxlen;
++	bool trunc = flags & O_TRUNC;
+ 
+ 	/* Userspace expects S_IFREG in create mode */
+ 	BUG_ON((mode & S_IFMT) != S_IFREG);
+@@ -561,7 +562,7 @@ static int fuse_create_open(struct inode
+ 	inarg.mode = mode;
+ 	inarg.umask = current_umask();
+ 
+-	if (fm->fc->handle_killpriv_v2 && (flags & O_TRUNC) &&
++	if (fm->fc->handle_killpriv_v2 && trunc &&
+ 	    !(flags & O_EXCL) && !capable(CAP_FSETID)) {
+ 		inarg.open_flags |= FUSE_OPEN_KILL_SUIDGID;
+ 	}
+@@ -623,6 +624,10 @@ static int fuse_create_open(struct inode
+ 	} else {
+ 		file->private_data = ff;
+ 		fuse_finish_open(inode, file);
++		if (fm->fc->atomic_o_trunc && trunc)
++			truncate_pagecache(inode, 0);
++		else if (!(ff->open_flags & FOPEN_KEEP_CACHE))
++			invalidate_inode_pages2(inode->i_mapping);
+ 	}
+ 	return err;
+ 
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -210,13 +210,9 @@ void fuse_finish_open(struct inode *inod
+ 		fi->attr_version = atomic64_inc_return(&fc->attr_version);
+ 		i_size_write(inode, 0);
+ 		spin_unlock(&fi->lock);
+-		truncate_pagecache(inode, 0);
+ 		file_update_time(file);
+ 		fuse_invalidate_attr_mask(inode, FUSE_STATX_MODSIZE);
+-	} else if (!(ff->open_flags & FOPEN_KEEP_CACHE)) {
+-		invalidate_inode_pages2(inode->i_mapping);
+ 	}
+-
+ 	if ((file->f_mode & FMODE_WRITE) && fc->writeback_cache)
+ 		fuse_link_write_file(file);
+ }
+@@ -239,30 +235,38 @@ int fuse_open_common(struct inode *inode
+ 	if (err)
+ 		return err;
+ 
+-	if (is_wb_truncate || dax_truncate) {
++	if (is_wb_truncate || dax_truncate)
+ 		inode_lock(inode);
+-		fuse_set_nowrite(inode);
+-	}
+ 
+ 	if (dax_truncate) {
+ 		filemap_invalidate_lock(inode->i_mapping);
+ 		err = fuse_dax_break_layouts(inode, 0, 0);
+ 		if (err)
+-			goto out;
++			goto out_inode_unlock;
+ 	}
+ 
++	if (is_wb_truncate || dax_truncate)
++		fuse_set_nowrite(inode);
++
+ 	err = fuse_do_open(fm, get_node_id(inode), file, isdir);
+ 	if (!err)
+ 		fuse_finish_open(inode, file);
+ 
+-out:
++	if (is_wb_truncate || dax_truncate)
++		fuse_release_nowrite(inode);
++	if (!err) {
++		struct fuse_file *ff = file->private_data;
++
++		if (fc->atomic_o_trunc && (file->f_flags & O_TRUNC))
++			truncate_pagecache(inode, 0);
++		else if (!(ff->open_flags & FOPEN_KEEP_CACHE))
++			invalidate_inode_pages2(inode->i_mapping);
++	}
+ 	if (dax_truncate)
+ 		filemap_invalidate_unlock(inode->i_mapping);
+-
+-	if (is_wb_truncate | dax_truncate) {
+-		fuse_release_nowrite(inode);
++out_inode_unlock:
++	if (is_wb_truncate || dax_truncate)
+ 		inode_unlock(inode);
+-	}
+ 
+ 	return err;
+ }
 
 
