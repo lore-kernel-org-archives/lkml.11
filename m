@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4C4C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29632C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347492AbiHOUZw (ORCPT
+        id S1347463AbiHOUZr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
+        Mon, 15 Aug 2022 16:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243999AbiHOUSo (ORCPT
+        with ESMTP id S243716AbiHOUSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:18:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DE145F43;
-        Mon, 15 Aug 2022 12:00:34 -0700 (PDT)
+        Mon, 15 Aug 2022 16:18:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D3C43E7B;
+        Mon, 15 Aug 2022 12:00:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5B56B810C5;
-        Mon, 15 Aug 2022 19:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A3E9C433D6;
-        Mon, 15 Aug 2022 19:00:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8C977CE1267;
+        Mon, 15 Aug 2022 19:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52601C433D6;
+        Mon, 15 Aug 2022 19:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590031;
-        bh=CBb0Nq4prmkpogVj+AXr6e4xJHBujYPfz49hr0sMgxE=;
+        s=korg; t=1660590025;
+        bh=/nlk2RNgiWALLZkduIiOCkuWAgi6PpoVPN4WKKCrp3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fQweulclZqzj9c9h3EUo78X+qrr6vsFVAxhMY1ERm/lp3+XC0RlfszWzS8b6vK4Oi
-         PUOVNLZcs1u2y7ieqNiYdujJqPjGK25oqZk8tw4H83jGxtL6BT8iZXtBWumVLQWmlc
-         3mpC7S9HKWPv51sSgxCxi4wuIWDIDJ6Od9gUmDG8=
+        b=zF/kDjt8qhkg/GX6zmooB6MG0ASioiYD2QR+ALQmIe3xMeI6hQzK4Qd5kTcERLQmG
+         FgJmMxKWnB0dTLUANP1WKsLLHPxmXCk49vz+WJrZf95BGwtNbY2OCss557w/8xlili
+         xZhf8L+VVD2Nowut5D4PayHJ2Dzrm1IUfM4HqaeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.18 0098/1095] soundwire: qcom: Check device status before reading devid
-Date:   Mon, 15 Aug 2022 19:51:37 +0200
-Message-Id: <20220815180433.612111006@linuxfoundation.org>
+        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.18 0125/1095] ARM: dts: uniphier: Fix USB interrupts for PXs2 SoC
+Date:   Mon, 15 Aug 2022 19:52:04 +0200
+Message-Id: <20220815180434.759536778@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit aa1262ca66957183ea1fb32a067e145b995f3744 upstream.
+commit 9b0dc7abb5cc43a2dbf90690c3c6011dcadc574d upstream.
 
-As per hardware datasheet its recommended that we check the device
-status before reading devid assigned by auto-enumeration.
-
-Without this patch we see SoundWire devices with invalid enumeration
-addresses on the bus.
+An interrupt for USB device are shared with USB host. Set interrupt-names
+property to common "dwc_usb3" instead of "host" and "peripheral".
 
 Cc: stable@vger.kernel.org
-Fixes: a6e6581942ca ("soundwire: qcom: add auto enumeration support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220706095644.5852-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 45be1573ad19 ("ARM: dts: uniphier: Add USB3 controller nodes")
+Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soundwire/qcom.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/uniphier-pxs2.dtsi |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -471,6 +471,10 @@ static int qcom_swrm_enumerate(struct sd
- 	char *buf1 = (char *)&val1, *buf2 = (char *)&val2;
- 
- 	for (i = 1; i <= SDW_MAX_DEVICES; i++) {
-+		/* do not continue if the status is Not Present  */
-+		if (!ctrl->status[i])
-+			continue;
-+
- 		/*SCP_Devid5 - Devid 4*/
- 		ctrl->reg_read(ctrl, SWRM_ENUMERATOR_SLAVE_DEV_ID_1(i), &val1);
- 
+--- a/arch/arm/boot/dts/uniphier-pxs2.dtsi
++++ b/arch/arm/boot/dts/uniphier-pxs2.dtsi
+@@ -597,8 +597,8 @@
+ 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
+ 			status = "disabled";
+ 			reg = <0x65a00000 0xcd00>;
+-			interrupt-names = "host", "peripheral";
+-			interrupts = <0 134 4>, <0 135 4>;
++			interrupt-names = "dwc_usb3";
++			interrupts = <0 134 4>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
+ 			clock-names = "ref", "bus_early", "suspend";
+@@ -693,8 +693,8 @@
+ 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
+ 			status = "disabled";
+ 			reg = <0x65c00000 0xcd00>;
+-			interrupt-names = "host", "peripheral";
+-			interrupts = <0 137 4>, <0 138 4>;
++			interrupt-names = "dwc_usb3";
++			interrupts = <0 137 4>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
+ 			clock-names = "ref", "bus_early", "suspend";
 
 
