@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CC4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B48C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354846AbiHOX5e (ORCPT
+        id S1355654AbiHOX5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
+        Mon, 15 Aug 2022 19:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355385AbiHOXwB (ORCPT
+        with ESMTP id S1355395AbiHOXwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:52:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEAC92F6E;
-        Mon, 15 Aug 2022 13:16:48 -0700 (PDT)
+        Mon, 15 Aug 2022 19:52:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5EA2CCB2;
+        Mon, 15 Aug 2022 13:16:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15FBBB8115B;
-        Mon, 15 Aug 2022 20:16:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47133C433D6;
-        Mon, 15 Aug 2022 20:16:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C45DB80EB1;
+        Mon, 15 Aug 2022 20:16:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642FFC433C1;
+        Mon, 15 Aug 2022 20:16:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594605;
-        bh=MEBQGLR4Wi8YUObvifBBBpQoQcSMmdCnvx59pobyrQc=;
+        s=korg; t=1660594608;
+        bh=X9e1ULn5u8dN/vWtVUa60/Uy8EpTPSSad7gGvaqhSkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wHKxf8d0kxwoQ9MwisoKksDJPeHs+QQmC/gi05Ak+XqgrYEH4bg1dR3WEoWmqM5TX
-         Zgi7Q7tfP/fMCxQeqB6uaLP1XSX5GpAql3+ecG+MACnwrns431rjGVP9CZa3zVIiAX
-         bGHTODN3LjlNNATqHwdTCrMpQUQSjjgXGp503ZqU=
+        b=J2jq8s3y63RKPKZXCOuc41vW0KgVLKNAQzSOm459RUD79eaSssTkTDI1ntvlOCqRk
+         dRdCPayOKQmFhAkN0UTTNLDkTlSB2YoWP92ip3V99ykXQK9u3hT+lc81o5oUmBwHYS
+         aI6LT8ORL7I/IfYlb+t5trHO4F+Um4Z7vkj0LYVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0501/1157] media: ov7251: add missing disable functions on error in ov7251_set_power_on()
-Date:   Mon, 15 Aug 2022 19:57:37 +0200
-Message-Id: <20220815180459.734281331@linuxfoundation.org>
+Subject: [PATCH 5.19 0502/1157] fs: check FMODE_LSEEK to control internal pipe splicing
+Date:   Mon, 15 Aug 2022 19:57:38 +0200
+Message-Id: <20220815180459.771925815@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,37 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 7a9795b31049b7e233d050a82b00094155a695c7 ]
+[ Upstream commit 97ef77c52b789ec1411d360ed99dca1efe4b2c81 ]
 
-Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
-before return from ov7251_set_power_on() in the error handling case.
+The original direct splicing mechanism from Jens required the input to
+be a regular file because it was avoiding the special socket case. It
+also recognized blkdevs as being close enough to a regular file. But it
+forgot about chardevs, which behave the same way and work fine here.
 
-Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This is an okayish heuristic, but it doesn't totally work. For example,
+a few chardevs should be spliceable here. And a few regular files
+shouldn't. This patch fixes this by instead checking whether FMODE_LSEEK
+is set, which represents decently enough what we need rewinding for when
+splicing to internal pipes.
+
+Fixes: b92ce5589374 ("[PATCH] splice: add direct fd <-> fd splicing support")
+Cc: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov7251.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/splice.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
-index 0e7be15bc20a..ad9689820ecc 100644
---- a/drivers/media/i2c/ov7251.c
-+++ b/drivers/media/i2c/ov7251.c
-@@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
- 					ARRAY_SIZE(ov7251_global_init_setting));
- 	if (ret < 0) {
- 		dev_err(ov7251->dev, "error during global init\n");
-+		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
-+		clk_disable_unprepare(ov7251->xclk);
- 		ov7251_regulators_disable(ov7251);
- 		return ret;
- 	}
+diff --git a/fs/splice.c b/fs/splice.c
+index 047b79db8eb5..93a2c9bf6249 100644
+--- a/fs/splice.c
++++ b/fs/splice.c
+@@ -814,17 +814,15 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
+ {
+ 	struct pipe_inode_info *pipe;
+ 	long ret, bytes;
+-	umode_t i_mode;
+ 	size_t len;
+ 	int i, flags, more;
+ 
+ 	/*
+-	 * We require the input being a regular file, as we don't want to
+-	 * randomly drop data for eg socket -> socket splicing. Use the
+-	 * piped splicing for that!
++	 * We require the input to be seekable, as we don't want to randomly
++	 * drop data for eg socket -> socket splicing. Use the piped splicing
++	 * for that!
+ 	 */
+-	i_mode = file_inode(in)->i_mode;
+-	if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode)))
++	if (unlikely(!(in->f_mode & FMODE_LSEEK)))
+ 		return -EINVAL;
+ 
+ 	/*
 -- 
 2.35.1
 
