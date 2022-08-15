@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85375C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B56CCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344467AbiHOUpW (ORCPT
+        id S1344686AbiHOUp2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
+        Mon, 15 Aug 2022 16:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347686AbiHOUnD (ORCPT
+        with ESMTP id S1347731AbiHOUnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:43:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7CCB56C5;
-        Mon, 15 Aug 2022 12:08:08 -0700 (PDT)
+        Mon, 15 Aug 2022 16:43:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5B7B2879;
+        Mon, 15 Aug 2022 12:07:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5A98B81062;
-        Mon, 15 Aug 2022 19:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE8FBC433C1;
-        Mon, 15 Aug 2022 19:08:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D37FBCE1082;
+        Mon, 15 Aug 2022 19:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52D6C433C1;
+        Mon, 15 Aug 2022 19:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590485;
-        bh=RJpMtkSYG/vXtAkOfRgXlbOp7ynizIaZM8ijsH0shiQ=;
+        s=korg; t=1660590472;
+        bh=fCYDI+F88UGUTrDjbcNz8uPK++EHHjAD50nTwpOJZGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QslqtIYRUkBewZbgB+JBPr1ED1tJPygrOmVuDK13eG0BjbJ/kYBYt0vqumMWzal6i
-         AJCylFKoxSZ2u1skNaLy6Trvcn2dZzDcFGqEzGS/vkWq/VxZf9vc6apnO0pkEpmKCo
-         rNn9OYdnznEOoPBH5NSY4TXjRv0z/aZQmHGgW6s0=
+        b=mPGVADW0QB9+owDFtgF8Kz8m3GEjF8dETJn0v5b9vIr6+EkqjjmhRmo5RxvookjtF
+         BqV2d/uwPwBz+u3BIcBmkZGJso0obKDBERXfQZ86tC5Se6Za/tK+tJZp31H3pfrWQb
+         EhwhpjoVH4RifZvErbsH/hCHMnGHgVDUA4dGFtd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0275/1095] dm writecache: return void from functions
-Date:   Mon, 15 Aug 2022 19:54:34 +0200
-Message-Id: <20220815180441.138418446@linuxfoundation.org>
+Subject: [PATCH 5.18 0271/1095] hwmon: (sch56xx-common) Add DMI override table
+Date:   Mon, 15 Aug 2022 19:54:30 +0200
+Message-Id: <20220815180440.967279788@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,100 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit 9bc0c92e4b82adb017026dbb2aa816b1ac2bef31 ]
+[ Upstream commit fd2d53c367ae9983c2100ac733a834e0c79d7537 ]
 
-The functions writecache_map_remap_origin and writecache_bio_copy_ssd
-only return a single value, thus they can be made to return void.
+Some devices like the Fujitsu Celsius W380 do contain
+a working sch56xx hardware monitoring device, but do
+not contain the necessary DMI onboard device.
 
-This helps simplify the following IO accounting changes.
+Do not check for the presence of an suitable onboard device
+on these machines. The list of affected machines was created
+using data collected by the Linux Hardware Project.
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Tested on a Fujitsu Esprimo P720, but sadly not on a affected
+machine.
+
+Fixes: 393935baa45e (hwmon: (sch56xx-common) Add automatic module loading on supported devices)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220604220200.2567-1-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-writecache.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/hwmon/sch56xx-common.c | 44 ++++++++++++++++++++++++++--------
+ 1 file changed, 34 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index 5630b470ba42..688b6b3bcd7b 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1328,8 +1328,8 @@ enum wc_map_op {
- 	WC_MAP_ERROR,
- };
- 
--static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc, struct bio *bio,
--						  struct wc_entry *e)
-+static void writecache_map_remap_origin(struct dm_writecache *wc, struct bio *bio,
-+					struct wc_entry *e)
- {
- 	if (e) {
- 		sector_t next_boundary =
-@@ -1337,8 +1337,6 @@ static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc, stru
- 		if (next_boundary < bio->bi_iter.bi_size >> SECTOR_SHIFT)
- 			dm_accept_partial_bio(bio, next_boundary);
- 	}
--
--	return WC_MAP_REMAP_ORIGIN;
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index 3ece53adabd6..de3a0886c2f7 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -523,6 +523,28 @@ static int __init sch56xx_device_add(int address, const char *name)
+ 	return PTR_ERR_OR_ZERO(sch56xx_pdev);
  }
  
- static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *bio)
-@@ -1365,14 +1363,15 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
- 			map_op = WC_MAP_REMAP;
- 		}
- 	} else {
--		map_op = writecache_map_remap_origin(wc, bio, e);
-+		writecache_map_remap_origin(wc, bio, e);
-+		map_op = WC_MAP_REMAP_ORIGIN;
- 	}
++static const struct dmi_system_id sch56xx_dmi_override_table[] __initconst = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS W380"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "ESPRIMO P710"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "ESPRIMO E9900"),
++		},
++	},
++	{ }
++};
++
+ /* For autoloading only */
+ static const struct dmi_system_id sch56xx_dmi_table[] __initconst = {
+ 	{
+@@ -543,16 +565,18 @@ static int __init sch56xx_init(void)
+ 		if (!dmi_check_system(sch56xx_dmi_table))
+ 			return -ENODEV;
  
- 	return map_op;
- }
- 
--static enum wc_map_op writecache_bio_copy_ssd(struct dm_writecache *wc, struct bio *bio,
--					      struct wc_entry *e, bool search_used)
-+static void writecache_bio_copy_ssd(struct dm_writecache *wc, struct bio *bio,
-+				    struct wc_entry *e, bool search_used)
- {
- 	unsigned bio_size = wc->block_size;
- 	sector_t start_cache_sec = cache_sector(wc, e);
-@@ -1418,8 +1417,6 @@ static enum wc_map_op writecache_bio_copy_ssd(struct dm_writecache *wc, struct b
- 	} else {
- 		writecache_schedule_autocommit(wc);
- 	}
--
--	return WC_MAP_REMAP;
- }
- 
- static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio *bio)
-@@ -1457,7 +1454,8 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
- direct_write:
- 				wc->stats.writes_around++;
- 				e = writecache_find_entry(wc, bio->bi_iter.bi_sector, WFE_RETURN_FOLLOWING);
--				return writecache_map_remap_origin(wc, bio, e);
-+				writecache_map_remap_origin(wc, bio, e);
-+				return WC_MAP_REMAP_ORIGIN;
- 			}
- 			wc->stats.writes_blocked_on_freelist++;
- 			writecache_wait_on_freelist(wc);
-@@ -1468,10 +1466,12 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
- 		wc->uncommitted_blocks++;
- 		wc->stats.writes_allocate++;
- bio_copy:
--		if (WC_MODE_PMEM(wc))
-+		if (WC_MODE_PMEM(wc)) {
- 			bio_copy_block(wc, bio, memory_data(wc, e));
--		else
--			return writecache_bio_copy_ssd(wc, bio, e, search_used);
-+		} else {
-+			writecache_bio_copy_ssd(wc, bio, e, search_used);
-+			return WC_MAP_REMAP;
+-		/*
+-		 * Some machines like the Esprimo P720 and Esprimo C700 have
+-		 * onboard devices named " Antiope"/" Theseus" instead of
+-		 * "Antiope"/"Theseus", so we need to check for both.
+-		 */
+-		if (!dmi_find_device(DMI_DEV_TYPE_OTHER, "Antiope", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Antiope", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, "Theseus", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Theseus", NULL))
+-			return -ENODEV;
++		if (!dmi_check_system(sch56xx_dmi_override_table)) {
++			/*
++			 * Some machines like the Esprimo P720 and Esprimo C700 have
++			 * onboard devices named " Antiope"/" Theseus" instead of
++			 * "Antiope"/"Theseus", so we need to check for both.
++			 */
++			if (!dmi_find_device(DMI_DEV_TYPE_OTHER, "Antiope", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Antiope", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, "Theseus", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Theseus", NULL))
++				return -ENODEV;
 +		}
- 	} while (bio->bi_iter.bi_size);
+ 	}
  
- 	if (unlikely(bio->bi_opf & REQ_FUA || wc->uncommitted_blocks >= wc->autocommit_blocks))
+ 	/*
 -- 
 2.35.1
 
