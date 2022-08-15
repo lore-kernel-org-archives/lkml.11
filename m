@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8545CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A65C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350302AbiHOVwo (ORCPT
+        id S1350322AbiHOVwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
+        Mon, 15 Aug 2022 17:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350292AbiHOVrh (ORCPT
+        with ESMTP id S1350293AbiHOVrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:47:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1541F5FAEF;
-        Mon, 15 Aug 2022 12:31:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1405D2A275;
+        Mon, 15 Aug 2022 12:31:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C33BAB81062;
-        Mon, 15 Aug 2022 19:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA91C433D6;
-        Mon, 15 Aug 2022 19:31:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCD18B8107A;
+        Mon, 15 Aug 2022 19:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F14DC433D6;
+        Mon, 15 Aug 2022 19:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591904;
-        bh=/EF4z/uxQCTHAXnRvEbMiDLRJBQ1km36r9FTaXO2r6g=;
+        s=korg; t=1660591907;
+        bh=qQyraYE4LbhTbwMvV6lt7Z7x61Pv/yXQ96/5OMaQNNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXdftRpWbl17hiPcXdmt4fYEW5d9yykT1ix5sVgCrchwKrEd3lsTTtSioPb3i75GQ
-         F5c9F1WeoKR2sCc0jOaLC6aTktSSLaQ6siM5AhhwCEee8LCj0mQkvFtYj+/+aEcOt1
-         7KqxS1KyYy4CsqK1qjBhDFiRrj+CKSWWc4GT2ZgQ=
+        b=Gbkfqy/bMsIX4FgTrjGVaFn6CWbpG9FX9Be9JNNmXw64sd+oFvV2xBukx8qy31krY
+         o0ZL4zXmkdtgz34LUO8zWKXBL0aMKqm1p7d/omn74g77o6ggURbA8mobPo0pRA8x6Q
+         t9L7X70ZSqP6v2670wfhQtSKX0kTBNxZ4ozXewTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0702/1095] clk: qcom: gcc-msm8939: Add missing system_mm_noc_bfdcd_clk_src
-Date:   Mon, 15 Aug 2022 20:01:41 +0200
-Message-Id: <20220815180458.406405612@linuxfoundation.org>
+        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0029/1157] KVM: Fully serialize gfn=>pfn cache refresh via mutex
+Date:   Mon, 15 Aug 2022 19:49:45 +0200
+Message-Id: <20220815180440.596564836@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit dd363e2f7196278e7a30f509a0e8a841cb763b14 ]
+commit 93984f19e7bce4c18084a6ef3dacafb155b806ed upstream.
 
-The msm8939 has an additional higher operating point for the multi-media
-peripherals. The higher throughput MM componets operate off of the
-system-mm noc not the system noc.
+Protect gfn=>pfn cache refresh with a mutex to fully serialize refreshes.
+The refresh logic doesn't protect against
 
-system_mm_noc_bfdcd_clk_src is the source clock for the higher frequency
-capable system noc mm.
+- concurrent unmaps, or refreshes with different GPAs (which may or may not
+  happen in practice, for example if a cache is only used under vcpu->mutex;
+  but it's allowed in the code)
 
-Maximum frequency for the MM SNOC is 400 MHz.
+- a false negative on the memslot generation.  If the first refresh sees
+  a stale memslot generation, it will refresh the hva and generation before
+  moving on to the hva=>pfn translation.  If it then drops gpc->lock, a
+  different user of the cache can come along, acquire gpc->lock, see that
+  the memslot generation is fresh, and skip the hva=>pfn update due to the
+  userspace address also matching (because it too was updated).
 
-Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504163835.40130-4-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The refresh path can already sleep during hva=>pfn resolution, so wrap
+the refresh with a mutex to ensure that any given refresh runs to
+completion before other callers can start their refresh.
+
+Cc: stable@vger.kernel.org
+Cc: Lai Jiangshan <jiangshanlai@gmail.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429210025.3293691-7-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-msm8939.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/linux/kvm_types.h |    2 ++
+ virt/kvm/pfncache.c       |   12 ++++++++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
-index 31568658d23d..12bab9067ea8 100644
---- a/drivers/clk/qcom/gcc-msm8939.c
-+++ b/drivers/clk/qcom/gcc-msm8939.c
-@@ -644,6 +644,18 @@ static struct clk_rcg2 bimc_ddr_clk_src = {
- 	},
- };
+--- a/include/linux/kvm_types.h
++++ b/include/linux/kvm_types.h
+@@ -19,6 +19,7 @@ struct kvm_memslots;
+ enum kvm_mr_change;
  
-+static struct clk_rcg2 system_mm_noc_bfdcd_clk_src = {
-+	.cmd_rcgr = 0x2600c,
-+	.hid_width = 5,
-+	.parent_map = gcc_xo_gpll0_gpll6a_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "system_mm_noc_bfdcd_clk_src",
-+		.parent_data = gcc_xo_gpll0_gpll6a_parent_data,
-+		.num_parents = 3,
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
+ #include <linux/bits.h>
++#include <linux/mutex.h>
+ #include <linux/types.h>
+ #include <linux/spinlock_types.h>
+ 
+@@ -69,6 +70,7 @@ struct gfn_to_pfn_cache {
+ 	struct kvm_vcpu *vcpu;
+ 	struct list_head list;
+ 	rwlock_t lock;
++	struct mutex refresh_lock;
+ 	void *khva;
+ 	kvm_pfn_t pfn;
+ 	enum pfn_cache_usage usage;
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -157,6 +157,13 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 	if (page_offset + len > PAGE_SIZE)
+ 		return -EINVAL;
+ 
++	/*
++	 * If another task is refreshing the cache, wait for it to complete.
++	 * There is no guarantee that concurrent refreshes will see the same
++	 * gpa, memslots generation, etc..., so they must be fully serialized.
++	 */
++	mutex_lock(&gpc->refresh_lock);
 +
- static const struct freq_tbl ftbl_gcc_camss_ahb_clk[] = {
- 	F(40000000, P_GPLL0, 10, 1, 2),
- 	F(80000000, P_GPLL0, 10, 0, 0),
-@@ -3623,6 +3635,7 @@ static struct clk_regmap *gcc_msm8939_clocks[] = {
- 	[GPLL2_VOTE] = &gpll2_vote,
- 	[PCNOC_BFDCD_CLK_SRC] = &pcnoc_bfdcd_clk_src.clkr,
- 	[SYSTEM_NOC_BFDCD_CLK_SRC] = &system_noc_bfdcd_clk_src.clkr,
-+	[SYSTEM_MM_NOC_BFDCD_CLK_SRC] = &system_mm_noc_bfdcd_clk_src.clkr,
- 	[CAMSS_AHB_CLK_SRC] = &camss_ahb_clk_src.clkr,
- 	[APSS_AHB_CLK_SRC] = &apss_ahb_clk_src.clkr,
- 	[CSI0_CLK_SRC] = &csi0_clk_src.clkr,
--- 
-2.35.1
-
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	old_pfn = gpc->pfn;
+@@ -250,6 +257,8 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+  out:
+ 	write_unlock_irq(&gpc->lock);
+ 
++	mutex_unlock(&gpc->refresh_lock);
++
+ 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ 
+ 	return ret;
+@@ -261,6 +270,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 	void *old_khva;
+ 	kvm_pfn_t old_pfn;
+ 
++	mutex_lock(&gpc->refresh_lock);
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	gpc->valid = false;
+@@ -276,6 +286,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 	gpc->pfn = KVM_PFN_ERR_FAULT;
+ 
+ 	write_unlock_irq(&gpc->lock);
++	mutex_unlock(&gpc->refresh_lock);
+ 
+ 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ }
+@@ -290,6 +301,7 @@ int kvm_gfn_to_pfn_cache_init(struct kvm
+ 
+ 	if (!gpc->active) {
+ 		rwlock_init(&gpc->lock);
++		mutex_init(&gpc->refresh_lock);
+ 
+ 		gpc->khva = NULL;
+ 		gpc->pfn = KVM_PFN_ERR_FAULT;
 
 
