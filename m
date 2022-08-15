@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F61C28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC087C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351599AbiHOWpr (ORCPT
+        id S1351583AbiHOWpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
+        Mon, 15 Aug 2022 18:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351258AbiHOWlp (ORCPT
+        with ESMTP id S1351217AbiHOWlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:41:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA4A73926;
-        Mon, 15 Aug 2022 12:52:10 -0700 (PDT)
+        Mon, 15 Aug 2022 18:41:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D1A2C659;
+        Mon, 15 Aug 2022 12:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E70076125C;
-        Mon, 15 Aug 2022 19:52:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B68C433D6;
-        Mon, 15 Aug 2022 19:52:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61345B80EAD;
+        Mon, 15 Aug 2022 19:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9EDC433D6;
+        Mon, 15 Aug 2022 19:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593129;
-        bh=FlydeP6PYQGyn0AYt0muUhmpUF8x2hn0JEyYh0BdFuw=;
+        s=korg; t=1660593126;
+        bh=vw72mgzvK0z4q3QqbLAcppyGA/1e3m8UYiLE+hwITeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QfF1BUi1344SR8SeyMUsNFO2FnSNlrqwSybJnLhP5E0fLVd9PGlrbLf1qqGjVfsm4
-         16cIft6JFYZI0VHk10jyz0g5WzksY3gLshR0shfXcRHYlViixqYeUOPNBvEsH7uUzL
-         pM1tLrMT/TVGisIap/DhmCHU56n3mkFugB04x8N4=
+        b=WXHD69gbA5SAk+5baG4Y+n6s5ENHV6mBXqXGTEsHdpA034TMStrs8BXj455H95pWM
+         j6QcAE1VtfHeV84Hhqfqfg32+6YPT2Es+wRy+U2x7LKXntq69eDt++1zYTY8u0iU3y
+         1M0H6VBfBb6M4dw4v9Ji+hhwFXci+K870AgANSwg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0900/1095] ASoC: fsl_asrc: force cast the asrc_format type
-Date:   Mon, 15 Aug 2022 20:04:59 +0200
-Message-Id: <20220815180506.534797777@linuxfoundation.org>
+Subject: [PATCH 5.19 0218/1157] arm64: dts: mt8192: Fix idle-states entry-method
+Date:   Mon, 15 Aug 2022 19:52:54 +0200
+Message-Id: <20220815180448.316820644@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,56 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit c49932726de24405d45516b3f8ad2735714fdf05 ]
+[ Upstream commit 2e599740f7e423ee89fb027896cb2635dd43784f ]
 
-Fix sparse warning:
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    expected unsigned int [usertype] *out_value
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    got restricted snd_pcm_format_t *
-sound/soc/fsl/fsl_asrc.c:1200:47: sparse: warning: restricted snd_pcm_format_t degrades to integer
+The entry-method property of the idle-states node should be "psci" as
+described in the idle-states binding, since this is already the value of
+enable-method in the CPU nodes. Fix it to get rid of a dtbs_check
+warning.
 
-Fixes: 4520af41fd21 ("ASoC: fsl_asrc: Support new property fsl,asrc-format")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-3-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220617233150.2466344-3-nfraprado@collabora.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_asrc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/fsl_asrc.c b/sound/soc/fsl/fsl_asrc.c
-index d7d1536a4f37..44dcbf49456c 100644
---- a/sound/soc/fsl/fsl_asrc.c
-+++ b/sound/soc/fsl/fsl_asrc.c
-@@ -1066,6 +1066,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *regs;
- 	int irq, ret, i;
-+	u32 asrc_fmt = 0;
- 	u32 map_idx;
- 	char tmp[16];
- 	u32 width;
-@@ -1174,7 +1175,8 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index c739e910883a..d5cae38c842a 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -172,7 +172,7 @@ l3_0: l3-cache {
+ 		};
  
--	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc->asrc_format);
-+	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
-+	asrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
- 	if (ret) {
- 		ret = of_property_read_u32(np, "fsl,asrc-width", &width);
- 		if (ret) {
-@@ -1197,7 +1199,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	if (!(FSL_ASRC_FORMATS & (1ULL << asrc->asrc_format))) {
-+	if (!(FSL_ASRC_FORMATS & pcm_format_to_bits(asrc->asrc_format))) {
- 		dev_warn(&pdev->dev, "unsupported width, use default S24_LE\n");
- 		asrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
- 	}
+ 		idle-states {
+-			entry-method = "arm,psci";
++			entry-method = "psci";
+ 			cpu_sleep_l: cpu-sleep-l {
+ 				compatible = "arm,idle-state";
+ 				arm,psci-suspend-param = <0x00010001>;
 -- 
 2.35.1
 
