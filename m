@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B1AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10426C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344702AbiHOToT (ORCPT
+        id S1344713AbiHOTo1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
+        Mon, 15 Aug 2022 15:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344508AbiHOTks (ORCPT
+        with ESMTP id S1344576AbiHOTlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:40:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003AD419A6;
-        Mon, 15 Aug 2022 11:47:16 -0700 (PDT)
+        Mon, 15 Aug 2022 15:41:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34F9419B6;
+        Mon, 15 Aug 2022 11:47:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5806B81082;
-        Mon, 15 Aug 2022 18:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1F7C433B5;
-        Mon, 15 Aug 2022 18:47:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA39611CA;
+        Mon, 15 Aug 2022 18:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6BCC4347C;
+        Mon, 15 Aug 2022 18:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589233;
-        bh=Mt7AGGcZfiDtZCpqwjCJ+SIH9BMtPjFp1JhQA7qDVTk=;
+        s=korg; t=1660589240;
+        bh=fmKx06rMjjpXJdunefnM2+WN1TOv8vRZu90f/apMnXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vWqebUEo4UKkjTLN5uIiCwVo9ZTfdwnGzeltu1LRTAN6/Dz6DrOjY/Lvzi7jDNxHb
-         g3oqMVwZ9hphDTM8E4z7JT0u+BBZNfBe8DBMYl2YqcLoY282zwAzzGesFzSvtWZrqA
-         NZck5HvV8RCh8Yg3gn44JruR9PatlwyC+kP606aY=
+        b=S9wSF7oEjtATKdJFovRX5Foaa82zYxy+BL/68RAlnL2ukozJ1InTY4C+Ge5bW3jS2
+         /tgQUC6QdFqb/WTWYQsKa2jAgEjrQx2rPimYKSTTihaM48E7Zig8tJlChvN0FIdaGQ
+         rq5iEv53bMDhVGrkpMHyYjsVpYKmtY87p0Wn1oew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 654/779] scripts/faddr2line: Fix vmlinux detection on arm64
-Date:   Mon, 15 Aug 2022 20:04:58 +0200
-Message-Id: <20220815180405.330986483@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 629/779] ASoC: audio-graph-card: Add of_node_put() in fail path
+Date:   Mon, 15 Aug 2022 20:04:33 +0200
+Message-Id: <20220815180404.253880323@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,45 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit b6a5068854cfe372da7dee3224dcf023ed5b00cb ]
+[ Upstream commit 65fb8e2ef3531a6e950060fca6e551c923fb0f0e ]
 
-Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
-failures, the sequel"), faddr2line is completely broken on arm64.
+In asoc_simple_parse_dai(), we should call of_node_put() for the
+reference returned by of_graph_get_port_parent() in fail path.
 
-For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
-rather than ET_EXEC.  Check for both when determining whether the object
-is vmlinux.
-
-Modules and vmlinux.o have type ET_REL on all arches.
-
-Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
-Reported-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: John Garry <john.garry@huawei.com>
-Link: https://lore.kernel.org/r/dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org
+Fixes: ae30a694da4c ("ASoC: simple-card-utils: add asoc_simple_card_parse_dai()")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220721144308.1301587-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/faddr2line | 4 +++-
+ sound/soc/generic/audio-graph-card.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 94ed98dd899f..57099687e5e1 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -112,7 +112,9 @@ __faddr2line() {
- 	# section offsets.
- 	local file_type=$(${READELF} --file-header $objfile |
- 		${AWK} '$1 == "Type:" { print $2; exit }')
--	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
-+		is_vmlinux=1
-+	fi
+diff --git a/sound/soc/generic/audio-graph-card.c b/sound/soc/generic/audio-graph-card.c
+index 546f6fd0609e..28cbcdb56857 100644
+--- a/sound/soc/generic/audio-graph-card.c
++++ b/sound/soc/generic/audio-graph-card.c
+@@ -158,8 +158,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
+ 	 *    if he unbinded CPU or Codec.
+ 	 */
+ 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
+-	if (ret < 0)
++	if (ret < 0) {
++		of_node_put(node);
+ 		return ret;
++	}
  
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
+ 	dlc->of_node = node;
+ 
 -- 
 2.35.1
 
