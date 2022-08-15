@@ -2,68 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B69C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE58C282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbiHPE3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
+        id S229803AbiHPEaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiHPE3J (ORCPT
+        with ESMTP id S229780AbiHPE35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:29:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14434BD10D;
-        Mon, 15 Aug 2022 18:09:28 -0700 (PDT)
+        Tue, 16 Aug 2022 00:29:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAA915B175;
+        Mon, 15 Aug 2022 13:17:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBB4EB8124C;
-        Tue, 16 Aug 2022 01:09:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36ADC433C1;
-        Tue, 16 Aug 2022 01:09:23 +0000 (UTC)
-Date:   Mon, 15 Aug 2022 21:09:16 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.19 0000/1157] 5.19.2-rc1 review
-Message-ID: <YvruPKI4dCyrXCp5@home.goodmis.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2621B81135;
+        Mon, 15 Aug 2022 20:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D489FC433C1;
+        Mon, 15 Aug 2022 20:17:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660594670;
+        bh=Ck2+hCrQVgLQVzZ0ToyRALvKkwnPpjmXE+ci7kc4odo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eAIWzghYXMOFjmlJotjh5t9xpcOQ5ZTKPSSuUHN3vCFIAYPGi1gM71fmvl+nlDbTK
+         5+fzHydEEKc2/cFnxNxb8fz1lkbcB/x+038yCJqd7OF4rLE3uhNo0GyluevzhvAitJ
+         gY5a015EUxcdBJ9SAYzRW+m7gTEaZ4xbocRncGFs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0522/1157] can: kvaser_usb_leaf: do not report txerr and rxerr during bus-off
+Date:   Mon, 15 Aug 2022 19:57:58 +0200
+Message-Id: <20220815180500.564140469@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 07:49:16PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.19.2 release.
-> There are 1157 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Hi Greg,
+[ Upstream commit a57732084e06791d37ea1ea447cca46220737abd ]
 
-Perhaps its time that you just send a single email to LKML pointing where to
-find the stable releases. These patch bombs are bringing vger down to its
-knees, and causing delays in people's workflows. This doesn't just affect
-LKML, but all other vger mailing lists. Probably because LKML has the biggest
-subscriber base that patch bombs to it can slow everything else down.
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-I sent 3 patches to the linux-trace-devel list almost 4 hours ago, and they
-still haven't shown up. I was going to point people to it tonight but it's now
-going to have to wait till tomorrow.
+Fixes: 7259124eac7d1 ("can: kvaser_usb: Split driver into kvaser_usb_core.c and kvaser_usb_leaf.c")
+Link: https://lore.kernel.org/all/20220719143550.3681-9-mailhol.vincent@wanadoo.fr
+CC: Jimmy Assarsson <extja@kvaser.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I really do not think LKML needs to see all 1157 patches that are being
-backported. There's other places to send them that will not be as disruptive.
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+index cc809ecd1e62..f551fde16a70 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+@@ -853,8 +853,10 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
+ 		break;
+ 	}
+ 
+-	cf->data[6] = es->txerr;
+-	cf->data[7] = es->rxerr;
++	if (new_state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = es->txerr;
++		cf->data[7] = es->rxerr;
++	}
+ 
+ 	netif_rx(skb);
+ }
+-- 
+2.35.1
 
-Thanks,
 
--- Steve
 
