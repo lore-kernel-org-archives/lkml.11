@@ -2,128 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87286C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B5CC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241737AbiHOMUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59938 "EHLO
+        id S231790AbiHOMWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiHOMUK (ORCPT
+        with ESMTP id S229623AbiHOMWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:20:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D304126571;
-        Mon, 15 Aug 2022 05:20:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 848D2B80E9D;
-        Mon, 15 Aug 2022 12:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ACCCC433B5;
-        Mon, 15 Aug 2022 12:20:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660566006;
-        bh=f2rktetsGEXE1st0YOSkZfJALIY6cfw8R10caJ6XQqg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=l1FM7H01y30MYX/EsZ92Nvhq7jNegbuX0ABjhbOBhV5oHXaapM4hpclSdxG8U3v2q
-         4wr6usF68C2MA2bvaVdSKQlQkGa79XC9r0P0yXSFI47t5dCFDPE+AeoixsIW4SjJv0
-         TUznUlujXKifhtcrTl/3DPXgnqt38jHo7cGp0bMPerDGz0lPPCEf7Td2wW9WCiNRlD
-         ZTMm9UUqH2anOBz9mnbkoNfgqsLn7hUtIRmALtC9uK2HqFa/XbCWT8lBjvjZykj45u
-         P8IwdCDA4yK/e8v+3ERTMkiv5wYvyp4GCkiPjIEnD16O1ystW9ZxLYdaVfap+6exS6
-         oiaa45r4T+jkA==
-Received: by mail-ed1-f48.google.com with SMTP id f22so9335262edc.7;
-        Mon, 15 Aug 2022 05:20:06 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3rtbhl1bU/x8SS1Zt0fwTn+5FSciEHlcWP0XNGUP33lhAeG8gi
-        aVo20JxCxJ/j2Ue4bxAdWfXdFiIjM/1ejbF7PNU=
-X-Google-Smtp-Source: AA6agR5HAszA2+ks7eYIZGL4H7rvMH0u5Oz+mr+FkFewIpN9MD3tM73YmvCfKBiZwLch21Kk8PCSKHHzJ3OjwFCTqZ0=
-X-Received: by 2002:a05:6402:270e:b0:43d:e3e1:847a with SMTP id
- y14-20020a056402270e00b0043de3e1847amr14500150edd.130.1660566004281; Mon, 15
- Aug 2022 05:20:04 -0700 (PDT)
+        Mon, 15 Aug 2022 08:22:01 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23071DA57;
+        Mon, 15 Aug 2022 05:22:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660566120; x=1692102120;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=k8Tjzo5FTyDnRt521m68Loy/Rs3ab8SDRc0XEsHrHL4=;
+  b=D4ASqcix0dQkKKwxQzgRBe042C26V0+ZmaQesjwyupY4m6rEVRAlAEnB
+   myT+SphToFZlLY7ewOZ/4C5AVf+370pq9Bjr7I8rSw9fUMgCENGr7xol4
+   zC9KrFTfFiATZZ6B0aS19WX/he2wkwm5XqE0ll8RBOTLlbSxCPNKqk/tU
+   1YDOR4xIy/iat0Dh5GezG0dUoW5pMP9cH/JWxJeuWwUetKln06yXqfvw8
+   kGliRJkKnIBnU29Rz5p/qu1Sdc0i4HYKshT3MNslaPT2lA6tJTNrdFCGK
+   zgloWEY8g+7MkZZMfHwsFbtgLu90410u6HlgZOzlYwkjLC/6jppEWpk8/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="278905755"
+X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
+   d="scan'208";a="278905755"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 05:22:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
+   d="scan'208";a="748904715"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 15 Aug 2022 05:21:57 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 15 Aug 2022 15:21:56 +0300
+Date:   Mon, 15 Aug 2022 15:21:56 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     shaomin Deng <dengshaomin@cdjrlc.com>
+Cc:     linux@roeck-us.net, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: typec: Remove repeated word in comments
+Message-ID: <Yvo6ZCxOADzRH7Gf@kuha.fi.intel.com>
+References: <20220808154830.10965-1-dengshaomin@cdjrlc.com>
 MIME-Version: 1.0
-References: <20220722122548.2db543ca@gandalf.local.home> <YtsRD1Po3qJy3w3t@krava>
- <20220722174120.688768a3@gandalf.local.home> <YtxqjxJVbw3RD4jt@krava>
- <YvbDlwJCTDWQ9uJj@krava> <20220813150252.5aa63650@rorschach.local.home>
- <YvkTLziHX4BINnla@krava> <77477710-c383-73b1-4f78-fe65a81c09b7@huawei.com>
- <Yvn+En35XDqKWptm@krava> <CAJ+HfNjLbsDuE4EB_1jwSOnyaUdjejMZJP6U=zcKvZd=iwhhDQ@mail.gmail.com>
- <YvouGQzlOhb88SM/@krava>
-In-Reply-To: <YvouGQzlOhb88SM/@krava>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Date:   Mon, 15 Aug 2022 14:19:52 +0200
-X-Gmail-Original-Message-ID: <CAJ+HfNhir0HcNYi5PediR=O39nAKUCptbxLDsNsQd-nUQNt=aQ@mail.gmail.com>
-Message-ID: <CAJ+HfNhir0HcNYi5PediR=O39nAKUCptbxLDsNsQd-nUQNt=aQ@mail.gmail.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808154830.10965-1-dengshaomin@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 at 13:29, Jiri Olsa <olsajiri@gmail.com> wrote:
->
-> On Mon, Aug 15, 2022 at 01:01:06PM +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> > On Mon, 15 Aug 2022 at 10:04, Jiri Olsa <olsajiri@gmail.com> wrote:
-> > [...]
-> > > > > >
-> > > > > > Today, objtool has also got involved, and added an "--mcount" o=
-ption
-> > > > > > that will create the section too.
-> > > > > I overlooked that objtool is involved as well,
-> > > > > will check on that
-> > > >
-> > > > objtool --mcount option only involves mcount_loc generation (see
-> > > > annotate_call_site) and other validation check call destination dir=
-ectly
-> > > > (see is_fentry_call).
-> > > >
-> > > > Some simply removing --mcount option dose work for this.
-> > > >
-> > > >
-> > > > Another question, it seems we can export and use DEFINE_BPF_DISPATC=
-HER out
-> > > > of kernel, does that means we should add NO_MCOUNT_FILES for these =
-single
-> > > > uages as well?
-> > >
-> > > yes, cc-ing Bj=C3=B6rn to make sure it's valid use case for dispatche=
-r
-> > >
-> >
-> > Hmm, could you expand a bit on how this would work?
->
-> the goal here is to remove bpf_dispatcher_<FUNC>_func functions from
-> ftrace, because it's updated by dispatcher code with bpf_arch_text_poke,
-> but it's also visible and attachable to ftrace.. and will cause problems
-> when these 2 updates will race
->
-> question was if DEFINE_BPF_DISPATCHER can be used in kernel module,
-> which would bring another realm of problems ;-)
->
+On Mon, Aug 08, 2022 at 11:48:30AM -0400, shaomin Deng wrote:
+> Remove the repeated word "to" in comments.
+> 
+> Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
 
-Oh, now I follow. AFAIK there is only one flavor of BPF dispatcher in
-use, and that's the XDP dispatcher, which does not reside in module
-code, but is typically *called* by module code.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-A module could define a BPF dispatcher, but it wouldn't be able to
-update it, since bpf_arch_text_poke() does not support poking in
-modules.
+> ---
+>  drivers/usb/typec/tcpm/tcpm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+> index e1126a6c8e46..ea5a917c51b1 100644
+> --- a/drivers/usb/typec/tcpm/tcpm.c
+> +++ b/drivers/usb/typec/tcpm/tcpm.c
+> @@ -4520,7 +4520,7 @@ static void run_state_machine(struct tcpm_port *port)
+>  		 * The specification suggests that dual mode ports in sink
+>  		 * mode should transition to state PE_SRC_Transition_to_default.
+>  		 * See USB power delivery specification chapter 8.3.3.6.1.3.
+> -		 * This would mean to to
+> +		 * This would mean to
+>  		 * - turn off VCONN, reset power supply
+>  		 * - request hardware reset
+>  		 * - turn on VCONN
+> -- 
+> 2.35.1
 
-
-Bj=C3=B6rn
+-- 
+heikki
