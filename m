@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237E9C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FFDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343738AbiHOTTl (ORCPT
+        id S1344148AbiHOTTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        Mon, 15 Aug 2022 15:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344504AbiHOTQu (ORCPT
+        with ESMTP id S1344530AbiHOTQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:16:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B6B2DAAE;
-        Mon, 15 Aug 2022 11:38:19 -0700 (PDT)
+        Mon, 15 Aug 2022 15:16:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FE45464E;
+        Mon, 15 Aug 2022 11:38:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8842060FB8;
-        Mon, 15 Aug 2022 18:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D66DC433C1;
-        Mon, 15 Aug 2022 18:38:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F748B81081;
+        Mon, 15 Aug 2022 18:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D98C433D6;
+        Mon, 15 Aug 2022 18:38:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588697;
-        bh=TSsNCgelctt+58xqKftZUVvkb58cH3/mqhqsM63/6wk=;
+        s=korg; t=1660588703;
+        bh=wYG8/+iJBFUffvlOg0M3StmDyPYkTXDDtClCklYvrSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImZRJ3G5vhtua67goD7jj1CBoVJna/WDec7uV68lAIN8pVYf4pOQIXLGRXI6IEs62
-         FrcXZarGpoQ5mFzIWjJr0pEOG3u6kqyMGWqBqiuovoy82xFzRKSH6E5IgTpxu7Dras
-         I3L2coBYEGkHgv0NXQFQ6ebMhwiwkbXPzRq2FNUo=
+        b=BaespXlP8u2tyq0djkr03KBRVj7aVljXmCXim+X0GDmlkHFADY9mhvdvF1Oj6NsCI
+         JopBLBFK1m7QNsO6s402TY65LPKJLAAq+XczZTtUyfDChs6wKnd7eyrGZF39hFlwo3
+         74X7x/v+Hb9AYRy47bk8REzXwpKyf9PDjUt9PO7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
+        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Mike McGowen <mike.mcgowen@microchip.com>,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 485/779] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
-Date:   Mon, 15 Aug 2022 20:02:09 +0200
-Message-Id: <20220815180357.995081206@linuxfoundation.org>
+Subject: [PATCH 5.15 487/779] scsi: smartpqi: Fix DMA direction for RAID requests
+Date:   Mon, 15 Aug 2022 20:02:11 +0200
+Message-Id: <20220815180358.080884043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -56,100 +55,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Roese <sr@denx.de>
+From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
 
-[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
+[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
 
-AER reporting is currently disabled in the DevCtl registers of all non Root
-Port PCIe devices on systems using pcie_ports_native || host->native_aer,
-disabling AER completely in such systems. This is because 2bd50dd800b5
-("PCI: PCIe: Disable PCIe port services during port initialization"), added
-a call to pci_disable_pcie_error_reporting() *after* the AER setup was
-completed for the PCIe device tree.
+Correct a SOP READ and WRITE DMA flags for some requests.
 
-Here a longer analysis about the current status of AER enabling /
-disabling upon bootup provided by Bjorn:
+This update corrects DMA direction issues with SCSI commands removed from
+the controller's internal lookup table.
 
-  pcie_portdrv_probe
-    pcie_port_device_register
-      get_port_device_capability
-        pci_disable_pcie_error_reporting
-          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
-      pcie_device_init
-        device_register                            # new AER service device
-          aer_probe
-            aer_enable_rootport                    # RP only
-              set_downstream_devices_error_reporting
-                set_device_error_reporting         # self (RP)
-                  if (RP || USP || DSP)
-                    pci_enable_pcie_error_reporting
-                      set CERE NFERE FERE URRE     # <-- enable for RP
-                pci_walk_bus
-                  set_device_error_reporting
-                    if (RP || USP || DSP)
-                      pci_enable_pcie_error_reporting
-                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
+Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
+lookup table and exposed a DMA direction flag issue.
 
-In a typical Root Port -> Endpoint hierarchy, the above:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port.
+SCSI READ BLOCK LIMITS was recently removed from our controller lookup
+table so the controller uses the respective IU flag field to set the DMA
+data direction. Since the DMA direction is incorrect the FW never completes
+the request causing a hang.
 
-In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
-Port -> Endpoint hierarchy:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Enables Error Reporting for both Switch Ports,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port,
-  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
-    claims them.  AER does not re-enable it because these are not Root
-    Ports.
+Some SCSI commands which use SCSI READ BLOCK LIMITS
 
-Remove this call to pci_disable_pcie_error_reporting() from
-get_port_device_capability(), leaving the already enabled AER configuration
-intact. With this change, AER is enabled in the Root Port and the PCIe
-switch upstream and downstream ports. Only the PCIe Endpoints don't have
-AER enabled yet. A follow-up patch will take care of this Endpoint
-enabling.
+      * sg_map
+      * mt -f /dev/stX status
 
-Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
-Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
-Signed-off-by: Stefan Roese <sr@denx.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc: Michal Simek <michal.simek@xilinx.com>
-Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
-Cc: Naveen Naidu <naveennaidu479@gmail.com>
+After updating controller firmware, users may notice their tape units
+failing. This patch resolves the issue.
+
+Also, the AIO path DMA direction is correct.
+
+The DMA direction flag is a day-one bug with no reported BZ.
+
+Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
+Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/portdrv_core.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-index 604feeb84ee4..1ac7fec47d6f 100644
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -222,15 +222,8 @@ static int get_port_device_capability(struct pci_dev *dev)
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index 2e690d8a3444..e3d8de1159b5 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -5310,10 +5310,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
+ 	}
  
- #ifdef CONFIG_PCIEAER
- 	if (dev->aer_cap && pci_aer_available() &&
--	    (pcie_ports_native || host->native_aer)) {
-+	    (pcie_ports_native || host->native_aer))
- 		services |= PCIE_PORT_SERVICE_AER;
--
--		/*
--		 * Disable AER on this port in case it's been enabled by the
--		 * BIOS (the AER service driver will enable it when necessary).
--		 */
--		pci_disable_pcie_error_reporting(dev);
--	}
- #endif
- 
- 	/* Root Ports and Root Complex Event Collectors may generate PMEs */
+ 	switch (scmd->sc_data_direction) {
+-	case DMA_TO_DEVICE:
++	case DMA_FROM_DEVICE:
+ 		request->data_direction = SOP_READ_FLAG;
+ 		break;
+-	case DMA_FROM_DEVICE:
++	case DMA_TO_DEVICE:
+ 		request->data_direction = SOP_WRITE_FLAG;
+ 		break;
+ 	case DMA_NONE:
 -- 
 2.35.1
 
