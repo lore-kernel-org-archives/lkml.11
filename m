@@ -2,130 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB59C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F06C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiHOJSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
+        id S231660AbiHOJTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241666AbiHOJRx (ORCPT
+        with ESMTP id S231655AbiHOJTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:17:53 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 02:17:52 PDT
-Received: from rcdn-iport-1.cisco.com (rcdn-iport-1.cisco.com [173.37.86.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27229220FF;
-        Mon, 15 Aug 2022 02:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1852; q=dns/txt; s=iport;
-  t=1660555072; x=1661764672;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QpiiM3DbmqyBkHT2kZF2nZitt5ASAzlJNOnL9SvqktM=;
-  b=PVvRZpYd4WK+1mFHJ1YwD6rVp8cbLv4Q3juDokyIJ5YEj7MCwkmw1kQA
-   E8ZUe9CckzWZ1zdZypNpHazoz2/HRUHNUkCYuGyNxsoQx753XX7KJkOv3
-   B0l8Qz9GUYyxV5c3afW8FQxawtPWpRsZABd7ubOxBgiMm1ofbDYGLIdcw
-   w=;
-IronPort-Data: =?us-ascii?q?A9a23=3AY7G1CaK0b7FTBaysFE+RbZclxSXFcZb7ZxGr2?=
- =?us-ascii?q?PjKsXjdYENS3zMEzGYcWWvVOfbbMGr8Kt8nb9yy8BlVv8fcxoBmTFAd+CA2R?=
- =?us-ascii?q?RqmiyZq6fd1j6vI0qj7wvTrFCqL1O1DLIiZRCwIZiWE/E31b+G/9SAUOZygH?=
- =?us-ascii?q?9IQNsaVYkideic8IMsRoUoLd98R2uaEs/Dga+++kYuaT/nkBbOQ82Uc3lT4R?=
- =?us-ascii?q?E60gEgHUPza4Fv0t7GlDBxBlAe2e3I9VPrzKUwtRkYUTLW4HsbiLwrC5Kuy8?=
- =?us-ascii?q?mWc9BA3B5b71L36aUYNBLXVOGBiiFIPBPPk2UcE93d0i/tkXBYfQR8/ZzGhk?=
- =?us-ascii?q?8J4x9JXqJ2YQgYyNaqKk+MYO/VdO3gmYfIWp+6ecCPXXcu7iheun2HX69BjC?=
- =?us-ascii?q?k5wGYww5edxDXtP6/ECbjsKa3irg+Ow3aL+SeR2gMknBNfkMZlZuXx6yzzdS?=
- =?us-ascii?q?/E8TvjrR6TM+M8d3TY3rt5BEOyYZMcDbzdrKhPabHVnJxEUDJ8/murthX7yd?=
- =?us-ascii?q?TxXgEqYo6Uq/3LUyg1hlrTgWPLRc8aRbcBYgk+WoWWA82mRKhMbP4bE4TmI6?=
- =?us-ascii?q?HShgqnIhyyTcKcTH72x+/osoFCVwGEJCRYWfVK9qP2+hQi1XNc3FqC+0kLCt?=
- =?us-ascii?q?oAo/0CtC9L6RRD9/jiPvwUXXJxbFOhS1e1E8YKMiy7xO4TOZmMphAQaifIL?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Aa0ie3au/IpkwDzoGlZnXaT+J7skDd9V00z?=
- =?us-ascii?q?EX/kB9WHVpmwKj+PxG+85rsSMc6QxhPU3I9urgBEDtex7hHP1OkOss1MmZPD?=
- =?us-ascii?q?UO0VHAROoJ0WKI+VPd8kPFmtK1rZ0QEJSXzLbLfD5HZQGQ2njeL+od?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0A5AAB2bIJi/51dJa1aHQEBAQEJARI?=
- =?us-ascii?q?BBQUBQIE7CAELAYIqgUs9Q4ROiCGIapxngXwLAQEBDQEBQgQBAYUChUACJTQ?=
- =?us-ascii?q?JDgECBAEBARIBAQUBAQECAQcEgQkThWgNhmwECwFGMAUCJgIuMgkJgn2DGKt?=
- =?us-ascii?q?Wen8ygQGIGYFlgRAsAYlDgQGEQhyBSUSEfYFQhkqCZQSVYzsDCQYHBTmBBRK?=
- =?us-ascii?q?BIXEBCAYGBwoFMgYCDBgUBAITElMMEgITDAocDg5GGQwPAxIDEQEHAgsSCBU?=
- =?us-ascii?q?sCAMCAwgDAgMjCwIDGAkHCgMdCAocEhAUAgQTHwsIAxofLQkCBA4DQwgLCgM?=
- =?us-ascii?q?RBAMTGAsWCBAEBgMJLw0oCwMFDw8BBgMGAgUFAQMgAxQDBScHAyEHCyYNDQQ?=
- =?us-ascii?q?jHQMDBSYDAgIbBwICAwIGFwYCAkAxCigNCAQIBBweJQ4FBQIHMQUELwIeBAU?=
- =?us-ascii?q?GEQkCFgIGBAUCBAQWAgISCAIIJxsHFjYZAQVdBgsJIxwsEQUGFgMmUgYiHAG?=
- =?us-ascii?q?WcD4zARZuCoFxDL9fgi2DVp9wGjGDdZMckUUBkTiFLiCiOYQlAgQGBQIWgWE?=
- =?us-ascii?q?8gVkzGggbFYMjURkPlViHGEQxOwIGAQoBAQMJkRoBAQ?=
-X-IronPort-AV: E=Sophos;i="5.91,230,1647302400"; 
-   d="scan'208";a="1047879193"
-Received: from rcdn-core-6.cisco.com ([173.37.93.157])
-  by rcdn-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 15 Aug 2022 09:16:48 +0000
-Received: from sjc-ads-9103.cisco.com (sjc-ads-9103.cisco.com [10.30.208.113])
-        by rcdn-core-6.cisco.com (8.15.2/8.15.2) with ESMTPS id 27F9GlH3015491
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 15 Aug 2022 09:16:48 GMT
-Received: by sjc-ads-9103.cisco.com (Postfix, from userid 487941)
-        id 698EACC128E; Mon, 15 Aug 2022 02:16:47 -0700 (PDT)
-From:   Denys Zagorui <dzagorui@cisco.com>
-To:     Meng.Li@windriver.com, jic23@kernel.org
-Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] iio: ltc2497: Fix reading conversion results
-Date:   Mon, 15 Aug 2022 09:16:47 +0000
-Message-Id: <20220815091647.1523532-1-dzagorui@cisco.com>
-X-Mailer: git-send-email 2.28.0
+        Mon, 15 Aug 2022 05:19:00 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4CC22505
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:18:59 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id l22so8378075wrz.7
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:18:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=OOL4Y5kIDK4GpzcnTvXTZTdG7FAR6zzCfj7Cij1BefI=;
+        b=CT2aSa6BZY94dkNNot3yaqnr3j9O7orSKuwxILRsqvRnd8WvEpXenBNae1eQ3He/Vr
+         3AhSFAuhYY2hqrnn0IDDF0KHetLNrj4QcIGdxSVAjSYmODvxB/brvk0Zl7qi20uhok1U
+         L8Vaasnomd+kIjC2rkJJhN7AU6emb3HjWMmp7U1Vlx8usn0ap0gN9exTvoztmuHkK+uZ
+         bbG7qHXipz8305jwg9NNwjHODD3YuBTXoLQlVrnf796/Ss23Cy7QGESwKPeZDSbvamLV
+         pmcUj/wRO29vXhL6WEKTuroMzefWNmVuDRvkPNn4jz3RLjyIYBjxzVAIO2YyineAt7Js
+         iEhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=OOL4Y5kIDK4GpzcnTvXTZTdG7FAR6zzCfj7Cij1BefI=;
+        b=L/z3kX5uQRDSRKVxNGNR9XHo+Xfxrk2D1qtZMjPiX1N4Sx9NmLDFtshtU8Hm14gGbw
+         reEi6ofx9pg/HI/ckSYocqyLJQzNZ2A2WJFVJLNWJ5jGJ9YhppNI5xebM4VyHgcPKj43
+         yq3L3Fot12LFEyCMGOG6VuPbqYrQFNX4PV0DOGoGI/VL4/pk60kCsJe9iEVGAG537Pfk
+         mSSC1UasLUs26PvnlYnsKqG2R0asFjSkfQ65Ocgj6VxXsEX3+x3ceA4HqTiYe9whb+Zg
+         G/r0Jl3iMI/RJBkQm917braHN2LyHn5x+rLrlzYUVVd9j672Hv2ThX5/7KP0OiPrR9E5
+         +4/Q==
+X-Gm-Message-State: ACgBeo1h0ptivWsrvG865Q2/mC5DKk3cGr1wVzFQmYlMFfcQxLf5RXa3
+        h4D+pbCNDOlBo5J7zpLd6hOX/zb1Ihl02WS4+Bv+Dw==
+X-Google-Smtp-Source: AA6agR4QK9DrJvHonI1zBR+KQRhkzI0CIqlFVXf7sQNjUkmnKeVQNB5PPIgTmo8PY85gS3TgTEj3HFWKmVMVmO9RYPA=
+X-Received: by 2002:a5d:5a82:0:b0:224:f744:1799 with SMTP id
+ bp2-20020a5d5a82000000b00224f7441799mr854866wrb.582.1660555137638; Mon, 15
+ Aug 2022 02:18:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Outbound-SMTP-Client: 10.30.208.113, sjc-ads-9103.cisco.com
-X-Outbound-Node: rcdn-core-6.cisco.com
+References: <20220628220938.3657876-1-yosryahmed@google.com>
+ <20220628220938.3657876-2-yosryahmed@google.com> <YsdJPeVOqlj4cf2a@google.com>
+ <CAJD7tkYE+pZdk=-psEP_Rq_1CmDjY7Go+s1LXm-ctryWvUdgLA@mail.gmail.com>
+ <Ys3+UTTC4Qgbm7pQ@google.com> <CAJD7tkY91oiDWTj5FY2Upc5vabsjLk+CBMNzAepXLUdF_GS11w@mail.gmail.com>
+ <CAJD7tkbc+E7f+ENRazf0SO7C3gR2bHiN4B0F1oPn8Pa6juAVfg@mail.gmail.com>
+In-Reply-To: <CAJD7tkbc+E7f+ENRazf0SO7C3gR2bHiN4B0F1oPn8Pa6juAVfg@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Mon, 15 Aug 2022 02:18:20 -0700
+Message-ID: <CAJD7tkY5SfdhC7-4B7QuJGUVj_Ts+xwCP5FUZ-Lvg=fd1p_xAQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
+ page table uses.
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Sean Christopherson <seanjc@google.com>, Tejun Heo <tj@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Shaoqin <shaoqin.huang@intel.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+On Mon, Aug 8, 2022 at 1:06 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> On Mon, Jul 18, 2022 at 11:26 AM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >
+> > On Tue, Jul 12, 2022 at 4:06 PM Sean Christopherson <seanjc@google.com> wrote:
+> > >
+> > > On Tue, Jul 12, 2022, Yosry Ahmed wrote:
+> > > > Thanks for taking another look at this!
+> > > >
+> > > > On Thu, Jul 7, 2022 at 1:59 PM Sean Christopherson <seanjc@google.com> wrote:
+> > > > >
+> > > > > On Tue, Jun 28, 2022, Yosry Ahmed wrote:
+> > > > > > diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> > > > > > index aab70355d64f3..13190d298c986 100644
+> > > > > > --- a/include/linux/mmzone.h
+> > > > > > +++ b/include/linux/mmzone.h
+> > > > > > @@ -216,6 +216,7 @@ enum node_stat_item {
+> > > > > >       NR_KERNEL_SCS_KB,       /* measured in KiB */
+> > > > > >  #endif
+> > > > > >       NR_PAGETABLE,           /* used for pagetables */
+> > > > > > +     NR_SECONDARY_PAGETABLE, /* secondary pagetables, e.g. kvm shadow pagetables */
+> > > > >
+> > > > > Nit, s/kvm/KVM, and drop the "shadow", which might be misinterpreted as saying KVM
+> > > > > pagetables are only accounted when KVM is using shadow paging.  KVM's usage of "shadow"
+> > > > > is messy, so I totally understand why you included it, but in this case it's unnecessary
+> > > > > and potentially confusing.
+> > > > >
+> > > > > And finally, something that's not a nit.  Should this be wrapped with CONFIG_KVM
+> > > > > (using IS_ENABLED() because KVM can be built as a module)?  That could be removed
+> > > > > if another non-KVM secondary MMU user comes along, but until then, #ifdeffery for
+> > > > > stats the depend on a single feature seems to be the status quo for this code.
+> > > > >
+> > > >
+> > > > I will #ifdef the stat, but I will emphasize in the docs that is
+> > > > currently *only* used for KVM so that it makes sense if users without
+> > > > KVM don't see the stat at all. I will also remove the stat from
+> > > > show_free_areas() in mm/page_alloc.c as it seems like none of the
+> > > > #ifdefed stats show up there.
+> > >
+> > > It's might be worth getting someone from mm/ to weigh in before going through the
+> > > trouble, my suggestion/question is based purely on the existing code.
+> >
+> > Any mm folks with an opinion about this?
+> >
+> > Any preference on whether we should wrap NR_SECONDARY_PAGETABLE stats
+> > with #ifdef CONFIG_KVM for now as it is currently the only source for
+> > this stat?
+>
+> Any input here?
+>
+> Johannes, you have been involved in discussions in earlier versions of
+> this series, any thoughts here?
 
-After the result of the previous conversion is read the chip
-automatically starts a new conversion and doesn't accept new i2c
-transfers until this conversion is completed which makes the function
-return failure.
+Andrew, do you have an opinion on this? If not, I will send a v7 with
+the nits discussed with Sean. I think otherwise this series has
+sufficient ACKs.
 
-So add an early return iff the programming of the new address isn't
-needed. Note this will not fix the problem in general, but all cases
-that are currently used. Once this changes we get the failure back, but
-this can be addressed when the need arises.
-
-Fixes: 69548b7c2c4f ("iio: adc: ltc2497: split protocol independent part in a separate module ")
-Reported-by: Meng Li <Meng.Li@windriver.com>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Denys Zagorui <dzagorui@cisco.com>
----
- drivers/iio/adc/ltc2497.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index f7c786f37ceb..78b93c99cc47 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -41,6 +41,19 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
- 		}
- 
- 		*val = (be32_to_cpu(st->buf) >> 14) - (1 << 17);
-+
-+		/*
-+		 * The part started a new conversion at the end of the above i2c
-+		 * transfer, so if the address didn't change since the last call
-+		 * everything is fine and we can return early.
-+		 * If not (which should only happen when some sort of bulk
-+		 * conversion is implemented) we have to program the new
-+		 * address. Note that this probably fails as the conversion that
-+		 * was triggered above is like not complete yet and the two
-+		 * operations have to be done in a single transfer.
-+		 */
-+		if (ddata->addr_prev == address)
-+			return 0;
- 	}
- 
- 	ret = i2c_smbus_write_byte(st->client,
--- 
-2.28.0
-
+Would this be merged through the mm tree or kvm tree? This was based
+on the kvm/queue branch but I think I can rebase it on top of
+mm-unstable, I think all dependencies that this would have added in
+kvm/queue would have been fanned to mm by now.
