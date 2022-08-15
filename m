@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3263FC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC24C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243494AbiHOXZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        id S245178AbiHOXZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345022AbiHOXU4 (ORCPT
+        with ESMTP id S1345398AbiHOXVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:20:56 -0400
+        Mon, 15 Aug 2022 19:21:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F562B4EAC;
-        Mon, 15 Aug 2022 13:04:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9CBB4EB8;
+        Mon, 15 Aug 2022 13:04:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF1A460693;
-        Mon, 15 Aug 2022 20:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C01D4C433C1;
-        Mon, 15 Aug 2022 20:04:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E52C260025;
+        Mon, 15 Aug 2022 20:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39EFC4314C;
+        Mon, 15 Aug 2022 20:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593859;
-        bh=NGilHNjrd5uqftgXcB6CgRGd4vGCjA/xtz5PynTnumU=;
+        s=korg; t=1660593862;
+        bh=kAyO+nz/zUmhS98Qlahcj3U4y3xPvdN4M6aw9dZu9FM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qBF663ivHNTIZh49MIWyHHjyTHdT+tTEiUnJdnLx8TMWVOvPu3Qe1MK+RFcx+rnkx
-         Ed1/4KnwBqr4/tCqQMzo9Dr0S9Tys4y2kowmHsc1dG6K2tdATFWVuzoNKm4+M9MDSz
-         4/77LrC8vsN1HIDPa1H4P4HaB3ytIxc0JqX26LmE=
+        b=EHkhlM4EBymbwUhrO6ZftZponsYfdUjs02q9U69llGuTdiDu3kfrQ61MNxQGMERcN
+         aYe4ptMTYj6QOQU5EkoOwZKwkkb+0hf8622LbTRYRzK/YTq3Y9jT1IrqJyokTaHfoq
+         BTylnmWYn/UjBa9r/GTrzfv4iMvGvuC0G1Ea+/U4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1017/1095] block: add a bdev_max_zone_append_sectors helper
-Date:   Mon, 15 Aug 2022 20:06:56 +0200
-Message-Id: <20220815180511.162001359@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Jocelyn Falempe <jfalempe@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>,
+        dri-devel@lists.freedesktop.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0310/1157] drm/mgag200: Acquire I/O lock while reading EDID
+Date:   Mon, 15 Aug 2022 19:54:26 +0200
+Message-Id: <20220815180452.062508070@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,78 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-[ Upstream commit 2aba0d19f4d8c8929b4b3b94a9cfde2aa20e6ee2 ]
+[ Upstream commit 5913ab941d6ea782e841234c76958c6872ea752d ]
 
-Add a helper to check the max supported sectors for zone append based on
-the block_device instead of having to poke into the block layer internal
-request_queue.
+DDC operation conflicts with concurrent mode setting. Acquire the
+driver's I/O lock in get_modes to prevent this. This change should
+have been part of commit 931e3f3a0e99 ("drm/mgag200: Protect
+concurrent access to I/O registers with lock"), but apparently got
+lost somewhere.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20220415045258.199825-16-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+v3:
+	* fix commit message to say 'drm/mgag200' (Jocelyn)
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Fixes: 931e3f3a0e99 ("drm/mgag200: Protect concurrent access to I/O registers with lock")
+Reviewed-by: Jocelyn Falempe <jfalempe@redhat.com>
+Tested-by: Jocelyn Falempe <jfalempe@redhat.com>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Jocelyn Falempe <jfalempe@redhat.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Dave Airlie <airlied@redhat.com>
+Cc: dri-devel@lists.freedesktop.org
+Link: https://patchwork.freedesktop.org/patch/msgid/20220516134343.6085-2-tzimmermann@suse.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/target/zns.c | 3 +--
- fs/zonefs/super.c         | 3 +--
- include/linux/blkdev.h    | 6 ++++++
- 3 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/mgag200/mgag200_mode.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/nvme/target/zns.c b/drivers/nvme/target/zns.c
-index e34718b09550..82b61acf7a72 100644
---- a/drivers/nvme/target/zns.c
-+++ b/drivers/nvme/target/zns.c
-@@ -34,8 +34,7 @@ static int validate_conv_zones_cb(struct blk_zone *z,
+diff --git a/drivers/gpu/drm/mgag200/mgag200_mode.c b/drivers/gpu/drm/mgag200/mgag200_mode.c
+index abde7655477d..4ad8d62c5631 100644
+--- a/drivers/gpu/drm/mgag200/mgag200_mode.c
++++ b/drivers/gpu/drm/mgag200/mgag200_mode.c
+@@ -667,16 +667,26 @@ static void mgag200_disable_display(struct mga_device *mdev)
  
- bool nvmet_bdev_zns_enable(struct nvmet_ns *ns)
+ static int mga_vga_get_modes(struct drm_connector *connector)
  {
--	struct request_queue *q = ns->bdev->bd_disk->queue;
--	u8 zasl = nvmet_zasl(queue_max_zone_append_sectors(q));
-+	u8 zasl = nvmet_zasl(bdev_max_zone_append_sectors(ns->bdev));
- 	struct gendisk *bd_disk = ns->bdev->bd_disk;
- 	int ret;
++	struct mga_device *mdev = to_mga_device(connector->dev);
+ 	struct mga_connector *mga_connector = to_mga_connector(connector);
+ 	struct edid *edid;
+ 	int ret = 0;
  
-diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
-index 15a4c7c07a3b..b68798a572fc 100644
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -723,13 +723,12 @@ static ssize_t zonefs_file_dio_append(struct kiocb *iocb, struct iov_iter *from)
- 	struct inode *inode = file_inode(iocb->ki_filp);
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
- 	struct block_device *bdev = inode->i_sb->s_bdev;
--	unsigned int max;
-+	unsigned int max = bdev_max_zone_append_sectors(bdev);
- 	struct bio *bio;
- 	ssize_t size;
- 	int nr_pages;
- 	ssize_t ret;
- 
--	max = queue_max_zone_append_sectors(bdev_get_queue(bdev));
- 	max = ALIGN_DOWN(max << SECTOR_SHIFT, inode->i_sb->s_blocksize);
- 	iov_iter_truncate(from, max);
- 
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index cc6b24a5098f..34f2b88dfd6e 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1190,6 +1190,12 @@ static inline unsigned int queue_max_zone_append_sectors(const struct request_qu
- 	return min(l->max_zone_append_sectors, l->max_sectors);
++	/*
++	 * Protect access to I/O registers from concurrent modesetting
++	 * by acquiring the I/O-register lock.
++	 */
++	mutex_lock(&mdev->rmmio_lock);
++
+ 	edid = drm_get_edid(connector, &mga_connector->i2c->adapter);
+ 	if (edid) {
+ 		drm_connector_update_edid_property(connector, edid);
+ 		ret = drm_add_edid_modes(connector, edid);
+ 		kfree(edid);
+ 	}
++
++	mutex_unlock(&mdev->rmmio_lock);
++
+ 	return ret;
  }
  
-+static inline unsigned int
-+bdev_max_zone_append_sectors(struct block_device *bdev)
-+{
-+	return queue_max_zone_append_sectors(bdev_get_queue(bdev));
-+}
-+
- static inline unsigned queue_logical_block_size(const struct request_queue *q)
- {
- 	int retval = 512;
 -- 
 2.35.1
 
