@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA8EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF2FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243299AbiHOUHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
+        id S243454AbiHOUHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244080AbiHOUFn (ORCPT
+        with ESMTP id S1345945AbiHOUFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:05:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23968050D;
-        Mon, 15 Aug 2022 11:54:48 -0700 (PDT)
+        Mon, 15 Aug 2022 16:05:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1612547B9B;
+        Mon, 15 Aug 2022 11:54:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEE5861029;
-        Mon, 15 Aug 2022 18:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B133CC433D6;
-        Mon, 15 Aug 2022 18:54:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 623C6B810C5;
+        Mon, 15 Aug 2022 18:54:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE5FAC433D6;
+        Mon, 15 Aug 2022 18:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589686;
-        bh=qpyjHBlNmvh5qz8ZjsmPzt6EGeEiWMCvxwoRJDS94vo=;
+        s=korg; t=1660589693;
+        bh=s9bXR2LcdQjUHgWzlKWD/cjyM09nvznL3+43Lz274b4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=juQNrNZSTQ9pcxyiFMcpimCcn3AuqdoWRaB9IfsuJ+oxfYS5SM5HmN04KVxHjvuU/
-         vyYWEHlBpcs3HPYIlZ/kJq+2h4MkoN+uWsWd1DXZFZJ2NOtthjA361w6O8s+rcId0I
-         DBN2e/d1w5EEq0R4wfg18D3NzG2cLwZBI1l3JyWg=
+        b=fFDSfh+B9SM9sx8Yvqqcl26oogsvqOKgNi/wIC+uscvWbShDEcPfUH4Z3F20wI1JZ
+         dKfN93J4iWuonFa2pgvZevgIM9BC4d5NkxNRG7LVNqvFZjEMfiqllokNyMtZoN05Yg
+         a7DlKyx8oPmlcDdN7bmr8rhnxJQSon1H8Zmmp5BU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.18 0017/1095] add barriers to buffer_uptodate and set_buffer_uptodate
-Date:   Mon, 15 Aug 2022 19:50:16 +0200
-Message-Id: <20220815180430.048003332@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.18 0019/1095] HID: hid-input: add Surface Go battery quirk
+Date:   Mon, 15 Aug 2022 19:50:18 +0200
+Message-Id: <20220815180430.139759532@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,77 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit d4252071b97d2027d246f6a82cbee4d52f618b47 upstream.
+commit db925d809011c37b246434fdce71209fc2e6c0c2 upstream.
 
-Let's have a look at this piece of code in __bread_slow:
+Similar to the Surface Go (1), the (Elantech) touchscreen/digitizer in
+the Surface Go 2 mistakenly reports the battery of the stylus. Instead
+of over the touchscreen device, battery information is provided via
+bluetooth and the touchscreen device reports an empty battery.
 
-	get_bh(bh);
-	bh->b_end_io = end_buffer_read_sync;
-	submit_bh(REQ_OP_READ, 0, bh);
-	wait_on_buffer(bh);
-	if (buffer_uptodate(bh))
-		return bh;
+Apply the HID_BATTERY_QUIRK_IGNORE quirk to ignore this battery and
+prevent the erroneous low battery warnings.
 
-Neither wait_on_buffer nor buffer_uptodate contain any memory barrier.
-Consequently, if someone calls sb_bread and then reads the buffer data,
-the read of buffer data may be executed before wait_on_buffer(bh) on
-architectures with weak memory ordering and it may return invalid data.
-
-Fix this bug by adding a memory barrier to set_buffer_uptodate and an
-acquire barrier to buffer_uptodate (in a similar way as
-folio_test_uptodate and folio_mark_uptodate).
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/buffer_head.h |   25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/hid/hid-ids.h   |    1 +
+ drivers/hid/hid-input.c |    2 ++
+ 2 files changed, 3 insertions(+)
 
---- a/include/linux/buffer_head.h
-+++ b/include/linux/buffer_head.h
-@@ -117,7 +117,6 @@ static __always_inline int test_clear_bu
-  * of the form "mark_buffer_foo()".  These are higher-level functions which
-  * do something in addition to setting a b_state bit.
-  */
--BUFFER_FNS(Uptodate, uptodate)
- BUFFER_FNS(Dirty, dirty)
- TAS_BUFFER_FNS(Dirty, dirty)
- BUFFER_FNS(Lock, locked)
-@@ -135,6 +134,30 @@ BUFFER_FNS(Meta, meta)
- BUFFER_FNS(Prio, prio)
- BUFFER_FNS(Defer_Completion, defer_completion)
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -413,6 +413,7 @@
+ #define USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN	0x2544
+ #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
+ #define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
++#define I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN	0x2A1C
  
-+static __always_inline void set_buffer_uptodate(struct buffer_head *bh)
-+{
-+	/*
-+	 * make it consistent with folio_mark_uptodate
-+	 * pairs with smp_load_acquire in buffer_uptodate
-+	 */
-+	smp_mb__before_atomic();
-+	set_bit(BH_Uptodate, &bh->b_state);
-+}
-+
-+static __always_inline void clear_buffer_uptodate(struct buffer_head *bh)
-+{
-+	clear_bit(BH_Uptodate, &bh->b_state);
-+}
-+
-+static __always_inline int buffer_uptodate(const struct buffer_head *bh)
-+{
-+	/*
-+	 * make it consistent with folio_test_uptodate
-+	 * pairs with smp_mb__before_atomic in set_buffer_uptodate
-+	 */
-+	return (smp_load_acquire(&bh->b_state) & (1UL << BH_Uptodate)) != 0;
-+}
-+
- #define bh_offset(bh)		((unsigned long)(bh)->b_data & ~PAGE_MASK)
+ #define USB_VENDOR_ID_ELECOM		0x056e
+ #define USB_DEVICE_ID_ELECOM_BM084	0x0061
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -381,6 +381,8 @@ static const struct hid_device_id hid_ba
+ 	  HID_BATTERY_QUIRK_IGNORE },
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
+ 	  HID_BATTERY_QUIRK_IGNORE },
++	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN),
++	  HID_BATTERY_QUIRK_IGNORE },
+ 	{}
+ };
  
- /* If we *know* page->private refers to buffer_heads */
 
 
