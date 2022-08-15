@@ -2,84 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EA3C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E76BC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239596AbiHPAd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40786 "EHLO
+        id S1348161AbiHPAeE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353182AbiHPAbO (ORCPT
+        with ESMTP id S1353373AbiHPAbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC06185985;
-        Mon, 15 Aug 2022 13:36:01 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D4B185995;
+        Mon, 15 Aug 2022 13:36:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE14C611FC;
-        Mon, 15 Aug 2022 20:35:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6A8C433C1;
-        Mon, 15 Aug 2022 20:35:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595732;
-        bh=LDycKYnW6ye4o2A+N5sKquPsWFCQPRnl7ImjLXfcl90=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uidPro0txmgm5UR4FYB9jgjAZ/N8lf+uqmgQP42sgv1zOsqb9torGRRsuRPUBBToV
-         lDw9ZWIW+Tojf+0eek4ShwAoTcTNCTvqduoeiw5/IWg34OMNFs9PYdjFXdRuJY9YBO
-         CLWbTUxML0t/nO8mB+k79KtVeZBzGnzL9r+KBG0k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0856/1157] tools/power/x86/intel-speed-select: Fix off by one check
-Date:   Mon, 15 Aug 2022 20:03:32 +0200
-Message-Id: <20220815180513.728398277@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80BEFB80EA8;
+        Mon, 15 Aug 2022 20:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3557C433D6;
+        Mon, 15 Aug 2022 20:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660595747;
+        bh=qf1uXQYDzbCjJhqp5PrXmCPOXnbpAKK9chCCYP5tWtQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=mo2MIfNF13xv6ntikuuQImFWHu1+thv5ivjIepIpCv0iYKXdmyrHjTCbOU+2XIS64
+         f6WCphkw7c+m0SbEE7D3r+DF+z9qjO0Z1nvGWl9PdvGqEm1i0N2oQK1ofz4DBye0c6
+         kj6LvC/Ml16VQRk1bWYc4eaz9vsohJtgqt+IC/MN5i82KcPba7lv5mwuk5dQ97Cz9j
+         pnUDHukh7zG3YKYptmuge4JNm6/ZCGUHaRe6eHL8pU4irn2Lv+zXOCALjx8MWlMbkY
+         rMzbII0WZ1fiQ8fNRhs1/1SFJF6mnieJxsQEaxZ75cCIu7tJvfsuhdhhelo2Dm5Thn
+         e7w/Qj1M67ScA==
+Date:   Mon, 15 Aug 2022 15:35:45 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     quic_jhugo@quicinc.com, wei.liu@kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com,
+        lpieralisi@kernel.org, bhelgaas@google.com,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mikelley@microsoft.com,
+        robh@kernel.org, kw@linux.com, alex.williamson@redhat.com,
+        boqun.feng@gmail.com, Boqun.Feng@microsoft.com,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: Re: [PATCH] PCI: hv: Fix the definiton of vector in
+ hv_compose_msi_msg()
+Message-ID: <20220815203545.GA1971949@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815185505.7626-1-decui@microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+s/definiton/definition/ in subject
+(only if you have other occasion to repost this)
 
-[ Upstream commit d9f74d98bbec978edbf860f729b531281ba0d8ff ]
+On Mon, Aug 15, 2022 at 11:55:05AM -0700, Dexuan Cui wrote:
+> The local variable 'vector' must be u32 rather than u8: see the
+> struct hv_msi_desc3.
+> 
+> 'vector_count' should be u16 rather than u8: see struct hv_msi_desc,
+> hv_msi_desc2 and hv_msi_desc3.
+> 
+> Fixes: a2bad844a67b ("PCI: hv: Fix interrupt mapping for multi-MSI")
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> Cc: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> Cc: Carl Vanderlip <quic_carlv@quicinc.com>
 
-Change > MAX_DIE_PER_PACKAGE to >= MAX_DIE_PER_PACKAGE to prevent
-accessing one element beyond the end of the array.
+Looks like Wei has been applying most changes to pci-hyperv.c, so I
+assume the same will happen here.
 
-Fixes: 7fd786dfbd2c ("tools/power/x86/intel-speed-select: OOB daemon mode")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/power/x86/intel-speed-select/isst-daemon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/power/x86/intel-speed-select/isst-daemon.c b/tools/power/x86/intel-speed-select/isst-daemon.c
-index dd372924bc82..d0400c6684ba 100644
---- a/tools/power/x86/intel-speed-select/isst-daemon.c
-+++ b/tools/power/x86/intel-speed-select/isst-daemon.c
-@@ -41,7 +41,7 @@ void process_level_change(int cpu)
- 	time_t tm;
- 	int ret;
- 
--	if (pkg_id >= MAX_PACKAGE_COUNT || die_id > MAX_DIE_PER_PACKAGE) {
-+	if (pkg_id >= MAX_PACKAGE_COUNT || die_id >= MAX_DIE_PER_PACKAGE) {
- 		debug_printf("Invalid package/die info for cpu:%d\n", cpu);
- 		return;
- 	}
--- 
-2.35.1
-
-
-
+> ---
+> 
+> The patch should be appplied after the earlier patch:
+>     [PATCH] PCI: hv: Only reuse existing IRTE allocation for Multi-MSI
+>     https://lwn.net/ml/linux-kernel/20220804025104.15673-1-decui%40microsoft.com/
+> 
+>  drivers/pci/controller/pci-hyperv.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 65d0dab25deb..53580899c859 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -1614,7 +1614,7 @@ static void hv_pci_compose_compl(void *context, struct pci_response *resp,
+>  
+>  static u32 hv_compose_msi_req_v1(
+>  	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector, u8 vector_count)
+> +	u32 slot, u8 vector, u16 vector_count)
+>  {
+>  	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+>  	int_pkt->wslot.slot = slot;
+> @@ -1642,7 +1642,7 @@ static int hv_compose_msi_req_get_cpu(struct cpumask *affinity)
+>  
+>  static u32 hv_compose_msi_req_v2(
+>  	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector, u8 vector_count)
+> +	u32 slot, u8 vector, u16 vector_count)
+>  {
+>  	int cpu;
+>  
+> @@ -1661,7 +1661,7 @@ static u32 hv_compose_msi_req_v2(
+>  
+>  static u32 hv_compose_msi_req_v3(
+>  	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u32 vector, u8 vector_count)
+> +	u32 slot, u32 vector, u16 vector_count)
+>  {
+>  	int cpu;
+>  
+> @@ -1702,7 +1702,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  	struct tran_int_desc *int_desc;
+>  	struct msi_desc *msi_desc;
+>  	bool multi_msi;
+> -	u8 vector, vector_count;
+> +	u32 vector; /* Must be u32: see the struct hv_msi_desc3 */
+> +	u16 vector_count;
+>  	struct {
+>  		struct pci_packet pci_pkt;
+>  		union {
+> -- 
+> 2.25.1
+> 
