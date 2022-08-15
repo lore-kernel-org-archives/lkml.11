@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37ECAC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4780C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232733AbiHPEr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
+        id S232768AbiHPEsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiHPEpb (ORCPT
+        with ESMTP id S232461AbiHPEpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:45:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937E7D805C;
-        Mon, 15 Aug 2022 13:44:20 -0700 (PDT)
+        Tue, 16 Aug 2022 00:45:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52823F1DA;
+        Mon, 15 Aug 2022 13:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9007761239;
-        Mon, 15 Aug 2022 20:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 885F0C433C1;
-        Mon, 15 Aug 2022 20:44:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D6D5B811A1;
+        Mon, 15 Aug 2022 20:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85415C433D6;
+        Mon, 15 Aug 2022 20:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596259;
-        bh=fsOMfTvKS1OwyHIHiFZi4yp3lzMzwBLEDwhB4KCaDkM=;
+        s=korg; t=1660596246;
+        bh=+axC2UCXXYpHbsM2UCfs8sZhbdEsDfVjDNihD+9RBik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8591Ges2otGfVffoFwi9Eh9teNN+GCmAs+Zhy7RiAiMQmNDhxabsQO6TBGISNAOt
-         Se3J0z9UXDZ1uPBlHYRDPSHncBqHVCFJazU7wg8UtgLlpe8owJ7W1c0eAQw31VLPLh
-         aODoT8H8kAloadu3e+yCMQkIlnLXI9e/oppYnQIc=
+        b=vsca4kCRu6HoTiclY2OjnRWR2/9fudoaok9i/8I98Y1aY+S6SqXp2pA2R95AOoDu7
+         odc/q6tp3YSUGSzdhquAiaS8xsHFz6p7eplGrmCc2cyhwekTyckiRYx4BTOAyLPqq5
+         jJmh0Ad+XepHZzn4mX+tQkESpjWQMIbzov4AD3JI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1023/1157] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
-Date:   Mon, 15 Aug 2022 20:06:19 +0200
-Message-Id: <20220815180520.836992065@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1019/1157] tty: serial: qcom-geni-serial: Fix %lu -> %u in print statements
+Date:   Mon, 15 Aug 2022 20:06:15 +0200
+Message-Id: <20220815180520.663487574@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,57 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Douglas Anderson <dianders@chromium.org>
 
-[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
+[ Upstream commit 0fec518018cc5ceffa706370b6e3acbbb1e3c798 ]
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug
-in:
-  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
-and then in:
-  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
-we'll get a division-by-zero.
+When we multiply an unsigned int by a u32 we still end up with an
+unsigned int. That means we should specify "%u" not "%lu" in the
+format code.
 
-The following log can reveal it:
+NOTE: this fix was chosen instead of somehow promoting the value to
+"unsigned long" since the max baud rate from the earlier call to
+uart_get_baud_rate() is 4000000 and the max sampling rate is 32.
+4000000 * 32 = 0x07a12000, not even close to overflowing 32-bits.
 
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
-RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Fix this by checking the argument of ark_set_pixclock() first.
-
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: c474c775716e ("tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.")
+Reported-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220802132250.1.Iea061e14157a17e114dbe2eca764568a02d6b889@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/arkfb.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/serial/qcom_geni_serial.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index eb3e47c58c5f..ed76ddc7df3d 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -781,7 +781,12 @@ static int arkfb_set_par(struct fb_info *info)
- 		return -EINVAL;
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f754619451dc..f7c1f1807040 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1033,12 +1033,12 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 		sampling_rate, &clk_div);
+ 	if (!clk_rate) {
+ 		dev_err(port->se.dev,
+-			"Couldn't find suitable clock rate for %lu\n",
++			"Couldn't find suitable clock rate for %u\n",
+ 			baud * sampling_rate);
+ 		goto out_restart_rx;
  	}
  
--	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-+	value = (hdiv * info->var.pixclock) / hmul;
-+	if (!value) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		value = 1;
-+	}
-+	ark_set_pixclock(info, value);
- 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
- 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
- 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
+-	dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
++	dev_dbg(port->se.dev, "desired_rate-%u, clk_rate-%lu, clk_div-%u\n",
+ 			baud * sampling_rate, clk_rate, clk_div);
+ 
+ 	uport->uartclk = clk_rate;
 -- 
 2.35.1
 
