@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50DCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E35C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243819AbiHOXcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
+        id S233701AbiHOXca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344063AbiHOX0K (ORCPT
+        with ESMTP id S1343991AbiHOX0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6108E80499;
-        Mon, 15 Aug 2022 13:06:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044387FE77;
+        Mon, 15 Aug 2022 13:06:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F088B60025;
-        Mon, 15 Aug 2022 20:06:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F203CC433C1;
-        Mon, 15 Aug 2022 20:06:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1DEAB80EA8;
+        Mon, 15 Aug 2022 20:06:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03928C433C1;
+        Mon, 15 Aug 2022 20:06:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593996;
-        bh=9/FwdszUVmHSP32BE8L/M81PIdZNgATYQgM69wIrkN4=;
+        s=korg; t=1660593993;
+        bh=7OXU0rqd51gmgEtu/3maRQVaWYMA60F/ZGx4Urwez44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7w0nk1mfFhmAbdz5BKelKOU7I9jPFanJcwMy0sePnWerR9Z8RY6bVD7KQx7Zh4xG
-         kYtJMDb6cgt/ArCEmL4QpieJr7upYLq3EWTL9nVyESTsdca0rQV7Ru0CLYr0sE4FJ7
-         Ccmw4EWe1cu5IxvmL2Pq65z33+JP/KNXn0Xsyb5o=
+        b=Sq5JOao/AOlGeSJNHzyaf/r7uxeAe6Q1J5UvdPOx/w7X8k6QGFxt4Y5nvGqwEr00q
+         LzDNXBk89PRiakYrjxM9s/girzl/p9296YArY4SnoZSA0XcNShx7YIg3fxuYAZQ9uf
+         iQoKHA3/PH0WGYeb/6M7vRbots9Qh8DNyp38sBrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0359/1157] drm/bridge: anx7625: Zero error variable when panel bridge not present
-Date:   Mon, 15 Aug 2022 19:55:15 +0200
-Message-Id: <20220815180454.076004289@linuxfoundation.org>
+Subject: [PATCH 5.18 1039/1095] KVM: x86/pmu: Ignore pmu->global_ctrl check if vPMU doesnt support global_ctrl
+Date:   Mon, 15 Aug 2022 20:07:18 +0200
+Message-Id: <20220815180512.079838805@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,46 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Like Xu <likexu@tencent.com>
 
-[ Upstream commit 3f49f7591e7150c502aa8d04354941ec2394153f ]
+[ Upstream commit 98defd2e17803263f49548fea930cfc974d505aa ]
 
-While parsing the DT, the anx7625 driver checks for the presence of a
-panel bridge on endpoint 1. If it is missing, pdata->panel_bridge stores
-the error pointer and the function returns successfully without first
-cleaning that variable. This is an issue since other functions later
-check for the presence of a panel bridge by testing the trueness of that
-variable.
+MSR_CORE_PERF_GLOBAL_CTRL is introduced as part of Architecture PMU V2,
+as indicated by Intel SDM 19.2.2 and the intel_is_valid_msr() function.
 
-In order to ensure proper behavior, zero out pdata->panel_bridge before
-returning when no panel bridge is found.
+So in the absence of global_ctrl support, all PMCs are enabled as AMD does.
 
-Fixes: 9e82ea0fb1df ("drm/bridge: anx7625: switch to devm_drm_of_get_bridge")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220613163705.1531721-1-nfraprado@collabora.com
+Signed-off-by: Like Xu <likexu@tencent.com>
+Message-Id: <20220509102204.62389-1-likexu@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/analogix/anx7625.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/pmu_intel.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 01f46d9189c1..0117fd8c62ae 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -1657,8 +1657,10 @@ static int anx7625_parse_dt(struct device *dev,
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index cd2d0454f8b0..2cbd5f183ab5 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -98,6 +98,9 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
+ {
+ 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
  
- 	pdata->panel_bridge = devm_drm_of_get_bridge(dev, np, 1, 0);
- 	if (IS_ERR(pdata->panel_bridge)) {
--		if (PTR_ERR(pdata->panel_bridge) == -ENODEV)
-+		if (PTR_ERR(pdata->panel_bridge) == -ENODEV) {
-+			pdata->panel_bridge = NULL;
- 			return 0;
-+		}
++	if (pmu->version < 2)
++		return true;
++
+ 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
+ }
  
- 		return PTR_ERR(pdata->panel_bridge);
- 	}
 -- 
 2.35.1
 
