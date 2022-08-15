@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB01C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FA2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbiHOXSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
+        id S243540AbiHOXS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347117AbiHOXP2 (ORCPT
+        with ESMTP id S1347438AbiHOXP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9820863F1B;
-        Mon, 15 Aug 2022 13:02:28 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B1E63F27;
+        Mon, 15 Aug 2022 13:02:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49343B80EAD;
-        Mon, 15 Aug 2022 20:02:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82431C433D6;
-        Mon, 15 Aug 2022 20:02:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A61186068D;
+        Mon, 15 Aug 2022 20:02:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0701C433D6;
+        Mon, 15 Aug 2022 20:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593746;
-        bh=gvSIMGbmbfaO0pJ10scnlFNqhCzkzrou4UE2ChCzTow=;
+        s=korg; t=1660593749;
+        bh=74aVVp2GcXBM2zXtNUT99Bg7mljouCS0TeZFGzM9fcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y24WTeGbvDw8UVod1UL/D8y44yvVcsuv36DDDmVpC+1Vq27wyTzxXBmrW5awo4K0V
-         P1hRMZRUscJsQgM1ob0z7SUCVXj3MA7QkYBvmemmdCQHJQYOsGZV/rdbNyY53CYPwO
-         4RJe5jhuI73LA9YAUpNECVW7YuROW4lbcB3c7W0U=
+        b=t5zoMMg+Hmg/Z1ffZYbHiq1XxSmN2cz/0c3jk/SybhE0wy30eORhlWnssRs9yHKtG
+         NnBqI9CdH3T2pJ4zCK7iftcKx3AFzlyfX874lQrksx6gI561MgT2BvJIPjNkPc0ggT
+         ZaQVNBSGBuJ2lBK4XU9RwAhsbhGaEC6Tb1qUJmM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongqin Liu <yongqin.liu@linaro.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>, kernel-team@android.com,
-        John Stultz <jstultz@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0319/1157] drm/bridge: lt9611: Use both bits for HDMI sensing
-Date:   Mon, 15 Aug 2022 19:54:35 +0200
-Message-Id: <20220815180452.403736490@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
+        stable <stable@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1000/1095] tty: 8250: Add support for Brainboxes PX cards.
+Date:   Mon, 15 Aug 2022 20:06:39 +0200
+Message-Id: <20220815180510.485567793@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,52 +48,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Stultz <jstultz@google.com>
+From: Cameron Williams <cang1@live.co.uk>
 
-[ Upstream commit 649eb3828fb22e829e222ebd83f4e11dc503a565 ]
+[ Upstream commit ef5a03a26c87a760bc3d86b5af7b773e82f8b1b7 ]
 
-In commit 19cf41b64e3b ("lontium-lt9611: check a different
-register bit for HDMI sensing"), the bit flag used to detect
-HDMI cable connect was switched from BIT(2) to BIT(0) to improve
-compatibility with some monitors that didn't seem to set BIT(2).
+Add support for some of the Brainboxes PCIe (PX) range of
+serial cards, including the PX-101, PX-235/PX-246,
+PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
+PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
+PX-803 and PX-846.
 
-However, with that change, I've seen occasional issues where the
-detection failed, because BIT(2) was set, but not BIT(0).
-
-Unfortunately, as I understand it, the bits and their function
-was never clearly documented. So lets instead check both
-(BIT(2) | BIT(0)) when checking the register.
-
-Cc: Yongqin Liu <yongqin.liu@linaro.org>
-Cc: Amit Pundir <amit.pundir@linaro.org>
-Cc: Peter Collingbourne <pcc@google.com>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Robert Foss <robert.foss@linaro.org>
-Cc: kernel-team@android.com
-Fixes: 19cf41b64e3b ("lontium-lt9611: check a different register bit for HDMI sensing")
-Signed-off-by: John Stultz <jstultz@google.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511012612.3297577-2-jstultz@google.com
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/lontium-lt9611.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_pci.c | 109 +++++++++++++++++++++++++++++
+ 1 file changed, 109 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/lontium-lt9611.c b/drivers/gpu/drm/bridge/lontium-lt9611.c
-index 7ef8fe5abc12..c0b182d1374e 100644
---- a/drivers/gpu/drm/bridge/lontium-lt9611.c
-+++ b/drivers/gpu/drm/bridge/lontium-lt9611.c
-@@ -586,7 +586,7 @@ lt9611_connector_detect(struct drm_connector *connector, bool force)
- 	int connected = 0;
- 
- 	regmap_read(lt9611->regmap, 0x825e, &reg_val);
--	connected  = (reg_val & BIT(0));
-+	connected  = (reg_val & (BIT(2) | BIT(0)));
- 
- 	lt9611->status = connected ?  connector_status_connected :
- 				connector_status_disconnected;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 818ed6cd3132..aeac20f7cbb2 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -5063,6 +5063,115 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0,
+ 		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes PX-101
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4005,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4019,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_2_15625000 },
++	/*
++	 * Brainboxes PX-235/246
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4004,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_1_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4016,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
++	/*
++	 * Brainboxes PX-203/PX-257
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4006,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4015,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_4_15625000 },
++	/*
++	 * Brainboxes PX-260/PX-701
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x400A,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_4_15625000 },
++	/*
++	 * Brainboxes PX-310
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x400E,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_2_15625000 },
++	/*
++	 * Brainboxes PX-313
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x400C,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_2_15625000 },
++	/*
++	 * Brainboxes PX-320/324/PX-376/PX-387
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x400B,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
++	/*
++	 * Brainboxes PX-335/346
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x400F,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_4_15625000 },
++	/*
++	 * Brainboxes PX-368
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x4010,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_4_15625000 },
++	/*
++	 * Brainboxes PX-420
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4000,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_4_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4011,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_4_15625000 },
++	/*
++	 * Brainboxes PX-803
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4009,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_1_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x401E,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
++	/*
++	 * Brainboxes PX-846
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4008,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b0_1_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4017,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
++
+ 	/*
+ 	 * Perle PCI-RAS cards
+ 	 */
 -- 
 2.35.1
 
