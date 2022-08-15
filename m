@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27AF4C32757
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA9AC32763
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346741AbiHOUl6 (ORCPT
+        id S1346893AbiHOUmI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
+        Mon, 15 Aug 2022 16:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346778AbiHOUgi (ORCPT
+        with ESMTP id S1345642AbiHOUhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:36:38 -0400
+        Mon, 15 Aug 2022 16:37:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBC34E852;
-        Mon, 15 Aug 2022 12:06:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FC4ABF36;
+        Mon, 15 Aug 2022 12:07:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A4661299;
-        Mon, 15 Aug 2022 19:06:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D143C433C1;
-        Mon, 15 Aug 2022 19:06:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF28E61019;
+        Mon, 15 Aug 2022 19:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF038C433C1;
+        Mon, 15 Aug 2022 19:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590415;
-        bh=yC+VSmPMf/FABXJ3eAcT1Ky9QRksUqiRrbWGIp/BIj0=;
+        s=korg; t=1660590421;
+        bh=3mOblT3WWCqHpamng/ifMwZwt9N/Hcq6obNiMPcRVuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXtkYuywnegnru14cY69oHtccKtHMJ5ovnt8p+VHtV2d6Oc7LO2d+n0FIek7Li0p9
-         m2HqRq7enr0lBIQmLSVvQ7WPuYaY8PeokJotKUlguYrSXHBAJ+GnJZs0ir3QW0URix
-         IM/8WUyAyD5xnLmFqgq48a0FQD2PVM8YJ6vVU1vY=
+        b=FAXfW2tqy0zwI91PKK5i581dmFEHjZqFbhBuwyc3iRrht8QCxgI273c9yDG52nFY/
+         KRZ5UGlDyiSXflgJWLtGWemuZcaYqggMgEhP/RiWDdGhDNaacZWPpOIJXqaMtI1TOd
+         8PHdvc4Kvo9RIq86ldnvKGcEOfY9GGnWK1OY+h/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        Jin Liu <jinl@redhat.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0252/1095] perf/core: Add perf_clear_branch_entry_bitfields() helper
-Date:   Mon, 15 Aug 2022 19:54:11 +0200
-Message-Id: <20220815180440.172989977@linuxfoundation.org>
+Subject: [PATCH 5.18 0254/1095] ACPI: VIOT: Fix ACS setup
+Date:   Mon, 15 Aug 2022 19:54:13 +0200
+Message-Id: <20220815180440.256760198@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,134 +52,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Eric Auger <eric.auger@redhat.com>
 
-[ Upstream commit bfe4daf850f45d92dcd3da477f0b0456620294c3 ]
+[ Upstream commit 3dcb861dbc6ab101838a1548b1efddd00ca3c3ec ]
 
-Make it simpler to reset all the info fields on the
-perf_branch_entry by adding a helper inline function.
+Currently acpi_viot_init() gets called after the pci
+device has been scanned and pci_enable_acs() has been called.
+So pci_request_acs() fails to be taken into account leading
+to wrong single iommu group topologies when dealing with
+multi-function root ports for instance.
 
-The goal is to centralize the initialization to avoid missing
-a field in case more are added.
+We cannot simply move the acpi_viot_init() earlier, similarly
+as the IORT init because the VIOT parsing relies on the pci
+scan. However we can detect VIOT is present earlier and in
+such a case, request ACS. Introduce a new acpi_viot_early_init()
+routine that allows to call pci_request_acs() before the scan.
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220322221517.2510440-2-eranian@google.com
+While at it, guard the call to pci_request_acs() with #ifdef
+CONFIG_PCI.
+
+Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Reported-by: Jin Liu <jinl@redhat.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/intel/lbr.c | 36 +++++++++++++++++-------------------
- include/linux/perf_event.h  | 16 ++++++++++++++++
- 2 files changed, 33 insertions(+), 19 deletions(-)
+ drivers/acpi/bus.c        |  1 +
+ drivers/acpi/viot.c       | 26 ++++++++++++++++++++------
+ include/linux/acpi_viot.h |  2 ++
+ 3 files changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index 1f156098a5bf..4f70fb6c2c1e 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -769,6 +769,7 @@ void intel_pmu_lbr_disable_all(void)
- void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
- {
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 6c735cfa7d43..ef7858393a3c 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -1373,6 +1373,7 @@ static int __init acpi_init(void)
  
-@@ -784,15 +785,11 @@ void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
- 
- 		rdmsrl(x86_pmu.lbr_from + lbr_idx, msr_lastbranch.lbr);
- 
--		cpuc->lbr_entries[i].from	= msr_lastbranch.from;
--		cpuc->lbr_entries[i].to		= msr_lastbranch.to;
--		cpuc->lbr_entries[i].mispred	= 0;
--		cpuc->lbr_entries[i].predicted	= 0;
--		cpuc->lbr_entries[i].in_tx	= 0;
--		cpuc->lbr_entries[i].abort	= 0;
--		cpuc->lbr_entries[i].cycles	= 0;
--		cpuc->lbr_entries[i].type	= 0;
--		cpuc->lbr_entries[i].reserved	= 0;
-+		perf_clear_branch_entry_bitfields(br);
-+
-+		br->from	= msr_lastbranch.from;
-+		br->to		= msr_lastbranch.to;
-+		br++;
- 	}
- 	cpuc->lbr_stack.nr = i;
- 	cpuc->lbr_stack.hw_idx = tos;
-@@ -807,6 +804,7 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- {
- 	bool need_info = false, call_stack = false;
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
- 	int out = 0;
-@@ -878,15 +876,14 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- 		if (abort && x86_pmu.lbr_double_abort && out > 0)
- 			out--;
- 
--		cpuc->lbr_entries[out].from	 = from;
--		cpuc->lbr_entries[out].to	 = to;
--		cpuc->lbr_entries[out].mispred	 = mis;
--		cpuc->lbr_entries[out].predicted = pred;
--		cpuc->lbr_entries[out].in_tx	 = in_tx;
--		cpuc->lbr_entries[out].abort	 = abort;
--		cpuc->lbr_entries[out].cycles	 = cycles;
--		cpuc->lbr_entries[out].type	 = 0;
--		cpuc->lbr_entries[out].reserved	 = 0;
-+		perf_clear_branch_entry_bitfields(br+out);
-+		br[out].from	 = from;
-+		br[out].to	 = to;
-+		br[out].mispred	 = mis;
-+		br[out].predicted = pred;
-+		br[out].in_tx	 = in_tx;
-+		br[out].abort	 = abort;
-+		br[out].cycles	 = cycles;
- 		out++;
- 	}
- 	cpuc->lbr_stack.nr = out;
-@@ -951,6 +948,8 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		to = rdlbr_to(i, lbr);
- 		info = rdlbr_info(i, lbr);
- 
-+		perf_clear_branch_entry_bitfields(e);
-+
- 		e->from		= from;
- 		e->to		= to;
- 		e->mispred	= get_lbr_mispred(info);
-@@ -959,7 +958,6 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		e->abort	= !!(info & LBR_INFO_ABORT);
- 		e->cycles	= get_lbr_cycles(info);
- 		e->type		= get_lbr_br_type(info);
--		e->reserved	= 0;
- 	}
- 
- 	cpuc->lbr_stack.nr = i;
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index af97dd427501..a411080d5169 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1063,6 +1063,22 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
- 	data->txn = 0;
+ 	pci_mmcfg_late_init();
+ 	acpi_iort_init();
++	acpi_viot_early_init();
+ 	acpi_hest_init();
+ 	acpi_ghes_init();
+ 	acpi_scan_init();
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+index d2256326c73a..647f11cf165d 100644
+--- a/drivers/acpi/viot.c
++++ b/drivers/acpi/viot.c
+@@ -248,6 +248,26 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
+ 	return ret;
  }
  
-+/*
-+ * Clear all bitfields in the perf_branch_entry.
-+ * The to and from fields are not cleared because they are
-+ * systematically modified by caller.
++/**
++ * acpi_viot_early_init - Test the presence of VIOT and enable ACS
++ *
++ * If the VIOT does exist, ACS must be enabled. This cannot be
++ * done in acpi_viot_init() which is called after the bus scan
 + */
-+static inline void perf_clear_branch_entry_bitfields(struct perf_branch_entry *br)
++void __init acpi_viot_early_init(void)
 +{
-+	br->mispred = 0;
-+	br->predicted = 0;
-+	br->in_tx = 0;
-+	br->abort = 0;
-+	br->cycles = 0;
-+	br->type = 0;
-+	br->reserved = 0;
++#ifdef CONFIG_PCI
++	acpi_status status;
++	struct acpi_table_header *hdr;
++
++	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
++	if (ACPI_FAILURE(status))
++		return;
++	pci_request_acs();
++	acpi_put_table(hdr);
++#endif
 +}
 +
- extern void perf_output_sample(struct perf_output_handle *handle,
- 			       struct perf_event_header *header,
- 			       struct perf_sample_data *data,
+ /**
+  * acpi_viot_init - Parse the VIOT table
+  *
+@@ -319,12 +339,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
+ 			epid = ((domain_nr - ep->segment_start) << 16) +
+ 				dev_id - ep->bdf_start + ep->endpoint_id;
+ 
+-			/*
+-			 * If we found a PCI range managed by the viommu, we're
+-			 * the one that has to request ACS.
+-			 */
+-			pci_request_acs();
+-
+ 			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
+ 						   epid);
+ 		}
+diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
+index 1eb8ee5b0e5f..a5a122431563 100644
+--- a/include/linux/acpi_viot.h
++++ b/include/linux/acpi_viot.h
+@@ -6,9 +6,11 @@
+ #include <linux/acpi.h>
+ 
+ #ifdef CONFIG_ACPI_VIOT
++void __init acpi_viot_early_init(void);
+ void __init acpi_viot_init(void);
+ int viot_iommu_configure(struct device *dev);
+ #else
++static inline void acpi_viot_early_init(void) {}
+ static inline void acpi_viot_init(void) {}
+ static inline int viot_iommu_configure(struct device *dev)
+ {
 -- 
 2.35.1
 
