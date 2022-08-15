@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B1EC2BB43
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B20C28B2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbiHPEus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S233099AbiHPEuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbiHPEqu (ORCPT
+        with ESMTP id S231961AbiHPEqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:50 -0400
+        Tue, 16 Aug 2022 00:46:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AFBAF0FB;
-        Mon, 15 Aug 2022 13:43:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0526FB24BC;
+        Mon, 15 Aug 2022 13:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 721F560F60;
-        Mon, 15 Aug 2022 20:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6350DC433D6;
-        Mon, 15 Aug 2022 20:43:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DFF06122B;
+        Mon, 15 Aug 2022 20:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F09AC433D6;
+        Mon, 15 Aug 2022 20:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596188;
-        bh=XxnMfiIn8ZZYp5o420FI+PUdTBG8lET6FLr1Ryvn9bQ=;
+        s=korg; t=1660596210;
+        bh=DSa1Nww/GJG07Ljq8FXOs2YqiTMvpeYFmc1IDhYdfg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OvPMB9NYNFuxM3riZcDbq67DWN/Gfe99l/xsNJFVkrgriB5MYTSZiOlOwDuL5NBxE
-         KaL/iTHCXIGeMOSUqGgl46IjI6OqXhKmgVWfYKLxWFy+mifGyphkwTb7DfJCRqK5N7
-         mRN2z8Ekm6mU/D+EZ2ht3GfUmpZNnoX6ACN+QWiE=
+        b=fvN7GSvU+GxXs6m9T3Mog5ReA6Lg35cB+ROU7eE9Sg7iArhUmV6cSrn89M4cKbbRN
+         57W2UP0v6u3YbEzgMxKRAe+OwDzg68y3R5oMydFA26uzg2GuWC6tPIdELE630PjfyJ
+         0+N6aBGhSINAz4pantkBycr56YD+al9/4KGqCjxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rashmica Gupta <rashmica@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Hyeong-Jun Kim <hj514.kim@samsung.com>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1000/1157] selftests/powerpc: Fix matrix multiply assist test
-Date:   Mon, 15 Aug 2022 20:05:56 +0200
-Message-Id: <20220815180519.784939569@linuxfoundation.org>
+Subject: [PATCH 5.19 1006/1157] f2fs: fix to invalidate META_MAPPING before DIO write
+Date:   Mon, 15 Aug 2022 20:06:02 +0200
+Message-Id: <20220815180520.056683269@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,43 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rashmica Gupta <rashmica@linux.ibm.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit cd1e64935f79e31d666172c52c951ca97152b783 ]
+[ Upstream commit 67ca06872eb02944b4c6f92cffa9242e92c63109 ]
 
-The ISA states: "when ACC[i] contains defined data, the contents of VSRs
-4×i to 4×i+3 are undefined until either a VSX Move From ACC instruction
-is used to copy the contents of ACC[i] to VSRs 4×i to 4×i+3 or some other
-instruction directly writes to one of these VSRs." We aren't doing this.
+Quoted from commit e3b49ea36802 ("f2fs: invalidate META_MAPPING before
+IPU/DIO write")
 
-This test only works on Power10 because the hardware implementation
-happens to map ACC0 to VSRs 0-3, but will fail on any other implementation
-that doesn't do this. So add xxmfacc between writing to the accumulator
-and accessing the VSRs.
+"
+Encrypted pages during GC are read and cached in META_MAPPING.
+However, due to cached pages in META_MAPPING, there is an issue where
+newly written pages are lost by IPU or DIO writes.
 
-Fixes: 3527e1ab9a79 ("selftests/powerpc: Add matrix multiply assist (MMA) test")
-Signed-off-by: Rashmica Gupta <rashmica@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220617043935.428083-1-rashmica@linux.ibm.com
+Thread A - f2fs_gc()            Thread B
+/* phase 3 */
+down_write(i_gc_rwsem)
+ra_data_block()       ---- (a)
+up_write(i_gc_rwsem)
+                                f2fs_direct_IO() :
+                                 - down_read(i_gc_rwsem)
+                                 - __blockdev_direct_io()
+                                 - get_data_block_dio_write()
+                                 - f2fs_dio_submit_bio()  ---- (b)
+                                 - up_read(i_gc_rwsem)
+/* phase 4 */
+down_write(i_gc_rwsem)
+move_data_block()     ---- (c)
+up_write(i_gc_rwsem)
+
+(a) In phase 3 of f2fs_gc(), up-to-date page is read from storage and
+    cached in META_MAPPING.
+(b) In thread B, writing new data by IPU or DIO write on same blkaddr as
+    read in (a). cached page in META_MAPPING become out-dated.
+(c) In phase 4 of f2fs_gc(), out-dated page in META_MAPPING is copied to
+    new blkaddr. In conclusion, the newly written data in (b) is lost.
+
+To address this issue, invalidating pages in META_MAPPING before IPU or
+DIO write.
+"
+
+In previous commit, we missed to cover extent cache hit case, and passed
+wrong value for parameter @end of invalidate_mapping_pages(), fix both
+issues.
+
+Fixes: 6aa58d8ad20a ("f2fs: readahead encrypted block during GC")
+Fixes: e3b49ea36802 ("f2fs: invalidate META_MAPPING before IPU/DIO write")
+Cc: Hyeong-Jun Kim <hj514.kim@samsung.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/powerpc/math/mma.S | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/f2fs/data.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/powerpc/math/mma.S b/tools/testing/selftests/powerpc/math/mma.S
-index 8528c9849565..61cc88b1b26b 100644
---- a/tools/testing/selftests/powerpc/math/mma.S
-+++ b/tools/testing/selftests/powerpc/math/mma.S
-@@ -20,6 +20,9 @@ test_mma:
- 	/* xvi16ger2s */
- 	.long	0xec042958
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 7fcbcf979737..f2a272613477 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -1463,9 +1463,12 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
+ 			*map->m_next_extent = pgofs + map->m_len;
  
-+	/* Deprime the accumulator - xxmfacc 0 */
-+	.long 0x7c000162
-+
- 	/* Store result in image passed in r5 */
- 	stxvw4x	0,0,5
- 	addi	5,5,16
+ 		/* for hardware encryption, but to avoid potential issue in future */
+-		if (flag == F2FS_GET_BLOCK_DIO)
++		if (flag == F2FS_GET_BLOCK_DIO) {
+ 			f2fs_wait_on_block_writeback_range(inode,
+ 						map->m_pblk, map->m_len);
++			invalidate_mapping_pages(META_MAPPING(sbi),
++				map->m_pblk, map->m_pblk + map->m_len - 1);
++		}
+ 
+ 		if (map->m_multidev_dio) {
+ 			block_t blk_addr = map->m_pblk;
+@@ -1682,7 +1685,7 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
+ 		f2fs_wait_on_block_writeback_range(inode,
+ 						map->m_pblk, map->m_len);
+ 		invalidate_mapping_pages(META_MAPPING(sbi),
+-						map->m_pblk, map->m_pblk);
++				map->m_pblk, map->m_pblk + map->m_len - 1);
+ 
+ 		if (map->m_multidev_dio) {
+ 			block_t blk_addr = map->m_pblk;
 -- 
 2.35.1
 
