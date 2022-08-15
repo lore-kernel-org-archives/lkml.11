@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF028C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDA3C32763
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351425AbiHOWmN (ORCPT
+        id S1351394AbiHOWmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
+        Mon, 15 Aug 2022 18:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350928AbiHOWhV (ORCPT
+        with ESMTP id S1350866AbiHOWhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:21 -0400
+        Mon, 15 Aug 2022 18:37:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B29C2DE8;
-        Mon, 15 Aug 2022 12:50:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0857277;
+        Mon, 15 Aug 2022 12:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E773B81154;
-        Mon, 15 Aug 2022 19:50:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5254AC433D7;
-        Mon, 15 Aug 2022 19:50:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 484B0B80EA9;
+        Mon, 15 Aug 2022 19:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81042C433C1;
+        Mon, 15 Aug 2022 19:49:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593003;
-        bh=tkqliisyWlw//YEyiwGGxb+HGB3tuKHQvqGhfE8nTOA=;
+        s=korg; t=1660592978;
+        bh=Yjb9Y4qVJPHM6/fkJw0FSZx+TJgkUbWAT0nB14c/RKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8yHJUQ4ZNrSQrP6BCP9wS6eQM3e1EuMZT1FzTMSQLLWHgFiTYuPlhGEd7sHFQ98u
-         uzMbsxU62Npbbk5X3hRgWpuhoqUC/JkOsdE8GzCeVcXW7rGd0lxNfMmEnkt3WGDH+U
-         pYDWASujksCo7oC/3uO8PmrC8H6/7WijkfMBSk/U=
+        b=cnKSwYY8CTbLMIYNHkxHnNiTAWxwngZTzUI+BFV7cL9RAEDfsZOBpOkdaWc9SQBfd
+         8W2J7Ve7NZ6smXOBIMPvB/qpzUzK1pULib5T79KjK/wFm0RpKT1ASmD5trqxzJGGH8
+         4AeDy3eYL5dD5Zk+E8JGOAET9LZXfR/GJ6PvjCs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0878/1095] ASoC: SOF: ipc3-topology: Prevent double freeing of ipc_control_data via load_bytes
-Date:   Mon, 15 Aug 2022 20:04:37 +0200
-Message-Id: <20220815180505.688938280@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0195/1157] io_uring: fix io_uring_cqe_overflow trace format
+Date:   Mon, 15 Aug 2022 19:52:31 +0200
+Message-Id: <20220815180447.527028256@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,42 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit d5bd47f3ca124058a8e87eae4508afeda2132611 ]
+[ Upstream commit 9b26e811e934eebda59362c9a03d082852552574 ]
 
-We have sanity checks for byte controls and if any of the fail the locally
-allocated scontrol->ipc_control_data is freed up, but not set to NULL.
+Make the trace format consistent with io_uring_complete for cflags
 
-On a rollback path of the error the higher level code will also try to free
-the scontrol->ipc_control_data which will eventually going to lead to
-memory corruption as double freeing memory is not a good thing.
-
-Fixes: b5cee8feb1d4 ("ASoC: SOF: topology: Make control parsing IPC agnostic")
-Reported-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220712130103.31514-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220630091231.1456789-12-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc3-topology.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/io_uring.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-index 80fb82ece38d..74c230fbcf68 100644
---- a/sound/soc/sof/ipc3-topology.c
-+++ b/sound/soc/sof/ipc3-topology.c
-@@ -1629,6 +1629,7 @@ static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_
- 	return 0;
- err:
- 	kfree(scontrol->ipc_control_data);
-+	scontrol->ipc_control_data = NULL;
- 	return ret;
- }
+diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_uring.h
+index aa2f951b07cd..6a12eef3ffb7 100644
+--- a/include/trace/events/io_uring.h
++++ b/include/trace/events/io_uring.h
+@@ -622,7 +622,7 @@ TRACE_EVENT(io_uring_cqe_overflow,
+ 		__entry->ocqe		= ocqe;
+ 	),
  
+-	TP_printk("ring %p, user_data 0x%llx, res %d, flags %x, "
++	TP_printk("ring %p, user_data 0x%llx, res %d, cflags 0x%x, "
+ 		  "overflow_cqe %p",
+ 		  __entry->ctx, __entry->user_data, __entry->res,
+ 		  __entry->cflags, __entry->ocqe)
 -- 
 2.35.1
 
