@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7099CC32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE38C32764
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350502AbiHOW0z (ORCPT
+        id S1350466AbiHOW0s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        Mon, 15 Aug 2022 18:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350922AbiHOWSw (ORCPT
+        with ESMTP id S1350884AbiHOWSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5477D66A74;
-        Mon, 15 Aug 2022 12:43:03 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C3F65835;
+        Mon, 15 Aug 2022 12:42:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72878B80EA7;
-        Mon, 15 Aug 2022 19:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB31EC433D7;
-        Mon, 15 Aug 2022 19:42:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 927D1611DD;
+        Mon, 15 Aug 2022 19:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80251C433D6;
+        Mon, 15 Aug 2022 19:42:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592580;
-        bh=siPGSWciJGt6lgMgSJxzauggUweP0sClQaAVfp+eYbg=;
+        s=korg; t=1660592577;
+        bh=FU1YbE1E2NkvVleTcRnvyZW61eUHNYJXk19HtY0RX9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p65Jf5toj+x/aneJLFAxgs/CtN/cWlH3ED+oMn+Ejk1yDSq8HhxZU9JPnLPRyeexh
-         7EFlO3CS0lvvldxs5hTNU0jh7rKLAxWoTf+5MzO7doKUgtx4c6047ohkO4VlRqcnye
-         o+izL8+af9zQUpB+WrIrLvNSngWkRi3C57BM/AlA=
+        b=sx/BnN+s9oDXvrPMJzWNJeoVdTHZRFDUkE4rt3M70xWD7wUFJoj9yY5KByzaTHPOl
+         ccR5hulhgN+YCYn8MF387wtTiwd2fEmbR/mwViwecdK8EpqwHvz4Da0ZufT7eIFya5
+         Zo+mZBKpCCl7+s50Ceu9uudcO2PDGKye4/Q0VtaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrei Vagin <avagin@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0811/1095] selftests: kvm: set rax before vmcall
-Date:   Mon, 15 Aug 2022 20:03:30 +0200
-Message-Id: <20220815180502.809034018@linuxfoundation.org>
+        stable@vger.kernel.org, Jack Pham <quic_jackp@quicinc.com>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.19 0132/1157] usb: typec: ucsi: Acknowledge the GET_ERROR_STATUS command completion
+Date:   Mon, 15 Aug 2022 19:51:28 +0200
+Message-Id: <20220815180444.903623677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Vagin <avagin@google.com>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-[ Upstream commit 281106f938d3daaea6f8b6723a8217a2a1ef6936 ]
+commit a7dc438b5e446afcd1b3b6651da28271400722f2 upstream.
 
-kvm_hypercall has to place the hypercall number in rax.
+We found PPM will not send any notification after it report error status
+and OPM issue GET_ERROR_STATUS command to read the details about error.
 
-Trace events show that kvm_pv_test doesn't work properly:
-     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
-     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
-     kvm_pv_test-53132: kvm_hypercall: nr 0x0 a0 0x0 a1 0x0 a2 0x0 a3 0x0
+According UCSI spec, PPM may clear the Error Status Data after the OPM
+has acknowledged the command completion.
 
-With this change, it starts working as expected:
-     kvm_pv_test-54285: kvm_hypercall: nr 0x5 a0 0x0 a1 0x0 a2 0x0 a3 0x0
-     kvm_pv_test-54285: kvm_hypercall: nr 0xa a0 0x0 a1 0x0 a2 0x0 a3 0x0
-     kvm_pv_test-54285: kvm_hypercall: nr 0xb a0 0x0 a1 0x0 a2 0x0 a3 0x0
+This change add operation to acknowledge the command completion from PPM.
 
-Signed-off-by: Andrei Vagin <avagin@google.com>
-Message-Id: <20220722230241.1944655-5-avagin@google.com>
-Fixes: ac4a4d6de22e ("selftests: kvm: test enforcement of paravirtual cpuid features")
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bdc62f2bae8f (usb: typec: ucsi: Simplified registration and I/O API)
+Cc: <stable@vger.kernel.org> # 5.10
+Signed-off-by: Jack Pham <quic_jackp@quicinc.com>
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1658817949-4632-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/kvm/lib/x86_64/processor.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/typec/ucsi/ucsi.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 33ea5e9955d9..b9984124a294 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -1423,7 +1423,7 @@ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -76,6 +76,10 @@ static int ucsi_read_error(struct ucsi *
+ 	if (ret)
+ 		return ret;
  
- 	asm volatile("vmcall"
- 		     : "=a"(r)
--		     : "b"(a0), "c"(a1), "d"(a2), "S"(a3));
-+		     : "a"(nr), "b"(a0), "c"(a1), "d"(a2), "S"(a3));
- 	return r;
- }
- 
--- 
-2.35.1
-
++	ret = ucsi_acknowledge_command(ucsi);
++	if (ret)
++		return ret;
++
+ 	switch (error) {
+ 	case UCSI_ERROR_INCOMPATIBLE_PARTNER:
+ 		return -EOPNOTSUPP;
 
 
