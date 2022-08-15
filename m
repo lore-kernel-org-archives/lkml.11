@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D99C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D0DC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238771AbiHOSPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S232488AbiHOSb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiHOSOy (ORCPT
+        with ESMTP id S242913AbiHOSaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:14:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD012AC62;
-        Mon, 15 Aug 2022 11:14:16 -0700 (PDT)
+        Mon, 15 Aug 2022 14:30:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56047F5B1;
+        Mon, 15 Aug 2022 11:20:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA81361283;
-        Mon, 15 Aug 2022 18:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D21E1C433D6;
-        Mon, 15 Aug 2022 18:14:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 037CBB81072;
+        Mon, 15 Aug 2022 18:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C81C433C1;
+        Mon, 15 Aug 2022 18:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587255;
-        bh=irsJIKL53q/IUaB0vpdqENRJHPJd0EtL0r96d2ea8dI=;
+        s=korg; t=1660587636;
+        bh=4pNbcfBY7sSXixtKDEXaS8TRXL9OvdOoDNaQXO+z7ao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IsB0q3z7nkoju83T+hSTbO1JCuRvEOJRV/Y1Pp8VnNNEuy3nqJi9suXhBZERc7Ezn
-         sudMh2Ds6/wfmFcCyxK6YOZ5lvtdbhfXJaoYI/jfvzOzH3wTxHunJIAzjmNf7++QT6
-         9keH2282C6qWeruRH+yR4JtVNgo82sBGHotoRh8k=
+        b=OCdt8kkcSM0oIq91A2XsJCtjegCbHdXznNsTauq72ClB3Q63mf/d0eK9LlIpi3lf1
+         giN4uEKejcVJWqoS5C9Fj7imcRw9W/D2JWw1w28P3kZxC1v2NKYHfkQPplSrN+Mvq4
+         Trs1CxY0tDUrjI9TBoWFpobplfsMj2XUuJKVbqVc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 027/779] KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
-Date:   Mon, 15 Aug 2022 19:54:31 +0200
-Message-Id: <20220815180338.373688419@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 146/779] hwmon: (sht15) Fix wrong assumptions in device remove callback
+Date:   Mon, 15 Aug 2022 19:56:30 +0200
+Message-Id: <20220815180343.568855910@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,75 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit c7d855c2aff2d511fd60ee2e356134c4fb394799 upstream.
+[ Upstream commit 7d4edccc9bbfe1dcdff641343f7b0c6763fbe774 ]
 
-Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
-per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
-on hardware to perform the checks, even for the few checks that have
-higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
-hardware while running the guest, (b) there may incompatible CR0/CR4 bits
-that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
-have further restricted the allowed CR0/CR4 values by manipulating the
-guest's nested VMX MSRs.
+Taking a lock at the beginning of .remove() doesn't prevent new readers.
+With the existing approach it can happen, that a read occurs just when
+the lock was taken blocking the reader until the lock is released at the
+end of the remove callback which then accessed *data that is already
+freed then.
 
-Note, despite a very strong desire to throw shade at Jim, commit
-70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
-is not to blame for the buggy behavior (though the comment...).  That
-commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
-(though it did erroneously drop the CPL check, but that has already been
-remedied).  KVM may force CR0.PE=1, but will do so only when also
-forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
+To actually fix this problem the hwmon core needs some adaption. Until
+this is implemented take the optimistic approach of assuming that all
+readers are gone after hwmon_device_unregister() and
+sysfs_remove_group() as most other drivers do. (And once the core
+implements that, taking the lock would deadlock.)
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
-Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
-Reported-by: Eric Li <ercli@ucdavis.edu>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So drop the lock, move the reset to after device unregistration to keep
+the device in a workable state until it's deregistered. Also add a error
+message in case the reset fails and return 0 anyhow. (Returning an error
+code, doesn't stop the platform device unregistration and only results
+in a little helpful error message before the devm cleanup handlers are
+called.)
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220725194344.150098-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c |   23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/hwmon/sht15.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4952,20 +4952,25 @@ static int handle_vmon(struct kvm_vcpu *
- 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
+diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
+index 7f4a63959730..ae4d14257a11 100644
+--- a/drivers/hwmon/sht15.c
++++ b/drivers/hwmon/sht15.c
+@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
+ static int sht15_remove(struct platform_device *pdev)
+ {
+ 	struct sht15_data *data = platform_get_drvdata(pdev);
++	int ret;
  
- 	/*
--	 * The Intel VMX Instruction Reference lists a bunch of bits that are
--	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
--	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
--	 * Otherwise, we should fail with #UD.  But most faulting conditions
--	 * have already been checked by hardware, prior to the VM-exit for
--	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
--	 * that bit set to 1 in non-root mode.
-+	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
-+	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
-+	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
-+	 * running the guest, i.e. KVM needs to check the _guest_ values.
-+	 *
-+	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
-+	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
-+	 * Mode, but KVM will never take the guest out of those modes.
- 	 */
--	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
-+	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
-+	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
- 		kvm_queue_exception(vcpu, UD_VECTOR);
- 		return 1;
+-	/*
+-	 * Make sure any reads from the device are done and
+-	 * prevent new ones beginning
+-	 */
+-	mutex_lock(&data->read_lock);
+-	if (sht15_soft_reset(data)) {
+-		mutex_unlock(&data->read_lock);
+-		return -EFAULT;
+-	}
+ 	hwmon_device_unregister(data->hwmon_dev);
+ 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++
++	ret = sht15_soft_reset(data);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
++
+ 	if (!IS_ERR(data->reg)) {
+ 		regulator_unregister_notifier(data->reg, &data->nb);
+ 		regulator_disable(data->reg);
  	}
  
--	/* CPL=0 must be checked manually. */
-+	/*
-+	 * CPL=0 and all other checks that are lower priority than VM-Exit must
-+	 * be checked manually.
-+	 */
- 	if (vmx_get_cpl(vcpu)) {
- 		kvm_inject_gp(vcpu, 0);
- 		return 1;
+-	mutex_unlock(&data->read_lock);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.35.1
+
 
 
