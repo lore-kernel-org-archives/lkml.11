@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CAEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C095CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232753AbiHOTdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37320 "EHLO
+        id S245011AbiHOTdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344882AbiHOT1Y (ORCPT
+        with ESMTP id S1344892AbiHOT1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:27:24 -0400
+        Mon, 15 Aug 2022 15:27:25 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6715B5B067;
-        Mon, 15 Aug 2022 11:43:14 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FHM6mF028192;
-        Mon, 15 Aug 2022 18:43:06 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54715B07F;
+        Mon, 15 Aug 2022 11:43:15 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FFPdqp024877;
+        Mon, 15 Aug 2022 18:43:09 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=qcppdkim1;
- bh=RyeIJarFB1x/FHKKeS30eY1z3YwgoI0uOq+LVXLj9wI=;
- b=DruxABf6YmYLxncAY4Xt859uhNAWoqHSccecCcGK1Hk0YIQnz3FCrysT/Xf6jRvX6JcP
- b+SQv3917xvo/wTpiA0hKxPuARJ97mmXwcVRA6fDwuNu/bBiWrSGFn66QizwhmJWO3sR
- 3Lugndknb0xgsW9nwehYozpNQThrnqwTgr4IDXqsZXsV+ssAAY0+cgmfMPtqHDXsgvz0
- m+ZrFY9Z+8f4NBVNuaLqiqRPHJFK8XEMdgR6d3FvvLi4+MCXMh7FriJjpZDpXut493hx
- zJC1o5vIUOmP8ds6bxxKuKBBHHyRWqWHAsjkbcPhBYfTpkrug6bu5hveZrnp7SjA9kvL tw== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hx1nkpcyx-1
+ bh=+CBHgz4opehVPDC+7miUFQAXIE2TJEdaD+kt/oubVxc=;
+ b=nFeDmSWXA6WU9N35THzh+bYO6LNQTYVAeZrB6Lc1qga41oQdFbwCQAfVcqeuriYDWS3o
+ ArDPR7NaVY/gYLPc/Xq7YaAfWLwZXMNJr9yRhSyKy5CQr7VIm8iVWQ4mmgviXAu0mI3w
+ oHaenRyA1isHHXuemnkeHg+hgLczrOL3NZeAWc8st1YGR4eXXJO6Nz8H7XxA41ke++qe
+ 6UwOTMfr9Yu5b4Qj8+6nLCknqN7a/uXiVn2R+beMvPUaAoVdaazJTY7wtKg40WAj7hPX
+ aPHdA/l+ACk9xPlx5P2jwQ/jpevKUIVZjw98zrLrSJqvEwo4KZAkbtYnxX6mkJIgIy1p MA== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hx467e5c0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 18:43:06 +0000
+        Mon, 15 Aug 2022 18:43:09 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27FIh596016588
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27FIh8h8002524
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 18:43:05 GMT
+        Mon, 15 Aug 2022 18:43:08 GMT
 Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 15 Aug 2022 11:43:04 -0700
+ 15.2.986.22; Mon, 15 Aug 2022 11:43:07 -0700
 From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
 To:     <airlied@linux.ie>, <daniel@ffwll.ch>,
         <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
@@ -47,9 +47,9 @@ CC:     <quic_carlv@quicinc.com>, <quic_ajitpals@quicinc.com>,
         <quic_pkanojiy@quicinc.com>, <dri-devel@lists.freedesktop.org>,
         <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [RFC PATCH 01/14] drm/qaic: Add documentation for AIC100 accelerator driver
-Date:   Mon, 15 Aug 2022 12:42:23 -0600
-Message-ID: <1660588956-24027-2-git-send-email-quic_jhugo@quicinc.com>
+Subject: [RFC PATCH 03/14] drm/qaic: Add qaic.h internal header
+Date:   Mon, 15 Aug 2022 12:42:25 -0600
+Message-ID: <1660588956-24027-4-git-send-email-quic_jhugo@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660588956-24027-1-git-send-email-quic_jhugo@quicinc.com>
 References: <1660588956-24027-1-git-send-email-quic_jhugo@quicinc.com>
@@ -61,616 +61,432 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 1FwtVUwhwH-TB7pj_TySIfgEpYEd2SGo
-X-Proofpoint-ORIG-GUID: 1FwtVUwhwH-TB7pj_TySIfgEpYEd2SGo
+X-Proofpoint-ORIG-GUID: abqtz3WO2FKHzj7_DV9IDeW8tqjoYaI9
+X-Proofpoint-GUID: abqtz3WO2FKHzj7_DV9IDeW8tqjoYaI9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
- spamscore=0 priorityscore=1501 lowpriorityscore=0 suspectscore=0
- clxscore=1015 malwarescore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208150070
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ phishscore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0 impostorscore=0
+ priorityscore=1501 mlxscore=0 suspectscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208150070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation covering both the QAIC driver, and the device that it
-drives.
+qaic.h contains all of the structs and defines that get passed around
+to the various components of the driver.
 
-Change-Id: Iee519cc0a276249c4e8684507d27ae2c33e29aeb
+Change-Id: I8349ac831a55daad3ac67ab763c2e815bb051be0
 Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
 ---
- Documentation/gpu/drivers.rst |   1 +
- Documentation/gpu/qaic.rst    | 567 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 568 insertions(+)
- create mode 100644 Documentation/gpu/qaic.rst
+ drivers/gpu/drm/qaic/qaic.h | 396 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 396 insertions(+)
+ create mode 100644 drivers/gpu/drm/qaic/qaic.h
 
-diff --git a/Documentation/gpu/drivers.rst b/Documentation/gpu/drivers.rst
-index 3a52f48..433dac5 100644
---- a/Documentation/gpu/drivers.rst
-+++ b/Documentation/gpu/drivers.rst
-@@ -18,6 +18,7 @@ GPU Driver Documentation
-    xen-front
-    afbc
-    komeda-kms
-+   qaic
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/gpu/qaic.rst b/Documentation/gpu/qaic.rst
+diff --git a/drivers/gpu/drm/qaic/qaic.h b/drivers/gpu/drm/qaic/qaic.h
 new file mode 100644
-index 0000000..3414f98
+index 0000000..07c25c1
 --- /dev/null
-+++ b/Documentation/gpu/qaic.rst
-@@ -0,0 +1,567 @@
-+Overview
-+--------
-+QAIC is the driver for the Qualcomm Cloud AI 100/AIC100 and SA9000P (part of
-+Snapdragon Ride) products.  Qualcomm Cloud AI 100 is a PCIe adapter card which
-+contains a dedicated SoC ASIC for the purpose of efficiently running Artificial
-+Intelligence (AI) Deep Learning inference workloads.
-+
-+The PCIe interface of Qualcomm Cloud AI 100 is capable of Gen4 x8.  An
-+individual SoC on a card can have up to 16 NSPs for running workloads.  Each SoC
-+has a A53 management CPU.  On card, there can be up to 32 GB of DDR
-+
-+Multiple Qualcomm Cloud AI 100 cards can be hosted in a single system to scale
-+overall performance.
-+
-+
-+Hardware Description
-+--------------------
-+An AIC100 card consists of an AIC100 SoC, on-card DDR, and a set of misc
-+peripherals (PMICs, etc).
-+
-+An AIC100 card can either be a PCIe HHHL form factor (a traditional PCIe card),
-+or a Dual M.2 card.  Both use PCIe to connect to the host system.
-+
-+As a PCIe endpoint/adapter, AIC100 uses the standard VendorID(VID)/
-+ProductID(PID) combination to uniquely identify itself to the host.  AIC100
-+uses the standard Qualcomm VID (0x17cb).  All AIC100 instances use the same
-+AIC100 PID (0xa100).
-+
-+AIC100 does not implement FLR (function level reset).
-+
-+AIC100 implements MSI but does not implement MSI-X.  AIC100 requires 17 MSIs to
-+operate (1 for MHI, 16 for the DMA Bridge).
-+
-+As a PCIe device, AIC100 utilizes BARs to provide host interfaces to the device
-+hardware.  AIC100 provides 3, 64-bit BARs.
-+
-+-The first BAR is 4K in size, and exposes the MHI interface to the host.
-+
-+-The second BAR is 2M in size, and exposes the DMA Bridge interface to the host.
-+
-+-The third BAR is variable in size based on an individual AIC100's
-+	configuration, but defaults to 64K.  This BAR currently has no purpose.
-+
-+From the host perspective, AIC100 has several key hardware components-
-+QSM (QAIC Service Manager)
-+NSPs (Neural Signal Processor)
-+DMA Bridge
-+DDR
-+MHI (Modem Host Interface)
-+
-+QSM - QAIC Service Manager.  This is an ARM A53 CPU that runs the primary
-+firmware of the card and performs on-card management tasks.  It also
-+communicates with the host (QAIC/userspace) via MHI.  Each AIC100 has one of
-+these.
-+
-+NSP - Neural Signal Processor.  Each AIC100 has up to 16 of these.  These are
-+the processors that run the workloads on AIC100.  Each NSP is a Qualcomm Hexagon
-+(Q6) DSP with HVX and HMX.  Each NSP can only run one workload at a time, but
-+multiple NSPs may be assigned to a single workload.  Since each NSP can only run
-+one workload, AIC100 is limited to 16 concurrent workloads.  Workload
-+"scheduling" is under the purview of the host.  AIC100 does not automatically
-+timeslice.
-+
-+DMA Bridge - The DMA Bridge is custom DMA engine that manages the flow of data
-+in and out of workloads.  AIC100 has one of these.  The DMA Bridge has 16
-+channels, each consisting of a set of request/response FIFOs.  Each active
-+workload is assigned a single DMA Bridge channel.  The DMA Bridge exposes
-+hardware registers to manage the FIFOs (head/tail pointers), but requires host
-+memory to store the FIFOs.
-+
-+DDR - AIC100 has on-card DDR.  In total, an AIC100 can have up to 32 GB of DDR.
-+This DDR is used to store workloads, data for the workloads, and is used by the
-+QSM for managing the device.  NSPs are granted access to sections of the DDR by
-+the QSM.  The host does not have direct access to the DDR, and must make
-+requests to the QSM to transfer data to the DDR.
-+
-+MHI - AIC100 has one MHI interface over PCIe.  MHI itself is documented at
-+Documentation/mhi/index.rst  MHI is the mechanism the host (QAIC/userspace)
-+uses to communicate with the QSM.  Except for workload data via the DMA Bridge,
-+all interaction with the device occurs via MHI.
-+
-+
-+High-level Use Flow
-+-------------------
-+AIC100 is a programmable accelerator.  AIC100 is typically used for running
-+neural networks in inferencing mode to efficiently perform AI operations.
-+AIC100 is not intended for training neural networks.  AIC100 can be utilitized
-+for generic compute workloads.
-+
-+Assuming a user wants to utilize AIC100, they would follow these steps:
-+
-+1. Compile the workload into an ELF targeting the NSP(s)
-+2. Make requests to the QSM to load the workload and related artifacts into the
-+   device DDR
-+3. Make a request to the QSM to activate the workload onto a set of idle NSPs
-+4. Make requests to the DMA Bridge to send input data to the workload to be
-+   processed, and other requests to receive processed output data from the
-+   workload.
-+5. Once the workload is no longer required, make a request to the QSM to
-+   deactivate the workload, thus putting the NSPs back into an idle state.
-+6. Once the workload and related artifacts are no longer needed for future
-+   sessions, make requests to the QSM to unload the data from DDR.  This frees
-+   the DDR to be used by other users.
-+
-+
-+Boot Flow
-+---------
-+AIC100 uses a flashless boot flow, derived from Qualcomm MSMs.
-+
-+When AIC100 is first powered on, it begins executing PBL (Primary Bootloader)
-+from ROM.  PBL enumerates the PCIe link, and initializes the BHI (Boot Host
-+Interface) component of MHI.
-+
-+Using BHI, the host points PBL to the location of the SBL (Secondary Bootloader)
-+image.  The PBL pulls the image from the host, validates it, and begins
-+execution of SBL.
-+
-+SBL initializes MHI, and uses MHI to notify the host that the device has entered
-+the SBL stage.  SBL performs a number of operations:
-+-SBL initializes the majority of hardware (anything PBL left uninitialized),
-+ including DDR.
-+-SBL offloads the bootlog to the host.
-+-SBL synchonizes timestamps with the host for future logging.
-+-SBL uses the Sahara protocol to obtain the runtime firmware images from the
-+ host.
-+
-+Once SBL has obtained and validated the runtime firmware, it brings the NSPs out
-+of reset, and jumps into the QSM.
-+
-+The QSM uses MHI to notify the host that the device has entered the QSM stage
-+(AMSS in MHI terms).  At this point, the AIC100 device is fully functional, and
-+ready to process workloads.
-+
-+
-+MHI Channels
-+------------
-+AIC100 defines a number of MHI channels for different purposes.  This is a list
-+of the defined channels, and their uses.
-+
-+QAIC_LOOPBACK
-+Channels 0/1
-+Valid for AMSS
-+Any data sent to the device on this channel is sent back to the host.
-+
-+QAIC_SAHARA
-+Channels 2/3
-+Valid for SBL
-+Used by SBL to obtain the runtime firmware from the host.
-+
-+QAIC_DIAG
-+Channels 4/5
-+Valid for AMSS
-+Used to communicate with QSM via the Diag protocol.
-+
-+QAIC_SSR
-+Channels 6/7
-+Valid for AMSS
-+Used to notify the host of subsystem restart events, and to offload SSR
-+crashdumps.
-+
-+QAIC_QDSS
-+Channels 8/9
-+Valid for AMSS
-+Used for the Qualcomm Debug Subsystem.
-+
-+QAIC_CONTROL
-+Channels 10/11
-+Valid for AMSS
-+Used for the Neural Network Control (NNC) protocol.  This is the primary channel
-+between host and QSM for managing workloads.
-+
-+QAIC_LOGGING
-+Channels 12/13
-+Valid for SBL
-+Used by the SBL to send the bootlog to the host.
-+
-+QAIC_STATUS
-+Channels 14/15
-+Valid for AMSS
-+Used to notify the host of Reliability, Accessability, Serviceability (RAS)
-+events.
-+
-+QAIC_TELEMETRY
-+Channels 16/17
-+Valid for AMSS
-+Used to get/set power/thermal/etc attributes.
-+
-+QAIC_DEBUG
-+Channels 18/19
-+Valid for AMSS
-+Not used.
-+
-+QAIC_TIMESYNC
-+Channels 20/21
-+Valid for SBL/AMSS
-+Used to synchronize timestamps in the device side logs with the host time
-+source.
-+
-+
-+DMA Bridge
-+----------
-+The DMA Bridge is one of the main interfaces to the host (QAIC) from the device
-+(the other being MHI).  As part of activating a workload to run on NSPs, the QSM
-+assigns that network a DMA Bridge channel.  A workload's DMA Bridge channel
-+(DBC for short) is solely for the use of that workload and is not shared with
-+other workloads.
-+
-+Each DBC is a pair of FIFOs that manage data in and out of the workload.  One
-+FIFO is the request FIFO.  The other FIFO is the response FIFO.
-+
-+Each DBC contains 4 registers in hardware:
-+-Request FIFO head pointer (offset 0x0).  Read only to the host.  Indicates the
-+ latest item in the FIFO the device has consumed.
-+-Request FIFO tail pointer (offset 0x4).  Read/write by the host.  Host
-+ increments this register to add new items to the FIFO.
-+-Response FIFO head pointer (offset 0x8).  Read/write by the host.  Indicates
-+ the latest item in the FIFO the host has consumed.
-+-Response FIFO tail pointer (offset 0xc).  Read only to the host.  Device
-+ increments this register to add new items to the FIFO.
-+
-+The values in each register are indexes in the FIFO.  To get the location of the
-+FIFO element pointed to by the register -
-+FIFO base address + register * element size.
-+
-+Dbc registers are exposed to the host via the second BAR.  Each DBC consumes
-+0x1000 of space in the BAR.
-+
-+The actual FIFOs are backed by host memory.  When sending a request to the QSM
-+to activate a network, the host must donate memory to be used for the FIFOs.
-+Due to internal mapping limitations of the device, a single contigious chunk of
-+memory must be provided per DBC, which hosts both FIFOs.  The request FIFO will
-+consume the beginning of the memory chunk, and the response FIFO will consume
-+the end of the memory chunk.
-+
-+A request FIFO element has the following structure:
-+
-+{
-+	u16 req_id;
-+	u8  seq_id;
-+	u8  pcie_dma_cmd;
-+	u32 reserved;
-+	u64 pcie_dma_source_addr;
-+	u64 pcie_dma_dest_addr;
-+	u32 pcie_dma_len;
-+	u32 reserved;
-+	u64 doorbell_addr;
-+	u8  doorbell_attr;
-+	u8  reserved;
-+	u16 reserved;
-+	u32 doorbell_data;
-+	u32 sem_cmd0;
-+	u32 sem_cmd1;
-+	u32 sem_cmd2;
-+	u32 sem_cmd3;
-+}
-+
-+Request field descriptions:
-+
-+req_id- request ID.  A request FIFO element and a response FIFO element with the
-+	same request ID refer to the same command.
-+
-+seq_id- sequence ID within a request.  Ignored by the DMA Bridge.
-+
-+pcie_dma_cmd- describes the DMA element of this request.
-+	Bit(7) is the force msi flag, which overrides the DMA Bridge MSI logic
-+		and generates a MSI when this request is complete, and QSM
-+		configures the DMA Bridge to look at this bit.
-+	Bits(6:5) are reserved.
-+	Bit(4) is the completion code flag, and indicates that the DMA Bridge
-+		shall generate a response FIFO element when this request is
-+		complete.
-+	Bit(3) indicates if this request is a linked list transfer(0) or a bulk
-+		transfer(1).
-+	Bit(2) is reserved.
-+	Bits(1:0) indicate the type of transfer.  No transfer(0), to device(1),
-+		from device(2).  Value 3 is illegal.
-+
-+pcie_dma_source_addr- source address for a bulk transfer, or the address of the
-+	linked list.
-+
-+pcie_dma_dest_addr- destination address for a bulk transfer.
-+
-+pcie_dma_len- length of the bulk transfer.  Note that the size of this field
-+	limits transfers to 4G in size.
-+
-+doorbell_addr- address of the doorbell to ring when this request is complete.
-+
-+doorbell_attr- doorbell attributes.
-+	Bit(7) indicates if a write to a doorbell is to occur.
-+	Bits(6:2) are reserved.
-+	Bits(1:0) contain the encoding of the doorbell length.  0 is 32-bit,
-+		1 is 16-bit, 2 is 8-bit, 3 is reserved.  The doorbell address
-+		must be naturally aligned to the specified length.
-+
-+doorbell_data- data to write to the doorbell.  Only the bits corresponding to
-+	the doorbell length are valid.
-+
-+sem_cmdN- semaphore command.
-+	Bit(31) indicates this semaphore command is enabled.
-+	Bit(30) is the to-device DMA fence.  Block this request until all
-+		to-device DMA transfers are complete.
-+	Bit(29) is the from-device DMA fence.  Block this request until all
-+		from-device DMA transfers are complete.
-+	Bits(28:27) are reserved.
-+	Bits(26:24) are the semaphore command.  0 is NOP.  1 is init with the
-+		specified value.  2 is increment.  3 is decrement.  4 is wait
-+		until the semaphore is equal to the specified value.  5 is wait
-+		until the semaphore is greater or equal to the specified value.
-+		6 is "P", wait until semaphore is greater than 0, then
-+		decrement by 1.  7 is reserved.
-+	Bit(23) is reserved.
-+	Bit(22) is the semaphore sync.  0 is post sync, which means that the
-+		semaphore operation is done after the DMA transfer.  1 is
-+		presync, which gates the DMA transfer.  Only one presync is
-+		allowed per request.
-+	Bit(21) is reserved.
-+	Bits(20:16) is the index of the semaphore to operate on.
-+	Bits(15:12) are reserved.
-+	Bits(11:0) are the semaphore value to use in operations.
-+
-+Overall, a request is processed in 4 steps:
-+1. If specified, the presync semaphore condition must be true
-+2. If enabled, the DMA transfer occurs
-+3. If specified, the postsync semaphore conditions must be true
-+4. If enabled, the doorbell is written
-+
-+By using the semaphores in conjunction with the workload running on the NSPs,
-+the data pipeline can be synchronized such that the host can queue multiple
-+requests of data for the workload to process, but the DMA Bridge will only copy
-+the data into the memory of the workload when the workload is ready to process
-+the next input.
-+
-+Once a request is fully processed, a response FIFO element is generated if
-+specified in pcie_dma_cmd.  The structure of a response FIFO element:
-+
-+{
-+	u16 req_id;
-+	u16 completion_code;
-+}
-+
-+req_id- matches the req_id of the request that generated this element.
-+
-+completion_code- status of this request.  0 is success.  non-zero is an error.
-+
-+The DMA Bridge will generate a MSI to the host as a reaction to activity in the
-+response FIFO of a DBC.  The DMA Bridge hardware has an IRQ storm mitigation
-+algorithm, where it will only generate a MSI when the response FIFO transitions
-+from empty to non-empty (unless force MSI is enabled and triggered).  In
-+response to this MSI, the host is expected to drain the response FIFO, and must
-+take care to handle any race conditions between draining the FIFO, and the
-+device inserting elements into the FIFO.
-+
-+It is still possible for an IRQ storm to occur, if the workload is particularly
-+quick, and the host is responsive.  If the host can drain the response FIFO as
-+quickly as the device can insert elements into it, then the device will
-+frequently transition the response FIFO from empty to non-empty and generate
-+MSIs at a rate equilivelent to the speed of the workload's ability to process
-+inputs.  The lprnet (license plate reader network) workload is known to trigger
-+this condition, and can generate in excess of 100k MSIs per second.  It has been
-+observed that most systems cannot tolerate this for long, and will crash due to
-+some form of watchdog due to the overhead of the interrupt controller
-+interrupting the host CPU.
-+
-+To mitigate this issue, the QAIC driver implements specific IRQ handling.  When
-+QAIC receives an IRQ, it disables that line.  This prevents the interrupt
-+controller from interrupting the CPU.  Then AIC drains the FIFO.  Once the FIFO
-+is drained, QAIC implements a "last chance" polling algorithm where QAIC will
-+sleep for a time to see if the workload will generate more activity.  The IRQ
-+line remains disabled during this time.  If no activity is detected, QAIC exits
-+polling mode and reenables the IRQ line.
-+
-+This mitigation in QAIC is very effective.  The same lprnet usecase that
-+generates 100k IRQs per second (per /proc/interrupts) is reduced to roughly 64
-+IRQs over 5 minutes while keeping the host system stable, and having the same
-+workload throughput performance (within run to run noise variation).
-+
-+
-+Neural Network Control (NNC) Protocol
-+-------------------------------------
-+The NNC protocol is how the host makes requests to the QSM to manage workloads.
-+It uses the QAIC_CONTROL MHI channel.
-+
-+Each NNC request is packaged into a message.  Each message is a series of
-+transactions.  A passthrough type transaction can contain elements known as
-+commands.  QAIC understands the structure of a message, and all of the
-+transactions.  QAIC does not understand commands (the payload of a passthrough
-+transaction).
-+
-+QSM requires NNC messages be little endian encoded and the fields be naturally
-+aligned.  Since there are 64-bit elements in some NNC messages, 64-bit alignment
-+must be maintained.
-+
-+A message contains a header and then a series of transactions.  A message may be
-+at most 4K in size from QSM to the host.  From the host to the QSM, a message
-+can be at most 64K (maximum size of a single MHI packet), but there is a
-+continuation feature where message N+1 can be marked as a continuation of
-+message N.  This is used for exceedingly large DMA xfer transactions.
-+
-+Transaction descriptions:
-+
-+passthrough- Allows userspace to send an opaque payload directly to the QSM.
-+	This is used for NNC commands.  Userspace is responsible for managing
-+	the QSM message requirements in the payload
-+
-+dma_xfer- DMA transfer.  Describes an object that the QSM should DMA into the
-+	device via address and size tuples.  QAIC ensures the data is mapped to
-+	device accessible addresses.
-+
-+activate- Activate a workload onto NSPs.  QAIC uses this transaction to assign
-+	host memory to be used by the DBC.  QAIC uses the response which
-+	contains the assigned DBC to ensure only the requesting user is allowed
-+	to access the assigned DBC.
-+
-+deactivate- Deactivate an active workload and return the NSPs to idle.  QAIC
-+	uses the transaction to remove access to a DBC from the requesting user.
-+
-+status- Query the QSM about it's NNC implementation.  Returns the NNC version,
-+	and if CRC is used.
-+
-+terminate- Release a user's resources.  Used by QAIC to indicate to QSM that a
-+	particular user has gone away, and all of their resources can be cleaned
-+	up.
-+
-+dma_xfer_cont- Continuation of a previous DMA transfer.  If a DMA transfer
-+	cannot be specified in a single message (highly fragmented), this
-+	transaction can be used to specify more ranges.
-+
-+validate_partition- Query to QSM to determine if a partition identifier is
-+	valid.
-+
-+
-+Each message is tagged with a user id, and a partition id.  The user id allows
-+QSM to track resources, and release them when the user goes away (eg the process
-+crashes).  A partition id identifies the resource partition that QSM manages,
-+which this message applies to.
-+
-+Messages may have CRCs.  Messages should have CRCs applied until the QSM
-+reports via the status transaction that CRCs are not needed.  The QSM on the
-+SA9000P requires CRCs for black channel safing.
-+
-+
-+Subsystem Restart (SSR)
-+-----------------------
-+SSR is the concept of limiting the impact of an error.  An AIC100 device may
-+have multiple users, each with their own workload running.  If the workload of
-+one user crashes, the fallout of that should be limited to that workload and not
-+impact other workloads.  SSR accomplishes this.
-+
-+If a particular workload crashes, QSM notifies the host via the QAIC_SSR MHI
-+channel.  This notification identifies the workload by it's assigned DBC.  A
-+multi-stage recovery process is then used to cleanup both sides, and get the
-+DBC/NSPs into a working state.  At each stage, QAIC sends uevents on the DBC to
-+userspace so that userspace is aware of the SSR event, and the event's progress.
-+
-+When SSR occurs, any state in the workload is lost.  Any inputs that were in
-+process, or queued by not yet serviced, are lost.  The loaded artifacts will
-+remain in on-card DDR, but userspace will need to re-activate the workload if
-+it desires to recover the workload.
-+
-+
-+Reliability, Accessability, Serviceability (RAS)
-+-----------------------------------------------
-+AIC100 is expected to be deployed in server systems where RAS ideology is
-+applied.  Simply put, RAS is the concept of detecting, classifying, and
-+reporting errors.  While PCIe has AER (Advanced Error Reporting) which factors
-+into RAS, AER does not allow for a device to report details about internal
-+errors.  Therefore, AIC100 implements a custom RAS mechanism.  When a RAS event
-+occurs, QSM will report the event with appropriate details via the QAIC_STATUS
-+MHI channel.  QAIC will receive these reports, decode them, and print the event
-+to the kernel log (much like AER handling).  A sysadmin may determine that a
-+particular device needs additional service based on RAS reports.
-+
-+
-+Telemetry
-+---------
-+QSM has the ability to report various physical attributes of the device, and in
-+some cases, to allow the host to control them.  Examples include thermal limits,
-+thermal readings, and power readings.  These items are communicated via the
-+QAIC_TELEMETRY MHI channel
-+
-+Many of these attributes apply to multiple components of the device.  The
-+scheme QAIC uses is that attribute0 refers to that attribute at the board level.
-+Attribute1 refers to that attribute at the SoC level.  Attribute2 refers to that
-+attribute at the DDR level.
-+
-+
-+Versioning
-+----------
-+QAIC provides a module/DRM version of the scheme Major.Minor.Patch
-+
-+The Major number is incremented when a code change results in a breaking change
-+to the uAPI.  This should never happen.
-+
-+The Minor number is incremented when a code change results in a backwards
-+compatible extension (new feature) to the uAPI.  This is expected to be rare.
-+
-+The Patch number is incremented when a code change results in an internal change
-+to QAIC, such as a bug fix.  This can be used to determine if the current
-+version of the driver contains some known update.
-+
-+An update to the Major number will reset the Minor number and Patch number.
-+An update to the Minor number will reset the Patch number.  Examples:
-+1.2.3 -> 2.0.0
-+1.2.3 -> 1.3.0
-+
-+Versions:
-+1.0.X - initial version of the DRM driver, accepted into upstream Linux
-+
-+
-+QSM can report a version number of the NNC protocol it supports.  This is in the
-+form of a Major number and a Minor number.
-+
-+Major number updates indicate changes to the NNC protocol which impact th
-+ message format, or transactions (impacts QAIC).
-+
-+Minor number updates indicate changes to the NNC protocol which impact the
-+commands (does not impact QAIC).
-+
-+
-+uAPI
-+----------
-+QAIC defines a number of driver specific IOCTLs as part of the userspace API.
-+This section describes those APIs.
-+
-+DRM_IOCTL_QAIC_MANAGE:
-+This IOCTL allows userspace to send a NNC request to the QSM.  The call will
-+block until a response is received, or the request has timed out.
-+
-+DRM_IOCTL_QAIC_CREATE_BO:
-+This IOCTL allows userspace to allocate a buffer object (BO) which can send or
-+receive data from a workload.  The call will return a GEM handle that
-+represents the allocated buffer.  The BO is not usable until it has been sliced
-+(see DRM_IOCTL_QAIC_ATTACH_SLICE_BO).
-+
-+DRM_IOCTL_QAIC_MMAP_BO:
-+This IOCTL allows userspace to prepare an allocated BO to be mmap'd into the
-+userspace process.
-+
-+DRM_IOCTL_QAIC_ATTACH_SLICE_BO:
-+This IOCTL allows userspace to slice a BO in preparation for sending the BO to
-+the device.  Slicing is the operation of describing what portions of a BO get
-+sent where to a workload.  This requires a set of DMA transfers for the DMA
-+Bridge, and as such, locks the BO to a specific DBC.
-+
-+DRM_IOCTL_QAIC_EXECUTE_BO:
-+This IOCTL allows userspace to submit a set of sliced BOs to the device.  The
-+call is non-blocking.  Success only indicates that the BOs have been queued
-+to the device, but does not guarantee they have been executed.
-+
-+DRM_IOCTL_QAIC_PARTIAL_EXECUTE_BO:
-+This IOCTL operates like DRM_IOCTL_QAIC_EXECUTE_BO, but it allows userspace to
-+shrink the BOs sent to the device for this specific call.  If a BO typically has
-+N inputs, but only a subset of those is available, this IOCTL allows userspace
-+to indicate that only the first M bytes of the BO should be sent to the device
-+to minimize data transfer overhead.  This IOCTL dynamically recomputes the
-+slicing, and therefore has some processing overhead before the BOs can be queued
-+to the device.
-+
-+DRM_IOCTL_QAIC_WAIT_BO:
-+This IOCTL allows userspace to determine when a particular BO has been processed
-+by the device.  The call will block until either the BO has been processed and
-+can be re-queued to the device, or a timeout occurs.
-+
-+DRM_IOCTL_QAIC_PERF_STATS_BO:
-+This IOCTL allows userspace to collect performance statistics on the most
-+recent execution of a BO.  This allows userspace to construct an end to end
-+timeline of the BO processing for a performance analysis.
++++ b/drivers/gpu/drm/qaic/qaic.h
+@@ -0,0 +1,396 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ *
++ * Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++#ifndef QAICINTERNAL_H_
++#define QAICINTERNAL_H_
++
++#include <linux/idr.h>
++#include <linux/interrupt.h>
++#include <linux/kref.h>
++#include <linux/mhi.h>
++#include <linux/mutex.h>
++#include <linux/pci.h>
++#include <linux/spinlock.h>
++#include <linux/srcu.h>
++#include <linux/wait.h>
++#include <linux/workqueue.h>
++#include <drm/drm_device.h>
++#include <drm/drm_gem.h>
++
++#define QAIC_DBC_BASE		0x20000
++#define QAIC_DBC_SIZE		0x1000
++
++#define QAIC_NO_PARTITION	-1
++
++#define QAIC_DBC_OFF(i)		((i) * QAIC_DBC_SIZE + QAIC_DBC_BASE)
++
++#define to_qaic_bo(obj) container_of(obj, struct qaic_bo, base)
++
++extern bool poll_datapath;
++
++enum dbc_states {
++	DBC_STATE_IDLE			= 0,
++	DBC_STATE_ASSIGNED		= 1,
++	DBC_STATE_BEFORE_SHUTDOWN	= 2,
++	DBC_STATE_AFTER_SHUTDOWN	= 3,
++	DBC_STATE_BEFORE_POWER_UP	= 4,
++	DBC_STATE_AFTER_POWER_UP	= 5,
++	DBC_STATE_MAX			= 6,
++};
++
++struct qaic_user {
++	/* PID of the process that opened this drm device */
++	pid_t			handle;
++	struct kref		ref_count;
++	/* Char device opened by this user */
++	struct qaic_drm_device	*qddev;
++	/* Node in list of users that opened this drm device */
++	struct list_head	node;
++	/* SRCU used to synchronize this user during cleanup */
++	struct srcu_struct	qddev_lock;
++	atomic_t		chunk_id;
++};
++
++struct dma_bridge_chan {
++	/* Pointer to device strcut maintained by driver */
++	struct qaic_device	*qdev;
++	/* ID of this DMA bridge channel(DBC) */
++	unsigned int		id;
++	/* Synchronizes access to xfer_list */
++	spinlock_t		xfer_lock;
++	/* Base address of request queue */
++	void			*req_q_base;
++	/* Base address of response queue */
++	void			*rsp_q_base;
++	/*
++	 * Base bus address of request queue. Response queue bus address can be
++	 * calculated by adding request queue size to this variable
++	 */
++	dma_addr_t		dma_addr;
++	/* Total size of request and response queue in byte */
++	u32			total_size;
++	/* Capacity of request/response queue */
++	u32			nelem;
++	/* Synchronizes access to idr buf_handles */
++	struct mutex		handle_lock;
++	/* Hold memory handles for this DBC */
++	struct idr		buf_handles;
++	/* The user that opened this DBC */
++	struct qaic_user	*usr;
++	/*
++	 * Request ID of next memory handle that goes in request queue. One
++	 * memory handle can enqueue more than one request elements, all
++	 * this requests that belong to same memory handle have same request ID
++	 */
++	u16			next_req_id;
++	/* TRUE: DBC is in use; FALSE: DBC not in use */
++	bool			in_use;
++	/* TRUE: This DBC is under sub system reset(SSR) */
++	bool			in_ssr;
++	/* Represents various states of this DBC from enum dbc_states */
++	unsigned int		state;
++	/*
++	 * Base address of device registers. Used to read/write request and
++	 * response queue's head and tail pointer of this DBC.
++	 */
++	void __iomem		*dbc_base;
++	/* Head of list where each node is a memory handle queued in request queue */
++	struct list_head	xfer_list;
++	/* Synchronizes DBC readers during cleanup */
++	struct srcu_struct	ch_lock;
++	/* Debugfs root directory for this DBC */
++	struct dentry		*debugfs_root;
++	/*
++	 * When this DBC is released, any thread waiting on this wait queue is
++	 * woken up
++	 */
++	wait_queue_head_t	dbc_release;
++	/*
++	 * Points to a book keeping struct maintained by MHI SSR device while
++	 * downloading a SSR crashdump. It is NULL when there no crashdump
++	 * downloading in progress.
++	 */
++	void			*dump_info;
++	/* Head of list where each node is a bo associated with this DBC */
++	struct list_head	bo_lists;
++	/* The irq line for this DBC.  Used for polling */
++	unsigned int		irq;
++	/* Polling work item to simulate interrupts */
++	struct work_struct	poll_work;
++};
++
++struct qaic_device {
++	/* Pointer to base PCI device struct of our physical device */
++	struct pci_dev		*pdev;
++	/* Mask of all bars of this device */
++	int			bars;
++	/* Req. ID of request that will be queued next in MHI control device */
++	u32			next_seq_num;
++	/* Base address of bar 0 */
++	void __iomem		*bar_0;
++	/* Base address of bar 2 */
++	void __iomem		*bar_2;
++	/* Controller structure for MHI devices */
++	struct mhi_controller	*mhi_cntl;
++	/* MHI control channel device */
++	struct mhi_device	*cntl_ch;
++	/* List of requests queued in MHI control device */
++	struct list_head	cntl_xfer_list;
++	/* Synchronizes MHI control device transactions and its xfer list */
++	struct mutex		cntl_mutex;
++	/* Base actual physical representation of drm device */
++	struct qaic_drm_device	*base_dev;
++	/* Array of DBC struct of this device */
++	struct dma_bridge_chan	*dbc;
++	/* Work queue for tasks related to MHI control device */
++	struct workqueue_struct	*cntl_wq;
++	/* Synchronizes all the users of device during cleanup */
++	struct srcu_struct	dev_lock;
++	/* Debugfs root directory for the device */
++	struct dentry		*debugfs_root;
++	/* HW monitoring device for this device */
++	struct device		*hwmon;
++	/* MHI telemetry channel device */
++	struct mhi_device	*tele_ch;
++	/* Head in list of requests queued in MHI telemetry device */
++	struct list_head	tele_xfer_list;
++	/* Req. ID of request that will be queued next in MHI telemetry device */
++	u32			tele_next_seq_num;
++	/*
++	 * TRUE: A tx MHI tansaction has failed and a rx buffer is still queued
++	 * in telemetry device. Such a buffer is considered lost rx buffer
++	 * FALSE: No rx buffer is lost in telemetry device
++	 */
++	bool			tele_lost_buf;
++	/* TRUE: Device under reset; FALSE: Device not under reset */
++	bool			in_reset;
++	/*
++	 * TRUE: A tx MHI tansaction has failed and a rx buffer is still queued
++	 * in control device. Such a buffer is considered lost rx buffer
++	 * FALSE: No rx buffer is lost in control device
++	 */
++	bool			cntl_lost_buf;
++	/* Synchronizes MHI telemetry device transactions and its xfer list */
++	struct mutex		tele_mutex;
++	/* Work queue for tasks related to MHI telemetry device */
++	struct workqueue_struct	*tele_wq;
++	/* MHI RAS channel device */
++	struct mhi_device	*ras_ch;
++	unsigned int		ce_count;
++	unsigned int		ue_count;
++	unsigned int		ue_nf_count;
++	/* Maximum number of DBC supported by this device */
++	u32			num_dbc;
++	/* Head of list of page allocated by MHI bootlog device */
++	struct list_head	bootlog;
++	/* MHI bootlog channel device */
++	struct mhi_device	*bootlog_ch;
++	/* Work queue for tasks related to MHI bootlog device */
++	struct workqueue_struct	*bootlog_wq;
++	/* Synchronizes access of pages in MHI bootlog device */
++	struct mutex		bootlog_mutex;
++	/* Head in list of drm device created on top of this device */
++	struct list_head	qaic_drm_devices;
++	/* Synchronizes access of qaic_drm_devices list */
++	struct mutex		qaic_drm_devices_mutex;
++	/* MHI SSR channel device */
++	struct mhi_device	*ssr_ch;
++	/* Work queue for tasks related to MHI SSR device */
++	struct workqueue_struct	*ssr_wq;
++	/* Generate the CRC of a control message */
++	u32 (*gen_crc)(void *msg);
++	/* Validate the CRC of a control message */
++	bool (*valid_crc)(void *msg);
++};
++
++struct qaic_drm_device {
++	/* Pointer to the root device struct driven by this driver */
++	struct qaic_device	*qdev;
++	/* Node in list of drm devices maintained by root device */
++	struct list_head	node;
++	/*
++	 * The physical device can be partition in number of logical devices.
++	 * And each logical device is given a partition id. This member stores
++	 * that id. QAIC_NO_PARTITION is a sentinel used to mark that this drm
++	 * device is the actual physical device
++	 */
++	s32			partition_id;
++	/*
++	 * It points to the user that created this drm device. It is NULL
++	 * when this drm device represents the physical device i.e.
++	 * partition_id is QAIC_NO_PARTITION
++	 */
++	struct qaic_user	*owner;
++	/* Pointer to the drm device struct of this drm device */
++	struct drm_device	*ddev;
++	/* Head in list of users who have opened this drm device */
++	struct list_head	users;
++	/* Synchronizes access to users list */
++	struct mutex		users_mutex;
++	/* Pointer to array of DBC sysfs attributes */
++	void			*sysfs_attrs;
++};
++
++struct qaic_bo {
++	struct drm_gem_object	base;
++	/* Scatter/gather table for allocate/imported BO */
++	struct sg_table		*sgt;
++	/* BO size requested by user. GEM object might be bigger in size. */
++	u64			size;
++	/* Head in list of slices of this BO */
++	struct list_head	slices;
++	/* Total nents, for all slices of this BO */
++	int			total_slice_nents;
++	/*
++	 * Direction of transfer. It can assume only two value DMA_TO_DEVICE and
++	 * DMA_FROM_DEVICE.
++	 */
++	int			dir;
++	/* The pointer of the DBC which operates on this BO */
++	struct dma_bridge_chan	*dbc;
++	/* Number of slice that belongs to this buffer */
++	u32			nr_slice;
++	/* Number of slice that have been transferred by DMA engine */
++	u32			nr_slice_xfer_done;
++	/* TRUE = BO is queued for execution, FALSE = BO is not queued */
++	bool			queued;
++	/**
++	 * If TRUE then user has attached slicing information to this BO by
++	 * calling DRM_IOCTL_QAIC_ATTACH_SLICE_BO ioctl.
++	 */
++	bool			sliced;
++	/* Request ID of this BO if it is queued for execution */
++	u16			req_id;
++	/* Handle assigned to this BO */
++	u32			handle;
++	/* Wait on this for completion of DMA transfer of this BO */
++	struct completion	xfer_done;
++	/*
++	 * Node in linked list where head is dbc->xfer_list.
++	 * This link list contain bo's that are queued for DMA transfer.
++	 */
++	struct list_head	xfer_list;
++	/*
++	 * Node in linked list where head is dbc->bo_lists.
++	 * This link list contain bo's that are associated with the DBC it is
++	 * linked to.
++	 */
++	struct list_head	bo_list;
++	struct {
++		/**
++		 * Latest timestamp(ns) at which kernel received a request to
++		 * execute this BO
++		 */
++		u64		req_received_ts;
++		/**
++		 * Latest timestamp(ns) at which kernel enqueued requests of
++		 * this BO for execution in DMA queue
++		 */
++		u64		req_submit_ts;
++		/**
++		 * Latest timestamp(ns) at which kernel received a completion
++		 * interrupt for requests of this BO
++		 */
++		u64		req_processed_ts;
++		/**
++		 * Number of elements already enqueued in DMA queue before
++		 * enqueuing requests of this BO
++		 */
++		u32		queue_level_before;
++	} perf_stats;
++
++};
++
++struct bo_slice {
++	/* Mapped pages */
++	struct sg_table		*sgt;
++	/* Number of requests required to queue in DMA queue */
++	int			nents;
++	/* See enum dma_data_direction */
++	int			dir;
++	/* Actual requests that will be copied in DMA queue */
++	struct dbc_req		*reqs;
++	struct kref		ref_count;
++	/* TRUE: No DMA transfer required */
++	bool			no_xfer;
++	/* Pointer to the parent bo handle */
++	struct qaic_bo		*bo;
++	/* Node in list of slices maintained by parent BO */
++	struct list_head	slice;
++	/* Size of this slice in byte */
++	u64			size;
++	/* Offset of this slice in buffer */
++	u64			offset;
++};
++
++int get_dbc_req_elem_size(void);
++int get_dbc_rsp_elem_size(void);
++int get_cntl_version(struct qaic_device *qdev, struct qaic_user *usr,
++		     u16 *major, u16 *minor);
++int qaic_manage_ioctl(struct drm_device *dev, void *data,
++		      struct drm_file *file_priv);
++int qaic_execute_ioctl(struct qaic_device *qdev, struct qaic_user *usr,
++		       unsigned long arg, bool is_partial);
++int qaic_wait_exec_ioctl(struct qaic_device *qdev, struct qaic_user *usr,
++			 unsigned long arg);
++int qaic_query_ioctl(struct qaic_device *qdev, struct qaic_user *usr,
++		     unsigned long arg);
++int qaic_data_mmap(struct qaic_device *qdev, struct qaic_user *usr,
++		   struct vm_area_struct *vma);
++void qaic_data_get_fifo_info(struct dma_bridge_chan *dbc, u32 *head,
++			     u32 *tail);
++int qaic_data_get_reservation(struct qaic_device *qdev, struct qaic_user *usr,
++			      void *data, u32 *partition_id,
++			      u16 *remove);
++void qaic_mhi_ul_xfer_cb(struct mhi_device *mhi_dev,
++			 struct mhi_result *mhi_result);
++
++void qaic_mhi_dl_xfer_cb(struct mhi_device *mhi_dev,
++			 struct mhi_result *mhi_result);
++
++int qaic_control_open(struct qaic_device *qdev);
++void qaic_control_close(struct qaic_device *qdev);
++void qaic_release_usr(struct qaic_device *qdev, struct qaic_user *usr);
++
++irqreturn_t dbc_irq_threaded_fn(int irq, void *data);
++irqreturn_t dbc_irq_handler(int irq, void *data);
++int disable_dbc(struct qaic_device *qdev, u32 dbc_id, struct qaic_user *usr);
++void enable_dbc(struct qaic_device *qdev, u32 dbc_id, struct qaic_user *usr);
++void wakeup_dbc(struct qaic_device *qdev, u32 dbc_id);
++void release_dbc(struct qaic_device *qdev, u32 dbc_id, bool set_state);
++
++void wake_all_cntl(struct qaic_device *qdev);
++void qaic_dev_reset_clean_local_state(struct qaic_device *qdev, bool exit_reset);
++
++int qaic_sysfs_init(struct qaic_drm_device *qdev);
++void qaic_sysfs_remove(struct qaic_drm_device *qdev);
++void set_dbc_state(struct qaic_device *qdev, u32 dbc_id, unsigned int state);
++
++void dbc_enter_ssr(struct qaic_device *qdev, u32 dbc_id);
++void dbc_exit_ssr(struct qaic_device *qdev, u32 dbc_id);
++
++struct drm_gem_object *qaic_gem_prime_import(struct drm_device *dev,
++					     struct dma_buf *dma_buf);
++
++int qaic_create_bo_ioctl(struct drm_device *dev, void *data,
++			 struct drm_file *file_priv);
++int qaic_mmap_bo_ioctl(struct drm_device *dev, void *data,
++		       struct drm_file *file_priv);
++int qaic_attach_slice_bo_ioctl(struct drm_device *dev, void *data,
++			       struct drm_file *file_priv);
++int qaic_execute_bo_ioctl(struct drm_device *dev, void *data,
++			  struct drm_file *file_priv);
++int qaic_partial_execute_bo_ioctl(struct drm_device *dev, void *data,
++				  struct drm_file *file_priv);
++int qaic_wait_bo_ioctl(struct drm_device *dev, void *data,
++		       struct drm_file *file_priv);
++int qaic_test_print_bo_ioctl(struct drm_device *dev, void *data,
++			     struct drm_file *file_priv);
++int qaic_perf_stats_bo_ioctl(struct drm_device *dev, void *data,
++			     struct drm_file *file_priv);
++void irq_polling_work(struct work_struct *work);
++
++#endif /* QAICINTERNAL_H_ */
 -- 
 2.7.4
 
