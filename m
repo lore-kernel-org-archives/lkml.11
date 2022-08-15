@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB409C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 679BAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243806AbiHOUHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
+        id S231255AbiHOUHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346176AbiHOUGO (ORCPT
+        with ESMTP id S1346239AbiHOUGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:06:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F7E81698;
-        Mon, 15 Aug 2022 11:55:01 -0700 (PDT)
+        Mon, 15 Aug 2022 16:06:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3824F81B23;
+        Mon, 15 Aug 2022 11:55:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 881D06125E;
-        Mon, 15 Aug 2022 18:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D722C433D6;
-        Mon, 15 Aug 2022 18:54:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D8D90CE1277;
+        Mon, 15 Aug 2022 18:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B10C433C1;
+        Mon, 15 Aug 2022 18:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589695;
-        bh=9oKqhmwN4AKakxaJwaUN3W6bPQ1UeHS2y21A6FGtcaE=;
+        s=korg; t=1660589702;
+        bh=llpMxHGJXWP5cf7sbBkd+Qs7oAxQTdYK6TfLN8Q4UGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxxvwr+88wAOpFhluwFxohjWSb89auHUyTPks3YMnwZbi/IgP+MwC96Es86dPk/zo
-         aAS73yHs7UapZxU8pBX0HY7Qdcha9zEC6qryhMGgKPb9cKXJHY8xubDzLigfulMJEx
-         0wK+QZKOZ4Zt5JPYnNlQjdsT5Zhww/rHSL3wBmOc=
+        b=W9bib26XbqEtKdeUdCbNdlNK7pzPAQ0oos6O1T0etLamGVaz2zF0TkviN0K4xhXNg
+         buEeEfSIiq36iE3xb+O4SAj9dqV5bdEbBX1w0HWNczjznZ/MfmbbeJNdtd6Bq8cpoW
+         53aeL3rAvuOYeiS1oEFSmgOfRy2+zEtFn6WJSv2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 0002/1095] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-Date:   Mon, 15 Aug 2022 19:50:01 +0200
-Message-Id: <20220815180429.383780689@linuxfoundation.org>
+        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.18 0021/1095] HID: wacom: Only report rotation for art pen
+Date:   Mon, 15 Aug 2022 19:50:20 +0200
+Message-Id: <20220815180430.226829268@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,82 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Ping Cheng <pinglinux@gmail.com>
 
-commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
+commit 7ccced33a0ba39b0103ae1dfbf7f1dffdc0a1bc2 upstream.
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+The generic routine, wacom_wac_pen_event, turns rotation value 90
+degree anti-clockwise before posting the events. This non-zero
+event trggers a non-zero ABS_Z event for non art pen tools. However,
+HID_DG_TWIST is only supported by art pen.
 
-  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
-
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[jkosina@suse.cz: fix build: add missing brace]
+Cc: stable@vger.kernel.org
+Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
+Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/boot/Makefile            |    2 +-
- arch/x86/boot/compressed/Makefile |    4 ++++
- arch/x86/entry/vdso/Makefile      |    2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/hid/wacom_wac.c |   29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
---- a/arch/x86/boot/Makefile
-+++ b/arch/x86/boot/Makefile
-@@ -103,7 +103,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
- AFLAGS_header.o += -I$(objtree)/$(obj)
- $(obj)/header.o: $(obj)/zoffset.h
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -638,9 +638,26 @@ static int wacom_intuos_id_mangle(int to
+ 	return (tool_id & ~0xFFF) << 4 | (tool_id & 0xFFF);
+ }
  
--LDFLAGS_setup.elf	:= -m elf_i386 -T
-+LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
- $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
- 	$(call if_changed,ld)
++static bool wacom_is_art_pen(int tool_id)
++{
++	bool is_art_pen = false;
++
++	switch (tool_id) {
++	case 0x885:	/* Intuos3 Marker Pen */
++	case 0x804:	/* Intuos4/5 13HD/24HD Marker Pen */
++	case 0x10804:	/* Intuos4/5 13HD/24HD Art Pen */
++		is_art_pen = true;
++		break;
++	}
++	return is_art_pen;
++}
++
+ static int wacom_intuos_get_tool_type(int tool_id)
+ {
+-	int tool_type;
++	int tool_type = BTN_TOOL_PEN;
++
++	if (wacom_is_art_pen(tool_id))
++		return tool_type;
  
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -69,6 +69,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
- ifdef CONFIG_LD_ORPHAN_WARN
- LDFLAGS_vmlinux += --orphan-handling=warn
- endif
-+LDFLAGS_vmlinux += -z noexecstack
-+ifeq ($(CONFIG_LD_IS_BFD),y)
-+LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
-+endif
- LDFLAGS_vmlinux += -T
- 
- hostprogs	:= mkpiggy
---- a/arch/x86/entry/vdso/Makefile
-+++ b/arch/x86/entry/vdso/Makefile
-@@ -179,7 +179,7 @@ quiet_cmd_vdso = VDSO    $@
- 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
- 
- VDSO_LDFLAGS = -shared --hash-style=both --build-id=sha1 \
--	$(call ld-option, --eh-frame-hdr) -Bsymbolic
-+	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
- GCOV_PROFILE := n
- 
- quiet_cmd_vdso_and_check = VDSO    $@
+ 	switch (tool_id) {
+ 	case 0x812: /* Inking pen */
+@@ -655,12 +672,9 @@ static int wacom_intuos_get_tool_type(in
+ 	case 0x852:
+ 	case 0x823: /* Intuos3 Grip Pen */
+ 	case 0x813: /* Intuos3 Classic Pen */
+-	case 0x885: /* Intuos3 Marker Pen */
+ 	case 0x802: /* Intuos4/5 13HD/24HD General Pen */
+-	case 0x804: /* Intuos4/5 13HD/24HD Marker Pen */
+ 	case 0x8e2: /* IntuosHT2 pen */
+ 	case 0x022:
+-	case 0x10804: /* Intuos4/5 13HD/24HD Art Pen */
+ 	case 0x10842: /* MobileStudio Pro Pro Pen slim */
+ 	case 0x14802: /* Intuos4/5 13HD/24HD Classic Pen */
+ 	case 0x16802: /* Cintiq 13HD Pro Pen */
+@@ -718,10 +732,6 @@ static int wacom_intuos_get_tool_type(in
+ 	case 0x10902: /* Intuos4/5 13HD/24HD Airbrush */
+ 		tool_type = BTN_TOOL_AIRBRUSH;
+ 		break;
+-
+-	default: /* Unknown tool */
+-		tool_type = BTN_TOOL_PEN;
+-		break;
+ 	}
+ 	return tool_type;
+ }
+@@ -2323,6 +2333,9 @@ static void wacom_wac_pen_event(struct h
+ 		}
+ 		return;
+ 	case HID_DG_TWIST:
++		/* don't modify the value if the pen doesn't support the feature */
++		if (!wacom_is_art_pen(wacom_wac->id[0])) return;
++
+ 		/*
+ 		 * Userspace expects pen twist to have its zero point when
+ 		 * the buttons/finger is on the tablet's left. HID values
 
 
