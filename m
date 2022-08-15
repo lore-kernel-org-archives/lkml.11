@@ -2,42 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A4FC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD59DC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbiHPEr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S232606AbiHPErf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232242AbiHPEoo (ORCPT
+        with ESMTP id S232329AbiHPEpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:44:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B31A19233F;
-        Mon, 15 Aug 2022 13:40:38 -0700 (PDT)
+        Tue, 16 Aug 2022 00:45:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C75B3F1C0;
+        Mon, 15 Aug 2022 13:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 271AE60F60;
-        Mon, 15 Aug 2022 20:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB0F5C433C1;
-        Mon, 15 Aug 2022 20:40:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DF9BB811AC;
+        Mon, 15 Aug 2022 20:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C51C433D7;
+        Mon, 15 Aug 2022 20:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596037;
-        bh=4j6xLiki7RQu8w3xPjg3bkrLFoXDa/GsticP4t84mxA=;
+        s=korg; t=1660596239;
+        bh=e25EplunFs+xhOssElaZHcLWfqW4P+ZY5UR2hRo+Ob0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iwHRhsuXlWA2gZMnSMTJXUyX+kq9Aujkhrk1XgITagAjjLyKSH+yQqaBtlml193ZE
-         vP6TQoorTGAUo2Mygtnkq8w0j9D0I98snQHGEFz8n9PEFD5RMlhRiGFAVpRtnZvOwX
-         FWiakMwm0lBmHDryKTROg8fRiVveHQDgS7kBPIDs=
+        b=am6LC2Wek9Pj0p/rhWGfxWF4XfA2IbEWDLyA99y1Z8JJt8GwrwZyNRYqtZk/5Is0+
+         xf55PaJ+TlsxiKqwkQexAiD9L496pezmrtZxH8CNsl6WwGY3qMbsg5797bgo9dfqZt
+         d0tKo3ia+JGtukW1+b0Ym6xszfgP1ifgBngSkvkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E8=B0=AD=E6=A2=93=E7=85=8A?= <tanzixuan.me@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0953/1157] ASoc: audio-graph-card2: Fix refcount leak bug in __graph_get_type()
-Date:   Mon, 15 Aug 2022 20:05:09 +0200
-Message-Id: <20220815180517.721567538@linuxfoundation.org>
+Subject: [PATCH 5.19 1017/1157] genelf: Use HAVE_LIBCRYPTO_SUPPORT, not the never defined HAVE_LIBCRYPTO
+Date:   Mon, 15 Aug 2022 20:06:13 +0200
+Message-Id: <20220815180520.561935337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,80 +59,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-[ Upstream commit eda26893dabfc6da7a1e1ff5f8628ed9faab3ab9 ]
+[ Upstream commit 91cea6be90e436c55cde8770a15e4dac9d3032d0 ]
 
-We should call of_node_put() for the reference before its replacement
-as it returned by of_get_parent() which has increased the refcount.
-Besides, we should also call of_node_put() before return.
+When genelf was introduced it tested for HAVE_LIBCRYPTO not
+HAVE_LIBCRYPTO_SUPPORT, which is the define the feature test for openssl
+defines, fix it.
 
-Fixes: c8c74939f791 ("ASoC: audio-graph-card2: add Multi CPU/Codec support")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220713071200.366729-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This also adds disables the deprecation warning, someone has to fix this
+to build with openssl 3.0 before the warning becomes a hard error.
+
+Fixes: 9b07e27f88b9cd78 ("perf inject: Add jitdump mmap injection support")
+Reported-by: 谭梓煊 <tanzixuan.me@gmail.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stephane Eranian <eranian@google.com>
+Link: http://lore.kernel.org/lkml/YulpPqXSOG0Q4J1o@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card2.c | 35 +++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 10 deletions(-)
+ tools/perf/util/genelf.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index 8e0628e6f2a0..5dba7c89007d 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -229,7 +229,8 @@ enum graph_type {
+diff --git a/tools/perf/util/genelf.c b/tools/perf/util/genelf.c
+index aed49806a09b..953338b9e887 100644
+--- a/tools/perf/util/genelf.c
++++ b/tools/perf/util/genelf.c
+@@ -30,7 +30,11 @@
  
- static enum graph_type __graph_get_type(struct device_node *lnk)
- {
--	struct device_node *np;
-+	struct device_node *np, *parent_np;
-+	enum graph_type ret;
+ #define BUILD_ID_URANDOM /* different uuid for each run */
  
- 	/*
- 	 * target {
-@@ -240,19 +241,33 @@ static enum graph_type __graph_get_type(struct device_node *lnk)
- 	 * };
- 	 */
- 	np = of_get_parent(lnk);
--	if (of_node_name_eq(np, "ports"))
--		np = of_get_parent(np);
-+	if (of_node_name_eq(np, "ports")) {
-+		parent_np = of_get_parent(np);
-+		of_node_put(np);
-+		np = parent_np;
-+	}
- 
--	if (of_node_name_eq(np, GRAPH_NODENAME_MULTI))
--		return GRAPH_MULTI;
-+	if (of_node_name_eq(np, GRAPH_NODENAME_MULTI)) {
-+		ret = GRAPH_MULTI;
-+		goto out_put;
-+	}
- 
--	if (of_node_name_eq(np, GRAPH_NODENAME_DPCM))
--		return GRAPH_DPCM;
-+	if (of_node_name_eq(np, GRAPH_NODENAME_DPCM)) {
-+		ret = GRAPH_DPCM;
-+		goto out_put;
-+	}
- 
--	if (of_node_name_eq(np, GRAPH_NODENAME_C2C))
--		return GRAPH_C2C;
-+	if (of_node_name_eq(np, GRAPH_NODENAME_C2C)) {
-+		ret = GRAPH_C2C;
-+		goto out_put;
-+	}
+-#ifdef HAVE_LIBCRYPTO
++// FIXME, remove this and fix the deprecation warnings before its removed and
++// We'll break for good here...
++#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 +
-+	ret = GRAPH_NORMAL;
-+
-+out_put:
-+	of_node_put(np);
-+	return ret;
++#ifdef HAVE_LIBCRYPTO_SUPPORT
  
--	return GRAPH_NORMAL;
- }
- 
- static enum graph_type graph_get_type(struct asoc_simple_priv *priv,
+ #define BUILD_ID_MD5
+ #undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
 -- 
 2.35.1
 
