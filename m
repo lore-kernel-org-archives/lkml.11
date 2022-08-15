@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAD1C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB56C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232146AbiHPEnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
+        id S231602AbiHPEn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiHPEkb (ORCPT
+        with ESMTP id S231939AbiHPEkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:40:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CE1A3D58;
-        Mon, 15 Aug 2022 13:31:51 -0700 (PDT)
+        Tue, 16 Aug 2022 00:40:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C919D1E1D;
+        Mon, 15 Aug 2022 13:33:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFB261072;
-        Mon, 15 Aug 2022 20:31:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D3BAC433D6;
-        Mon, 15 Aug 2022 20:31:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C71E3B81197;
+        Mon, 15 Aug 2022 20:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A111C433C1;
+        Mon, 15 Aug 2022 20:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595511;
-        bh=Ykk3jmbFM3PJt62sxcizrmy6rHAzlSYX/3dokANt3sM=;
+        s=korg; t=1660595599;
+        bh=jmK2cpuZJgzfFUBDT4X/tT4K1ZIqlymHVLMD9MRYZTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QfQV1vOu/oLGEuw69X78FNV7XvmZGciE+CNun9Ncz1exxs6u7em5Kd/n3ZCtiHJ7f
-         PI9npTJbtMcX6jVen5fSjXjfy9gUf520PNcMsVBCqZH0RLF1UmO3njo/WFvmS5kYeE
-         EQRhehd2bf05XJYBoeOeDrc11vE72qrXu6sRll+8=
+        b=xPLduvZRcHWT/K5p2Ba0G+tCWHtl42P3GuxpxBvjBczvDEVf5bBu1xAdlGmfpLzIG
+         h6NFC6WQDJGPnIcLByFCbZ0x5po5XUwXCq1Dn5uURD940HtpjfYkXOfsp3xpFh9s8q
+         eVit9G+y33DwZ3lefCEujZU2lQtJAzrjERhXyCfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0760/1157] clk: qcom: camcc-sm8250: Fix topology around titan_top power domain
-Date:   Mon, 15 Aug 2022 20:01:56 +0200
-Message-Id: <20220815180509.894025167@linuxfoundation.org>
+        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0815/1157] phy: rockchip-inno-usb2: Ignore OTG IRQs in host mode
+Date:   Mon, 15 Aug 2022 20:02:51 +0200
+Message-Id: <20220815180512.092521896@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,53 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit f8acf01a6a4f84baf05181e24bd48def4ba23f5b ]
+[ Upstream commit fd7d47484125c7d04578de9294faa7fec6e5df0a ]
 
-On SM8250 two found VFE GDSC power domains shall not be operated, if
-titan top is turned off, thus the former power domains will be set as
-subdomains by a GDSC registration routine.
+When the OTG port is fixed to host mode, the driver does not request its
+IRQs, nor does it enable those IRQs in hardware. Similarly, the driver
+should ignore the OTG port IRQs when handling the shared interrupt.
 
-Fixes: 5d66ca79b58c ("clk: qcom: Add camera clock controller driver for SM8250")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220519214133.1728979-3-vladimir.zapolskiy@linaro.org
+Otherwise, it would update the extcon based on an ID pin which may be in
+an undefined state, or try to queue a uninitialized work item.
+
+Fixes: 6a98df08ccd5 ("phy: rockchip-inno-usb2: Fix muxed interrupt support")
+Reported-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Peter Geis <pgwipeout@gmail.com>
+Tested-by: Frank Wunderlich <frank-w@public-files.de>
+Link: https://lore.kernel.org/r/20220708061434.38115-1-samuel@sholland.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/camcc-sm8250.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/camcc-sm8250.c b/drivers/clk/qcom/camcc-sm8250.c
-index ae4e9774f36e..9b32c56a5bc5 100644
---- a/drivers/clk/qcom/camcc-sm8250.c
-+++ b/drivers/clk/qcom/camcc-sm8250.c
-@@ -2205,6 +2205,8 @@ static struct clk_branch cam_cc_sleep_clk = {
- 	},
- };
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index 6e44069617df..5223d4c9afdf 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -978,7 +978,9 @@ static irqreturn_t rockchip_usb2phy_irq(int irq, void *data)
  
-+static struct gdsc titan_top_gdsc;
-+
- static struct gdsc bps_gdsc = {
- 	.gdscr = 0x7004,
- 	.pd = {
-@@ -2238,6 +2240,7 @@ static struct gdsc ife_0_gdsc = {
- 		.name = "ife_0_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
-@@ -2247,6 +2250,7 @@ static struct gdsc ife_1_gdsc = {
- 		.name = "ife_1_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
+ 		switch (rport->port_id) {
+ 		case USB2PHY_PORT_OTG:
+-			ret |= rockchip_usb2phy_otg_mux_irq(irq, rport);
++			if (rport->mode != USB_DR_MODE_HOST &&
++			    rport->mode != USB_DR_MODE_UNKNOWN)
++				ret |= rockchip_usb2phy_otg_mux_irq(irq, rport);
+ 			break;
+ 		case USB2PHY_PORT_HOST:
+ 			ret |= rockchip_usb2phy_linestate_irq(irq, rport);
 -- 
 2.35.1
 
