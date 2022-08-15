@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C7CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8BAC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351568AbiHOWp3 (ORCPT
+        id S1351576AbiHOWpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
+        Mon, 15 Aug 2022 18:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350812AbiHOWko (ORCPT
+        with ESMTP id S1350882AbiHOWkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:40:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33B94DB3A;
-        Mon, 15 Aug 2022 12:52:02 -0700 (PDT)
+        Mon, 15 Aug 2022 18:40:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897CA73901;
+        Mon, 15 Aug 2022 12:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 662E5CE1262;
-        Mon, 15 Aug 2022 19:52:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55B5DC433C1;
-        Mon, 15 Aug 2022 19:51:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36C3CB80EAB;
+        Mon, 15 Aug 2022 19:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67456C433D7;
+        Mon, 15 Aug 2022 19:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593119;
-        bh=y00JDlmXaOUG89+arkkzRd59IEcKQ9D8Us7X+XR4hQI=;
+        s=korg; t=1660593122;
+        bh=mQCrq2ntPhCcnbK41SusLBAMdtiHg3E1dAxiOPm3NqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hG0YsDD6w1Y0Gkg5lfSJ7oGpYUBGRJa+ljUbHnUqz1b8IMNnQJ9DCkif2kcYafq8w
-         sBe50AplLZkeWgAuHcVAwIl2wfF293cSstxsZfFpVqMbEdnGhLmpfluX3z98YonmV1
-         NNFgpsC5u75AcbErKJ5RzdX5bMAunGYneqLQSrAg=
+        b=rvVq6BIhMhi9HhDq5SkoPeUrXz9k48/5ddghfGk+5INqxyDHAzniJ5Q5nK62okqh+
+         9YhPP6ECO5w4NLXFyfoIe2sG3Lkn3+mqS1KPc9ZO6QJrvPDqk5IP8nOcT4t2TjsgaN
+         h/bAaXyEfgRfHTbbrr2Zhm7DTZ3aOrKdX7kjP5vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0217/1157] arm64: dts: mt8192: Fix idle-states nodes naming scheme
-Date:   Mon, 15 Aug 2022 19:52:53 +0200
-Message-Id: <20220815180448.278004903@linuxfoundation.org>
+Subject: [PATCH 5.18 0899/1095] s390/zcore: fix race when reading from hardware system area
+Date:   Mon, 15 Aug 2022 20:04:58 +0200
+Message-Id: <20220815180506.482092573@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,139 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 399e23ad51caaf62400a531c9268ad3c453c3d76 ]
+[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
 
-Tweak the name of the idle-states subnodes so that they follow the
-binding pattern, getting rid of dtbs_check warnings.
+Memory buffer used for reading out data from hardware system
+area is not protected against concurrent access.
 
-Only the usage of "-" in the name was necessary, but "off" was also
-exchanged for "sleep" since that seems to be a more common wording in
-other dts files.
-
-Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220617233150.2466344-2-nfraprado@collabora.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: 411ed3225733 ("[S390] zfcpdump support.")
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/s390/char/zcore.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 733aec2e7f77..c739e910883a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -43,7 +43,7 @@ cpu0: cpu@0 {
- 			reg = <0x000>;
- 			enable-method = "psci";
- 			clock-frequency = <1701000000>;
--			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			cpu-idle-states = <&cpu_sleep_l &cluster_sleep_l>;
- 			next-level-cache = <&l2_0>;
- 			capacity-dmips-mhz = <530>;
- 		};
-@@ -54,7 +54,7 @@ cpu1: cpu@100 {
- 			reg = <0x100>;
- 			enable-method = "psci";
- 			clock-frequency = <1701000000>;
--			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			cpu-idle-states = <&cpu_sleep_l &cluster_sleep_l>;
- 			next-level-cache = <&l2_0>;
- 			capacity-dmips-mhz = <530>;
- 		};
-@@ -65,7 +65,7 @@ cpu2: cpu@200 {
- 			reg = <0x200>;
- 			enable-method = "psci";
- 			clock-frequency = <1701000000>;
--			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			cpu-idle-states = <&cpu_sleep_l &cluster_sleep_l>;
- 			next-level-cache = <&l2_0>;
- 			capacity-dmips-mhz = <530>;
- 		};
-@@ -76,7 +76,7 @@ cpu3: cpu@300 {
- 			reg = <0x300>;
- 			enable-method = "psci";
- 			clock-frequency = <1701000000>;
--			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			cpu-idle-states = <&cpu_sleep_l &cluster_sleep_l>;
- 			next-level-cache = <&l2_0>;
- 			capacity-dmips-mhz = <530>;
- 		};
-@@ -87,7 +87,7 @@ cpu4: cpu@400 {
- 			reg = <0x400>;
- 			enable-method = "psci";
- 			clock-frequency = <2171000000>;
--			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			cpu-idle-states = <&cpu_sleep_b &cluster_sleep_b>;
- 			next-level-cache = <&l2_1>;
- 			capacity-dmips-mhz = <1024>;
- 		};
-@@ -98,7 +98,7 @@ cpu5: cpu@500 {
- 			reg = <0x500>;
- 			enable-method = "psci";
- 			clock-frequency = <2171000000>;
--			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			cpu-idle-states = <&cpu_sleep_b &cluster_sleep_b>;
- 			next-level-cache = <&l2_1>;
- 			capacity-dmips-mhz = <1024>;
- 		};
-@@ -109,7 +109,7 @@ cpu6: cpu@600 {
- 			reg = <0x600>;
- 			enable-method = "psci";
- 			clock-frequency = <2171000000>;
--			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			cpu-idle-states = <&cpu_sleep_b &cluster_sleep_b>;
- 			next-level-cache = <&l2_1>;
- 			capacity-dmips-mhz = <1024>;
- 		};
-@@ -120,7 +120,7 @@ cpu7: cpu@700 {
- 			reg = <0x700>;
- 			enable-method = "psci";
- 			clock-frequency = <2171000000>;
--			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			cpu-idle-states = <&cpu_sleep_b &cluster_sleep_b>;
- 			next-level-cache = <&l2_1>;
- 			capacity-dmips-mhz = <1024>;
- 		};
-@@ -173,7 +173,7 @@ l3_0: l3-cache {
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 516783ba950f..92b32ce645b9 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -50,6 +50,7 @@ static struct dentry *zcore_reipl_file;
+ static struct dentry *zcore_hsa_file;
+ static struct ipl_parameter_block *zcore_ipl_block;
  
- 		idle-states {
- 			entry-method = "arm,psci";
--			cpuoff_l: cpuoff_l {
-+			cpu_sleep_l: cpu-sleep-l {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x00010001>;
- 				local-timer-stop;
-@@ -181,7 +181,7 @@ cpuoff_l: cpuoff_l {
- 				exit-latency-us = <140>;
- 				min-residency-us = <780>;
- 			};
--			cpuoff_b: cpuoff_b {
-+			cpu_sleep_b: cpu-sleep-b {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x00010001>;
- 				local-timer-stop;
-@@ -189,7 +189,7 @@ cpuoff_b: cpuoff_b {
- 				exit-latency-us = <145>;
- 				min-residency-us = <720>;
- 			};
--			clusteroff_l: clusteroff_l {
-+			cluster_sleep_l: cluster-sleep-l {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x01010002>;
- 				local-timer-stop;
-@@ -197,7 +197,7 @@ clusteroff_l: clusteroff_l {
- 				exit-latency-us = <155>;
- 				min-residency-us = <860>;
- 			};
--			clusteroff_b: clusteroff_b {
-+			cluster_sleep_b: cluster-sleep-b {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x01010002>;
- 				local-timer-stop;
++static DEFINE_MUTEX(hsa_buf_mutex);
+ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
+ 
+ /*
+@@ -66,19 +67,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+ 		bytes = min(PAGE_SIZE - offset, count);
+-		if (copy_to_user(dest, hsa_buf + offset, bytes))
++		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EFAULT;
++		}
+ 		src += bytes;
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
+@@ -96,9 +102,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+@@ -108,6 +116,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
