@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6264C32767
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36EBC32765
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344817AbiHOVVn (ORCPT
+        id S1344441AbiHOVVe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
+        Mon, 15 Aug 2022 17:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244742AbiHOVQk (ORCPT
+        with ESMTP id S243392AbiHOVP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:16:40 -0400
+        Mon, 15 Aug 2022 17:15:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D20DEA6C;
-        Mon, 15 Aug 2022 12:20:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB2CDD751;
+        Mon, 15 Aug 2022 12:20:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A1A46101F;
-        Mon, 15 Aug 2022 19:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B26FC433C1;
-        Mon, 15 Aug 2022 19:20:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7A8461029;
+        Mon, 15 Aug 2022 19:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2FAFC4314B;
+        Mon, 15 Aug 2022 19:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591210;
-        bh=fI3ggYNDRY5ZStkHfiu7AToAPUQW7fzehU9W+hqrCew=;
+        s=korg; t=1660591202;
+        bh=o4hOL74n7dGYA/eSRE1bc2Cbf2Nn5U/BWYjK5vaLMuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uRLwgXS7paPxOUS8HdmMaLqzq7ROuHPedVTsq/EwqoPu1vWEwIPV9iFOd00o9XlJg
-         TuWZ48335hnfTzSN3vb+H6tkvEODwaDPGoeYx6Q4wLAbS04BR1Dj948ax07REYjMxL
-         r+XFGzd8ClI2FlR0gelxG5mi+rZslWgtMXCFQuoE=
+        b=CaIHGDwl5B9n4iXGf2KZz3+wNBx0/SqIvSBQwOuMfhUuToqsTZ+VuqSFdseDLfaqv
+         aohbOmS2IlosvOmkTwEyCUJMfdGQl/QXsyFQppKgLaqd5wSFPyn8+gXH1VILBpIi2+
+         2wWLMPOuN75nLcuCuEn1gk834F4+I0fUYpEgeA68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0508/1095] media: cedrus: hevc: Add check for invalid timestamp
-Date:   Mon, 15 Aug 2022 19:58:27 +0200
-Message-Id: <20220815180450.547425221@linuxfoundation.org>
+Subject: [PATCH 5.18 0462/1095] bpf: Fix subprog names in stack traces.
+Date:   Mon, 15 Aug 2022 19:57:41 +0200
+Message-Id: <20220815180448.720612194@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,43 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-[ Upstream commit 143201a6435bf65f0115435e9dc6d95c66b908e9 ]
+[ Upstream commit 9c7c48d6a1e2eb5192ad5294c1c4dbd42a88e88b ]
 
-Not all DPB entries will be used most of the time. Unused entries will
-thus have invalid timestamps. They will produce negative buffer index
-which is not specifically handled. This works just by chance in current
-code. It will even produce bogus pointer, but since it's not used, it
-won't do any harm.
+The commit 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+accidently made bpf_prog_ksym_set_name() conservative for bpf subprograms.
+Fixed it so instead of "bpf_prog_tag_F" the stack traces print "bpf_prog_tag_full_subprog_name".
 
-Let's fix that brittle design by skipping writing DPB entry altogether
-if timestamp is invalid.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
+Reported-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220714211637.17150-1-alexei.starovoitov@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/bpf/verifier.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index 2f6404fccd5a..04419381ea56 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -147,6 +147,9 @@ static void cedrus_h265_frame_info_write_dpb(struct cedrus_ctx *ctx,
- 			dpb[i].pic_order_cnt_val
- 		};
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index a6d3a8972355..f29aa357826c 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13016,6 +13016,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 		/* Below members will be freed only at prog->aux */
+ 		func[i]->aux->btf = prog->aux->btf;
+ 		func[i]->aux->func_info = prog->aux->func_info;
++		func[i]->aux->func_info_cnt = prog->aux->func_info_cnt;
+ 		func[i]->aux->poke_tab = prog->aux->poke_tab;
+ 		func[i]->aux->size_poke_tab = prog->aux->size_poke_tab;
  
-+		if (buffer_index < 0)
-+			continue;
-+
- 		cedrus_h265_frame_info_write_single(ctx, i, dpb[i].field_pic,
- 						    pic_order_cnt,
- 						    buffer_index);
+@@ -13028,9 +13029,6 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 				poke->aux = func[i]->aux;
+ 		}
+ 
+-		/* Use bpf_prog_F_tag to indicate functions in stack traces.
+-		 * Long term would need debug info to populate names
+-		 */
+ 		func[i]->aux->name[0] = 'F';
+ 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
+ 		func[i]->jit_requested = 1;
 -- 
 2.35.1
 
