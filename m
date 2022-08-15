@@ -2,109 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BA8C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB38BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244019AbiHOTaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
+        id S244557AbiHOTaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343790AbiHOT0O (ORCPT
+        with ESMTP id S1343775AbiHOT0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:26:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB45A2ED69;
-        Mon, 15 Aug 2022 11:41:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81C52ED58;
+        Mon, 15 Aug 2022 11:41:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4744D61029;
-        Mon, 15 Aug 2022 18:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378FCC433B5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C65611C2;
         Mon, 15 Aug 2022 18:41:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588904;
-        bh=yIa20byh02SPEnrPWn+KsrTdc7YW/1nPI3I2EWlrIBk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1op+MAWkzb+815QFh157OHyY2JbS57AVxsOxfm4t8GdKlseeS3fG00a1Jhs27452j
-         X3bfyF1Oh/eoKtSUYGItwkxfhVgJPu6l3p8G3eK+CqlptiAXTzawecWw1r8hMFlsNF
-         GyCMC3Tx0zs4SxFmALnZEQWC/GDbRvINji1/vwsc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 551/779] nvme: disable namespace access for unsupported metadata
-Date:   Mon, 15 Aug 2022 20:03:15 +0200
-Message-Id: <20220815180400.883704062@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF31C433C1;
+        Mon, 15 Aug 2022 18:41:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660588903;
+        bh=IXMwntOfMMG69rLS3fgGLcQBvXemm6MxdOrUbCxYe7I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=WLWP46DEf1eTmq2N8bORpL8r54qXucaoOFzO7m+O3S/a9jGAIRagoDdhNFnrA1sfa
+         RybdRdLuDvrl/p5iUwVLa+eno2T7Zcq7fcHfph2bPXfApLlkgYjmC6naIU7yJgyeVY
+         kI5U4tfB7RztOVB/1WIN2/Mp+B4fy4/SZy9i5f1uQi3UuSmaXO3gjBZmy1IbpaseC8
+         poVpLnBLLTUC4Z62jeV+BvpZ8iUr+cbdYE43dtyLMrUPA1j+voZc1FHegKoYt3b0Ko
+         21Db4vUO/pPXC5bEDUPNCihkIJrRLnWq/iAQfjU02lMHTA3B3OImF8BZecG6b7aCLA
+         R/Fri/jzw3/Gw==
+Date:   Mon, 15 Aug 2022 13:41:42 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Shunsuke Mie <mie@igel.co.jp>
+Cc:     Jon Mason <jdmason@kudzu.us>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Ren Zhijie <renzhijie2@huawei.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: endpoint: fix Kconfig indent style
+Message-ID: <20220815184142.GA1960338@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815025006.48167-1-mie@igel.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+On Mon, Aug 15, 2022 at 11:50:06AM +0900, Shunsuke Mie wrote:
+> Change to follow the Kconfig style guide. This patch fixes to use tab
+> rather than space to indent, while help text is indented an additional
+> two spaces.
+> 
+> Fixes: e35f56bb0330 ("PCI: endpoint: Support NTB transfer between RC and EP")
+> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
 
-[ Upstream commit d39ad2a45c0e38def3e0c95f5b90d9af4274c939 ]
+Thanks for doing this.  In the future make the subject line match the
+history, e.g.,
 
-The only fabrics target that supports metadata handling through the
-separate integrity buffer is RDMA. It is currently usable only if the
-size is 8B per block and formatted for protection information. If an
-rdma target were to export a namespace with a different format (ex:
-4k+64B), the driver will not be able to submit valid read/write commands
-for that namespace.
+  $ git log --oneline drivers/pci/endpoint/functions/Kconfig
+  556a2c7dca33 ("PCI: endpoint: Fix Kconfig dependency")
+  e35f56bb0330 ("PCI: endpoint: Support NTB transfer between RC and EP")
+  8b821cf76150 ("PCI: endpoint: Add EP function driver to provide NTB functionality")
+  98dbf5af4fdd ("PCI: endpoint: Select CRC32 to fix test build error")
+  349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
 
-Suppress setting the metadata feature in the namespace so that the
-gendisk capacity will be set to 0. This will prevent read/write access
-through the block stack, but will continue to allow ioctl passthrough
-commands.
+Note that these are all capitalized ("Fix Kconfig indent style").
 
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/nvme/host/core.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+Lorenzo will likely fix this up when applying, so no need to repost
+for this.
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index ace55ebb1bff..d9aea6c22f52 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1744,9 +1744,20 @@ static int nvme_configure_metadata(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		 */
- 		if (WARN_ON_ONCE(!(id->flbas & NVME_NS_FLBAS_META_EXT)))
- 			return -EINVAL;
--		if (ctrl->max_integrity_segments)
--			ns->features |=
--				(NVME_NS_METADATA_SUPPORTED | NVME_NS_EXT_LBAS);
-+
-+		ns->features |= NVME_NS_EXT_LBAS;
-+
-+		/*
-+		 * The current fabrics transport drivers support namespace
-+		 * metadata formats only if nvme_ns_has_pi() returns true.
-+		 * Suppress support for all other formats so the namespace will
-+		 * have a 0 capacity and not be usable through the block stack.
-+		 *
-+		 * Note, this check will need to be modified if any drivers
-+		 * gain the ability to use other metadata formats.
-+		 */
-+		if (ctrl->max_integrity_segments && nvme_ns_has_pi(ns))
-+			ns->features |= NVME_NS_METADATA_SUPPORTED;
- 	} else {
- 		/*
- 		 * For PCIe controllers, we can't easily remap the separate
--- 
-2.35.1
-
-
-
+> ---
+>  drivers/pci/endpoint/functions/Kconfig | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
+> index 295a033ee9a2..9fd560886871 100644
+> --- a/drivers/pci/endpoint/functions/Kconfig
+> +++ b/drivers/pci/endpoint/functions/Kconfig
+> @@ -27,13 +27,13 @@ config PCI_EPF_NTB
+>  	  If in doubt, say "N" to disable Endpoint NTB driver.
+>  
+>  config PCI_EPF_VNTB
+> -        tristate "PCI Endpoint NTB driver"
+> -        depends on PCI_ENDPOINT
+> -        depends on NTB
+> -        select CONFIGFS_FS
+> -        help
+> -          Select this configuration option to enable the Non-Transparent
+> -          Bridge (NTB) driver for PCIe Endpoint. NTB driver implements NTB
+> -          between PCI Root Port and PCIe Endpoint.
+> +	tristate "PCI Endpoint NTB driver"
+> +	depends on PCI_ENDPOINT
+> +	depends on NTB
+> +	select CONFIGFS_FS
+> +	help
+> +	  Select this configuration option to enable the Non-Transparent
+> +	  Bridge (NTB) driver for PCIe Endpoint. NTB driver implements NTB
+> +	  between PCI Root Port and PCIe Endpoint.
+>  
+> -          If in doubt, say "N" to disable Endpoint NTB driver.
+> +	  If in doubt, say "N" to disable Endpoint NTB driver.
+> -- 
+> 2.17.1
+> 
