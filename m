@@ -2,102 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22375C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E10C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240440AbiHOFp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 01:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
+        id S233003AbiHOFql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 01:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiHOFpX (ORCPT
+        with ESMTP id S229709AbiHOFqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 01:45:23 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5D55FCE;
-        Sun, 14 Aug 2022 22:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660542323; x=1692078323;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MN6DZzBy9X27OEYsKBr2tzzbyxhyziDucda9ItSouK4=;
-  b=ZRmm7FzeriUOpGDeBI1QopzXyEZx2E0Jxb2n9awAhxSjhmMUo9Yw3u7l
-   ejSyT8kqUpPMB/ieWUH+v1KsQfW7rRh3C5lSV7hbCJ8rQ+Yvwc355IOfx
-   BlbgYZ54J7fDpuPHk/TAP/BJIwtgcyHd6w/qr+2j7wV12eG0HIPB4kiI9
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.93,237,1654560000"; 
-   d="scan'208";a="119102256"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 05:45:03 +0000
-Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com (Postfix) with ESMTPS id F32032011F5;
-        Mon, 15 Aug 2022 05:44:58 +0000 (UTC)
-Received: from [192.168.12.137] (10.43.162.134) by
- EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Mon, 15 Aug 2022 05:44:52 +0000
-Message-ID: <05dbdf57-e990-465d-e4cc-e83e7f2b697a@amazon.com>
-Date:   Mon, 15 Aug 2022 08:44:42 +0300
+        Mon, 15 Aug 2022 01:46:39 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D32B10FE2;
+        Sun, 14 Aug 2022 22:46:38 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M5jvX75Z8z4x1P;
+        Mon, 15 Aug 2022 15:46:32 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1660542394;
+        bh=xjW48oFcQsQOFiXcpzHjYMTpjM5xsTjxRkql1X/sLgk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=jWYtvhUQmFzSNRL7ewx8eqvEqHMcNQS9vuHCyMShPf+PHFld92WTfRl70GYP/osJr
+         LmmWKxbNvu0E4EOo1FEEPskOMfi/91v/5jY+lv1saYTbd+zxfxotBH8pC2hJsnxxkU
+         lkcJjMvQWObnyN5AY+Uc0Q8w12+8L37mukutKU3/TyvEsxa7Bd6Yv0WXNu/Cguesif
+         B3hZpH1XcqUwBv9ueolyZW9P4q058V6oT1yJ7w5rPeB6DuPyimppneWoiwHfivEnc4
+         blfWCcZbixMNDYh+iF8hkG/CtQfPX2b4DLg9DPyMNCqXQU2tIhCpGv9vB7ABZLgPWl
+         QgZdmr9Kj2NoQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Guowen Shan <gshan@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] powerpc/pci: Prefer PCI domain assignment via DT
+ 'linux,pci-domain' and alias
+In-Reply-To: <20220813135735.GA3413265@roeck-us.net>
+References: <20220706102148.5060-1-pali@kernel.org>
+ <20220706102148.5060-2-pali@kernel.org>
+ <20220813135735.GA3413265@roeck-us.net>
+Date:   Mon, 15 Aug 2022 15:46:31 +1000
+Message-ID: <874jyevz2g.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.3
-Subject: Re: [PATCH] kunit: fix Kconfig for build-in tests USB4 and Nitro
- Enclaves
-To:     Nico Pache <npache@redhat.com>, <kunit-dev@googlegroups.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <davidgow@google.com>
-CC:     <skhan@linuxfoundation.org>, <dlatypov@google.com>,
-        <brendan.higgins@linux.dev>, <alcioa@amazon.com>,
-        <lexnv@amazon.com>, <YehezkelShB@gmail.com>,
-        <mika.westerberg@linux.intel.com>, <michael.jamet@intel.com>,
-        <andreas.noever@gmail.com>
-References: <20220810234056.2494993-1-npache@redhat.com>
-Content-Language: en-US
-From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
-In-Reply-To: <20220810234056.2494993-1-npache@redhat.com>
-X-Originating-IP: [10.43.162.134]
-X-ClientProxiedBy: EX13D18UWC002.ant.amazon.com (10.43.162.88) To
- EX13D16EUB003.ant.amazon.com (10.43.166.99)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpPbiAxMS4wOC4yMDIyIDAyOjQwLCBOaWNvIFBhY2hlIHdyb3RlOgo+IAo+IEJvdGggdGhlIFVT
-QjQgYW5kIE5pdHJvIEVuY2xhdmVzIEtVTklUIHRlc3RzIGFyZSBub3cgYWJsZSB0byBiZSBjb21w
-aWxlZAo+IGlmIEtVTklUIGlzIGNvbXBpbGVkIGFzIGEgbW9kdWxlLiBUaGlzIGxlYWRzIHRvIGlz
-c3VlcyBpZiBLVU5JVCBpcyBiZWluZwo+IHBhY2thZ2VkIHNlcGFyYXRlbHkgZnJvbSB0aGUgY29y
-ZSBrZXJuZWwgYW5kIHdoZW4gS1VOSVQgaXMgcnVuIGJhcmVtZXRhbAo+IHdpdGhvdXQgdGhlIHJl
-cXVpcmVkIGRyaXZlciBjb21waWxlZCBpbnRvIHRoZSBrZXJuZWwuCj4gCj4gRml4ZXM6IDYzNWRj
-ZDE2ODQ0YiAoInRodW5kZXJib2x0OiB0ZXN0OiBVc2Uga3VuaXRfdGVzdF9zdWl0ZSgpIG1hY3Jv
-IikKPiBGaXhlczogZmU1YmU4MDhmYTZjICgibml0cm9fZW5jbGF2ZXM6IHRlc3Q6IFVzZSBrdW5p
-dF90ZXN0X3N1aXRlKCkgbWFjcm8iKQo+IFNpZ25lZC1vZmYtYnk6IE5pY28gUGFjaGUgPG5wYWNo
-ZUByZWRoYXQuY29tPgo+IC0tLQo+ICAgZHJpdmVycy90aHVuZGVyYm9sdC9LY29uZmlnICAgICAg
-ICAgfCAzICstLQo+ICAgZHJpdmVycy92aXJ0L25pdHJvX2VuY2xhdmVzL0tjb25maWcgfCAyICst
-Cj4gICAyIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKPiAK
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90aHVuZGVyYm9sdC9LY29uZmlnIGIvZHJpdmVycy90aHVu
-ZGVyYm9sdC9LY29uZmlnCj4gaW5kZXggZTc2YTZjMTczNjM3Li5mMTJkMGEzZWUzZTIgMTAwNjQ0
-Cj4gLS0tIGEvZHJpdmVycy90aHVuZGVyYm9sdC9LY29uZmlnCj4gKysrIGIvZHJpdmVycy90aHVu
-ZGVyYm9sdC9LY29uZmlnCj4gQEAgLTI5LDggKzI5LDcgQEAgY29uZmlnIFVTQjRfREVCVUdGU19X
-UklURQo+IAo+ICAgY29uZmlnIFVTQjRfS1VOSVRfVEVTVAo+ICAgICAgICAgIGJvb2wgIktVbml0
-IHRlc3RzIiBpZiAhS1VOSVRfQUxMX1RFU1RTCj4gLSAgICAgICBkZXBlbmRzIG9uIChVU0I0PW0g
-fHwgS1VOSVQ9eSkKPiAtICAgICAgIGRlcGVuZHMgb24gS1VOSVQKPiArICAgICAgIGRlcGVuZHMg
-b24gVVNCNCAmJiBLVU5JVD15Cj4gICAgICAgICAgZGVmYXVsdCBLVU5JVF9BTExfVEVTVFMKPiAK
-PiAgIGNvbmZpZyBVU0I0X0RNQV9URVNUCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlydC9uaXRy
-b19lbmNsYXZlcy9LY29uZmlnIGIvZHJpdmVycy92aXJ0L25pdHJvX2VuY2xhdmVzL0tjb25maWcK
-PiBpbmRleCBjZTkxYWRkODE0MDEuLmRjNGQyNWMyNjI1NiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJz
-L3ZpcnQvbml0cm9fZW5jbGF2ZXMvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvdmlydC9uaXRyb19l
-bmNsYXZlcy9LY29uZmlnCj4gQEAgLTE3LDcgKzE3LDcgQEAgY29uZmlnIE5JVFJPX0VOQ0xBVkVT
-Cj4gCj4gICBjb25maWcgTklUUk9fRU5DTEFWRVNfTUlTQ19ERVZfVEVTVAo+ICAgICAgICAgIGJv
-b2wgIlRlc3RzIGZvciB0aGUgbWlzYyBkZXZpY2UgZnVuY3Rpb25hbGl0eSBvZiB0aGUgTml0cm8g
-RW5jbGF2ZXMiIGlmICFLVU5JVF9BTExfVEVTVFMKPiAtICAgICAgIGRlcGVuZHMgb24gTklUUk9f
-RU5DTEFWRVMgJiYgS1VOSVQKPiArICAgICAgIGRlcGVuZHMgb24gTklUUk9fRU5DTEFWRVMgJiYg
-S1VOSVQ9eQo+ICAgICAgICAgIGRlZmF1bHQgS1VOSVRfQUxMX1RFU1RTCj4gICAgICAgICAgaGVs
-cAo+ICAgICAgICAgICAgRW5hYmxlIEtVbml0IHRlc3RzIGZvciB0aGUgbWlzYyBkZXZpY2UgZnVu
-Y3Rpb25hbGl0eSBvZiB0aGUgTml0cm8KCgpGb3IgdGhlIE5pdHJvIEVuY2xhdmVzIHBhcnQ6CgpS
-ZXZpZXdlZC1ieTogQW5kcmEgUGFyYXNjaGl2IDxhbmRyYXByc0BhbWF6b24uY29tPgoKVGhhbmsg
-eW91LgoKQW5kcmEKCj4gLS0KPiAyLjM2LjEKPiAKCgoKQW1hem9uIERldmVsb3BtZW50IENlbnRl
-ciAoUm9tYW5pYSkgUy5SLkwuIHJlZ2lzdGVyZWQgb2ZmaWNlOiAyN0EgU2YuIExhemFyIFN0cmVl
-dCwgVUJDNSwgZmxvb3IgMiwgSWFzaSwgSWFzaSBDb3VudHksIDcwMDA0NSwgUm9tYW5pYS4gUmVn
-aXN0ZXJlZCBpbiBSb21hbmlhLiBSZWdpc3RyYXRpb24gbnVtYmVyIEoyMi8yNjIxLzIwMDUuCg==
+Guenter Roeck <linux@roeck-us.net> writes:
+> On Wed, Jul 06, 2022 at 12:21:48PM +0200, Pali Roh=C3=A1r wrote:
+>> Other Linux architectures use DT property 'linux,pci-domain' for specify=
+ing
+>> fixed PCI domain of PCI controller specified in Device-Tree.
+>>=20
+>> And lot of Freescale powerpc boards have defined numbered pci alias in
+>> Device-Tree for every PCIe controller which number specify preferred PCI
+>> domain.
+>>=20
+>> So prefer usage of DT property 'linux,pci-domain' (via function
+>> of_get_pci_domain_nr()) and DT pci alias (via function of_alias_get_id())
+>> on powerpc architecture for assigning PCI domain to PCI controller.
+>>=20
+>> Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on devi=
+ce-tree properties")
+>> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+>
+> This patch results in a number of boot warnings with various qemu
+> boot tests.
 
+Thanks for the report.
+
+I have automated qemu boot tests to catch things like this, they even
+have DEBUG_ATOMIC_SLEEP enabled ... but I inadvertantly broke my script
+that checks for "BUG:" in the console log. Sometimes you just can't
+win.
+
+cheers
