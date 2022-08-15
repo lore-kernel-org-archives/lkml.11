@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F03C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB58C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbiHOXTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:19:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        id S241223AbiHOXTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352987AbiHOXPr (ORCPT
+        with ESMTP id S1353050AbiHOXPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3184D9D664;
-        Mon, 15 Aug 2022 13:02:46 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F003146CC2;
+        Mon, 15 Aug 2022 13:02:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6228B80EAD;
-        Mon, 15 Aug 2022 20:02:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45FD6C433B5;
-        Mon, 15 Aug 2022 20:02:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0F48B80EA8;
+        Mon, 15 Aug 2022 20:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42218C433C1;
+        Mon, 15 Aug 2022 20:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593763;
-        bh=PYKDtfJN7xItE80ybdVMebvz/REKeuxmoiaYOjlu43Q=;
+        s=korg; t=1660593766;
+        bh=xUM//LR8mCZ5HV/uPUUTtp7F7cgtfU222nJBmpBQiGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jH3K+9Y5tY64sZ41xt+VGK0yf8Pvgql6/5LlTEw22CoLEAqgqkGgpEvE/jqiLeFD/
-         6Dwb/a9uPb6PqpdNiTtmcsY5lhT4R4v4iFyUoJk1/qOVnOxrio0A2ZoAaB0/B09G4g
-         MgRGHn82RcwJuZ6Un5iGItUns9dB4FLpDn20soSA=
+        b=BRHIALxyoXAT2GfCKBfX74zu5m1ipsaRedMaBUuxYzou32Kb8Aa1WAG0o2lxb1NVI
+         ie/as9OHqOcQ8PulC/nvbnPEnJSLFLErBWQ8eIqnCu6uVKCIDOoNiGAbzIrdDULocT
+         376TJqkMA5LN2DIBiU2D5jEXwzB3jJdIpP2txWxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0989/1095] firmware: arm_scpi: Ensure scpi_info is not assigned if the probe fails
-Date:   Mon, 15 Aug 2022 20:06:28 +0200
-Message-Id: <20220815180510.022504747@linuxfoundation.org>
+Subject: [PATCH 5.19 0322/1157] drm: bridge: adv7511: Move CEC definitions to adv7511_cec.c
+Date:   Mon, 15 Aug 2022 19:54:38 +0200
+Message-Id: <20220815180452.535207812@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,153 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 689640efc0a2c4e07e6f88affe6d42cd40cc3f85 ]
+[ Upstream commit 91776af1d8deb8f36cbec6bf2bf24b661b2b5cbb ]
 
-When scpi probe fails, at any point, we need to ensure that the scpi_info
-is not set and will remain NULL until the probe succeeds. If it is not
-taken care, then it could result use-after-free as the value is exported
-via get_scpi_ops() and could refer to a memory allocated via devm_kzalloc()
-but freed when the probe fails.
+ADV7511_REG_CEC_RX_FRAME_HDR[] and ADV7511_REG_CEC_RX_FRAME_LEN[]
+are only used inside adv7511_cec.c.
 
-Link: https://lore.kernel.org/r/20220701160310.148344-1-sudeep.holla@arm.com
-Cc: stable@vger.kernel.org # 4.19+
-Reported-by: huhai <huhai@kylinos.cn>
-Reviewed-by: Jackie Liu <liuyun01@kylinos.cn>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Move their definitions to this file to avoid the following build
+warnings when CONFIG_DRM_I2C_ADV7511_CEC is not selected:
+
+drivers/gpu/drm/bridge/adv7511/adv7511.h:229:17: warning: 'ADV7511_REG_CEC_RX_FRAME_HDR' defined but not used [-Wunused-const-variable=]
+drivers/gpu/drm/bridge/adv7511/adv7511.h:235:17: warning: 'ADV7511_REG_CEC_RX_FRAME_LEN' defined but not used [-Wunused-const-variable=]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: ab0af093bf90 ("drm: bridge: adv7511: use non-legacy mode for CEC RX")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220525215316.1133057-1-festevam@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scpi.c | 61 +++++++++++++++++++++----------------
- 1 file changed, 35 insertions(+), 26 deletions(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511.h     | 12 ------------
+ drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 12 ++++++++++++
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/firmware/arm_scpi.c b/drivers/firmware/arm_scpi.c
-index ddf0b9ff9e15..435d0e2658a4 100644
---- a/drivers/firmware/arm_scpi.c
-+++ b/drivers/firmware/arm_scpi.c
-@@ -815,7 +815,7 @@ static int scpi_init_versions(struct scpi_drvinfo *info)
- 		info->firmware_version = le32_to_cpu(caps.platform_version);
- 	}
- 	/* Ignore error if not implemented */
--	if (scpi_info->is_legacy && ret == -EOPNOTSUPP)
-+	if (info->is_legacy && ret == -EOPNOTSUPP)
- 		return 0;
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+index 9e3bb8a8ee40..a031a0cd1f18 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+@@ -226,18 +226,6 @@
+ #define ADV7511_REG_CEC_CLK_DIV		0x4e
+ #define ADV7511_REG_CEC_SOFT_RESET	0x50
  
- 	return ret;
-@@ -913,13 +913,14 @@ static int scpi_probe(struct platform_device *pdev)
- 	struct resource res;
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
-+	struct scpi_drvinfo *scpi_drvinfo;
+-static const u8 ADV7511_REG_CEC_RX_FRAME_HDR[] = {
+-	ADV7511_REG_CEC_RX1_FRAME_HDR,
+-	ADV7511_REG_CEC_RX2_FRAME_HDR,
+-	ADV7511_REG_CEC_RX3_FRAME_HDR,
+-};
+-
+-static const u8 ADV7511_REG_CEC_RX_FRAME_LEN[] = {
+-	ADV7511_REG_CEC_RX1_FRAME_LEN,
+-	ADV7511_REG_CEC_RX2_FRAME_LEN,
+-	ADV7511_REG_CEC_RX3_FRAME_LEN,
+-};
+-
+ #define ADV7533_REG_CEC_OFFSET		0x70
  
--	scpi_info = devm_kzalloc(dev, sizeof(*scpi_info), GFP_KERNEL);
--	if (!scpi_info)
-+	scpi_drvinfo = devm_kzalloc(dev, sizeof(*scpi_drvinfo), GFP_KERNEL);
-+	if (!scpi_drvinfo)
- 		return -ENOMEM;
+ enum adv7511_input_clock {
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+index 399f625a50c8..0b266f28f150 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+@@ -15,6 +15,18 @@
  
- 	if (of_match_device(legacy_scpi_of_match, &pdev->dev))
--		scpi_info->is_legacy = true;
-+		scpi_drvinfo->is_legacy = true;
+ #include "adv7511.h"
  
- 	count = of_count_phandle_with_args(np, "mboxes", "#mbox-cells");
- 	if (count < 0) {
-@@ -927,19 +928,19 @@ static int scpi_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	scpi_info->channels = devm_kcalloc(dev, count, sizeof(struct scpi_chan),
--					   GFP_KERNEL);
--	if (!scpi_info->channels)
-+	scpi_drvinfo->channels =
-+		devm_kcalloc(dev, count, sizeof(struct scpi_chan), GFP_KERNEL);
-+	if (!scpi_drvinfo->channels)
- 		return -ENOMEM;
- 
--	ret = devm_add_action(dev, scpi_free_channels, scpi_info);
-+	ret = devm_add_action(dev, scpi_free_channels, scpi_drvinfo);
- 	if (ret)
- 		return ret;
- 
--	for (; scpi_info->num_chans < count; scpi_info->num_chans++) {
-+	for (; scpi_drvinfo->num_chans < count; scpi_drvinfo->num_chans++) {
- 		resource_size_t size;
--		int idx = scpi_info->num_chans;
--		struct scpi_chan *pchan = scpi_info->channels + idx;
-+		int idx = scpi_drvinfo->num_chans;
-+		struct scpi_chan *pchan = scpi_drvinfo->channels + idx;
- 		struct mbox_client *cl = &pchan->cl;
- 		struct device_node *shmem = of_parse_phandle(np, "shmem", idx);
- 
-@@ -986,45 +987,53 @@ static int scpi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	scpi_info->commands = scpi_std_commands;
-+	scpi_drvinfo->commands = scpi_std_commands;
- 
--	platform_set_drvdata(pdev, scpi_info);
-+	platform_set_drvdata(pdev, scpi_drvinfo);
- 
--	if (scpi_info->is_legacy) {
-+	if (scpi_drvinfo->is_legacy) {
- 		/* Replace with legacy variants */
- 		scpi_ops.clk_set_val = legacy_scpi_clk_set_val;
--		scpi_info->commands = scpi_legacy_commands;
-+		scpi_drvinfo->commands = scpi_legacy_commands;
- 
- 		/* Fill priority bitmap */
- 		for (idx = 0; idx < ARRAY_SIZE(legacy_hpriority_cmds); idx++)
- 			set_bit(legacy_hpriority_cmds[idx],
--				scpi_info->cmd_priority);
-+				scpi_drvinfo->cmd_priority);
- 	}
- 
--	ret = scpi_init_versions(scpi_info);
-+	scpi_info = scpi_drvinfo;
++static const u8 ADV7511_REG_CEC_RX_FRAME_HDR[] = {
++	ADV7511_REG_CEC_RX1_FRAME_HDR,
++	ADV7511_REG_CEC_RX2_FRAME_HDR,
++	ADV7511_REG_CEC_RX3_FRAME_HDR,
++};
 +
-+	ret = scpi_init_versions(scpi_drvinfo);
- 	if (ret) {
- 		dev_err(dev, "incorrect or no SCP firmware found\n");
-+		scpi_info = NULL;
- 		return ret;
- 	}
- 
--	if (scpi_info->is_legacy && !scpi_info->protocol_version &&
--	    !scpi_info->firmware_version)
-+	if (scpi_drvinfo->is_legacy && !scpi_drvinfo->protocol_version &&
-+	    !scpi_drvinfo->firmware_version)
- 		dev_info(dev, "SCP Protocol legacy pre-1.0 firmware\n");
- 	else
- 		dev_info(dev, "SCP Protocol %lu.%lu Firmware %lu.%lu.%lu version\n",
- 			 FIELD_GET(PROTO_REV_MAJOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(PROTO_REV_MINOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(FW_REV_MAJOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_MINOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_PATCH_MASK,
--				   scpi_info->firmware_version));
--	scpi_info->scpi_ops = &scpi_ops;
-+				   scpi_drvinfo->firmware_version));
++static const u8 ADV7511_REG_CEC_RX_FRAME_LEN[] = {
++	ADV7511_REG_CEC_RX1_FRAME_LEN,
++	ADV7511_REG_CEC_RX2_FRAME_LEN,
++	ADV7511_REG_CEC_RX3_FRAME_LEN,
++};
 +
-+	scpi_drvinfo->scpi_ops = &scpi_ops;
- 
--	return devm_of_platform_populate(dev);
-+	ret = devm_of_platform_populate(dev);
-+	if (ret)
-+		scpi_info = NULL;
-+
-+	return ret;
- }
- 
- static const struct of_device_id scpi_of_match[] = {
+ #define ADV7511_INT1_CEC_MASK \
+ 	(ADV7511_INT1_CEC_TX_READY | ADV7511_INT1_CEC_TX_ARBIT_LOST | \
+ 	 ADV7511_INT1_CEC_TX_RETRY_TIMEOUT | ADV7511_INT1_CEC_RX_READY1 | \
 -- 
 2.35.1
 
