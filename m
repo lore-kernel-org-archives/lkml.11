@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3005C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84996C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243601AbiHOUO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S232770AbiHOUPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346203AbiHOULD (ORCPT
+        with ESMTP id S1346226AbiHOULE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDC2AE5C;
-        Mon, 15 Aug 2022 11:57:04 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5AAB7F8;
+        Mon, 15 Aug 2022 11:57:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 207DC6125B;
-        Mon, 15 Aug 2022 18:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109D4C433C1;
-        Mon, 15 Aug 2022 18:57:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF030B810A0;
+        Mon, 15 Aug 2022 18:57:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3360DC43470;
+        Mon, 15 Aug 2022 18:57:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589823;
-        bh=Muz+6devd5UaSOJcMQZ9LRIIl260cRIsDAwDtiF54MI=;
+        s=korg; t=1660589829;
+        bh=h2a++vB7rUxdHLPrp5od/YYDptU4FG5vuzzKULCmoS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzPgYHccgP7nM9JLM5Zrzt6MYqglc3H1To23HmEZltBrWANjDAtSsMiASMVN95opi
-         XrKAPzRjv3PQA6kbjBHvuC/Vj/BFAaQUjvnq9jj6mfUrHnzdIwbEM0l6rmsSBFU3c4
-         qJoGDZVmvMLCmrFpFLa7CsWojO6ZFu0T/njFDhY8=
+        b=KHAgyWzUb0eDv+obPCHFY4Kk9AUn1vw3u6iKNZvvxAvAthv7ZHCK3NJLkiELbb7ue
+         w+Ru1AbTMkpSoIDfrtGe1yjABYTF3AA63AAbu/SXJTWn535GP4aNxsHzYGFdOTvUwP
+         1BubqN/gVZ9ZtMSk2FHfuIlaAF3qjd0G/aqVDgp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.18 0058/1095] parisc: Check the return value of ioremap() in lba_driver_probe()
-Date:   Mon, 15 Aug 2022 19:50:57 +0200
-Message-Id: <20220815180431.876467103@linuxfoundation.org>
+        stable@vger.kernel.org, Yipeng Zou <zouyipeng@huawei.com>,
+        Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0060/1095] riscv:uprobe fix SR_SPIE set/clear handling
+Date:   Mon, 15 Aug 2022 19:50:59 +0200
+Message-Id: <20220815180431.979677244@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,39 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Yipeng Zou <zouyipeng@huawei.com>
 
-commit cf59f34d7f978d14d6520fd80a78a5ad5cb8abf8 upstream.
+commit 3dbe5829408bc1586f75b4667ef60e5aab0209c7 upstream.
 
-The function ioremap() in lba_driver_probe() can fail, so
-its return value should be checked.
+In riscv the process of uprobe going to clear spie before exec
+the origin insn,and set spie after that.But When access the page
+which origin insn has been placed a page fault may happen and
+irq was disabled in arch_uprobe_pre_xol function,It cause a WARN
+as follows.
+There is no need to clear/set spie in arch_uprobe_pre/post/abort_xol.
+We can just remove it.
 
-Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org> # v5.6+
+[   31.684157] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1488
+[   31.684677] in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 76, name: work
+[   31.684929] preempt_count: 0, expected: 0
+[   31.685969] CPU: 2 PID: 76 Comm: work Tainted: G
+[   31.686542] Hardware name: riscv-virtio,qemu (DT)
+[   31.686797] Call Trace:
+[   31.687053] [<ffffffff80006442>] dump_backtrace+0x30/0x38
+[   31.687699] [<ffffffff80812118>] show_stack+0x40/0x4c
+[   31.688141] [<ffffffff8081817a>] dump_stack_lvl+0x44/0x5c
+[   31.688396] [<ffffffff808181aa>] dump_stack+0x18/0x20
+[   31.688653] [<ffffffff8003e454>] __might_resched+0x114/0x122
+[   31.688948] [<ffffffff8003e4b2>] __might_sleep+0x50/0x7a
+[   31.689435] [<ffffffff80822676>] down_read+0x30/0x130
+[   31.689728] [<ffffffff8000b650>] do_page_fault+0x166/x446
+[   31.689997] [<ffffffff80003c0c>] ret_from_exception+0x0/0xc
+
+Fixes: 74784081aac8 ("riscv: Add uprobes supported")
+Signed-off-by: Yipeng Zou <zouyipeng@huawei.com>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220721065820.245755-1-zouyipeng@huawei.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/parisc/lba_pci.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/riscv/kernel/probes/uprobes.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/parisc/lba_pci.c
-+++ b/drivers/parisc/lba_pci.c
-@@ -1476,9 +1476,13 @@ lba_driver_probe(struct parisc_device *d
- 	u32 func_class;
- 	void *tmp_obj;
- 	char *version;
--	void __iomem *addr = ioremap(dev->hpa.start, 4096);
-+	void __iomem *addr;
- 	int max;
+--- a/arch/riscv/kernel/probes/uprobes.c
++++ b/arch/riscv/kernel/probes/uprobes.c
+@@ -59,8 +59,6 @@ int arch_uprobe_pre_xol(struct arch_upro
  
-+	addr = ioremap(dev->hpa.start, 4096);
-+	if (addr == NULL)
-+		return -ENOMEM;
-+
- 	/* Read HW Rev First */
- 	func_class = READ_REG32(addr + LBA_FCLASS);
+ 	instruction_pointer_set(regs, utask->xol_vaddr);
  
+-	regs->status &= ~SR_SPIE;
+-
+ 	return 0;
+ }
+ 
+@@ -72,8 +70,6 @@ int arch_uprobe_post_xol(struct arch_upr
+ 
+ 	instruction_pointer_set(regs, utask->vaddr + auprobe->insn_size);
+ 
+-	regs->status |= SR_SPIE;
+-
+ 	return 0;
+ }
+ 
+@@ -111,8 +107,6 @@ void arch_uprobe_abort_xol(struct arch_u
+ 	 * address.
+ 	 */
+ 	instruction_pointer_set(regs, utask->vaddr);
+-
+-	regs->status &= ~SR_SPIE;
+ }
+ 
+ bool arch_uretprobe_is_alive(struct return_instance *ret, enum rp_check ctx,
 
 
