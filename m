@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5F6C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99438C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiHPEkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
+        id S231351AbiHPEkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiHPEje (ORCPT
+        with ESMTP id S231594AbiHPEje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:39:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F43ECD7AE;
-        Mon, 15 Aug 2022 13:30:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9EECD7AC;
+        Mon, 15 Aug 2022 13:30:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DA7C60EE9;
-        Mon, 15 Aug 2022 20:30:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 799ABC433C1;
-        Mon, 15 Aug 2022 20:30:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49E51B80EB1;
+        Mon, 15 Aug 2022 20:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 916C0C433C1;
+        Mon, 15 Aug 2022 20:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595444;
-        bh=h1c5kmFWQCXORLtYNwoZ9HDkuyhJMikKoqEajH9jiWY=;
+        s=korg; t=1660595442;
+        bh=SBzQteFzmwAx5cbaMvhguyziPkBKT50j+fZw3n8Q/0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOJKdQAkirI5kRtuhhvi/QrwS4sK7GBNA1RgYyVMnHmVgj3euO6bHgD9hfTwJKM9X
-         FyMPIjy+SmURy+4Hs+NZOFIESqZt9Ira2RLWEbG7R/UPBQLuqVH1Gx8pRy5IlwQFxf
-         AYu4RctxKzVoALH0bd5g7BKa5DuevfHEnPGuIxOc=
+        b=srNAfklqgpV2MD9QPIE1SimZP69dUzCqlKpezliJRHD9zUdTOyjdjStiin49m3fIF
+         GDXu/mSgab7TLUKHHx8C4UYcldZSzsM/Z+E0TfoZHP5kNyr6vr9lAmpQkNAosB5jQt
+         2llMt8DOZgsLxUrQ6XaYvPvhzQF9BKBaw/OgxWj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0767/1157] kasan: fix zeroing vmalloc memory with HW_TAGS
-Date:   Mon, 15 Aug 2022 20:02:03 +0200
-Message-Id: <20220815180510.173732661@linuxfoundation.org>
+Subject: [PATCH 5.19 0758/1157] clk: qcom: ipq8074: set BRANCH_HALT_DELAY flag for UBI clocks
+Date:   Mon, 15 Aug 2022 20:01:54 +0200
+Message-Id: <20220815180509.820749968@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,140 +49,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 6c2f761dad7851d8088b91063ccaea3c970efe78 ]
+[ Upstream commit 2bd357e698207e2e65db03007e4be65bf9d6a7b3 ]
 
-HW_TAGS KASAN skips zeroing page_alloc allocations backing vmalloc
-mappings via __GFP_SKIP_ZERO.  Instead, these pages are zeroed via
-kasan_unpoison_vmalloc() by passing the KASAN_VMALLOC_INIT flag.
+Currently, attempting to enable the UBI clocks will cause the stuck at
+off warning to be printed and clk_enable will fail.
 
-The problem is that __kasan_unpoison_vmalloc() does not zero pages when
-either kasan_vmalloc_enabled() or is_vmalloc_or_module_addr() fail.
+[   14.936694] gcc_ubi1_ahb_clk status stuck at 'off'
 
-Thus:
+Downstream 5.4 QCA kernel has fixed this by seting the BRANCH_HALT_DELAY
+flag on UBI clocks, so lets do the same.
 
-1. Change __vmalloc_node_range() to only set KASAN_VMALLOC_INIT when
-   __GFP_SKIP_ZERO is set.
-
-2. Change __kasan_unpoison_vmalloc() to always zero pages when the
-   KASAN_VMALLOC_INIT flag is set.
-
-3. Add WARN_ON() asserts to check that KASAN_VMALLOC_INIT cannot be set
-   in other early return paths of __kasan_unpoison_vmalloc().
-
-Also clean up the comment in __kasan_unpoison_vmalloc.
-
-Link: https://lkml.kernel.org/r/4bc503537efdc539ffc3f461c1b70162eea31cf6.1654798516.git.andreyknvl@google.com
-Fixes: 23689e91fb22 ("kasan, vmalloc: add vmalloc tagging for HW_TAGS")
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 5736294aef83 ("clk: qcom: ipq8074: add NSS clocks")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-6-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kasan/hw_tags.c | 32 +++++++++++++++++++++++---------
- mm/vmalloc.c       | 10 +++++-----
- 2 files changed, 28 insertions(+), 14 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
-index 9e1b6544bfa8..9ad8eff71b28 100644
---- a/mm/kasan/hw_tags.c
-+++ b/mm/kasan/hw_tags.c
-@@ -257,27 +257,37 @@ static void unpoison_vmalloc_pages(const void *addr, u8 tag)
- 	}
- }
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index f1017f2e61bd..2c2ecfc5e61f 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -3354,6 +3354,7 @@ static struct clk_branch gcc_nssnoc_ubi1_ahb_clk = {
  
-+static void init_vmalloc_pages(const void *start, unsigned long size)
-+{
-+	const void *addr;
-+
-+	for (addr = start; addr < start + size; addr += PAGE_SIZE) {
-+		struct page *page = virt_to_page(addr);
-+
-+		clear_highpage_kasan_tagged(page);
-+	}
-+}
-+
- void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
- 				kasan_vmalloc_flags_t flags)
- {
- 	u8 tag;
- 	unsigned long redzone_start, redzone_size;
+ static struct clk_branch gcc_ubi0_ahb_clk = {
+ 	.halt_reg = 0x6820c,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x6820c,
+ 		.enable_mask = BIT(0),
+@@ -3371,6 +3372,7 @@ static struct clk_branch gcc_ubi0_ahb_clk = {
  
--	if (!kasan_vmalloc_enabled())
--		return (void *)start;
--
--	if (!is_vmalloc_or_module_addr(start))
-+	if (!kasan_vmalloc_enabled() || !is_vmalloc_or_module_addr(start)) {
-+		if (flags & KASAN_VMALLOC_INIT)
-+			init_vmalloc_pages(start, size);
- 		return (void *)start;
-+	}
+ static struct clk_branch gcc_ubi0_axi_clk = {
+ 	.halt_reg = 0x68200,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68200,
+ 		.enable_mask = BIT(0),
+@@ -3388,6 +3390,7 @@ static struct clk_branch gcc_ubi0_axi_clk = {
  
- 	/*
--	 * Skip unpoisoning and assigning a pointer tag for non-VM_ALLOC
--	 * mappings as:
-+	 * Don't tag non-VM_ALLOC mappings, as:
- 	 *
- 	 * 1. Unlike the software KASAN modes, hardware tag-based KASAN only
- 	 *    supports tagging physical memory. Therefore, it can only tag a
- 	 *    single mapping of normal physical pages.
- 	 * 2. Hardware tag-based KASAN can only tag memory mapped with special
--	 *    mapping protection bits, see arch_vmalloc_pgprot_modify().
-+	 *    mapping protection bits, see arch_vmap_pgprot_tagged().
- 	 *    As non-VM_ALLOC mappings can be mapped outside of vmalloc code,
- 	 *    providing these bits would require tracking all non-VM_ALLOC
- 	 *    mappers.
-@@ -289,15 +299,19 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
- 	 *
- 	 * For non-VM_ALLOC allocations, page_alloc memory is tagged as usual.
- 	 */
--	if (!(flags & KASAN_VMALLOC_VM_ALLOC))
-+	if (!(flags & KASAN_VMALLOC_VM_ALLOC)) {
-+		WARN_ON(flags & KASAN_VMALLOC_INIT);
- 		return (void *)start;
-+	}
+ static struct clk_branch gcc_ubi0_nc_axi_clk = {
+ 	.halt_reg = 0x68204,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68204,
+ 		.enable_mask = BIT(0),
+@@ -3405,6 +3408,7 @@ static struct clk_branch gcc_ubi0_nc_axi_clk = {
  
- 	/*
- 	 * Don't tag executable memory.
- 	 * The kernel doesn't tolerate having the PC register tagged.
- 	 */
--	if (!(flags & KASAN_VMALLOC_PROT_NORMAL))
-+	if (!(flags & KASAN_VMALLOC_PROT_NORMAL)) {
-+		WARN_ON(flags & KASAN_VMALLOC_INIT);
- 		return (void *)start;
-+	}
+ static struct clk_branch gcc_ubi0_core_clk = {
+ 	.halt_reg = 0x68210,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68210,
+ 		.enable_mask = BIT(0),
+@@ -3422,6 +3426,7 @@ static struct clk_branch gcc_ubi0_core_clk = {
  
- 	tag = kasan_random_tag();
- 	start = set_tag(start, tag);
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index effd1ff6a4b4..a1ab9b472571 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -3168,15 +3168,15 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
+ static struct clk_branch gcc_ubi0_mpt_clk = {
+ 	.halt_reg = 0x68208,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68208,
+ 		.enable_mask = BIT(0),
+@@ -3439,6 +3444,7 @@ static struct clk_branch gcc_ubi0_mpt_clk = {
  
- 	/*
- 	 * Mark the pages as accessible, now that they are mapped.
--	 * The init condition should match the one in post_alloc_hook()
--	 * (except for the should_skip_init() check) to make sure that memory
--	 * is initialized under the same conditions regardless of the enabled
--	 * KASAN mode.
-+	 * The condition for setting KASAN_VMALLOC_INIT should complement the
-+	 * one in post_alloc_hook() with regards to the __GFP_SKIP_ZERO check
-+	 * to make sure that memory is initialized under the same conditions.
- 	 * Tag-based KASAN modes only assign tags to normal non-executable
- 	 * allocations, see __kasan_unpoison_vmalloc().
- 	 */
- 	kasan_flags |= KASAN_VMALLOC_VM_ALLOC;
--	if (!want_init_on_free() && want_init_on_alloc(gfp_mask))
-+	if (!want_init_on_free() && want_init_on_alloc(gfp_mask) &&
-+	    (gfp_mask & __GFP_SKIP_ZERO))
- 		kasan_flags |= KASAN_VMALLOC_INIT;
- 	/* KASAN_VMALLOC_PROT_NORMAL already set if required. */
- 	area->addr = kasan_unpoison_vmalloc(area->addr, real_size, kasan_flags);
+ static struct clk_branch gcc_ubi1_ahb_clk = {
+ 	.halt_reg = 0x6822c,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x6822c,
+ 		.enable_mask = BIT(0),
+@@ -3456,6 +3462,7 @@ static struct clk_branch gcc_ubi1_ahb_clk = {
+ 
+ static struct clk_branch gcc_ubi1_axi_clk = {
+ 	.halt_reg = 0x68220,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68220,
+ 		.enable_mask = BIT(0),
+@@ -3473,6 +3480,7 @@ static struct clk_branch gcc_ubi1_axi_clk = {
+ 
+ static struct clk_branch gcc_ubi1_nc_axi_clk = {
+ 	.halt_reg = 0x68224,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68224,
+ 		.enable_mask = BIT(0),
+@@ -3490,6 +3498,7 @@ static struct clk_branch gcc_ubi1_nc_axi_clk = {
+ 
+ static struct clk_branch gcc_ubi1_core_clk = {
+ 	.halt_reg = 0x68230,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68230,
+ 		.enable_mask = BIT(0),
+@@ -3507,6 +3516,7 @@ static struct clk_branch gcc_ubi1_core_clk = {
+ 
+ static struct clk_branch gcc_ubi1_mpt_clk = {
+ 	.halt_reg = 0x68228,
++	.halt_check = BRANCH_HALT_DELAY,
+ 	.clkr = {
+ 		.enable_reg = 0x68228,
+ 		.enable_mask = BIT(0),
 -- 
 2.35.1
 
