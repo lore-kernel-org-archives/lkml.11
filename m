@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B58E0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85044C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiHOVX3 (ORCPT
+        id S1343832AbiHOVXf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
+        Mon, 15 Aug 2022 17:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343599AbiHOVRF (ORCPT
+        with ESMTP id S1344874AbiHOVRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2145D6270;
-        Mon, 15 Aug 2022 12:20:24 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A9FE0FD9;
+        Mon, 15 Aug 2022 12:20:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AA0C6009B;
-        Mon, 15 Aug 2022 19:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F55EC433C1;
-        Mon, 15 Aug 2022 19:20:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FA9BB80FD3;
+        Mon, 15 Aug 2022 19:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 993C4C433D6;
+        Mon, 15 Aug 2022 19:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591223;
-        bh=WJJZjSRsNAmFjH1N2BZiZSDeHE3N2TcBII3rUzJ6/LA=;
+        s=korg; t=1660591250;
+        bh=TQxWdx3oGUdaA/R2Vh3d0qVpSXxzDrvfsM9VzIlgOAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PxmB5ywAhRSZtWSDU5rkBrZvNi15AY4HzGI9GPXr6OnlKcItFLa9eAoPSK42JSqQn
-         F5E4HcYw4O8U2L2U3/lt12/HOIB6p41Ihw2sxqNE400yNh0bv/ZFlr00MV+tHTRLnT
-         +6w5M/OXcNwkA/gTMMWtPyDGAO9TfWQGytQSMjXI=
+        b=kNRtr97poKl908dk+Zu6F6hPdzIr6mC8Ksto7TnYqLCEOmzellDHyRua3QHtiU+6T
+         hJl163PVLwR6945rAs7GaKW+Q7owWDzlCtdt1SFpMzc3KmK1yScTFH+cVdwxeGvWcW
+         w8PPlKSVYDEOkCcSjqCwRD+R5nQ7Ls/+8YintxYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
+        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0512/1095] net/mlx5e: TC, Fix post_act to not match on in_port metadata
-Date:   Mon, 15 Aug 2022 19:58:31 +0200
-Message-Id: <20220815180450.703036192@linuxfoundation.org>
+Subject: [PATCH 5.18 0519/1095] net/mlx5: Fix driver use of uninitialized timeout
+Date:   Mon, 15 Aug 2022 19:58:38 +0200
+Message-Id: <20220815180451.008226773@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,40 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-[ Upstream commit 903f2194f74bbd289f3170114035d472a36a8ab4 ]
+[ Upstream commit 42b4f7f66a43cdb9216e76e595c8a9af154806da ]
 
-The cited commit changed CT to use multi table actions post act infrastructure instead
-of using it own post act infrastructure, this broke decap during VF tunnel offload
-(Stack devices) with CT due to wrong match on in_port metadata in the post act table.
-This changed only broke VF tunnel offload because it modify the packet in_port metadata
-to be VF metadata and it isn't propagate the post act creation.
+Currently, driver is setting default values to all timeouts during
+function setup. The offending commit is using a timeout before
+function setup, meaning: the timeout is 0 (or garbage), since no
+value have been set.
+This may result in failure to probe the driver:
+mlx5_function_setup:1034:(pid 69850): Firmware over 4294967296 MS in pre-initializing state, aborting
+probe_one:1591:(pid 69850): mlx5_init_one failed with error code -16
 
-Fixed by modify post act rules to match only on fte_id and not match on in_port metadata
-which isn't needed.
+Hence, set default values to timeouts during tout_init()
 
-Fixes: a81283263bb0 ("net/mlx5e: Use multi table support for CT and sample actions")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 37ca95e62ee2 ("net/mlx5: Increase FW pre-init timeout for health recovery")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c | 11 ++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  2 --
+ 3 files changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-index dea137dd744b..2b64dd557b5d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-@@ -128,6 +128,7 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
- 	post_attr->inner_match_level = MLX5_MATCH_NONE;
- 	post_attr->outer_match_level = MLX5_MATCH_NONE;
- 	post_attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_DECAP;
-+	post_attr->flags |= MLX5_ATTR_FLAG_NO_IN_PORT;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index d758848d34d0..696e45e2bd06 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -32,20 +32,17 @@ static void tout_set(struct mlx5_core_dev *dev, u64 val, enum mlx5_timeouts_type
+ 	dev->timeouts->to[type] = val;
+ }
  
- 	handle->ns_type = post_act->ns_type;
- 	/* Splits were handled before post action */
+-void mlx5_tout_set_def_val(struct mlx5_core_dev *dev)
++int mlx5_tout_init(struct mlx5_core_dev *dev)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
+-		tout_set(dev, tout_def_sw_val[i], i);
+-}
+-
+-int mlx5_tout_init(struct mlx5_core_dev *dev)
+-{
+ 	dev->timeouts = kmalloc(sizeof(*dev->timeouts), GFP_KERNEL);
+ 	if (!dev->timeouts)
+ 		return -ENOMEM;
+ 
++	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
++		tout_set(dev, tout_def_sw_val[i], i);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 257c03eeab36..bc9e9aeda847 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -35,7 +35,6 @@ int mlx5_tout_init(struct mlx5_core_dev *dev);
+ void mlx5_tout_cleanup(struct mlx5_core_dev *dev);
+ void mlx5_tout_query_iseg(struct mlx5_core_dev *dev);
+ int mlx5_tout_query_dtor(struct mlx5_core_dev *dev);
+-void mlx5_tout_set_def_val(struct mlx5_core_dev *dev);
+ u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
+ 
+ #define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index ffb0bb4ecdef..75d216246955 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1025,8 +1025,6 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ 	if (mlx5_core_is_pf(dev))
+ 		pcie_print_link_status(dev->pdev);
+ 
+-	mlx5_tout_set_def_val(dev);
+-
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+ 	err = wait_fw_init(dev, timeout,
 -- 
 2.35.1
 
