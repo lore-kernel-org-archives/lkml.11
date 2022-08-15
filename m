@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BC8C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF93C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242670AbiHOVFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
+        id S244256AbiHOVFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347622AbiHOVCM (ORCPT
+        with ESMTP id S1347681AbiHOVCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:02:12 -0400
+        Mon, 15 Aug 2022 17:02:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A01CB5EC;
-        Mon, 15 Aug 2022 12:14:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86745CE496;
+        Mon, 15 Aug 2022 12:14:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 514FC60F27;
-        Mon, 15 Aug 2022 19:14:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35445C433B5;
-        Mon, 15 Aug 2022 19:14:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B83A060EF0;
+        Mon, 15 Aug 2022 19:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAE9C433C1;
+        Mon, 15 Aug 2022 19:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590845;
-        bh=KcEV8SKvsjL468XkPQvCHNAT9nTCGEg25sQJaScv6vE=;
+        s=korg; t=1660590852;
+        bh=0GoneA/qGJtls0aUIePvwzp+dy/pKMZAcfjAAZ2A3tM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FJMIE1uHqRV733J8vdWkcMPQ9bmi44MUW1pihXuGQhKi0zczI1Xp4PEIt2BfqFO+7
-         EJHhUWJrDtsX5SVo6ZDJfAH0rgcmvtqLUoFRXuaU85n+9PD6QSAQ7DY3MtFXCzRm9j
-         PjLBTH4d9DPogI/bqynnlaCi2VT0xOGbe6MFhLtU=
+        b=TiySknY54gVgjRw/9EQ8HRB1yqozhHJNebAoJbXQMtYNpQQTDXZzt1XWMD5NMEAW5
+         bU8hyWNAX6O+v0DrhuXLOaDRBmqlxkJdgiG6XIkee+SRHibBMqTwlYT+BHBzZm5xUl
+         38n91VpZVwwN6O8a5GMaUWngEvXjA1nULhq3eE0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0389/1095] drm/vc4: dsi: Register dsi0 as the correct vc4 encoder type
-Date:   Mon, 15 Aug 2022 19:56:28 +0200
-Message-Id: <20220815180445.778843063@linuxfoundation.org>
+Subject: [PATCH 5.18 0364/1095] drm/radeon: fix incorrrect SPDX-License-Identifiers
+Date:   Mon, 15 Aug 2022 19:56:03 +0200
+Message-Id: <20220815180444.778790656@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,39 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 4d9273c978d4c1af15d7874c10c732ec83d444d0 ]
+[ Upstream commit 1f43b8903f3aae4a26a603c36f6d5dd25d6edb51 ]
 
-vc4_dsi was registering both dsi0 and dsi1 as VC4_ENCODER_TYPE_DSI1
-which seemed to work OK for a single DSI display, but fails
-if there are two DSI displays connected.
+radeon is MIT.  This were incorrectly changed in
+commit b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+and
+commit d198b34f3855 (".gitignore: add SPDX License Identifier")
+and:
+commit ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
 
-Update to register the correct type.
-
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-15-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: d198b34f3855 (".gitignore: add SPDX License Identifier")
+Fixes: ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
+Fixes: b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2053
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/.gitignore | 2 +-
+ drivers/gpu/drm/radeon/Kconfig    | 2 +-
+ drivers/gpu/drm/radeon/Makefile   | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 81a6c4e9576d..97a258c934af 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1518,7 +1518,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/radeon/.gitignore b/drivers/gpu/drm/radeon/.gitignore
+index 9c1a94153983..d8777383a64a 100644
+--- a/drivers/gpu/drm/radeon/.gitignore
++++ b/drivers/gpu/drm/radeon/.gitignore
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ mkregtable
+ *_reg_safe.h
  
- 	INIT_LIST_HEAD(&dsi->bridge_chain);
--	vc4_dsi_encoder->base.type = VC4_ENCODER_TYPE_DSI1;
-+	vc4_dsi_encoder->base.type = dsi->variant->port ?
-+			VC4_ENCODER_TYPE_DSI1 : VC4_ENCODER_TYPE_DSI0;
- 	vc4_dsi_encoder->dsi = dsi;
- 	dsi->encoder = &vc4_dsi_encoder->base.base;
- 
+diff --git a/drivers/gpu/drm/radeon/Kconfig b/drivers/gpu/drm/radeon/Kconfig
+index 6f60f4840cc5..52819e7f1fca 100644
+--- a/drivers/gpu/drm/radeon/Kconfig
++++ b/drivers/gpu/drm/radeon/Kconfig
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ config DRM_RADEON_USERPTR
+ 	bool "Always enable userptr support"
+ 	depends on DRM_RADEON
+diff --git a/drivers/gpu/drm/radeon/Makefile b/drivers/gpu/drm/radeon/Makefile
+index 11c97edde54d..3d502f1bbfcb 100644
+--- a/drivers/gpu/drm/radeon/Makefile
++++ b/drivers/gpu/drm/radeon/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: MIT
+ #
+ # Makefile for the drm device driver.  This driver provides support for the
+ # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
 -- 
 2.35.1
 
