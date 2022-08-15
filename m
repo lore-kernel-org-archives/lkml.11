@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAB9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C0FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230442AbiHODzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
+        id S230029AbiHODwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiHODza (ORCPT
+        with ESMTP id S229528AbiHODwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:55:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FD3627A;
-        Sun, 14 Aug 2022 20:55:29 -0700 (PDT)
+        Sun, 14 Aug 2022 23:52:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AB913F47
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:52:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB4160EF1;
-        Mon, 15 Aug 2022 03:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AA553C433C1;
-        Mon, 15 Aug 2022 03:55:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 815C3B80CF1
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:52:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E67C433D6;
+        Mon, 15 Aug 2022 03:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660535728;
-        bh=MgA5zDE8RPJK79rlqlC3IbBUVTth+II+UBJdAEV4GD4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mlD/Xp5XqO/1qExsLpw3QDAg2OpnC8B+q+aRc3UpeqWJblr2LJLO2T+Bfs3QnaZun
-         REgqbB/pE0OdxrtDvesTKyAQ74Wp+qeYmGnGiBXrNmLTeGvxw35f94dFWthxfNCYZn
-         V+w7+HC2JIRRmYwAvG2pp/sB+tde6dXzWEuokwRN4mlIpbVSIuawDvRvnVscqyvY+0
-         X6XIvKu8pMf5Y1TWBkNrLW3eH88Q7UYmw/eHHbZKM5/2bnuIgdT3bItEaGLctuxJ4I
-         H6nQghr29j/+H8+bSSa33RlvxZ4kkoIZBEl3g4Se5Y+s0E/UfSDQKt1n3k+uUq9Lqr
-         6z0r8Lfmjnz4g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F3C7E2A04F;
-        Mon, 15 Aug 2022 03:55:28 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1660535552;
+        bh=x8mswgoGqL/z1c3stv7WymTX1bkbDAeAwck9N1MfYS0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=cGj6y/eJLhf7nsTgC7aSqktLSsEdswIC18PEZUrpeELK4uChjmCRTernzEtYJfczD
+         zcHGxIqyIOG2DR6+Q+z0gLM6QVMw0rUr8u88f6eHt4wdD8G9cpojJ78ij2/FJs1bDG
+         42xq8vbVpILU76o+m/NyGbp/WSuj/u5AiM36GFh5ucLLqsvycpPnx0DJKtlyp/OgDA
+         OjiczQKGG/PHQO6VI2SW8AZxe90myMJSW8YJBvZRqfspOog0IFKC2gqJxaEfNMdYnN
+         /I1YHBOecfiDbZ1qktoNtAvZiirc4Z05vXkDlGYL5TrOxwxgNuhfZH0j0vCPhvQmTh
+         KK4lfYKUt1pfw==
+Message-ID: <65562b32-505f-796e-305a-d1b03baeb388@kernel.org>
+Date:   Mon, 15 Aug 2022 11:52:28 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] [v3] media: platform: cros-ec: Add moli to the match table
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <166053572858.30867.5596424089361079581.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Aug 2022 03:55:28 +0000
-References: <20220520110831.29502-1-scott_chao@wistron.corp-partner.google.com>
-In-Reply-To: <20220520110831.29502-1-scott_chao@wistron.corp-partner.google.com>
-To:     Scott Chao <scott_chao@wistron.corp-partner.google.com>
-Cc:     hverkuil-cisco@xs4all.nl, mchehab@kernel.org, bleung@chromium.org,
-        groeck@chromium.org, zhuohao@chromium.org,
-        linux-media@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [f2fs-dev] [PATCH] f2fs: fix wrong continue condition in GC
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     stable@kernel.org
+References: <20220813143709.11909-1-jaegeuk@kernel.org>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220813143709.11909-1-jaegeuk@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to chrome-platform/linux.git (for-next)
-by Mauro Carvalho Chehab <mchehab@kernel.org>:
-
-On Fri, 20 May 2022 19:08:31 +0800 you wrote:
-> The Google Moli device uses the same approach as the Google Brask
-> which enables the HDMI CEC via the cros-ec-cec driver.
+On 2022/8/13 22:37, Jaegeuk Kim wrote:
+> We should decrease the frozen counter.
 > 
-> Signed-off-by: Scott Chao <scott_chao@wistron.corp-partner.google.com>
+> Cc: stable@kernel.org
+> Fixes: 325163e9892b ("f2fs: add gc_urgent_high_remaining sysfs node")
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 > ---
->  drivers/media/cec/platform/cros-ec/cros-ec-cec.c | 2 ++
->  1 file changed, 2 insertions(+)
+>   fs/f2fs/gc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+> index 6da21d405ce1..7e4b41240d59 100644
+> --- a/fs/f2fs/gc.c
+> +++ b/fs/f2fs/gc.c
+> @@ -102,7 +102,7 @@ static int gc_thread_func(void *data)
+>   					sbi->gc_urgent_high_limited = false;
+>   					spin_unlock(&sbi->gc_urgent_high_lock);
+>   					sbi->gc_mode = GC_NORMAL;
+> -					continue;
+> +					goto next;
+>   				}
+>   				sbi->gc_urgent_high_remaining--;
+>   			}
 
-Here is the summary with links:
-  - [v3] media: platform: cros-ec: Add moli to the match table
-    https://git.kernel.org/chrome-platform/c/a1a9b71ebd65
+Why not:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+	if (!sbi->gc_urgent_high_remaining) {
+		sbi->gc_urgent_high_limited = false;
+		spin_unlock(&sbi->gc_urgent_high_lock);
+		sbi->gc_mode = GC_NORMAL;
+	} else {
+		sbi->gc_urgent_high_remaining--;
+	}
 
-
+Thanks,
