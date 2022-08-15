@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A524C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F244CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243495AbiHOVyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
+        id S1348456AbiHOVyo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350534AbiHOVve (ORCPT
+        with ESMTP id S1350551AbiHOVvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB8F106F97;
-        Mon, 15 Aug 2022 12:33:00 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9582E106FBB;
+        Mon, 15 Aug 2022 12:33:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 338F36115A;
-        Mon, 15 Aug 2022 19:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0A3C433C1;
-        Mon, 15 Aug 2022 19:32:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8A2AB80EA7;
+        Mon, 15 Aug 2022 19:33:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B144C433D6;
+        Mon, 15 Aug 2022 19:33:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591979;
-        bh=reaCaFSvJsZu7N/qYI/xflIODqPJK6dLRIETjCF7GMs=;
+        s=korg; t=1660591982;
+        bh=8yMkKzhaIIy3DNw9qsKXKinY89NRF/Ka1TXvMtoYgLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0TqItxlElUtjLey9HZVbY/jcGPSIU6qU78oUXfSyQmhdt4HpTzFAKmYGC7oQmfYz
-         lXG2gDUGCsBTx76ZM48t8XxbtPZNWMNoebJ+jsfzPMSNmkKgXhqdiJIwii6EZn3tZn
-         xyWj6P7AASHQ9NFRgsmlPQT/NMwuSI500GD31VIA=
+        b=wtb5w3lczj0nviXn8a5nG2Nkp8JKgSj0TQYHHy2Url6UCH7xwtkf/yRHccyCiaa+l
+         HL5eEjdS5JbYkbo9lFXbQj1n2CzrXb6qu7ktKR9oWIqI3S0jTrusqgJjeicz1F2jTf
+         axuRwGpefMsPrSepl2SRhuwWOjNRVSGauxLqUtho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0713/1095] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
-Date:   Mon, 15 Aug 2022 20:01:52 +0200
-Message-Id: <20220815180458.895291883@linuxfoundation.org>
+Subject: [PATCH 5.18 0696/1095] clk: qcom: clk-krait: unlock spin after mux completion
+Date:   Mon, 15 Aug 2022 20:01:35 +0200
+Message-Id: <20220815180458.175221153@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,55 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Travkin <nikita@trvn.ru>
+From: Ansuel Smith <ansuelsmth@gmail.com>
 
-[ Upstream commit d0696770cef35a1fd16ea2167e2198c18aa6fbfe ]
+[ Upstream commit df83d2c9e72910416f650ade1e07cc314ff02731 ]
 
-Sometimes calculation of d value may result in 0 because of the
-rounding after integer division. This causes the following error:
+Unlock spinlock after the mux switch is completed to prevent any corner
+case of mux request while the switch still needs to be done.
 
-[  113.969689] camss_gp1_clk_src: rcg didn't update its configuration.
-[  113.969754] WARNING: CPU: 3 PID: 35 at drivers/clk/qcom/clk-rcg2.c:122 update_config+0xc8/0xdc
-
-Make sure that D value is never zero.
-
-Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for RCG")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 4d7dc77babfe ("clk: qcom: Add support for Krait clocks")
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220612145955.385787-3-nikita@trvn.ru
+Link: https://lore.kernel.org/r/20220430054458.31321-3-ansuelsmth@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/clk-rcg2.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/clk/qcom/clk-krait.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
-index 9611c9a7231f..caafc35eecfd 100644
---- a/drivers/clk/qcom/clk-rcg2.c
-+++ b/drivers/clk/qcom/clk-rcg2.c
-@@ -13,6 +13,7 @@
- #include <linux/rational.h>
- #include <linux/regmap.h>
- #include <linux/math64.h>
-+#include <linux/minmax.h>
- #include <linux/slab.h>
+diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+index 59f1af415b58..90046428693c 100644
+--- a/drivers/clk/qcom/clk-krait.c
++++ b/drivers/clk/qcom/clk-krait.c
+@@ -32,11 +32,16 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
+ 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
+ 	}
+ 	krait_set_l2_indirect_reg(mux->offset, regval);
+-	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
  
- #include <asm/div64.h>
-@@ -429,9 +430,11 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
- 	/* Calculate 2d value */
- 	d = DIV_ROUND_CLOSEST(n * duty_per * 2, 100);
- 
--	 /* Check bit widths of 2d. If D is too big reduce duty cycle. */
--	if (d > mask)
--		d = mask;
+ 	/* Wait for switch to complete. */
+ 	mb();
+ 	udelay(1);
++
 +	/*
-+	 * Check bit widths of 2d. If D is too big reduce duty cycle.
-+	 * Also make sure it is never zero.
++	 * Unlock now to make sure the mux register is not
++	 * modified while switching to the new parent.
 +	 */
-+	d = clamp_val(d, 1, mask);
++	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+ }
  
- 	if ((d / 2) > (n - m))
- 		d = (n - m) * 2;
+ static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 -- 
 2.35.1
 
