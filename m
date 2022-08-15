@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FA2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F5BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243540AbiHOXS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S244450AbiHOXTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347438AbiHOXP3 (ORCPT
+        with ESMTP id S1347644AbiHOXPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B1E63F27;
-        Mon, 15 Aug 2022 13:02:30 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E265863F37;
+        Mon, 15 Aug 2022 13:02:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A61186068D;
-        Mon, 15 Aug 2022 20:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0701C433D6;
-        Mon, 15 Aug 2022 20:02:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80B54612B8;
+        Mon, 15 Aug 2022 20:02:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B222C433C1;
+        Mon, 15 Aug 2022 20:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593749;
-        bh=74aVVp2GcXBM2zXtNUT99Bg7mljouCS0TeZFGzM9fcs=;
+        s=korg; t=1660593751;
+        bh=aDKi8r+Ka7824Zy81hOI8/sqQakOv5cZuDn04XHuXOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5zoMMg+Hmg/Z1ffZYbHiq1XxSmN2cz/0c3jk/SybhE0wy30eORhlWnssRs9yHKtG
-         NnBqI9CdH3T2pJ4zCK7iftcKx3AFzlyfX874lQrksx6gI561MgT2BvJIPjNkPc0ggT
-         ZaQVNBSGBuJ2lBK4XU9RwAhsbhGaEC6Tb1qUJmM4=
+        b=2ZaABJEWvuQsZvgBgR1XmbPZYD88XT1yr8GkPKKbu+hRt8OwY9ciJ6QVR9UpDbWtV
+         p2Pu/h1g44IkOPn7rLSCWFi7g12C3lxjo6SBMMxT86Y6fdsIbS3puqA5lZ6mbEkpSn
+         fScRiSThLkWNxxW44qDSBvtt/UGFZSHIcASkFmYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
-        stable <stable@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1000/1095] tty: 8250: Add support for Brainboxes PX cards.
-Date:   Mon, 15 Aug 2022 20:06:39 +0200
-Message-Id: <20220815180510.485567793@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        David Lechner <david@lechnology.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0320/1157] drm/st7735r: Fix module autoloading for Okaya RH128128T
+Date:   Mon, 15 Aug 2022 19:54:36 +0200
+Message-Id: <20220815180452.438851716@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,145 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit ef5a03a26c87a760bc3d86b5af7b773e82f8b1b7 ]
+[ Upstream commit 9ad6f181ad9a19a26bda73a7b199df44ccfcdaba ]
 
-Add support for some of the Brainboxes PCIe (PX) range of
-serial cards, including the PX-101, PX-235/PX-246,
-PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
-PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
-PX-803 and PX-846.
+The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
+registered via OF. This means that the st7735r.ko module won't autoload if
+a DT has a node with a compatible "okaya,rh128128t" string.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
+instead will get a "MODALIAS=spi:rh128128t", which is not present in the
+list of aliases:
+
+  $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
+  alias:          of:N*T*Cokaya,rh128128tC*
+  alias:          of:N*T*Cokaya,rh128128t
+  alias:          of:N*T*Cjianda,jd-t18003-t01C*
+  alias:          of:N*T*Cjianda,jd-t18003-t01
+  alias:          spi:jd-t18003-t01
+
+To workaround this issue, add in the SPI table an entry for that device.
+
+Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: David Lechner <david@lechnology.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220520091602.179078-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_pci.c | 109 +++++++++++++++++++++++++++++
- 1 file changed, 109 insertions(+)
+ drivers/gpu/drm/tiny/st7735r.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 818ed6cd3132..aeac20f7cbb2 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -5063,6 +5063,115 @@ static const struct pci_device_id serial_pci_tbl[] = {
- 		PCI_ANY_ID, PCI_ANY_ID,
- 		0, 0,
- 		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes PX-101
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4005,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4019,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-235/246
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4004,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4016,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-203/PX-257
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4006,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4015,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-260/PX-701
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-310
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-313
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400C,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-320/324/PX-376/PX-387
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400B,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-335/346
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400F,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-368
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x4010,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-420
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4000,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_4_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4011,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-803
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4009,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x401E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-846
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4008,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4017,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+
- 	/*
- 	 * Perle PCI-RAS cards
- 	 */
+diff --git a/drivers/gpu/drm/tiny/st7735r.c b/drivers/gpu/drm/tiny/st7735r.c
+index 29d618093e94..e0f02d367d88 100644
+--- a/drivers/gpu/drm/tiny/st7735r.c
++++ b/drivers/gpu/drm/tiny/st7735r.c
+@@ -174,6 +174,7 @@ MODULE_DEVICE_TABLE(of, st7735r_of_match);
+ 
+ static const struct spi_device_id st7735r_id[] = {
+ 	{ "jd-t18003-t01", (uintptr_t)&jd_t18003_t01_cfg },
++	{ "rh128128t", (uintptr_t)&rh128128t_cfg },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(spi, st7735r_id);
 -- 
 2.35.1
 
