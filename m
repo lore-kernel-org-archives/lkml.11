@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C564BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C248AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244642AbiHOTEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S244849AbiHOTE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244874AbiHOS73 (ORCPT
+        with ESMTP id S244948AbiHOTAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:59:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66814AD5C;
-        Mon, 15 Aug 2022 11:32:38 -0700 (PDT)
+        Mon, 15 Aug 2022 15:00:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8A74B0C0;
+        Mon, 15 Aug 2022 11:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B275B81074;
-        Mon, 15 Aug 2022 18:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E517C433C1;
-        Mon, 15 Aug 2022 18:32:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA8761057;
+        Mon, 15 Aug 2022 18:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF4EC4314A;
+        Mon, 15 Aug 2022 18:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588355;
-        bh=gN0AZ4KaMAhv6HkJ0uXltNqatxe15poS66mDjc+otfc=;
+        s=korg; t=1660588362;
+        bh=z1YM0gPwBlW36x0Nmj2Ijs3X1DFwm9C1rmfuErDEhtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQu0FUans9zmWp7KfWBZvf+t/hBQLEqvGawbcleFBeLrTqVdisFNroPoSyILVmur+
-         jOTLd/I3QYEbIdrJf/1Y2MS7tcci8z+Gqe5/wU/EnsjxJmsAv390m36VmRNjuZ+tAr
-         2Fz5uR83YAJmB+JJuqYtg/b0mqdGDa9MV1JV4ob4=
+        b=NFpOZesgAD5bRi5HLoO8Oeil5DO43dJVUmr08eFejL4htXOff/PZAwfumHA7snY2F
+         yv5T371VaqH94uPQCKfz7PyHNuVmATz+fKwhuzWei5EUfreBJhwYqolxfoXamnu9qi
+         VHTRpO64/Om1lpmkAmmODTi1CI5zdM/2Ger0DDBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Manning <mvrmanning@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 376/779] net: allow unbound socket for packets in VRF when tcp_l3mdev_accept set
-Date:   Mon, 15 Aug 2022 20:00:20 +0200
-Message-Id: <20220815180353.349648511@linuxfoundation.org>
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 378/779] wifi: rtw88: check the return value of alloc_workqueue()
+Date:   Mon, 15 Aug 2022 20:00:22 +0200
+Message-Id: <20220815180353.431786620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,123 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Manning <mvrmanning@gmail.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit 944fd1aeacb627fa617f85f8e5a34f7ae8ea4d8e ]
+[ Upstream commit 42bbf810e155efc6129a3a648ae5300f00b79d7b ]
 
-The commit 3c82a21f4320 ("net: allow binding socket in a VRF when
-there's an unbound socket") changed the inet socket lookup to avoid
-packets in a VRF from matching an unbound socket. This is to ensure the
-necessary isolation between the default and other VRFs for routing and
-forwarding. VRF-unaware processes running in the default VRF cannot
-access another VRF and have to be run with 'ip vrf exec <vrf>'. This is
-to be expected with tcp_l3mdev_accept disabled, but could be reallowed
-when this sysctl option is enabled. So instead of directly checking dif
-and sdif in inet[6]_match, here call inet_sk_bound_dev_eq(). This
-allows a match on unbound socket for non-zero sdif i.e. for packets in
-a VRF, if tcp_l3mdev_accept is enabled.
+The function alloc_workqueue() in rtw_core_init() can fail, but
+there is no check of its return value. To fix this bug, its return value
+should be checked with new error handling code.
 
-Fixes: 3c82a21f4320 ("net: allow binding socket in a VRF when there's an unbound socket")
-Signed-off-by: Mike Manning <mvrmanning@gmail.com>
-Link: https://lore.kernel.org/netdev/a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de/
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: fe101716c7c9d ("rtw88: replace tx tasklet with work queue")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220723063756.2956189-1-williamsukatube@163.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/inet6_hashtables.h |  7 +++----
- include/net/inet_hashtables.h  | 19 +++----------------
- include/net/inet_sock.h        | 11 +++++++++++
- 3 files changed, 17 insertions(+), 20 deletions(-)
+ drivers/net/wireless/realtek/rtw88/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-index f259e1ae14ba..56f1286583d3 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -110,8 +110,6 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 			       const __portpair ports,
- 			       const int dif, const int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_family != AF_INET6 ||
- 	    sk->sk_portpair != ports ||
-@@ -119,8 +117,9 @@ static inline bool inet6_match(struct net *net, const struct sock *sk,
- 	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
- 		return false;
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 69512856bb46..5786995d90d4 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1819,6 +1819,10 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+ 	timer_setup(&rtwdev->tx_report.purge_timer,
+ 		    rtw_tx_report_purge_timer, 0);
+ 	rtwdev->tx_wq = alloc_workqueue("rtw_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
++	if (!rtwdev->tx_wq) {
++		rtw_warn(rtwdev, "alloc_workqueue rtw_tx_wq failed\n");
++		return -ENOMEM;
++	}
  
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- #endif /* IS_ENABLED(CONFIG_IPV6) */
- 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 825ad1d06d05..53c22b64e972 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -203,17 +203,6 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
- 	hashinfo->ehash_locks = NULL;
- }
- 
--static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
--					int dif, int sdif)
--{
--#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
--	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
--				 bound_dev_if, dif, sdif);
--#else
--	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
--#endif
--}
--
- struct inet_bind_bucket *
- inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
- 			struct inet_bind_hashbucket *head,
-@@ -311,16 +300,14 @@ static inline bool INET_MATCH(struct net *net, const struct sock *sk,
- 			      const __addrpair cookie, const __portpair ports,
- 			      int dif, int sdif)
- {
--	int bound_dev_if;
--
- 	if (!net_eq(sock_net(sk), net) ||
- 	    sk->sk_portpair != ports ||
- 	    sk->sk_addrpair != cookie)
- 	        return false;
- 
--	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
--	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
--	return bound_dev_if == dif || bound_dev_if == sdif;
-+	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
-+	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
-+				    sdif);
- }
- 
- /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index c307a547d2cb..2c2b41ea7f81 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -149,6 +149,17 @@ static inline bool inet_bound_dev_eq(bool l3mdev_accept, int bound_dev_if,
- 	return bound_dev_if == dif || bound_dev_if == sdif;
- }
- 
-+static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
-+					int dif, int sdif)
-+{
-+#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
-+	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
-+				 bound_dev_if, dif, sdif);
-+#else
-+	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
-+#endif
-+}
-+
- struct inet_cork {
- 	unsigned int		flags;
- 	__be32			addr;
+ 	INIT_DELAYED_WORK(&rtwdev->watch_dog_work, rtw_watch_dog_work);
+ 	INIT_DELAYED_WORK(&coex->bt_relink_work, rtw_coex_bt_relink_work);
 -- 
 2.35.1
 
