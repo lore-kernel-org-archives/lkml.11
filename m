@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8853CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FADCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352404AbiHOW5s (ORCPT
+        id S1346655AbiHOW5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        Mon, 15 Aug 2022 18:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352531AbiHOW4Q (ORCPT
+        with ESMTP id S1352545AbiHOW4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:56:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081C230578;
-        Mon, 15 Aug 2022 12:55:31 -0700 (PDT)
+        Mon, 15 Aug 2022 18:56:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E47B642F4;
+        Mon, 15 Aug 2022 12:55:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3AD0B8114A;
-        Mon, 15 Aug 2022 19:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B910C433C1;
-        Mon, 15 Aug 2022 19:55:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1A586CE12C1;
+        Mon, 15 Aug 2022 19:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BD13C433D6;
+        Mon, 15 Aug 2022 19:55:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593328;
-        bh=05avqxmYXFOy+Fb6qKZzCgRFhzrIHH+pxQNlBFNqTWo=;
+        s=korg; t=1660593331;
+        bh=ZlP02CErwL5spOOFP0xeXrsrG3wjZ7Udqm4opyEYMgY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HQZ1nwn7A+ozVnbGR6uindWse91RcOCoKMaqWfZxSDLXLjN1/SHFc0z+iJBhXGQPU
-         g6qfdss9I9puRevV+JqGl/qsQG5hbJGfrwhguOk17pnP7Od8SkP/genq7odnc9LHVm
-         60bLoFIdErKeF72/hvzFA5HdbnfPrBagxYxkZsm4=
+        b=sjqt+fXFbu7n72+t+wSS9hyR7M41BqkXSA7WnsXIL557RrgSBvkx4AqhNQu/ZewpZ
+         l+jxqyQQQNxD/jCe6zVnjA0IvMM9Oo8Cb3upAa7T9QhfGoaoWe476RRiE3zqVqNzJv
+         VNRpYqq+oReAzH8xy9LxMUqzqHTZDNQcclsF9VGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0930/1095] f2fs: give priority to select unpinned section for foreground GC
-Date:   Mon, 15 Aug 2022 20:05:29 +0200
-Message-Id: <20220815180507.708748476@linuxfoundation.org>
+Subject: [PATCH 5.19 0252/1157] perf/x86/intel: Fix PEBS data source encoding for ADL
+Date:   Mon, 15 Aug 2022 19:53:28 +0200
+Message-Id: <20220815180449.680431529@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,214 +51,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit 71419129625a50cfb5e3c5cc215948a3f98c806d ]
+[ Upstream commit ccf170e9d8fdacfe435bbe3749c897c7d86d32f8 ]
 
-Previously, during foreground GC, if victims contain data of pinned file,
-it will fail migration of the data, and meanwhile i_gc_failures of that
-pinned file may increase, and when it exceeds threshold, GC will unpin
-the file, result in breaking pinfile's semantics.
+The PEBS data source encoding for the e-core is different from the
+p-core.
 
-In order to mitigate such condition, let's record and skip section which
-has pinned file's data and give priority to select unpinned one.
+Add the pebs_data_source[] in the struct x86_hybrid_pmu to store the
+data source encoding for each type of the core.
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Add intel_pmu_pebs_data_source_grt() for the e-core.
+There is nothing changed for the data source encoding of the p-core,
+which still reuse the intel_pmu_pebs_data_source_skl().
+
+Fixes: f83d2f91d259 ("perf/x86/intel: Add Alder Lake Hybrid support")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220629150840.2235741-2-kan.liang@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/gc.c      | 85 +++++++++++++++++++++++++++++++++++++++--------
- fs/f2fs/segment.c |  8 +++++
- fs/f2fs/segment.h |  3 ++
- 3 files changed, 82 insertions(+), 14 deletions(-)
+ arch/x86/events/intel/core.c |  2 +-
+ arch/x86/events/intel/ds.c   | 51 +++++++++++++++++++++++++++---------
+ arch/x86/events/perf_event.h |  6 +++++
+ 3 files changed, 45 insertions(+), 14 deletions(-)
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index a193862ad8a5..3009c0a97ab4 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -646,6 +646,54 @@ static void release_victim_entry(struct f2fs_sb_info *sbi)
- 	f2fs_bug_on(sbi, !list_empty(&am->victim_list));
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 07d4a5f20321..bd8b98857609 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6241,7 +6241,7 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+ 		x86_pmu.lbr_pt_coexist = true;
+-		intel_pmu_pebs_data_source_skl(false);
++		intel_pmu_pebs_data_source_adl();
+ 		x86_pmu.pebs_latency_data = adl_latency_data_small;
+ 		x86_pmu.num_topdown_events = 8;
+ 		x86_pmu.update_topdown_event = adl_update_topdown_event;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index de84385de414..ba60427caa6d 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -94,15 +94,40 @@ void __init intel_pmu_pebs_data_source_nhm(void)
+ 	pebs_data_source[0x07] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HITM);
  }
  
-+static bool f2fs_pin_section(struct f2fs_sb_info *sbi, unsigned int segno)
-+{
-+	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-+	unsigned int secno = GET_SEC_FROM_SEG(sbi, segno);
-+
-+	if (!dirty_i->enable_pin_section)
-+		return false;
-+	if (!test_and_set_bit(secno, dirty_i->pinned_secmap))
-+		dirty_i->pinned_secmap_cnt++;
-+	return true;
-+}
-+
-+static bool f2fs_pinned_section_exists(struct dirty_seglist_info *dirty_i)
-+{
-+	return dirty_i->pinned_secmap_cnt;
-+}
-+
-+static bool f2fs_section_is_pinned(struct dirty_seglist_info *dirty_i,
-+						unsigned int secno)
-+{
-+	return dirty_i->enable_pin_section &&
-+		f2fs_pinned_section_exists(dirty_i) &&
-+		test_bit(secno, dirty_i->pinned_secmap);
-+}
-+
-+static void f2fs_unpin_all_sections(struct f2fs_sb_info *sbi, bool enable)
-+{
-+	unsigned int bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
-+
-+	if (f2fs_pinned_section_exists(DIRTY_I(sbi))) {
-+		memset(DIRTY_I(sbi)->pinned_secmap, 0, bitmap_size);
-+		DIRTY_I(sbi)->pinned_secmap_cnt = 0;
-+	}
-+	DIRTY_I(sbi)->enable_pin_section = enable;
-+}
-+
-+static int f2fs_gc_pinned_control(struct inode *inode, int gc_type,
-+							unsigned int segno)
-+{
-+	if (!f2fs_is_pinned_file(inode))
-+		return 0;
-+	if (gc_type != FG_GC)
-+		return -EBUSY;
-+	if (!f2fs_pin_section(F2FS_I_SB(inode), segno))
-+		f2fs_pin_file_control(inode, true);
-+	return -EAGAIN;
-+}
-+
- /*
-  * This function is called from two paths.
-  * One is garbage collection and the other is SSR segment selection.
-@@ -787,6 +835,9 @@ static int get_victim_by_default(struct f2fs_sb_info *sbi,
- 		if (gc_type == BG_GC && test_bit(secno, dirty_i->victim_secmap))
- 			goto next;
- 
-+		if (gc_type == FG_GC && f2fs_section_is_pinned(dirty_i, secno))
-+			goto next;
-+
- 		if (is_atgc) {
- 			add_victim_entry(sbi, &p, segno);
- 			goto next;
-@@ -1201,12 +1252,9 @@ static int move_data_block(struct inode *inode, block_t bidx,
- 		goto out;
- 	}
- 
--	if (f2fs_is_pinned_file(inode)) {
--		if (gc_type == FG_GC)
--			f2fs_pin_file_control(inode, true);
--		err = -EAGAIN;
-+	err = f2fs_gc_pinned_control(inode, gc_type, segno);
-+	if (err)
- 		goto out;
--	}
- 
- 	set_new_dnode(&dn, inode, NULL, NULL, 0);
- 	err = f2fs_get_dnode_of_data(&dn, bidx, LOOKUP_NODE);
-@@ -1351,12 +1399,9 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
- 		err = -EAGAIN;
- 		goto out;
- 	}
--	if (f2fs_is_pinned_file(inode)) {
--		if (gc_type == FG_GC)
--			f2fs_pin_file_control(inode, true);
--		err = -EAGAIN;
-+	err = f2fs_gc_pinned_control(inode, gc_type, segno);
-+	if (err)
- 		goto out;
--	}
- 
- 	if (gc_type == BG_GC) {
- 		if (PageWriteback(page)) {
-@@ -1476,14 +1521,15 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
- 		ofs_in_node = le16_to_cpu(entry->ofs_in_node);
- 
- 		if (phase == 3) {
-+			int err;
-+
- 			inode = f2fs_iget(sb, dni.ino);
- 			if (IS_ERR(inode) || is_bad_inode(inode) ||
- 					special_file(inode->i_mode))
- 				continue;
- 
--			if (is_inode_flag_set(inode, FI_PIN_FILE) &&
--							gc_type == FG_GC) {
--				f2fs_pin_file_control(inode, true);
-+			err = f2fs_gc_pinned_control(inode, gc_type, segno);
-+			if (err == -EAGAIN) {
- 				iput(inode);
- 				return submitted;
- 			}
-@@ -1766,9 +1812,17 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
- 		ret = -EINVAL;
- 		goto stop;
- 	}
-+retry:
- 	ret = __get_victim(sbi, &segno, gc_type);
--	if (ret)
-+	if (ret) {
-+		/* allow to search victim from sections has pinned data */
-+		if (ret == -ENODATA && gc_type == FG_GC &&
-+				f2fs_pinned_section_exists(DIRTY_I(sbi))) {
-+			f2fs_unpin_all_sections(sbi, false);
-+			goto retry;
-+		}
- 		goto stop;
-+	}
- 
- 	seg_freed = do_garbage_collect(sbi, segno, &gc_list, gc_type, force);
- 	if (gc_type == FG_GC &&
-@@ -1819,6 +1873,9 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
- 	SIT_I(sbi)->last_victim[ALLOC_NEXT] = 0;
- 	SIT_I(sbi)->last_victim[FLUSH_DEVICE] = init_segno;
- 
-+	if (gc_type == FG_GC)
-+		f2fs_unpin_all_sections(sbi, true);
-+
- 	trace_f2fs_gc_end(sbi->sb, ret, total_freed, sec_freed,
- 				get_pages(sbi, F2FS_DIRTY_NODES),
- 				get_pages(sbi, F2FS_DIRTY_DENTS),
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index aa0162664a1e..a914b70f8543 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4653,6 +4653,13 @@ static int init_victim_secmap(struct f2fs_sb_info *sbi)
- 	dirty_i->victim_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
- 	if (!dirty_i->victim_secmap)
- 		return -ENOMEM;
-+
-+	dirty_i->pinned_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
-+	if (!dirty_i->pinned_secmap)
-+		return -ENOMEM;
-+
-+	dirty_i->pinned_secmap_cnt = 0;
-+	dirty_i->enable_pin_section = true;
- 	return 0;
- }
- 
-@@ -5241,6 +5248,7 @@ static void destroy_victim_secmap(struct f2fs_sb_info *sbi)
+-void __init intel_pmu_pebs_data_source_skl(bool pmem)
++static void __init __intel_pmu_pebs_data_source_skl(bool pmem, u64 *data_source)
  {
- 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+ 	u64 pmem_or_l4 = pmem ? LEVEL(PMEM) : LEVEL(L4);
  
-+	kvfree(dirty_i->pinned_secmap);
- 	kvfree(dirty_i->victim_secmap);
+-	pebs_data_source[0x08] = OP_LH | pmem_or_l4 | P(SNOOP, HIT);
+-	pebs_data_source[0x09] = OP_LH | pmem_or_l4 | REM | P(SNOOP, HIT);
+-	pebs_data_source[0x0b] = OP_LH | LEVEL(RAM) | REM | P(SNOOP, NONE);
+-	pebs_data_source[0x0c] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOPX, FWD);
+-	pebs_data_source[0x0d] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOP, HITM);
++	data_source[0x08] = OP_LH | pmem_or_l4 | P(SNOOP, HIT);
++	data_source[0x09] = OP_LH | pmem_or_l4 | REM | P(SNOOP, HIT);
++	data_source[0x0b] = OP_LH | LEVEL(RAM) | REM | P(SNOOP, NONE);
++	data_source[0x0c] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOPX, FWD);
++	data_source[0x0d] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOP, HITM);
++}
++
++void __init intel_pmu_pebs_data_source_skl(bool pmem)
++{
++	__intel_pmu_pebs_data_source_skl(pmem, pebs_data_source);
++}
++
++static void __init intel_pmu_pebs_data_source_grt(u64 *data_source)
++{
++	data_source[0x05] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HIT);
++	data_source[0x06] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOP, HITM);
++	data_source[0x08] = OP_LH | P(LVL, L3) | LEVEL(L3) | P(SNOOPX, FWD);
++}
++
++void __init intel_pmu_pebs_data_source_adl(void)
++{
++	u64 *data_source;
++
++	data_source = x86_pmu.hybrid_pmu[X86_HYBRID_PMU_CORE_IDX].pebs_data_source;
++	memcpy(data_source, pebs_data_source, sizeof(pebs_data_source));
++	__intel_pmu_pebs_data_source_skl(false, data_source);
++
++	data_source = x86_pmu.hybrid_pmu[X86_HYBRID_PMU_ATOM_IDX].pebs_data_source;
++	memcpy(data_source, pebs_data_source, sizeof(pebs_data_source));
++	intel_pmu_pebs_data_source_grt(data_source);
  }
  
-diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
-index 1fa26a9603cb..8fbc9f6afa55 100644
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -295,6 +295,9 @@ struct dirty_seglist_info {
- 	struct mutex seglist_lock;		/* lock for segment bitmaps */
- 	int nr_dirty[NR_DIRTY_TYPE];		/* # of dirty segments */
- 	unsigned long *victim_secmap;		/* background GC victims */
-+	unsigned long *pinned_secmap;		/* pinned victims from foreground GC */
-+	unsigned int pinned_secmap_cnt;		/* count of victims which has pinned data */
-+	bool enable_pin_section;		/* enable pinning section */
+ static u64 precise_store_data(u64 status)
+@@ -198,7 +223,7 @@ u64 adl_latency_data_small(struct perf_event *event, u64 status)
+ 
+ 	dse.val = status;
+ 
+-	val = pebs_data_source[dse.ld_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.ld_dse];
+ 
+ 	/*
+ 	 * For the atom core on ADL,
+@@ -214,7 +239,7 @@ u64 adl_latency_data_small(struct perf_event *event, u64 status)
+ 	return val;
+ }
+ 
+-static u64 load_latency_data(u64 status)
++static u64 load_latency_data(struct perf_event *event, u64 status)
+ {
+ 	union intel_x86_pebs_dse dse;
+ 	u64 val;
+@@ -224,7 +249,7 @@ static u64 load_latency_data(u64 status)
+ 	/*
+ 	 * use the mapping table for bit 0-3
+ 	 */
+-	val = pebs_data_source[dse.ld_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.ld_dse];
+ 
+ 	/*
+ 	 * Nehalem models do not support TLB, Lock infos
+@@ -263,7 +288,7 @@ static u64 load_latency_data(u64 status)
+ 	return val;
+ }
+ 
+-static u64 store_latency_data(u64 status)
++static u64 store_latency_data(struct perf_event *event, u64 status)
+ {
+ 	union intel_x86_pebs_dse dse;
+ 	u64 val;
+@@ -273,7 +298,7 @@ static u64 store_latency_data(u64 status)
+ 	/*
+ 	 * use the mapping table for bit 0-3
+ 	 */
+-	val = pebs_data_source[dse.st_lat_dse];
++	val = hybrid_var(event->pmu, pebs_data_source)[dse.st_lat_dse];
+ 
+ 	pebs_set_tlb_lock(&val, dse.st_lat_stlb_miss, dse.st_lat_locked);
+ 
+@@ -1459,9 +1484,9 @@ static u64 get_data_src(struct perf_event *event, u64 aux)
+ 	bool fst = fl & (PERF_X86_EVENT_PEBS_ST | PERF_X86_EVENT_PEBS_HSW_PREC);
+ 
+ 	if (fl & PERF_X86_EVENT_PEBS_LDLAT)
+-		val = load_latency_data(aux);
++		val = load_latency_data(event, aux);
+ 	else if (fl & PERF_X86_EVENT_PEBS_STLAT)
+-		val = store_latency_data(aux);
++		val = store_latency_data(event, aux);
+ 	else if (fl & PERF_X86_EVENT_PEBS_LAT_HYBRID)
+ 		val = x86_pmu.pebs_latency_data(event, aux);
+ 	else if (fst && (fl & PERF_X86_EVENT_PEBS_HSW_PREC))
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index ff6dd189739e..821098aebf78 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -643,6 +643,8 @@ enum {
+ 	x86_lbr_exclusive_max,
  };
  
- /* victim selection function for cleaning and SSR */
++#define PERF_PEBS_DATA_SOURCE_MAX	0x10
++
+ struct x86_hybrid_pmu {
+ 	struct pmu			pmu;
+ 	const char			*name;
+@@ -670,6 +672,8 @@ struct x86_hybrid_pmu {
+ 	unsigned int			late_ack	:1,
+ 					mid_ack		:1,
+ 					enabled_ack	:1;
++
++	u64				pebs_data_source[PERF_PEBS_DATA_SOURCE_MAX];
+ };
+ 
+ static __always_inline struct x86_hybrid_pmu *hybrid_pmu(struct pmu *pmu)
+@@ -1507,6 +1511,8 @@ void intel_pmu_pebs_data_source_nhm(void);
+ 
+ void intel_pmu_pebs_data_source_skl(bool pmem);
+ 
++void intel_pmu_pebs_data_source_adl(void);
++
+ int intel_pmu_setup_lbr_filter(struct perf_event *event);
+ 
+ void intel_pt_interrupt(void);
 -- 
 2.35.1
 
