@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD6FC28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F4BC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344820AbiHOVRg (ORCPT
+        id S1344976AbiHOVRi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
+        Mon, 15 Aug 2022 17:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348143AbiHOVIN (ORCPT
+        with ESMTP id S1347730AbiHOVHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:08:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1543152FC2;
-        Mon, 15 Aug 2022 12:18:31 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D15D7CC0;
+        Mon, 15 Aug 2022 12:16:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC47EB81106;
-        Mon, 15 Aug 2022 19:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16EE4C433D6;
-        Mon, 15 Aug 2022 19:18:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F32660F68;
+        Mon, 15 Aug 2022 19:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65520C433C1;
+        Mon, 15 Aug 2022 19:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591108;
-        bh=J5MIm3UtF/W+1yWUXo2HL/p6MBZovK8cm6sauq+Outg=;
+        s=korg; t=1660590960;
+        bh=TV1A34qSeVnvK3T5CmuOfDs7H8Ocm+rnoh5pu/mpe1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yl+neMqc7i8YAUwRKy3OT7j0P1sVVkJZ9r8qST/BPcdYuQKMLGlfv98Ozr3eYCE1d
-         EaNkz4yIvo5ztpTjB2hTm6VCz+LuoLniknpOo89phieMUB9xz3N7oyIOt6Vs2RV/AT
-         UStfruWhsr9o6Bd9jvKQk0iQHDoHVW5jZcEp0ajY=
+        b=pYtuTMA7VkvQm4h0sDbfo1MVvaDsRJZwDZQmi9oMM8DRgq8JFqEAjrBiN3KOdIvrf
+         DOFeF/IXYTiev9KJVd5Wd1FUk2SPzzrZInh7IbzsBCX5JQX6fKvcQ+YI6Nd42xbtlS
+         zP3M/uPflskz8sP9GS6Ipikxd/GdvG+A4rHJpArc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Joanne Koong <joannelkoong@gmail.com>,
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0475/1095] bpf: Move check_ptr_off_reg before check_map_access
-Date:   Mon, 15 Aug 2022 19:57:54 +0200
-Message-Id: <20220815180449.237811027@linuxfoundation.org>
+Subject: [PATCH 5.18 0425/1095] crypto: hisilicon/sec - dont sleep when in softirq
+Date:   Mon, 15 Aug 2022 19:57:04 +0200
+Message-Id: <20220815180447.314041633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,118 +50,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-[ Upstream commit e9147b4422e1f35b9c229c980c596ccf03d61562 ]
+[ Upstream commit 02884a4f12de11f54d4ca67a07dd1f111d96fdbd ]
 
-Some functions in next patch want to use this function, and those
-functions will be called by check_map_access, hence move it before
-check_map_access.
+When kunpeng920 encryption driver is used to deencrypt and decrypt
+packets during the softirq, it is not allowed to use mutex lock. The
+kernel will report the following error:
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Joanne Koong <joannelkoong@gmail.com>
-Link: https://lore.kernel.org/bpf/20220415160354.1050687-3-memxor@gmail.com
+BUG: scheduling while atomic: swapper/57/0/0x00000300
+Call trace:
+dump_backtrace+0x0/0x1e4
+show_stack+0x20/0x2c
+dump_stack+0xd8/0x140
+__schedule_bug+0x68/0x80
+__schedule+0x728/0x840
+schedule+0x50/0xe0
+schedule_preempt_disabled+0x18/0x24
+__mutex_lock.constprop.0+0x594/0x5dc
+__mutex_lock_slowpath+0x1c/0x30
+mutex_lock+0x50/0x60
+sec_request_init+0x8c/0x1a0 [hisi_sec2]
+sec_process+0x28/0x1ac [hisi_sec2]
+sec_skcipher_crypto+0xf4/0x1d4 [hisi_sec2]
+sec_skcipher_encrypt+0x1c/0x30 [hisi_sec2]
+crypto_skcipher_encrypt+0x2c/0x40
+crypto_authenc_encrypt+0xc8/0xfc [authenc]
+crypto_aead_encrypt+0x2c/0x40
+echainiv_encrypt+0x144/0x1a0 [echainiv]
+crypto_aead_encrypt+0x2c/0x40
+esp_output_tail+0x348/0x5c0 [esp4]
+esp_output+0x120/0x19c [esp4]
+xfrm_output_one+0x25c/0x4d4
+xfrm_output_resume+0x6c/0x1fc
+xfrm_output+0xac/0x3c0
+xfrm4_output+0x64/0x130
+ip_build_and_send_pkt+0x158/0x20c
+tcp_v4_send_synack+0xdc/0x1f0
+tcp_conn_request+0x7d0/0x994
+tcp_v4_conn_request+0x58/0x6c
+tcp_v6_conn_request+0xf0/0x100
+tcp_rcv_state_process+0x1cc/0xd60
+tcp_v4_do_rcv+0x10c/0x250
+tcp_v4_rcv+0xfc4/0x10a4
+ip_protocol_deliver_rcu+0xf4/0x200
+ip_local_deliver_finish+0x58/0x70
+ip_local_deliver+0x68/0x120
+ip_sublist_rcv_finish+0x70/0x94
+ip_list_rcv_finish.constprop.0+0x17c/0x1d0
+ip_sublist_rcv+0x40/0xb0
+ip_list_rcv+0x140/0x1dc
+__netif_receive_skb_list_core+0x154/0x28c
+__netif_receive_skb_list+0x120/0x1a0
+netif_receive_skb_list_internal+0xe4/0x1f0
+napi_complete_done+0x70/0x1f0
+gro_cell_poll+0x9c/0xb0
+napi_poll+0xcc/0x264
+net_rx_action+0xd4/0x21c
+__do_softirq+0x130/0x358
+irq_exit+0x11c/0x13c
+__handle_domain_irq+0x88/0xf0
+gic_handle_irq+0x78/0x2c0
+el1_irq+0xb8/0x140
+arch_cpu_idle+0x18/0x40
+default_idle_call+0x5c/0x1c0
+cpuidle_idle_call+0x174/0x1b0
+do_idle+0xc8/0x160
+cpu_startup_entry+0x30/0x11c
+secondary_start_kernel+0x158/0x1e4
+softirq: huh, entered softirq 3 NET_RX 0000000093774ee4 with
+preempt_count 00000100, exited with fffffe00?
+
+Fixes: 416d82204df4 ("crypto: hisilicon - add HiSilicon SEC V2 driver")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 76 +++++++++++++++++++++----------------------
- 1 file changed, 38 insertions(+), 38 deletions(-)
+ drivers/crypto/hisilicon/sec2/sec.h        |  2 +-
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 20 ++++++++++----------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index f29aa357826c..afa05e6cd78f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3468,6 +3468,44 @@ static int check_mem_region_access(struct bpf_verifier_env *env, u32 regno,
- 	return 0;
+diff --git a/drivers/crypto/hisilicon/sec2/sec.h b/drivers/crypto/hisilicon/sec2/sec.h
+index c2e9b01187a7..a44c8dba3cda 100644
+--- a/drivers/crypto/hisilicon/sec2/sec.h
++++ b/drivers/crypto/hisilicon/sec2/sec.h
+@@ -119,7 +119,7 @@ struct sec_qp_ctx {
+ 	struct idr req_idr;
+ 	struct sec_alg_res res[QM_Q_DEPTH];
+ 	struct sec_ctx *ctx;
+-	struct mutex req_lock;
++	spinlock_t req_lock;
+ 	struct list_head backlog;
+ 	struct hisi_acc_sgl_pool *c_in_pool;
+ 	struct hisi_acc_sgl_pool *c_out_pool;
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index a91635c348b5..f193d6b6fa16 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -127,11 +127,11 @@ static int sec_alloc_req_id(struct sec_req *req, struct sec_qp_ctx *qp_ctx)
+ {
+ 	int req_id;
+ 
+-	mutex_lock(&qp_ctx->req_lock);
++	spin_lock_bh(&qp_ctx->req_lock);
+ 
+ 	req_id = idr_alloc_cyclic(&qp_ctx->req_idr, NULL,
+ 				  0, QM_Q_DEPTH, GFP_ATOMIC);
+-	mutex_unlock(&qp_ctx->req_lock);
++	spin_unlock_bh(&qp_ctx->req_lock);
+ 	if (unlikely(req_id < 0)) {
+ 		dev_err(req->ctx->dev, "alloc req id fail!\n");
+ 		return req_id;
+@@ -156,9 +156,9 @@ static void sec_free_req_id(struct sec_req *req)
+ 	qp_ctx->req_list[req_id] = NULL;
+ 	req->qp_ctx = NULL;
+ 
+-	mutex_lock(&qp_ctx->req_lock);
++	spin_lock_bh(&qp_ctx->req_lock);
+ 	idr_remove(&qp_ctx->req_idr, req_id);
+-	mutex_unlock(&qp_ctx->req_lock);
++	spin_unlock_bh(&qp_ctx->req_lock);
  }
  
-+static int __check_ptr_off_reg(struct bpf_verifier_env *env,
-+			       const struct bpf_reg_state *reg, int regno,
-+			       bool fixed_off_ok)
-+{
-+	/* Access to this pointer-typed register or passing it to a helper
-+	 * is only allowed in its original, unmodified form.
-+	 */
-+
-+	if (reg->off < 0) {
-+		verbose(env, "negative offset %s ptr R%d off=%d disallowed\n",
-+			reg_type_str(env, reg->type), regno, reg->off);
-+		return -EACCES;
-+	}
-+
-+	if (!fixed_off_ok && reg->off) {
-+		verbose(env, "dereference of modified %s ptr R%d off=%d disallowed\n",
-+			reg_type_str(env, reg->type), regno, reg->off);
-+		return -EACCES;
-+	}
-+
-+	if (!tnum_is_const(reg->var_off) || reg->var_off.value) {
-+		char tn_buf[48];
-+
-+		tnum_strn(tn_buf, sizeof(tn_buf), reg->var_off);
-+		verbose(env, "variable %s access var_off=%s disallowed\n",
-+			reg_type_str(env, reg->type), tn_buf);
-+		return -EACCES;
-+	}
-+
-+	return 0;
-+}
-+
-+int check_ptr_off_reg(struct bpf_verifier_env *env,
-+		      const struct bpf_reg_state *reg, int regno)
-+{
-+	return __check_ptr_off_reg(env, reg, regno, false);
-+}
-+
- /* check read/write into a map element with possible variable offset */
- static int check_map_access(struct bpf_verifier_env *env, u32 regno,
- 			    int off, int size, bool zero_size_allowed)
-@@ -3979,44 +4017,6 @@ static int get_callee_stack_depth(struct bpf_verifier_env *env,
- }
- #endif
+ static u8 pre_parse_finished_bd(struct bd_status *status, void *resp)
+@@ -273,7 +273,7 @@ static int sec_bd_send(struct sec_ctx *ctx, struct sec_req *req)
+ 	    !(req->flag & CRYPTO_TFM_REQ_MAY_BACKLOG))
+ 		return -EBUSY;
  
--static int __check_ptr_off_reg(struct bpf_verifier_env *env,
--			       const struct bpf_reg_state *reg, int regno,
--			       bool fixed_off_ok)
--{
--	/* Access to this pointer-typed register or passing it to a helper
--	 * is only allowed in its original, unmodified form.
--	 */
--
--	if (reg->off < 0) {
--		verbose(env, "negative offset %s ptr R%d off=%d disallowed\n",
--			reg_type_str(env, reg->type), regno, reg->off);
--		return -EACCES;
--	}
--
--	if (!fixed_off_ok && reg->off) {
--		verbose(env, "dereference of modified %s ptr R%d off=%d disallowed\n",
--			reg_type_str(env, reg->type), regno, reg->off);
--		return -EACCES;
--	}
--
--	if (!tnum_is_const(reg->var_off) || reg->var_off.value) {
--		char tn_buf[48];
--
--		tnum_strn(tn_buf, sizeof(tn_buf), reg->var_off);
--		verbose(env, "variable %s access var_off=%s disallowed\n",
--			reg_type_str(env, reg->type), tn_buf);
--		return -EACCES;
--	}
--
--	return 0;
--}
--
--int check_ptr_off_reg(struct bpf_verifier_env *env,
--		      const struct bpf_reg_state *reg, int regno)
--{
--	return __check_ptr_off_reg(env, reg, regno, false);
--}
--
- static int __check_buffer_access(struct bpf_verifier_env *env,
- 				 const char *buf_info,
- 				 const struct bpf_reg_state *reg,
+-	mutex_lock(&qp_ctx->req_lock);
++	spin_lock_bh(&qp_ctx->req_lock);
+ 	ret = hisi_qp_send(qp_ctx->qp, &req->sec_sqe);
+ 
+ 	if (ctx->fake_req_limit <=
+@@ -281,10 +281,10 @@ static int sec_bd_send(struct sec_ctx *ctx, struct sec_req *req)
+ 		list_add_tail(&req->backlog_head, &qp_ctx->backlog);
+ 		atomic64_inc(&ctx->sec->debug.dfx.send_cnt);
+ 		atomic64_inc(&ctx->sec->debug.dfx.send_busy_cnt);
+-		mutex_unlock(&qp_ctx->req_lock);
++		spin_unlock_bh(&qp_ctx->req_lock);
+ 		return -EBUSY;
+ 	}
+-	mutex_unlock(&qp_ctx->req_lock);
++	spin_unlock_bh(&qp_ctx->req_lock);
+ 
+ 	if (unlikely(ret == -EBUSY))
+ 		return -ENOBUFS;
+@@ -487,7 +487,7 @@ static int sec_create_qp_ctx(struct hisi_qm *qm, struct sec_ctx *ctx,
+ 
+ 	qp->req_cb = sec_req_cb;
+ 
+-	mutex_init(&qp_ctx->req_lock);
++	spin_lock_init(&qp_ctx->req_lock);
+ 	idr_init(&qp_ctx->req_idr);
+ 	INIT_LIST_HEAD(&qp_ctx->backlog);
+ 
+@@ -1382,7 +1382,7 @@ static struct sec_req *sec_back_req_clear(struct sec_ctx *ctx,
+ {
+ 	struct sec_req *backlog_req = NULL;
+ 
+-	mutex_lock(&qp_ctx->req_lock);
++	spin_lock_bh(&qp_ctx->req_lock);
+ 	if (ctx->fake_req_limit >=
+ 	    atomic_read(&qp_ctx->qp->qp_status.used) &&
+ 	    !list_empty(&qp_ctx->backlog)) {
+@@ -1390,7 +1390,7 @@ static struct sec_req *sec_back_req_clear(struct sec_ctx *ctx,
+ 				typeof(*backlog_req), backlog_head);
+ 		list_del(&backlog_req->backlog_head);
+ 	}
+-	mutex_unlock(&qp_ctx->req_lock);
++	spin_unlock_bh(&qp_ctx->req_lock);
+ 
+ 	return backlog_req;
+ }
 -- 
 2.35.1
 
