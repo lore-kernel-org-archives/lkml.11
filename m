@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CCFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A573C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240518AbiHOW5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        id S1352353AbiHOW5g (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352348AbiHOWzg (ORCPT
+        with ESMTP id S1352359AbiHOWzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:55:36 -0400
+        Mon, 15 Aug 2022 18:55:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794B913B8BC;
-        Mon, 15 Aug 2022 12:55:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8CC261E;
+        Mon, 15 Aug 2022 12:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF8EA61299;
-        Mon, 15 Aug 2022 19:55:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8F3C433C1;
-        Mon, 15 Aug 2022 19:55:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C337561178;
+        Mon, 15 Aug 2022 19:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE486C433D6;
+        Mon, 15 Aug 2022 19:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593312;
-        bh=tgXo0m4ZmGZzXE4hfXCGg2cljQgs33kT9N1XWJ3j07k=;
+        s=korg; t=1660593315;
+        bh=P5OullaDC/JY0jpGOHyzfuITkSwrD2srDkMM99RXN/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENpcHRdnr4dSt4E2dypNvFcaV3RX966RleRj/yHcmvCq//UQiL8t9oRGKhzqT3bX/
-         oGNE+JoAxk8gQ6i1IGPemCiCkdcHuoKjJPuKIQvWgurMUDT3H44y462GrqQhRHPPq8
-         m7uokrH7NRSZ+Eu2tVvH3Pyrrfydau00wotDiB/M=
+        b=vk0A/CwQ3/LOJ73fqyR/tRZv1ZveqgATrJ2218l3LdQ7JGZnfZMb+PbVTDzw01U76
+         JMpgJdeKLVHN4IdKB6IXv8SZtyXuEIqL7FGnGKUnEdgt/wwQOErqK0B3Kn/2Kit8pJ
+         ZZrr+C9OzYEVBsLh1JG5REEz2cu0wG7i1lXkw3VE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0249/1157] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
-Date:   Mon, 15 Aug 2022 19:53:25 +0200
-Message-Id: <20220815180449.548571853@linuxfoundation.org>
+Subject: [PATCH 5.18 0928/1095] f2fs: dont set GC_FAILURE_PIN for background GC
+Date:   Mon, 15 Aug 2022 20:05:27 +0200
+Message-Id: <20220815180507.633833003@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
+[ Upstream commit 642c0969916eaa4878cb74f36752108e590b0389 ]
 
-The smem-state properties for the pronto node were incorrectly labelled,
-reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-the stop state to be used.
+So that it can reduce the possibility that file be unpinned forcely by
+foreground GC due to .i_gc_failures[GC_FAILURE_PIN] exceeds threshold.
 
-Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/f2fs/gc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 05472510e29d..15c91fb59dba 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -1788,8 +1788,8 @@ pronto: remoteproc@a21b000 {
- 					<&rpmpd MSM8916_VDDMX>;
- 			power-domain-names = "cx", "mx";
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index e83c07144d8f..6a7e4148ff9d 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -1202,7 +1202,8 @@ static int move_data_block(struct inode *inode, block_t bidx,
+ 	}
  
--			qcom,state = <&wcnss_smp2p_out 0>;
--			qcom,state-names = "stop";
-+			qcom,smem-states = <&wcnss_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
- 
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&wcnss_pin_a>;
+ 	if (f2fs_is_pinned_file(inode)) {
+-		f2fs_pin_file_control(inode, true);
++		if (gc_type == FG_GC)
++			f2fs_pin_file_control(inode, true);
+ 		err = -EAGAIN;
+ 		goto out;
+ 	}
 -- 
 2.35.1
 
