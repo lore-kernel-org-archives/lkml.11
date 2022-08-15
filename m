@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9688EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715C5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344224AbiHOTjM (ORCPT
+        id S1344237AbiHOTjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
+        Mon, 15 Aug 2022 15:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344250AbiHOTg0 (ORCPT
+        with ESMTP id S1344267AbiHOTg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:36:26 -0400
+        Mon, 15 Aug 2022 15:36:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8A9642D2;
-        Mon, 15 Aug 2022 11:45:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41402F674;
+        Mon, 15 Aug 2022 11:45:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C1AD611E8;
-        Mon, 15 Aug 2022 18:45:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92AA6C433C1;
-        Mon, 15 Aug 2022 18:45:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E8D9611AA;
+        Mon, 15 Aug 2022 18:45:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02973C433D6;
+        Mon, 15 Aug 2022 18:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589141;
-        bh=ZrmD6NIvlvB4c/OD2NuWsSHOYZ1Vb1Ay9jCFCc1P/sY=;
+        s=korg; t=1660589145;
+        bh=KIjTpLMYMMESOEUkLCXFuygfVJV54M6nmV1h3uM4cDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W8OQADtHScLQZuVAlDPqJ42iAV+SMzqpcyaWBzBShZOHABb8ghbxRn3zmP8MjUb4M
-         Feg1AN6Fvx9S7o8H7O9MimD8OGC3x8zfi8AVEESCvlnvnzhOKBiAeIpB9dVwXgPZpU
-         tHgMx1oukAOMZZMlQ2ht7qSA/Vl8kEGFe6dRDRv0=
+        b=EQ6/YU7PQ/FtJTvK6xHYbRiwaqxgsK8f1qu3kCUaqiyg0cdraTBLAHII7JqHph5Zm
+         ZXybcTZ0bKfGGEbw6wbIDClWzQAg99S2KbDNsg0bYuQFkoUwiMbdDYT8VGeSUJe5ga
+         vn14RWiRqO4LSFsgMt72FYiIekx35tKXyTdnHX2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 625/779] ASoC: fsl_easrc: use snd_pcm_format_t type for sample_format
-Date:   Mon, 15 Aug 2022 20:04:29 +0200
-Message-Id: <20220815180404.101146633@linuxfoundation.org>
+Subject: [PATCH 5.15 596/779] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Mon, 15 Aug 2022 20:04:00 +0200
+Message-Id: <20220815180402.832791565@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,105 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit de27216cf2d645c2fd14e513707bdcd54e5b1de4 ]
+[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
 
-Fix sparse warning:
-sound/soc/fsl/fsl_easrc.c:562:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:563:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:565:38: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:566:39: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:608:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:609:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:615:40: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:616:41: sparse: warning: restricted snd_pcm_format_t degrades to integer
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse: warning: incorrect type in argument 2 (different base types)
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    expected restricted snd_pcm_format_t [usertype] *in_raw_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    expected restricted snd_pcm_format_t [usertype] *out_raw_format
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    expected unsigned int [usertype] *out_value
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    got restricted snd_pcm_format_t *
-sound/soc/fsl/fsl_easrc.c:1943:49: sparse: warning: restricted snd_pcm_format_t degrades to integer
-
-Fixes: 955ac624058f ("ASoC: fsl_easrc: Add EASRC ASoC CPU DAI drivers")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-5-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_easrc.c | 9 ++++++---
- sound/soc/fsl/fsl_easrc.h | 2 +-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_easrc.c b/sound/soc/fsl/fsl_easrc.c
-index be14f84796cb..cf0e10d17dbe 100644
---- a/sound/soc/fsl/fsl_easrc.c
-+++ b/sound/soc/fsl/fsl_easrc.c
-@@ -476,7 +476,8 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
- 	struct fsl_asrc_pair *ctx;
- 	struct device *dev;
- 	u32 inrate, outrate, offset = 0;
--	u32 in_s_rate, out_s_rate, in_s_fmt, out_s_fmt;
-+	u32 in_s_rate, out_s_rate;
-+	snd_pcm_format_t in_s_fmt, out_s_fmt;
- 	int ret, i;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index b5ce10b0656f..35504e7e6a35 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1711,8 +1711,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
- 	if (!easrc)
-@@ -1873,6 +1874,7 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	struct device_node *np;
- 	void __iomem *regs;
-+	u32 asrc_fmt = 0;
- 	int ret, irq;
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1727,8 +1727,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
- 	easrc = devm_kzalloc(dev, sizeof(*easrc), GFP_KERNEL);
-@@ -1933,13 +1935,14 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	ret = of_property_read_u32(np, "fsl,asrc-format", &easrc->asrc_format);
-+	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
-+	easrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
- 	if (ret) {
- 		dev_err(dev, "failed to asrc format\n");
- 		return ret;
- 	}
- 
--	if (!(FSL_EASRC_FORMATS & (1ULL << easrc->asrc_format))) {
-+	if (!(FSL_EASRC_FORMATS & (pcm_format_to_bits(easrc->asrc_format)))) {
- 		dev_warn(dev, "unsupported format, switching to S24_LE\n");
- 		easrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
- 	}
-diff --git a/sound/soc/fsl/fsl_easrc.h b/sound/soc/fsl/fsl_easrc.h
-index 30620d56252c..5b8469757c12 100644
---- a/sound/soc/fsl/fsl_easrc.h
-+++ b/sound/soc/fsl/fsl_easrc.h
-@@ -569,7 +569,7 @@ struct fsl_easrc_io_params {
- 	unsigned int access_len;
- 	unsigned int fifo_wtmk;
- 	unsigned int sample_rate;
--	unsigned int sample_format;
-+	snd_pcm_format_t sample_format;
- 	unsigned int norm_rate;
- };
- 
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
 -- 
 2.35.1
 
