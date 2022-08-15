@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4C5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A24C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244169AbiHOSuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
+        id S244177AbiHOSuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243824AbiHOSpp (ORCPT
+        with ESMTP id S243863AbiHOSp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:45:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3C030F7A;
-        Mon, 15 Aug 2022 11:27:34 -0700 (PDT)
+        Mon, 15 Aug 2022 14:45:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553BB31228;
+        Mon, 15 Aug 2022 11:27:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBBB960FB8;
-        Mon, 15 Aug 2022 18:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA007C433C1;
-        Mon, 15 Aug 2022 18:27:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94D38B81081;
+        Mon, 15 Aug 2022 18:27:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDED5C433D6;
+        Mon, 15 Aug 2022 18:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588053;
-        bh=C+7qbxZDcsHmioA8hGAKIIf6AxtRN3IaVwqqKwIMSR0=;
+        s=korg; t=1660588059;
+        bh=tncehYp3RIreavQFAJJmsSQ5PE2Xm9k9/Z+h64kWCsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XiGvHBRpsN5dnHi63w+LLQbJ2tWhqgzA1Z9jN5IfD2+SPcOacDfNceumuAymGTkTi
-         N4+/gSVPV8Pkt5tWF1FqRGJuM6kU3Ue7vqDOH14vdeR4or3A3WpQC4ivQLYazeaTmB
-         9aQUCfnEzpl8bDspAbPXyV2NTt3qp1QrH4vLTZ8Q=
+        b=fi7utdLG/NsolvOE1jLc7d6umBQP9jm8PVgmDkSLkD0taE0Fa9XVoZ7ymI9SAmKI0
+         iBvPFCaD3ZrDfYz/xLxCkbxg/tFuGGz3D3GUrGeLvlL2iyNkDQC9+OTcRwFdPxiFxU
+         r04+43Uhihqol+mNTEh3oYPtj8D8R1KboWEjqiwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 280/779] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
-Date:   Mon, 15 Aug 2022 19:58:44 +0200
-Message-Id: <20220815180349.281891910@linuxfoundation.org>
+        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 282/779] rcutorture: Warn on individual rcu_torture_init() error conditions
+Date:   Mon, 15 Aug 2022 19:58:46 +0200
+Message-Id: <20220815180349.367984790@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,61 +48,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
+[ Upstream commit efeff6b39b9de4480572c7b0c5eb77204795cb57 ]
 
-As a result of the execution of the inner while loop, the value
-of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
-is not checked after the loop and 'idx' is used to write the
-LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
-in the outer loop.
+When running rcutorture as a module, any rcu_torture_init() issues will be
+reflected in the error code from modprobe or insmod, as the case may be.
+However, these error codes are not available when running rcutorture
+built-in, for example, when using the kvm.sh script.  This commit
+therefore adds WARN_ON_ONCE() to allow distinguishing rcu_torture_init()
+errors when running rcutorture built-in.
 
-The fix is to check the new value of 'idx' inside the nested loop,
-and break both loops if index equals the size. Checking it at the
-start is now pointless, so let's remove it.
-
-Detected using the static analysis tool - Svace.
-
-Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
-Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ include/linux/torture.h |  8 ++++++++
+ kernel/rcu/rcutorture.c | 30 +++++++++++++++---------------
+ 2 files changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-index 9a491e5db75b..532e3b91777d 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-@@ -2403,7 +2403,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		/* Repeat initial/next rate.
- 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
- 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
--		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
-+		while (repeat_rate > 0) {
- 			if (is_legacy(tbl_type.lq_type)) {
- 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
- 					ant_toggle_cnt++;
-@@ -2422,6 +2422,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 			    cpu_to_le32(new_rate);
- 			repeat_rate--;
- 			idx++;
-+			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
-+				goto out;
- 		}
+diff --git a/include/linux/torture.h b/include/linux/torture.h
+index 0910c5803f35..24f58e50a94b 100644
+--- a/include/linux/torture.h
++++ b/include/linux/torture.h
+@@ -47,6 +47,14 @@ do {										\
+ } while (0)
+ void verbose_torout_sleep(void);
  
- 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
-@@ -2466,6 +2468,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		repeat_rate--;
++#define torture_init_error(firsterr)						\
++({										\
++	int ___firsterr = (firsterr);						\
++										\
++	WARN_ONCE(!IS_MODULE(CONFIG_RCU_TORTURE_TEST) && ___firsterr < 0, "Torture-test initialization failed with error code %d\n", ___firsterr); \
++	___firsterr < 0;								\
++})
++
+ /* Definitions for online/offline exerciser. */
+ #ifdef CONFIG_HOTPLUG_CPU
+ int torture_num_online_cpus(void);
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index f922937eb39a..c1b36c52e896 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -3066,7 +3066,7 @@ rcu_torture_init(void)
+ 	rcu_torture_write_types();
+ 	firsterr = torture_create_kthread(rcu_torture_writer, NULL,
+ 					  writer_task);
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	if (nfakewriters > 0) {
+ 		fakewriter_tasks = kcalloc(nfakewriters,
+@@ -3081,7 +3081,7 @@ rcu_torture_init(void)
+ 	for (i = 0; i < nfakewriters; i++) {
+ 		firsterr = torture_create_kthread(rcu_torture_fakewriter,
+ 						  NULL, fakewriter_tasks[i]);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
  	}
+ 	reader_tasks = kcalloc(nrealreaders, sizeof(reader_tasks[0]),
+@@ -3097,7 +3097,7 @@ rcu_torture_init(void)
+ 		rcu_torture_reader_mbchk[i].rtc_chkrdr = -1;
+ 		firsterr = torture_create_kthread(rcu_torture_reader, (void *)i,
+ 						  reader_tasks[i]);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	nrealnocbers = nocbs_nthreads;
+@@ -3117,18 +3117,18 @@ rcu_torture_init(void)
+ 	}
+ 	for (i = 0; i < nrealnocbers; i++) {
+ 		firsterr = torture_create_kthread(rcu_nocb_toggle, NULL, nocb_tasks[i]);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	if (stat_interval > 0) {
+ 		firsterr = torture_create_kthread(rcu_torture_stats, NULL,
+ 						  stats_task);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	if (test_no_idle_hz && shuffle_interval > 0) {
+ 		firsterr = torture_shuffle_init(shuffle_interval * HZ);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	if (stutter < 0)
+@@ -3138,7 +3138,7 @@ rcu_torture_init(void)
  
-+out:
- 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
- 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
+ 		t = cur_ops->stall_dur ? cur_ops->stall_dur() : stutter * HZ;
+ 		firsterr = torture_stutter_init(stutter * HZ, t);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	if (fqs_duration < 0)
+@@ -3147,7 +3147,7 @@ rcu_torture_init(void)
+ 		/* Create the fqs thread */
+ 		firsterr = torture_create_kthread(rcu_torture_fqs, NULL,
+ 						  fqs_task);
+-		if (firsterr)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 	}
+ 	if (test_boost_interval < 1)
+@@ -3161,7 +3161,7 @@ rcu_torture_init(void)
+ 		firsterr = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "RCU_TORTURE",
+ 					     rcutorture_booster_init,
+ 					     rcutorture_booster_cleanup);
+-		if (firsterr < 0)
++		if (torture_init_error(firsterr))
+ 			goto unwind;
+ 		rcutor_hp = firsterr;
  
+@@ -3182,23 +3182,23 @@ rcu_torture_init(void)
+ 	}
+ 	shutdown_jiffies = jiffies + shutdown_secs * HZ;
+ 	firsterr = torture_shutdown_init(shutdown_secs, rcu_torture_cleanup);
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	firsterr = torture_onoff_init(onoff_holdoff * HZ, onoff_interval,
+ 				      rcutorture_sync);
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	firsterr = rcu_torture_stall_init();
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	firsterr = rcu_torture_fwd_prog_init();
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	firsterr = rcu_torture_barrier_init();
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	firsterr = rcu_torture_read_exit_init();
+-	if (firsterr)
++	if (torture_init_error(firsterr))
+ 		goto unwind;
+ 	if (object_debug)
+ 		rcu_test_debug_objects();
 -- 
 2.35.1
 
