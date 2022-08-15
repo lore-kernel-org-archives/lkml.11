@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6C1C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBBEC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345504AbiHPBBD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46116 "EHLO
+        id S244321AbiHPBDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244032AbiHPAyL (ORCPT
+        with ESMTP id S1348489AbiHPA5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:54:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12E819C378;
-        Mon, 15 Aug 2022 13:47:39 -0700 (PDT)
+        Mon, 15 Aug 2022 20:57:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBBEDAEE3;
+        Mon, 15 Aug 2022 13:48:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A1633CE12DE;
-        Mon, 15 Aug 2022 20:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E55C4314B;
-        Mon, 15 Aug 2022 20:47:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EE3D6126B;
+        Mon, 15 Aug 2022 20:48:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B22AC433C1;
+        Mon, 15 Aug 2022 20:48:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596455;
-        bh=DLGiwA63AXXNhPRPrN+7nn6lZx8gref/YXMUo+ADIzU=;
+        s=korg; t=1660596531;
+        bh=tgdmrLTdQe9hBmm6vZyxh3Cm1CaEASKqr81F1Z/8h5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Fiz1HuPu0NMgS2G2opq0hTPpNcMX18tDr1HqoHTLKkOZW4qkHWemL5DfrF8f8O6t
-         BU8Q35mb7DCSigDe1tAqtPSDC8lr/9s7P9AE0mmX7AfamLYLlfPUODaskYM6Pnq/+i
-         cnjUaCfk8e0IcJgzo/OK2SinbvRjb2gNDb5AxOKU=
+        b=1owQmaQ0RpEgV4xxZIT+OSfLFRmkRG8z/V+gJWY8/K2F7XPvxI3M/KhCA8zkMCWNn
+         6pFRjvpZQ5z8QM7hoIGNtMvFG1xpbtM9Eeg1QeW4JRcFehN8c9u/kKfJX3wzCuY+cg
+         kFTNibeNL1Aak+ilewGPEL69p1fdzOOzwEWBZwXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.19 1051/1157] posix-cpu-timers: Cleanup CPU timers before freeing them during exec
-Date:   Mon, 15 Aug 2022 20:06:47 +0200
-Message-Id: <20220815180522.099633730@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1109/1157] dm raid: fix address sanitizer warning in raid_status
+Date:   Mon, 15 Aug 2022 20:07:45 +0200
+Message-Id: <20220815180524.658664582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,47 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit e362359ace6f87c201531872486ff295df306d13 upstream.
+[ Upstream commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 ]
 
-Commit 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a
-task") started looking up tasks by PID when deleting a CPU timer.
+There is this warning when using a kernel with the address sanitizer
+and running this testsuite:
+https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
 
-When a non-leader thread calls execve, it will switch PIDs with the leader
-process. Then, as it calls exit_itimers, posix_cpu_timer_del cannot find
-the task because the timer still points out to the old PID.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
+Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
+CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x6a/0x9c
+ print_address_description.constprop.0+0x1f/0x1e0
+ print_report.cold+0x55/0x244
+ kasan_report+0xc9/0x100
+ raid_status+0x1747/0x2820 [dm_raid]
+ dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
+ table_load+0x35c/0x630 [dm_mod]
+ ctl_ioctl+0x411/0x630 [dm_mod]
+ dm_ctl_ioctl+0xa/0x10 [dm_mod]
+ __x64_sys_ioctl+0x12a/0x1a0
+ do_syscall_64+0x5b/0x80
 
-That means that armed timers won't be disarmed, that is, they won't be
-removed from the timerqueue_list. exit_itimers will still release their
-memory, and when that list is later processed, it leads to a
-use-after-free.
+The warning is caused by reading conf->max_nr_stripes in raid_status. The
+code in raid_status reads mddev->private, casts it to struct r5conf and
+reads the entry max_nr_stripes.
 
-Clean up the timers from the de-threaded task before freeing them. This
-prevents a reported use-after-free.
+However, if we have different raid type than 4/5/6, mddev->private
+doesn't point to struct r5conf; it may point to struct r0conf, struct
+r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
+of these structs to struct r5conf, we will be reading invalid memory
+and KASAN warns about it.
 
-Fixes: 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a task")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220809170751.164716-1-cascardo@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exec.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/md/dm-raid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1301,6 +1301,9 @@ int begin_new_exec(struct linux_binprm *
- 	bprm->mm = NULL;
- 
- #ifdef CONFIG_POSIX_TIMERS
-+	spin_lock_irq(&me->sighand->siglock);
-+	posix_cpu_timers_exit(me);
-+	spin_unlock_irq(&me->sighand->siglock);
- 	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
+diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
+index 80c9f7134e9b..4e7f870b2277 100644
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3509,7 +3509,7 @@ static void raid_status(struct dm_target *ti, status_type_t type,
+ {
+ 	struct raid_set *rs = ti->private;
+ 	struct mddev *mddev = &rs->md;
+-	struct r5conf *conf = mddev->private;
++	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
+ 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
+ 	unsigned long recovery;
+ 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
+-- 
+2.35.1
+
 
 
