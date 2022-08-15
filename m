@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CFDC2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42657C2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355005AbiHOXq5 (ORCPT
+        id S1354952AbiHOXqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
+        Mon, 15 Aug 2022 19:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354326AbiHOXlx (ORCPT
+        with ESMTP id S1354327AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73572C665;
-        Mon, 15 Aug 2022 13:12:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3AD2C661;
+        Mon, 15 Aug 2022 13:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C116077B;
-        Mon, 15 Aug 2022 20:12:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 541F9C433C1;
-        Mon, 15 Aug 2022 20:12:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D33D5B80EA9;
+        Mon, 15 Aug 2022 20:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AEE5C433D6;
+        Mon, 15 Aug 2022 20:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594356;
-        bh=Y7dWTjLqANNjbJKqLAbtLdNNLRyhsxmBAvgy0geNrzM=;
+        s=korg; t=1660594353;
+        bh=PvyEqTet1YutiyM68uLV8/0zJlbK9ycyLKrxuXea/54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TTv6G4IfScpWIDNA/Vnmb1rtgz2GFc9biFIAP7ZR2rjEBl9PAIjq169ih7PhWV4yd
-         ItbccRauNFSoJHo9ZVq+bvwlFB2s/6e/IPcIh44SZAY5sNwq2RBlH7IfW00TVf9SVY
-         SDldB4yVGLtVrKFU6Ocy5cbb84HF/tqmwoEwCfgo=
+        b=RVEhrbyhcol+KpKpjgmSuJyWLyFvzAMY8KhxnvNtJnsLW0e2UoHC/kJytmAlMfNBR
+         cKb7OwewUnhADZfkUC/nPNfOdjLCNZXe59UVYge+TB9+ITsbWFYQFnaik+awre8c+v
+         i4jkMXcIT7Y6X7D2yD/4RmvNoMpcA4qzFfxk4t4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 1084/1095] net: dsa: felix: fix min gate len calculation for tc when its first gate is closed
-Date:   Mon, 15 Aug 2022 20:08:03 +0200
-Message-Id: <20220815180513.883761274@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0420/1157] drm/vc4: hdmi: Move HDMI reset to pm_resume
+Date:   Mon, 15 Aug 2022 19:56:16 +0200
+Message-Id: <20220815180456.476020431@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,87 +51,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 7e4babffa6f340a74c820d44d44d16511e666424 upstream.
+[ Upstream commit 467e30171b5b483922b1c24c573fa50787207cb6 ]
 
-min_gate_len[tc] is supposed to track the shortest interval of
-continuously open gates for a traffic class. For example, in the
-following case:
+The BCM2835-37 found in the RaspberryPi 0 to 3 have a power domain
+attached to the HDMI block, handled in Linux through runtime_pm.
 
-TC 76543210
+That power domain is shared with the VEC block, so even if we put our
+runtime_pm reference in the HDMI driver it would keep being on. If the
+VEC is disabled though, the power domain would be disabled and we would
+lose any initialization done in our bind implementation.
 
-t0 00000001b 200000 ns
-t1 00000010b 200000 ns
+That initialization involves calling the reset function and initializing
+the CEC registers.
 
-min_gate_len[0] and min_gate_len[1] should be 200000, while
-min_gate_len[2-7] should be 0.
+Let's move the initialization to our runtime_resume implementation so
+that we initialize everything properly if we ever need to.
 
-However what happens is that min_gate_len[0] is 200000, but
-min_gate_len[1] ends up being 0 (despite gate_len[1] being 200000 at the
-point where the logic detects the gate close event for TC 1).
-
-The problem is that the code considers a "gate close" event whenever it
-sees that there is a 0 for that TC (essentially it's level rather than
-edge triggered). By doing that, any time a gate is seen as closed
-without having been open prior, gate_len, which is 0, will be written
-into min_gate_len. Once min_gate_len becomes 0, it's impossible for it
-to track anything higher than that (the length of actually open
-intervals).
-
-To fix this, we make the writing to min_gate_len[tc] be edge-triggered,
-which avoids writes for gates that are closed in consecutive intervals.
-However what this does is it makes us need to special-case the
-permanently closed gates at the end.
-
-Fixes: 55a515b1f5a9 ("net: dsa: felix: drop oversized frames with tc-taprio instead of hanging the port")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220804202817.1677572-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c86b41214362 ("drm/vc4: hdmi: Move the HSM clock enable to runtime_pm")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-24-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c |   15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 41 ++++++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 19 deletions(-)
 
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1133,6 +1133,7 @@ static void vsc9959_tas_min_gate_lengths
- {
- 	struct tc_taprio_sched_entry *entry;
- 	u64 gate_len[OCELOT_NUM_TC];
-+	u8 gates_ever_opened = 0;
- 	int tc, i, n;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index b73f64f0ba09..f3e0de6515e0 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2544,8 +2544,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
+ 	struct cec_connector_info conn_info;
+ 	struct platform_device *pdev = vc4_hdmi->pdev;
+ 	struct device *dev = &pdev->dev;
+-	unsigned long flags;
+-	u32 value;
+ 	int ret;
  
- 	/* Initialize arrays */
-@@ -1160,16 +1161,28 @@ static void vsc9959_tas_min_gate_lengths
- 		for (tc = 0; tc < OCELOT_NUM_TC; tc++) {
- 			if (entry->gate_mask & BIT(tc)) {
- 				gate_len[tc] += entry->interval;
-+				gates_ever_opened |= BIT(tc);
- 			} else {
- 				/* Gate closes now, record a potential new
- 				 * minimum and reinitialize length
- 				 */
--				if (min_gate_len[tc] > gate_len[tc])
-+				if (min_gate_len[tc] > gate_len[tc] &&
-+				    gate_len[tc])
- 					min_gate_len[tc] = gate_len[tc];
- 				gate_len[tc] = 0;
- 			}
- 		}
- 	}
-+
-+	/* min_gate_len[tc] actually tracks minimum *open* gate time, so for
-+	 * permanently closed gates, min_gate_len[tc] will still be U64_MAX.
-+	 * Therefore they are currently indistinguishable from permanently
-+	 * open gates. Overwrite the gate len with 0 when we know they're
-+	 * actually permanently closed, i.e. after the loop above.
-+	 */
-+	for (tc = 0; tc < OCELOT_NUM_TC; tc++)
-+		if (!(gates_ever_opened & BIT(tc)))
-+			min_gate_len[tc] = 0;
+ 	if (!of_find_property(dev->of_node, "interrupts", NULL)) {
+@@ -2564,15 +2562,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
+ 	cec_fill_conn_info_from_drm(&conn_info, &vc4_hdmi->connector);
+ 	cec_s_conn_info(vc4_hdmi->cec_adap, &conn_info);
+ 
+-	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
+-	value = HDMI_READ(HDMI_CEC_CNTRL_1);
+-	/* Set the logical address to Unregistered */
+-	value |= VC4_HDMI_CEC_ADDR_MASK;
+-	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
+-	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
+-
+-	vc4_hdmi_cec_update_clk_div(vc4_hdmi);
+-
+ 	if (vc4_hdmi->variant->external_irq_controller) {
+ 		ret = request_threaded_irq(platform_get_irq_byname(pdev, "cec-rx"),
+ 					   vc4_cec_irq_handler_rx_bare,
+@@ -2588,10 +2577,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
+ 		if (ret)
+ 			goto err_remove_cec_rx_handler;
+ 	} else {
+-		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
+-		HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, 0xffffffff);
+-		spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
+-
+ 		ret = request_threaded_irq(platform_get_irq(pdev, 0),
+ 					   vc4_cec_irq_handler,
+ 					   vc4_cec_irq_handler_thread, 0,
+@@ -2642,7 +2627,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
  }
  
- /* Update QSYS_PORT_MAX_SDU to make sure the static guard bands added by the
+ static void vc4_hdmi_cec_exit(struct vc4_hdmi *vc4_hdmi) {};
+-
+ #endif
+ 
+ static int vc4_hdmi_build_regset(struct vc4_hdmi *vc4_hdmi,
+@@ -2871,12 +2855,34 @@ static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
+ static int vc4_hdmi_runtime_resume(struct device *dev)
+ {
+ 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
++	unsigned long __maybe_unused flags;
++	u32 __maybe_unused value;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
+ 	if (ret)
+ 		return ret;
+ 
++	if (vc4_hdmi->variant->reset)
++		vc4_hdmi->variant->reset(vc4_hdmi);
++
++#ifdef CONFIG_DRM_VC4_HDMI_CEC
++	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
++	value = HDMI_READ(HDMI_CEC_CNTRL_1);
++	/* Set the logical address to Unregistered */
++	value |= VC4_HDMI_CEC_ADDR_MASK;
++	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
++	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
++
++	vc4_hdmi_cec_update_clk_div(vc4_hdmi);
++
++	if (!vc4_hdmi->variant->external_irq_controller) {
++		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
++		HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, 0xffffffff);
++		spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
++	}
++#endif
++
+ 	return 0;
+ }
+ 
+@@ -2966,9 +2972,6 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+ 
+-	if (vc4_hdmi->variant->reset)
+-		vc4_hdmi->variant->reset(vc4_hdmi);
+-
+ 	if ((of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi0") ||
+ 	     of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi1")) &&
+ 	    HDMI_READ(HDMI_VID_CTL) & VC4_HD_VID_CTL_ENABLE) {
+-- 
+2.35.1
+
 
 
