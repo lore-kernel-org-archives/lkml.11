@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D9BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1A5C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352701AbiHPATL (ORCPT
+        id S1352739AbiHPATP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
+        Mon, 15 Aug 2022 20:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357020AbiHPAM5 (ORCPT
+        with ESMTP id S1357013AbiHPAM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:12:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8D617545E;
-        Mon, 15 Aug 2022 13:29:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DD1175E17;
+        Mon, 15 Aug 2022 13:29:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80792B811A5;
-        Mon, 15 Aug 2022 20:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD051C433D7;
-        Mon, 15 Aug 2022 20:29:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9239761135;
+        Mon, 15 Aug 2022 20:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8259DC433D6;
+        Mon, 15 Aug 2022 20:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595374;
-        bh=8yMkKzhaIIy3DNw9qsKXKinY89NRF/Ka1TXvMtoYgLo=;
+        s=korg; t=1660595384;
+        bh=8xVoADYwIv4LNKJ9F7p8sP2HeEkSfNtj+oTvGTxCvuo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NadCh0N6Jcf7rBc1+JZL1hNfCxwZIyRXALXLokeW62+DhSv3ExmRKtTvhhcDee6/o
-         y9TyndTnZcscPzrkb14MclvBjKh0lMbbuP2WGOh1eNB675OvuJ6srDGQjMqkCDLyM1
-         d3s9mZDohovdbb9vbGU+6bdPP6/u2XS95Y0rN7is=
+        b=WNsdW8JYTkMpXfD3WD/77FBrPUfbDYD7NZBPPP/AdPbkAbx4uGQ+KJhRHfk00+E+A
+         VQ1AqBhFgFDK5TlSlmoD5bji6obzFKb8sLZPlLS28RKTkHqbvwLXnUIpPinNIP8jpj
+         zSceSbxcPKunym3MDPpPvMCw3Sqey3PELcHX5qEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Neal Liu <neal_liu@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0744/1157] clk: qcom: clk-krait: unlock spin after mux completion
-Date:   Mon, 15 Aug 2022 20:01:40 +0200
-Message-Id: <20220815180509.227870647@linuxfoundation.org>
+Subject: [PATCH 5.19 0747/1157] usb: gadget: f_mass_storage: Make CD-ROM emulation works with Windows OS
+Date:   Mon, 15 Aug 2022 20:01:43 +0200
+Message-Id: <20220815180509.347232682@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,45 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit df83d2c9e72910416f650ade1e07cc314ff02731 ]
+[ Upstream commit 3b91edd624ab1ab694deef513a45eb9e9d49d75f ]
 
-Unlock spinlock after the mux switch is completed to prevent any corner
-case of mux request while the switch still needs to be done.
+Add read TOC with format 1 to support CD-ROM emulation with
+Windows OS.
+This patch is tested on Windows OS Server 2019.
 
-Fixes: 4d7dc77babfe ("clk: qcom: Add support for Krait clocks")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220430054458.31321-3-ansuelsmth@gmail.com
+Fixes: 89ada0fe669a ("usb: gadget: f_mass_storage: Make CD-ROM emulation work with Mac OS-X")
+Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20220628021436.3252262-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/clk-krait.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/usb/gadget/function/f_mass_storage.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index 59f1af415b58..90046428693c 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -32,11 +32,16 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
- 	}
- 	krait_set_l2_indirect_reg(mux->offset, regval);
--	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+diff --git a/drivers/usb/gadget/function/f_mass_storage.c b/drivers/usb/gadget/function/f_mass_storage.c
+index 3a77bca0ebe1..e884f295504f 100644
+--- a/drivers/usb/gadget/function/f_mass_storage.c
++++ b/drivers/usb/gadget/function/f_mass_storage.c
+@@ -1192,13 +1192,14 @@ static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
+ 	u8		format;
+ 	int		i, len;
  
- 	/* Wait for switch to complete. */
- 	mb();
- 	udelay(1);
++	format = common->cmnd[2] & 0xf;
 +
-+	/*
-+	 * Unlock now to make sure the mux register is not
-+	 * modified while switching to the new parent.
-+	 */
-+	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
- }
+ 	if ((common->cmnd[1] & ~0x02) != 0 ||	/* Mask away MSF */
+-			start_track > 1) {
++			(start_track > 1 && format != 0x1)) {
+ 		curlun->sense_data = SS_INVALID_FIELD_IN_CDB;
+ 		return -EINVAL;
+ 	}
  
- static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
+-	format = common->cmnd[2] & 0xf;
+ 	/*
+ 	 * Check if CDB is old style SFF-8020i
+ 	 * i.e. format is in 2 MSBs of byte 9
+@@ -1208,8 +1209,8 @@ static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
+ 		format = (common->cmnd[9] >> 6) & 0x3;
+ 
+ 	switch (format) {
+-	case 0:
+-		/* Formatted TOC */
++	case 0:	/* Formatted TOC */
++	case 1:	/* Multi-session info */
+ 		len = 4 + 2*8;		/* 4 byte header + 2 descriptors */
+ 		memset(buf, 0, len);
+ 		buf[1] = len - 2;	/* TOC Length excludes length field */
+@@ -1250,7 +1251,7 @@ static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
+ 		return len;
+ 
+ 	default:
+-		/* Multi-session, PMA, ATIP, CD-TEXT not supported/required */
++		/* PMA, ATIP, CD-TEXT not supported/required */
+ 		curlun->sense_data = SS_INVALID_FIELD_IN_CDB;
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
 
