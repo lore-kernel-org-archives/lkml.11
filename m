@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D3BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2662CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352305AbiHOW5V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
+        id S233689AbiHOW51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352210AbiHOWzL (ORCPT
+        with ESMTP id S1352242AbiHOWzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:55:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0098D13AE3F;
-        Mon, 15 Aug 2022 12:55:05 -0700 (PDT)
+        Mon, 15 Aug 2022 18:55:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6310413B88F;
+        Mon, 15 Aug 2022 12:55:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44993B81136;
-        Mon, 15 Aug 2022 19:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C214C433C1;
-        Mon, 15 Aug 2022 19:55:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA264612AC;
+        Mon, 15 Aug 2022 19:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6EFC433C1;
+        Mon, 15 Aug 2022 19:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593304;
-        bh=Jv2aLvtiyqHLtL9YV79jTFbZ91vRJlawb2asnTw+3fg=;
+        s=korg; t=1660593307;
+        bh=++/ccFWEPTN4VQVkgkKIVVVj1aYxf7ZJD9jzJQ3EwYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FuDUhEtxIP+xFA0jashc1D2LWgwjPeSIAKqFNwUCP9Mnh+Zzdwtjwy3/vcqx11iLD
-         kwcAUhteIcZPV1T9xZhyT85R8D6wY6dEcwx83eRDxYzopSkGZIsVy8FVSmiRdD9Yhw
-         66ll/IhVNItiNQIfk1KSqCy+5+jkZj9UPv1mHElk=
+        b=Ov+PjKJlosBOqHgCYeaYP4BeE4m4HA2wXhT5f3GKunAYC/cTiM3lItUkU1NSpRD4P
+         1L5cD5pGopOOLY4bE89C4xJDMMIzR8QA4iQ755YzpSv8wZpx0cm+UkJ541+C9Csb1f
+         4nxllBDO4VpswNnQj+DneOyLLMWxwORcaCXQRG2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Luca Weiss <luca@z3ntu.xyz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0243/1157] ARM: dts: qcom: msm8974: add required ranges to OCMEM
-Date:   Mon, 15 Aug 2022 19:53:19 +0200
-Message-Id: <20220815180449.293579586@linuxfoundation.org>
+Subject: [PATCH 5.18 0927/1095] f2fs: check pinfile in gc_data_segment() in advance
+Date:   Mon, 15 Aug 2022 20:05:26 +0200
+Message-Id: <20220815180507.603347042@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,35 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 7a16ea7f3a5ec0f30b146b058c273b7a9c8ceadf ]
+[ Upstream commit a22bb5526d7dd627b94a7ee22e5a98c36e39fceb ]
 
-The OCMEM bindings require ranges property.
+In order to skip migrating section which contains data of pinned
+file in advance.
 
-Fixes: a2cc991ed634 ("ARM: dts: qcom: msm8974: add ocmem node")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Luca Weiss <luca@z3ntu.xyz>
-Tested-by: Luca Weiss <luca@z3ntu.xyz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220607171848.535128-7-krzysztof.kozlowski@linaro.org
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ fs/f2fs/gc.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index ce9cb5e4e95d..3c31c95aa6b9 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1630,6 +1630,7 @@ ocmem@fdd00000 {
- 			reg = <0xfdd00000 0x2000>,
- 			      <0xfec00000 0x180000>;
- 			reg-names = "ctrl", "mem";
-+			ranges = <0 0xfec00000 0x180000>;
- 			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>,
- 				 <&mmcc OCMEMCX_OCMEMNOC_CLK>;
- 			clock-names = "core", "iface";
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index ea5b93b689cd..e83c07144d8f 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -1480,6 +1480,13 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
+ 					special_file(inode->i_mode))
+ 				continue;
+ 
++			if (is_inode_flag_set(inode, FI_PIN_FILE) &&
++							gc_type == FG_GC) {
++				f2fs_pin_file_control(inode, true);
++				iput(inode);
++				return submitted;
++			}
++
+ 			if (!f2fs_down_write_trylock(
+ 				&F2FS_I(inode)->i_gc_rwsem[WRITE])) {
+ 				iput(inode);
 -- 
 2.35.1
 
