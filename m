@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E9DC28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28181C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354234AbiHOXoA (ORCPT
+        id S1354258AbiHOXoG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        Mon, 15 Aug 2022 19:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354141AbiHOXl1 (ORCPT
+        with ESMTP id S1354153AbiHOXl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D66128EE4;
-        Mon, 15 Aug 2022 13:10:46 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABC213263F;
+        Mon, 15 Aug 2022 13:10:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96026B80EAD;
-        Mon, 15 Aug 2022 20:10:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DD2C433D6;
-        Mon, 15 Aug 2022 20:10:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E1C60B6E;
+        Mon, 15 Aug 2022 20:10:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11464C433D6;
+        Mon, 15 Aug 2022 20:10:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594244;
-        bh=2OjajXMonsA43H6MGn0Yk7kn041C0Uia5PRSs490OSo=;
+        s=korg; t=1660594247;
+        bh=vDkvebUt7MZA8+U3hS5joEOkD7qc/yPP/d1mBQwSSSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8aT9XYN4ViCtPQZc+KFB6qZS+K9zYtAZ3BoHkI4p648wbvfKl7yKQJ7UchxNm/nh
-         ntVehBpoF8cd0uOjMVYEgMDp2HeeaYbxCLFqIcWrk34e5DwyddNBQDkUme6n5cR4gP
-         QPZYQJlPzyLm9Musas8okk/65gUnKpwlSgE8iUVs=
+        b=knRDWrs4cwEwisOzd9V0laaCCsJS3E98QZ4K+20hjQOjPcvMZD4WX6toC8eUZoQI7
+         2L9s3/LU8MHYQscLM/5tJFrwzE5E1n7kY5LmOk17utfaoJ4VQUAGF1KdiotFIGHMxo
+         cTFqIy/yPxWcsbHc8JjVFJNq/xudHS+55Wpcadjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0400/1157] media: sta2x11: remove VIRT_TO_BUS dependency
-Date:   Mon, 15 Aug 2022 19:55:56 +0200
-Message-Id: <20220815180455.676500630@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.18 1078/1095] crypto: lib/blake2s - reduce stack frame usage in self test
+Date:   Mon, 15 Aug 2022 20:07:57 +0200
+Message-Id: <20220815180513.639968639@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit a157802359f7451ed8046b2b6dbaca187797e062 ]
+commit d6c14da474bf260d73953fbf7992c98d9112aec7 upstream.
 
-This driver does not use the virt_to_bus() function, though it
-depends on x86 specific fixups in the swiotlb code, which was
-last rewritten in commit e380a0394c36 ("x86/PCI: sta2x11: use
-default DMA address translation").
+Using 3 blocks here doesn't give us much more than using 2, and it
+causes a stack frame size warning on certain compiler/config/arch
+combinations:
 
-It is possible that the driver still fails to build on some
-architectures that are missing CONFIG_VIRT_TO_BUS, but it is
-always set on x86 machines with the STA2X11 platform enabled.
+   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
+>> lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     632 | }
+         | ^
 
-More likely though is that it was never meant to depend on
-CONFIG_VIRT_TO_BUS, and the Kconfig dependency was kept from
-an out-of-tree version when the driver was originally merged.
+So this patch just reduces the block from 3 to 2, which makes the
+warning go away.
 
-Fixes: efeb98b4e2b2 ("[media] STA2X11 VIP: new V4L2 driver")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/linux-crypto/202206200851.gE3MHCgd-lkp@intel.com
+Fixes: 2d16803c562e ("crypto: blake2s - remove shash module")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/pci/sta2x11/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/crypto/blake2s-selftest.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/pci/sta2x11/Kconfig b/drivers/media/pci/sta2x11/Kconfig
-index a96e170ab04e..118b922c08c3 100644
---- a/drivers/media/pci/sta2x11/Kconfig
-+++ b/drivers/media/pci/sta2x11/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config STA2X11_VIP
- 	tristate "STA2X11 VIP Video For Linux"
--	depends on PCI && VIDEO_DEV && VIRT_TO_BUS && I2C
-+	depends on PCI && VIDEO_DEV && I2C
- 	depends on STA2X11 || COMPILE_TEST
- 	select GPIOLIB if MEDIA_SUBDRV_AUTOSELECT
- 	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
--- 
-2.35.1
-
+--- a/lib/crypto/blake2s-selftest.c
++++ b/lib/crypto/blake2s-selftest.c
+@@ -593,7 +593,7 @@ bool __init blake2s_selftest(void)
+ 		enum { TEST_ALIGNMENT = 16 };
+ 		u8 unaligned_block[BLAKE2S_BLOCK_SIZE + TEST_ALIGNMENT - 1]
+ 					__aligned(TEST_ALIGNMENT);
+-		u8 blocks[BLAKE2S_BLOCK_SIZE * 3];
++		u8 blocks[BLAKE2S_BLOCK_SIZE * 2];
+ 		struct blake2s_state state1, state2;
+ 
+ 		get_random_bytes(blocks, sizeof(blocks));
+@@ -603,8 +603,8 @@ bool __init blake2s_selftest(void)
+     defined(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
+ 		memcpy(&state1, &state, sizeof(state1));
+ 		memcpy(&state2, &state, sizeof(state2));
+-		blake2s_compress(&state1, blocks, 3, BLAKE2S_BLOCK_SIZE);
+-		blake2s_compress_generic(&state2, blocks, 3, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress(&state1, blocks, 2, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress_generic(&state2, blocks, 2, BLAKE2S_BLOCK_SIZE);
+ 		if (memcmp(&state1, &state2, sizeof(state1))) {
+ 			pr_err("blake2s random compress self-test %d: FAIL\n",
+ 			       i + 1);
 
 
