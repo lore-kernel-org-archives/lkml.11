@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC633C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F81C2BB41
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346777AbiHOUzr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S239475AbiHOU4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346773AbiHOUyt (ORCPT
+        with ESMTP id S233730AbiHOUyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:54:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DA3BFA90;
-        Mon, 15 Aug 2022 12:11:08 -0700 (PDT)
+        Mon, 15 Aug 2022 16:54:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDE6BE4F7;
+        Mon, 15 Aug 2022 12:11:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43AAD60BAF;
-        Mon, 15 Aug 2022 19:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A2B0C433D6;
-        Mon, 15 Aug 2022 19:11:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5163AB81113;
+        Mon, 15 Aug 2022 19:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95858C433C1;
+        Mon, 15 Aug 2022 19:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590660;
-        bh=aeRuvv4n+RQx3rdfldF9GjNSj+5s1DQan1L3wad8ZI0=;
+        s=korg; t=1660590654;
+        bh=S/qUgiOb7gvhSDYcpoVyel7diGhJ8zcEJdnPWh7FNVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwsZCqggWxxvyInvQrBwVIEQiXwnOHxO0OmCh232GBVAlwAj47yb8JHHTZo9KN0Hi
-         F2wvqJ5w9Yor6jQHvDAUTAzsGrJmOQV7co1N2QtLkTlqTPEqHCjTNMgJ2T4THNgOon
-         KoSlZFgM31OddLExU297v9LDGzxEt+XK1cPxAMoo=
+        b=Mtd9YdJcDBU9COR+tfzeWUxwxbcjP1T3fezEpRs8mjIGsdvdXs8Wf3xYjw0HV/b8S
+         i7tUWn9VsopskkoqYMSs8RTrreyE9vyFUVypWuSur2vQjCKIY2R5R+1glsGdQ+WE2M
+         +69ImtWihdsqwDTYdGnSt+PQp/9KKRXNVi9b+uto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0299/1095] pwm: sifive: Ensure the clk is enabled exactly once per running PWM
-Date:   Mon, 15 Aug 2022 19:54:58 +0200
-Message-Id: <20220815180442.145155594@linuxfoundation.org>
+        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0327/1095] i2c: npcm: Remove own slave addresses 2:10
+Date:   Mon, 15 Aug 2022 19:55:26 +0200
+Message-Id: <20220815180443.313367078@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,110 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Tali Perry <tali.perry1@gmail.com>
 
-[ Upstream commit ace41d7564e655c39f709a78c035188a460c7cbd ]
+[ Upstream commit 47d506d1a28fd10a9fb1f33df5622d88fae72095 ]
 
-.apply() assumes the clk to be for a given PWM iff the PWM is enabled.
-So make sure this is the case when .probe() completes. And in .remove()
-disable the according number of times.
+NPCM can support up to 10 own slave addresses. In practice, only one
+address is actually being used. In order to access addresses 2 and above,
+need to switch register banks. The switch needs spinlock.
+To avoid using spinlock for this useless feature removed support of SA >=
+2. Also fix returned slave event enum.
 
-This fixes a clk enable/disable imbalance, if some PWMs are already running
-at probe time.
+Remove some comment since the bank selection is not required. The bank
+selection is not required since the supported slave addresses are reduced.
 
-Fixes: 9e37a53eb051 (pwm: sifive: Add a driver for SiFive SoC PWM)
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 46 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 37 insertions(+), 9 deletions(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 41 +++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index a55f7345dc87..3936fda53366 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -229,6 +229,8 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 	struct pwm_sifive_ddata *ddata;
- 	struct pwm_chip *chip;
- 	int ret;
-+	u32 val;
-+	unsigned int enabled_pwms = 0, enabled_clks = 1;
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 743ac20a405c..bc462d257baa 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -123,11 +123,11 @@ enum i2c_addr {
+  * Since the addr regs are sprinkled all over the address space,
+  * use this array to get the address or each register.
+  */
+-#define I2C_NUM_OWN_ADDR 10
++#define I2C_NUM_OWN_ADDR 2
++#define I2C_NUM_OWN_ADDR_SUPPORTED 2
++
+ static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
+-	NPCM_I2CADDR1, NPCM_I2CADDR2, NPCM_I2CADDR3, NPCM_I2CADDR4,
+-	NPCM_I2CADDR5, NPCM_I2CADDR6, NPCM_I2CADDR7, NPCM_I2CADDR8,
+-	NPCM_I2CADDR9, NPCM_I2CADDR10,
++	NPCM_I2CADDR1, NPCM_I2CADDR2,
+ };
+ #endif
  
- 	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
- 	if (!ddata)
-@@ -255,6 +257,33 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 		return ret;
+@@ -391,14 +391,10 @@ static void npcm_i2c_disable(struct npcm_i2c *bus)
+ #if IS_ENABLED(CONFIG_I2C_SLAVE)
+ 	int i;
+ 
+-	/* select bank 0 for I2C addresses */
+-	npcm_i2c_select_bank(bus, I2C_BANK_0);
+-
+ 	/* Slave addresses removal */
+-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++)
++	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++)
+ 		iowrite8(0, bus->reg + npcm_i2caddr[i]);
+ 
+-	npcm_i2c_select_bank(bus, I2C_BANK_1);
+ #endif
+ 	/* Disable module */
+ 	i2cctl2 = ioread8(bus->reg + NPCM_I2CCTL2);
+@@ -603,8 +599,7 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
+ 			i2cctl1 &= ~NPCM_I2CCTL1_GCMEN;
+ 		iowrite8(i2cctl1, bus->reg + NPCM_I2CCTL1);
+ 		return 0;
+-	}
+-	if (addr_type == I2C_ARP_ADDR) {
++	} else if (addr_type == I2C_ARP_ADDR) {
+ 		i2cctl3 = ioread8(bus->reg + NPCM_I2CCTL3);
+ 		if (enable)
+ 			i2cctl3 |= I2CCTL3_ARPMEN;
+@@ -613,16 +608,16 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
+ 		iowrite8(i2cctl3, bus->reg + NPCM_I2CCTL3);
+ 		return 0;
  	}
- 
-+	val = readl(ddata->regs + PWM_SIFIVE_PWMCFG);
-+	if (val & PWM_SIFIVE_PWMCFG_EN_ALWAYS) {
-+		unsigned int i;
++	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10)
++		dev_err(bus->dev, "try to enable more than 2 SA not supported\n");
 +
-+		for (i = 0; i < chip->npwm; ++i) {
-+			val = readl(ddata->regs + PWM_SIFIVE_PWMCMP(i));
-+			if (val > 0)
-+				++enabled_pwms;
-+		}
-+	}
+ 	if (addr_type >= I2C_ARP_ADDR)
+ 		return -EFAULT;
+-	/* select bank 0 for address 3 to 10 */
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_0);
 +
-+	/* The clk should be on once for each running PWM. */
-+	if (enabled_pwms) {
-+		while (enabled_clks < enabled_pwms) {
-+			/* This is not expected to fail as the clk is already on */
-+			ret = clk_enable(ddata->clk);
-+			if (unlikely(ret)) {
-+				dev_err_probe(dev, ret, "Failed to enable clk\n");
-+				goto disable_clk;
-+			}
-+			++enabled_clks;
-+		}
-+	} else {
-+		clk_disable(ddata->clk);
-+		enabled_clks = 0;
-+	}
+ 	/* Set and enable the address */
+ 	iowrite8(sa_reg, bus->reg + npcm_i2caddr[addr_type]);
+ 	npcm_i2c_slave_int_enable(bus, enable);
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_1);
 +
- 	/* Watch for changes to underlying clock frequency */
- 	ddata->notifier.notifier_call = pwm_sifive_clock_notifier;
- 	ret = clk_notifier_register(ddata->clk, &ddata->notifier);
-@@ -277,7 +306,11 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- unregister_clk:
- 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
- disable_clk:
--	clk_disable_unprepare(ddata->clk);
-+	while (enabled_clks) {
-+		clk_disable(ddata->clk);
-+		--enabled_clks;
-+	}
-+	clk_unprepare(ddata->clk);
- 
- 	return ret;
+ 	return 0;
  }
-@@ -285,21 +318,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- static int pwm_sifive_remove(struct platform_device *dev)
+ #endif
+@@ -843,15 +838,11 @@ static u8 npcm_i2c_get_slave_addr(struct npcm_i2c *bus, enum i2c_addr addr_type)
  {
- 	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
--	bool is_enabled = false;
- 	struct pwm_device *pwm;
- 	int ch;
+ 	u8 slave_add;
  
- 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
- 		pwm = &ddata->chip.pwms[ch];
--		if (pwm->state.enabled) {
--			is_enabled = true;
--			break;
--		}
-+		if (pwm->state.enabled)
-+			clk_disable(ddata->clk);
+-	/* select bank 0 for address 3 to 10 */
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_0);
++	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10)
++		dev_err(bus->dev, "get slave: try to use more than 2 SA not supported\n");
+ 
+ 	slave_add = ioread8(bus->reg + npcm_i2caddr[(int)addr_type]);
+ 
+-	if (addr_type > I2C_SLAVE_ADDR2)
+-		npcm_i2c_select_bank(bus, I2C_BANK_1);
+-
+ 	return slave_add;
+ }
+ 
+@@ -861,12 +852,12 @@ static int npcm_i2c_remove_slave_addr(struct npcm_i2c *bus, u8 slave_add)
+ 
+ 	/* Set the enable bit */
+ 	slave_add |= 0x80;
+-	npcm_i2c_select_bank(bus, I2C_BANK_0);
+-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++) {
++
++	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++) {
+ 		if (ioread8(bus->reg + npcm_i2caddr[i]) == slave_add)
+ 			iowrite8(0, bus->reg + npcm_i2caddr[i]);
  	}
--	if (is_enabled)
--		clk_disable(ddata->clk);
- 
--	clk_disable_unprepare(ddata->clk);
-+	clk_unprepare(ddata->clk);
- 	pwmchip_remove(&ddata->chip);
- 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+-	npcm_i2c_select_bank(bus, I2C_BANK_1);
++
+ 	return 0;
+ }
  
 -- 
 2.35.1
