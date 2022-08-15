@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26C4C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CECAC2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354847AbiHOXqb (ORCPT
+        id S1354920AbiHOXqt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        Mon, 15 Aug 2022 19:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354322AbiHOXlx (ORCPT
+        with ESMTP id S1354330AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF9F2C660;
-        Mon, 15 Aug 2022 13:12:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D6C2C670;
+        Mon, 15 Aug 2022 13:12:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 294EB60B9B;
-        Mon, 15 Aug 2022 20:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192AFC433C1;
-        Mon, 15 Aug 2022 20:12:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B837F6077B;
+        Mon, 15 Aug 2022 20:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6078C433C1;
+        Mon, 15 Aug 2022 20:12:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594350;
-        bh=18v+vZT0Ed/9QFymO9brtDowoMMCn/h3TPlulZeogO8=;
+        s=korg; t=1660594366;
+        bh=OzJrhHoWezHSiKoUoOVlcSSDC8fVKfDYPyy4cgaLBnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o+CPzbWjGlBwbWOFN/bfbNMfF5/+aVeNil2ucPqgwljBJdcLZAE9vgLROYnzQVY96
-         RkMfIm4niG288oFKmSMwOeAQcBNGsMDnapnQBGMKfkIMZRzIlPVdBgys3JocBvVQdS
-         JL7Qr3k7YkzyQMrIEE574LzXmTFXPLwrUCd9hTrY=
+        b=BupXyloczGEliip6uj4sH/RhTDPYbQHgzTWqiBKPRxCEOkBV2Zvvl6xRpDmOxkUdn
+         riuDL4NVbsr0OMFJOfOnD3eWFfTY988GFRuznx3WGcZRtqd8lQA7e5uHddJdLyQpDY
+         kXhCcUJT5wQMPuqD4+OxcBTlGiZy4GELFdz+KeJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0419/1157] drm/vc4: hdmi: Switch to pm_runtime_status_suspended
-Date:   Mon, 15 Aug 2022 19:56:15 +0200
-Message-Id: <20220815180456.434613174@linuxfoundation.org>
+Subject: [PATCH 5.19 0423/1157] drm/vc4: hdmi: Correct HDMI timing registers for interlaced modes
+Date:   Mon, 15 Aug 2022 19:56:19 +0200
+Message-Id: <20220815180456.592927553@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,54 +53,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit fcef97e70094a33ded73b3eb9bef06698c6e9c12 ]
+[ Upstream commit fb10dc451c0f15e3c19798a2f41d357f3f7576f5 ]
 
-If the controller isn't clocked or its domain powered up, the register
-accesses will either stall the CPU or return garbage, respectively.
+For interlaced modes the timings were not being correctly
+programmed into the HDMI block, so correct them.
 
-Thus, we had a warning in our register access function to complain when
-that kind of risky accesses were performed.
-
-In order to check the runtime_pm power state, we were using
-pm_runtime_active(), but it turns out that it will become active only
-once the runtime_resume hook has been executed.
-
-This prevents us from doing any WARN-free register access in our
-runtime_resume() implementation, while this is valid.
-
-Let's switch to pm_runtime_status_suspended() instead.
-
-Fixes: 14e193b95604 ("drm/vc4: hdmi: Warn if we access the controller while disabled")
+Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-23-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220613144800.326124-33-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi_regs.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-index 549cc63dab39..0198de96c7b2 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-@@ -423,7 +423,7 @@ static inline u32 vc4_hdmi_read(struct vc4_hdmi *hdmi,
- 	const struct vc4_hdmi_variant *variant = hdmi->variant;
- 	void __iomem *base;
- 
--	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
-+	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
- 
- 	if (reg >= variant->num_registers) {
- 		dev_warn(&hdmi->pdev->dev,
-@@ -453,7 +453,7 @@ static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
- 
- 	lockdep_assert_held(&hdmi->hw_lock);
- 
--	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
-+	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
- 
- 	if (reg >= variant->num_registers) {
- 		dev_warn(&hdmi->pdev->dev,
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 3829e13c8627..ad7fcfa5a068 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1040,13 +1040,13 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
+ 		     VC4_SET_FIELD(mode->crtc_vsync_start - mode->crtc_vdisplay,
+ 				   VC5_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
+-	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
+-				   interlaced,
++	u32 vertb = (VC4_SET_FIELD(mode->htotal >> (2 - pixel_rep),
++				   VC5_HDMI_VERTB_VSPO) |
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end,
++					mode->crtc_vsync_end - interlaced,
+ 					VC4_HDMI_VERTB_VBP));
+ 	unsigned long flags;
+ 	unsigned char gcp;
 -- 
 2.35.1
 
