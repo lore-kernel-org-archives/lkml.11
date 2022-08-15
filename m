@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE34C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04511C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiHOXWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
+        id S233192AbiHOXWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346068AbiHOXOg (ORCPT
+        with ESMTP id S233832AbiHOXOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:36 -0400
+        Mon, 15 Aug 2022 19:14:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C807C193;
-        Mon, 15 Aug 2022 13:02:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104697C1A0;
+        Mon, 15 Aug 2022 13:02:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E89F26068D;
-        Mon, 15 Aug 2022 20:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7524C433C1;
-        Mon, 15 Aug 2022 20:02:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A5E6068D;
+        Mon, 15 Aug 2022 20:02:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A27E6C433C1;
+        Mon, 15 Aug 2022 20:02:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593722;
-        bh=ztuiYlmLkVZncfWoJY2ReqlKwgNsbOSNGQvAWdyy7tc=;
+        s=korg; t=1660593731;
+        bh=c8TCoezreroQ22F4AADF+S+ZKsutgMUl6aGH1RvFDmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IzzGW/4AvwkQSF5nL1wqjtmX8Hi6k3BScUm0jgMiyCABX5LVb8LziOZOeB96ypijA
-         uEOJgGsqdHsCRk872WSQnDLkh2/SZAUvR0NH6QCIkPvE6abEgrr6O16mma2scijHjc
-         Slcso2JL3ejLlKdqYXmUo+mT0Om0vKidibOOJLUY=
+        b=1iyEEjTNi0GgDvcieeBOujnFAYyFhMMjP4ZELVWwiHypzf9Y+CKYljSX1fIO1YzQf
+         E4aIc1pJ0f8a3KbsLDKK84bZkDtPiAiGLRw1EaH60QUgUXtZ2GYijBP2qqkjsLwoWp
+         K+Fk7URAxYd9QvRXibwVmOqhQmm1fROMcwfrN7kU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meeta Saggi <msaggi@purestorage.com>,
-        Mohamed Khalfella <mkhalfella@purestorage.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Eric Badger <ebadger@purestorage.com>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marek Vasut <marex@denx.de>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0996/1095] PCI/AER: Iterate over error counters instead of error strings
-Date:   Mon, 15 Aug 2022 20:06:35 +0200
-Message-Id: <20220815180510.317409848@linuxfoundation.org>
+Subject: [PATCH 5.19 0308/1157] drm: bridge: DRM_FSL_LDB should depend on ARCH_MXC
+Date:   Mon, 15 Aug 2022 19:54:24 +0200
+Message-Id: <20220815180451.986008296@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,59 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohamed Khalfella <mkhalfella@purestorage.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 5e6ae050955b566484f3cc6a66e3925eae87a0ed ]
+[ Upstream commit a9ad5822366c5065e6a65fe5ff5090295ba98986 ]
 
-Previously we iterated over AER stat *names*, e.g.,
-aer_correctable_error_string[32], but the actual stat *counters* may not be
-that large, e.g., pdev->aer_stats->dev_cor_errs[16], which means that we
-printed junk in the sysfs stats files.
+The Freescale i.MX8MP LDB bridge is only present on Freescale i.MX8MP
+SoCs.  Hence add a dependency on ARCH_MXC, to prevent asking the user
+about this driver when configuring a kernel without i.MX SoC support.
 
-Iterate over the stat counter arrays instead of the names to avoid this
-junk.
-
-Also, added a build time check to make sure all
-counters have entries in strings array.
-
-Fixes: 0678e3109a3c ("PCI/AER: Simplify __aer_print_error()")
-Link: https://lore.kernel.org/r/20220509181441.31884-1-mkhalfella@purestorage.com
-Reported-by: Meeta Saggi <msaggi@purestorage.com>
-Signed-off-by: Mohamed Khalfella <mkhalfella@purestorage.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Meeta Saggi <msaggi@purestorage.com>
-Reviewed-by: Eric Badger <ebadger@purestorage.com>
-Cc: stable@vger.kernel.org
+Fixes: 463db5c2ed4aed01 ("drm: bridge: ldb: Implement simple Freescale i.MX8MP LDB bridge")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/449e08ca791a3ca308de5477c1bdc1f6eb1b34e7.1652104211.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/aer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 7952e5efd6cf..a1e38ca93cd9 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -538,7 +538,7 @@ static const char *aer_agent_string[] = {
- 	u64 *stats = pdev->aer_stats->stats_array;			\
- 	size_t len = 0;							\
- 									\
--	for (i = 0; i < ARRAY_SIZE(strings_array); i++) {		\
-+	for (i = 0; i < ARRAY_SIZE(pdev->aer_stats->stats_array); i++) {\
- 		if (strings_array[i])					\
- 			len += sysfs_emit_at(buf, len, "%s %llu\n",	\
- 					     strings_array[i],		\
-@@ -1347,6 +1347,11 @@ static int aer_probe(struct pcie_device *dev)
- 	struct device *device = &dev->device;
- 	struct pci_dev *port = dev->port;
- 
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_correctable_error_string) <
-+		     AER_MAX_TYPEOF_COR_ERRS);
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
-+		     AER_MAX_TYPEOF_UNCOR_ERRS);
-+
- 	/* Limit to Root Ports or Root Complex Event Collectors */
- 	if ((pci_pcie_type(port) != PCI_EXP_TYPE_RC_EC) &&
- 	    (pci_pcie_type(port) != PCI_EXP_TYPE_ROOT_PORT))
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index 307b135da2f6..449b1b5a76ac 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -78,6 +78,7 @@ config DRM_DISPLAY_CONNECTOR
+ config DRM_FSL_LDB
+ 	tristate "Freescale i.MX8MP LDB bridge"
+ 	depends on OF
++	depends on ARCH_MXC || COMPILE_TEST
+ 	select DRM_KMS_HELPER
+ 	select DRM_PANEL_BRIDGE
+ 	help
 -- 
 2.35.1
 
