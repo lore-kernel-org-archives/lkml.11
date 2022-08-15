@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17ADC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B456C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344263AbiHOTjW (ORCPT
+        id S1344283AbiHOTj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
+        Mon, 15 Aug 2022 15:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344295AbiHOTg3 (ORCPT
+        with ESMTP id S1344343AbiHOTge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:36:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AC30544;
-        Mon, 15 Aug 2022 11:45:53 -0700 (PDT)
+        Mon, 15 Aug 2022 15:36:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8107D642E2;
+        Mon, 15 Aug 2022 11:45:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52779611C1;
-        Mon, 15 Aug 2022 18:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22483C433D6;
-        Mon, 15 Aug 2022 18:45:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 832DA611EC;
+        Mon, 15 Aug 2022 18:45:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFECC433C1;
+        Mon, 15 Aug 2022 18:45:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589151;
-        bh=7NiuDdZp+VFXZf96F2eqTvZlHVtKr2r82h+BlquUbbE=;
+        s=korg; t=1660589157;
+        bh=amYYCAHW3rWIpE80WiCKgqephSy5vPKtilzeKaE+CA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y76iTdc9trS6YJjX2GuHS4DngfoQ8q/5hnV5RaeK5xlSz+qaMZH9swm5iu+YCGEZJ
-         u5rI40gRqd1sncZU6yEZl10myNdythdzvnV+lF0i3tDlyrhireNmqEXYN7zlQvPI7Q
-         Umrr+Msdfh1KvkRwAMmGSApZfoiWK2883cIzzic4=
+        b=pxavnGOemPVFIJNNIyjhYF+lrAB7VhG01KDGxiaOaXtqrswTmwSUqcEVluUHLAPeq
+         Yd+WsP+2JzbJ2fj5rj7uod1pN2VikgtBai757iRryPk5ILDet7oqUfxo2B97G8IJsb
+         /2ZDlkU5lVSUPlx6qvZWdO82BN6caM9vq4zkqMJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 598/779] tty: n_gsm: fix missing corner cases in gsmld_poll()
-Date:   Mon, 15 Aug 2022 20:04:02 +0200
-Message-Id: <20220815180402.919621462@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 600/779] swiotlb: fail map correctly with failed io_tlb_default_mem
+Date:   Mon, 15 Aug 2022 20:04:04 +0200
+Message-Id: <20220815180402.999454368@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,47 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit 7e5b4322cde067e1d0f1bf8f490e93f664a7c843 ]
+[ Upstream commit c51ba246cb172c9e947dc6fb8868a1eaf0b2a913 ]
 
-gsmld_poll() currently fails to handle the following corner cases correctly:
-- remote party closed the associated tty
+In the failure case of trying to use a buffer which we'd previously
+failed to allocate, the "!mem" condition is no longer sufficient since
+io_tlb_default_mem became static and assigned by default. Update the
+condition to work as intended per the rest of that conversion.
 
-Add the missing checks and map those to EPOLLHUP.
-Reorder the checks to group them by their reaction.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-4-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 463e862ac63e ("swiotlb: Convert io_default_tlb_mem to static allocation")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 7a82fff7f5fe..b89655f585f1 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2954,12 +2954,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 2ee5419649ed..e62fb7a4da69 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -551,7 +551,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	int index;
+ 	phys_addr_t tlb_addr;
  
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
-+
-+	if (gsm->dead)
-+		mask |= EPOLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= EPOLLHUP;
-+	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
-+		mask |= EPOLLHUP;
- 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
--	if (gsm->dead)
--		mask |= EPOLLHUP;
- 	return mask;
- }
+-	if (!mem)
++	if (!mem || !mem->nslabs)
+ 		panic("Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
  
+ 	if (mem_encrypt_active())
 -- 
 2.35.1
 
