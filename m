@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E14BDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE23FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241049AbiHOXMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
+        id S1346614AbiHOXM3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353247AbiHOXLH (ORCPT
+        with ESMTP id S1353283AbiHOXLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:11:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B7779A53;
-        Mon, 15 Aug 2022 13:00:11 -0700 (PDT)
+        Mon, 15 Aug 2022 19:11:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E3AE0;
+        Mon, 15 Aug 2022 13:00:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A13960FD8;
-        Mon, 15 Aug 2022 20:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 067FBC433C1;
-        Mon, 15 Aug 2022 20:00:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6B8E6068D;
+        Mon, 15 Aug 2022 20:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B525EC433C1;
+        Mon, 15 Aug 2022 20:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593610;
-        bh=AAVDZDfssf5k6rhB/ON9yV403YnrCocT4nm7X9rDlkY=;
+        s=korg; t=1660593613;
+        bh=h1lAwXEzOBwnzyaZlWPDLYxbCPN2BU7bW/+B5CVB0Bs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+wMK3heW7LSt0ms0Dx1HxvItVQIelDNvJRA6OTbZLxg5xBLKqv3BoILqmDxplUPS
-         ma+411kd2ed4wZ85wRDjMG+kJFKz8v2Lf7L+pPDxRBkdaUjyJCGweLOyCwZbvAZsG2
-         i6I/4Y7SejM/Pn2qjYuNgbJ1KJc5wa31iIdpOJXw=
+        b=J0u4ShBk6kw+GRja3stKOs2gEriAfq0Q098M8COs0H/kG1vIed7vPrbvUOW8xllfj
+         8kcWKxYRb9Qu3O3vBXy6v0Ki6Us0OvU77NeSzwzWo6VZJwrr9CF4lmk3V/POzE/3Qm
+         Z69SO6qjA9qkizLOfyRIq2fuIFHTywFKmtLo6qd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Bharath SM <bharathsm@microsoft.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 0975/1095] SMB3: fix lease break timeout when multiple deferred close handles for the same file.
-Date:   Mon, 15 Aug 2022 20:06:14 +0200
-Message-Id: <20220815180509.436681728@linuxfoundation.org>
+        stable@vger.kernel.org, YiFei Zhu <zhuyifei@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0296/1157] selftests/seccomp: Fix compile warning when CC=clang
+Date:   Mon, 15 Aug 2022 19:54:12 +0200
+Message-Id: <20220815180451.485989045@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,66 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bharath SM <bharathsm@microsoft.com>
+From: YiFei Zhu <zhuyifei@google.com>
 
-commit 9e31678fb403eae0f4fe37c6374be098835c73cd upstream.
+[ Upstream commit 3ce4b78f73e8e00fb86bad67ee7f6fe12019707e ]
 
-Solution is to send lease break ack immediately even in case of
-deferred close handles to avoid lease break request timing out
-and let deferred closed handle gets closed as scheduled.
-Later patches could optimize cases where we then close some
-of these handles sooner for the cases where lease break is to 'none'
+clang has -Wconstant-conversion by default, and the constant 0xAAAAAAAAA
+(9 As) being converted to an int, which is generally 32 bits, results
+in the compile warning:
 
-Cc: stable@kernel.org
-Signed-off-by: Bharath SM <bharathsm@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  clang -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/  -lpthread  seccomp_bpf.c -lcap -o seccomp_bpf
+  seccomp_bpf.c:812:67: warning: implicit conversion from 'long' to 'int' changes value from 45812984490 to -1431655766 [-Wconstant-conversion]
+          int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
+              ~~~~                                                         ^~~~~~~~~~~
+  1 warning generated.
+
+-1431655766 is the expected truncation, 0xAAAAAAAA (8 As), so use
+this directly in the code to avoid the warning.
+
+Fixes: 3932fcecd962 ("selftests/seccomp: Add test for unknown SECCOMP_RET kill behavior")
+Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220526223407.1686936-1-zhuyifei@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/file.c |   20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -4807,8 +4807,6 @@ void cifs_oplock_break(struct work_struc
- 	struct TCP_Server_Info *server = tcon->ses->server;
- 	int rc = 0;
- 	bool purge_cache = false;
--	bool is_deferred = false;
--	struct cifs_deferred_close *dclose;
- 
- 	wait_on_bit(&cinode->flags, CIFS_INODE_PENDING_WRITERS,
- 			TASK_UNINTERRUPTIBLE);
-@@ -4845,22 +4843,6 @@ void cifs_oplock_break(struct work_struc
- 
- oplock_break_ack:
- 	/*
--	 * When oplock break is received and there are no active
--	 * file handles but cached, then schedule deferred close immediately.
--	 * So, new open will not use cached handle.
--	 */
--	spin_lock(&CIFS_I(inode)->deferred_lock);
--	is_deferred = cifs_is_deferred_close(cfile, &dclose);
--	spin_unlock(&CIFS_I(inode)->deferred_lock);
--	if (is_deferred &&
--	    cfile->deferred_close_scheduled &&
--	    delayed_work_pending(&cfile->deferred)) {
--		if (cancel_delayed_work(&cfile->deferred)) {
--			_cifsFileInfo_put(cfile, false, false);
--			goto oplock_break_done;
--		}
--	}
--	/*
- 	 * releasing stale oplock after recent reconnect of smb session using
- 	 * a now incorrect file handle is not a data integrity issue but do
- 	 * not bother sending an oplock release if session to server still is
-@@ -4871,7 +4853,7 @@ oplock_break_ack:
- 							     cinode);
- 		cifs_dbg(FYI, "Oplock release rc = %d\n", rc);
- 	}
--oplock_break_done:
-+
- 	_cifsFileInfo_put(cfile, false /* do not wait for ourself */, false);
- 	cifs_done_oplock_break(cinode);
- }
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index 136df5b76319..4ae6c8991307 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -809,7 +809,7 @@ void kill_thread_or_group(struct __test_metadata *_metadata,
+ 		.len = (unsigned short)ARRAY_SIZE(filter_thread),
+ 		.filter = filter_thread,
+ 	};
+-	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
++	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAA;
+ 	struct sock_filter filter_process[] = {
+ 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS,
+ 			offsetof(struct seccomp_data, nr)),
+-- 
+2.35.1
+
 
 
