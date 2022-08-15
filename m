@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6B6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6ACC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351551AbiHOWpO (ORCPT
+        id S1351308AbiHOWpS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        Mon, 15 Aug 2022 18:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244050AbiHOWkF (ORCPT
+        with ESMTP id S1350656AbiHOWkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:40:05 -0400
+        Mon, 15 Aug 2022 18:40:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E021F21B4;
-        Mon, 15 Aug 2022 12:51:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE309FD1;
+        Mon, 15 Aug 2022 12:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95164B80EAB;
-        Mon, 15 Aug 2022 19:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE99C433D6;
-        Mon, 15 Aug 2022 19:51:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F559B80EAD;
+        Mon, 15 Aug 2022 19:51:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D00C433C1;
+        Mon, 15 Aug 2022 19:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593113;
-        bh=jztBd4sZFkZnnNSyY7Gg8qvaMjbW9hiYtsi5arzlBw8=;
+        s=korg; t=1660593110;
+        bh=05K6e8DDsGvu0xMBaRum+fYSQ7upnYPuRy7qrtX142g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GkgwN17edshAOHwUv5PdJ7oonU4hsYMPLC10IzYroOlKSk6iY/22xmNsnmOYRth18
-         PTjSZZOZ607W0kPvWqOWPI/l2nuSneWoXeZ+/WAGuiC8YN/zxzBYHeDdDxU0GYvdPw
-         rJPkD0jZO/3s4L2J0rqZwikDlW04nVKyq+rvdBMk=
+        b=tI02wAyqbUsY3uURQdngfKEuEkscFZPMDjJgwWazPEtF8K2VGB+fh/7tfn7RgH8gI
+         lFQCxIauZ6TXvX1ue1jVvZk2y0Hz7pMWhF0gOsHJJSfHB2bdJeWaZ0JER7kZ5TkwY+
+         thrFq7IihlqIBgV/os7q2xEPU+jatcbfhYZA08sU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Sunil V L <sunilvl@ventanamicro.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0216/1157] ARM: dts: ast2600-evb-a1: fix board compatible
-Date:   Mon, 15 Aug 2022 19:52:52 +0200
-Message-Id: <20220815180448.247493103@linuxfoundation.org>
+Subject: [PATCH 5.18 0897/1095] riscv: spinwait: Fix hartid variable type
+Date:   Mon, 15 Aug 2022 20:04:56 +0200
+Message-Id: <20220815180506.411004254@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,32 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Sunil V L <sunilvl@ventanamicro.com>
 
-[ Upstream commit 33c39140cc298e0d4e36083cb9a665a837773a60 ]
+[ Upstream commit c029e487e7c00e5594a4ae946952605db34e359b ]
 
-The AST2600 EVB A1 board should have dedicated compatible.
+The hartid variable is of type int but compared with
+ULONG_MAX(INVALID_HARTID). This issue is fixed by changing
+the hartid variable type to unsigned long.
 
-Fixes: a72955180372 ("ARM: dts: aspeed: ast2600evb: Add dts file for A1 and A0")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220529104928.79636-6-krzysztof.kozlowski@linaro.org
+Fixes: c78f94f35cf6 ("RISC-V: Use __cpu_up_stack/task_pointer only for spinwait method")
+
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+Link: https://lore.kernel.org/r/20220527051743.2829940-3-sunilvl@ventanamicro.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts | 1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/kernel/cpu_ops_spinwait.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
-index dd7148060c4a..d0a5c2ff0fec 100644
---- a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
-@@ -5,6 +5,7 @@
+diff --git a/arch/riscv/kernel/cpu_ops_spinwait.c b/arch/riscv/kernel/cpu_ops_spinwait.c
+index c662a7cf10a4..d98d19226b5f 100644
+--- a/arch/riscv/kernel/cpu_ops_spinwait.c
++++ b/arch/riscv/kernel/cpu_ops_spinwait.c
+@@ -20,7 +20,7 @@ void *__cpu_spinwait_task_pointer[NR_CPUS] __section(".data");
+ static void cpu_update_secondary_bootdata(unsigned int cpuid,
+ 				   struct task_struct *tidle)
+ {
+-	int hartid = cpuid_to_hartid_map(cpuid);
++	unsigned long hartid = cpuid_to_hartid_map(cpuid);
  
- / {
- 	model = "AST2600 A1 EVB";
-+	compatible = "aspeed,ast2600-evb-a1", "aspeed,ast2600";
+ 	/*
+ 	 * The hartid must be less than NR_CPUS to avoid out-of-bound access
+@@ -29,7 +29,7 @@ static void cpu_update_secondary_bootdata(unsigned int cpuid,
+ 	 * spinwait booting is not the recommended approach for any platforms
+ 	 * booting Linux in S-mode and can be disabled in the future.
+ 	 */
+-	if (hartid == INVALID_HARTID || hartid >= NR_CPUS)
++	if (hartid == INVALID_HARTID || hartid >= (unsigned long) NR_CPUS)
+ 		return;
  
- 	/delete-node/regulator-vcc-sdhci0;
- 	/delete-node/regulator-vcc-sdhci1;
+ 	/* Make sure tidle is updated */
 -- 
 2.35.1
 
