@@ -2,164 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E28C28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC835C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240478AbiHOUN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        id S242900AbiHOUNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiHOUJc (ORCPT
+        with ESMTP id S243972AbiHOUJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:32 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBA183F24;
-        Mon, 15 Aug 2022 11:56:02 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id ha11so7689066pjb.2;
-        Mon, 15 Aug 2022 11:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=+TETRuQREbWQMsK22eWvupq1sOQwbs1H5QXxZ2DEAgU=;
-        b=f3E/ojiaz0NM63zgkJ6u7+tDQzLKIRRocWMkYaGqPGppzv5A2CRcZ4klgHcqLpTBNO
-         UngXV4EWEHYrgvCn+TOgh3V4yIN6sgOaH9C/2fJz3k8+uUYVbNPlrkVIIFQfMIJMKIOg
-         Zx+3dLSWUqr0a7/Y+/TzyPM78llRWrbfD1OHttkjC8QErSmtqZAWVFzrxI6dRuUcxfZ9
-         McsQaV5CDmB3AXS4JCgfoDnPbukLWfrjty6MFRUZTI0z/GMVNZHiomZxIDdgiAh3o0lm
-         dAaIbaqHz2liQhdZWWPXXok0hv8bdHGpgBBAGWHIz5lNBWv1Eioqe3n7Vu92977ImC7r
-         0b5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=+TETRuQREbWQMsK22eWvupq1sOQwbs1H5QXxZ2DEAgU=;
-        b=QRJgZuTVUBW13FCsTgkT7cPOvG9X9a6VU7PWideJaHlmy0/DMfzf+0XpdGCQP9Nctj
-         ERFpqG5xfY3Bo/Y4Kpq3UrRjHx5wOxcK9DkxJ1FuXbUaJtHlwnOWyGwxpHGVdFdL0fxb
-         oVdXxQICS4m9YSJfAoPgyymIR0/SbkBPp9hSPc2/WF5NY0qrFYnHB+Q/xUKaNzxTq5xj
-         E2UX7uHNIffifgpNZJiz0TGSJNpWa5yUgdpktsLgde6iVQqju4d5xB1ymmWOGy+pHI0L
-         isZuPwKJ33nlYgvbihxt48OF1czcSvb/+/XJ3RqV8Jmy6vwq1NFOPOi7hOcl0gbgGp8Q
-         Fhaw==
-X-Gm-Message-State: ACgBeo0HEzyAQWZyi6rqTcJnS/nIh/WaHT3Fs4A/MBSVNFgXItlHnp9n
-        dC8DLmmDG0eXyJCdVAdaLTP+Kg9gtHwyiMCr
-X-Google-Smtp-Source: AA6agR7CudSG0LqZx+wKC4C1PIGfjK9cuqlus0vYtBkYoxZbg+jdJMDMCTln1TB5lc5Wk4KfUxJMvQ==
-X-Received: by 2002:a17:90a:317:b0:1f3:8ad:52aa with SMTP id 23-20020a17090a031700b001f308ad52aamr20072887pje.106.1660589761635;
-        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
-Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
-        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.56.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
-From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Subject: [PATCH 4/7] btrfs: Convert process_page_range() to use filemap_get_folios_contig()
-Date:   Mon, 15 Aug 2022 11:54:49 -0700
-Message-Id: <20220815185452.37447-5-vishal.moola@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
-References: <20220815185452.37447-1-vishal.moola@gmail.com>
+        Mon, 15 Aug 2022 16:09:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02ED299;
+        Mon, 15 Aug 2022 11:56:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E1D06125B;
+        Mon, 15 Aug 2022 18:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98F76C433B5;
+        Mon, 15 Aug 2022 18:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589766;
+        bh=ELjryB8FWGLugOIuSJFH96NH9H+/KyRj7dUBAwO2eqs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1MpXWzROWKlrW4HGu4RpcppXzG7R/HtVbiF7UIo2YN/djlo/TgKRh8AsjuJY/6Tlz
+         JnDrXMTtJ2XMO0rhZDLIYe/9g5CZcSVM9azQPx3eMIQ6QilHz3MOa5EFEWvnyNrkWv
+         QHLDSMTxuq/hjEl2MOFzt2qJiNp5H0v83TLEt2Xc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 0042/1095] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
+Date:   Mon, 15 Aug 2022 19:50:41 +0200
+Message-Id: <20220815180431.175225230@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Converted function to use folios throughout. This is in preparation for
-the removal of find_get_pages_contig(). Now also supports large folios.
+From: Meng Tang <tangmeng@uniontech.com>
 
-Since we may receive more than nr_pages pages, nr_pages may underflow.
-Since nr_pages > 0 is equivalent to index <= end_index, we replaced it
-with this check instead.
+commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
 
-Also minor comment renaming for consistency in subpage.
+There is another LENOVO 20149 (Type1Sku0) Notebook model with
+CX20590, the device PCI SSID is 17aa:3977, which headphones are
+not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
+Add the corresponding entry to the quirk table.
 
-Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/subpage.c               |  2 +-
- fs/btrfs/tests/extent-io-tests.c | 31 ++++++++++++++++---------------
- 2 files changed, 17 insertions(+), 16 deletions(-)
+ sound/pci/hda/patch_conexant.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/subpage.c b/fs/btrfs/subpage.c
-index 6fc2b77ae5c3..9a176af847d7 100644
---- a/fs/btrfs/subpage.c
-+++ b/fs/btrfs/subpage.c
-@@ -337,7 +337,7 @@ bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
-  *
-  * Even with 0 returned, the page still need extra check to make sure
-  * it's really the correct page, as the caller is using
-- * find_get_pages_contig(), which can race with page invalidating.
-+ * filemap_get_folios_contig(), which can race with page invalidating.
-  */
- int btrfs_page_start_writer_lock(const struct btrfs_fs_info *fs_info,
- 		struct page *page, u64 start, u32 len)
-diff --git a/fs/btrfs/tests/extent-io-tests.c b/fs/btrfs/tests/extent-io-tests.c
-index a232b15b8021..530073868916 100644
---- a/fs/btrfs/tests/extent-io-tests.c
-+++ b/fs/btrfs/tests/extent-io-tests.c
-@@ -4,6 +4,7 @@
-  */
- 
- #include <linux/pagemap.h>
-+#include <linux/pagevec.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
- #include <linux/sizes.h>
-@@ -20,39 +21,39 @@ static noinline int process_page_range(struct inode *inode, u64 start, u64 end,
- 				       unsigned long flags)
- {
- 	int ret;
--	struct page *pages[16];
-+	struct folio_batch fbatch;
- 	unsigned long index = start >> PAGE_SHIFT;
- 	unsigned long end_index = end >> PAGE_SHIFT;
--	unsigned long nr_pages = end_index - index + 1;
- 	int i;
- 	int count = 0;
- 	int loops = 0;
- 
--	while (nr_pages > 0) {
--		ret = find_get_pages_contig(inode->i_mapping, index,
--				     min_t(unsigned long, nr_pages,
--				     ARRAY_SIZE(pages)), pages);
-+	folio_batch_init(&fbatch);
-+
-+	while (index <= end_index) {
-+		ret = filemap_get_folios_contig(inode->i_mapping, &index,
-+				end_index, &fbatch);
- 		for (i = 0; i < ret; i++) {
-+			struct folio *folio = fbatch.folios[i];
- 			if (flags & PROCESS_TEST_LOCKED &&
--			    !PageLocked(pages[i]))
-+			    !folio_test_locked(folio))
- 				count++;
--			if (flags & PROCESS_UNLOCK && PageLocked(pages[i]))
--				unlock_page(pages[i]);
--			put_page(pages[i]);
-+			if (flags & PROCESS_UNLOCK && folio_test_locked(folio))
-+				folio_unlock(folio);
- 			if (flags & PROCESS_RELEASE)
--				put_page(pages[i]);
-+				folio_put(folio);
- 		}
--		nr_pages -= ret;
--		index += ret;
-+		folio_batch_release(&fbatch);
- 		cond_resched();
- 		loops++;
- 		if (loops > 100000) {
- 			printk(KERN_ERR
--		"stuck in a loop, start %llu, end %llu, nr_pages %lu, ret %d\n",
--				start, end, nr_pages, ret);
-+		"stuck in a loop, start %llu, end %llu, ret %d\n",
-+				start, end, ret);
- 			break;
- 		}
- 	}
-+
- 	return count;
- }
- 
--- 
-2.36.1
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -222,6 +222,7 @@ enum {
+ 	CXT_PINCFG_LEMOTE_A1205,
+ 	CXT_PINCFG_COMPAQ_CQ60,
+ 	CXT_FIXUP_STEREO_DMIC,
++	CXT_PINCFG_LENOVO_NOTEBOOK,
+ 	CXT_FIXUP_INC_MIC_BOOST,
+ 	CXT_FIXUP_HEADPHONE_MIC_PIN,
+ 	CXT_FIXUP_HEADPHONE_MIC,
+@@ -772,6 +773,14 @@ static const struct hda_fixup cxt_fixups
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt_fixup_stereo_dmic,
+ 	},
++	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x1a, 0x05d71030 },
++			{ }
++		},
++		.chain_id = CXT_FIXUP_STEREO_DMIC,
++	},
+ 	[CXT_FIXUP_INC_MIC_BOOST] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt5066_increase_mic_boost,
+@@ -971,7 +980,7 @@ static const struct snd_pci_quirk cxt506
+ 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
+-	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
++	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
+ 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
+
 
