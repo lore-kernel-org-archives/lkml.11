@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFEEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686F7C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243650AbiHOSeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
+        id S243661AbiHOSeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243384AbiHOSda (ORCPT
+        with ESMTP id S243447AbiHOSdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:33:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE24437F81;
-        Mon, 15 Aug 2022 11:21:55 -0700 (PDT)
+        Mon, 15 Aug 2022 14:33:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC45737F89;
+        Mon, 15 Aug 2022 11:21:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9CED60F1D;
-        Mon, 15 Aug 2022 18:21:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC0BC433C1;
-        Mon, 15 Aug 2022 18:21:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7C8BB81077;
+        Mon, 15 Aug 2022 18:21:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39671C433D6;
+        Mon, 15 Aug 2022 18:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587713;
-        bh=ERQwP8uKDUfGNJbBFJ0TAgA9TP/S/fhReXq7rTHMIb0=;
+        s=korg; t=1660587706;
+        bh=jztBd4sZFkZnnNSyY7Gg8qvaMjbW9hiYtsi5arzlBw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oAdHwRHJpfFXM69Kl30MLWUB+Rqa7hVt26ecAakelUkoZS6ZSuWCyTZcIq56qQaA3
-         qGKi2oN+CAMl7JxiHQHBDt7OcZAot3PTFS0LSCPHboe2GL0Ey7jsTMACZlp8cI1lrM
-         mkpUC4qpN6qlfFgTixWEA3j8Y0mVVEDIF/+ObDyU=
+        b=S2dma+NFo9i8g/R723tyEYRz9Qc+1QreFaghzsgP/4/Wb8lAgws5r3sGxUt+qCEtO
+         z6O9SdQC4+BP2vc3z6LVQUBfqVYGD/8LNZbs1M2Uim3Bs2Vw7rTdeSaQOiSCQq+cfm
+         16peJip5eGYVZkLP9C2DOgoPDZ5Bcq7e4XMayhts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 172/779] arm64: dts: mt8192: Fix idle-states entry-method
-Date:   Mon, 15 Aug 2022 19:56:56 +0200
-Message-Id: <20220815180344.637976650@linuxfoundation.org>
+Subject: [PATCH 5.15 170/779] ARM: dts: ast2600-evb-a1: fix board compatible
+Date:   Mon, 15 Aug 2022 19:56:54 +0200
+Message-Id: <20220815180344.576488181@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,38 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 2e599740f7e423ee89fb027896cb2635dd43784f ]
+[ Upstream commit 33c39140cc298e0d4e36083cb9a665a837773a60 ]
 
-The entry-method property of the idle-states node should be "psci" as
-described in the idle-states binding, since this is already the value of
-enable-method in the CPU nodes. Fix it to get rid of a dtbs_check
-warning.
+The AST2600 EVB A1 board should have dedicated compatible.
 
-Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220617233150.2466344-3-nfraprado@collabora.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Fixes: a72955180372 ("ARM: dts: aspeed: ast2600evb: Add dts file for A1 and A0")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220529104928.79636-6-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index a57ac5163acc..d1e63527b387 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -168,7 +168,7 @@ l3_0: l3-cache {
- 		};
+diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
+index dd7148060c4a..d0a5c2ff0fec 100644
+--- a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
++++ b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
+@@ -5,6 +5,7 @@
  
- 		idle-states {
--			entry-method = "arm,psci";
-+			entry-method = "psci";
- 			cpu_sleep_l: cpu-sleep-l {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x00010001>;
+ / {
+ 	model = "AST2600 A1 EVB";
++	compatible = "aspeed,ast2600-evb-a1", "aspeed,ast2600";
+ 
+ 	/delete-node/regulator-vcc-sdhci0;
+ 	/delete-node/regulator-vcc-sdhci1;
 -- 
 2.35.1
 
