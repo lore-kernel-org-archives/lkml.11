@@ -2,237 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F688C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BBEC25B0F
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiHPFyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
+        id S229805AbiHPF6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbiHPFye (ORCPT
+        with ESMTP id S229670AbiHPF6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:54:34 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2064.outbound.protection.outlook.com [40.107.223.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCB42253AD;
-        Mon, 15 Aug 2022 16:05:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eCbXDrjFchgsIJkxcJbBQsqoqCDt1sq/ej9wVW3PfOnHOqRq0V8MXniPDzrWn+ZDMgySWmuku7mZ0oKoc0wF27Hu4HuAmqQJlO5gLRH4apvNLr0kRCa27P/iWkSIs70DLePnyUNaKXzbvaU87MhhEQ3WHgHoIr/3yGgSu4zsR0UXVO+IJ1/QUhrNMFzAX5KoRP7xpW69zILnlnnd45f9CcLZTdw3xn/ozHND19lmWmZeUL0kKE3f5VzYlaVlfgDg7gf1lMUqJvawKn6POwhhczpp0lYOwi0KFpXKPWkDo0mUU/F14dh36Dul+kbtJPKpgx5vEUt7VGE24Hge0tmptw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DNXujW5Abg6YTWkaUrpuVSaiEbj2qQrBiWyrMxds+Hc=;
- b=f7WWSsA+KQM6JGXDSUfgGfxDTTtc1FB+ZoxPWqMEc/SNrL8dTc0g03ko7L8GrvhTX3R7yqdWAooAMz9FH/Pcup/WjdebchcSube3BDd3AZJPih83GHzU4oHCDRK6H6hplSWht1dL2ORJTRY6Py5uT8jM7s2moNLdI0iy1daA6kfXp5Gtr+1ZK0rvcGMaU/eZUcJQmQTecsaVsQEFl2LlYspesDegTnBzre9EYVgjOf17oIioDmDnO1WTMCXCTaE5C3VE1DUkm5/i1UvDdH5JS7oALJHF0etv1l9RJ/fj+EVoWOCNn79cng2s38wshQd9o1NyjAdyItr4Zb8+imSQSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DNXujW5Abg6YTWkaUrpuVSaiEbj2qQrBiWyrMxds+Hc=;
- b=pJ1uNFgEac1jbcsv+nVejO9GuECfPIcQE/8RFkUosf/IJ4d13oADRh0NOUm7IteWzcMbvnRDLo2PIQrno5PNizpxJEfseiS1FbEb5YY0gU16GVHTXtTVIzUH7NjZ1lS5aXssWUw8a0oEmndSo0gSa/MHWHHYEciFAL7K4BeEi34=
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
- by DM5PR12MB1610.namprd12.prod.outlook.com (2603:10b6:4:3::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.15; Mon, 15 Aug 2022 23:04:49 +0000
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::8953:6baa:97bb:a15d]) by SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::8953:6baa:97bb:a15d%7]) with mapi id 15.20.5525.011; Mon, 15 Aug 2022
- 23:04:49 +0000
-From:   "Kalra, Ashish" <Ashish.Kalra@amd.com>
-To:     Sabin Rapan <sabrapan@amazon.com>
-CC:     "ak@linux.intel.com" <ak@linux.intel.com>,
-        "alpergun@google.com" <alpergun@google.com>,
-        "ardb@kernel.org" <ardb@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dgilbert@redhat.com" <dgilbert@redhat.com>,
-        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "marcorr@google.com" <marcorr@google.com>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "slp@redhat.com" <slp@redhat.com>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "tobin@ibm.com" <tobin@ibm.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: RE: [PATCH Part2 v6 26/49] KVM: SVM: Add KVM_SEV_SNP_LAUNCH_UPDATE
- command 
-Thread-Topic: [PATCH Part2 v6 26/49] KVM: SVM: Add KVM_SEV_SNP_LAUNCH_UPDATE
- command 
-Thread-Index: AQHYq/fTv45CCBlvoUerPNyckT4b4q2wjGMA
-Date:   Mon, 15 Aug 2022 23:04:49 +0000
-Message-ID: <SN6PR12MB2767EAECF8D4AE1C889B27548E689@SN6PR12MB2767.namprd12.prod.outlook.com>
-References: <fdf036c1e2fdf770da8238b31056206be08a7c1b.1655761627.git.ashish.kalra@amd.com>
- <20220809135535.88234-1-sabrapan@amazon.com>
-In-Reply-To: <20220809135535.88234-1-sabrapan@amazon.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-08-15T21:58:33Z;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=837686d3-afc8-4692-b21d-1ab83a7b9b29;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=1
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_enabled: true
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_setdate: 2022-08-15T23:04:47Z
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_method: Standard
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_name: General
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_actionid: fd08155a-cfc2-4364-b42b-b47e0ca94609
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bc413fb3-60ca-4b7d-201f-08da7f128de1
-x-ms-traffictypediagnostic: DM5PR12MB1610:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: aCVree3xiKBUV28wa4J+2/NjdIKfhw0S80fBvKRVroP9VO/g2S6w9jlNB8NI4N8Yxn86rXeIO2dh5/orkJpZC5Y7F4dE1KgQX8KnzG6BcnoSh88RSE6GQWbLJfhjaQqNb5PGP/C5NXKvwZdSrs8B90fxMiZ/MGFhjZdyVYrVwGe6/9EH9mcHJkqPCUetBq4cHE9YbrFnlKyZQQGEmU8WhzDBtMILb0lvM8LPrbmHUjrl8ubnhtjmfnfYAMXbaHQ9/CJjWcvmtbELDASBR4s/w+KPtnFRnv9T6qs2sbkgB/TMn4v21T8FJGb/NtK/KwCQiXgJkMXtwyl/U5U/e09zNNemvEX1PqIB48oSwtQpRJ+8kcRnDgo+wrtgS5WQM7CEu+SuDmGu9qng3vH/iMgq9cAAEu5HJk/XXpmsVc6gEN1ks+dt4r5LtchAEvPndJGq6KEh8pMwm55DSdfAKahxK9A/Jnuqm+kaqHaubNdRh62UbbQl9viaPT/+opxUZd6beHrX/NBq4PERUIvGnve5ffbZV9/3fHyBZvgTMs2pjINh0qSJB/0cY9L3FuuoKTwVw0ZnTADNuFzFcMlNzajXlm4rsEEhSPKWLWLN4lXZ6s0rXAnSNSaVEQkPt3atP+WJzc0noucxc7pQRoSiykrTJXS76giR6ZHAq+ePFhqlmoQSjovUTM3xHpoQzGF+wR0FJTgK8v0GxWuJWYWfDEVnU71oXor7vUa+d0Gsuccriq3gtboEhj59F8JyR5eVVTPEA8SgeOXZoLOTLBsIwbEWCjNeDTpOg6M2FH+XfCE+J5qxYAUxaRJw+HI4Vps+P4m7
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(86362001)(478600001)(33656002)(6506007)(7696005)(38070700005)(26005)(4743002)(9686003)(186003)(71200400001)(41300700001)(83380400001)(55016003)(5660300002)(66446008)(76116006)(66556008)(66476007)(2906002)(4326008)(54906003)(316002)(6916009)(64756008)(8676002)(66946007)(122000001)(38100700002)(52536014)(7416002)(7406005)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AsIt9POjjl3S/z6/xPPlcBbGliZVYqPEW6KX2ftIp6pnlwfnvMbvdmGahETA?=
- =?us-ascii?Q?cST6Ap91Vj9oSSTR9mT6MWPYdgYAQGQqsElH1xmIruc8s24XNPUYCl1QlLs5?=
- =?us-ascii?Q?LQ4/2BN4WyEUlKpKBa3Vzve2QGQvHIqZ74jhsrbJ2cKKjLEo32jYIbvuSfAV?=
- =?us-ascii?Q?M8WuyGaXjDEYX7eWpqayHw/rHp+qDV6MMO8AGNrlZeNj+Q2kPfmRlASezxpC?=
- =?us-ascii?Q?s46GvtZvp+2TfqXiVQQwCVE1ZfscQbk+ag46EOux2IWvaLx3jUXKGFqKXT/W?=
- =?us-ascii?Q?gk7crxcqYkUszRMIVJ7AtUtxKQTR79XAz4XL9/qgoVDSD41hWXF7XeorZSdJ?=
- =?us-ascii?Q?nmJvBbxd7ql4Dw4qtq0XbqOitIMQcRHQBEafY9e4SLybZF5d6oHGernq23pf?=
- =?us-ascii?Q?ZXmLOvKBzzCEkKAG4mLUiRxlYINIhjo22vz0NRG3ds8cqI+68Lbikx+LeNT6?=
- =?us-ascii?Q?T7UqraGsZQKkZUQr9Q8CbbYtkNs2JIkVU718CP41W/V/h/8NpMkhuRzmheyN?=
- =?us-ascii?Q?Zc+OSscS2y/8hm5yMa7oTfdkrB5mDpccJH/CPq5yhK1PZnurRXt25MSKjVxo?=
- =?us-ascii?Q?AAPZ4pvdjtcEfCAi5vK+wUCxD/f2Ex7Fpj2VkfxmlMMbfHwmym6AlXA7XS/q?=
- =?us-ascii?Q?5/4IexJFT2dVCHtpl7l/snf99OmrBr5obCf6z0lBCWJ5aeYuPe/l5hSgxk0U?=
- =?us-ascii?Q?M7ZcPYEfdE9Gzgm/bV7ueXKDoo+kE7wFPphkcKe9LripGKlnQCcv5Yodhof0?=
- =?us-ascii?Q?0xKHjRFXePdV/6CbSB3XaIK5kVAPdO//6YRYKXtXcp/yQUx6Ji/cMMoVENiN?=
- =?us-ascii?Q?GwpHCo00d43rEB1B2trNL2DQ//8I7f+2K+7dYdZCaZ+ZZQYf6ZqijF+lj/wZ?=
- =?us-ascii?Q?u3X3dDdGaW3hOs8fTIZTXKSBM9vSWdlpo1vi+NXsfoBpJNMQ1gSdbbRlngef?=
- =?us-ascii?Q?F4TuGdlpHP3TV0zlYAkXunJEMA/f0v9m29G9y/X1EK2IV/awjaSCE/w8rBDA?=
- =?us-ascii?Q?XChswfZDsl3uLufeG7NHrTTY4pR7jvicSJmUxWJlom5ckvZxFGA72JmY6qMY?=
- =?us-ascii?Q?ZyLWAkqs/q1Kh6ZCpGF/jdOAFRsdn79vbjQHXeS4tR/cBoh/rIhlqcKgLnHH?=
- =?us-ascii?Q?9cKzSwlDuqz1Exx2DKDwkNqFhE3DRAv97PrZICxxQEvWHMNsX8inIep95AWH?=
- =?us-ascii?Q?Sa1T2j3JotOtgJ5xxBLOstkt5hUQuygOPFVxJ1Yw9Gv/J23gF4bqoDTejdxL?=
- =?us-ascii?Q?ePVk9M5kxU31BHUgL5Qp/4CwVH+VcIYWPY7PCGW3BAbNMWMsBOrdIChUtxOs?=
- =?us-ascii?Q?g+OETs3M71rKheTek4U6y3aioCsrZo3xRSGLmMJfFyelNIVuC3z8OMLiZTG1?=
- =?us-ascii?Q?B68cmw7j8lLqykbBAJzNEcxSH00MOmy+7aVLjO4LB8Kcye6vghg1tn8Z/e4a?=
- =?us-ascii?Q?FNe66R3rNgb/+WJvJnJXzMACW1zIUZdCaQtImC+eVNLDIQPGqZtCA+ccAVsk?=
- =?us-ascii?Q?JI2xMbv25DAnwVL4zLcAIz6g7PGyZx7evwA36hKLwSb1wti5QYJ0kRoLVRX8?=
- =?us-ascii?Q?v9CyX4STgbH1DyLBtGY=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 16 Aug 2022 01:58:00 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D85F9D666
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 16:16:33 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id c20so7009594qtw.8
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 16:16:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=2NHSu+WR71bWEHouMtYEYWTZ2k/kphqS/Xaa0m4gsqo=;
+        b=RdxioX6rfZpldJqhwhtPJeZPySZfy2kj3BdriChWQwfUY6NXW7Q1VLICRE9Zqweb+r
+         gwrzBdCRX9ofe59/sA+Er7wcZ8SfrC0yQr0qZB22kyXtTztAb7qfOQwR0BTKByvh2Xrk
+         joGRbfm86wLLmTtUU7TYwtAh69+AuDDC0o0eBUeR6TMH8wLqlg1V+dx3+aoGzIgRzlM3
+         4vd6VJyB8xZYordFoEIVcdJqW/Kx15ZctZTc3e9XPPcF4WE29vwD5iiFCcDa4M2e8ZRw
+         6+zq8dzDFJ3sjxrvzA3MdARDyvfTOgJk+l9X0HGfcVt/BOEO685/Yfth3PuOYL0AbJbb
+         Ebiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=2NHSu+WR71bWEHouMtYEYWTZ2k/kphqS/Xaa0m4gsqo=;
+        b=bHiVWJ/I/yGuv1nuZmWnbPTpnRJ11bMv+KRsQa3r4UI0Rc6U1vhte85AqFMMiKGub4
+         PWbrw8pfh6Ec4YEjuyQgixV3owPHahj7HUKoiq6hEYw6rzRDIfZ5mDEZIYx27yV8ly8A
+         iyM8me25Fb1VMEfZbanixxnGDTs6p9KfFxKhDugnk73lp5XUWhA+xTqsTDn0sU5QiW7s
+         sfHpN9eDqItTb+9yMXasbs3+uBmeuvwjYYrDJGV8hBVqmZ9AK4CkpMqRdC30TPP+nkjR
+         NDDtlwKweBIHBI/+6RUpfgtM09Nq9OVLvkLAxow9eXse+AIGQ6Z7TZBca0gTGAlhxJEb
+         4CPQ==
+X-Gm-Message-State: ACgBeo3enMQWuUvgSKVjWcG9u4HYm09AE7EJpjHPZSIz5mewiRUUsdMt
+        U+fy5qwKmybUPVe/ds/u7bxLSVR6iqXqwD3z
+X-Google-Smtp-Source: AA6agR5IQPzo2LnMl+iKR8S7dBMSEVPE5W7Xd5TxJPOPIUXUs6m6Q/yoaSd/tKdtwwHfQLCUx6+Wtw==
+X-Received: by 2002:ac8:7fc5:0:b0:343:681d:c3fb with SMTP id b5-20020ac87fc5000000b00343681dc3fbmr16179373qtk.157.1660605392431;
+        Mon, 15 Aug 2022 16:16:32 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05620a430b00b006b99b78751csm10441188qko.112.2022.08.15.16.16.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 16:16:31 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux@rempel-privat.de, kernel@pengutronix.de
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH] counter: interrupt-cnt: Implement watch_validate callback
+Date:   Mon, 15 Aug 2022 18:50:58 -0400
+Message-Id: <20220815225058.144203-1-william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc413fb3-60ca-4b7d-201f-08da7f128de1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2022 23:04:49.2514
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1rdJssJ2XtrKz4OuzmHnXTRm8pwlSGNslJtoe9b04erO4o5apjdqxHCtH1G4A4DQ8UOcatdDw0MeGj/eo6ZnYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1610
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[AMD Official Use Only - General]
+The interrupt-cnt counter driver only pushes one type of event on only
+one channel: COUNTER_EVENT_CHANGE_OF_STATE on channel 0. The
+interrupt_cnt_watch_validate() watch_valid callback is implemented to
+ensure watch configurations are valid for this driver.
 
-Hello Sabin,
+Cc: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/counter/interrupt-cnt.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
->> +static bool is_hva_registered(struct kvm *kvm, hva_t hva, size_t len)=20
->> +{
->> +	struct kvm_sev_info *sev =3D &to_kvm_svm(kvm)->sev_info;
->> +	struct list_head *head =3D &sev->regions_list;
->> +	struct enc_region *i;
->> +
->> +	lockdep_assert_held(&kvm->lock);
->> +
->> +	list_for_each_entry(i, head, list) {
->> +		u64 start =3D i->uaddr;
->> +		u64 end =3D start + i->size;
->> +
->> +		if (start <=3D hva && end >=3D (hva + len))
->> +			return true;
->> +	}
->> +
->> +	return false;
->> +}
+diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+index 3b13f56bbb11..05a5d3e2d2b0 100644
+--- a/drivers/counter/interrupt-cnt.c
++++ b/drivers/counter/interrupt-cnt.c
+@@ -139,12 +139,23 @@ static int interrupt_cnt_signal_read(struct counter_device *counter,
+ 	return 0;
+ }
+ 
++static int interrupt_cnt_watch_validate(struct counter_device *counter,
++					const struct counter_watch *watch)
++{
++	if (watch->channel != 0 ||
++	    watch->event != COUNTER_EVENT_CHANGE_OF_STATE)
++		return -EINVAL;
++
++	return 0;
++}
++
+ static const struct counter_ops interrupt_cnt_ops = {
+ 	.action_read = interrupt_cnt_action_read,
+ 	.count_read = interrupt_cnt_read,
+ 	.count_write = interrupt_cnt_write,
+ 	.function_read = interrupt_cnt_function_read,
+ 	.signal_read  = interrupt_cnt_signal_read,
++	.watch_validate  = interrupt_cnt_watch_validate,
+ };
+ 
+ static int interrupt_cnt_probe(struct platform_device *pdev)
 
->Since KVM_MEMORY_ENCRYPT_REG_REGION should be called for every memory regi=
-on the user gives to kvm, is the regions_list any different from kvm's mems=
-lots?
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.2
 
-Actually, the KVM_MEMORY_ENCRYPT_REG_REGION is being called and the regions=
-_list is only being setup for the guest RAM blocks.
-
->> +
->> +static int snp_launch_update(struct kvm *kvm, struct kvm_sev_cmd=20
->> +*argp) {
->> +	struct kvm_sev_info *sev =3D &to_kvm_svm(kvm)->sev_info;
->> +	struct sev_data_snp_launch_update data =3D {0};
->> +	struct kvm_sev_snp_launch_update params;
->> +	unsigned long npages, pfn, n =3D 0;
->> +	int *error =3D &argp->error;
->> +	struct page **inpages;
->> +	int ret, i, level;
->> +	u64 gfn;
->> +
->> +	if (!sev_snp_guest(kvm))
->> +		return -ENOTTY;
->> +
->> +	if (!sev->snp_context)
->> +		return -EINVAL;
->> +
->> +	if (copy_from_user(&params, (void __user *)(uintptr_t)argp->data, size=
-of(params)))
->> +		return -EFAULT;
->> +
->> +	/* Verify that the specified address range is registered. */
->> +	if (!is_hva_registered(kvm, params.uaddr, params.len))
->> +		return -EINVAL;
->> +
->> +	/*
->> +	 * The userspace memory is already locked so technically we don't
->> +	 * need to lock it again. Later part of the function needs to know
->> +	 * pfn so call the sev_pin_memory() so that we can get the list of
->> +	 * pages to iterate through.
->> +	 */
->> +	inpages =3D sev_pin_memory(kvm, params.uaddr, params.len, &npages, 1);
->> +	if (!inpages)
->> +		return -ENOMEM;
-
->sev_pin_memory will call pin_user_pages() which fails for PFNMAP vmas that=
- you would get if you use memory allocated from an IO driver.
->Using gfn_to_pfn instead will make this work with vmas backed by pages or =
-raw pfn mappings.
-
-All the guest memory is being allocated via the userspace VMM, so how and w=
-here will we get memory allocated from an IO driver ?
-
-Thanks,
-Ashish
