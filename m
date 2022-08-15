@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBE2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B07C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240609AbiHOSjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
+        id S241755AbiHOSj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243970AbiHOSgN (ORCPT
+        with ESMTP id S240890AbiHOSix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:36:13 -0400
+        Mon, 15 Aug 2022 14:38:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5553C141;
-        Mon, 15 Aug 2022 11:23:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A472F3D59A;
+        Mon, 15 Aug 2022 11:23:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC0BD606A1;
-        Mon, 15 Aug 2022 18:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1260C433D6;
-        Mon, 15 Aug 2022 18:22:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ABE76068D;
+        Mon, 15 Aug 2022 18:23:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED809C433D7;
+        Mon, 15 Aug 2022 18:23:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587780;
-        bh=lwen1EgOL0WIJxndcyGGj6vv0zvik1mBKliZtD3eSSU=;
+        s=korg; t=1660587827;
+        bh=wxOLwuRbTjTq7t+voomz6BH+XUZah3K8GfdHFh66MGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqAMFYrLTS21/vaNGcd0+jCwJfFBl6rS7MZotvBO81kz5bGmMxQxovKgNTpIjgezA
-         O6j6TGUu2e6XM4jWxT+D75J92wgO4VzJGSpU7tnrRv2OhYIouv6D5jrBSl3/D4nn9y
-         VAfq7SiHdX3n81cOPwS0WdZZAbENbKudJ+tq6EZA=
+        b=OKsFY2nAIKyAjvpZQYAJusxO5dHlBEoQML3cQsgDNgjoiyMG1D+aCkEFHJ+qXU/o+
+         91EY07tirtpcvXkC9Ge4oP/3uTHe/vtzFcKiTIl7LOg67i1sW7Rp9Vp74hcLsfQuBw
+         PrikwKwKtAsaoDVCcbXUvo1gWrKlagQvGyf7iFgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Liu Jinbao <liujinbao1@xiaomi.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 161/779] ARM: dts: imx7d-colibri-emmc: add cpu1 supply
-Date:   Mon, 15 Aug 2022 19:56:45 +0200
-Message-Id: <20220815180344.217106397@linuxfoundation.org>
+Subject: [PATCH 5.15 207/779] erofs: avoid consecutive detection for Highmem memory
+Date:   Mon, 15 Aug 2022 19:57:31 +0200
+Message-Id: <20220815180346.123733950@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,36 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-[ Upstream commit ba28db60d34271e8a3cf4d7158d71607e8b1e57f ]
+[ Upstream commit 448b5a1548d87c246c3d0c3df8480d3c6eb6c11a ]
 
-Each cpu-core is supposed to list its supply separately, add supply for
-cpu1.
+Currently, vmap()s are avoided if physical addresses are
+consecutive for decompressed buffers.
 
-Fixes: 2d7401f8632f ("ARM: dts: imx7d: Add cpu1 supply")
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+I observed that is very common for 4KiB pclusters since the
+numbers of decompressed pages are almost 2 or 3.
+
+However, such detection doesn't work for Highmem pages on
+32-bit machines, let's fix it now.
+
+Reported-by: Liu Jinbao <liujinbao1@xiaomi.com>
+Fixes: 7fc45dbc938a ("staging: erofs: introduce generic decompression backend")
+Link: https://lore.kernel.org/r/20220708101001.21242-1-hsiangkao@linux.alibaba.com
+Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7d-colibri-emmc.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ fs/erofs/decompressor.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-index af39e5370fa1..045e4413d339 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-@@ -13,6 +13,10 @@ memory@80000000 {
- 	};
- };
+diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
+index ad3f31380e6b..8193c14bb111 100644
+--- a/fs/erofs/decompressor.c
++++ b/fs/erofs/decompressor.c
+@@ -93,14 +93,18 @@ static int z_erofs_lz4_prepare_destpages(struct z_erofs_decompress_req *rq,
  
-+&cpu1 {
-+	cpu-supply = <&reg_DCDC2>;
-+};
-+
- &gpio6 {
- 	gpio-line-names = "",
- 			  "",
+ 		if (page) {
+ 			__clear_bit(j, bounced);
+-			if (kaddr) {
+-				if (kaddr + PAGE_SIZE == page_address(page))
++			if (!PageHighMem(page)) {
++				if (!i) {
++					kaddr = page_address(page);
++					continue;
++				}
++				if (kaddr &&
++				    kaddr + PAGE_SIZE == page_address(page)) {
+ 					kaddr += PAGE_SIZE;
+-				else
+-					kaddr = NULL;
+-			} else if (!i) {
+-				kaddr = page_address(page);
++					continue;
++				}
+ 			}
++			kaddr = NULL;
+ 			continue;
+ 		}
+ 		kaddr = NULL;
 -- 
 2.35.1
 
