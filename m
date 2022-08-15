@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC3EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B088C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352764AbiHPAYM (ORCPT
+        id S1352871AbiHPAYS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
+        Mon, 15 Aug 2022 20:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353228AbiHPAUw (ORCPT
+        with ESMTP id S1353101AbiHPAUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:20:52 -0400
+        Mon, 15 Aug 2022 20:20:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE9617C32E;
-        Mon, 15 Aug 2022 13:33:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C220717B822;
+        Mon, 15 Aug 2022 13:33:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D326117D;
-        Mon, 15 Aug 2022 20:33:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65A21C433C1;
-        Mon, 15 Aug 2022 20:33:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C4CF6117D;
+        Mon, 15 Aug 2022 20:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74EA3C433D6;
+        Mon, 15 Aug 2022 20:33:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595622;
-        bh=VQGx/IU7kOtacVCrGRXqdtCla6OPAn5IxSG9vexBIsA=;
+        s=korg; t=1660595611;
+        bh=3DYUns0bvxVARDYeCIucXBYeeHnzF1psCJsi+8eGx64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjEKGMWzhJZTczRf++1qDOI/3PDIlA1SjGZuc34EDR3FaNTYHSBY+X157vZervGY0
-         4xofmq+ogUyW1nllZr919xNofP6tFpFmq0mLDY73PheFiDTjCbTvSJvQvNMHGkzPWX
-         UGNAenFTlahLOBs8itCrjb3mehOPG1aj9S5+lTQY=
+        b=PKxrsOOkUB5HmtOu4i5MxqWBg1VXMODRJnvNAyaihnKSQ2L3UmvLDFBdSKmz1R9tq
+         UmjgDECoiA0FcCa8lYsEoKWOuk+F8K5t+jZdRbtceZzuw+Vmb2PYeME2VpyGhxo928
+         CnXDMDfFKy03i+QYbSSbKBAFkvke/xPUb4j1prWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Patrick Wang <patrick.wang.shcn@gmail.com>,
+        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0821/1157] RDMA/irdma: Fix VLAN connection with wildcard address
-Date:   Mon, 15 Aug 2022 20:02:57 +0200
-Message-Id: <20220815180512.326176096@linuxfoundation.org>
+Subject: [PATCH 5.19 0819/1157] mm: percpu: use kmemleak_ignore_phys() instead of kmemleak_free()
+Date:   Mon, 15 Aug 2022 20:02:55 +0200
+Message-Id: <20220815180512.251603428@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,49 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+From: Patrick Wang <patrick.wang.shcn@gmail.com>
 
-[ Upstream commit 82ab2b52654c43ba24a3f6603fec40874cc5a7e5 ]
+[ Upstream commit a317ebccaa3609917a2c021af870cf3fa607ab0c ]
 
-When an application listens on a wildcard address, and there are VLAN and
-non-VLAN IP addresses, iWARP connection establishemnt can fail if the listen
-node VLAN ID does not match.
+Kmemleak recently added a rbtree to store the objects allocted with
+physical address.  Those objects can't be freed with kmemleak_free().
 
-Fix this by checking the vlan_id only if not a wildcard listen node.
+According to the comments, percpu allocations are tracked by kmemleak
+separately.  Kmemleak_free() was used to avoid the unnecessary
+tracking.  If kmemleak_free() fails, those objects would be scanned by
+kmemleak, which is unnecessary but shouldn't lead to other effects.
 
-Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
-Link: https://lore.kernel.org/r/20220705230815.265-7-shiraz.saleem@intel.com
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Use kmemleak_ignore_phys() instead of kmemleak_free() for those
+objects.
+
+Link: https://lkml.kernel.org/r/20220705113158.127600-1-patrick.wang.shcn@gmail.com
+Fixes: 0c24e061196c ("mm: kmemleak: add rbtree and store physical address for objects allocated with PA")
+Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+Cc: Dennis Zhou <dennis@kernel.org>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/irdma/cm.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ mm/percpu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 646fa8677490..7b086fe63a24 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -1477,12 +1477,13 @@ irdma_find_listener(struct irdma_cm_core *cm_core, u32 *dst_addr, u16 dst_port,
- 	list_for_each_entry (listen_node, &cm_core->listen_list, list) {
- 		memcpy(listen_addr, listen_node->loc_addr, sizeof(listen_addr));
- 		listen_port = listen_node->loc_port;
-+		if (listen_port != dst_port ||
-+		    !(listener_state & listen_node->listener_state))
-+			continue;
- 		/* compare node pair, return node handle if a match */
--		if ((!memcmp(listen_addr, dst_addr, sizeof(listen_addr)) ||
--		     !memcmp(listen_addr, ip_zero, sizeof(listen_addr))) &&
--		    listen_port == dst_port &&
--		    vlan_id == listen_node->vlan_id &&
--		    (listener_state & listen_node->listener_state)) {
-+		if (!memcmp(listen_addr, ip_zero, sizeof(listen_addr)) ||
-+		    (!memcmp(listen_addr, dst_addr, sizeof(listen_addr)) &&
-+		     vlan_id == listen_node->vlan_id)) {
- 			refcount_inc(&listen_node->refcnt);
- 			spin_unlock_irqrestore(&cm_core->listen_list_lock,
- 					       flags);
+diff --git a/mm/percpu.c b/mm/percpu.c
+index 3633eeefaa0d..27697b2429c2 100644
+--- a/mm/percpu.c
++++ b/mm/percpu.c
+@@ -3104,7 +3104,7 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
+ 			goto out_free_areas;
+ 		}
+ 		/* kmemleak tracks the percpu allocations separately */
+-		kmemleak_free(ptr);
++		kmemleak_ignore_phys(__pa(ptr));
+ 		areas[group] = ptr;
+ 
+ 		base = min(ptr, base);
+@@ -3304,7 +3304,7 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t
+ 				goto enomem;
+ 			}
+ 			/* kmemleak tracks the percpu allocations separately */
+-			kmemleak_free(ptr);
++			kmemleak_ignore_phys(__pa(ptr));
+ 			pages[j++] = virt_to_page(ptr);
+ 		}
+ 	}
+@@ -3417,7 +3417,7 @@ void __init setup_per_cpu_areas(void)
+ 	if (!ai || !fc)
+ 		panic("Failed to allocate memory for percpu areas.");
+ 	/* kmemleak tracks the percpu allocations separately */
+-	kmemleak_free(fc);
++	kmemleak_ignore_phys(__pa(fc));
+ 
+ 	ai->dyn_size = unit_size;
+ 	ai->unit_size = unit_size;
 -- 
 2.35.1
 
