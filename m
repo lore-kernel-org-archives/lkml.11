@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A69C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2B6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350767AbiHOWnG (ORCPT
+        id S1350830AbiHOWnN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
+        Mon, 15 Aug 2022 18:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351212AbiHOWht (ORCPT
+        with ESMTP id S1350947AbiHOWhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:49 -0400
+        Mon, 15 Aug 2022 18:37:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796E112F71A;
-        Mon, 15 Aug 2022 12:50:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B8A3DBFB;
+        Mon, 15 Aug 2022 12:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC02BB80EAB;
-        Mon, 15 Aug 2022 19:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A3AAC433D6;
-        Mon, 15 Aug 2022 19:50:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E13B0B81141;
+        Mon, 15 Aug 2022 19:49:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49E5AC433D6;
+        Mon, 15 Aug 2022 19:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593056;
-        bh=UcJUPZ1QbSmS9xdHVvp7rd9UQ+GV5ASMhZ482Ly/dV4=;
+        s=korg; t=1660592990;
+        bh=qD8iqtAHW8h3e52RnPcjZiRtkyWciAJc3DN0Ssk+n1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJoEgCRtzjPAH3ZU8gc+iqlDqaTRmnQNqqecvJtbHZoAsTBzqWGYq0zBtgi/2O1GG
-         v9ALjWhMrDb/YDxSRXBBdkueaN/jc8HA4h1NMT/oyUqSkCiNoaykBMBg3tNfE8cTDg
-         rqLD3F13LpOkvigKT635cfKWOchYWgtbFCLVf3+U=
+        b=l74jWvECMZfz04E+EVUPyWuipKmtOqT/HKBqzrr2FLRjRYjq5E+piaja+mZGdBM0+
+         smEXcW0bKN64NR9byPJafMKTEbkZfrwfrgZjDA8sOmRC0Z1cGyFdZMOMvmbm2rcn79
+         Uu3RubiD9y0QQyOYbGpZbTIDeSVrsm2qXrICj3GI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Bruno Goncalves <bgoncalv@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0206/1157] ARM: dts: imx7-colibri: improve wake-up with gpio key
-Date:   Mon, 15 Aug 2022 19:52:42 +0200
-Message-Id: <20220815180447.892699167@linuxfoundation.org>
+Subject: [PATCH 5.19 0197/1157] wait: Fix __wait_event_hrtimeout for RT/DL tasks
+Date:   Mon, 15 Aug 2022 19:52:33 +0200
+Message-Id: <20220815180447.591910749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,51 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+From: Juri Lelli <juri.lelli@redhat.com>
 
-[ Upstream commit fd5d2974652c96935d94301af6eaf6b3585ab330 ]
+[ Upstream commit cceeeb6a6d02e7b9a74ddd27a3225013b34174aa ]
 
-The pin GPIO1_IO01 externally pulls down, it is required to sequentially
-connect this pin (signal WAKE_MICO#) to +3v3 and then disconnect it to
-trigger a wakeup interrupt.
-Adding the flag GPIO_PULL_DOWN allows the system to be woken up just
-connecting the pin GPIO1_IO01 to +3v3.
+Changes to hrtimer mode (potentially made by __hrtimer_init_sleeper on
+PREEMPT_RT) are not visible to hrtimer_start_range_ns, thus not
+accounted for by hrtimer_start_expires call paths. In particular,
+__wait_event_hrtimeout suffers from this problem as we have, for
+example:
 
-Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+fs/aio.c::read_events
+  wait_event_interruptible_hrtimeout
+    __wait_event_hrtimeout
+      hrtimer_init_sleeper_on_stack <- this might "mode |= HRTIMER_MODE_HARD"
+                                       on RT if task runs at RT/DL priority
+        hrtimer_start_range_ns
+          WARN_ON_ONCE(!(mode & HRTIMER_MODE_HARD) ^ !timer->is_hard)
+          fires since the latter doesn't see the change of mode done by
+          init_sleeper
+
+Fix it by making __wait_event_hrtimeout call hrtimer_sleeper_start_expires,
+which is aware of the special RT/DL case, instead of hrtimer_start_range_ns.
+
+Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lore.kernel.org/r/20220627095051.42470-1-juri.lelli@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri-aster.dtsi   | 2 +-
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/linux/wait.h | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-index 950b4e5f6cf4..69ee85084ad4 100644
---- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-@@ -16,7 +16,7 @@ gpio-keys {
- 
- 		power {
- 			label = "Wake-Up";
--			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
-+			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
- 			linux,code = <KEY_WAKEUP>;
- 			debounce-interval = <10>;
- 			wakeup-source;
-diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index 17ad9065646d..d6775e3c64f1 100644
---- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -34,7 +34,7 @@ gpio-keys {
- 
- 		power {
- 			label = "Wake-Up";
--			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
-+			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
- 			linux,code = <KEY_WAKEUP>;
- 			debounce-interval = <10>;
- 			wakeup-source;
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index 851e07da2583..58cfbf81447c 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -544,10 +544,11 @@ do {										\
+ 										\
+ 	hrtimer_init_sleeper_on_stack(&__t, CLOCK_MONOTONIC,			\
+ 				      HRTIMER_MODE_REL);			\
+-	if ((timeout) != KTIME_MAX)						\
+-		hrtimer_start_range_ns(&__t.timer, timeout,			\
+-				       current->timer_slack_ns,			\
+-				       HRTIMER_MODE_REL);			\
++	if ((timeout) != KTIME_MAX) {						\
++		hrtimer_set_expires_range_ns(&__t.timer, timeout,		\
++					current->timer_slack_ns);		\
++		hrtimer_sleeper_start_expires(&__t, HRTIMER_MODE_REL);		\
++	}									\
+ 										\
+ 	__ret = ___wait_event(wq_head, condition, state, 0, 0,			\
+ 		if (!__t.task) {						\
 -- 
 2.35.1
 
