@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 659F2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AD7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233255AbiHOUD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
+        id S239960AbiHOUDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346211AbiHOUBx (ORCPT
+        with ESMTP id S1346264AbiHOUB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:01:53 -0400
+        Mon, 15 Aug 2022 16:01:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0F17D1D2;
-        Mon, 15 Aug 2022 11:54:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631037D1FE;
+        Mon, 15 Aug 2022 11:54:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29147B810A2;
-        Mon, 15 Aug 2022 18:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 746FBC433C1;
-        Mon, 15 Aug 2022 18:53:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F904B810A4;
+        Mon, 15 Aug 2022 18:54:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A99C433C1;
+        Mon, 15 Aug 2022 18:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589635;
-        bh=vDkvebUt7MZA8+U3hS5joEOkD7qc/yPP/d1mBQwSSSQ=;
+        s=korg; t=1660589642;
+        bh=ADDZENk4U535ezQ9Bwf0xtyUCnQSO4AeE9KEO3JLlTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0c/NMwkaW1FioGdS3uC/aME3rs3lNq+8Lo83Rl7X93MqcyT9tbKH28Rn6DMZnRpj
-         /++reb+quQuAhhz/9SIxT6PEKSmYIVpOj3OSdve7wnmnvNjnPk8p/3lC/+1+M1oEVv
-         U2k2TdPpczjZ1+ViJhU4iyH/5FJ9U/CSqFbKpBd0=
+        b=YX7EdM/54O/E7e8AeQWfyNCnpXNBFN9ITo6NhKYpy9vdWpuyGnL/bPDKJTnEc55SY
+         GouvJuFIA50KuP5gvx7dVxEimtmYnCh0P7UjQ7+dtJSo6+Q8Xm3aj3+kCvrP71XK3p
+         Yj2bSHTU0XGMTj2nht4j+vQB2QYkWpodQyL/tDcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.15 764/779] crypto: lib/blake2s - reduce stack frame usage in self test
-Date:   Mon, 15 Aug 2022 20:06:48 +0200
-Message-Id: <20220815180410.068767541@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>
+Subject: [PATCH 5.15 766/779] Revert "s390/smp: enforce lowcore protection on CPU restart"
+Date:   Mon, 15 Aug 2022 20:06:50 +0200
+Message-Id: <20220815180410.150840368@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,53 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-commit d6c14da474bf260d73953fbf7992c98d9112aec7 upstream.
+commit 953503751a426413ea8aee2299ae3ee971b70d9b upstream.
 
-Using 3 blocks here doesn't give us much more than using 2, and it
-causes a stack frame size warning on certain compiler/config/arch
-combinations:
+This reverts commit 6f5c672d17f583b081e283927f5040f726c54598.
 
-   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
->> lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     632 | }
-         | ^
+This breaks normal crash dump when CPU0 is offline.
 
-So this patch just reduces the block from 3 to 2, which makes the
-warning go away.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/linux-crypto/202206200851.gE3MHCgd-lkp@intel.com
-Fixes: 2d16803c562e ("crypto: blake2s - remove shash module")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/crypto/blake2s-selftest.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/s390/kernel/setup.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/crypto/blake2s-selftest.c
-+++ b/lib/crypto/blake2s-selftest.c
-@@ -593,7 +593,7 @@ bool __init blake2s_selftest(void)
- 		enum { TEST_ALIGNMENT = 16 };
- 		u8 unaligned_block[BLAKE2S_BLOCK_SIZE + TEST_ALIGNMENT - 1]
- 					__aligned(TEST_ALIGNMENT);
--		u8 blocks[BLAKE2S_BLOCK_SIZE * 3];
-+		u8 blocks[BLAKE2S_BLOCK_SIZE * 2];
- 		struct blake2s_state state1, state2;
- 
- 		get_random_bytes(blocks, sizeof(blocks));
-@@ -603,8 +603,8 @@ bool __init blake2s_selftest(void)
-     defined(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
- 		memcpy(&state1, &state, sizeof(state1));
- 		memcpy(&state2, &state, sizeof(state2));
--		blake2s_compress(&state1, blocks, 3, BLAKE2S_BLOCK_SIZE);
--		blake2s_compress_generic(&state2, blocks, 3, BLAKE2S_BLOCK_SIZE);
-+		blake2s_compress(&state1, blocks, 2, BLAKE2S_BLOCK_SIZE);
-+		blake2s_compress_generic(&state2, blocks, 2, BLAKE2S_BLOCK_SIZE);
- 		if (memcmp(&state1, &state2, sizeof(state1))) {
- 			pr_err("blake2s random compress self-test %d: FAIL\n",
- 			       i + 1);
+--- a/arch/s390/kernel/setup.c
++++ b/arch/s390/kernel/setup.c
+@@ -507,8 +507,8 @@ static void __init setup_lowcore_dat_on(
+ 	S390_lowcore.svc_new_psw.mask |= PSW_MASK_DAT;
+ 	S390_lowcore.program_new_psw.mask |= PSW_MASK_DAT;
+ 	S390_lowcore.io_new_psw.mask |= PSW_MASK_DAT;
+-	__ctl_set_bit(0, 28);
+ 	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
++	__ctl_set_bit(0, 28);
+ 	put_abs_lowcore(restart_flags, RESTART_FLAG_CTLREGS);
+ 	put_abs_lowcore(program_new_psw, lc->program_new_psw);
+ 	for (cr = 0; cr < ARRAY_SIZE(lc->cregs_save_area); cr++)
 
 
