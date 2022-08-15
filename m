@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C8EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C267C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245124AbiHPAf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S1347390AbiHPAfg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354500AbiHPAbh (ORCPT
+        with ESMTP id S242813AbiHPAbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995BE18730D;
-        Mon, 15 Aug 2022 13:37:01 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD508186E88;
+        Mon, 15 Aug 2022 13:36:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8020611E2;
-        Mon, 15 Aug 2022 20:37:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7008C433D6;
-        Mon, 15 Aug 2022 20:36:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 678EFB80EA8;
+        Mon, 15 Aug 2022 20:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F61C433C1;
+        Mon, 15 Aug 2022 20:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595820;
-        bh=o1kO/kGJcleySV8cZnjcpWdXy1DYRXJbPorvBfsbIFw=;
+        s=korg; t=1660595811;
+        bh=4W+j0Bg9obX7L5ZVTF5NbGu5Xo5MV93h/4WaETWB/cI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NXKwfK8W8S3EesA2wvIIAVwNVhfgcsNNklK0iNurQmvoEJKAGaEfs8rnrR4AgWekb
-         y7Kle4omvZ7NCoJfzyVNsOhvpdyqqjigchi1gvO0a5ahBx2pl1IJFIIxJE0P6su18m
-         cj5h1YWQtutr6mooM0dMl79jiR4RnLDf9TRG2iOY=
+        b=xjH4XwGzh/Lb1s44Z1fEKoHJQyrudEz6bXr4Swa6DeQ4PZgO7QK6pvJB9/tJK9PwN
+         NxW6Om1zAn8Sx6g/HuYeoTKXshtcuNeAVvwZ/XeaStWX/ULaPOHKUiJ3+RiJn1J/K4
+         FeiP7vAXO5WSXUPCvet9CPN9HTtSoXIT4dlwPApA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Joel Granados <j.granados@samsung.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0885/1157] jbd2: fix outstanding credits assert in jbd2_journal_commit_transaction()
-Date:   Mon, 15 Aug 2022 20:04:01 +0200
-Message-Id: <20220815180514.839532242@linuxfoundation.org>
+Subject: [PATCH 5.19 0882/1157] nvme: catch -ENODEV from nvme_revalidate_zones again
+Date:   Mon, 15 Aug 2022 20:03:58 +0200
+Message-Id: <20220815180514.702520111@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,72 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit a89573ce4ad32f19f43ec669771726817e185be0 ]
+[ Upstream commit e06b425bc835ead08b9fd935bf5e47eef473e7a0 ]
 
-We catch an assert problem in jbd2_journal_commit_transaction() when
-doing fsstress and request falut injection tests. The problem is
-happened in a race condition between jbd2_journal_commit_transaction()
-and ext4_end_io_end(). Firstly, ext4_writepages() writeback dirty pages
-and start reserved handle, and then the journal was aborted due to some
-previous metadata IO error, jbd2_journal_abort() start to commit current
-running transaction, the committing procedure could be raced by
-ext4_end_io_end() and lead to subtract j_reserved_credits twice from
-commit_transaction->t_outstanding_credits, finally the
-t_outstanding_credits is mistakenly smaller than t_nr_buffers and
-trigger assert.
+nvme_revalidate_zones can also return -ENODEV if e.g. zone sizes aren't
+constant or not a power of two.  In that case we should jump to marking
+the gendisk hidden and only support pass through.
 
-kjournald2           kworker
-
-jbd2_journal_commit_transaction()
- write_unlock(&journal->j_state_lock);
- atomic_sub(j_reserved_credits, t_outstanding_credits); //sub once
-
-     	             jbd2_journal_start_reserved()
-     	              start_this_handle()  //detect aborted journal
-     	              jbd2_journal_free_reserved()  //get running transaction
-                       read_lock(&journal->j_state_lock)
-     	                __jbd2_journal_unreserve_handle()
-     	               atomic_sub(j_reserved_credits, t_outstanding_credits);
-                       //sub again
-                       read_unlock(&journal->j_state_lock);
-
- journal->j_running_transaction = NULL;
- J_ASSERT(t_nr_buffers <= t_outstanding_credits) //bomb!!!
-
-Fix this issue by using journal->j_state_lock to protect the subtraction
-in jbd2_journal_commit_transaction().
-
-Fixes: 96f1e0974575 ("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220611130426.2013258-1-yi.zhang@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 602e57c9799c ("nvme: also mark passthrough-only namespaces ready in nvme_update_ns_info")
+Reported-by: Joel Granados <j.granados@samsung.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Joel Granados <j.granados@samsung.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/commit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
-index eb315e81f1a6..af1a9191368c 100644
---- a/fs/jbd2/commit.c
-+++ b/fs/jbd2/commit.c
-@@ -553,13 +553,13 @@ void jbd2_journal_commit_transaction(journal_t *journal)
- 	 */
- 	jbd2_journal_switch_revoke_table(journal);
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 9c75d7378d31..2f965356f345 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -1927,8 +1927,10 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
  
-+	write_lock(&journal->j_state_lock);
+ 	if (ns->head->ids.csi == NVME_CSI_ZNS) {
+ 		ret = nvme_update_zone_info(ns, lbaf);
+-		if (ret)
+-			goto out_unfreeze;
++		if (ret) {
++			blk_mq_unfreeze_queue(ns->disk->queue);
++			goto out;
++		}
+ 	}
+ 
+ 	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
+@@ -1939,7 +1941,7 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 	if (blk_queue_is_zoned(ns->queue)) {
+ 		ret = nvme_revalidate_zones(ns);
+ 		if (ret && !nvme_first_scan(ns->disk))
+-			return ret;
++			goto out;
+ 	}
+ 
+ 	if (nvme_ns_head_multipath(ns->head)) {
+@@ -1954,9 +1956,9 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 		disk_update_readahead(ns->head->disk);
+ 		blk_mq_unfreeze_queue(ns->head->disk->queue);
+ 	}
+-	return 0;
+ 
+-out_unfreeze:
++	ret = 0;
++out:
  	/*
- 	 * Reserved credits cannot be claimed anymore, free them
- 	 */
- 	atomic_sub(atomic_read(&journal->j_reserved_credits),
- 		   &commit_transaction->t_outstanding_credits);
+ 	 * If probing fails due an unsupported feature, hide the block device,
+ 	 * but still allow other access.
+@@ -1966,7 +1968,6 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 		set_bit(NVME_NS_READY, &ns->flags);
+ 		ret = 0;
+ 	}
+-	blk_mq_unfreeze_queue(ns->disk->queue);
+ 	return ret;
+ }
  
--	write_lock(&journal->j_state_lock);
- 	trace_jbd2_commit_flushing(journal, commit_transaction);
- 	stats.run.rs_flushing = jiffies;
- 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
 -- 
 2.35.1
 
