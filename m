@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3253C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE823C2BB43
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350354AbiHOWbl (ORCPT
+        id S1350287AbiHOWbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        Mon, 15 Aug 2022 18:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350191AbiHOW00 (ORCPT
+        with ESMTP id S1350112AbiHOW0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:26:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84214128463;
-        Mon, 15 Aug 2022 12:45:08 -0700 (PDT)
+        Mon, 15 Aug 2022 18:26:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29DD12845E;
+        Mon, 15 Aug 2022 12:45:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7E6ACCE12E4;
-        Mon, 15 Aug 2022 19:45:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A17C433D6;
-        Mon, 15 Aug 2022 19:45:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E224610A3;
+        Mon, 15 Aug 2022 19:45:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592E1C433D6;
+        Mon, 15 Aug 2022 19:45:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592704;
-        bh=zfl6Pl3K4qT0tKLKmfKOMaYKm1X2H/9fLtFsWsnGeQU=;
+        s=korg; t=1660592701;
+        bh=8SMpDs+qLkU3eSZtrCGgQx5CHK2Yl0vTWXKJJG+w0B0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFhvVUS/pS1HoM9I2K1rsDH1Mk90rydGkCgyRMNIgir9HEvN9BvnDnWzNM+CZENvT
-         dP+kzTKhSisSwVEEYXqs90ZMeQNh81KsvH3vXInN/8th2Wi9yRikjq8EsDQpX1XdRb
-         pnZ5YnKE69JhXhuliUecGCFAHIOJ2WzhiON8zcEg=
+        b=HFlR+iTf3cQ00Cd2suObW9DjbN9r/TBzyWaITUewwOKORRY9Ayv4GFLiLiORcMliZ
+         yel2YoHI+hrw/QsyFMOIztjGFrlOf8XCAYnsgFvyQs4CehrqYwyhwMDXC/lHmomijd
+         8Azn5AoI20jbaNjFnnxGgLLndtwZ1kX5ShutJPdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0833/1095] ASoC: mediatek: mt8173-rt5650: Fix refcount leak in mt8173_rt5650_dev_probe
-Date:   Mon, 15 Aug 2022 20:03:52 +0200
-Message-Id: <20220815180503.780351868@linuxfoundation.org>
+        stable@vger.kernel.org, hewenliang <hewenliang4@huawei.com>,
+        Haibin Zhang <haibinzhang@tencent.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0152/1157] arm64: fix oops in concurrently setting insn_emulation sysctls
+Date:   Mon, 15 Aug 2022 19:51:48 +0200
+Message-Id: <20220815180445.747084825@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,62 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: haibinzhang (张海斌) <haibinzhang@tencent.com>
 
-[ Upstream commit efe2178d1a32492f99e7f1f2568eea5c88a85729 ]
+[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Fix refcount leak in some error paths.
+emulation_proc_handler() changes table->data for proc_dointvec_minmax
+and can generate the following Oops if called concurrently with itself:
 
-Fixes: 0f83f9296d5c ("ASoC: mediatek: Add machine driver for ALC5650 codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603124243.31358-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+ | Internal error: Oops: 96000006 [#1] SMP
+ | Call trace:
+ | update_insn_emulation_mode+0xc0/0x148
+ | emulation_proc_handler+0x64/0xb8
+ | proc_sys_call_handler+0x9c/0xf8
+ | proc_sys_write+0x18/0x20
+ | __vfs_write+0x20/0x48
+ | vfs_write+0xe4/0x1d0
+ | ksys_write+0x70/0xf8
+ | __arm64_sys_write+0x20/0x28
+ | el0_svc_common.constprop.0+0x7c/0x1c0
+ | el0_svc_handler+0x2c/0xa0
+ | el0_svc+0x8/0x200
+
+To fix this issue, keep the table->data as &insn->current_mode and
+use container_of() to retrieve the insn pointer. Another mutex is
+used to protect against the current_mode update but not for retrieving
+insn_emulation as table->data is no longer changing.
+
+Co-developed-by: hewenliang <hewenliang4@huawei.com>
+Signed-off-by: hewenliang <hewenliang4@huawei.com>
+Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
+Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-rt5650.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-index fc164f4f95f8..487807ee7019 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-@@ -280,7 +280,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
- 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node;
-@@ -293,7 +294,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 			dev_err(&pdev->dev,
- 				"%s codec_capture_dai name fail %d\n",
- 				__func__, ret);
--			return ret;
-+			goto put_platform_node;
- 		}
- 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].dai_name =
- 			codec_capture_dai;
-@@ -315,12 +316,14 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	card->dev = &pdev->dev;
+diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+index 6875a16b09d2..fb0e7c7b2e20 100644
+--- a/arch/arm64/kernel/armv8_deprecated.c
++++ b/arch/arm64/kernel/armv8_deprecated.c
+@@ -59,6 +59,7 @@ struct insn_emulation {
+ static LIST_HEAD(insn_emulation);
+ static int nr_insn_emulated __initdata;
+ static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
++static DEFINE_MUTEX(insn_emulation_mutex);
  
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ static void register_emulation_hooks(struct insn_emulation_ops *ops)
+ {
+@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+ 				  loff_t *ppos)
+ {
+ 	int ret = 0;
+-	struct insn_emulation *insn = (struct insn_emulation *) table->data;
++	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
+ 	enum insn_emulation_mode prev_mode = insn->current_mode;
  
-+put_platform_node:
- 	of_node_put(platform_node);
+-	table->data = &insn->current_mode;
++	mutex_lock(&insn_emulation_mutex);
+ 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ 
+ 	if (ret || !write || prev_mode == insn->current_mode)
+@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+ 		update_insn_emulation_mode(insn, INSN_UNDEF);
+ 	}
+ ret:
+-	table->data = insn;
++	mutex_unlock(&insn_emulation_mutex);
  	return ret;
  }
+ 
+@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
+ 		sysctl->maxlen = sizeof(int);
+ 
+ 		sysctl->procname = insn->ops->name;
+-		sysctl->data = insn;
++		sysctl->data = &insn->current_mode;
+ 		sysctl->extra1 = &insn->min;
+ 		sysctl->extra2 = &insn->max;
+ 		sysctl->proc_handler = emulation_proc_handler;
 -- 
 2.35.1
 
