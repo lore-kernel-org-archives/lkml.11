@@ -2,111 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63813C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 10:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B74C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 10:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiHOKig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 06:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        id S242250AbiHOKix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 06:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiHOKic (ORCPT
+        with ESMTP id S229752AbiHOKiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 06:38:32 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3D21117E;
-        Mon, 15 Aug 2022 03:38:32 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id ACD865C00A1;
-        Mon, 15 Aug 2022 06:38:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 06:38:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=undef.tools; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm1; t=1660559911; x=1660646311; bh=l7tzxS11gKHrXKaS8T9yXyMkE
-        8x+VVDK1NsLzxeV1wI=; b=kIXBtljSQPTxfbpnr5ETctb/X6WOiJlnD4gd9hjEw
-        OKl0ToDc3D71s7jvH57GssWiHJgPMFEOubFKODK4Wv0j9GJmbl4FGsHsjCxWMP/m
-        F8/NX678CEWMC9RtPrqNe0b+ClOTm61gGiVr79kDBhshx73Myoi/xtd7Gnnms1MK
-        91G67rxsdbw++uGeqm5APDsejfnUkShaozn1g+4PrdcN8BiL60e/uVC4FBJ5wgb2
-        yIMFUY2kK90lTSY2S+ut73gjguULZ0SgQIsWG0FUkCbdU41xqpplNxiqlNInOCUN
-        2B1bmMXVe67etzKC2hoKIivc3oS0fpKXtFxX3zJOJgluQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660559911; x=1660646311; bh=l7tzxS11gKHrXKaS8T9yXyMkE8x+VVDK1Ns
-        LzxeV1wI=; b=qaVQGMPI94iPnqpZxLkN1o5MblWmMOZxwgqP6D1JQLYPVuF4jQp
-        9HM02Ep5mu/irrTMDcSRJPc+y8xAMqXkPQC8+NXGwUNoUUvdGVYtU5cZ+blEX6Xf
-        Gl3p70SP7IDVi5yDRhvsUnkuC1Wnzb9JqTvcTeGLNh9z0KWdB9KCX2D8ckvadlsV
-        EGKwDaXeu3P7yrh9emNHmXdcC1fAxMDGOvqJ94NeXlprr643e9NjPMmb8uWKeMEK
-        SZrZx9HZlvJEVAVaaUq1Akb0MR+vS3i268Nwdd2HNryzb3qjMcdhZ0S5ImA/oR/7
-        niO4NCINL1/6svi7cJ2AsbT1VZBax0JErDQ==
-X-ME-Sender: <xms:JiL6YlQGdttFvqPnpKgJwVFt2oJ0HzZtxjn9B442w0uK5Z_B9JRfzg>
-    <xme:JiL6YuxFVnAa4dAM_xsX2ZK8M92SE-3lkL2RJMh5wSklNhgpkLjx_O0IAKhl-GjWs
-    gThyH7IpoUHixgqnxU>
-X-ME-Received: <xmr:JiL6Yq0lfmxUZQ3VOr2fo8wm7cU3UKrPOD5yGFoZ5uxWLfzBIiaIn3oSfxt-avK_T7R_dgV1uHDe_YMMULWSGPb8pozY_ZnCzObPY0-E-YxLN66Hw9sMdTYlgQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgfedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomheplfgrrhhrrghh
-    ucfiohhssggvlhhluceokhgvrhhnvghlsehunhguvghfrdhtohholhhsqeenucggtffrrg
-    htthgvrhhnpeejueevgfejfeeghffhfeehvdffleetheekkedvfeehieetuedtheevgefh
-    geekhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hkvghrnhgvlhesuhhnuggvfhdrthhoohhlsh
-X-ME-Proxy: <xmx:JiL6YtDk7o0FclxYF3M3-heuBfLlR8ewnFWUwu36iAW0AauqPtEuoQ>
-    <xmx:JiL6YugQTpwBo9WWoWrfORrTiMwMnMhSbIHnvn-b0Ob4uRAlBBriBw>
-    <xmx:JiL6Yho_NPdA54dkOdOsJR0-D0Mm0pV__NN39kshRbLsQCSIEyYu7g>
-    <xmx:JyL6YpPZxrLshMykFemM7UJtSTDLc8lorJWG9z80RJF8TyljzQLKTw>
-Feedback-ID: id76147eb:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 06:38:27 -0400 (EDT)
-From:   Jarrah Gosbell <kernel@undef.tools>
-To:     Jacob Chen <jacob-chen@iotwrt.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, Ondrej Jirman <megi@xff.cz>,
-        Jarrah Gosbell <kernel@undef.tools>
-Subject: [PATCH v2] media: rockchip: rga: Fix probe rga_parse_dt bugs
-Date:   Mon, 15 Aug 2022 10:36:22 +0000
-Message-Id: <20220815103621.86509-1-kernel@undef.tools>
-X-Mailer: git-send-email 2.35.1
+        Mon, 15 Aug 2022 06:38:51 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7B13D64
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:38:49 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by laurent.telenet-ops.be with bizsmtp
+        id 7men2800a4C55Sk01men5m; Mon, 15 Aug 2022 12:38:47 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oNXUd-0019cC-Ch; Mon, 15 Aug 2022 12:38:47 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oNXUc-00C0SR-PO; Mon, 15 Aug 2022 12:38:46 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     linux-m68k@lists.linux-m68k.org
+Cc:     linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] netfilter: conntrack: NF_CONNTRACK_PROCFS should no longer default to y
+Date:   Mon, 15 Aug 2022 12:38:45 +0200
+Message-Id: <1498887cf43bf7ab7c47e2a397e67bff55524f92.1660559553.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Jirman <megi@xff.cz>
+NF_CONNTRACK_PROCFS was marked obsolete in commit 54b07dca68557b09
+("netfilter: provide config option to disable ancient procfs parts") in
+v3.3.
 
-rga_parse_dt is missing a error return, so if some of the resources
-return DEFER_PROBE, probe will succeed without these resources.
-
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
-Co-developed-by: Jarrah Gosbell <kernel@undef.tools>
-Signed-off-by: Jarrah Gosbell <kernel@undef.tools>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
-v1 -> v2: use dev_err_probe to handle -EPROBE_DEFER.
+ net/netfilter/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
- drivers/media/platform/rockchip/rga/rga.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
-index 2f8df74ad0fd..61b25fcf826e 100644
---- a/drivers/media/platform/rockchip/rga/rga.c
-+++ b/drivers/media/platform/rockchip/rga/rga.c
-@@ -816,7 +816,7 @@ static int rga_probe(struct platform_device *pdev)
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index 22f15ebf6045b3a9..4b8d04640ff32274 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -144,7 +144,6 @@ config NF_CONNTRACK_ZONES
  
- 	ret = rga_parse_dt(rga);
- 	if (ret)
--		dev_err(&pdev->dev, "Unable to parse OF data\n");
-+		return dev_err_probe(&pdev->dev, ret, "Unable to parse OF data\n");
- 
- 	pm_runtime_enable(rga->dev);
- 
+ config NF_CONNTRACK_PROCFS
+ 	bool "Supply CT list in procfs (OBSOLETE)"
+-	default y
+ 	depends on PROC_FS
+ 	help
+ 	This option enables for the list of known conntrack entries
 -- 
-2.35.1
+2.25.1
 
