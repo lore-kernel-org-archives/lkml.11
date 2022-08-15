@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 819FDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416DAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345521AbiHOT5t (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S239749AbiHOT6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344837AbiHOTyU (ORCPT
+        with ESMTP id S1345593AbiHOTyq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:54:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CF146DAB;
-        Mon, 15 Aug 2022 11:52:08 -0700 (PDT)
+        Mon, 15 Aug 2022 15:54:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAB5474D0;
+        Mon, 15 Aug 2022 11:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5ADEB810A1;
-        Mon, 15 Aug 2022 18:52:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464E1C433D6;
-        Mon, 15 Aug 2022 18:52:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3316C6122A;
+        Mon, 15 Aug 2022 18:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40180C433C1;
+        Mon, 15 Aug 2022 18:52:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589525;
-        bh=0KD7QWSgaLCh+FTKLs8Nuov2UeaSqaFCWzUcFIzW7MY=;
+        s=korg; t=1660589528;
+        bh=vRllzNOW7z4C9KZEF8OVgn21/Jd/wEYuUh01kNRgf3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HG9d90tEWjCXpX9RZRNQ4abvldWMAEIE3a5fISfwwpHEt/mLYByu+7tShsZWVXTV2
-         wwMqO5oABXHegYbBZ/tqezklTWcTdCOTPInm2Xf9Y3qY2D3Yz57Y6fcLclMMxoZQUL
-         Mi8DMbuy23XRA6kutiv5wHp6t+tYeOe5qkXyD2N4=
+        b=n55nGjSPQrB5eYpvE+A/vhwhm0nI2bsa3T86fCCq6seoaUtNhN0bLAjkX9Gb4mzpS
+         2QmqLymPy7egZZNMq9XiHvvV8J9rquzeTGHDPKzsE9Gfjw3/XuV+CQes0wWzTvwlXd
+         8On3lP9V+WBQBic3jtBS+I7dI9FThL2AZTHgY1+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 746/779] ext4: correct the misjudgment in ext4_iget_extra_inode
-Date:   Mon, 15 Aug 2022 20:06:30 +0200
-Message-Id: <20220815180409.361550591@linuxfoundation.org>
+Subject: [PATCH 5.15 729/779] btrfs: properly flag filesystem with BTRFS_FEATURE_INCOMPAT_BIG_METADATA
+Date:   Mon, 15 Aug 2022 20:06:13 +0200
+Message-Id: <20220815180408.608022252@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,38 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Nikolay Borisov <nborisov@suse.com>
 
-[ Upstream commit fd7e672ea98b95b9d4c9dae316639f03c16a749d ]
+[ Upstream commit e26b04c4c91925dba57324db177a24e18e2d0013 ]
 
-Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
-determine whether the inode have xattr space.
+Commit 6f93e834fa7c seemingly inadvertently moved the code responsible
+for flagging the filesystem as having BIG_METADATA to a place where
+setting the flag was essentially lost. This means that
+filesystems created with kernels containing this bug (starting with 5.15)
+can potentially be mounted by older (pre-3.4) kernels. In reality
+chances for this happening are low because there are other incompat
+flags introduced in the mean time. Still the correct behavior is to set
+INCOMPAT_BIG_METADATA flag and persist this in the superblock.
 
-Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-5-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 6f93e834fa7c ("btrfs: fix upper limit for max_inline for page size 64K")
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/inode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/btrfs/disk-io.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 149377c849ee..f95c73defe05 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4516,8 +4516,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
- 	__le32 *magic = (void *)raw_inode +
- 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index 383e9c861306..e65c3039caf1 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3337,16 +3337,6 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
+ 	 */
+ 	fs_info->compress_type = BTRFS_COMPRESS_ZLIB;
  
--	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
--	    EXT4_INODE_SIZE(inode->i_sb) &&
-+	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
- 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
- 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
- 		return ext4_find_inline_data_nolock(inode);
+-	/*
+-	 * Flag our filesystem as having big metadata blocks if they are bigger
+-	 * than the page size.
+-	 */
+-	if (btrfs_super_nodesize(disk_super) > PAGE_SIZE) {
+-		if (!(features & BTRFS_FEATURE_INCOMPAT_BIG_METADATA))
+-			btrfs_info(fs_info,
+-				"flagging fs with big metadata feature");
+-		features |= BTRFS_FEATURE_INCOMPAT_BIG_METADATA;
+-	}
+ 
+ 	/* Set up fs_info before parsing mount options */
+ 	nodesize = btrfs_super_nodesize(disk_super);
+@@ -3387,6 +3377,17 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
+ 	if (features & BTRFS_FEATURE_INCOMPAT_SKINNY_METADATA)
+ 		btrfs_info(fs_info, "has skinny extents");
+ 
++	/*
++	 * Flag our filesystem as having big metadata blocks if they are bigger
++	 * than the page size.
++	 */
++	if (btrfs_super_nodesize(disk_super) > PAGE_SIZE) {
++		if (!(features & BTRFS_FEATURE_INCOMPAT_BIG_METADATA))
++			btrfs_info(fs_info,
++				"flagging fs with big metadata feature");
++		features |= BTRFS_FEATURE_INCOMPAT_BIG_METADATA;
++	}
++
+ 	/*
+ 	 * mixed block groups end up with duplicate but slightly offset
+ 	 * extent buffers for the same range.  It leads to corruptions
 -- 
 2.35.1
 
