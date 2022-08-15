@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 301F7C32765
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 993CCC3276A
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356161AbiHPACE (ORCPT
+        id S1356343AbiHPACS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
+        Mon, 15 Aug 2022 20:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356356AbiHOXyL (ORCPT
+        with ESMTP id S1356445AbiHOXy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:54:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD2160100;
-        Mon, 15 Aug 2022 13:18:59 -0700 (PDT)
+        Mon, 15 Aug 2022 19:54:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047761607A1;
+        Mon, 15 Aug 2022 13:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE2260E73;
-        Mon, 15 Aug 2022 20:18:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F7CC433C1;
-        Mon, 15 Aug 2022 20:18:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C998A60F86;
+        Mon, 15 Aug 2022 20:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9F1C433C1;
+        Mon, 15 Aug 2022 20:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594733;
-        bh=T1l5jLko//pl/xTkp40ct8rrtd6LACJ0z7ATcLqw1Cg=;
+        s=korg; t=1660594749;
+        bh=4Da9VfCATmK0UuUvULHDYgqa7YJ9Qcv9Lzqi2nk+pWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2eOmbWJx/HnpAOhtsKK64LiOHQd3q4FFY3s6OY0z7y34U+9Y/pMV0uwhwfL6ccD8F
-         2TBita/VU/j8BWbFjjj6b7IO5EwD4uEV7D/Bj9Zvy537InfFC0L4wl1MnbcThi0GNi
-         K5QN8M1ecDhnN1ULa/073KTSSB/+fBP9x/pNe0Wo=
+        b=lKdpkdMBnkt45nY4JX6u3YwZKS31CRgCVXaHybVz+SOdD5kQ/uXncUS/OvjwMUONZ
+         TVfFHFvu2kRLhwtRlpKBXlX61JvZfuaza3B4I0Ysq4KWctNgxfppgDCbsIPGOKvQ8X
+         9uu2uN2vTs0861z2huUXWsG2d9z4jaTCFB8DJv/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel test robot <lkp@intel.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0541/1157] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
-Date:   Mon, 15 Aug 2022 19:58:17 +0200
-Message-Id: <20220815180501.315274593@linuxfoundation.org>
+Subject: [PATCH 5.19 0545/1157] hantro: Remove incorrect HEVC SPS validation
+Date:   Mon, 15 Aug 2022 19:58:21 +0200
+Message-Id: <20220815180501.466187835@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,56 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 
-[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
+[ Upstream commit df9ec2fc8e70e01532fd9161cd98711969561ff6 ]
 
-Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
-but it forgets to change the value to be returned that came from
-simple_write_to_buffer() call. It results in the following warning:
+Currently, the driver tries to validat the HEVC SPS
+against the CAPTURE queue format (i.e. the decoded format).
+This is not correct, because typically the SPS control is set
+before the CAPTURE queue is negotiated.
 
-  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
-           return rc;
-                  ^~
-
-Remove rc variable and just return the passed in length if the
-memdup_user() succeeds.
-
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
-Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
+Fixes: 135ad96cb4d6b ("media: hantro: Be more accurate on pixel formats step_width constraints")
+Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/media/hantro/hantro_drv.c  | 12 ++++++------
+ drivers/staging/media/hantro/hantro_hevc.c |  9 +--------
+ drivers/staging/media/hantro/hantro_hw.h   |  1 -
+ 3 files changed, 7 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
-index fe84362718de..04d1aa0e2d35 100644
---- a/drivers/net/wireless/ath/wil6210/debugfs.c
-+++ b/drivers/net/wireless/ath/wil6210/debugfs.c
-@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
- 	void *cmd;
- 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
- 	u16 cmdid;
--	int rc, rc1;
-+	int rc1;
+diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+index 01d33dcb0467..ac232b5f7825 100644
+--- a/drivers/staging/media/hantro/hantro_drv.c
++++ b/drivers/staging/media/hantro/hantro_drv.c
+@@ -253,11 +253,6 @@ queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_vq)
  
- 	if (cmdlen < 0 || *ppos != 0)
- 		return -EINVAL;
-@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ static int hantro_try_ctrl(struct v4l2_ctrl *ctrl)
+ {
+-	struct hantro_ctx *ctx;
+-
+-	ctx = container_of(ctrl->handler,
+-			   struct hantro_ctx, ctrl_handler);
+-
+ 	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+ 		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
  
- 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+@@ -273,7 +268,12 @@ static int hantro_try_ctrl(struct v4l2_ctrl *ctrl)
+ 	} else if (ctrl->id == V4L2_CID_MPEG_VIDEO_HEVC_SPS) {
+ 		const struct v4l2_ctrl_hevc_sps *sps = ctrl->p_new.p_hevc_sps;
  
--	return rc;
-+	return len;
+-		return hantro_hevc_validate_sps(ctx, sps);
++		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
++			/* Luma and chroma bit depth mismatch */
++			return -EINVAL;
++		if (sps->bit_depth_luma_minus8 != 0)
++			/* Only 8-bit is supported */
++			return -EINVAL;
+ 	} else if (ctrl->id == V4L2_CID_STATELESS_VP9_FRAME) {
+ 		const struct v4l2_ctrl_vp9_frame *dec_params = ctrl->p_new.p_vp9_frame;
+ 
+diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
+index 4f7e2acb46ec..df1f81952bba 100644
+--- a/drivers/staging/media/hantro/hantro_hevc.c
++++ b/drivers/staging/media/hantro/hantro_hevc.c
+@@ -154,15 +154,8 @@ static int tile_buffer_reallocate(struct hantro_ctx *ctx)
+ 	return -ENOMEM;
  }
  
- static const struct file_operations fops_wmi = {
+-int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps)
++static int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps)
+ {
+-	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+-		/* Luma and chroma bit depth mismatch */
+-		return -EINVAL;
+-	if (sps->bit_depth_luma_minus8 != 0)
+-		/* Only 8-bit is supported */
+-		return -EINVAL;
+-
+ 	/*
+ 	 * for tile pixel format check if the width and height match
+ 	 * hardware constraints
+diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+index 33d156ccbfeb..77769d2bb38e 100644
+--- a/drivers/staging/media/hantro/hantro_hw.h
++++ b/drivers/staging/media/hantro/hantro_hw.h
+@@ -359,7 +359,6 @@ int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
+ void hantro_hevc_ref_init(struct hantro_ctx *ctx);
+ dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
+ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
+-int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps);
+ 
+ 
+ static inline unsigned short hantro_vp9_num_sbs(unsigned short dimension)
 -- 
 2.35.1
 
