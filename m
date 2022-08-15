@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D5DC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C458BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347410AbiHOUZS (ORCPT
+        id S1347416AbiHOUZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        Mon, 15 Aug 2022 16:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240593AbiHOURE (ORCPT
+        with ESMTP id S241843AbiHOURH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:17:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A40F48;
-        Mon, 15 Aug 2022 12:00:17 -0700 (PDT)
+        Mon, 15 Aug 2022 16:17:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807E3C6B;
+        Mon, 15 Aug 2022 12:00:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD2F2B8110B;
-        Mon, 15 Aug 2022 19:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25208C433B5;
-        Mon, 15 Aug 2022 19:00:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 277B7611D6;
+        Mon, 15 Aug 2022 19:00:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29782C433B5;
+        Mon, 15 Aug 2022 19:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590013;
-        bh=FU1YbE1E2NkvVleTcRnvyZW61eUHNYJXk19HtY0RX9A=;
+        s=korg; t=1660590019;
+        bh=zEedom811/5se5b7aljK1JSNDPwuR5xYRPX2z+nxSlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bR9ieCzQucUwbzRG2hTXlxUYajypsp2tviRcVGbNG5VtJXm0stsxlc4UCnlfU9Mwf
-         TdAAmFsgI9urgWZzFjZ/xnryuvenrVHAp5GaLwJqTksYr1qZ7qKg7/mIbrKQdvW662
-         +CjFroXSdGLVj+nEC4u8IyC+5en07boZh+nXTRqI=
+        b=mxfC9WbYIpEwvB5LwhTpqJz8qo2qv61rJ+ZOMQmzPnn5+rVNby4Ui52L0IPJ1qt2y
+         AcpaKat80pRWOUTRnrUmErTsyws2eAInOW8WSOrKAYFHphxQ6/m6O243/whRB2HW/h
+         9ZW2ECj2ME+w8p2GhC95bdQYucAnLJXaVCwH1VSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Pham <quic_jackp@quicinc.com>,
-        Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.18 0122/1095] usb: typec: ucsi: Acknowledge the GET_ERROR_STATUS command completion
-Date:   Mon, 15 Aug 2022 19:52:01 +0200
-Message-Id: <20220815180434.641471278@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Bikash Hazarika <bhazarika@marvell.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 0097/1095] scsi: qla2xxx: Zero undefined mailbox IN registers
+Date:   Mon, 15 Aug 2022 19:51:36 +0200
+Message-Id: <20220815180433.564851189@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,40 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Bikash Hazarika <bhazarika@marvell.com>
 
-commit a7dc438b5e446afcd1b3b6651da28271400722f2 upstream.
+commit 6c96a3c7d49593ef15805f5e497601c87695abc9 upstream.
 
-We found PPM will not send any notification after it report error status
-and OPM issue GET_ERROR_STATUS command to read the details about error.
+While requesting a new mailbox command, driver does not write any data to
+unused registers.  Initialize the unused register value to zero while
+requesting a new mailbox command to prevent stale entry access by firmware.
 
-According UCSI spec, PPM may clear the Error Status Data after the OPM
-has acknowledged the command completion.
-
-This change add operation to acknowledge the command completion from PPM.
-
-Fixes: bdc62f2bae8f (usb: typec: ucsi: Simplified registration and I/O API)
-Cc: <stable@vger.kernel.org> # 5.10
-Signed-off-by: Jack Pham <quic_jackp@quicinc.com>
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1658817949-4632-1-git-send-email-quic_linyyuan@quicinc.com
+Link: https://lore.kernel.org/r/20220713052045.10683-4-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Bikash Hazarika <bhazarika@marvell.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/scsi/qla2xxx/qla_mbx.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -76,6 +76,10 @@ static int ucsi_read_error(struct ucsi *
- 	if (ret)
- 		return ret;
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -238,6 +238,8 @@ qla2x00_mailbox_command(scsi_qla_host_t
+ 			ql_dbg(ql_dbg_mbx, vha, 0x1112,
+ 			    "mbox[%d]<-0x%04x\n", cnt, *iptr);
+ 			wrt_reg_word(optr, *iptr);
++		} else {
++			wrt_reg_word(optr, 0);
+ 		}
  
-+	ret = ucsi_acknowledge_command(ucsi);
-+	if (ret)
-+		return ret;
-+
- 	switch (error) {
- 	case UCSI_ERROR_INCOMPATIBLE_PARTNER:
- 		return -EOPNOTSUPP;
+ 		mboxes >>= 1;
 
 
