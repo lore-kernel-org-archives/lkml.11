@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF22C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9746BC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350561AbiHOWj4 (ORCPT
+        id S1350658AbiHOWkF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        Mon, 15 Aug 2022 18:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245188AbiHOWdr (ORCPT
+        with ESMTP id S1348953AbiHOWeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:33:47 -0400
+        Mon, 15 Aug 2022 18:34:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAB971736;
-        Mon, 15 Aug 2022 12:49:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB470E72;
+        Mon, 15 Aug 2022 12:49:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E99266123B;
-        Mon, 15 Aug 2022 19:49:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E53DAC433D6;
-        Mon, 15 Aug 2022 19:49:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C89D06122B;
+        Mon, 15 Aug 2022 19:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E5FC433D6;
+        Mon, 15 Aug 2022 19:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592955;
-        bh=zHXXtMvGg4b4maDB7wqIZ15PbGofr2RdcvBPSMXAyHU=;
+        s=korg; t=1660592974;
+        bh=HAgF+QZyq7BwwqLqpaRvWir0GnzA1N0v4RZ9HqRJ7ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e7H3vcr0G8JcR9X33YlTTNg03ewFI77RlHCGJOZE/8OuKGmBzn144peCLXFpPSRjD
-         f1aGg08Z59cP5P2RbdNw6bPb0tKDL1AeVj/jHG1Wlg/B0Q2WAhaSKNikh1F6Ynyzlp
-         PY4bvCzlRNwjj7tBjKv5aRCg/r7y7RMjDkWHplDQ=
+        b=iUQ12fr9DzSratNurm9taG/M/U0q9bOQfTY85XxK36BP0zjCwNOqF5zXW/0LboxlD
+         svvGirAcT/W6erj3IQppyzID8ckua+vf6Fi38ESASVAGTw3EawZUrCa88VSxY8ZRa5
+         uTo3/l84A8yHrY76Bn9C2qDQDLv8UY2ccktlWF5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0192/1157] PM: hibernate: defer device probing when resuming from hibernation
-Date:   Mon, 15 Aug 2022 19:52:28 +0200
-Message-Id: <20220815180447.430514154@linuxfoundation.org>
+Subject: [PATCH 5.18 0874/1095] tty: n_gsm: fix missing corner cases in gsmld_poll()
+Date:   Mon, 15 Aug 2022 20:04:33 +0200
+Message-Id: <20220815180505.522422313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,104 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 8386c414e27caba8501119948e9551e52b527f59 ]
+[ Upstream commit 7e5b4322cde067e1d0f1bf8f490e93f664a7c843 ]
 
-syzbot is reporting hung task at misc_open() [1], for there is a race
-window of AB-BA deadlock which involves probe_count variable. Currently
-wait_for_device_probe() from snapshot_open() from misc_open() can sleep
-forever with misc_mtx held if probe_count cannot become 0.
+gsmld_poll() currently fails to handle the following corner cases correctly:
+- remote party closed the associated tty
 
-When a device is probed by hub_event() work function, probe_count is
-incremented before the probe function starts, and probe_count is
-decremented after the probe function completed.
+Add the missing checks and map those to EPOLLHUP.
+Reorder the checks to group them by their reaction.
 
-There are three cases that can prevent probe_count from dropping to 0.
-
-  (a) A device being probed stopped responding (i.e. broken/malicious
-      hardware).
-
-  (b) A process emulating a USB device using /dev/raw-gadget interface
-      stopped responding for some reason.
-
-  (c) New device probe requests keeps coming in before existing device
-      probe requests complete.
-
-The phenomenon syzbot is reporting is (b). A process which is holding
-system_transition_mutex and misc_mtx is waiting for probe_count to become
-0 inside wait_for_device_probe(), but the probe function which is called
- from hub_event() work function is waiting for the processes which are
-blocked at mutex_lock(&misc_mtx) to respond via /dev/raw-gadget interface.
-
-This patch mitigates (b) by deferring wait_for_device_probe() from
-snapshot_open() to snapshot_write() and snapshot_ioctl(). Please note that
-the possibility of (b) remains as long as any thread which is emulating a
-USB device via /dev/raw-gadget interface can be blocked by uninterruptible
-blocking operations (e.g. mutex_lock()).
-
-Please also note that (a) and (c) are not addressed. Regarding (c), we
-should change the code to wait for only one device which contains the
-image for resuming from hibernation. I don't know how to address (a), for
-use of timeout for wait_for_device_probe() might result in loss of user
-data in the image. Maybe we should require the userland to wait for the
-image device before opening /dev/snapshot interface.
-
-Link: https://syzkaller.appspot.com/bug?extid=358c9ab4c93da7b7238c [1]
-Reported-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-4-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/power/user.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/power/user.c b/kernel/power/user.c
-index ad241b4ff64c..d43c2aa583b2 100644
---- a/kernel/power/user.c
-+++ b/kernel/power/user.c
-@@ -26,6 +26,7 @@
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 7749de4f269a..3dd71ede4cd4 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3057,12 +3057,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
  
- #include "power.h"
- 
-+static bool need_wait;
- 
- static struct snapshot_data {
- 	struct snapshot_handle handle;
-@@ -78,7 +79,7 @@ static int snapshot_open(struct inode *inode, struct file *filp)
- 		 * Resuming.  We may need to wait for the image device to
- 		 * appear.
- 		 */
--		wait_for_device_probe();
-+		need_wait = true;
- 
- 		data->swap = -1;
- 		data->mode = O_WRONLY;
-@@ -168,6 +169,11 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
- 	ssize_t res;
- 	loff_t pg_offp = *offp & ~PAGE_MASK;
- 
-+	if (need_wait) {
-+		wait_for_device_probe();
-+		need_wait = false;
-+	}
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
 +
- 	lock_system_sleep();
++	if (gsm->dead)
++		mask |= EPOLLHUP;
+ 	if (tty_hung_up_p(file))
+ 		mask |= EPOLLHUP;
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		mask |= EPOLLHUP;
+ 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
+-	if (gsm->dead)
+-		mask |= EPOLLHUP;
+ 	return mask;
+ }
  
- 	data = filp->private_data;
-@@ -244,6 +250,11 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
- 	loff_t size;
- 	sector_t offset;
- 
-+	if (need_wait) {
-+		wait_for_device_probe();
-+		need_wait = false;
-+	}
-+
- 	if (_IOC_TYPE(cmd) != SNAPSHOT_IOC_MAGIC)
- 		return -ENOTTY;
- 	if (_IOC_NR(cmd) > SNAPSHOT_IOC_MAXNR)
 -- 
 2.35.1
 
