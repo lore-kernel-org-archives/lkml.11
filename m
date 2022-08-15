@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC05AC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5B4C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242388AbiHPAx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S243770AbiHPAxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344310AbiHPAo3 (ORCPT
+        with ESMTP id S244742AbiHPAol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:44:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1EE193552;
-        Mon, 15 Aug 2022 13:41:18 -0700 (PDT)
+        Mon, 15 Aug 2022 20:44:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706DFAE209;
+        Mon, 15 Aug 2022 13:40:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6D16B80EAD;
-        Mon, 15 Aug 2022 20:41:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36303C433D7;
-        Mon, 15 Aug 2022 20:41:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 134DCB80EAD;
+        Mon, 15 Aug 2022 20:40:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4210FC433C1;
+        Mon, 15 Aug 2022 20:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596075;
-        bh=JLzz5dq88jRbBg6ItZt/44TfxmNsOXXimPAGwGAhAmo=;
+        s=korg; t=1660596046;
+        bh=hF+MWjz3NwNhxg062slqc22gSVlrgR4oKLCaB8gyQdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ef0zvKInlc+YR6jjZp0q/UqrUlTYVeEIhGW0xTXZ4iGz+kOzAkvsM0pkScu24CNWa
-         boXoQaGmrA+ikrHbZ9zJq16K2z4kJgITiiIbHATCvDQB1Z2fs5nZ9Jzn5IDgNuZInF
-         EMMO3VsPPBFYAAWbouAXUArsu3bROZ92JQeYF5oc=
+        b=bNOzs+2Ul5mzL2IbCFoOCD2mHBn0UE66SWan4lOXKhGNdbFdi5NtToWBmjBEuKGSm
+         uk817MicYYEeImvb6ay+bEq6tS4V/OsF8hcyEoZonkwPb0z33mjH0qTbDYzD6apZAp
+         4bgGV1MEmMZFwRqvNO9W1Kop3LtCDCGSbKuCtbPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Stefani Seibold <stefani@seibold.net>,
-        Randy Dunlap <randy.dunlap@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0964/1157] kfifo: fix kfifo_to_user() return type
-Date:   Mon, 15 Aug 2022 20:05:20 +0200
-Message-Id: <20220815180518.225172147@linuxfoundation.org>
+Subject: [PATCH 5.19 0956/1157] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
+Date:   Mon, 15 Aug 2022 20:05:12 +0200
+Message-Id: <20220815180517.873457451@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,42 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit 045ed31e23aea840648c290dbde04797064960db ]
+[ Upstream commit 3182efd036c1b955403d131258234896cbd9fbeb ]
 
-The kfifo_to_user() macro is supposed to return zero for success or
-negative error codes.  Unfortunately, there is a signedness bug so it
-returns unsigned int.  This only affects callers which try to save the
-result in ssize_t and as far as I can see the only place which does that
-is line6_hwdep_read().
+Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
+from S2") prevented an early enabling of RTS during resume, but it did
+not actively restore the RTS state after resume.
 
-TL;DR: s/_uint/_int/.
-
-Link: https://lkml.kernel.org/r/YrVL3OJVLlNhIMFs@kili
-Fixes: 144ecf310eb5 ("kfifo: fix kfifo_alloc() to return a signed int value")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Stefani Seibold <stefani@seibold.net>
-Cc: Randy Dunlap <randy.dunlap@oracle.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220714031316.404918-1-f.fainelli@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kfifo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
-index 86249476b57f..0b35a41440ff 100644
---- a/include/linux/kfifo.h
-+++ b/include/linux/kfifo.h
-@@ -688,7 +688,7 @@ __kfifo_uint_must_check_helper( \
-  * writer, you don't need extra locking to use these macro.
-  */
- #define	kfifo_to_user(fifo, to, len, copied) \
--__kfifo_uint_must_check_helper( \
-+__kfifo_int_must_check_helper( \
- ({ \
- 	typeof((fifo) + 1) __tmp = (fifo); \
- 	void __user *__to = (to); \
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 9b878d023dac..8efdc271eb75 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
+-
+-	serial8250_suspend_port(priv->line);
+-	clk_disable_unprepare(priv->baud_mux_clk);
++	unsigned long flags;
+ 
+ 	/*
+ 	 * This will prevent resume from enabling RTS before the
+-	 *  baud rate has been resored.
++	 *  baud rate has been restored.
+ 	 */
++	spin_lock_irqsave(&port->lock, flags);
+ 	priv->saved_mctrl = port->mctrl;
+-	port->mctrl = 0;
++	port->mctrl &= ~TIOCM_RTS;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	serial8250_suspend_port(priv->line);
++	clk_disable_unprepare(priv->baud_mux_clk);
+ 
+ 	return 0;
+ }
+@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
++	unsigned long flags;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(priv->baud_mux_clk);
+@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 		start_rx_dma(serial8250_get_port(priv->line));
+ 	}
+ 	serial8250_resume_port(priv->line);
+-	port->mctrl = priv->saved_mctrl;
++
++	if (priv->saved_mctrl & TIOCM_RTS) {
++		/* Restore RTS */
++		spin_lock_irqsave(&port->lock, flags);
++		port->mctrl |= TIOCM_RTS;
++		port->ops->set_mctrl(port, port->mctrl);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
