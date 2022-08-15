@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6212CC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7BFC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239742AbiHPAsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
+        id S233800AbiHPAsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243828AbiHPApj (ORCPT
+        with ESMTP id S1345757AbiHPApm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17033D4772;
-        Mon, 15 Aug 2022 13:40:55 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60384193564;
+        Mon, 15 Aug 2022 13:41:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66481B8119A;
-        Mon, 15 Aug 2022 20:40:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FC6C433C1;
-        Mon, 15 Aug 2022 20:40:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBBED61233;
+        Mon, 15 Aug 2022 20:41:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A11C433D6;
+        Mon, 15 Aug 2022 20:41:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596053;
-        bh=cxXucUSZz/3hhprAB3D1nyqJ+G2drWUuZmqO81cbMuY=;
+        s=korg; t=1660596088;
+        bh=0uKQ4XlDoVmec3sjjPuLPu/Rai684n2yPKBqpnW4JQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SOStMD9zTDsu9J34tA48cE83YpzADPtnO+tWMgKlcyvNpFZYzRhyrIX93TTnDKqTL
-         PE9+R2LhahDGeK/6++pRjCLK642ra3/uUjYCCVMY0FESR10frE1ynZDYUe/oQgvhbu
-         0SRwNo08Moa7A1zBeW+UOGCrygLtW2151I+3+jAM=
+        b=xjcJ9CeAzU3auZTeip9qPMck9oh5mvzRkO6MJ1HE2fstcHijO3YDmtI7yerYCX1Wv
+         gHlC6hL5OcGW1KBOkxr3gW+wxCY4WzP6T7Yd4DT53sCzgX+p87GyZ5NJU50LXuEhwE
+         UH6gB3BJujNHkHhuws/Uow4jEgWC6/acKdnxEg8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
+        stable@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0958/1157] 9p: Drop kref usage
-Date:   Mon, 15 Aug 2022 20:05:14 +0200
-Message-Id: <20220815180517.953367760@linuxfoundation.org>
+Subject: [PATCH 5.19 0968/1157] remoteproc: sysmon: Wait for SSCTL service to come up
+Date:   Mon, 15 Aug 2022 20:05:24 +0200
+Message-Id: <20220815180518.404555643@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,91 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@gmail.com>
+From: Sibi Sankar <quic_sibis@quicinc.com>
 
-[ Upstream commit 6cda12864cb0f99810a5809e11e3ee5b102c9a47 ]
+[ Upstream commit 47c04e00eff86a81cd357c3feed04c86089bcb85 ]
 
-An upcoming patch is going to require passing the client through
-p9_req_put() -> p9_req_free(), but that's awkward with the kref
-indirection - so this patch switches to using refcount_t directly.
+The SSCTL service comes up after a finite time when the remote Q6 comes
+out of reset. Any graceful shutdowns requested during this period will
+be a NOP and abrupt tearing down of the glink channel might lead to pending
+transactions on the remote Q6 side and will ultimately lead to a fatal
+error. Fix this by waiting for the SSCTL service when a graceful shutdown
+is requested.
 
-Link: https://lkml.kernel.org/r/20220704014243.153050-1-kent.overstreet@gmail.com
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Eric Van Hensbergen <ericvh@gmail.com>
-Cc: Latchesar Ionkov <lucho@ionkov.net>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Fixes: 1fb82ee806d1 ("remoteproc: qcom: Introduce sysmon")
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1657022900-2049-7-git-send-email-quic_sibis@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/9p/client.h |  6 +++---
- net/9p/client.c         | 19 ++++++++-----------
- 2 files changed, 11 insertions(+), 14 deletions(-)
+ drivers/remoteproc/qcom_sysmon.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index ec1d1706f43c..c038c2d73dae 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -76,7 +76,7 @@ enum p9_req_status_t {
- struct p9_req_t {
- 	int status;
- 	int t_err;
--	struct kref refcount;
-+	refcount_t refcount;
- 	wait_queue_head_t wq;
- 	struct p9_fcall tc;
- 	struct p9_fcall rc;
-@@ -227,12 +227,12 @@ struct p9_req_t *p9_tag_lookup(struct p9_client *c, u16 tag);
+diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
+index 9fca81492863..a9f04dd83ab6 100644
+--- a/drivers/remoteproc/qcom_sysmon.c
++++ b/drivers/remoteproc/qcom_sysmon.c
+@@ -41,6 +41,7 @@ struct qcom_sysmon {
+ 	struct completion comp;
+ 	struct completion ind_comp;
+ 	struct completion shutdown_comp;
++	struct completion ssctl_comp;
+ 	struct mutex lock;
  
- static inline void p9_req_get(struct p9_req_t *r)
- {
--	kref_get(&r->refcount);
-+	refcount_inc(&r->refcount);
+ 	bool ssr_ack;
+@@ -445,6 +446,8 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
+ 
+ 	svc->priv = sysmon;
+ 
++	complete(&sysmon->ssctl_comp);
++
+ 	return 0;
  }
  
- static inline int p9_req_try_get(struct p9_req_t *r)
- {
--	return kref_get_unless_zero(&r->refcount);
-+	return refcount_inc_not_zero(&r->refcount);
- }
+@@ -501,6 +504,7 @@ static int sysmon_start(struct rproc_subdev *subdev)
+ 		.ssr_event = SSCTL_SSR_EVENT_AFTER_POWERUP
+ 	};
  
- int p9_req_put(struct p9_req_t *r);
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 8bba0d9cf975..0ee48e8b7220 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -305,7 +305,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
- 	 * callback), so p9_client_cb eats the second ref there
- 	 * as the pointer is duplicated directly by virtqueue_add_sgs()
- 	 */
--	refcount_set(&req->refcount.refcount, 2);
-+	refcount_set(&req->refcount, 2);
++	reinit_completion(&sysmon->ssctl_comp);
+ 	mutex_lock(&sysmon->state_lock);
+ 	sysmon->state = SSCTL_SSR_EVENT_AFTER_POWERUP;
+ 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
+@@ -545,6 +549,11 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
+ 	if (crashed)
+ 		return;
  
- 	return req;
- 
-@@ -370,18 +370,15 @@ static int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
- 	return p9_req_put(r);
- }
- 
--static void p9_req_free(struct kref *ref)
--{
--	struct p9_req_t *r = container_of(ref, struct p9_req_t, refcount);
--
--	p9_fcall_fini(&r->tc);
--	p9_fcall_fini(&r->rc);
--	kmem_cache_free(p9_req_cache, r);
--}
--
- int p9_req_put(struct p9_req_t *r)
- {
--	return kref_put(&r->refcount, p9_req_free);
-+	if (refcount_dec_and_test(&r->refcount)) {
-+		p9_fcall_fini(&r->tc);
-+		p9_fcall_fini(&r->rc);
-+		kmem_cache_free(p9_req_cache, r);
-+		return 1;
++	if (sysmon->ssctl_instance) {
++		if (!wait_for_completion_timeout(&sysmon->ssctl_comp, HZ / 2))
++			dev_err(sysmon->dev, "timeout waiting for ssctl service\n");
 +	}
-+	return 0;
- }
- EXPORT_SYMBOL(p9_req_put);
++
+ 	if (sysmon->ssctl_version)
+ 		sysmon->shutdown_acked = ssctl_request_shutdown(sysmon);
+ 	else if (sysmon->ept)
+@@ -631,6 +640,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
+ 	init_completion(&sysmon->comp);
+ 	init_completion(&sysmon->ind_comp);
+ 	init_completion(&sysmon->shutdown_comp);
++	init_completion(&sysmon->ssctl_comp);
+ 	mutex_init(&sysmon->lock);
+ 	mutex_init(&sysmon->state_lock);
  
 -- 
 2.35.1
