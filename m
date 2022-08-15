@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC18FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64035C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241078AbiHOXKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
+        id S1345144AbiHOXKH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353240AbiHOXHc (ORCPT
+        with ESMTP id S1353254AbiHOXHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:07:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804DB86B66;
-        Mon, 15 Aug 2022 12:59:33 -0700 (PDT)
+        Mon, 15 Aug 2022 19:07:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2E586B7B;
+        Mon, 15 Aug 2022 12:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2128BB80EAD;
-        Mon, 15 Aug 2022 19:59:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76218C433C1;
-        Mon, 15 Aug 2022 19:59:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55C3E61226;
+        Mon, 15 Aug 2022 19:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6105FC433D6;
+        Mon, 15 Aug 2022 19:59:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593570;
-        bh=ZkfPhjN2avtPFEMPzc3hA7bzstrynbp1NHZb4XLt1sc=;
+        s=korg; t=1660593573;
+        bh=JS66pYgxtcebIxprTYSV0gPkrW5D2hGNzWn3UMetqOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fmvb6hLpwLBElnB//5/JdzD2YezkV5ztvuanTeXikwvR8IhxSFVIRmFN56aYqcDka
-         Pbo7mOdy+pUAVXIr50l1+Bvqh8lGmID2Nc3U+ugz0r2uE9FYaVJeewAWbbxts2WMPU
-         gcQvirMcMaFe92yFQwwhqnh2BvHzwxDsW8EOJJJU=
+        b=JID7JC6hxUVgpcC7z8XSxLDsvBCe5VYBAu8JE1yLbwhc1dAoesVYnYt8KX8Vs+wgs
+         KYlRVeyqjprbij54J9Sf0cgHNNyLS5ZGmJDLMGLoobtr5jhBJAdscBalHbAF5RI+6p
+         7kqHr73QHQcTpaLV3EBAz/j2ZtK6v6cxayY87C/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0956/1095] video: fbdev: vt8623fb: Check the size of screen before memset_io()
-Date:   Mon, 15 Aug 2022 20:05:55 +0200
-Message-Id: <20220815180508.641844592@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0290/1157] sched: only perform capability check on privileged operation
+Date:   Mon, 15 Aug 2022 19:54:06 +0200
+Message-Id: <20220815180451.220086470@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,48 +51,210 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit ec0754c60217248fa77cc9005d66b2b55200ac06 ]
+[ Upstream commit 700a78335fc28a59c307f420857fd2d4521549f8 ]
 
-In the function vt8623fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+sched_setattr(2) issues via kernel/sched/core.c:__sched_setscheduler()
+a CAP_SYS_NICE audit event unconditionally, even when the requested
+operation does not require that capability / is unprivileged, i.e. for
+reducing niceness.
+This is relevant in connection with SELinux, where a capability check
+results in a policy decision and by default a denial message on
+insufficient permission is issued.
+It can lead to three undesired cases:
+  1. A denial message is generated, even in case the operation was an
+     unprivileged one and thus the syscall succeeded, creating noise.
+  2. To avoid the noise from 1. the policy writer adds a rule to ignore
+     those denial messages, hiding future syscalls, where the task
+     performs an actual privileged operation, leading to hidden limited
+     functionality of that task.
+  3. To avoid the noise from 1. the policy writer adds a rule to allow
+     the task the capability CAP_SYS_NICE, while it does not need it,
+     violating the principle of least privilege.
 
-[  583.339036] BUG: unable to handle page fault for address: ffffc90005000000
-[  583.339049] #PF: supervisor write access in kernel mode
-[  583.339052] #PF: error_code(0x0002) - not-present page
-[  583.339074] RIP: 0010:memset_orig+0x33/0xb0
-[  583.339110] Call Trace:
-[  583.339118]  vt8623fb_set_par+0x11cd/0x21e0
-[  583.339146]  fb_set_var+0x604/0xeb0
-[  583.339181]  do_fb_ioctl+0x234/0x670
-[  583.339209]  fb_ioctl+0xdd/0x130
+Conduct privilged/unprivileged categorization first and perform a
+capable test (and at most once) only if needed.
 
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: 558b7bd86c32 ("vt8623fb: new framebuffer driver for VIA VT8623")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220615152505.310488-1-cgzones@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/vt8623fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sched/core.c | 138 ++++++++++++++++++++++++++------------------
+ 1 file changed, 83 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/video/fbdev/vt8623fb.c b/drivers/video/fbdev/vt8623fb.c
-index a92a8c670cf0..4274c6efb249 100644
---- a/drivers/video/fbdev/vt8623fb.c
-+++ b/drivers/video/fbdev/vt8623fb.c
-@@ -507,6 +507,8 @@ static int vt8623fb_set_par(struct fb_info *info)
- 			 (info->var.vmode & FB_VMODE_DOUBLE) ? 2 : 1, 1,
- 			 1, info->node);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 410b04decb90..f1e070551aa9 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -7002,17 +7002,29 @@ void set_user_nice(struct task_struct *p, long nice)
+ EXPORT_SYMBOL(set_user_nice);
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
+ /*
+- * can_nice - check if a task can reduce its nice value
++ * is_nice_reduction - check if nice value is an actual reduction
++ *
++ * Similar to can_nice() but does not perform a capability check.
++ *
+  * @p: task
+  * @nice: nice value
+  */
+-int can_nice(const struct task_struct *p, const int nice)
++static bool is_nice_reduction(const struct task_struct *p, const int nice)
+ {
+ 	/* Convert nice value [19,-20] to rlimit style value [1,40]: */
+ 	int nice_rlim = nice_to_rlimit(nice);
  
- 	/* Device and screen back on */
+-	return (nice_rlim <= task_rlimit(p, RLIMIT_NICE) ||
+-		capable(CAP_SYS_NICE));
++	return (nice_rlim <= task_rlimit(p, RLIMIT_NICE));
++}
++
++/*
++ * can_nice - check if a task can reduce its nice value
++ * @p: task
++ * @nice: nice value
++ */
++int can_nice(const struct task_struct *p, const int nice)
++{
++	return is_nice_reduction(p, nice) || capable(CAP_SYS_NICE);
+ }
+ 
+ #ifdef __ARCH_WANT_SYS_NICE
+@@ -7291,6 +7303,69 @@ static bool check_same_owner(struct task_struct *p)
+ 	return match;
+ }
+ 
++/*
++ * Allow unprivileged RT tasks to decrease priority.
++ * Only issue a capable test if needed and only once to avoid an audit
++ * event on permitted non-privileged operations:
++ */
++static int user_check_sched_setscheduler(struct task_struct *p,
++					 const struct sched_attr *attr,
++					 int policy, int reset_on_fork)
++{
++	if (fair_policy(policy)) {
++		if (attr->sched_nice < task_nice(p) &&
++		    !is_nice_reduction(p, attr->sched_nice))
++			goto req_priv;
++	}
++
++	if (rt_policy(policy)) {
++		unsigned long rlim_rtprio = task_rlimit(p, RLIMIT_RTPRIO);
++
++		/* Can't set/change the rt policy: */
++		if (policy != p->policy && !rlim_rtprio)
++			goto req_priv;
++
++		/* Can't increase priority: */
++		if (attr->sched_priority > p->rt_priority &&
++		    attr->sched_priority > rlim_rtprio)
++			goto req_priv;
++	}
++
++	/*
++	 * Can't set/change SCHED_DEADLINE policy at all for now
++	 * (safest behavior); in the future we would like to allow
++	 * unprivileged DL tasks to increase their relative deadline
++	 * or reduce their runtime (both ways reducing utilization)
++	 */
++	if (dl_policy(policy))
++		goto req_priv;
++
++	/*
++	 * Treat SCHED_IDLE as nice 20. Only allow a switch to
++	 * SCHED_NORMAL if the RLIMIT_NICE would normally permit it.
++	 */
++	if (task_has_idle_policy(p) && !idle_policy(policy)) {
++		if (!is_nice_reduction(p, task_nice(p)))
++			goto req_priv;
++	}
++
++	/* Can't change other user's priorities: */
++	if (!check_same_owner(p))
++		goto req_priv;
++
++	/* Normal users shall not reset the sched_reset_on_fork flag: */
++	if (p->sched_reset_on_fork && !reset_on_fork)
++		goto req_priv;
++
++	return 0;
++
++req_priv:
++	if (!capable(CAP_SYS_NICE))
++		return -EPERM;
++
++	return 0;
++}
++
+ static int __sched_setscheduler(struct task_struct *p,
+ 				const struct sched_attr *attr,
+ 				bool user, bool pi)
+@@ -7332,58 +7407,11 @@ static int __sched_setscheduler(struct task_struct *p,
+ 	    (rt_policy(policy) != (attr->sched_priority != 0)))
+ 		return -EINVAL;
+ 
+-	/*
+-	 * Allow unprivileged RT tasks to decrease priority:
+-	 */
+-	if (user && !capable(CAP_SYS_NICE)) {
+-		if (fair_policy(policy)) {
+-			if (attr->sched_nice < task_nice(p) &&
+-			    !can_nice(p, attr->sched_nice))
+-				return -EPERM;
+-		}
+-
+-		if (rt_policy(policy)) {
+-			unsigned long rlim_rtprio =
+-					task_rlimit(p, RLIMIT_RTPRIO);
+-
+-			/* Can't set/change the rt policy: */
+-			if (policy != p->policy && !rlim_rtprio)
+-				return -EPERM;
+-
+-			/* Can't increase priority: */
+-			if (attr->sched_priority > p->rt_priority &&
+-			    attr->sched_priority > rlim_rtprio)
+-				return -EPERM;
+-		}
+-
+-		 /*
+-		  * Can't set/change SCHED_DEADLINE policy at all for now
+-		  * (safest behavior); in the future we would like to allow
+-		  * unprivileged DL tasks to increase their relative deadline
+-		  * or reduce their runtime (both ways reducing utilization)
+-		  */
+-		if (dl_policy(policy))
+-			return -EPERM;
+-
+-		/*
+-		 * Treat SCHED_IDLE as nice 20. Only allow a switch to
+-		 * SCHED_NORMAL if the RLIMIT_NICE would normally permit it.
+-		 */
+-		if (task_has_idle_policy(p) && !idle_policy(policy)) {
+-			if (!can_nice(p, task_nice(p)))
+-				return -EPERM;
+-		}
+-
+-		/* Can't change other user's priorities: */
+-		if (!check_same_owner(p))
+-			return -EPERM;
+-
+-		/* Normal users shall not reset the sched_reset_on_fork flag: */
+-		if (p->sched_reset_on_fork && !reset_on_fork)
+-			return -EPERM;
+-	}
+-
+ 	if (user) {
++		retval = user_check_sched_setscheduler(p, attr, policy, reset_on_fork);
++		if (retval)
++			return retval;
++
+ 		if (attr->sched_flags & SCHED_FLAG_SUGOV)
+ 			return -EINVAL;
+ 
 -- 
 2.35.1
 
