@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93927C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4382C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245233AbiHOTBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S245280AbiHOTBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245157AbiHOS4w (ORCPT
+        with ESMTP id S245169AbiHOS44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:52 -0400
+        Mon, 15 Aug 2022 14:56:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C89B32DBB;
-        Mon, 15 Aug 2022 11:31:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC6048E90;
+        Mon, 15 Aug 2022 11:31:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CECF3B81082;
-        Mon, 15 Aug 2022 18:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053A9C433C1;
-        Mon, 15 Aug 2022 18:31:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F26C7B8106E;
+        Mon, 15 Aug 2022 18:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C172C433B5;
+        Mon, 15 Aug 2022 18:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588312;
-        bh=UNse/8MvXDfLtiLsFDhl/AJsP8hoheWPNg98s6jZGdA=;
+        s=korg; t=1660588315;
+        bh=aQEoMfCovPkTWLiJW3uCpiZOLirceCKWhcTPW0uKekk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=abxF6zHlVgj2Md8Kd/Jk2TmmxKYxhaFPe169wY3AgtaA+Cj8w9/HeIFbww7dItNE6
-         KdcJrr3wikOzN2LLWxWIGxnLWETJP4XWiHHEF6F+H6u/oTYKIGlMr/Re2DglE0r2u3
-         5Lv1df24yXD/r8nYaNS3fwiRxDuDG0PlKmfXLBJQ=
+        b=pzPn+Dvh4hYkSKM9MjKaqhBoDJj7DsvM9CNcQKFfMD1GxQYcUrgSOi3JtRQ3folmQ
+         l/HZULGJewH66U/HSHST+MVSeKs15vvKdJYXhxbkNb3lm6wcO3kP/4uAmPl/5HRr3Y
+         I4RFmGyLEebVb7LiAX3Govw6ICSdc2ol0RhbItCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 332/779] mediatek: mt76: eeprom: fix missing of_node_put() in mt76_find_power_limits_node()
-Date:   Mon, 15 Aug 2022 19:59:36 +0200
-Message-Id: <20220815180351.473557798@linuxfoundation.org>
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Houlong Wei <houlong.wei@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 323/779] media: platform: mtk-mdp: Fix mdp_ipi_comm structure alignment
+Date:   Mon, 15 Aug 2022 19:59:27 +0200
+Message-Id: <20220815180351.088343494@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,40 +54,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit 3bd53ea02d77917c2314ec7be9e2d05be22f87d3 ]
+[ Upstream commit ab14c99c035da7156a3b66fa171171295bc4b89a ]
 
-We should use of_node_put() for the reference 'np' returned by
-of_get_child_by_name() which will increase the refcount.
+The mdp_ipi_comm structure defines a command that is either
+PROCESS (start processing) or DEINIT (destroy instance); we
+are using this one to send PROCESS or DEINIT commands from Linux
+to an MDP instance through a VPU write but, while the first wants
+us to stay 4-bytes aligned, the VPU instead requires an 8-bytes
+data alignment.
 
-Fixes: 22b980badc0f ("mt76: add functions for parsing rate power limits from DT")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Keeping in mind that these commands are executed immediately
+after sending them (hence not chained with others before the
+VPU/MDP "actually" start executing), it is fine to simply add
+a padding of 4 bytes to this structure: this keeps the same
+performance as before, as we're still stack-allocating it,
+while avoiding hackery inside of mtk-vpu to ensure alignment
+bringing a definitely bigger performance impact.
+
+Fixes: c8eb2d7e8202 ("[media] media: Add Mediatek MDP Driver")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
+Reviewed-by: Irui Wang <irui.wang@mediatek.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/eeprom.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/eeprom.c b/drivers/net/wireless/mediatek/mt76/eeprom.c
-index 3b47e85e95e7..db0cd56c8dc7 100644
---- a/drivers/net/wireless/mediatek/mt76/eeprom.c
-+++ b/drivers/net/wireless/mediatek/mt76/eeprom.c
-@@ -146,10 +146,13 @@ mt76_find_power_limits_node(struct mt76_dev *dev)
- 		}
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+index 2cb8cecb3077..b810c96695c8 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+@@ -40,12 +40,14 @@ struct mdp_ipi_init {
+  * @ipi_id        : IPI_MDP
+  * @ap_inst       : AP mtk_mdp_vpu address
+  * @vpu_inst_addr : VPU MDP instance address
++ * @padding       : Alignment padding
+  */
+ struct mdp_ipi_comm {
+ 	uint32_t msg_id;
+ 	uint32_t ipi_id;
+ 	uint64_t ap_inst;
+ 	uint32_t vpu_inst_addr;
++	uint32_t padding;
+ };
  
- 		if (mt76_string_prop_find(country, dev->alpha2) ||
--		    mt76_string_prop_find(regd, region_name))
-+		    mt76_string_prop_find(regd, region_name)) {
-+			of_node_put(np);
- 			return cur;
-+		}
- 	}
- 
-+	of_node_put(np);
- 	return fallback;
- }
- 
+ /**
 -- 
 2.35.1
 
