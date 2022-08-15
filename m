@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70635C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3066FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239451AbiHOVNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        id S239886AbiHOVNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347912AbiHOVHp (ORCPT
+        with ESMTP id S1347896AbiHOVHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B766D8B0F;
-        Mon, 15 Aug 2022 12:16:32 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A35247C;
+        Mon, 15 Aug 2022 12:16:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08CCEB8107A;
-        Mon, 15 Aug 2022 19:16:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB53C433C1;
-        Mon, 15 Aug 2022 19:16:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01950B8107A;
+        Mon, 15 Aug 2022 19:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D93BC433D6;
+        Mon, 15 Aug 2022 19:16:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590989;
-        bh=4rRpc6oDYt6umUIsSVxUbsmklZ9vSZ679ntW2hRKkpw=;
+        s=korg; t=1660590980;
+        bh=LirXWrjAmt9goQwEFSLoY6YoxSifPxKeann4ZciL/hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+yj7wgZ3/wdafX0V4MopEDYRTfcMAyYADSg+DdLJhNmYz7WC6ar260UWvc1CEH7x
-         I7wpni2mkg/Mk3gLgdzgesHhoFqmQoRc1Bqrhc7LH95xFeuTVa+i+WNkVOegUvK4XU
-         xLJu0wVvMlh42sAh6itltXdAz6GbmOeeMUjYyg5I=
+        b=jDUy/XulmV7Rs2QYyQgAtGFp0x6rb0iLrwYf1w+veivGJD2V7JbNBfWP7h5f2El+x
+         ric1ruIkhRl7BBFx8V/tfd8XU3LySm0i59syzwnWdt9v6fCUkS8yDkNvDQzwAw+++K
+         nhrnodNZhU4nyYU1EEuUV9Ipv2FK3LaSK4s3slWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0395/1095] drm/vc4: hdmi: Reset HDMI MISC_CONTROL register
-Date:   Mon, 15 Aug 2022 19:56:34 +0200
-Message-Id: <20220815180446.026539156@linuxfoundation.org>
+Subject: [PATCH 5.18 0402/1095] crypto: arm64/gcm - Select AEAD for GHASH_ARM64_CE
+Date:   Mon, 15 Aug 2022 19:56:41 +0200
+Message-Id: <20220815180446.326140313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,82 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Qian Cai <quic_qiancai@quicinc.com>
 
-[ Upstream commit 35dc00c12a72700a9c4592afee7d136ecb280cbd ]
+[ Upstream commit fac76f2260893dde5aa05bb693b4c13e8ed0454b ]
 
-The HDMI block can repeat pixels for double clocked modes,
-and the firmware is now configuring the block to do this as
-the PV is doing it incorrectly when at 2pixels/clock.
-If the kernel doesn't reset it then we end up with strange
-modes.
+Otherwise, we could fail to compile.
 
-Reset MISC_CONTROL.
+ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_exit':
+ghash-ce-glue.c:(.exit.text+0x24): undefined reference to 'crypto_unregister_aead'
+ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_init':
+ghash-ce-glue.c:(.init.text+0x34): undefined reference to 'crypto_register_aead'
 
-Fixes: 8323989140f3 ("drm/vc4: hdmi: Support the BCM2711 HDMI controllers")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-22-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: 537c1445ab0b ("crypto: arm64/gcm - implement native driver using v8 Crypto Extensions")
+Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c      | 8 ++++++++
- drivers/gpu/drm/vc4/vc4_hdmi_regs.h | 3 +++
- 2 files changed, 11 insertions(+)
+ arch/arm64/crypto/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 114b007a1e6e..452b3214fd09 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -79,6 +79,9 @@
- #define VC5_HDMI_VERTB_VSPO_SHIFT		16
- #define VC5_HDMI_VERTB_VSPO_MASK		VC4_MASK(29, 16)
+diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
+index 2a965aa0188d..bdca34283c06 100644
+--- a/arch/arm64/crypto/Kconfig
++++ b/arch/arm64/crypto/Kconfig
+@@ -59,6 +59,7 @@ config CRYPTO_GHASH_ARM64_CE
+ 	select CRYPTO_HASH
+ 	select CRYPTO_GF128MUL
+ 	select CRYPTO_LIB_AES
++	select CRYPTO_AEAD
  
-+#define VC5_HDMI_MISC_CONTROL_PIXEL_REP_SHIFT	0
-+#define VC5_HDMI_MISC_CONTROL_PIXEL_REP_MASK	VC4_MASK(3, 0)
-+
- #define VC5_HDMI_SCRAMBLER_CTL_ENABLE		BIT(0)
- 
- #define VC5_HDMI_DEEP_COLOR_CONFIG_1_INIT_PACK_PHASE_SHIFT	8
-@@ -988,6 +991,11 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
- 	reg |= gcp_en ? VC5_HDMI_GCP_CONFIG_GCP_ENABLE : 0;
- 	HDMI_WRITE(HDMI_GCP_CONFIG, reg);
- 
-+	reg = HDMI_READ(HDMI_MISC_CONTROL);
-+	reg &= ~VC5_HDMI_MISC_CONTROL_PIXEL_REP_MASK;
-+	reg |= VC4_SET_FIELD(0, VC5_HDMI_MISC_CONTROL_PIXEL_REP);
-+	HDMI_WRITE(HDMI_MISC_CONTROL, reg);
-+
- 	HDMI_WRITE(HDMI_CLOCK_STOP, 0);
- 
- 	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-index fc971506bd4f..24056441a4bb 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-@@ -125,6 +125,7 @@ enum vc4_hdmi_field {
- 	HDMI_VERTB0,
- 	HDMI_VERTB1,
- 	HDMI_VID_CTL,
-+	HDMI_MISC_CONTROL,
- };
- 
- struct vc4_hdmi_register {
-@@ -235,6 +236,7 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
- 	VC4_HDMI_REG(HDMI_VERTB0, 0x0f0),
- 	VC4_HDMI_REG(HDMI_VERTA1, 0x0f4),
- 	VC4_HDMI_REG(HDMI_VERTB1, 0x0f8),
-+	VC4_HDMI_REG(HDMI_MISC_CONTROL, 0x100),
- 	VC4_HDMI_REG(HDMI_MAI_CHANNEL_MAP, 0x09c),
- 	VC4_HDMI_REG(HDMI_MAI_CONFIG, 0x0a0),
- 	VC4_HDMI_REG(HDMI_DEEP_COLOR_CONFIG_1, 0x170),
-@@ -315,6 +317,7 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
- 	VC4_HDMI_REG(HDMI_VERTB0, 0x0f0),
- 	VC4_HDMI_REG(HDMI_VERTA1, 0x0f4),
- 	VC4_HDMI_REG(HDMI_VERTB1, 0x0f8),
-+	VC4_HDMI_REG(HDMI_MISC_CONTROL, 0x100),
- 	VC4_HDMI_REG(HDMI_MAI_CHANNEL_MAP, 0x09c),
- 	VC4_HDMI_REG(HDMI_MAI_CONFIG, 0x0a0),
- 	VC4_HDMI_REG(HDMI_DEEP_COLOR_CONFIG_1, 0x170),
+ config CRYPTO_CRCT10DIF_ARM64_CE
+ 	tristate "CRCT10DIF digest algorithm using PMULL instructions"
 -- 
 2.35.1
 
