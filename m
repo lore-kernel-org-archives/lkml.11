@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5235C282E7
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90FDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232675AbiHPEt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        id S229938AbiHPEtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiHPEqC (ORCPT
+        with ESMTP id S232852AbiHPEqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:46:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F44176DD2;
-        Mon, 15 Aug 2022 13:43:56 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02DC175458;
+        Mon, 15 Aug 2022 13:43:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08A2FB80EAD;
-        Mon, 15 Aug 2022 20:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F451C433C1;
-        Mon, 15 Aug 2022 20:43:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB4E861234;
+        Mon, 15 Aug 2022 20:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ED8C433C1;
+        Mon, 15 Aug 2022 20:43:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596233;
-        bh=a8xOtKnYMAkem95yckU2lhi3DlAhwkHOwu0q0nxZIDI=;
+        s=korg; t=1660596227;
+        bh=AyU24YVz++nhNR4ubWOG1XjYUMz+8Y1xf/PQPu5HIz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yiuW2tpMHk8zLn87XOhAqtSVtje37WvajWRuAHjBNPwCPHcdK+Y0j6qpz6g8vx6xh
-         F9t9yh2Wgw6MDNx/u5usw7yOO42rpuQ9A9YHlwn5A7A4pmYDmBtsyH18yKx9C5nQY+
-         qKue6ctOCZjsJBeRuLHeWAt2GnFlC7HlYeb3i7r4=
+        b=RN3dhG9efRZ/VoubCDi6qnH8cwb5fVCGKYqrO0AgcvtR19AxehYoX3n/HoxVGRBfq
+         rsl6xYJ8vi+wr0i/IdmGQ5LQuqS35sHmr896qBIe1TDULQEnJWOA/LZwuPZxo+xNuQ
+         U5S/g823b133jdPqLjB6zbyuOcjavLkPIfJpdmnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0971/1157] ASoC: amd: yc: Decrease level of error message
-Date:   Mon, 15 Aug 2022 20:05:27 +0200
-Message-Id: <20220815180518.543596136@linuxfoundation.org>
+Subject: [PATCH 5.19 0979/1157] ASoC: fsl-asoc-card: force cast the asrc_format type
+Date:   Mon, 15 Aug 2022 20:05:35 +0200
+Message-Id: <20220815180518.908629797@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,42 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 393a40b50fe976a121b15752d2dd6151c7a92126 ]
+[ Upstream commit 6c7b077dad62178c33f9a3ae17f90d6b0bf6e2e5 ]
 
-On a number of platforms that contain acp3x controller a new ERR level
-message is showing up:
+Fix sparse warning:
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse: warning: incorrect type in argument 3 (different base types)
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse:    expected unsigned int [usertype] *out_value
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse:    got restricted snd_pcm_format_t *
 
-`acp6x pci device not found`
-
-This is because ACP3x and ACP6x share same PCI ID but can be identified
-by PCI revision.  As this is expected behavior for a system with ACP3x
-decrease message to debug.
-
-Fixes: b1630fcbfde6c ("ASoC: amd: yc: add new YC platform varaint support")
-Cc: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Link: https://lore.kernel.org/r/20220718213402.19497-1-mario.limonciello@amd.com
+Fixes: 859e364302c5 ("ASoC: fsl-asoc-card: Support new property fsl, asrc-format")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1658399393-28777-4-git-send-email-shengjiu.wang@nxp.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/yc/pci-acp6x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/fsl-asoc-card.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/amd/yc/pci-acp6x.c b/sound/soc/amd/yc/pci-acp6x.c
-index 20f7a99783f2..77c5fa1f7af1 100644
---- a/sound/soc/amd/yc/pci-acp6x.c
-+++ b/sound/soc/amd/yc/pci-acp6x.c
-@@ -159,7 +159,7 @@ static int snd_acp6x_probe(struct pci_dev *pci,
- 	case 0x6f:
- 		break;
- 	default:
--		dev_err(&pci->dev, "acp6x pci device not found\n");
-+		dev_dbg(&pci->dev, "acp6x pci device not found\n");
- 		return -ENODEV;
- 	}
- 	if (pci_enable_device(pci)) {
+diff --git a/sound/soc/fsl/fsl-asoc-card.c b/sound/soc/fsl/fsl-asoc-card.c
+index d9a0d4768c4d..c836848ef0a6 100644
+--- a/sound/soc/fsl/fsl-asoc-card.c
++++ b/sound/soc/fsl/fsl-asoc-card.c
+@@ -537,6 +537,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
+ 	struct device *codec_dev = NULL;
+ 	const char *codec_dai_name;
+ 	const char *codec_dev_name;
++	u32 asrc_fmt = 0;
+ 	u32 width;
+ 	int ret;
+ 
+@@ -829,8 +830,8 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
+ 			goto asrc_fail;
+ 		}
+ 
+-		ret = of_property_read_u32(asrc_np, "fsl,asrc-format",
+-					   &priv->asrc_format);
++		ret = of_property_read_u32(asrc_np, "fsl,asrc-format", &asrc_fmt);
++		priv->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
+ 		if (ret) {
+ 			/* Fallback to old binding; translate to asrc_format */
+ 			ret = of_property_read_u32(asrc_np, "fsl,asrc-width",
 -- 
 2.35.1
 
