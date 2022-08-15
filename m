@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE552C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C31FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244910AbiHOXMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44130 "EHLO
+        id S1345958AbiHOXM7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242188AbiHOXLh (ORCPT
+        with ESMTP id S232933AbiHOXLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:11:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D31DF2C;
-        Mon, 15 Aug 2022 13:00:27 -0700 (PDT)
+        Mon, 15 Aug 2022 19:11:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8542238B3;
+        Mon, 15 Aug 2022 13:00:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 259DAB8113E;
-        Mon, 15 Aug 2022 20:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A181C433C1;
-        Mon, 15 Aug 2022 20:00:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99AEB612B8;
+        Mon, 15 Aug 2022 20:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E38AC433C1;
+        Mon, 15 Aug 2022 20:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593624;
-        bh=OH96su+aiaQi23wTafGmmD8O4Crw/idqAWFIg1eYYPM=;
+        s=korg; t=1660593616;
+        bh=HH4qPGidm0OUya6QXERfAKhEFrdc6+v3zuCV1SJ7ZWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CHxBVvd6uZbIwagBtRpumBlyP7jFqrNen2hGJc15wk2fMfJ2FKwrcjkJSL6Usk82a
-         yW/eRcKRfpJ6m2xf/4LWJEXCUBjTWH0fd7JG7ny+Cxx6lfMEciABM+qDU8BrMYM8gC
-         C3m6pRQ37/53ERhxCukCWzXhtnGba+o11CdBxrLo=
+        b=DvLgj34xtBjS79KJcY+X2oBoudgW4Gb+klj5T23u+xCtTyF0dAylqFXJbFO/9x9+g
+         Wvwbbt5fDP5j4Gnw2FD6TNwygRfxb6JyalasyPYBMku91+ii0Kge/U8b257Rsac159
+         srLLmxvR8NtWNIVbvuLWl0R+jVzz9fgMC970ahpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Chen Yu <yu.c.chen@intel.com>, Tom Rix <trix@redhat.com>,
-        Len Brown <len.brown@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0298/1157] tools/power turbostat: Fix file pointer leak
-Date:   Mon, 15 Aug 2022 19:54:14 +0200
-Message-Id: <20220815180451.559713255@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.18 0976/1095] posix-cpu-timers: Cleanup CPU timers before freeing them during exec
+Date:   Mon, 15 Aug 2022 20:06:15 +0200
+Message-Id: <20220815180509.486593618@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-[ Upstream commit 5e5fd36c58d6c820f7292ee492c3731c9a104a41 ]
+commit e362359ace6f87c201531872486ff295df306d13 upstream.
 
-Currently if a fscanf fails then an early return leaks an open
-file pointer. Fix this by fclosing the file before the return.
-Detected using static analysis with cppcheck:
+Commit 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a
+task") started looking up tasks by PID when deleting a CPU timer.
 
-tools/power/x86/turbostat/turbostat.c:2039:3: error: Resource leak: fp [resourceLeak]
+When a non-leader thread calls execve, it will switch PIDs with the leader
+process. Then, as it calls exit_itimers, posix_cpu_timer_del cannot find
+the task because the timer still points out to the old PID.
 
-Fixes: eae97e053fe3 ("tools/power turbostat: Support thermal throttle count print")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Acked-by: Chen Yu <yu.c.chen@intel.com>
-Reviewed-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Len Brown <len.brown@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+That means that armed timers won't be disarmed, that is, they won't be
+removed from the timerqueue_list. exit_itimers will still release their
+memory, and when that list is later processed, it leads to a
+use-after-free.
+
+Clean up the timers from the de-threaded task before freeing them. This
+prevents a reported use-after-free.
+
+Fixes: 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a task")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220809170751.164716-1-cascardo@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/power/x86/turbostat/turbostat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/exec.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index ede31a4287a0..2e9a751af260 100644
---- a/tools/power/x86/turbostat/turbostat.c
-+++ b/tools/power/x86/turbostat/turbostat.c
-@@ -2035,9 +2035,9 @@ int get_core_throt_cnt(int cpu, unsigned long long *cnt)
- 	if (!fp)
- 		return -1;
- 	ret = fscanf(fp, "%lld", &tmp);
-+	fclose(fp);
- 	if (ret != 1)
- 		return -1;
--	fclose(fp);
- 	*cnt = tmp;
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1297,6 +1297,9 @@ int begin_new_exec(struct linux_binprm *
+ 	bprm->mm = NULL;
  
- 	return 0;
--- 
-2.35.1
-
+ #ifdef CONFIG_POSIX_TIMERS
++	spin_lock_irq(&me->sighand->siglock);
++	posix_cpu_timers_exit(me);
++	spin_unlock_irq(&me->sighand->siglock);
+ 	exit_itimers(me);
+ 	flush_itimer_signals();
+ #endif
 
 
