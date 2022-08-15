@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B8FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917E6C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243922AbiHOVJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
+        id S244165AbiHOVJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241522AbiHOVEQ (ORCPT
+        with ESMTP id S243106AbiHOVFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:04:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEC1D5710;
-        Mon, 15 Aug 2022 12:14:52 -0700 (PDT)
+        Mon, 15 Aug 2022 17:05:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A60151A0E;
+        Mon, 15 Aug 2022 12:14:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E4E14CE1262;
-        Mon, 15 Aug 2022 19:14:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D091EC433D6;
-        Mon, 15 Aug 2022 19:14:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF685B810C6;
+        Mon, 15 Aug 2022 19:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28F3C433D6;
+        Mon, 15 Aug 2022 19:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590889;
-        bh=qLnXxGHuebqquUUuCDId5Q1nQL5MJHCqyFlJRxfHHtc=;
+        s=korg; t=1660590892;
+        bh=BAEcyU3+ShsFXc6JgX0vieoDWdx4El55H+ZjK+qyTOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TSOKaNJqK0o6vUnInbs50pslSLCy8Zjfn4ltMRRp5FSNiLfpYflLGQgDDcF2Dr/F2
-         qfY7r7oZzWNprygfw6CqHIIqtmc9T5owTTuYgbkrh/shf6B0VX7BsEi9eymq2/HgX6
-         LJLGTZynz4RrecoDjD2aVAExv5tXv9o1+ioBCeG0=
+        b=re7yNE4C08PXBfdXIWgdFu42FiukIZwkCP7Qv89qsmenzteUFtxAe9PPl98NWTNyo
+         MvWOEn9MVtWDr8FHRsriSf6Eu7Dc3aMjoxGPYaBSx+fgLC2v2IjPE0psqRmRPsv7vP
+         cJVBLb3L+MxZOcTp1OhuaJK5GQqG//r6TixLq62o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0396/1095] drm/vc4: hdmi: Switch to pm_runtime_status_suspended
-Date:   Mon, 15 Aug 2022 19:56:35 +0200
-Message-Id: <20220815180446.070314409@linuxfoundation.org>
+Subject: [PATCH 5.18 0405/1095] net: mscc: ocelot: minimize holes in struct ocelot_port
+Date:   Mon, 15 Aug 2022 19:56:44 +0200
+Message-Id: <20220815180446.469088623@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,56 +49,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit fcef97e70094a33ded73b3eb9bef06698c6e9c12 ]
+[ Upstream commit 6d0be600477089026c76fe529bd96fad4cf69c3b ]
 
-If the controller isn't clocked or its domain powered up, the register
-accesses will either stall the CPU or return garbage, respectively.
+Reorder members of struct ocelot_port to eliminate holes and reduce
+structure size. Pahole says:
 
-Thus, we had a warning in our register access function to complain when
-that kind of risky accesses were performed.
+Before:
 
-In order to check the runtime_pm power state, we were using
-pm_runtime_active(), but it turns out that it will become active only
-once the runtime_resume hook has been executed.
+struct ocelot_port {
+        struct ocelot *            ocelot;               /*     0     8 */
+        struct regmap *            target;               /*     8     8 */
+        bool                       vlan_aware;           /*    16     1 */
 
-This prevents us from doing any WARN-free register access in our
-runtime_resume() implementation, while this is valid.
+        /* XXX 7 bytes hole, try to pack */
 
-Let's switch to pm_runtime_status_suspended() instead.
+        const struct ocelot_bridge_vlan  * pvid_vlan;    /*    24     8 */
+        unsigned int               ptp_skbs_in_flight;   /*    32     4 */
+        u8                         ptp_cmd;              /*    36     1 */
 
-Fixes: 14e193b95604 ("drm/vc4: hdmi: Warn if we access the controller while disabled")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-23-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+        /* XXX 3 bytes hole, try to pack */
+
+        struct sk_buff_head        tx_skbs;              /*    40    96 */
+        /* --- cacheline 2 boundary (128 bytes) was 8 bytes ago --- */
+        u8                         ts_id;                /*   136     1 */
+
+        /* XXX 3 bytes hole, try to pack */
+
+        phy_interface_t            phy_mode;             /*   140     4 */
+        bool                       is_dsa_8021q_cpu;     /*   144     1 */
+        bool                       learn_ena;            /*   145     1 */
+
+        /* XXX 6 bytes hole, try to pack */
+
+        struct net_device *        bond;                 /*   152     8 */
+        bool                       lag_tx_active;        /*   160     1 */
+
+        /* XXX 1 byte hole, try to pack */
+
+        u16                        mrp_ring_id;          /*   162     2 */
+
+        /* XXX 4 bytes hole, try to pack */
+
+        struct net_device *        bridge;               /*   168     8 */
+        int                        bridge_num;           /*   176     4 */
+        u8                         stp_state;            /*   180     1 */
+
+        /* XXX 3 bytes hole, try to pack */
+
+        int                        speed;                /*   184     4 */
+
+        /* size: 192, cachelines: 3, members: 18 */
+        /* sum members: 161, holes: 7, sum holes: 27 */
+        /* padding: 4 */
+};
+
+After:
+
+struct ocelot_port {
+        struct ocelot *            ocelot;               /*     0     8 */
+        struct regmap *            target;               /*     8     8 */
+        struct net_device *        bond;                 /*    16     8 */
+        struct net_device *        bridge;               /*    24     8 */
+        const struct ocelot_bridge_vlan  * pvid_vlan;    /*    32     8 */
+        phy_interface_t            phy_mode;             /*    40     4 */
+        unsigned int               ptp_skbs_in_flight;   /*    44     4 */
+        struct sk_buff_head        tx_skbs;              /*    48    96 */
+        /* --- cacheline 2 boundary (128 bytes) was 16 bytes ago --- */
+        u16                        mrp_ring_id;          /*   144     2 */
+        u8                         ptp_cmd;              /*   146     1 */
+        u8                         ts_id;                /*   147     1 */
+        u8                         stp_state;            /*   148     1 */
+        bool                       vlan_aware;           /*   149     1 */
+        bool                       is_dsa_8021q_cpu;     /*   150     1 */
+        bool                       learn_ena;            /*   151     1 */
+        bool                       lag_tx_active;        /*   152     1 */
+
+        /* XXX 3 bytes hole, try to pack */
+
+        int                        bridge_num;           /*   156     4 */
+        int                        speed;                /*   160     4 */
+
+        /* size: 168, cachelines: 3, members: 18 */
+        /* sum members: 161, holes: 1, sum holes: 3 */
+        /* padding: 4 */
+        /* last cacheline: 40 bytes */
+};
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi_regs.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/soc/mscc/ocelot.h | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-index 24056441a4bb..72b769412482 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi_regs.h
-@@ -417,7 +417,7 @@ static inline u32 vc4_hdmi_read(struct vc4_hdmi *hdmi,
- 	const struct vc4_hdmi_variant *variant = hdmi->variant;
- 	void __iomem *base;
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index b191f0a7fe26..bae2ddb06731 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -652,28 +652,30 @@ struct ocelot_port {
  
--	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
-+	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
+ 	struct regmap			*target;
  
- 	if (reg >= variant->num_registers) {
- 		dev_warn(&hdmi->pdev->dev,
-@@ -447,7 +447,7 @@ static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
+-	bool				vlan_aware;
++	struct net_device		*bond;
++	struct net_device		*bridge;
++
+ 	/* VLAN that untagged frames are classified to, on ingress */
+ 	const struct ocelot_bridge_vlan	*pvid_vlan;
  
- 	lockdep_assert_held(&hdmi->hw_lock);
++	phy_interface_t			phy_mode;
++
+ 	unsigned int			ptp_skbs_in_flight;
+-	u8				ptp_cmd;
+ 	struct sk_buff_head		tx_skbs;
+-	u8				ts_id;
  
--	WARN_ON(!pm_runtime_active(&hdmi->pdev->dev));
-+	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
+-	phy_interface_t			phy_mode;
++	u16				mrp_ring_id;
  
- 	if (reg >= variant->num_registers) {
- 		dev_warn(&hdmi->pdev->dev,
++	u8				ptp_cmd;
++	u8				ts_id;
++
++	u8				stp_state;
++	bool				vlan_aware;
+ 	bool				is_dsa_8021q_cpu;
+ 	bool				learn_ena;
+ 
+-	struct net_device		*bond;
+ 	bool				lag_tx_active;
+ 
+-	u16				mrp_ring_id;
+-
+-	struct net_device		*bridge;
+ 	int				bridge_num;
+-	u8				stp_state;
+ 
+ 	int				speed;
+ };
 -- 
 2.35.1
 
