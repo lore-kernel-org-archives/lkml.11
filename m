@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B54BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 365E2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347093AbiHOW77 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S241074AbiHOXAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352461AbiHOW6c (ORCPT
+        with ESMTP id S1345352AbiHOW6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:58:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A06375FD5;
-        Mon, 15 Aug 2022 12:56:26 -0700 (PDT)
+        Mon, 15 Aug 2022 18:58:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380A075FEE;
+        Mon, 15 Aug 2022 12:56:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A797A60FB5;
-        Mon, 15 Aug 2022 19:56:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C1DC433C1;
-        Mon, 15 Aug 2022 19:56:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7F8C60FD8;
+        Mon, 15 Aug 2022 19:56:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B621FC433D6;
+        Mon, 15 Aug 2022 19:56:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593385;
-        bh=vep4ycP0V4FffTk9DpsuDGT1Dir7m6EzFiRNUMoPxTA=;
+        s=korg; t=1660593388;
+        bh=LlyLbRg2vFLS4ph5qJL+ouCVBytnnYnLYD7VRmv8WO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fUReZ50fiPmC1gCxID0zB83rzO26n2gKST/b2h02IU5i+VWSZ7xuEw+EH1jl6d5mx
-         7Tf8F+9SBQQOMAd5pf5j3ApxL3Iw0gQ3DRqBMRjFI4AbmtJ1eZsbctodkebw4pJ+WV
-         4WkYqEkb3rWoBPNNcOZRL6ewKfUo4Q4K9r4D2btw=
+        b=xSDz/K4yg63s+rEe82kCojFJF6cnbRHjGA+GxanUfwLlvDSyg2HLpWGlYinPgBj6u
+         Nv7Yj3MJAd+PKynR1W056V5wpsMjvzli43RsMMJxkl1sIASAf3PTeihlLZii//OBCY
+         bTqOmYTqwQR51p5kiQkT4jV1yT6HhDT+nrQ5Nd3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0938/1095] powerpc/cell/axon_msi: Fix refcount leak in setup_msi_msg_address
-Date:   Mon, 15 Aug 2022 20:05:37 +0200
-Message-Id: <20220815180508.011278501@linuxfoundation.org>
+Subject: [PATCH 5.19 0260/1157] arm64: dts: qcom: sm8250: add missing PCIe PHY clock-cells
+Date:   Mon, 15 Aug 2022 19:53:36 +0200
+Message-Id: <20220815180449.977511505@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit df5d4b616ee76abc97e5bd348e22659c2b095b1c ]
+[ Upstream commit d9fd162ce764c227fcfd4242f6c1639895a9481f ]
 
-of_get_next_parent() returns a node pointer with refcount incremented,
-we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() in the error path to avoid refcount leak.
+Add the missing '#clock-cells' properties to the PCIe QMP PHY nodes.
 
-Fixes: ce21b3c9648a ("[CELL] add support for MSI on Axon-based Cell systems")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220605065129.63906-1-linmq006@gmail.com
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Fixes: e53bdfc00977 ("arm64: dts: qcom: sm8250: Add PCIe support")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220705114032.22787-3-johan+linaro@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/axon_msi.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sm8250.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/powerpc/platforms/cell/axon_msi.c b/arch/powerpc/platforms/cell/axon_msi.c
-index 354a58c1e6f2..dba34f4d5162 100644
---- a/arch/powerpc/platforms/cell/axon_msi.c
-+++ b/arch/powerpc/platforms/cell/axon_msi.c
-@@ -223,6 +223,7 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
- 	if (!prop) {
- 		dev_dbg(&dev->dev,
- 			"axon_msi: no msi-address-(32|64) properties found\n");
-+		of_node_put(dn);
- 		return -ENOENT;
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+index d0760e6ec942..e8cdca50bc83 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -1884,6 +1884,8 @@ pcie0_lane: phy@1c06200 {
+ 				clock-names = "pipe0";
  
+ 				#phy-cells = <0>;
++
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_0_pipe_clk";
+ 			};
+ 		};
+@@ -1990,6 +1992,8 @@ pcie1_lane: phy@1c0e200 {
+ 				clock-names = "pipe0";
+ 
+ 				#phy-cells = <0>;
++
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_1_pipe_clk";
+ 			};
+ 		};
+@@ -2096,6 +2100,8 @@ pcie2_lane: phy@1c16200 {
+ 				clock-names = "pipe0";
+ 
+ 				#phy-cells = <0>;
++
++				#clock-cells = <0>;
+ 				clock-output-names = "pcie_2_pipe_clk";
+ 			};
+ 		};
 -- 
 2.35.1
 
