@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7459DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DF0C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347437AbiHOWHd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S244405AbiHOWHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350418AbiHOWCG (ORCPT
+        with ESMTP id S1350404AbiHOWCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:02:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1BE27CCA;
-        Mon, 15 Aug 2022 12:36:36 -0700 (PDT)
+        Mon, 15 Aug 2022 18:02:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684371DA78;
+        Mon, 15 Aug 2022 12:36:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F207EB80EA8;
-        Mon, 15 Aug 2022 19:36:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BC6C433C1;
-        Mon, 15 Aug 2022 19:36:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0601C6113B;
+        Mon, 15 Aug 2022 19:36:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE5CC433D6;
+        Mon, 15 Aug 2022 19:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592193;
-        bh=BquEyuFVINTO9pj6c/C0lL1koQzpgtW1m20hzVLlITU=;
+        s=korg; t=1660592190;
+        bh=weT2Jgo6SU7o7Tg5tLuNruMypYiqKj6ujCT9fI1psWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euS0r8B2uZfnkCb2hU4L9YbPD3htWGDoiEKJAxEUBJR3LIKrkgxvkbQOOVrXEuNZV
-         S1mOBahi6vvC9k271699F/YB48j6DpafA3QCjFQ9EP2bRq8xXPAw4AgGLH9+mXS6rW
-         tCCnWQdoU1ib8LshGNCkNkf9rz/8Fe0oE4JroKXM=
+        b=ULFcpy/pu5eJWeE19rMh0CBbTQzpqD8OBAfQG8jDuXi4GwgrrNdq/aD6UYt2K/Q/v
+         DUysYCmH4iWYrvYS3w6fuecdQceFtjjHHTYaoTHYsahPxddwWpLTWvraP+WxXZcJb0
+         eszdiLRb8Bt5KMYTimMrFgtpb++HN7a0HNEiCy9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0072/1157] RISC-V: Declare cpu_ops_spinwait in <asm/cpu_ops.h>
-Date:   Mon, 15 Aug 2022 19:50:28 +0200
-Message-Id: <20220815180442.405075717@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0747/1095] mmc: block: Add single read for 4k sector cards
+Date:   Mon, 15 Aug 2022 20:02:26 +0200
+Message-Id: <20220815180500.256068333@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +51,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@sifive.com>
+From: Christian Loehle <CLoehle@hyperstone.com>
 
-commit da6d2128e56a50a0d497c8e41ca1d33d88bcc0aa upstream.
+[ Upstream commit b3fa3e6dccc465969721b8bd2824213bd235efeb ]
 
-The cpu_ops_spinwait is used in a couple of places in arch/riscv
-and is causing a sparse warning due to no declaration. Add this
-to <asm/cpu_ops.h> with the others to fix the following:
+Cards with 4k native sector size may only be read 4k-aligned,
+accommodate for this in the single read recovery and use it.
 
-arch/riscv/kernel/cpu_ops_spinwait.c:16:29: warning: symbol 'cpu_ops_spinwait' was not declared. Should it be static?
-
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Link: https://lore.kernel.org/r/20220714071811.187491-1-ben.dooks@sifive.com
-[Palmer: Drop the extern from cpu_ops.c]
-Fixes: 2ffc48fc7071 ("RISC-V: Move spinwait booting method to its own config")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 81196976ed946 (mmc: block: Add blk-mq support)
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Link: https://lore.kernel.org/r/cf4f316274c5474586d0d99b17db4a4c@hyperstone.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/include/asm/cpu_ops.h |    1 +
- arch/riscv/kernel/cpu_ops.c      |    4 +---
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/mmc/core/block.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
---- a/arch/riscv/include/asm/cpu_ops.h
-+++ b/arch/riscv/include/asm/cpu_ops.h
-@@ -38,6 +38,7 @@ struct cpu_operations {
- #endif
- };
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index 23fcb7a16605..0b8d3d25ba7a 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -175,7 +175,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
+ 				      unsigned int part_type);
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq);
+ static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
  
-+extern const struct cpu_operations cpu_ops_spinwait;
- extern const struct cpu_operations *cpu_ops[NR_CPUS];
- void __init cpu_set_ops(int cpu);
+@@ -1285,7 +1285,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
+ }
  
---- a/arch/riscv/kernel/cpu_ops.c
-+++ b/arch/riscv/kernel/cpu_ops.c
-@@ -15,9 +15,7 @@
- const struct cpu_operations *cpu_ops[NR_CPUS] __ro_after_init;
+ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+-			      int disable_multi, bool *do_rel_wr_p,
++			      int recovery_mode, bool *do_rel_wr_p,
+ 			      bool *do_data_tag_p)
+ {
+ 	struct mmc_blk_data *md = mq->blkdata;
+@@ -1351,12 +1351,12 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+ 			brq->data.blocks--;
  
- extern const struct cpu_operations cpu_ops_sbi;
--#ifdef CONFIG_RISCV_BOOT_SPINWAIT
--extern const struct cpu_operations cpu_ops_spinwait;
--#else
-+#ifndef CONFIG_RISCV_BOOT_SPINWAIT
- const struct cpu_operations cpu_ops_spinwait = {
- 	.name		= "",
- 	.cpu_prepare	= NULL,
+ 		/*
+-		 * After a read error, we redo the request one sector
++		 * After a read error, we redo the request one (native) sector
+ 		 * at a time in order to accurately determine which
+ 		 * sectors can be read successfully.
+ 		 */
+-		if (disable_multi)
+-			brq->data.blocks = 1;
++		if (recovery_mode)
++			brq->data.blocks = queue_physical_block_size(mq->queue) >> 9;
+ 
+ 		/*
+ 		 * Some controllers have HW issues while operating
+@@ -1573,7 +1573,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
+ 
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq)
+ {
+ 	u32 readcmd, writecmd;
+@@ -1582,7 +1582,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 	struct mmc_blk_data *md = mq->blkdata;
+ 	bool do_rel_wr, do_data_tag;
+ 
+-	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
++	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
+ 
+ 	brq->mrq.cmd = &brq->cmd;
+ 
+@@ -1673,7 +1673,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
+ 
+ #define MMC_READ_SINGLE_RETRIES	2
+ 
+-/* Single sector read during recovery */
++/* Single (native) sector read during recovery */
+ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ {
+ 	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
+@@ -1681,6 +1681,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 	struct mmc_card *card = mq->card;
+ 	struct mmc_host *host = card->host;
+ 	blk_status_t error = BLK_STS_OK;
++	size_t bytes_per_read = queue_physical_block_size(mq->queue);
+ 
+ 	do {
+ 		u32 status;
+@@ -1715,13 +1716,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 		else
+ 			error = BLK_STS_OK;
+ 
+-	} while (blk_update_request(req, error, 512));
++	} while (blk_update_request(req, error, bytes_per_read));
+ 
+ 	return;
+ 
+ error_exit:
+ 	mrq->data->bytes_xfered = 0;
+-	blk_update_request(req, BLK_STS_IOERR, 512);
++	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
+ 	/* Let it try the remaining request again */
+ 	if (mqrq->retries > MMC_MAX_RETRIES - 1)
+ 		mqrq->retries = MMC_MAX_RETRIES - 1;
+@@ -1862,10 +1863,9 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
+ 		return;
+ 	}
+ 
+-	/* FIXME: Missing single sector read for large sector size */
+-	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
+-	    brq->data.blocks > 1) {
+-		/* Read one sector at a time */
++	if (rq_data_dir(req) == READ && brq->data.blocks >
++			queue_physical_block_size(mq->queue) >> 9) {
++		/* Read one (native) sector at a time */
+ 		mmc_blk_read_single(mq, req);
+ 		return;
+ 	}
+-- 
+2.35.1
+
 
 
