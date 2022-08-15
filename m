@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B58F2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F0EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiHOTty (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
+        id S242953AbiHOTvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344981AbiHOTsE (ORCPT
+        with ESMTP id S1345276AbiHOTtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:48:04 -0400
+        Mon, 15 Aug 2022 15:49:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EB042ACB;
-        Mon, 15 Aug 2022 11:49:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E3172854;
+        Mon, 15 Aug 2022 11:49:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D19CA611EC;
-        Mon, 15 Aug 2022 18:49:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5906C433D6;
-        Mon, 15 Aug 2022 18:49:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06612611EC;
+        Mon, 15 Aug 2022 18:49:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E546FC433D6;
+        Mon, 15 Aug 2022 18:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589384;
-        bh=zmO6h4LqP4TkymwQXnLVD7MZL74/ycAA3eFNVw5TmDU=;
+        s=korg; t=1660589387;
+        bh=Oyu8SLvYHA4waZZ1sY8iSpqGSuscCZRhPGnX5EgPg38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4nSgfQh6VVhsHZGDcfH2yGtkJh9KumSrSVslkKXGtx0pw/uasGEDxy2xnI6XiOJ/
-         /7d0TPF19Y6ouy3C01uEpYWC32pMxyY6J7J7fd5OnSQQZL4aAMMWShoBzt1e0IDzGd
-         D59r51q4dzHmFeAdiacY0ltKZKYMFDdssDYKHSRs=
+        b=UgLOSITrE+W4uR5mXnSbJ7bPMgLmF7RLewFepynLIRx4qIWf+4OCBCPcrjBdkrHka
+         ARJ72CPDnVhm/fxyy3UnECzA0df3jTATeYtvQfecJY413SeyJ4AF9PrDXIXCqwAz10
+         3bFErjH9fVeweGTfySOMHH1TJpr4r4Ns6LKBGwgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Valentin Schneider <vschneid@redhat.com>,
-        Tianchen Ding <dtcccc@linux.alibaba.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 660/779] sched: Fix the check of nr_running at queue wakelist
-Date:   Mon, 15 Aug 2022 20:05:04 +0200
-Message-Id: <20220815180405.571526633@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.15 695/779] usbnet: smsc95xx: Dont clear read-only PHY interrupt
+Date:   Mon, 15 Aug 2022 20:05:39 +0200
+Message-Id: <20220815180407.050105261@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,52 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianchen Ding <dtcccc@linux.alibaba.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 28156108fecb1f808b21d216e8ea8f0d205a530c ]
+[ Upstream commit 3108871f19221372b251f7da1ac38736928b5b3a ]
 
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
+Upon receiving data from the Interrupt Endpoint, the SMSC LAN95xx driver
+attempts to clear the signaled interrupts by writing "all ones" to the
+Interrupt Status Register.
 
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
+However the driver only ever enables a single type of interrupt, namely
+the PHY Interrupt.  And according to page 119 of the LAN950x datasheet,
+its bit in the Interrupt Status Register is read-only.  There's no other
+way to clear it than in a separate PHY register:
 
-The benchmark result is in [1].
+https://www.microchip.com/content/dam/mchp/documents/UNG/ProductDocuments/DataSheets/LAN950x-Data-Sheet-DS00001875D.pdf
 
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
+Consequently, writing "all ones" to the Interrupt Status Register is
+pointless and can be dropped.
 
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220608233412.327341-2-dtcccc@linux.alibaba.com
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/usb/smsc95xx.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5c7937b504d2..892c06ff9dd0 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3735,8 +3735,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 4e39e4345084..c33089168880 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -570,10 +570,6 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	unsigned long flags;
+ 	int ret;
  
- 	return false;
+-	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
+-	if (ret < 0)
+-		return ret;
+-
+ 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
+ 	if (pdata->phydev->duplex != DUPLEX_FULL) {
+ 		pdata->mac_cr &= ~MAC_CR_FDPX_;
 -- 
 2.35.1
 
