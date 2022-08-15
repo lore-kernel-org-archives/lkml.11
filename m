@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CE0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA6BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245076AbiHOTDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        id S245097AbiHOTD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244844AbiHOSz6 (ORCPT
+        with ESMTP id S244957AbiHOS4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:55:58 -0400
+        Mon, 15 Aug 2022 14:56:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1C39FE1;
-        Mon, 15 Aug 2022 11:30:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD16B2AE16;
+        Mon, 15 Aug 2022 11:30:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0CBEB81082;
-        Mon, 15 Aug 2022 18:30:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124E1C433C1;
-        Mon, 15 Aug 2022 18:30:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A86FB8106C;
+        Mon, 15 Aug 2022 18:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05EBC433D6;
+        Mon, 15 Aug 2022 18:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588228;
-        bh=KkHREOusnFK0praXr7IyTVls1fNCqrScOy5EFJVCbVg=;
+        s=korg; t=1660588255;
+        bh=RclICDonFjO944ZHoBtWwLTYZURYZW3jTo1y4qRELnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFPOO9r5vdT6UExl1hU1fq7Bl6oAS7Thk9DQgkEpUV21WFbvq12dfSIqC2610ACcT
-         WVfV1LtjtIlGScJsKsGoz1ahcLVUsQ6UOSAbb+CO/cnbmFgHy+U7b5+QjuHd95TwwQ
-         E4KFvH50mdrBe3QGRMxlCHfbAyVLBO19hA2sV/20=
+        b=jxQ0lDzOzE3oeAB+LIUgxzFMiggdP+wC/VsTh+9TpZfvZV0YP8FUyGaoTmK5Xi7o7
+         /D+YXUqqlzZpq6GLj373ijNJa6MF7NIE5REUwJ56TgGe2c6mHNRvyXKJS5ojr/eiIz
+         8t/jgSgMXQ3jzBI0jBKm2wXuvrusTSERIfYWEzMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anquan Wu <leiqi96@hotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 336/779] libbpf: Fix the name of a reused map
-Date:   Mon, 15 Aug 2022 19:59:40 +0200
-Message-Id: <20220815180351.640658608@linuxfoundation.org>
+Subject: [PATCH 5.15 344/779] media: hevc: Embedded indexes in RPS
+Date:   Mon, 15 Aug 2022 19:59:48 +0200
+Message-Id: <20220815180351.954446748@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,69 +52,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anquan Wu <leiqi96@hotmail.com>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-[ Upstream commit bf3f00378524adae16628cbadbd11ba7211863bb ]
+[ Upstream commit d95a63daca85f4bca3b70e622c75586b5bf0ea5c ]
 
-BPF map name is limited to BPF_OBJ_NAME_LEN.
-A map name is defined as being longer than BPF_OBJ_NAME_LEN,
-it will be truncated to BPF_OBJ_NAME_LEN when a userspace program
-calls libbpf to create the map. A pinned map also generates a path
-in the /sys. If the previous program wanted to reuse the map，
-it can not get bpf_map by name, because the name of the map is only
-partially the same as the name which get from pinned path.
+Reference Picture Set lists provide indices of short and long term
+reference in DBP array.
+Fix Hantro to not do a look up in DBP entries.
+Make documentation more clear about it.
 
-The syscall information below show that map name "process_pinned_map"
-is truncated to "process_pinned_".
+[hverkuil: fix typo in commit log]
 
-    bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/process_pinned_map",
-    bpf_fd=0, file_flags=0}, 144) = -1 ENOENT (No such file or directory)
-
-    bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_HASH, key_size=4,
-    value_size=4,max_entries=1024, map_flags=0, inner_map_fd=0,
-    map_name="process_pinned_",map_ifindex=0, btf_fd=3, btf_key_type_id=6,
-    btf_value_type_id=10,btf_vmlinux_value_type_id=0}, 72) = 4
-
-This patch check that if the name of pinned map are the same as the
-actual name for the first (BPF_OBJ_NAME_LEN - 1),
-bpf map still uses the name which is included in bpf object.
-
-Fixes: 26736eb9a483 ("tools: libbpf: allow map reuse")
-Signed-off-by: Anquan Wu <leiqi96@hotmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/OSZP286MB1725CEA1C95C5CB8E7CCC53FB8869@OSZP286MB1725.JPNP286.PROD.OUTLOOK.COM
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ .../media/v4l/ext-ctrls-codec.rst             |  6 ++---
+ .../staging/media/hantro/hantro_g2_hevc_dec.c | 25 +++++--------------
+ 2 files changed, 9 insertions(+), 22 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 1ba2dd3523f8..050622649797 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3942,7 +3942,7 @@ static int bpf_get_map_info_from_fdinfo(int fd, struct bpf_map_info *info)
- int bpf_map__reuse_fd(struct bpf_map *map, int fd)
+diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+index 976d34445a24..f1421cf1a1b3 100644
+--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
++++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+@@ -3326,15 +3326,15 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+     * - __u8
+       - ``poc_st_curr_before[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+       - PocStCurrBefore as described in section 8.3.2 "Decoding process for reference
+-        picture set.
++        picture set": provides the index of the short term before references in DPB array.
+     * - __u8
+       - ``poc_st_curr_after[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+       - PocStCurrAfter as described in section 8.3.2 "Decoding process for reference
+-        picture set.
++        picture set": provides the index of the short term after references in DPB array.
+     * - __u8
+       - ``poc_lt_curr[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+       - PocLtCurr as described in section 8.3.2 "Decoding process for reference
+-        picture set.
++        picture set": provides the index of the long term references in DPB array.
+     * - __u64
+       - ``flags``
+       - See :ref:`Decode Parameters Flags <hevc_decode_params_flags>`
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index e63b777d4266..87086f5c5495 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -264,24 +264,11 @@ static void set_params(struct hantro_ctx *ctx)
+ 	hantro_reg_write(vpu, &g2_apf_threshold, 8);
+ }
+ 
+-static int find_ref_pic_index(const struct v4l2_hevc_dpb_entry *dpb, int pic_order_cnt)
+-{
+-	int i;
+-
+-	for (i = 0; i < V4L2_HEVC_DPB_ENTRIES_NUM_MAX; i++) {
+-		if (dpb[i].pic_order_cnt[0] == pic_order_cnt)
+-			return i;
+-	}
+-
+-	return 0x0;
+-}
+-
+ static void set_ref_pic_list(struct hantro_ctx *ctx)
  {
- 	struct bpf_map_info info = {};
--	__u32 len = sizeof(info);
-+	__u32 len = sizeof(info), name_len;
- 	int new_fd, err;
- 	char *new_name;
+ 	const struct hantro_hevc_dec_ctrls *ctrls = &ctx->hevc_dec.ctrls;
+ 	struct hantro_dev *vpu = ctx->dev;
+ 	const struct v4l2_ctrl_hevc_decode_params *decode_params = ctrls->decode_params;
+-	const struct v4l2_hevc_dpb_entry *dpb = decode_params->dpb;
+ 	u32 list0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX] = {};
+ 	u32 list1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX] = {};
+ 	static const struct hantro_reg ref_pic_regs0[] = {
+@@ -325,11 +312,11 @@ static void set_ref_pic_list(struct hantro_ctx *ctx)
+ 	/* List 0 contains: short term before, short term after and long term */
+ 	j = 0;
+ 	for (i = 0; i < decode_params->num_poc_st_curr_before && j < ARRAY_SIZE(list0); i++)
+-		list0[j++] = find_ref_pic_index(dpb, decode_params->poc_st_curr_before[i]);
++		list0[j++] = decode_params->poc_st_curr_before[i];
+ 	for (i = 0; i < decode_params->num_poc_st_curr_after && j < ARRAY_SIZE(list0); i++)
+-		list0[j++] = find_ref_pic_index(dpb, decode_params->poc_st_curr_after[i]);
++		list0[j++] = decode_params->poc_st_curr_after[i];
+ 	for (i = 0; i < decode_params->num_poc_lt_curr && j < ARRAY_SIZE(list0); i++)
+-		list0[j++] = find_ref_pic_index(dpb, decode_params->poc_lt_curr[i]);
++		list0[j++] = decode_params->poc_lt_curr[i];
  
-@@ -3952,7 +3952,12 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	if (err)
- 		return libbpf_err(err);
+ 	/* Fill the list, copying over and over */
+ 	i = 0;
+@@ -338,11 +325,11 @@ static void set_ref_pic_list(struct hantro_ctx *ctx)
  
--	new_name = strdup(info.name);
-+	name_len = strlen(info.name);
-+	if (name_len == BPF_OBJ_NAME_LEN - 1 && strncmp(map->name, info.name, name_len) == 0)
-+		new_name = strdup(map->name);
-+	else
-+		new_name = strdup(info.name);
-+
- 	if (!new_name)
- 		return libbpf_err(-errno);
+ 	j = 0;
+ 	for (i = 0; i < decode_params->num_poc_st_curr_after && j < ARRAY_SIZE(list1); i++)
+-		list1[j++] = find_ref_pic_index(dpb, decode_params->poc_st_curr_after[i]);
++		list1[j++] = decode_params->poc_st_curr_after[i];
+ 	for (i = 0; i < decode_params->num_poc_st_curr_before && j < ARRAY_SIZE(list1); i++)
+-		list1[j++] = find_ref_pic_index(dpb, decode_params->poc_st_curr_before[i]);
++		list1[j++] = decode_params->poc_st_curr_before[i];
+ 	for (i = 0; i < decode_params->num_poc_lt_curr && j < ARRAY_SIZE(list1); i++)
+-		list1[j++] = find_ref_pic_index(dpb, decode_params->poc_lt_curr[i]);
++		list1[j++] = decode_params->poc_lt_curr[i];
  
+ 	i = 0;
+ 	while (j < ARRAY_SIZE(list1))
 -- 
 2.35.1
 
