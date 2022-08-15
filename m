@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAD5C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A3A5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbiHOSXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        id S241272AbiHOSXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241074AbiHOSW2 (ORCPT
+        with ESMTP id S241114AbiHOSWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:22:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23552D1DC;
-        Mon, 15 Aug 2022 11:17:20 -0700 (PDT)
+        Mon, 15 Aug 2022 14:22:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733842D1FA;
+        Mon, 15 Aug 2022 11:17:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7227BB8107D;
-        Mon, 15 Aug 2022 18:17:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D17CCC433D6;
-        Mon, 15 Aug 2022 18:17:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F8A060010;
+        Mon, 15 Aug 2022 18:17:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA14BC433D6;
+        Mon, 15 Aug 2022 18:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587434;
-        bh=y8D86iaIAcMgG4Ko5STDm+qPGW86hj1iLyKTt2iRk+w=;
+        s=korg; t=1660587440;
+        bh=eD+jMb7n534/jcdT29lctYRtPAq2NIYdwp89rzXmdf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p1fGUEJaYagkMPtWHkytfcj7czoqgMxCDxWxK4W+nz1Wyqjbk03DXD1NMj7pN1p3b
-         89llB0UV9iZNAjc91O290u/dnX0syqmLJUI3RLfZlQe3x8X9USR8bLsrqGjkcCNJ6w
-         VI2rHniYIUomIH91TIcWCjq2pBRzcDVPl1wrR16Y=
+        b=KQfApQRW9PMDPJJzrNANQj2kG/zZAlaqNJbGLCRWh5PPLACCZQGDufxI5Ge46WKDy
+         LIoxaFfNJCoqhAPCCulZD7gNDTfOs9V3Xcrju5VuHpBtkzVg6dLyZcJegow2/9uiUe
+         MOLaypzFIcEWQlLWjXLjqCUDRfu7XhjhEinvPpj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        zdi-disclosures@trendmicro.com
-Subject: [PATCH 5.15 084/779] ksmbd: fix use-after-free bug in smb2_tree_disconect
-Date:   Mon, 15 Aug 2022 19:55:28 +0200
-Message-Id: <20220815180340.880995784@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH 5.15 056/779] RISC-V: Fixup get incorrect user mode PC for kernel mode regs
+Date:   Mon, 15 Aug 2022 19:55:00 +0200
+Message-Id: <20220815180339.655440018@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,59 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit cf6531d98190fa2cf92a6d8bbc8af0a4740a223c upstream.
+commit 59c026c359c30f116fef6ee958e24d04983efbb0 upstream.
 
-smb2_tree_disconnect() freed the struct ksmbd_tree_connect,
-but it left the dangling pointer. It can be accessed
-again under compound requests.
+When use 'echo c > /proc/sysrq-trigger' to trigger kdump, riscv_crash_save_regs()
+will be called to save regs for vmcore, we found "epc" value 00ffffffa5537400
+is not a valid kernel virtual address, but is a user virtual address. Other
+regs(eg, ra, sp, gp...) are correct kernel virtual address.
+Actually 0x00ffffffb0dd9400 is the user mode PC of 'PID: 113 Comm: sh', which
+is saved in the task's stack.
 
-This bug can lead an oops looking something link:
+[   21.201701] CPU: 0 PID: 113 Comm: sh Kdump: loaded Not tainted 5.18.9 #45
+[   21.201979] Hardware name: riscv-virtio,qemu (DT)
+[   21.202160] epc : 00ffffffa5537400 ra : ffffffff80088640 sp : ff20000010333b90
+[   21.202435]  gp : ffffffff810dde38 tp : ff6000000226c200 t0 : ffffffff8032be7c
+[   21.202707]  t1 : 0720072007200720 t2 : 30203a7375746174 s0 : ff20000010333cf0
+[   21.202973]  s1 : 0000000000000000 a0 : ff20000010333b98 a1 : 0000000000000001
+[   21.203243]  a2 : 0000000000000010 a3 : 0000000000000000 a4 : 28c8f0aeffea4e00
+[   21.203519]  a5 : 28c8f0aeffea4e00 a6 : 0000000000000009 a7 : ffffffff8035c9b8
+[   21.203794]  s2 : ffffffff810df0a8 s3 : ffffffff810df718 s4 : ff20000010333b98
+[   21.204062]  s5 : 0000000000000000 s6 : 0000000000000007 s7 : ffffffff80c4a468
+[   21.204331]  s8 : 00ffffffef451410 s9 : 0000000000000007 s10: 00aaaaaac0510700
+[   21.204606]  s11: 0000000000000001 t3 : ff60000001218f00 t4 : ff60000001218f00
+[   21.204876]  t5 : ff60000001218000 t6 : ff200000103338b8
+[   21.205079] status: 0000000200000020 badaddr: 0000000000000000 cause: 0000000000000008
 
-[ 1685.468014 ] BUG: KASAN: use-after-free in ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468068 ] Read of size 4 at addr ffff888102172180 by task kworker/1:2/4807
-...
-[ 1685.468130 ] Call Trace:
-[ 1685.468132 ]  <TASK>
-[ 1685.468135 ]  dump_stack_lvl+0x49/0x5f
-[ 1685.468141 ]  print_report.cold+0x5e/0x5cf
-[ 1685.468145 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468157 ]  kasan_report+0xaa/0x120
-[ 1685.468194 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468206 ]  __asan_report_load4_noabort+0x14/0x20
-[ 1685.468210 ]  ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468222 ]  smb2_tree_disconnect+0x175/0x250 [ksmbd]
-[ 1685.468235 ]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
-[ 1685.468247 ]  process_one_work+0x778/0x11c0
-[ 1685.468251 ]  ? _raw_spin_lock_irq+0x8e/0xe0
-[ 1685.468289 ]  worker_thread+0x544/0x1180
-[ 1685.468293 ]  ? __cpuidle_text_end+0x4/0x4
-[ 1685.468297 ]  kthread+0x282/0x320
-[ 1685.468301 ]  ? process_one_work+0x11c0/0x11c0
-[ 1685.468305 ]  ? kthread_complete_and_exit+0x30/0x30
-[ 1685.468309 ]  ret_from_fork+0x1f/0x30
+With the incorrect PC, the backtrace showed by crash tool as below, the first
+stack frame is abnormal,
 
-Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
+crash> bt
+PID: 113      TASK: ff60000002269600  CPU: 0    COMMAND: "sh"
+ #0 [ff2000001039bb90] __efistub_.Ldebug_info0 at 00ffffffa5537400 <-- Abnormal
+ #1 [ff2000001039bcf0] panic at ffffffff806578ba
+ #2 [ff2000001039bd50] sysrq_reset_seq_param_set at ffffffff8038c030
+ #3 [ff2000001039bda0] __handle_sysrq at ffffffff8038c5f8
+ #4 [ff2000001039be00] write_sysrq_trigger at ffffffff8038cad8
+ #5 [ff2000001039be20] proc_reg_write at ffffffff801b7edc
+ #6 [ff2000001039be40] vfs_write at ffffffff80152ba6
+ #7 [ff2000001039be80] ksys_write at ffffffff80152ece
+ #8 [ff2000001039bed0] sys_write at ffffffff80152f46
+
+With the patch, we can get current kernel mode PC, the output as below,
+
+[   17.607658] CPU: 0 PID: 113 Comm: sh Kdump: loaded Not tainted 5.18.9 #42
+[   17.607937] Hardware name: riscv-virtio,qemu (DT)
+[   17.608150] epc : ffffffff800078f8 ra : ffffffff8008862c sp : ff20000010333b90
+[   17.608441]  gp : ffffffff810dde38 tp : ff6000000226c200 t0 : ffffffff8032be68
+[   17.608741]  t1 : 0720072007200720 t2 : 666666666666663c s0 : ff20000010333cf0
+[   17.609025]  s1 : 0000000000000000 a0 : ff20000010333b98 a1 : 0000000000000001
+[   17.609320]  a2 : 0000000000000010 a3 : 0000000000000000 a4 : 0000000000000000
+[   17.609601]  a5 : ff60000001c78000 a6 : 000000000000003c a7 : ffffffff8035c9a4
+[   17.609894]  s2 : ffffffff810df0a8 s3 : ffffffff810df718 s4 : ff20000010333b98
+[   17.610186]  s5 : 0000000000000000 s6 : 0000000000000007 s7 : ffffffff80c4a468
+[   17.610469]  s8 : 00ffffffca281410 s9 : 0000000000000007 s10: 00aaaaaab5bb6700
+[   17.610755]  s11: 0000000000000001 t3 : ff60000001218f00 t4 : ff60000001218f00
+[   17.611041]  t5 : ff60000001218000 t6 : ff20000010333988
+[   17.611255] status: 0000000200000020 badaddr: 0000000000000000 cause: 0000000000000008
+
+With the correct PC, the backtrace showed by crash tool as below,
+
+crash> bt
+PID: 113      TASK: ff6000000226c200  CPU: 0    COMMAND: "sh"
+ #0 [ff20000010333b90] riscv_crash_save_regs at ffffffff800078f8 <--- Normal
+ #1 [ff20000010333cf0] panic at ffffffff806578c6
+ #2 [ff20000010333d50] sysrq_reset_seq_param_set at ffffffff8038c03c
+ #3 [ff20000010333da0] __handle_sysrq at ffffffff8038c604
+ #4 [ff20000010333e00] write_sysrq_trigger at ffffffff8038cae4
+ #5 [ff20000010333e20] proc_reg_write at ffffffff801b7ee8
+ #6 [ff20000010333e40] vfs_write at ffffffff80152bb2
+ #7 [ff20000010333e80] ksys_write at ffffffff80152eda
+ #8 [ff20000010333ed0] sys_write at ffffffff80152f52
+
+Fixes: e53d28180d4d ("RISC-V: Add kdump support")
+Co-developed-by: Guo Ren <guoren@kernel.org>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220811074150.3020189-3-xianting.tian@linux.alibaba.com
 Cc: stable@vger.kernel.org
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17816
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/kernel/crash_save_regs.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -2044,6 +2044,7 @@ int smb2_tree_disconnect(struct ksmbd_wo
+diff --git a/arch/riscv/kernel/crash_save_regs.S b/arch/riscv/kernel/crash_save_regs.S
+index 7832fb763aba..b2a1908c0463 100644
+--- a/arch/riscv/kernel/crash_save_regs.S
++++ b/arch/riscv/kernel/crash_save_regs.S
+@@ -44,7 +44,7 @@ SYM_CODE_START(riscv_crash_save_regs)
+ 	REG_S t6,  PT_T6(a0)	/* x31 */
  
- 	ksmbd_close_tree_conn_fds(work);
- 	ksmbd_tree_conn_disconnect(sess, tcon);
-+	work->tcon = NULL;
- 	return 0;
- }
+ 	csrr t1, CSR_STATUS
+-	csrr t2, CSR_EPC
++	auipc t2, 0x0
+ 	csrr t3, CSR_TVAL
+ 	csrr t4, CSR_CAUSE
  
+-- 
+2.37.1
+
 
 
