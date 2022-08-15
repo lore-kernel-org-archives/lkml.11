@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A97DDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F72C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351915AbiHOWtu (ORCPT
+        id S1351927AbiHOWty (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        Mon, 15 Aug 2022 18:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352055AbiHOWrn (ORCPT
+        with ESMTP id S1352099AbiHOWrv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC67135AD8;
-        Mon, 15 Aug 2022 12:53:20 -0700 (PDT)
+        Mon, 15 Aug 2022 18:47:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62254135AE0;
+        Mon, 15 Aug 2022 12:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBB16122B;
-        Mon, 15 Aug 2022 19:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D82C433D6;
-        Mon, 15 Aug 2022 19:53:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5522ECE12C1;
+        Mon, 15 Aug 2022 19:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CECCC433D6;
+        Mon, 15 Aug 2022 19:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593199;
-        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
+        s=korg; t=1660593202;
+        bh=hyTcSWCJpM8XrR++nPsIwaPrLzF9BBedKqDgX0Srn/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LjHDDuP+Z2xP2SP4JlUva7mkOsiTZsL/fJ6z0YIYX27c232NAWOFTSiZhzZLe6d6Z
-         7+h4UwafHx2WplsvaPwBqZav0rntjSjkmtcQccjVkYo71aa75HkYX6sZL8roswU+UR
-         ufgeZ367EE/rTaG7zqs9JYVmATbOa19Wi+u+V+Rs=
+        b=kUuHy/+V3COipcsKw8jGJcNicuMAWydJ353y82ab/nsg/UmLHrCM3MbJMURuDq2J2
+         poZkzI5ulExEHkgFBpfF7zwy4PowRKlsu1zAxVpOaxScZZERnJmVvKsWSKkjBKMw8W
+         w5a65Rz4LFYkoNSaEJVVXOcmkUw5KzveZsRVwLU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0229/1157] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
-Date:   Mon, 15 Aug 2022 19:53:05 +0200
-Message-Id: <20220815180448.736280735@linuxfoundation.org>
+Subject: [PATCH 5.18 0893/1095] mfd: t7l66xb: Drop platform disable callback
+Date:   Mon, 15 Aug 2022 20:04:52 +0200
+Message-Id: <20220815180506.269443880@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,34 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
+[ Upstream commit 128ac294e1b437cb8a7f2ff8ede1cde9082bddbe ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+None of the in-tree instantiations of struct t7l66xb_platform_data
+provides a disable callback. So better don't dereference this function
+pointer unconditionally. As there is no user, drop it completely instead
+of calling it conditional.
 
-Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+This is a preparation for making platform remove callbacks return void.
+
+Fixes: 1f192015ca5b ("mfd: driver for the T7L66XB TMIO SoC")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220530192430.2108217-3-u.kleine-koenig@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/prm3xxx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mfd/t7l66xb.c       | 6 +-----
+ include/linux/mfd/t7l66xb.h | 1 -
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
-index 1b442b128569..63e73e9b82bc 100644
---- a/arch/arm/mach-omap2/prm3xxx.c
-+++ b/arch/arm/mach-omap2/prm3xxx.c
-@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
- 	}
+diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
+index 5369c67e3280..663ffd4b8570 100644
+--- a/drivers/mfd/t7l66xb.c
++++ b/drivers/mfd/t7l66xb.c
+@@ -397,11 +397,8 @@ static int t7l66xb_probe(struct platform_device *dev)
  
- 	irq_num = of_irq_get(np, 0);
-+	of_node_put(np);
- 	if (irq_num == -EPROBE_DEFER)
- 		return irq_num;
+ static int t7l66xb_remove(struct platform_device *dev)
+ {
+-	struct t7l66xb_platform_data *pdata = dev_get_platdata(&dev->dev);
+ 	struct t7l66xb *t7l66xb = platform_get_drvdata(dev);
+-	int ret;
+ 
+-	ret = pdata->disable(dev);
+ 	clk_disable_unprepare(t7l66xb->clk48m);
+ 	clk_put(t7l66xb->clk48m);
+ 	clk_disable_unprepare(t7l66xb->clk32k);
+@@ -412,8 +409,7 @@ static int t7l66xb_remove(struct platform_device *dev)
+ 	mfd_remove_devices(&dev->dev);
+ 	kfree(t7l66xb);
+ 
+-	return ret;
+-
++	return 0;
+ }
+ 
+ static struct platform_driver t7l66xb_platform_driver = {
+diff --git a/include/linux/mfd/t7l66xb.h b/include/linux/mfd/t7l66xb.h
+index 69632c1b07bd..ae3e7a5c5219 100644
+--- a/include/linux/mfd/t7l66xb.h
++++ b/include/linux/mfd/t7l66xb.h
+@@ -12,7 +12,6 @@
+ 
+ struct t7l66xb_platform_data {
+ 	int (*enable)(struct platform_device *dev);
+-	int (*disable)(struct platform_device *dev);
+ 	int (*suspend)(struct platform_device *dev);
+ 	int (*resume)(struct platform_device *dev);
  
 -- 
 2.35.1
