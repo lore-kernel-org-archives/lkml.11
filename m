@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 375E6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F08CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354528AbiHOXsa (ORCPT
+        id S1354578AbiHOXsi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
+        Mon, 15 Aug 2022 19:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354232AbiHOXll (ORCPT
+        with ESMTP id S1354467AbiHOXmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E4E614A;
-        Mon, 15 Aug 2022 13:11:18 -0700 (PDT)
+        Mon, 15 Aug 2022 19:42:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B685491CA;
+        Mon, 15 Aug 2022 13:13:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 786796077B;
-        Mon, 15 Aug 2022 20:11:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63E5AC433C1;
-        Mon, 15 Aug 2022 20:11:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95B27B81154;
+        Mon, 15 Aug 2022 20:13:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2224C433D7;
+        Mon, 15 Aug 2022 20:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594277;
-        bh=ECYLy6ZnFKRuF+2gIewQOS7C8kcMwJoNV5HEHpGO02I=;
+        s=korg; t=1660594409;
+        bh=NyLGZrmkN/d+RhugtN39rrIWi6Tif1siwmp5jXnzoNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oIbewXdUyfAcOZNuwzEBddBydJ1oW4G7l1IuZfpd5YkHs0mEBVL4xBB8JSlFehD2M
-         Otu0v7gG1pgIwlYaXS1SeFKKuRq1cjsxYiAmI+AQcUyuii5c5h2JRW8f9jHFRGLVgB
-         uCwvKE5+str4VFLe1OKhlTRqYVHyXJ7nhb6M9xBA=
+        b=BemnqsKAMlgCeEgbnJJ1IRFp47bqjHgDoDOlrDpgonvmSaWB5XsML47Tn7t3azKFq
+         x770NlOx+WlSRbaUp7ousj6wv2KRdk7WWw6whjvGYLdIfdrVpV+0CkWT7od+99RvZm
+         1srwhaZWa3L0yqzL0TKdIZBGZGYP+feq8ti7IxZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1054/1095] ext4: update s_overhead_clusters in the superblock during an on-line resize
-Date:   Mon, 15 Aug 2022 20:07:33 +0200
-Message-Id: <20220815180512.668476663@linuxfoundation.org>
+Subject: [PATCH 5.19 0436/1157] drm/msm/dpu: move intf and wb assignment to dpu_encoder_setup_display()
+Date:   Mon, 15 Aug 2022 19:56:32 +0200
+Message-Id: <20220815180457.083799772@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,48 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Abhinav Kumar <quic_abhinavk@quicinc.com>
 
-[ Upstream commit de394a86658ffe4e89e5328fd4993abfe41b7435 ]
+[ Upstream commit b4a624acabe99f2ea912e895529b8b37d1fa909d ]
 
-When doing an online resize, the on-disk superblock on-disk wasn't
-updated.  This means that when the file system is unmounted and
-remounted, and the on-disk overhead value is non-zero, this would
-result in the results of statfs(2) to be incorrect.
+intf and wb resources are not dependent on the rm global
+state so need not be allocated during dpu_encoder_virt_atomic_mode_set().
 
-This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
-calculation to account for the reserved gdt blocks"), 85d825dbf489
-("ext4: force overhead calculation if the s_overhead_cluster makes no
-sense"), and eb7054212eac ("ext4: update the cached overhead value in
-the superblock").
+Move the allocation of intf and wb resources to dpu_encoder_setup_display()
+so that we can utilize the hw caps even during atomic_check() phase.
 
-However, since it was too expensive to forcibly recalculate the
-overhead for bigalloc file systems at every mount, this didn't fix the
-problem for bigalloc file systems.  This commit should address the
-problem when resizing file systems with the bigalloc feature enabled.
+Since dpu_encoder_setup_display() already has protection against
+setting invalid intf_idx and wb_idx, these checks can now
+be dropped as well.
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+changes in v2:
+	- add phys->hw_intf and phys->hw_wb checks back
+
+changes in v3:
+	- correct the Fixes tag
+
+Fixes: e02a559a720f ("drm/msm/dpu: make changes to dpu_encoder to support virtual encoder")
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/489885/
+Link: https://lore.kernel.org/r/1655406084-17407-1-git-send-email-quic_abhinavk@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 36 ++++++++++-----------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 8b70a4701293..e5c2713aa11a 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1484,6 +1484,7 @@ static void ext4_update_super(struct super_block *sb,
- 	 * Update the fs overhead information
- 	 */
- 	ext4_calculate_overhead(sb);
-+	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index a1b8c4592943..9b4df3084366 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1048,24 +1048,6 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
+ 		phys->hw_pp = dpu_enc->hw_pp[i];
+ 		phys->hw_ctl = to_dpu_hw_ctl(hw_ctl[i]);
  
- 	if (test_opt(sb, DEBUG))
- 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
+-		if (phys->intf_idx >= INTF_0 && phys->intf_idx < INTF_MAX)
+-			phys->hw_intf = dpu_rm_get_intf(&dpu_kms->rm, phys->intf_idx);
+-
+-		if (phys->wb_idx >= WB_0 && phys->wb_idx < WB_MAX)
+-			phys->hw_wb = dpu_rm_get_wb(&dpu_kms->rm, phys->wb_idx);
+-
+-		if (!phys->hw_intf && !phys->hw_wb) {
+-			DPU_ERROR_ENC(dpu_enc,
+-				      "no intf or wb block assigned at idx: %d\n", i);
+-			return;
+-		}
+-
+-		if (phys->hw_intf && phys->hw_wb) {
+-			DPU_ERROR_ENC(dpu_enc,
+-					"invalid phys both intf and wb block at idx: %d\n", i);
+-			return;
+-		}
+-
+ 		phys->cached_mode = crtc_state->adjusted_mode;
+ 		if (phys->ops.atomic_mode_set)
+ 			phys->ops.atomic_mode_set(phys, crtc_state, conn_state);
+@@ -2294,7 +2276,25 @@ static int dpu_encoder_setup_display(struct dpu_encoder_virt *dpu_enc,
+ 		struct dpu_encoder_phys *phys = dpu_enc->phys_encs[i];
+ 		atomic_set(&phys->vsync_cnt, 0);
+ 		atomic_set(&phys->underrun_cnt, 0);
++
++		if (phys->intf_idx >= INTF_0 && phys->intf_idx < INTF_MAX)
++			phys->hw_intf = dpu_rm_get_intf(&dpu_kms->rm, phys->intf_idx);
++
++		if (phys->wb_idx >= WB_0 && phys->wb_idx < WB_MAX)
++			phys->hw_wb = dpu_rm_get_wb(&dpu_kms->rm, phys->wb_idx);
++
++		if (!phys->hw_intf && !phys->hw_wb) {
++			DPU_ERROR_ENC(dpu_enc, "no intf or wb block assigned at idx: %d\n", i);
++			ret = -EINVAL;
++		}
++
++		if (phys->hw_intf && phys->hw_wb) {
++			DPU_ERROR_ENC(dpu_enc,
++					"invalid phys both intf and wb block at idx: %d\n", i);
++			ret = -EINVAL;
++		}
+ 	}
++
+ 	mutex_unlock(&dpu_enc->enc_lock);
+ 
+ 	return ret;
 -- 
 2.35.1
 
