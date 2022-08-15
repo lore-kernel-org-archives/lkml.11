@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558FC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE2ECC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348019AbiHPBCG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
+        id S244032AbiHPBCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344401AbiHPA4c (ORCPT
+        with ESMTP id S1346837AbiHPA5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:56:32 -0400
+        Mon, 15 Aug 2022 20:57:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEED17B83A;
-        Mon, 15 Aug 2022 13:48:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65044B7EF5;
+        Mon, 15 Aug 2022 13:48:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A278BB8114A;
-        Mon, 15 Aug 2022 20:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB9D3C433D6;
-        Mon, 15 Aug 2022 20:48:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5584B8114A;
+        Mon, 15 Aug 2022 20:48:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA35C433D6;
+        Mon, 15 Aug 2022 20:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596481;
-        bh=vIGpQcAgld7A+4ecjA7VklllgQvBCtIXhrhWmWy5tT8=;
+        s=korg; t=1660596503;
+        bh=y54VjTkQNMStid2ByS12E+NB1nC0NfRQ1/G4aNt0/P8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TO1VOhKVK5aOlJui03VeL1s6xjyO76+Q3M+PeLk23FZmqe9Ntm91dB0OLm5z1lqmg
-         1P8/NqVnpmV40cLQxhZh5WA63bvR7XboRweTk677MQ4WWh/16YA0DOpL44ePNFse2+
-         QvNrDdqlSY7crdWt25HWP7AtXJT0a6Tl0Kf39xO8=
+        b=k3l0D54pkNHSXVEvZJjF1TL1VMMgxt/pEO8fQWYcQ7tHwI1/U+21AhnXa+vMKG0hU
+         jhyW12OrWFy8IMTWLqtXlGzZb5240R1WRXlkkx8Y61SRDbRb2xXzsQsO18TBDKifmK
+         E3UfafgVl8i9FQH9Iwff6gTrfn2v2sefpkzJUDtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1094/1157] btrfs: zoned: activate necessary block group
-Date:   Mon, 15 Aug 2022 20:07:30 +0200
-Message-Id: <20220815180523.983097592@linuxfoundation.org>
+Subject: [PATCH 5.19 1100/1157] powerpc/powernv/kvm: Use darn for H_RANDOM on Power9
+Date:   Mon, 15 Aug 2022 20:07:36 +0200
+Message-Id: <20220815180524.267408207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,58 +50,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit b6a98021e4019c562a23ad151a7e40adfa9f91e5 ]
+[ Upstream commit 7ef3d06f1bc4a5e62273726f3dc2bd258ae1c71f ]
 
-There are two places where allocating a chunk is not enough. These two
-places are trying to ensure the space by allocating a chunk. To meet the
-condition for active_total_bytes, we also need to activate a block group
-there.
+The existing logic in KVM to support guests calling H_RANDOM only works
+on Power8, because it looks for an RNG in the device tree, but on Power9
+we just use darn.
 
-CC: stable@vger.kernel.org # 5.16+
-Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+In addition the existing code needs to work in real mode, so we have the
+special cased powernv_get_random_real_mode() to deal with that.
+
+Instead just have KVM call ppc_md.get_random_seed(), and do the real
+mode check inside of there, that way we use whatever RNG is available,
+including darn on Power9.
+
+Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+Cc: stable@vger.kernel.org # v4.1+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+[mpe: Rebase on previous commit, update change log appropriately]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220727143219.2684192-2-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/block-group.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/powerpc/include/asm/archrandom.h |  5 ----
+ arch/powerpc/kvm/book3s_hv_builtin.c  |  7 +++---
+ arch/powerpc/platforms/powernv/rng.c  | 36 ++++++---------------------
+ 3 files changed, 12 insertions(+), 36 deletions(-)
 
-diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
-index 20c78ae7d150..5627b43d4cc2 100644
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -2665,6 +2665,14 @@ int btrfs_inc_block_group_ro(struct btrfs_block_group *cache,
- 	ret = btrfs_chunk_alloc(trans, alloc_flags, CHUNK_ALLOC_FORCE);
- 	if (ret < 0)
- 		goto out;
-+	/*
-+	 * We have allocated a new chunk. We also need to activate that chunk to
-+	 * grant metadata tickets for zoned filesystem.
-+	 */
-+	ret = btrfs_zoned_activate_one_bg(fs_info, cache->space_info, true);
-+	if (ret < 0)
-+		goto out;
-+
- 	ret = inc_block_group_ro(cache, 0);
- 	if (ret == -ETXTBSY)
- 		goto unlock_out;
-@@ -3890,6 +3898,14 @@ static void reserve_chunk_space(struct btrfs_trans_handle *trans,
- 		if (IS_ERR(bg)) {
- 			ret = PTR_ERR(bg);
- 		} else {
-+			/*
-+			 * We have a new chunk. We also need to activate it for
-+			 * zoned filesystem.
-+			 */
-+			ret = btrfs_zoned_activate_one_bg(fs_info, info, true);
-+			if (ret < 0)
-+				return;
-+
- 			/*
- 			 * If we fail to add the chunk item here, we end up
- 			 * trying again at phase 2 of chunk allocation, at
+diff --git a/arch/powerpc/include/asm/archrandom.h b/arch/powerpc/include/asm/archrandom.h
+index 9a53e29680f4..258174304904 100644
+--- a/arch/powerpc/include/asm/archrandom.h
++++ b/arch/powerpc/include/asm/archrandom.h
+@@ -38,12 +38,7 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+ #endif /* CONFIG_ARCH_RANDOM */
+ 
+ #ifdef CONFIG_PPC_POWERNV
+-int powernv_hwrng_present(void);
+ int powernv_get_random_long(unsigned long *v);
+-int powernv_get_random_real_mode(unsigned long *v);
+-#else
+-static inline int powernv_hwrng_present(void) { return 0; }
+-static inline int powernv_get_random_real_mode(unsigned long *v) { return 0; }
+ #endif
+ 
+ #endif /* _ASM_POWERPC_ARCHRANDOM_H */
+diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
+index 88a8f6473c4e..3abaef5f9ac2 100644
+--- a/arch/powerpc/kvm/book3s_hv_builtin.c
++++ b/arch/powerpc/kvm/book3s_hv_builtin.c
+@@ -19,7 +19,7 @@
+ #include <asm/interrupt.h>
+ #include <asm/kvm_ppc.h>
+ #include <asm/kvm_book3s.h>
+-#include <asm/archrandom.h>
++#include <asm/machdep.h>
+ #include <asm/xics.h>
+ #include <asm/xive.h>
+ #include <asm/dbell.h>
+@@ -176,13 +176,14 @@ EXPORT_SYMBOL_GPL(kvmppc_hcall_impl_hv_realmode);
+ 
+ int kvmppc_hwrng_present(void)
+ {
+-	return powernv_hwrng_present();
++	return ppc_md.get_random_seed != NULL;
+ }
+ EXPORT_SYMBOL_GPL(kvmppc_hwrng_present);
+ 
+ long kvmppc_rm_h_random(struct kvm_vcpu *vcpu)
+ {
+-	if (powernv_get_random_real_mode(&vcpu->arch.regs.gpr[4]))
++	if (ppc_md.get_random_seed &&
++	    ppc_md.get_random_seed(&vcpu->arch.regs.gpr[4]))
+ 		return H_SUCCESS;
+ 
+ 	return H_HARDWARE;
+diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+index 2287c9cd0cd5..d19305292e1e 100644
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -29,15 +29,6 @@ struct powernv_rng {
+ 
+ static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
+ 
+-int powernv_hwrng_present(void)
+-{
+-	struct powernv_rng *rng;
+-
+-	rng = get_cpu_var(powernv_rng);
+-	put_cpu_var(rng);
+-	return rng != NULL;
+-}
+-
+ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+ {
+ 	unsigned long parity;
+@@ -58,19 +49,6 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+ 	return val;
+ }
+ 
+-int powernv_get_random_real_mode(unsigned long *v)
+-{
+-	struct powernv_rng *rng;
+-
+-	rng = raw_cpu_read(powernv_rng);
+-	if (!rng)
+-		return 0;
+-
+-	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
+-
+-	return 1;
+-}
+-
+ static int powernv_get_random_darn(unsigned long *v)
+ {
+ 	unsigned long val;
+@@ -107,12 +85,14 @@ int powernv_get_random_long(unsigned long *v)
+ {
+ 	struct powernv_rng *rng;
+ 
+-	rng = get_cpu_var(powernv_rng);
+-
+-	*v = rng_whiten(rng, in_be64(rng->regs));
+-
+-	put_cpu_var(rng);
+-
++	if (mfmsr() & MSR_DR) {
++		rng = get_cpu_var(powernv_rng);
++		*v = rng_whiten(rng, in_be64(rng->regs));
++		put_cpu_var(rng);
++	} else {
++		rng = raw_cpu_read(powernv_rng);
++		*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
++	}
+ 	return 1;
+ }
+ EXPORT_SYMBOL_GPL(powernv_get_random_long);
 -- 
 2.35.1
 
