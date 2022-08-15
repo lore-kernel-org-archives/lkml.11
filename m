@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AADC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565ACC25B08
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354142AbiHPALF (ORCPT
+        id S1354474AbiHPALJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
+        Mon, 15 Aug 2022 20:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356102AbiHPACA (ORCPT
+        with ESMTP id S1356255AbiHPACJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:02:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9543F1677DE;
-        Mon, 15 Aug 2022 13:23:17 -0700 (PDT)
+        Mon, 15 Aug 2022 20:02:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347FA168A45;
+        Mon, 15 Aug 2022 13:23:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0025EB81197;
-        Mon, 15 Aug 2022 20:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64BD7C433C1;
-        Mon, 15 Aug 2022 20:23:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 951D1B8119D;
+        Mon, 15 Aug 2022 20:23:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFB75C433D6;
+        Mon, 15 Aug 2022 20:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594994;
-        bh=KxbBiebF6g52idOOJGhOynKXfZU+gaU+GULar7Lqibw=;
+        s=korg; t=1660595010;
+        bh=2YYp1pyJZPc3drJBP+v525omMRdvo3xH8Vra2/XQD5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJAKztCAmTzsNFPMCmhRz9KZD5hIOatcYYHLmBe3cPrdUHFJbC57GbB84Hz2MuwKY
-         jtMKtANCwKCbvvMF5ydEM6IP9BVX/tnoXhlYtwWb1e0azZ7LA0DpK+im/U25MFDGCK
-         Nkqpu42UmMvGD5g0Q6OFxlDBuwLMcQLdBn3HXkr0=
+        b=dRy4qSV4hsb2JVMkyo2UEZIaHPqVLb2a+2ajHV+9For5Ica+KFAS48GzTpK5yEG4i
+         agpyBq3QQdeS5l00kI1EyWA8//j1lzDjdBh13C30t2pxtjbAhFHeJLtFw5kvqqhb2e
+         VuqqoN3wyYNZdhwtjcmmReVOSCkJvD35QJFqrTB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jagath Jog J <jagathjog1996@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0582/1157] scsi: qla2xxx: edif: bsg refactor
-Date:   Mon, 15 Aug 2022 19:58:58 +0200
-Message-Id: <20220815180502.940527955@linuxfoundation.org>
+Subject: [PATCH 5.19 0629/1157] iio: accel: bma400: conversion to device-managed function
+Date:   Mon, 15 Aug 2022 19:59:45 +0200
+Message-Id: <20220815180504.835972305@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,336 +51,249 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Jagath Jog J <jagathjog1996@gmail.com>
 
-[ Upstream commit 7a7b0b4865d3490f62d6ef1a3aa39fa2b47859a4 ]
+[ Upstream commit 12c99f859fd3da5fc8f8491826e7023001f54821 ]
 
- - Add version field to edif bsg for future enhancement.
+This is a conversion to device-managed by using devm_iio_device_register()
+inside probe function. Previously the bma400 was not put into power down
+mode in some error paths in probe where it now is, but that should cause
+no harm.
 
- - Add version edif bsg version check
+The dev_set_drvdata() call, bma400_remove() function and hooks in the I2C
+and SPI driver struct is removed as devm_iio_device_register() function is
+used to automatically unregister on driver detach.
 
- - Remove unused interfaces and fields.
-
-Link: https://lore.kernel.org/r/20220607044627.19563-3-njavali@marvell.com
-Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220505133021.22362-4-jagathjog1996@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c     | 32 +++++++---
- drivers/scsi/qla2xxx/qla_edif_bsg.h | 90 ++++++++++++++++++-----------
- 2 files changed, 79 insertions(+), 43 deletions(-)
+ drivers/iio/accel/bma400.h      |  2 -
+ drivers/iio/accel/bma400_core.c | 77 ++++++++++++++++-----------------
+ drivers/iio/accel/bma400_i2c.c  |  8 ----
+ drivers/iio/accel/bma400_spi.c  |  6 ---
+ 4 files changed, 38 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index e789f59395ce..0a49834198ca 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -280,14 +280,19 @@ qla_edif_app_check(scsi_qla_host_t *vha, struct app_id appid)
- {
- 	/* check that the app is allow/known to the driver */
+diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+index 80330c7ce17f..1c8c47a9a317 100644
+--- a/drivers/iio/accel/bma400.h
++++ b/drivers/iio/accel/bma400.h
+@@ -113,6 +113,4 @@ extern const struct regmap_config bma400_regmap_config;
  
--	if (appid.app_vid == EDIF_APP_ID) {
--		ql_dbg(ql_dbg_edif + ql_dbg_verbose, vha, 0x911d, "%s app id ok\n", __func__);
--		return true;
-+	if (appid.app_vid != EDIF_APP_ID) {
-+		ql_dbg(ql_dbg_edif, vha, 0x911d, "%s app id not ok (%x)",
-+		    __func__, appid.app_vid);
-+		return false;
-+	}
-+
-+	if (appid.version != EDIF_VERSION1) {
-+		ql_dbg(ql_dbg_edif, vha, 0x911d, "%s app version is not ok (%x)",
-+		    __func__, appid.version);
-+		return false;
+ int bma400_probe(struct device *dev, struct regmap *regmap, const char *name);
+ 
+-void bma400_remove(struct device *dev);
+-
+ #endif
+diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+index 25ad1f7339bc..07674d89d978 100644
+--- a/drivers/iio/accel/bma400_core.c
++++ b/drivers/iio/accel/bma400_core.c
+@@ -560,6 +560,26 @@ static void bma400_init_tables(void)
  	}
--	ql_dbg(ql_dbg_edif, vha, 0x911d, "%s app id not ok (%x)",
--	    __func__, appid.app_vid);
- 
--	return false;
-+	return true;
  }
  
- static void
-@@ -555,6 +560,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	appreply.host_support_edif = vha->hw->flags.edif_enabled;
- 	appreply.edif_enode_active = vha->pur_cinfo.enode_flags;
- 	appreply.edif_edb_active = vha->e_dbell.db_flags;
-+	appreply.version = EDIF_VERSION1;
- 
- 	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
- 
-@@ -684,6 +690,7 @@ qla_edif_app_authok(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	portid.b.area   = appplogiok.u.d_id.b.area;
- 	portid.b.al_pa  = appplogiok.u.d_id.b.al_pa;
- 
-+	appplogireply.version = EDIF_VERSION1;
- 	switch (appplogiok.type) {
- 	case PL_TYPE_WWPN:
- 		fcport = qla2x00_find_fcport_by_wwpn(vha,
-@@ -876,6 +883,8 @@ qla_edif_app_getfcinfo(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	} else {
- 		struct fc_port	*fcport = NULL, *tf;
- 
-+		app_reply->version = EDIF_VERSION1;
++static void bma400_regulators_disable(void *data_ptr)
++{
++	struct bma400_data *data = data_ptr;
 +
- 		list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list) {
- 			if (!(fcport->flags & FCF_FCSP_DEVICE))
- 				continue;
-@@ -892,9 +901,6 @@ qla_edif_app_getfcinfo(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 			if (tdid.b24 != 0 && tdid.b24 != fcport->d_id.b24)
- 				continue;
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
++}
++
++static void bma400_power_disable(void *data_ptr)
++{
++	struct bma400_data *data = data_ptr;
++	int ret;
++
++	mutex_lock(&data->mutex);
++	ret = bma400_set_power_mode(data, POWER_MODE_SLEEP);
++	mutex_unlock(&data->mutex);
++	if (ret)
++		dev_warn(data->dev, "Failed to put device into sleep mode (%pe)\n",
++			 ERR_PTR(ret));
++}
++
+ static int bma400_init(struct bma400_data *data)
+ {
+ 	unsigned int val;
+@@ -569,13 +589,12 @@ static int bma400_init(struct bma400_data *data)
+ 	ret = regmap_read(data->regmap, BMA400_CHIP_ID_REG, &val);
+ 	if (ret) {
+ 		dev_err(data->dev, "Failed to read chip id register\n");
+-		goto out;
++		return ret;
+ 	}
  
--			app_reply->ports[pcnt].rekey_count =
--				fcport->edif.rekey_cnt;
+ 	if (val != BMA400_ID_REG_VAL) {
+ 		dev_err(data->dev, "Chip ID mismatch\n");
+-		ret = -ENODEV;
+-		goto out;
++		return -ENODEV;
+ 	}
+ 
+ 	data->regulators[BMA400_VDD_REGULATOR].supply = "vdd";
+@@ -589,27 +608,31 @@ static int bma400_init(struct bma400_data *data)
+ 				"Failed to get regulators: %d\n",
+ 				ret);
+ 
+-		goto out;
++		return ret;
+ 	}
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
+ 				    data->regulators);
+ 	if (ret) {
+ 		dev_err(data->dev, "Failed to enable regulators: %d\n",
+ 			ret);
+-		goto out;
++		return ret;
+ 	}
+ 
++	ret = devm_add_action_or_reset(data->dev, bma400_regulators_disable, data);
++	if (ret)
++		return ret;
++
+ 	ret = bma400_get_power_mode(data);
+ 	if (ret) {
+ 		dev_err(data->dev, "Failed to get the initial power-mode\n");
+-		goto err_reg_disable;
++		return ret;
+ 	}
+ 
+ 	if (data->power_mode != POWER_MODE_NORMAL) {
+ 		ret = bma400_set_power_mode(data, POWER_MODE_NORMAL);
+ 		if (ret) {
+ 			dev_err(data->dev, "Failed to wake up the device\n");
+-			goto err_reg_disable;
++			return ret;
+ 		}
+ 		/*
+ 		 * TODO: The datasheet waits 1500us here in the example, but
+@@ -618,19 +641,23 @@ static int bma400_init(struct bma400_data *data)
+ 		usleep_range(1500, 2000);
+ 	}
+ 
++	ret = devm_add_action_or_reset(data->dev, bma400_power_disable, data);
++	if (ret)
++		return ret;
++
+ 	bma400_init_tables();
+ 
+ 	ret = bma400_get_accel_output_data_rate(data);
+ 	if (ret)
+-		goto err_reg_disable;
++		return ret;
+ 
+ 	ret = bma400_get_accel_oversampling_ratio(data);
+ 	if (ret)
+-		goto err_reg_disable;
++		return ret;
+ 
+ 	ret = bma400_get_accel_scale(data);
+ 	if (ret)
+-		goto err_reg_disable;
++		return ret;
+ 
+ 	/*
+ 	 * Once the interrupt engine is supported we might use the
+@@ -639,12 +666,6 @@ static int bma400_init(struct bma400_data *data)
+ 	 * channel.
+ 	 */
+ 	return regmap_write(data->regmap, BMA400_ACC_CONFIG2_REG, 0x00);
 -
- 			if (fcport->scan_state != QLA_FCPORT_FOUND)
- 				continue;
+-err_reg_disable:
+-	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
+-			       data->regulators);
+-out:
+-	return ret;
+ }
  
-@@ -909,6 +915,7 @@ qla_edif_app_getfcinfo(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ static int bma400_read_raw(struct iio_dev *indio_dev,
+@@ -822,32 +843,10 @@ int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
+ 	indio_dev->num_channels = ARRAY_SIZE(bma400_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
  
- 			rval = 0;
- 
-+			app_reply->ports[pcnt].version = EDIF_VERSION1;
- 			app_reply->ports[pcnt].remote_type =
- 				VND_CMD_RTYPE_UNKNOWN;
- 			if (fcport->port_type & (FCT_NVME_TARGET | FCT_TARGET))
-@@ -1005,6 +1012,8 @@ qla_edif_app_getstats(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	} else {
- 		struct fc_port	*fcport = NULL, *tf;
- 
-+		app_reply->version = EDIF_VERSION1;
-+
- 		list_for_each_entry_safe(fcport, tf, &vha->vp_fcports, list) {
- 			if (fcport->edif.enable) {
- 				if (pcnt > app_req.num_ports)
-@@ -2036,6 +2045,7 @@ qla_edb_eventcreate(scsi_qla_host_t *vha, uint32_t dbtype,
- 		edbnode->u.sa_aen.port_id = fcport->d_id;
- 		edbnode->u.sa_aen.status =  data;
- 		edbnode->u.sa_aen.key_type =  data2;
-+		edbnode->u.sa_aen.version = EDIF_VERSION1;
- 		break;
- 	default:
- 		ql_dbg(ql_dbg_edif, vha, 0x09102,
-@@ -3379,6 +3389,10 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	port_id_t d_id;
- 	struct qla_bsg_auth_els_request *p =
- 	    (struct qla_bsg_auth_els_request *)bsg_job->request;
-+	struct qla_bsg_auth_els_reply *rpl =
-+	    (struct qla_bsg_auth_els_reply *)bsg_job->reply;
-+
-+	rpl->version = EDIF_VERSION1;
- 
- 	d_id.b.al_pa = bsg_request->rqst_data.h_els.port_id[2];
- 	d_id.b.area = bsg_request->rqst_data.h_els.port_id[1];
-diff --git a/drivers/scsi/qla2xxx/qla_edif_bsg.h b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-index 5a26c77157da..301523e4f483 100644
---- a/drivers/scsi/qla2xxx/qla_edif_bsg.h
-+++ b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-@@ -7,13 +7,15 @@
- #ifndef __QLA_EDIF_BSG_H
- #define __QLA_EDIF_BSG_H
- 
-+#define EDIF_VERSION1 1
-+
- /* BSG Vendor specific commands */
- #define	ELS_MAX_PAYLOAD		2112
- #ifndef	WWN_SIZE
- #define WWN_SIZE		8
- #endif
--#define	VND_CMD_APP_RESERVED_SIZE	32
+-	dev_set_drvdata(dev, indio_dev);
 -
-+#define VND_CMD_APP_RESERVED_SIZE	28
-+#define VND_CMD_PAD_SIZE                3
- enum auth_els_sub_cmd {
- 	SEND_ELS = 0,
- 	SEND_ELS_REPLY,
-@@ -28,7 +30,9 @@ struct extra_auth_els {
- #define BSG_CTL_FLAG_LS_ACC     1
- #define BSG_CTL_FLAG_LS_RJT     2
- #define BSG_CTL_FLAG_TRM        3
--	uint8_t         extra_rsvd[3];
-+	uint8_t		version;
-+	uint8_t		pad[2];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
+-	return iio_device_register(indio_dev);
++	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS(bma400_probe, IIO_BMA400);
  
- struct qla_bsg_auth_els_request {
-@@ -39,51 +43,46 @@ struct qla_bsg_auth_els_request {
- struct qla_bsg_auth_els_reply {
- 	struct fc_bsg_reply r;
- 	uint32_t rx_xchg_address;
-+	uint8_t version;
-+	uint8_t pad[VND_CMD_PAD_SIZE];
-+	uint8_t reserved[VND_CMD_APP_RESERVED_SIZE];
+-void bma400_remove(struct device *dev)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct bma400_data *data = iio_priv(indio_dev);
+-	int ret;
+-
+-	mutex_lock(&data->mutex);
+-	ret = bma400_set_power_mode(data, POWER_MODE_SLEEP);
+-	mutex_unlock(&data->mutex);
+-
+-	if (ret)
+-		dev_warn(dev, "Failed to put device into sleep mode (%pe)\n", ERR_PTR(ret));
+-
+-	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
+-			       data->regulators);
+-
+-	iio_device_unregister(indio_dev);
+-}
+-EXPORT_SYMBOL_NS(bma400_remove, IIO_BMA400);
+-
+ MODULE_AUTHOR("Dan Robertson <dan@dlrobertson.com>");
+ MODULE_DESCRIPTION("Bosch BMA400 triaxial acceleration sensor core");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/accel/bma400_i2c.c b/drivers/iio/accel/bma400_i2c.c
+index da104ffd3fe0..4f6e01a3b3a1 100644
+--- a/drivers/iio/accel/bma400_i2c.c
++++ b/drivers/iio/accel/bma400_i2c.c
+@@ -27,13 +27,6 @@ static int bma400_i2c_probe(struct i2c_client *client,
+ 	return bma400_probe(&client->dev, regmap, id->name);
+ }
+ 
+-static int bma400_i2c_remove(struct i2c_client *client)
+-{
+-	bma400_remove(&client->dev);
+-
+-	return 0;
+-}
+-
+ static const struct i2c_device_id bma400_i2c_ids[] = {
+ 	{ "bma400", 0 },
+ 	{ }
+@@ -52,7 +45,6 @@ static struct i2c_driver bma400_i2c_driver = {
+ 		.of_match_table = bma400_of_i2c_match,
+ 	},
+ 	.probe    = bma400_i2c_probe,
+-	.remove   = bma400_i2c_remove,
+ 	.id_table = bma400_i2c_ids,
  };
  
- struct app_id {
- 	int		app_vid;
--	uint8_t		app_key[32];
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
+diff --git a/drivers/iio/accel/bma400_spi.c b/drivers/iio/accel/bma400_spi.c
+index 51f23bdc0ea5..28e240400a3f 100644
+--- a/drivers/iio/accel/bma400_spi.c
++++ b/drivers/iio/accel/bma400_spi.c
+@@ -87,11 +87,6 @@ static int bma400_spi_probe(struct spi_device *spi)
+ 	return bma400_probe(&spi->dev, regmap, id->name);
+ }
  
- struct app_start_reply {
- 	uint32_t	host_support_edif;
- 	uint32_t	edif_enode_active;
- 	uint32_t	edif_edb_active;
--	uint32_t	reserved[VND_CMD_APP_RESERVED_SIZE];
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- struct app_start {
- 	struct app_id	app_info;
--	uint32_t	prli_to;
--	uint32_t	key_shred;
- 	uint8_t         app_start_flags;
--	uint8_t         reserved[VND_CMD_APP_RESERVED_SIZE - 1];
-+	uint8_t		version;
-+	uint8_t		pad[2];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- struct app_stop {
- 	struct app_id	app_info;
--	char		buf[16];
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- struct app_plogi_reply {
- 	uint32_t	prli_status;
--	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
--} __packed;
+-static void bma400_spi_remove(struct spi_device *spi)
+-{
+-	bma400_remove(&spi->dev);
+-}
 -
--#define	RECFG_TIME	1
--#define	RECFG_BYTES	2
--
--struct app_rekey_cfg {
--	struct app_id app_info;
--	uint8_t	 rekey_mode;
--	port_id_t d_id;
--	uint8_t	 force;
--	union {
--		int64_t bytes;
--		int64_t time;
--	} rky_units;
--
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
- 	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
+ static const struct spi_device_id bma400_spi_ids[] = {
+ 	{ "bma400", 0 },
+ 	{ }
+@@ -110,7 +105,6 @@ static struct spi_driver bma400_spi_driver = {
+ 		.of_match_table = bma400_of_spi_match,
+ 	},
+ 	.probe    = bma400_spi_probe,
+-	.remove   = bma400_spi_remove,
+ 	.id_table = bma400_spi_ids,
+ };
  
-@@ -91,7 +90,9 @@ struct app_pinfo_req {
- 	struct app_id app_info;
- 	uint8_t	 num_ports;
- 	port_id_t remote_pid;
--	uint8_t	 reserved[VND_CMD_APP_RESERVED_SIZE];
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- struct app_pinfo {
-@@ -103,11 +104,8 @@ struct app_pinfo {
- #define	VND_CMD_RTYPE_INITIATOR		2
- 	uint8_t	remote_state;
- 	uint8_t	auth_state;
--	uint8_t	rekey_mode;
--	int64_t	rekey_count;
--	int64_t	rekey_config_value;
--	int64_t	rekey_consumed_value;
--
-+	uint8_t	version;
-+	uint8_t	pad[VND_CMD_PAD_SIZE];
- 	uint8_t	reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
-@@ -120,6 +118,8 @@ struct app_pinfo {
- 
- struct app_pinfo_reply {
- 	uint8_t		port_count;
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
- 	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- 	struct app_pinfo ports[];
- } __packed;
-@@ -127,6 +127,8 @@ struct app_pinfo_reply {
- struct app_sinfo_req {
- 	struct app_id	app_info;
- 	uint8_t		num_ports;
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
- 	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
-@@ -140,6 +142,9 @@ struct app_sinfo {
- 
- struct app_stats_reply {
- 	uint8_t		elem_count;
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved[VND_CMD_APP_RESERVED_SIZE];
- 	struct app_sinfo elem[];
- } __packed;
- 
-@@ -163,9 +168,11 @@ struct qla_sa_update_frame {
- 	uint8_t		node_name[WWN_SIZE];
- 	uint8_t		port_name[WWN_SIZE];
- 	port_id_t	port_id;
-+	uint8_t		version;
-+	uint8_t		pad[VND_CMD_PAD_SIZE];
-+	uint8_t		reserved2[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
--// used for edif mgmt bsg interface
- #define	QL_VND_SC_UNDEF		0
- #define	QL_VND_SC_SA_UPDATE	1
- #define	QL_VND_SC_APP_START	2
-@@ -175,6 +182,8 @@ struct qla_sa_update_frame {
- #define	QL_VND_SC_REKEY_CONFIG	6
- #define	QL_VND_SC_GET_FCINFO	7
- #define	QL_VND_SC_GET_STATS	8
-+#define QL_VND_SC_AEN_COMPLETE  9
-+
- 
- /* Application interface data structure for rtn data */
- #define	EXT_DEF_EVENT_DATA_SIZE	64
-@@ -191,7 +200,9 @@ struct edif_sa_update_aen {
- 	port_id_t port_id;
- 	uint32_t key_type;	/* Tx (1) or RX (2) */
- 	uint32_t status;	/* 0 succes,  1 failed, 2 timeout , 3 error */
--	uint8_t		reserved[16];
-+	uint8_t	version;
-+	uint8_t	pad[VND_CMD_PAD_SIZE];
-+	uint8_t	reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- #define	QL_VND_SA_STAT_SUCCESS	0
-@@ -212,7 +223,18 @@ struct auth_complete_cmd {
- 		uint8_t  wwpn[WWN_SIZE];
- 		port_id_t d_id;
- 	} u;
--	uint32_t reserved[VND_CMD_APP_RESERVED_SIZE];
-+	uint8_t	version;
-+	uint8_t	pad[VND_CMD_PAD_SIZE];
-+	uint8_t	reserved[VND_CMD_APP_RESERVED_SIZE];
-+} __packed;
-+
-+struct aen_complete_cmd {
-+	struct app_id app_info;
-+	port_id_t   port_id;
-+	uint32_t    event_code;
-+	uint8_t     version;
-+	uint8_t     pad[VND_CMD_PAD_SIZE];
-+	uint8_t     reserved[VND_CMD_APP_RESERVED_SIZE];
- } __packed;
- 
- #define RX_DELAY_DELETE_TIMEOUT 20
 -- 
 2.35.1
 
