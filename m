@@ -2,68 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9068CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A651BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232440AbiHONFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S242582AbiHONFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbiHONE7 (ORCPT
+        with ESMTP id S231493AbiHONF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:04:59 -0400
+        Mon, 15 Aug 2022 09:05:29 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275A213F14
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:04:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2381146D
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:05:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JBsYsHNQOPaZ948dk66lvAF/aD4bnqX0dYrshuXzMVA=; b=HFoFOXpraaKL8DZh8t+ujOscao
-        J8fazQPV8Q6Vs/+JtUi9aWpnC8DKoy5oc1BT5uiumbyGpFI1gzdk2h5WPkozB3ExFbD7b3h7zTRSW
-        a4MDaqrv+H32CPir2aOEM4s4+KhsCFoTZHBn51xjyBnk/+sl4qXHzGpNU/4dRXzFarm/zOh246Di4
-        8bdIQSbvKLNvEkHClVNyvSWiAZExWw0FhIKbcuEwIFsiUsAuvJ9Uy/UedQgN1ogeMh81ZS7cToDWw
-        eYe2HMEnnWhvryinjhv+3nWSx0zMcq7NCERV4QNYB0MigFpRnyk5b6cz2TJrmrqqfO2YuYe+/wW+x
-        0RCccUig==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNZlv-005jfn-40; Mon, 15 Aug 2022 13:04:47 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 78D9C980153; Mon, 15 Aug 2022 15:04:45 +0200 (CEST)
-Date:   Mon, 15 Aug 2022 15:04:45 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ashok Raj <ashok.raj@intel.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        LKML Mailing List <linux-kernel@vger.kernel.org>,
-        X86-kernel <x86@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH 3/5] x86/microcode/intel: Allow a late-load only if a min
- rev is specified
-Message-ID: <YvpEbby2yp78Br9E@worktop.programming.kicks-ass.net>
-References: <20220813223825.3164861-1-ashok.raj@intel.com>
- <20220813223825.3164861-4-ashok.raj@intel.com>
- <Yvn5vBRNz9z8Y4A9@worktop.programming.kicks-ass.net>
- <Yvo+4odYjQEkvmRr@araj-dh-work>
+        bh=0O1sf920eUihvgTY7T5XThUehKdDUHn2aHkaf8kBbAc=; b=U5+YgxZRQJLUsZVFGa8jpjISiZ
+        KXqYNcUc1MqF7NtePqt0KqehSGtnJdqqCaFozy4CIyCEG6PLW/qQes26YDnOMVQ7G9mxk7meBbkX+
+        Ad4seMTumPH4iTpcmCefpeyUQ+qVxQhzFYz/j/t9etjlPQjX5JQ03IYKDb2gYC5TPlN48pYtMGiAi
+        soblL2ptmaA4v/24nrXFZArqKunBh0PexOXZh4iM240WD+YmP+Ce97qrjFhtFx11cqXGzPFW2txRB
+        AS7yxj+/PzcEzLVuX8SetJ1HDhR6MhalKy1VrMxU6zfk33PbOSVI24Vt/vat1p2DbSX83vhstHv3Y
+        W6LzNG8Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNZmT-005jhz-Cz; Mon, 15 Aug 2022 13:05:21 +0000
+Date:   Mon, 15 Aug 2022 14:05:21 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: fs/ntfs/aops.c:378:12: warning: stack frame size (2216) exceeds
+ limit (1024) in 'ntfs_read_folio'
+Message-ID: <YvpEkYMatTeNvNZa@casper.infradead.org>
+References: <202208140835.W6F1j6Da-lkp@intel.com>
+ <Yvo8KUKJBlMtoNgI@casper.infradead.org>
+ <CAK8P3a3Gx39P90k9ZUMdzHiNpjNn1tdvkTktQyzUqqfG+an4BA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yvo+4odYjQEkvmRr@araj-dh-work>
+In-Reply-To: <CAK8P3a3Gx39P90k9ZUMdzHiNpjNn1tdvkTktQyzUqqfG+an4BA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 12:41:06PM +0000, Ashok Raj wrote:
-
-> OR
+On Mon, Aug 15, 2022 at 02:56:11PM +0200, Arnd Bergmann wrote:
+> On Mon, Aug 15, 2022 at 2:29 PM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > On Sun, Aug 14, 2022 at 08:21:36AM +0800, kernel test robot wrote:
+> > > Hi Matthew,
+> > >
+> > > FYI, the error/warning still remains.
+> >
+> > FYI, this is still not interesting.
+> > This is a hexagon 256kB PAGE_SIZE config, and so the amount of stack
+> > space is correspondingly larger.  The frame size warning should be
+> > increased to allow for this.
+> >
+> > > >> fs/ntfs/aops.c:378:12: warning: stack frame size (2216) exceeds limit (1024) in 'ntfs_read_folio' [-Wframe-larger-than]
 > 
-> The release missed specifying a min-rev before release, accidently even
-> though its actually removing a feature? That would be in the bug category.
-> 
-> Release should have validation tests to cover all known feature bits and
-> such and check for any misses after an update as part of the qual process.
+> I don't think we should change the frame size warning for this, there is not
+> generally any correlation between page size and stack usage, so that would
+> just hide bugs elsewhere.
 
-This; it would be very unfortunate if this ever happened.
+In this specific case, there is.  It's a stack allocation of an array
+that depends on the number of 512-byte blocks per page.  With 4k pages,
+that's only 8.  With 256k pages, that's 512.  With an 8-byte pointer,
+that's a 4kB allocation, and even with a 4-byte pointer, that's a 2kB
+stack allocation, which is still going to blow the prescribed stack
+limit.
+
+This is not unique to NTFS!  An NTFS-specific "fix" is inappropriate.
+It's just that nobody's paying attention to the warnings coming from
+fs/buffer.c:
+
+include/linux/buffer_head.h:#define MAX_BUF_PER_PAGE (PAGE_SIZE / 512)
+
+int block_read_full_folio(struct folio *folio, get_block_t *get_block)
+{
+...
+        struct buffer_head *bh, *head, *arr[MAX_BUF_PER_PAGE];
+
+I don't know why I'm not getting a nastygram about that one, but it's
+all bufferhead based filesystems.
+
+> NTFS has had problems with stack usage on 64K+ pages before, the last
+> time we addressed this using 4eec7faf6775 ("fs: ntfs: Limit NTFS_RW to
+> page sizes smaller than 64k"), but it looks like this time it affects both
+> write and read support.
+
+The reasoning there is faulty.  If you have a 64k (or 256k) page size,
+your stack is correspondingly huge and can handle these kinds of
+allocations.
