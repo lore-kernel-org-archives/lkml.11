@@ -2,147 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 269A9C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95943C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241529AbiHOJFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
+        id S231805AbiHOJGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiHOJE7 (ORCPT
+        with ESMTP id S229935AbiHOJGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:04:59 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E760020F6E
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:04:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1660554288;
-  x=1692090288;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zt034/C45VJoSyl9XibRuMatY47BOXi19qHnJVO9/7o=;
-  b=hMoBn8mmAQCTGt/Sek19gAqCwJwzVazF8m7jaLP755hvI89rbg3J2XF+
-   VjWGgJ8ZEGOz0I4Sg2xRvtXs6tKHdrpFlPiAP6bao9zniNAYhtx6Vxlrf
-   SBzE5mE40zNgQ+aYWGvzyGJx+xD6M3nuarCncAHK2vfAxwkwhIgQPVVS4
-   YasDc3I+Xb7iwEC9HWQkVh6sd/9D0OLPthKbTfbuWPelz3Z2dPYtzhRzq
-   TjKxubvxnNnNVaPVcupjOMWREglFhtrnsaWr+GyMxsQO6wbpl78hDLS4h
-   msHPe4G984uWDhil0Si6uzLov3y6QM11gIea561zknfkKNVNLKbNi77hM
-   g==;
-From:   Surendranath Parimi <surendranath.parimi@axis.com>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>
-CC:     <kernel@axis.com>,
-        Surendranath Parimi <surendranath.parimi@axis.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] extcon: usbc-tusb320: Expose the charger type
-Date:   Mon, 15 Aug 2022 11:04:27 +0200
-Message-ID: <20220815090427.3205-1-surendranath.parimi@axis.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 15 Aug 2022 05:06:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297B0BC8F;
+        Mon, 15 Aug 2022 02:05:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D5BE03486C;
+        Mon, 15 Aug 2022 09:05:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660554357; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wmyLVShEDIO9zR9fd/Zd6KIwqvJ7WmFq3Q+f4veJxx4=;
+        b=Hr7FJApvmpacg+qsEsJ9ov0c/tj4crcwwKaC5VvYz8JZ5R2TTE2h7cECeD9EJfzdYfYWAc
+        cN6spABRKoxVA3aiXtRq3fSz0vQiAI+DH1UU/0eoeqEB7IGt1oHlgnYia5D4+XmpkvfT97
+        uWu7YDaPLs1jhiKEkKAQrGk8nHMwqEU=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9321913A93;
+        Mon, 15 Aug 2022 09:05:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id lVbSInUM+mLXTwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 15 Aug 2022 09:05:57 +0000
+Date:   Mon, 15 Aug 2022 11:05:56 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Mukesh Ojha <quic_mojha@quicinc.com>
+Cc:     Tejun Heo <tj@kernel.org>, Imran Khan <imran.f.khan@oracle.com>,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, tglx@linutronix.de,
+        steven.price@arm.com, peterz@infradead.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>
+Subject: Re: Query regarding deadlock involving cgroup_threadgroup_rwsem and
+ cpu_hotplug_lock
+Message-ID: <20220815090556.GB27407@blackbody.suse.cz>
+References: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
+ <26d0e4cc-be0e-2c12-6174-dfbb1edb1ed6@oracle.com>
+ <bbc01477-231b-3dbb-3e09-9338f5413f06@oracle.com>
+ <ba48eac5-8ef7-251b-11fe-8163bb7a2d54@quicinc.com>
+ <224b19f3-912d-b858-7af4-185b8e55bc66@quicinc.com>
+ <YthDz4BnfYHce1od@slm.duckdns.org>
+ <YuGTBLkFerUboctl@slm.duckdns.org>
+ <dc0cff0e-b744-9d5d-e727-70d1c31b2a74@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dc0cff0e-b744-9d5d-e727-70d1c31b2a74@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the UFP mode of operation, knowing the charger type helps to draw the
-appropriate amount of current from the charger. The charger type can be
-know by reading the current_mode_detect bits of register 0x08.
++Cc: Zhao Gongyi <zhaogongyi@huawei.com>, Zhang Qiao <zhangqiao22@huawei.com>
 
-Add support to expose the charger type.
+On Fri, Aug 12, 2022 at 03:57:00PM +0530, Mukesh Ojha <quic_mojha@quicinc.com> wrote:
+> The original patch of yours [1]  and the revert of [2] is fixing the issue
+> and it is also confirmed here [3].
+> Can we get proper fix merge on your tree?
+> 
+> [1] https://lore.kernel.org/lkml/YuGbYCfAG81mZBnN@slm.duckdns.org/
+> 
+> [2]
+> https://lore.kernel.org/all/20220121101210.84926-1-zhangqiao22@huawei.com/
 
-Signed-off-by: Surendranath Parimi <surendranath.parimi@axis.com>
----
- drivers/extcon/extcon-usbc-tusb320.c | 37 ++++++++++++++++++++++++++--
- 1 file changed, 35 insertions(+), 2 deletions(-)
+The revert + Tejun's patch looks fine wrt the problem of the reverted
+patch (just moves cpus_read_lock to upper callers).
 
-diff --git a/drivers/extcon/extcon-usbc-tusb320.c b/drivers/extcon/extcon-usbc-tusb320.c
-index 6ba3d89b106d..43f07efa3472 100644
---- a/drivers/extcon/extcon-usbc-tusb320.c
-+++ b/drivers/extcon/extcon-usbc-tusb320.c
-@@ -14,6 +14,10 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- 
-+#define TUSB320_REG8				0x8
-+#define TUSB320_REG8_CURRENT_MODE_DETECT_SHIFT	0x4
-+#define TUSB320_REG8_CURRENT_MODE_DETECT_MASK	0x3
-+
- #define TUSB320_REG9				0x9
- #define TUSB320_REG9_ATTACHED_STATE_SHIFT	6
- #define TUSB320_REG9_ATTACHED_STATE_MASK	0x3
-@@ -42,6 +46,13 @@ enum tusb320_mode {
- 	TUSB320_MODE_DRP,
- };
- 
-+enum tusb320_current_mode_detect {
-+	TUSB320_CURRENT_MODE_DETECT_DEFAULT,
-+	TUSB320_CURRENT_MODE_DETECT_MEDIUM,
-+	TUSB320_CURRENT_MODE_DETECT_ACCESSORY,
-+	TUSB320_CURRENT_MODE_DETECT_HIGH,
-+};
-+
- struct tusb320_priv;
- 
- struct tusb320_ops {
-@@ -67,6 +78,9 @@ static const char * const tusb_attached_states[] = {
- static const unsigned int tusb320_extcon_cable[] = {
- 	EXTCON_USB,
- 	EXTCON_USB_HOST,
-+	EXTCON_CHG_USB_FAST,
-+	EXTCON_CHG_USB_SLOW,
-+	EXTCON_CHG_USB_PD,
- 	EXTCON_NONE,
- };
- 
-@@ -187,8 +201,8 @@ static struct tusb320_ops tusb320l_ops = {
- static irqreturn_t tusb320_irq_handler(int irq, void *dev_id)
- {
- 	struct tusb320_priv *priv = dev_id;
--	int state, polarity;
--	unsigned reg;
-+	int state, polarity, current_mode;
-+	unsigned int reg, reg8;
- 
- 	if (regmap_read(priv->regmap, TUSB320_REG9, &reg)) {
- 		dev_err(priv->dev, "error during i2c read!\n");
-@@ -205,10 +219,26 @@ static irqreturn_t tusb320_irq_handler(int irq, void *dev_id)
- 	dev_dbg(priv->dev, "attached state: %s, polarity: %d\n",
- 		tusb_attached_states[state], polarity);
- 
-+	if (regmap_read(priv->regmap, TUSB320_REG8, &reg8)) {
-+		dev_err(priv->dev, "error during i2c read!\n");
-+		return IRQ_NONE;
-+	}
-+
-+	current_mode = (reg8 >> TUSB320_REG8_CURRENT_MODE_DETECT_SHIFT) &
-+			TUSB320_REG8_CURRENT_MODE_DETECT_MASK;
-+
-+	dev_dbg(priv->dev, "current_mode:%d\n", current_mode);
-+
- 	extcon_set_state(priv->edev, EXTCON_USB,
- 			 state == TUSB320_ATTACHED_STATE_UFP);
- 	extcon_set_state(priv->edev, EXTCON_USB_HOST,
- 			 state == TUSB320_ATTACHED_STATE_DFP);
-+	extcon_set_state(priv->edev, EXTCON_CHG_USB_SLOW,
-+			 current_mode == TUSB320_CURRENT_MODE_DETECT_ACCESSORY);
-+	extcon_set_state(priv->edev, EXTCON_CHG_USB_FAST,
-+			 current_mode == TUSB320_CURRENT_MODE_DETECT_MEDIUM);
-+	extcon_set_state(priv->edev, EXTCON_CHG_USB_PD,
-+			 current_mode == TUSB320_CURRENT_MODE_DETECT_HIGH);
- 	extcon_set_property(priv->edev, EXTCON_USB,
- 			    EXTCON_PROP_USB_TYPEC_POLARITY,
- 			    (union extcon_property_value)polarity);
-@@ -217,6 +247,9 @@ static irqreturn_t tusb320_irq_handler(int irq, void *dev_id)
- 			    (union extcon_property_value)polarity);
- 	extcon_sync(priv->edev, EXTCON_USB);
- 	extcon_sync(priv->edev, EXTCON_USB_HOST);
-+	extcon_sync(priv->edev, EXTCON_CHG_USB_PD);
-+	extcon_sync(priv->edev, EXTCON_CHG_USB_FAST);
-+	extcon_sync(priv->edev, EXTCON_CHG_USB_SLOW);
- 
- 	priv->state = state;
- 
--- 
-2.20.1
+I'd just suggest a comment that'd explicitly document also the lock
+order that we stick to, IIUC, it should be:
 
+	cpu_hotplug_lock // cpus_read_lock
+	cgroup_threadgroup_rwsem
+	cpuset_rwsem
+
+Michal
+
+> 
+> [3] https://lore.kernel.org/lkml/CAB8ipk-72V-bYRfL-VcSRSyXTeQqkBVj+1d5MHSVV5CTar9a0Q@mail.gmail.com/
+> 
+> -Mukesh
