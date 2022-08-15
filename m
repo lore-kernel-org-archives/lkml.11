@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DD6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF65CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348014AbiHOVyJ (ORCPT
+        id S1347007AbiHOVyN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        Mon, 15 Aug 2022 17:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350478AbiHOVvZ (ORCPT
+        with ESMTP id S1350488AbiHOVv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:25 -0400
+        Mon, 15 Aug 2022 17:51:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4A710523B;
-        Mon, 15 Aug 2022 12:32:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD4B106521;
+        Mon, 15 Aug 2022 12:32:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 646306101B;
-        Mon, 15 Aug 2022 19:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EDA8C433D7;
-        Mon, 15 Aug 2022 19:32:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D33561133;
+        Mon, 15 Aug 2022 19:32:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FDCC433D6;
+        Mon, 15 Aug 2022 19:32:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591963;
-        bh=97zjYBB23BfRBu0CCZkuOZde815VbzM7pC1v+wXwUcQ=;
+        s=korg; t=1660591966;
+        bh=Ykk3jmbFM3PJt62sxcizrmy6rHAzlSYX/3dokANt3sM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oGy5s/8ME2DVubM0GIa6w+5iCElYCgRMOBTN+T+ICQKpr37b/6x4A7Aw17RKf3Fyh
-         WSBh2QtPUwdWjt0JlQ3H/bFe9QGMw5zHSvj+vQte2wR3Dgd3d4mNKjyBvC01QS1YcL
-         AzRRGlPuwgQgLSfYmcxXkhK4SVWJmyvxQ/D+Lt6c=
+        b=stNHOsDJg54+RMlQ7xCbEwTp8z5Et5PId+itoTat9KQhxshuskEIcpLxG6FJT7Meu
+         NyUZV2/0kIHJZViz4rtuQ+qfX3vPAkq9HeNYEkewLdcEuPqnDWObYLlPgRVPm5nDVS
+         11kiMrpIaLQ7I5PHGGruyMQCH3B+OjoTBcHf1DBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 5.19 0037/1157] KVM: x86: Set error code to segment selector on LLDT/LTR non-canonical #GP
-Date:   Mon, 15 Aug 2022 19:49:53 +0200
-Message-Id: <20220815180440.918041548@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0711/1095] clk: qcom: camcc-sm8250: Fix topology around titan_top power domain
+Date:   Mon, 15 Aug 2022 20:01:50 +0200
+Message-Id: <20220815180458.813027052@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-commit 2626206963ace9e8bf92b6eea5ff78dd674c555c upstream.
+[ Upstream commit f8acf01a6a4f84baf05181e24bd48def4ba23f5b ]
 
-When injecting a #GP on LLDT/LTR due to a non-canonical LDT/TSS base, set
-the error code to the selector.  Intel SDM's says nothing about the #GP,
-but AMD's APM explicitly states that both LLDT and LTR set the error code
-to the selector, not zero.
+On SM8250 two found VFE GDSC power domains shall not be operated, if
+titan top is turned off, thus the former power domains will be set as
+subdomains by a GDSC registration routine.
 
-Note, a non-canonical memory operand on LLDT/LTR does generate a #GP(0),
-but the KVM code in question is specific to the base from the descriptor.
-
-Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Link: https://lore.kernel.org/r/20220711232750.1092012-3-seanjc@google.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5d66ca79b58c ("clk: qcom: Add camera clock controller driver for SM8250")
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220519214133.1728979-3-vladimir.zapolskiy@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/qcom/camcc-sm8250.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1724,8 +1724,8 @@ static int __load_segment_descriptor(str
- 		if (ret != X86EMUL_CONTINUE)
- 			return ret;
- 		if (emul_is_noncanonical_address(get_desc_base(&seg_desc) |
--				((u64)base3 << 32), ctxt))
--			return emulate_gp(ctxt, 0);
-+						 ((u64)base3 << 32), ctxt))
-+			return emulate_gp(ctxt, err_code);
- 	}
+diff --git a/drivers/clk/qcom/camcc-sm8250.c b/drivers/clk/qcom/camcc-sm8250.c
+index ae4e9774f36e..9b32c56a5bc5 100644
+--- a/drivers/clk/qcom/camcc-sm8250.c
++++ b/drivers/clk/qcom/camcc-sm8250.c
+@@ -2205,6 +2205,8 @@ static struct clk_branch cam_cc_sleep_clk = {
+ 	},
+ };
  
- 	if (seg == VCPU_SREG_TR) {
++static struct gdsc titan_top_gdsc;
++
+ static struct gdsc bps_gdsc = {
+ 	.gdscr = 0x7004,
+ 	.pd = {
+@@ -2238,6 +2240,7 @@ static struct gdsc ife_0_gdsc = {
+ 		.name = "ife_0_gdsc",
+ 	},
+ 	.flags = POLL_CFG_GDSCR,
++	.parent = &titan_top_gdsc.pd,
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
+ 
+@@ -2247,6 +2250,7 @@ static struct gdsc ife_1_gdsc = {
+ 		.name = "ife_1_gdsc",
+ 	},
+ 	.flags = POLL_CFG_GDSCR,
++	.parent = &titan_top_gdsc.pd,
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
+ 
+-- 
+2.35.1
+
 
 
