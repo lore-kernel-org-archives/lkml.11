@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFC3C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C417C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiHPErJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        id S232418AbiHPEpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiHPEoB (ORCPT
+        with ESMTP id S232936AbiHPElx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:44:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018DD191378;
-        Mon, 15 Aug 2022 13:40:09 -0700 (PDT)
+        Tue, 16 Aug 2022 00:41:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85967183E01;
+        Mon, 15 Aug 2022 13:35:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD0FC6123A;
-        Mon, 15 Aug 2022 20:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D67BEC433C1;
-        Mon, 15 Aug 2022 20:40:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70DEFB811A1;
+        Mon, 15 Aug 2022 20:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD2A0C433C1;
+        Mon, 15 Aug 2022 20:35:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596008;
-        bh=BwivCXdpVUnrCIEe7lBbklIGrOowao4E3xi5XGbnH7c=;
+        s=korg; t=1660595701;
+        bh=GGl2XcemejMsdDYcS3TU1Sv+xt5V3QzJefCXjm/Nfrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZsYEmHMGp2QwyIlGCocKBcsEjUdPxOwQPtmyx7pzc3Q/U7B3PHig0bit5vhtfDZb
-         6x4MbhWnNp6E1aNeXEa1lisDt6EubSJnHnsxtBfnSBxwJ0L7nNVpQSSZV8xE2ehECo
-         2ujlK38ikbyhqoPRC0oPs52podz3ficEaK3mezNo=
+        b=KakT7qJK/+AFAvloo/Ov2kVGEQUBcEAr44BC7EXtMhlWn3MK9Ljxu5gagE3ShjoeQ
+         +/QddLEatjdUbOaDa0DGJQD63NxolgukQUJo0EeXNv3+nvY+xOeu3UBPqlNV7bHgDp
+         7hOlmZOn+PUJuA03cJZjAgLDblqZhkY9fxpnKfjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0945/1157] tty: n_gsm: fix flow control handling in tx path
-Date:   Mon, 15 Aug 2022 20:05:01 +0200
-Message-Id: <20220815180517.348862851@linuxfoundation.org>
+Subject: [PATCH 5.19 0847/1157] PCI: tegra194: Fix Root Port interrupt handling
+Date:   Mon, 15 Aug 2022 20:03:23 +0200
+Message-Id: <20220815180513.380177764@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,39 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Vidya Sagar <vidyas@nvidia.com>
 
-[ Upstream commit 59ff0680ecbfec742b1e0381e7cc46b41eb06647 ]
+[ Upstream commit 6646e99bcec627e866bc84365af37942c72b4b76 ]
 
-The current implementation constipates all transmission paths during flow
-control except for flow control frames. However, these may not be located
-at the beginning of the transmission queue of the control channel.
-Ensure that flow control frames in the transmission queue for the control
-channel are always handled even if constipated by skipping through other
-messages.
+As part of Root Port interrupt handling, level-0 register is read first and
+based on the bits set in that, corresponding level-1 registers are read for
+further interrupt processing. Since both these values are currently read
+into the same 'val' variable, checking level-0 bits the second time around
+is happening on the 'val' variable value of level-1 register contents
+instead of freshly reading the level-0 value again.
 
-Fixes: 0af021678d5d ("tty: n_gsm: fix deadlock and link starvation in outgoing data path")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-3-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix by using different variables to store level-0 and level-1 registers
+contents.
+
+Link: https://lore.kernel.org/r/20220721142052.25971-11-vidyas@nvidia.com
+Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 46 +++++++++++-----------
+ 1 file changed, 22 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 90060018928f..51447ccccbab 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -891,7 +891,7 @@ static int gsm_data_kick(struct gsm_mux *gsm)
- 	/* Serialize control messages and control channel messages first */
- 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_ctrl_list, list) {
- 		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
--			return -EAGAIN;
-+			continue;
- 		ret = gsm_send_packet(gsm, msg);
- 		switch (ret) {
- 		case -ENOSPC:
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index d992371a36e6..0bab700086f9 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -350,15 +350,14 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
+ 	struct tegra194_pcie *pcie = arg;
+ 	struct dw_pcie *pci = &pcie->pci;
+ 	struct pcie_port *pp = &pci->pp;
+-	u32 val, tmp;
++	u32 val, status_l0, status_l1;
+ 	u16 val_w;
+ 
+-	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
+-	if (val & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
+-		if (val & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
+-			appl_writel(pcie, val, APPL_INTR_STATUS_L1_0_0);
+-
++	status_l0 = appl_readl(pcie, APPL_INTR_STATUS_L0);
++	if (status_l0 & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
++		appl_writel(pcie, status_l1, APPL_INTR_STATUS_L1_0_0);
++		if (status_l1 & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
+ 			/* SBR & Surprise Link Down WAR */
+ 			val = appl_readl(pcie, APPL_CAR_RESET_OVRD);
+ 			val &= ~APPL_CAR_RESET_OVRD_CYA_OVERRIDE_CORE_RST_N;
+@@ -374,15 +373,15 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
+ 		}
+ 	}
+ 
+-	if (val & APPL_INTR_STATUS_L0_INT_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
+-		if (val & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
++	if (status_l0 & APPL_INTR_STATUS_L0_INT_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
++		if (status_l1 & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
+ 			appl_writel(pcie,
+ 				    APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS,
+ 				    APPL_INTR_STATUS_L1_8_0);
+ 			apply_bad_link_workaround(pp);
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
++		if (status_l1 & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
+ 			appl_writel(pcie,
+ 				    APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS,
+ 				    APPL_INTR_STATUS_L1_8_0);
+@@ -394,25 +393,24 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
+ 		}
+ 	}
+ 
+-	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
+-	if (val & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
+-		val = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
+-		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
++	if (status_l0 & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
++		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
+ 			dev_info(pci->dev, "CDM check complete\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
++			val |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
+ 			dev_err(pci->dev, "CDM comparison mismatch\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
++			val |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
+ 		}
+-		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
++		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
+ 			dev_err(pci->dev, "CDM Logic error\n");
+-			tmp |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
++			val |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
+ 		}
+-		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, tmp);
+-		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
+-		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", tmp);
++		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
++		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", val);
+ 	}
+ 
+ 	return IRQ_HANDLED;
 -- 
 2.35.1
 
