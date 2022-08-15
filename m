@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C094AC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A918C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353077AbiHPAUY (ORCPT
+        id S1348321AbiHPAU3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37740 "EHLO
+        Mon, 15 Aug 2022 20:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357445AbiHPANg (ORCPT
+        with ESMTP id S1357565AbiHPANv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:13:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF4515D888;
-        Mon, 15 Aug 2022 13:30:07 -0700 (PDT)
+        Mon, 15 Aug 2022 20:13:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7F117828B;
+        Mon, 15 Aug 2022 13:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2194B61057;
-        Mon, 15 Aug 2022 20:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 289F8C433D6;
-        Mon, 15 Aug 2022 20:30:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A401FCE1344;
+        Mon, 15 Aug 2022 20:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE62DC433C1;
+        Mon, 15 Aug 2022 20:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595406;
-        bh=FsTM63fKqrQhD58pgBUPeFDJ8S+3PWu0hrxKXaYf4pk=;
+        s=korg; t=1660595417;
+        bh=Sl8pAt6Q0dhidSZAmwSvNFkkV5IgZon/SaDP+uWCIr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IY36NvoyrjGi8I3f6MXgxflsgU48QpmsYKpl4gBL6eK6lh5py23MqYLpBPnSQKqox
-         EuYRQHFEPbJB1BupevJ27loCGVsdAvBhhGLoHY0iJD3vl+xWI32/c7BrWmWX7ziPqy
-         QAa228nrH+07nu2WVtd2r1C+PjBJAhABzdxMLen8=
+        b=QU2sdD8g9GFHGCuVMj88jkCcYIk8L8u2E8QCrE2EEYHMq08C8pxeKnuTPiHwjP4pJ
+         jFWSCTukjpegCCUtNfy56XMY98+itawithALKoeTp5M+ySvcfNVK+dcER/8YBOjK+e
+         JopOtPqplSygkRRvZ5nxbfTxQBogo4dD34Ov/sik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0753/1157] RDMA/rxe: Add a responder state for atomic reply
-Date:   Mon, 15 Aug 2022 20:01:49 +0200
-Message-Id: <20220815180509.629844107@linuxfoundation.org>
+Subject: [PATCH 5.19 0756/1157] clk: qcom: ipq8074: SW workaround for UBI32 PLL lock
+Date:   Mon, 15 Aug 2022 20:01:52 +0200
+Message-Id: <20220815180509.746385658@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,92 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 0ed5493e430a1d887eb62b45c75dd5d6bb2dcf48 ]
+[ Upstream commit 3401ea2856ef84f39b75f0dc5ebcaeda81cb90ec ]
 
-Add a responder state for atomic reply similar to read reply and rename
-process_atomic() rxe_atomic_reply(). In preparation for merging the normal
-and retry atomic responder flows.
+UBI32 Huayra PLL fails to lock in 5 us in some SoC silicon and thus it
+will cause the wait_for_pll() to timeout and thus return the error
+indicating that the PLL failed to lock.
 
-Link: https://lore.kernel.org/r/20220606143836.3323-3-rpearsonhpe@gmail.com
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+This is bug in Huayra PLL HW for which SW workaround
+is to set bit 26 of TEST_CTL register.
+
+This is ported from the QCA 5.4 based downstream kernel.
+
+Fixes: b8e7e519625f ("clk: qcom: ipq8074: add remaining PLL’s")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-2-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_resp.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_resp.c b/drivers/infiniband/sw/rxe/rxe_resp.c
-index f4f6ee5d81fe..e38bf958ab48 100644
---- a/drivers/infiniband/sw/rxe/rxe_resp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_resp.c
-@@ -21,6 +21,7 @@ enum resp_states {
- 	RESPST_CHK_RKEY,
- 	RESPST_EXECUTE,
- 	RESPST_READ_REPLY,
-+	RESPST_ATOMIC_REPLY,
- 	RESPST_COMPLETE,
- 	RESPST_ACKNOWLEDGE,
- 	RESPST_CLEANUP,
-@@ -55,6 +56,7 @@ static char *resp_state_name[] = {
- 	[RESPST_CHK_RKEY]			= "CHK_RKEY",
- 	[RESPST_EXECUTE]			= "EXECUTE",
- 	[RESPST_READ_REPLY]			= "READ_REPLY",
-+	[RESPST_ATOMIC_REPLY]			= "ATOMIC_REPLY",
- 	[RESPST_COMPLETE]			= "COMPLETE",
- 	[RESPST_ACKNOWLEDGE]			= "ACKNOWLEDGE",
- 	[RESPST_CLEANUP]			= "CLEANUP",
-@@ -552,8 +554,8 @@ static enum resp_states write_data_in(struct rxe_qp *qp,
- /* Guarantee atomicity of atomic operations at the machine level. */
- static DEFINE_SPINLOCK(atomic_ops_lock);
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 1a5141da7e23..b4291ba53c78 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -4805,6 +4805,9 @@ static int gcc_ipq8074_probe(struct platform_device *pdev)
+ 	if (IS_ERR(regmap))
+ 		return PTR_ERR(regmap);
  
--static enum resp_states process_atomic(struct rxe_qp *qp,
--				       struct rxe_pkt_info *pkt)
-+static enum resp_states rxe_atomic_reply(struct rxe_qp *qp,
-+					 struct rxe_pkt_info *pkt)
- {
- 	u64 *vaddr;
- 	enum resp_states ret;
-@@ -585,7 +587,16 @@ static enum resp_states process_atomic(struct rxe_qp *qp,
- 
- 	spin_unlock_bh(&atomic_ops_lock);
- 
--	ret = RESPST_NONE;
-+	qp->resp.msn++;
++	/* SW Workaround for UBI32 Huayra PLL */
++	regmap_update_bits(regmap, 0x2501c, BIT(26), BIT(26));
 +
-+	/* next expected psn, read handles this separately */
-+	qp->resp.psn = (pkt->psn + 1) & BTH_PSN_MASK;
-+	qp->resp.ack_psn = qp->resp.psn;
-+
-+	qp->resp.opcode = pkt->opcode;
-+	qp->resp.status = IB_WC_SUCCESS;
-+
-+	ret = RESPST_ACKNOWLEDGE;
- out:
- 	return ret;
- }
-@@ -858,9 +869,7 @@ static enum resp_states execute(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
- 		qp->resp.msn++;
- 		return RESPST_READ_REPLY;
- 	} else if (pkt->mask & RXE_ATOMIC_MASK) {
--		err = process_atomic(qp, pkt);
--		if (err)
--			return err;
-+		return RESPST_ATOMIC_REPLY;
- 	} else {
- 		/* Unreachable */
- 		WARN_ON_ONCE(1);
-@@ -1316,6 +1325,9 @@ int rxe_responder(void *arg)
- 		case RESPST_READ_REPLY:
- 			state = read_reply(qp, pkt);
- 			break;
-+		case RESPST_ATOMIC_REPLY:
-+			state = rxe_atomic_reply(qp, pkt);
-+			break;
- 		case RESPST_ACKNOWLEDGE:
- 			state = acknowledge(qp, pkt);
- 			break;
+ 	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
+ 	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
+ 				&nss_crypto_pll_config);
 -- 
 2.35.1
 
