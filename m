@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037F8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C797DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348786AbiHOWcm (ORCPT
+        id S1349241AbiHOWct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        Mon, 15 Aug 2022 18:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350741AbiHOW1J (ORCPT
+        with ESMTP id S1350959AbiHOW1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:09 -0400
+        Mon, 15 Aug 2022 18:27:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A4A4198F;
-        Mon, 15 Aug 2022 12:45:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321076B161;
+        Mon, 15 Aug 2022 12:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63375B81136;
-        Mon, 15 Aug 2022 19:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB13DC433C1;
-        Mon, 15 Aug 2022 19:45:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3F99B80EB2;
+        Mon, 15 Aug 2022 19:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11350C433C1;
+        Mon, 15 Aug 2022 19:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592733;
-        bh=GQzVVrODmWCT239cap0EveCqiYT9gKfYsgEnP5+XKRs=;
+        s=korg; t=1660592749;
+        bh=jtlJ/aF5jzgzQ3e/YRU9ZDxBgf3Qo3d8ZkJO5zUFZe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VTSNDZEdi/cBywZKYptSxsJ2GiWXT/3yL3v1Go8Qx+4AtjAxJdddOkQfM0F/hEwqE
-         JQlPzWpSxLrHnoN9FM7PbfUOmnW1fsYCDSZ42MlBC20s6qx40zflEPdIYiDHE/iFIz
-         xEXlv97ScDQRJhbdjMMfYbemyb1Vu1D5l78J8axs=
+        b=X1DQIFdWBHIKxOcG4mLPhdWu6eo2CwmRY7g70ahFVlDn+hgkMq+xIaxgrmjLyFYX6
+         hQSYG55bHNrlpl895pTP5noc3Nf5gDoN6VmfFXKf4iMgK1hmJ53LpGULA7CeDn2VtA
+         NksHaqI49YAw3SVadcVvPfUMlpjY9eqj6ykVrblU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0837/1095] ASoC: SOF: make ctx_store and ctx_restore as optional
-Date:   Mon, 15 Aug 2022 20:03:56 +0200
-Message-Id: <20220815180503.967711887@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0159/1157] genirq: GENERIC_IRQ_IPI depends on SMP
+Date:   Mon, 15 Aug 2022 19:51:55 +0200
+Message-Id: <20220815180446.050699655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,40 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 03f69725749f453b9a4d454a92805f8eb5f095c2 ]
+[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
 
-Commit 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
-did not marked ctx_store and ctx_restore as Optional.
+The generic IPI code depends on the IRQ affinity mask being allocated
+and initialized. This will not be the case if SMP is disabled. Fix up
+the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
 
-Fixes: 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220610083549.16773-2-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/sof-priv.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/Kconfig | 2 +-
+ kernel/irq/Kconfig      | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index c856f0d84e49..f369242dd975 100644
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -364,8 +364,8 @@ struct snd_sof_ipc_msg {
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 12664ac6ac2d..6b287dc025a9 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -177,7 +177,7 @@ config MADERA_IRQ
+ config IRQ_MIPS_CPU
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+-	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
++	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+ 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
  
- /**
-  * struct sof_ipc_pm_ops - IPC-specific PM ops
-- * @ctx_save:		Function pointer for context save
-- * @ctx_restore:	Function pointer for context restore
-+ * @ctx_save:		Optional function pointer for context save
-+ * @ctx_restore:	Optional function pointer for context restore
-  */
- struct sof_ipc_pm_ops {
- 	int (*ctx_save)(struct snd_sof_dev *sdev);
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index 10929eda9825..fc760d064a65 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
+ # Generic IRQ IPI support
+ config GENERIC_IRQ_IPI
+ 	bool
++	depends on SMP
+ 	select IRQ_DOMAIN_HIERARCHY
+ 
+ # Generic MSI interrupt support
 -- 
 2.35.1
 
