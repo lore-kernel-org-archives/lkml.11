@@ -2,86 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD239C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596ACC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240393AbiHOMiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
+        id S231219AbiHOMig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiHOMiC (ORCPT
+        with ESMTP id S229623AbiHOMif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:38:02 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3E020F6E;
-        Mon, 15 Aug 2022 05:38:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5Ly2/Q/Gj3PGUvgRwRp1buJOUgaq2gWZGs2NW4e5dCw=; b=j01s9Ia7TTbz0+edCRg71r8pvK
-        OPJ21hUqbOgDyr5Xs0qjReFV+8PmFn8bKn17bK2rIvIu5FF1WJCnsxqCFLlzZ5Uil0OtdU272EMJG
-        5vXELWjfKBx8OOyGHHjmRZQUU14/e3ve+NtHackjQ8hpIxoYaOlNwh9NFshwi02bZ1MvTGBx/Jmee
-        WYtCxOTOZ8usZd6IrqUQA9RV1YOVoqaB95HJQAp4aAA/8t5k9p3wSiNXm8W+dY3R+fdZ8wUdPxGNq
-        T4+ZATJnRe9FZN/Mk7ArdEbj780Kwm0tEJarX9kLfR171evapy3Zl58jpjSmrtnFsPqPMG/npfGGK
-        pKGPvrqQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNZLf-002fiF-9x; Mon, 15 Aug 2022 12:37:39 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4AF07980153; Mon, 15 Aug 2022 14:37:38 +0200 (CEST)
-Date:   Mon, 15 Aug 2022 14:37:38 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-Message-ID: <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
-References: <CAADnVQ+hLnyztCi9aqpptjQk-P+ByAkyj2pjbdD45dsXwpZ0bw@mail.gmail.com>
- <20220722120854.3cc6ec4b@gandalf.local.home>
- <20220722122548.2db543ca@gandalf.local.home>
- <YtsRD1Po3qJy3w3t@krava>
- <20220722174120.688768a3@gandalf.local.home>
- <YtxqjxJVbw3RD4jt@krava>
- <YvbDlwJCTDWQ9uJj@krava>
- <20220813150252.5aa63650@rorschach.local.home>
- <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
- <YvoVgMzMuQbAEayk@krava>
+        Mon, 15 Aug 2022 08:38:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F50B20F6E;
+        Mon, 15 Aug 2022 05:38:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE37C611CB;
+        Mon, 15 Aug 2022 12:38:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EDBCC433C1;
+        Mon, 15 Aug 2022 12:38:27 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        Min Zhou <zhoumin@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V10 2/4] LoongArch: Add sparse memory vmemmap support
+Date:   Mon, 15 Aug 2022 20:36:11 +0800
+Message-Id: <20220815123613.3291770-3-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220815123613.3291770-1-chenhuacai@loongson.cn>
+References: <20220815123613.3291770-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvoVgMzMuQbAEayk@krava>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:44:32AM +0200, Jiri Olsa wrote:
-> On Mon, Aug 15, 2022 at 10:03:17AM +0200, Peter Zijlstra wrote:
-> > On Sat, Aug 13, 2022 at 03:02:52PM -0400, Steven Rostedt wrote:
-> > > On Fri, 12 Aug 2022 23:18:15 +0200
-> > > Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > 
-> > > > the patch below moves the bpf function into sepatate object and switches
-> > > > off the -mrecord-mcount for it.. so the function gets profile call
-> > > > generated but it's not visible to ftrace
-> > 
-> > Why ?!?
-> 
-> there's bpf dispatcher code that updates bpf_dispatcher_xdp_func
-> function with bpf_arch_text_poke and that can race with ftrace update
-> if the function is traced
+From: Feiyang Chen <chenfeiyang@loongson.cn>
 
-I thought bpf_arch_text_poke() wasn't allowed to touch kernel code and
-ftrace is in full control of it ?
+Add sparse memory vmemmap support for LoongArch. SPARSEMEM_VMEMMAP
+uses a virtually mapped memmap to optimise pfn_to_page and page_to_pfn
+operations. This is the most efficient option when sufficient kernel
+resources are available.
+
+Signed-off-by: Min Zhou <zhoumin@loongson.cn>
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/loongarch/Kconfig                 |  1 +
+ arch/loongarch/include/asm/pgtable.h   |  7 ++-
+ arch/loongarch/include/asm/sparsemem.h |  6 +++
+ arch/loongarch/mm/init.c               | 73 +++++++++++++++++++++++++-
+ include/linux/mm.h                     |  2 +
+ mm/sparse-vmemmap.c                    | 10 ++++
+ 6 files changed, 97 insertions(+), 2 deletions(-)
+
+diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+index 4abc9a28aba4..15e6aca2c930 100644
+--- a/arch/loongarch/Kconfig
++++ b/arch/loongarch/Kconfig
+@@ -419,6 +419,7 @@ config ARCH_FLATMEM_ENABLE
+ 
+ config ARCH_SPARSEMEM_ENABLE
+ 	def_bool y
++	select SPARSEMEM_VMEMMAP_ENABLE
+ 	help
+ 	  Say Y to support efficient handling of sparse physical memory,
+ 	  for architectures which are either NUMA (Non-Uniform Memory Access)
+diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
+index 700ce735c101..fcab8c89b56b 100644
+--- a/arch/loongarch/include/asm/pgtable.h
++++ b/arch/loongarch/include/asm/pgtable.h
+@@ -11,6 +11,7 @@
+ 
+ #include <linux/compiler.h>
+ #include <asm/addrspace.h>
++#include <asm/page.h>
+ #include <asm/pgtable-bits.h>
+ 
+ #if CONFIG_PGTABLE_LEVELS == 2
+@@ -60,6 +61,7 @@
+ #include <linux/mmzone.h>
+ #include <asm/fixmap.h>
+ #include <asm/io.h>
++#include <asm/sparsemem.h>
+ 
+ struct mm_struct;
+ struct vm_area_struct;
+@@ -87,7 +89,10 @@ extern unsigned long zero_page_mask;
+ #define VMALLOC_START	MODULES_END
+ #define VMALLOC_END	\
+ 	(vm_map_base +	\
+-	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE)
++	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE - VMEMMAP_SIZE)
++
++#define vmemmap		((struct page *)((VMALLOC_END + PMD_SIZE) & PMD_MASK))
++#define VMEMMAP_END	((unsigned long)vmemmap + VMEMMAP_SIZE - 1)
+ 
+ #define pte_ERROR(e) \
+ 	pr_err("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
+diff --git a/arch/loongarch/include/asm/sparsemem.h b/arch/loongarch/include/asm/sparsemem.h
+index 3d18cdf1b069..ee55cdf933c6 100644
+--- a/arch/loongarch/include/asm/sparsemem.h
++++ b/arch/loongarch/include/asm/sparsemem.h
+@@ -11,6 +11,12 @@
+ #define SECTION_SIZE_BITS	29 /* 2^29 = Largest Huge Page Size */
+ #define MAX_PHYSMEM_BITS	48
+ 
++#ifndef CONFIG_SPARSEMEM_VMEMMAP
++#define VMEMMAP_SIZE	0
++#else
++#define VMEMMAP_SIZE	(sizeof(struct page) * (1UL << (cpu_pabits + 1 - PAGE_SHIFT)))
++#endif
++
+ #endif /* CONFIG_SPARSEMEM */
+ 
+ #ifdef CONFIG_MEMORY_HOTPLUG
+diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+index 7094a68c9b83..78f71f9bf295 100644
+--- a/arch/loongarch/mm/init.c
++++ b/arch/loongarch/mm/init.c
+@@ -22,7 +22,7 @@
+ #include <linux/pfn.h>
+ #include <linux/hardirq.h>
+ #include <linux/gfp.h>
+-#include <linux/initrd.h>
++#include <linux/hugetlb.h>
+ #include <linux/mmzone.h>
+ 
+ #include <asm/asm-offsets.h>
+@@ -157,6 +157,77 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+ #endif
+ #endif
+ 
++#ifdef CONFIG_SPARSEMEM_VMEMMAP
++static int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++						int node, struct vmem_altmap *altmap)
++{
++	unsigned long addr = start;
++	unsigned long next;
++	pgd_t *pgd;
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++
++	for (addr = start; addr < end; addr = next) {
++		next = pmd_addr_end(addr, end);
++
++		pgd = vmemmap_pgd_populate(addr, node);
++		if (!pgd)
++			return -ENOMEM;
++		p4d = vmemmap_p4d_populate(pgd, addr, node);
++		if (!p4d)
++			return -ENOMEM;
++		pud = vmemmap_pud_populate(p4d, addr, node);
++		if (!pud)
++			return -ENOMEM;
++
++		pmd = pmd_offset(pud, addr);
++		if (pmd_none(*pmd)) {
++			void *p = NULL;
++
++			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
++			if (p) {
++				pmd_t entry;
++
++				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
++				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
++				set_pmd_at(&init_mm, addr, pmd, entry);
++
++				continue;
++			}
++		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
++			vmemmap_verify((pte_t *)pmd, node, addr, next);
++			continue;
++		}
++		if (vmemmap_populate_basepages(addr, next, node, NULL))
++			return -ENOMEM;
++	}
++
++	return 0;
++}
++
++#if CONFIG_PGTABLE_LEVELS == 2
++int __meminit vmemmap_populate(unsigned long start, unsigned long end,
++			int node, struct vmem_altmap *altmap)
++{
++	return vmemmap_populate_basepages(start, end, node, NULL);
++}
++#else
++int __meminit vmemmap_populate(unsigned long start, unsigned long end,
++			int node, struct vmem_altmap *altmap)
++{
++	return vmemmap_populate_hugepages(start, end, node, NULL);
++}
++#endif
++
++#ifdef CONFIG_MEMORY_HOTPLUG
++void vmemmap_free(unsigned long start, unsigned long end,
++			struct vmem_altmap *altmap)
++{
++}
++#endif
++#endif
++
+ /*
+  * Align swapper_pg_dir in to 64K, allows its address to be loaded
+  * with a single LUI instruction in the TLB handlers.  If we used
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 3bedc449c14d..4b05c1d007b5 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3146,6 +3146,8 @@ void *sparse_buffer_alloc(unsigned long size);
+ struct page * __populate_section_memmap(unsigned long pfn,
+ 		unsigned long nr_pages, int nid, struct vmem_altmap *altmap,
+ 		struct dev_pagemap *pgmap);
++void pmd_init(void *addr);
++void pud_init(void *addr);
+ pgd_t *vmemmap_pgd_populate(unsigned long addr, int node);
+ p4d_t *vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node);
+ pud_t *vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node);
+diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+index 46ae542118c0..797b30e9050c 100644
+--- a/mm/sparse-vmemmap.c
++++ b/mm/sparse-vmemmap.c
+@@ -196,6 +196,10 @@ pmd_t * __meminit vmemmap_pmd_populate(pud_t *pud, unsigned long addr, int node)
+ 	return pmd;
+ }
+ 
++void __weak __meminit pmd_init(void *addr)
++{
++}
++
+ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
+ {
+ 	pud_t *pud = pud_offset(p4d, addr);
+@@ -203,11 +207,16 @@ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
+ 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
+ 		if (!p)
+ 			return NULL;
++		pmd_init(p);
+ 		pud_populate(&init_mm, pud, p);
+ 	}
+ 	return pud;
+ }
+ 
++void __weak __meminit pud_init(void *addr)
++{
++}
++
+ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
+ {
+ 	p4d_t *p4d = p4d_offset(pgd, addr);
+@@ -215,6 +224,7 @@ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
+ 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
+ 		if (!p)
+ 			return NULL;
++		pud_init(p);
+ 		p4d_populate(&init_mm, p4d, p);
+ 	}
+ 	return p4d;
+-- 
+2.31.1
+
