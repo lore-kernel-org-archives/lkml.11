@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F7EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB91C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239875AbiHOVDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
+        id S240429AbiHOVDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346807AbiHOVBI (ORCPT
+        with ESMTP id S1346905AbiHOVBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:01:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D92C6EA1;
-        Mon, 15 Aug 2022 12:13:12 -0700 (PDT)
+        Mon, 15 Aug 2022 17:01:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFD1C7BAE;
+        Mon, 15 Aug 2022 12:13:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B52FB81106;
-        Mon, 15 Aug 2022 19:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80CD7C433C1;
-        Mon, 15 Aug 2022 19:13:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 218E4CE12C8;
+        Mon, 15 Aug 2022 19:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C27C433C1;
+        Mon, 15 Aug 2022 19:13:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590790;
-        bh=SYmROEW95gLMnhGnaxwDmkZqi0WBlA/SO1b/5eSAcH0=;
+        s=korg; t=1660590799;
+        bh=a31WYOj3u0YxhhWWPGE8uaQmFHl6yu7OQLekdTH58ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rT6rUikw2OkqkI4pznK0k7Fb10KpQ23Ns1OBDFgX2/vuSSZj/f9VrEjFtwZaWpruN
-         +bje2/DhEdXNvGcTgj0cHp/xXxgl9xv6lm6PAcW9kR6IYqWDb6HLUFhI/fMHtn7PqM
-         YL4qWEo39Rt2+VzpXKbMb7byPhz0BaHW7IL7t2eo=
+        b=ECOBIbqYy0GGof4UTsr4Kx2++7qIXuoVJqDKXtxzg8OFHh9wLVFE6jkF1RbQCJVPW
+         GV1kUEue5u073QxfVOVwd7OYVR/SJO2Mc2JSxz2QHgXDMSTIXDSJQRo27hJLQpDvVH
+         hn4FScFLU0l1fw0d2gUaCpnUsJT3McU2u38g2r5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0372/1095] media: imx-jpeg: Disable slot interrupt when frame done
-Date:   Mon, 15 Aug 2022 19:56:11 +0200
-Message-Id: <20220815180445.106739773@linuxfoundation.org>
+Subject: [PATCH 5.18 0375/1095] media: hdpvr: fix error value returns in hdpvr_read
+Date:   Mon, 15 Aug 2022 19:56:14 +0200
+Message-Id: <20220815180445.221584739@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,86 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 22a2bc88c139dc9757bdb1d0a3665ac27edc79a5 ]
+[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
 
-The interrupt STMBUF_HALF may be triggered after frame done.
-It may led to system hang if driver try to access the register after
-power off.
+Error return values are supposed to be negative in hdpvr_read. Most
+error returns are currently handled via an unsigned integer "ret". When
+setting a negative error value to "ret", the value actually becomes a
+large positive value, because "ret" is unsigned. Later on, the "ret"
+value is returned. But as ssize_t is a 64-bit signed number, the error
+return value stays a large positive integer instead of a negative
+integer. This can cause an error value to be interpreted as the read
+size, which can cause a buffer overread for applications relying on the
+returned size.
 
-Disable the slot interrupt when frame done.
-
-Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Tested-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c |  5 +++++
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h |  1 +
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 10 ++--------
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-index 29c604b1b179..718b7b08f93e 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
-@@ -79,6 +79,11 @@ void mxc_jpeg_enable_irq(void __iomem *reg, int slot)
- 	writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
- }
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 60e57e0f1927..fd7d2a9d0449 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -409,7 +409,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
+ 	struct hdpvr_device *dev = video_drvdata(file);
+ 	struct hdpvr_buffer *buf = NULL;
+ 	struct urb *urb;
+-	unsigned int ret = 0;
++	int ret = 0;
+ 	int rem, cnt;
  
-+void mxc_jpeg_disable_irq(void __iomem *reg, int slot)
-+{
-+	writel(0x0, reg + MXC_SLOT_OFFSET(slot, SLOT_IRQ_EN));
-+}
-+
- void mxc_jpeg_sw_reset(void __iomem *reg)
- {
- 	/*
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-index 12f132a83a23..bf4e1973a066 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-@@ -125,6 +125,7 @@ u32 mxc_jpeg_get_offset(void __iomem *reg, int slot);
- void mxc_jpeg_enable_slot(void __iomem *reg, int slot);
- void mxc_jpeg_set_l_endian(void __iomem *reg, int le);
- void mxc_jpeg_enable_irq(void __iomem *reg, int slot);
-+void mxc_jpeg_disable_irq(void __iomem *reg, int slot);
- int mxc_jpeg_set_input(void __iomem *reg, u32 in_buf, u32 bufsize);
- int mxc_jpeg_set_output(void __iomem *reg, u16 out_pitch, u32 out_buf,
- 			u16 w, u16 h);
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-index 8c0bd8b75b00..c287eb789fe6 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-@@ -593,15 +593,8 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 	dev_dbg(dev, "Irq %d on slot %d.\n", irq, slot);
- 
- 	ctx = v4l2_m2m_get_curr_priv(jpeg->m2m_dev);
--	if (!ctx) {
--		dev_err(dev,
--			"Instance released before the end of transaction.\n");
--		/* soft reset only resets internal state, not registers */
--		mxc_jpeg_sw_reset(reg);
--		/* clear all interrupts */
--		writel(0xFFFFFFFF, reg + MXC_SLOT_OFFSET(slot, SLOT_STATUS));
-+	if (WARN_ON(!ctx))
- 		goto job_unlock;
--	}
- 
- 	if (slot != ctx->slot) {
- 		/* TODO investigate when adding multi-instance support */
-@@ -673,6 +666,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 	buf_state = VB2_BUF_STATE_DONE;
- 
- buffers_done:
-+	mxc_jpeg_disable_irq(reg, ctx->slot);
- 	jpeg->slot_data[slot].used = false; /* unused, but don't free */
- 	mxc_jpeg_check_and_set_last_buffer(ctx, src_buf, dst_buf);
- 	v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+ 	if (*pos)
 -- 
 2.35.1
 
