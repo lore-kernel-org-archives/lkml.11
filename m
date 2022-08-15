@@ -2,156 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 844FCC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D71C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232880AbiHPFDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S233190AbiHPFEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233305AbiHPFDJ (ORCPT
+        with ESMTP id S232992AbiHPFDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:03:09 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED171B9DC3;
-        Mon, 15 Aug 2022 14:04:41 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id DB9963200495;
-        Mon, 15 Aug 2022 17:04:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 17:04:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660597479; x=1660683879; bh=/DXZeTr6nc
-        QrsVrzKQetD1MJlZAdV7mdoExoKtlNx08=; b=vaek1/hY6jpMZLhoeTR3/5UZGn
-        zzeKgLdOTEUFTA2ZKYJm0CXjiH0C35BCGPXaa0M5T0htHV3tfujr6O4OAO3H8LIs
-        WJnb/ZCfJzdxDwUPR0wY9PXRTdrfV+IYDknLKdXlRSKfIG7/wZxl9gkOB/EgSFTw
-        CmI5V7TdaIwknwIZ7v3nokqWaFzs0tGu/VaGYF4+VXITKCQtOrc20Ur6yHhdv/ZY
-        R/9yqTwhWKll8LS+bg7HR3VP9sdTUSqdV89AoDx1min8ZYwqhGMeAqI3Sb/X0eYR
-        62CzpMExjDWxY9skYjC28GdkR5WACbCjkrDbNbNd9FxN2mYD4duriuE7mtYQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660597479; x=1660683879; bh=/DXZeTr6ncQrsVrzKQetD1MJlZAd
-        V7mdoExoKtlNx08=; b=Bp6uuZFQrhSxxp2kYUkxaPwvE1Wxr5YX4K/JLV68NDXQ
-        y96rQ30LHsxprGpTyEvcEP7rdCspX2pteIlROU8AOwy0tnjKQn0IHDmHWvJJizSk
-        tL0ccd22ipDSGJDNmwHdw98cr+sqzil8cYSWVtt78NHZLl/WPSCK1fLYULx+Fi4y
-        1HpFvcbnoUpgNWQIomq7KLm7waSmpEnOFeKSynIgus8TiUkGnA6HCZZt82y8zLqb
-        kKm6XwVBDSBi08XaBntHgWtRCKsn+Wy/GxYkKu9e64nA5WPncuD0xlPjksSH5Lvg
-        MKPalEY2I5JNMMqqflw6hDEZFTCPw/MMR1dBaV8o3w==
-X-ME-Sender: <xms:5rT6YuCj6Ap-BrzZKaz7yljDDykoyKKfO6IFFYqmem14XBBK5trBkQ>
-    <xme:5rT6Yogiv0LW8EXzojDRowWeSxJpDtW5J1CXmmg_Fwyi9ai0DBHr1vw6ULf0EvNP4
-    AW6V7kfy3ZENiJwdw>
-X-ME-Received: <xmr:5rT6Yhk8KOEu8nlXi0-t3wzecwrGNm2Vnjagmxo8OMGubVH3IspxtmUxOqCOaxM1wL3DyW0L6A76VTxiKfczok4YBBw0WrKT1j9YXvBXsCcOJtjvdaVhqesf5X11>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudehkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:5rT6Ysx4D16efdLye-L_68Q379-Hxdqbl84wWtYmRmovQ3DNph3hxQ>
-    <xmx:5rT6YjR7cXMdgIuEhUw9p0fZ743IvHNO738KJGfL1bW7SWbkRqtBOA>
-    <xmx:5rT6YnbJ2EiLxrzs3QHfNcYdoMEzppM8qb7ISQZuuVimW-Za18fF_g>
-    <xmx:57T6Ykj_r77gCL1HrNQKD70JFChemj-1IpjT7KG9TaKEHSjrJCXicQ>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 17:04:37 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 14:04:37 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815210437.saptyw6clr7datun@awork3.anarazel.de>
-References: <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
- <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
- <20220815161423-mutt-send-email-mst@kernel.org>
- <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
+        Tue, 16 Aug 2022 01:03:41 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24EAC6E94
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:01:33 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-328303afa6eso103160407b3.10
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:01:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=elGV48BlDszZRuy8S9+m13PY1kqIqtWfREXP+EXFmrg=;
+        b=r8NjbapBTS67+vpVF7+sCFfdYsvuzVpSbreXNSPasBnVSUXsEkW2Tdiy0vBzbOigcM
+         qkHezPAEwRYmAfuMzU7q6qw4S5wZy3KRTtCpEP69ti5057pFT/Te3P5tEFe+xNHwZC+m
+         Tf3GeanOn8C43ORFxDvYPY4oID2CctIoeScmjdwsfdlI5xtnUMR9bJ2JRxwTzOdhN6B/
+         Q2jJ//9GPDv5iPdQrFBgt1hXlMV7dlgnVz+CxBkfIXZqtN0HMa5iF1fqfIMMDJHs3IbN
+         gHVjl6QzTSIciKflXKOAYtOtwqyjwYxUfM2HGX2gXXOcMk2jxDLBXTVALHOUX/KDTSv6
+         vfmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=elGV48BlDszZRuy8S9+m13PY1kqIqtWfREXP+EXFmrg=;
+        b=er0MNSwHxh146w7ofhi63PZ7AckI5qyNucqSmj2fpjSHAS20GLSt7FNqw5jp52p0U3
+         cgoLr2+iZ9VhQNnynAHQVcrf5FaGecpVAVXx2MVqYT0hYfg0jkqxmsXM7VEGCwTauJYd
+         KKeLAkUl0rZ30/Zwplw37fLEGlkkmxtw36mWT63M+wlHosIXQskD9RNyt0d1amRuB+bP
+         KQPIlS/gb75r4//iuXIqaTl8SflDfqwUjXrz8vBrw4MFxlkf2cjE20srBsf4qgAVxKm0
+         bJenNPAW9rYfy5Y77fzDxOlMrVKbvhQj6D+sZPz4NggkJIunnvKSG0ROs8fiDkhWHghL
+         mtvA==
+X-Gm-Message-State: ACgBeo3MHfrr7hvGDf11tbXPen4AKUowhE/jvjxltXVIb1D8BPzl+wso
+        3avvCBR4R0phyzFy7jlAMzmA3yPOgOkp8MOaJRf0SQ==
+X-Google-Smtp-Source: AA6agR41q4yHanMi1A+gXLO08ia/kXxxT1OUdvxPqS+JZ3AYLwYDjl7erHXWMxbaY8NeTp1jebE8Ei5/XTiAHc+ZS+o=
+X-Received: by 2002:a25:6612:0:b0:670:7c81:3aa6 with SMTP id
+ a18-20020a256612000000b006707c813aa6mr13305548ybc.530.1660597293043; Mon, 15
+ Aug 2022 14:01:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
+References: <20220810060040.321697-1-saravanak@google.com> <20220810060040.321697-10-saravanak@google.com>
+ <YvYhoGdemyKEx++d@atomide.com> <CAGETcx_SdxJKV56jGSx8GbmA4y_zaoP6z8n8xKZGZbCcmewvDQ@mail.gmail.com>
+ <YvoglKDbsDLHq2S0@atomide.com>
+In-Reply-To: <YvoglKDbsDLHq2S0@atomide.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 15 Aug 2022 14:00:57 -0700
+Message-ID: <CAGETcx-wz0k13K2fOjTN9RfuMzUPti=UQqY5Mq9XYLK8vudYng@mail.gmail.com>
+Subject: Re: [PATCH v1 9/9] of: property: Simplify of_link_to_phandle()
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, Abel Vesa <abel.vesa@linaro.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        John Stultz <jstultz@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-15 13:53:31 -0700, Andres Freund wrote:
-> The reason the debug patch didn't change anything, and that my debug printk
-> didn't show, is that gcp uses the legacy paths...
-> 
-> If there were a bug in the legacy path, it'd explain why the problem only
-> shows on gcp, and not in other situations.
-> 
-> I'll queue testing the legacy path with the equivalent change.
+On Mon, Aug 15, 2022 at 3:31 AM Tony Lindgren <tony@atomide.com> wrote:
+>
+> * Saravana Kannan <saravanak@google.com> [220813 00:30]:
+> > On Fri, Aug 12, 2022 at 2:47 AM Tony Lindgren <tony@atomide.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > * Saravana Kannan <saravanak@google.com> [220810 05:54]:
+> > > > The driver core now:
+> > > > - Has the parent device of a supplier pick up the consumers if the
+> > > >   supplier never has a device created for it.
+> > > > - Ignores a supplier if the supplier has no parent device and will never
+> > > >   be probed by a driver
+> > > >
+> > > > And already prevents creating a device link with the consumer as a
+> > > > supplier of a parent.
+> > > >
+> > > > So, we no longer need to find the "compatible" node of the supplier or
+> > > > do any other checks in of_link_to_phandle(). We simply need to make sure
+> > > > that the supplier is available in DT.
+> > >
+> > > This patch fixes booting for me, so it should be applied as a fix and
+> > > tagged with:
+> > >
+> > > Fixes: 5a46079a9645 ("PM: domains: Delete usage of driver_deferred_probe_check_state()")
+> > >
+> > > If there are dependencies to the other patches in this series, it might
+> > > make sense to revert commit 5a46079a9645 instead.
+> >
+> > Yes, there are dependencies on the rest of the patches in this series.
+> > For linux-next, I think we should pick up this series once we get more
+> > Tested-bys.
+> >
+> >  So if 5a46079a9645 is causing any regression in stable branches, we
+> > should pick up the revert series [1] instead of this series we are
+> > replying to.
+>
+> Agreed we should apply the reverts in [1] for v6.0-rc series. At least
+> several generations of the TI 32-bit ARM SoCs are failing to boot
+> otherwise.
 
-Booting with the equivalent change, atop 5.19, in the legacy setup_vq()
-reliably causes boot to hang:
+Actually I wasn't clear in my earlier email. I meant to say "releases
+branches", as in 5.19.xxx and not "stable branches". So for 5.19.xxx
+we'd pick up these reverts.
 
-[    0.718768] ACPI: button: Sleep Button [SLPF]
-[    0.721989] ACPI: \_SB_.LNKC: Enabled at IRQ 11
-[    0.722688] adebug: use legacy: 0
-[    0.722724] virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-[    0.724286] adebug: probe modern: -19
-[    0.727353] ACPI: \_SB_.LNKD: Enabled at IRQ 10
-[    0.728719] adebug: use legacy: 0
-[    0.728766] virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-[    0.730422] adebug: probe modern: -19
-[    0.733552] ACPI: \_SB_.LNKA: Enabled at IRQ 10
-[    0.734923] adebug: use legacy: 0
-[    0.734957] virtio-pci 0000:00:05.0: virtio_pci: leaving for legacy driver
-[    0.736426] adebug: probe modern: -19
-[    0.739039] ACPI: \_SB_.LNKB: Enabled at IRQ 11
-[    0.740350] adebug: use legacy: 0
-[    0.740390] virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
-[    0.742142] adebug: probe modern: -19
-[    0.747627] adebug: legacy setup_vq
-[    0.748243] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 256
-[    0.751081] adebug: legacy setup_vq
-[    0.751110] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 256
-[    0.754028] adebug: legacy setup_vq
-[    0.754059] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 1
-[    0.757760] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-[    0.759135] 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-[    0.760399] 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-[    0.761610] 00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-[    0.762923] 00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-[    0.764222] Non-volatile memory driver v1.3
-[    0.768857] adebug: legacy setup_vq
-[    0.768882] virtio-pci 0000:00:06.0: adebug: legacy: not limiting queue size, only 256
-[    0.773002] Linux agpgart interface v0.103
-[    0.775424] loop: module loaded
-[    0.780513] adebug: legacy setup_vq
-[    0.780538] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.784075] adebug: legacy setup_vq
-[    0.784104] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.787073] adebug: legacy setup_vq
-[    0.787101] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.790379] scsi host0: Virtio SCSI HBA
-[    0.795968] Freeing initrd memory: 7236K
+And for v6.0-rc if my other patch series [1] fixes the issue, I'd
+rather apply [1] than this series. Because this series is meant to be
+temporary (I'll be reverting this in the future).
 
-Greetings,
+-Saravana
 
-Andres Freund
+[1] - https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
