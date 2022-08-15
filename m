@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68629C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC52C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347675AbiHOWHt (ORCPT
+        id S1346869AbiHOWHy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        Mon, 15 Aug 2022 18:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350400AbiHOWCF (ORCPT
+        with ESMTP id S1350468AbiHOWCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:02:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E647610FE7;
-        Mon, 15 Aug 2022 12:36:29 -0700 (PDT)
+        Mon, 15 Aug 2022 18:02:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC0C7268B;
+        Mon, 15 Aug 2022 12:36:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8EF2BB80EA9;
-        Mon, 15 Aug 2022 19:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DED6C433D7;
-        Mon, 15 Aug 2022 19:36:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBB3D610A3;
+        Mon, 15 Aug 2022 19:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACCF0C433B5;
+        Mon, 15 Aug 2022 19:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592187;
-        bh=I0wyDQbLG/JuU5JwqWrzDV7Xw9+rd6SjzThjPNzvkho=;
+        s=korg; t=1660592215;
+        bh=iA3kgPdrYq8HZkBGT4PqxpGRtbzq58obzUta28Y1qg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KcHUZ/aujdRlk4Qq+LrkxeIMiXFglv0MTTnKsVc9kEHK8zDlzOThzwU5VCmsRQYRp
-         bNsvRby1yteKEWM/l3YVkA5dg3nbEnzO2R7xEjLTwh8oS3faXcRSJOsSecTsca2INH
-         W3BEj23mB5hrt+tmwVIWcGkwa/9a3NZVyqT/VKf8=
+        b=q2xrdKKrOP+Dzl6Ec6UF8LCU7FprcIs/wirOy2J3hgcHxi/PF6kLQWF7i05kKSNrw
+         1cwYr77FLvWrE+PVkat6nfGE259WH9MCy5GNWGTXOqX7E4LyXcOoJ2kCi5cOHpc5b7
+         rgDIaypRlrPnLBTo2Oa7WEgcog1YNDi67xcuAsPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0729/1095] KVM: arm64: Dont return from void function
-Date:   Mon, 15 Aug 2022 20:02:08 +0200
-Message-Id: <20220815180459.542749604@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Mike McGowen <mike.mcgowen@microchip.com>,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0751/1095] scsi: smartpqi: Fix DMA direction for RAID requests
+Date:   Mon, 15 Aug 2022 20:02:30 +0200
+Message-Id: <20220815180500.417389117@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,52 +55,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Perret <qperret@google.com>
+From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
 
-[ Upstream commit 1c3ace2b8b3995d3213c5e2d2aca01a0577a3b0f ]
+[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
 
-Although harmless, the return statement in kvm_unexpected_el2_exception
-is rather confusing as the function itself has a void return type. The
-C standard is also pretty clear that "A return statement with an
-expression shall not appear in a function whose return type is void".
-Given that this return statement does not seem to add any actual value,
-let's not pointlessly violate the standard.
+Correct a SOP READ and WRITE DMA flags for some requests.
 
-Build-tested with GCC 10 and CLANG 13 for good measure, the disassembled
-code is identical with or without the return statement.
+This update corrects DMA direction issues with SCSI commands removed from
+the controller's internal lookup table.
 
-Fixes: e9ee186bb735 ("KVM: arm64: Add kvm_extable for vaxorcism code")
-Signed-off-by: Quentin Perret <qperret@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220705142310.3847918-1-qperret@google.com
+Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
+lookup table and exposed a DMA direction flag issue.
+
+SCSI READ BLOCK LIMITS was recently removed from our controller lookup
+table so the controller uses the respective IU flag field to set the DMA
+data direction. Since the DMA direction is incorrect the FW never completes
+the request causing a hang.
+
+Some SCSI commands which use SCSI READ BLOCK LIMITS
+
+      * sg_map
+      * mt -f /dev/stX status
+
+After updating controller firmware, users may notice their tape units
+failing. This patch resolves the issue.
+
+Also, the AIO path DMA direction is correct.
+
+The DMA direction flag is a day-one bug with no reported BZ.
+
+Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
+Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kvm/hyp/nvhe/switch.c | 2 +-
- arch/arm64/kvm/hyp/vhe/switch.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index 6410d21d8695..858e5be48791 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -371,5 +371,5 @@ void __noreturn hyp_panic(void)
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index 7c0d069a3158..e1fc6f5b9612 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -5484,10 +5484,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
+ 	}
  
- asmlinkage void kvm_unexpected_el2_exception(void)
- {
--	return __kvm_unexpected_el2_exception();
-+	__kvm_unexpected_el2_exception();
- }
-diff --git a/arch/arm64/kvm/hyp/vhe/switch.c b/arch/arm64/kvm/hyp/vhe/switch.c
-index 262dfe03134d..51ea9ac71210 100644
---- a/arch/arm64/kvm/hyp/vhe/switch.c
-+++ b/arch/arm64/kvm/hyp/vhe/switch.c
-@@ -240,5 +240,5 @@ void __noreturn hyp_panic(void)
- 
- asmlinkage void kvm_unexpected_el2_exception(void)
- {
--	return __kvm_unexpected_el2_exception();
-+	__kvm_unexpected_el2_exception();
- }
+ 	switch (scmd->sc_data_direction) {
+-	case DMA_TO_DEVICE:
++	case DMA_FROM_DEVICE:
+ 		request->data_direction = SOP_READ_FLAG;
+ 		break;
+-	case DMA_FROM_DEVICE:
++	case DMA_TO_DEVICE:
+ 		request->data_direction = SOP_WRITE_FLAG;
+ 		break;
+ 	case DMA_NONE:
 -- 
 2.35.1
 
