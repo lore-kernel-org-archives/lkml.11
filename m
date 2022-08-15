@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6689AC282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B39AC2BB41
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347546AbiHOUZ5 (ORCPT
+        id S1347599AbiHOU0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47858 "EHLO
+        Mon, 15 Aug 2022 16:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241563AbiHOUSh (ORCPT
+        with ESMTP id S229547AbiHOUTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:18:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDD845059;
-        Mon, 15 Aug 2022 12:00:29 -0700 (PDT)
+        Mon, 15 Aug 2022 16:19:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E5D96768;
+        Mon, 15 Aug 2022 12:00:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5574C611D6;
-        Mon, 15 Aug 2022 19:00:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF24C433C1;
-        Mon, 15 Aug 2022 19:00:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCD8AB810A3;
+        Mon, 15 Aug 2022 19:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABF6C433C1;
+        Mon, 15 Aug 2022 19:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590028;
-        bh=rkWXU3TEa6CIXUl/UnvFRmLkzh9CC0lIVI2ALWVyQsY=;
+        s=korg; t=1660590040;
+        bh=pEg1GtkK46egxGc6yKcxjHl9FylMjMsYz88rOu1nqA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDrLiUkk0C38Exnzao9fL/LpbGKbnlv9dLlzIQpZPGECtxxeNjtY6roRKwYyuNaYt
-         h0DhNLLtGoINc/o1GsesXzktjH9skLEn8awXzsBrjruCkon737iy9LXcLzrgGZhSm5
-         +j6Xo9k00DV3Ji13jZcge+hNByerAQ34ozbO6OsY=
+        b=H4Qnn4t0w4Qs1GyGD+AScyi2sduMHAqzKRmqZan8lZkvrEYYBliVO04CPt1jgWWGv
+         6SriNycXruxSoDFsw8WOx0DwjrlQAbTKKLM+6N3F5XXS/wgKdmseOHCMw3TnHoi2ww
+         tm1kGXyLI8BGbvQIpt0gIt1lLjUrAfX5HEq95YEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.18 0126/1095] arm64: dts: uniphier: Fix USB interrupts for PXs3 SoC
-Date:   Mon, 15 Aug 2022 19:52:05 +0200
-Message-Id: <20220815180434.796543185@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        zdi-disclosures@trendmicro.com
+Subject: [PATCH 5.18 0101/1095] ksmbd: fix use-after-free bug in smb2_tree_disconect
+Date:   Mon, 15 Aug 2022 19:51:40 +0200
+Message-Id: <20220815180433.723496121@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,46 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit fe17b91a7777df140d0f1433991da67ba658796c upstream.
+commit cf6531d98190fa2cf92a6d8bbc8af0a4740a223c upstream.
 
-An interrupt for USB device are shared with USB host. Set interrupt-names
-property to common "dwc_usb3" instead of "host" and "peripheral".
+smb2_tree_disconnect() freed the struct ksmbd_tree_connect,
+but it left the dangling pointer. It can be accessed
+again under compound requests.
 
+This bug can lead an oops looking something link:
+
+[ 1685.468014 ] BUG: KASAN: use-after-free in ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468068 ] Read of size 4 at addr ffff888102172180 by task kworker/1:2/4807
+...
+[ 1685.468130 ] Call Trace:
+[ 1685.468132 ]  <TASK>
+[ 1685.468135 ]  dump_stack_lvl+0x49/0x5f
+[ 1685.468141 ]  print_report.cold+0x5e/0x5cf
+[ 1685.468145 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468157 ]  kasan_report+0xaa/0x120
+[ 1685.468194 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468206 ]  __asan_report_load4_noabort+0x14/0x20
+[ 1685.468210 ]  ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
+[ 1685.468222 ]  smb2_tree_disconnect+0x175/0x250 [ksmbd]
+[ 1685.468235 ]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
+[ 1685.468247 ]  process_one_work+0x778/0x11c0
+[ 1685.468251 ]  ? _raw_spin_lock_irq+0x8e/0xe0
+[ 1685.468289 ]  worker_thread+0x544/0x1180
+[ 1685.468293 ]  ? __cpuidle_text_end+0x4/0x4
+[ 1685.468297 ]  kthread+0x282/0x320
+[ 1685.468301 ]  ? process_one_work+0x11c0/0x11c0
+[ 1685.468305 ]  ? kthread_complete_and_exit+0x30/0x30
+[ 1685.468309 ]  ret_from_fork+0x1f/0x30
+
+Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
 Cc: stable@vger.kernel.org
-Fixes: d7b9beb830d7 ("arm64: dts: uniphier: Add USB3 controller nodes")
-Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17816
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/ksmbd/smb2pdu.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-@@ -599,8 +599,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 134 4>, <0 135 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 134 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -701,8 +701,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65c00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 137 4>, <0 138 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 137 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
- 			clock-names = "ref", "bus_early", "suspend";
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -2043,6 +2043,7 @@ int smb2_tree_disconnect(struct ksmbd_wo
+ 
+ 	ksmbd_close_tree_conn_fds(work);
+ 	ksmbd_tree_conn_disconnect(sess, tcon);
++	work->tcon = NULL;
+ 	return 0;
+ }
+ 
 
 
