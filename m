@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20591C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CAAC25B0D
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353307AbiHPAKq (ORCPT
+        id S1353790AbiHPAKz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47900 "EHLO
+        Mon, 15 Aug 2022 20:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356025AbiHPABz (ORCPT
+        with ESMTP id S1356050AbiHPAB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:01:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5075C1677CB;
-        Mon, 15 Aug 2022 13:23:14 -0700 (PDT)
+        Mon, 15 Aug 2022 20:01:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8071916814D;
+        Mon, 15 Aug 2022 13:23:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01C56B8119B;
-        Mon, 15 Aug 2022 20:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38143C433D6;
-        Mon, 15 Aug 2022 20:23:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2DDA61058;
+        Mon, 15 Aug 2022 20:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CB6C433D6;
+        Mon, 15 Aug 2022 20:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594991;
-        bh=kWhCVLa2hIdt+6A4jmvdG3NihjyJlK0l95tur8Z+cTQ=;
+        s=korg; t=1660595004;
+        bh=Bc1TolM682MDUtF/9AwyY7cOvy03uM8FRp6Z0YxCu+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kK0tiwL3w4YX0/JVQBRau5glHJ9QixtKIeT6H57PbN0hbB+yqPg7bIdGq0fZqf1TI
-         k+Lb6BSQ9pZQxBBvYBUdcdr6EsiLfBN+wEk2LSVkK/+I03USPwtdXCQHJdjpddkdzj
-         9dbAWef231doIQvsf9okyqmf4UgVxwQI6H+BF7pw=
+        b=VpVWO1ObQOJqDA4g/H4DFvtsqn1sO1XKLCHvJ+XkniI6LW7w6UNYzVFXr/SsRw7RX
+         x1lYiAIVH3oc+cieGmz1QM64UykW41NrlzjMaS4a38Dn7CBWYwpwR0lFR53CA1RWFP
+         BH3kN+KuYUBDf2hpJZb+oybxnTbCM5RGCaXoLzQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0591/1157] KVM: SVM: Stuff next_rip on emulated INT3 injection if NRIPS is supported
-Date:   Mon, 15 Aug 2022 19:59:07 +0200
-Message-Id: <20220815180503.302865620@linuxfoundation.org>
+Subject: [PATCH 5.19 0627/1157] iio: sx9324: Fix register field spelling
+Date:   Mon, 15 Aug 2022 19:59:43 +0200
+Message-Id: <20220815180504.742854725@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,51 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-[ Upstream commit 3741aec4c38fa4123ab08ae552f05366d4fd05d8 ]
+[ Upstream commit 0b24034c7ffa20bcfb4fdfece1df770ec5b0a634 ]
 
-If NRIPS is supported in hardware but disabled in KVM, set next_rip to
-the next RIP when advancing RIP as part of emulating INT3 injection.
-There is no flag to tell the CPU that KVM isn't using next_rip, and so
-leaving next_rip is left as is will result in the CPU pushing garbage
-onto the stack when vectoring the injected event.
+Field for PROX_CTRL4 should contain PROX_CTRL4.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-Message-Id: <cd328309a3b88604daa2359ad56f36cb565ce2d4.1651440202.git.maciej.szmigiero@oracle.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 4c18a890dff8d ("iio:proximity:sx9324: Add SX9324 support")
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/20220429220144.1476049-3-gwendal@chromium.org
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/proximity/sx9324.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index fe8536c57fd7..92b30b4937fc 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -392,6 +392,10 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
- 		 */
- 		(void)svm_skip_emulated_instruction(vcpu);
- 		rip = kvm_rip_read(vcpu);
-+
-+		if (boot_cpu_has(X86_FEATURE_NRIPS))
-+			svm->vmcb->control.next_rip = rip;
-+
- 		svm->int3_rip = rip + svm->vmcb->save.cs.base;
- 		svm->int3_injected = rip - old_rip;
- 	}
-@@ -3702,7 +3706,7 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	/*
- 	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
- 	 * injecting the soft exception/interrupt.  That advancement needs to
--	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
-+	 * be unwound if vectoring didn't complete.  Note, the new event may
- 	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
- 	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
- 	 * be the reported vectored event, but RIP still needs to be unwound.
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 63fbcaa4cac8..a30ac8007a3d 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -93,7 +93,7 @@
+ #define SX9324_REG_PROX_CTRL4_AVGNEGFILT_MASK	GENMASK(5, 3)
+ #define SX9324_REG_PROX_CTRL4_AVGNEG_FILT_2 0x08
+ #define SX9324_REG_PROX_CTRL4_AVGPOSFILT_MASK	GENMASK(2, 0)
+-#define SX9324_REG_PROX_CTRL3_AVGPOS_FILT_256 0x04
++#define SX9324_REG_PROX_CTRL4_AVGPOS_FILT_256 0x04
+ #define SX9324_REG_PROX_CTRL5		0x35
+ #define SX9324_REG_PROX_CTRL5_HYST_MASK			GENMASK(5, 4)
+ #define SX9324_REG_PROX_CTRL5_CLOSE_DEBOUNCE_MASK	GENMASK(3, 2)
+@@ -810,7 +810,7 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
+ 	{ SX9324_REG_PROX_CTRL3, SX9324_REG_PROX_CTRL3_AVGDEB_2SAMPLES |
+ 		SX9324_REG_PROX_CTRL3_AVGPOS_THRESH_16K },
+ 	{ SX9324_REG_PROX_CTRL4, SX9324_REG_PROX_CTRL4_AVGNEG_FILT_2 |
+-		SX9324_REG_PROX_CTRL3_AVGPOS_FILT_256 },
++		SX9324_REG_PROX_CTRL4_AVGPOS_FILT_256 },
+ 	{ SX9324_REG_PROX_CTRL5, 0x00 },
+ 	{ SX9324_REG_PROX_CTRL6, SX9324_REG_PROX_CTRL6_PROXTHRESH_32 },
+ 	{ SX9324_REG_PROX_CTRL7, SX9324_REG_PROX_CTRL6_PROXTHRESH_32 },
 -- 
 2.35.1
 
