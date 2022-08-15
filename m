@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A96FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E6AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345594AbiHOUfa (ORCPT
+        id S1346101AbiHOUfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
+        Mon, 15 Aug 2022 16:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347702AbiHOUbg (ORCPT
+        with ESMTP id S1347733AbiHOUbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:31:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA6EA5C79;
-        Mon, 15 Aug 2022 12:04:54 -0700 (PDT)
+        Mon, 15 Aug 2022 16:31:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52282A61D5;
+        Mon, 15 Aug 2022 12:04:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 549CFB81104;
-        Mon, 15 Aug 2022 19:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97BA4C433D6;
-        Mon, 15 Aug 2022 19:04:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AD96612B7;
+        Mon, 15 Aug 2022 19:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 152DBC433D7;
+        Mon, 15 Aug 2022 19:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590282;
-        bh=tJAnO42wOvjfzA6oc3W60FsYJ9qlzwG5YhKzZ2eZRWw=;
+        s=korg; t=1660590294;
+        bh=VYfBlipzcVbhm4a67MWNtWYnwO8/NK7weJw/0ZKExAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+4CLn8xKJiMuyGmrP+jK4dMPitMTOUZcxBrdh7NJHxLCRgBXusH8rdTzG7pIXtAS
-         XBGK8g05jNJKIC6U4sYImTenO6Zd5x4gTVw8+wSd41Th3iI1yN8/04XELBre6MyUZq
-         Q23ETHr5Xg/cRud9NMnRqXHHv5paXkb/b8f/OG/o=
+        b=J4orDkO/ZRRYtwfjo2Nd+97vVF4zyY/xWUF8udH9IGvVwjaAEtP2c/xHxvaLez5cN
+         Ypm5aiLJ2hZCqAZqNO5VI90ARWoTdZZu7rv6wN+PsCVkIP6tsclX2LkzzSjzUHgQE+
+         U9FuvtpGpVkJXDWh4xT7LzjSz3394UV9SOLok+P8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0211/1095] arm64: dts: qcom: sdm845-akatsuki: Round down l22a regulator voltage
-Date:   Mon, 15 Aug 2022 19:53:30 +0200
-Message-Id: <20220815180438.392245088@linuxfoundation.org>
+Subject: [PATCH 5.18 0197/1095] Revert "ARM: dts: imx6qdl-apalis: Avoid underscore in node name"
+Date:   Mon, 15 Aug 2022 19:53:16 +0200
+Message-Id: <20220815180437.778617589@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,44 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit 4148a9eeb15152865d60b0913d96beb7ca166f9a ]
+[ Upstream commit 9c0919acb3fa7c1a24e384ff912f2d88f060c373 ]
 
-2700000 is not a multiple of pmic4_pldo's step size of 8000 (with base
-voltage 1664000), resulting in pm8998-rpmh-regulators not probing.  Just
-as we did with MSM8998's Sony Yoshino Poplar [1], round the voltages
-down to err on the cautious side and leave a comment in place to
-document this discrepancy wrt downstream sources.
+The STMPE MFD device binding requires the child node to have a fixed
+name, i.e. with '_', not '-'. Otherwise the stmpe_adc, stmpe_touchscreen
+drivers will not be probed.
 
-[1]: https://lore.kernel.org/linux-arm-msm/20220507153627.1478268-1-marijn.suijten@somainline.org/
-
-Fixes: 30a7f99befc6 ("arm64: dts: qcom: Add support for SONY Xperia XZ2 / XZ2C / XZ3 (Tama platform)")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220620211212.269956-1-marijn.suijten@somainline.org
+Fixes: 56086b5e804f ("ARM: dts: imx6qdl-apalis: Avoid underscore in node name")
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-index 8a0d94e7f598..2f5e12deaada 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dts
-@@ -19,8 +19,9 @@ &vreg_l14a_1p8 {
- };
+diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+index bd763bae596b..da919d0544a8 100644
+--- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+@@ -315,7 +315,7 @@ stmpe811@41 {
+ 		/* ADC conversion time: 80 clocks */
+ 		st,sample-time = <4>;
  
- &vreg_l22a_2p8 {
--	regulator-min-microvolt = <2700000>;
--	regulator-max-microvolt = <2700000>;
-+	/* Note: Round-down from 2700000 to be a multiple of PLDO step-size 8000 */
-+	regulator-min-microvolt = <2696000>;
-+	regulator-max-microvolt = <2696000>;
- };
+-		stmpe_touchscreen: stmpe-touchscreen {
++		stmpe_touchscreen: stmpe_touchscreen {
+ 			compatible = "st,stmpe-ts";
+ 			/* 8 sample average control */
+ 			st,ave-ctrl = <3>;
+@@ -332,7 +332,7 @@ stmpe_touchscreen: stmpe-touchscreen {
+ 			st,touch-det-delay = <5>;
+ 		};
  
- &vreg_l28a_2p8 {
+-		stmpe_adc: stmpe-adc {
++		stmpe_adc: stmpe_adc {
+ 			compatible = "st,stmpe-adc";
+ 			/* forbid to use ADC channels 3-0 (touch) */
+ 			st,norequest-mask = <0x0F>;
 -- 
 2.35.1
 
