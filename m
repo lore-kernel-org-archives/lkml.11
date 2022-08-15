@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D67C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A959CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345648AbiHOUdu (ORCPT
+        id S1345746AbiHOUeC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
+        Mon, 15 Aug 2022 16:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347390AbiHOU1d (ORCPT
+        with ESMTP id S1347477AbiHOU2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:27:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F81A0608;
+        Mon, 15 Aug 2022 16:28:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2165AA0621;
         Mon, 15 Aug 2022 12:04:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 474A961299;
-        Mon, 15 Aug 2022 19:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B17DC433C1;
-        Mon, 15 Aug 2022 19:03:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1E6C612AB;
+        Mon, 15 Aug 2022 19:04:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0EE1C433B5;
+        Mon, 15 Aug 2022 19:04:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590234;
-        bh=5H4tar8fnHRgidQpmaez/5zo8Yhc3S0NY+XkZsD8nr8=;
+        s=korg; t=1660590253;
+        bh=rwkTHpB1djJ8Tb2+9cwpD8csB2WM2/iWjGaLWOtDMeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUyo0bgjO5a7IH1TQIunDGqbCWlAegPgs8uuOGaYWG2QJ4Byehjr7SIxalPyaCj03
-         xwihzFo0/AFP6fD0rWiuxEHXBVekQ5AGq3JenvSyan9M2oICh/rFRFlKCOlc4PGalL
-         kpDxkQBLf4IxxpSgiKY2G7Ihd3z0773mq0uIH1lo=
+        b=gsmmPNfAJfoJg8x23K0f/F8P7nzkKKYCH1/RNp+Royo5lhjD8EJOEL7I05IFMriwP
+         /zW9i6apXN6w3rGx/TBiK5I8VR0jejPkEFcroLTKFuOm9oLShmv4qxNteBjzlDaASg
+         4z2gQALclU9XfeOfdo83C0FEmCFfyN05B1g/2Zrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Renesas Vietnam via Yoshihiro Shimoda 
-        <yoshihiro.shimoda.uh@renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0194/1095] soc: renesas: r8a779a0-sysc: Fix A2DP1 and A2CV[2357] PDR values
-Date:   Mon, 15 Aug 2022 19:53:13 +0200
-Message-Id: <20220815180437.654258777@linuxfoundation.org>
+Subject: [PATCH 5.18 0171/1095] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
+Date:   Mon, 15 Aug 2022 19:52:50 +0200
+Message-Id: <20220815180436.706085467@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,44 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit bccceabb92ce8eb78bbf2de08308e2cc2761a2e5 ]
+[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
 
-The PDR values for the A2DP1 and A2CV[2357] power areas on R-Car V3U are
-incorrect (copied-and-pasted from A2DP0 and A2CV[0146]).
-Fix them.
+"status" does not match any pattern in the gpio-leds binding. Rename the
+node to the preferred pattern. This fixes a `make dtbs_check` error.
 
-Reported-by: Renesas Vietnam via Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Fixes: 1b4298f000064cc2 ("soc: renesas: r8a779a0-sysc: Add r8a779a0 support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/87bc2e70ba4082970cf8c65871beae4be3503189.1654696188.git.geert+renesas@glider.be
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/renesas/r8a779a0-sysc.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soc/renesas/r8a779a0-sysc.c b/drivers/soc/renesas/r8a779a0-sysc.c
-index fdfc857df334..04f1bc322ae7 100644
---- a/drivers/soc/renesas/r8a779a0-sysc.c
-+++ b/drivers/soc/renesas/r8a779a0-sysc.c
-@@ -57,11 +57,11 @@ static struct rcar_gen4_sysc_area r8a779a0_areas[] __initdata = {
- 	{ "a2cv6",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
- 	{ "a2cn2",	R8A779A0_PD_A2CN2, R8A779A0_PD_A3IR },
- 	{ "a2imp23",	R8A779A0_PD_A2IMP23, R8A779A0_PD_A3IR },
--	{ "a2dp1",	R8A779A0_PD_A2DP0, R8A779A0_PD_A3IR },
--	{ "a2cv2",	R8A779A0_PD_A2CV0, R8A779A0_PD_A3IR },
--	{ "a2cv3",	R8A779A0_PD_A2CV1, R8A779A0_PD_A3IR },
--	{ "a2cv5",	R8A779A0_PD_A2CV4, R8A779A0_PD_A3IR },
--	{ "a2cv7",	R8A779A0_PD_A2CV6, R8A779A0_PD_A3IR },
-+	{ "a2dp1",	R8A779A0_PD_A2DP1, R8A779A0_PD_A3IR },
-+	{ "a2cv2",	R8A779A0_PD_A2CV2, R8A779A0_PD_A3IR },
-+	{ "a2cv3",	R8A779A0_PD_A2CV3, R8A779A0_PD_A3IR },
-+	{ "a2cv5",	R8A779A0_PD_A2CV5, R8A779A0_PD_A3IR },
-+	{ "a2cv7",	R8A779A0_PD_A2CV7, R8A779A0_PD_A3IR },
- 	{ "a2cn1",	R8A779A0_PD_A2CN1, R8A779A0_PD_A3IR },
- 	{ "a1cnn0",	R8A779A0_PD_A1CNN0, R8A779A0_PD_A2CN0 },
- 	{ "a1cnn2",	R8A779A0_PD_A1CNN2, R8A779A0_PD_A2CN2 },
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+index c519d9fa6967..3d2c68d58f49 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+@@ -40,7 +40,7 @@ hdmi_con_in: endpoint {
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		status {
++		led-0 {
+ 			label = "orangepi:green:status";
+ 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
+ 		};
 -- 
 2.35.1
 
