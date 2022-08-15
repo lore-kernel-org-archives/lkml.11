@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927C8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470E2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346647AbiHOUx2 (ORCPT
+        id S1346661AbiHOUxb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
+        Mon, 15 Aug 2022 16:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347072AbiHOUv2 (ORCPT
+        with ESMTP id S1347121AbiHOUvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:51:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF75BC12B;
-        Mon, 15 Aug 2022 12:10:13 -0700 (PDT)
+        Mon, 15 Aug 2022 16:51:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462A3BCC26;
+        Mon, 15 Aug 2022 12:10:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDEE460693;
-        Mon, 15 Aug 2022 19:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CA4C433D7;
-        Mon, 15 Aug 2022 19:10:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B709CB81104;
+        Mon, 15 Aug 2022 19:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 105C1C433C1;
+        Mon, 15 Aug 2022 19:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590611;
-        bh=VBA4o0Mb7y8Az4iYRvFH18ZYSc8JyfxdBkwdZbQ+Q28=;
+        s=korg; t=1660590608;
+        bh=2KW1HM963k7v+bwEDDz4Yh4oQrYctMijf1hKLtDHh9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qKDWCppXw/WjLlz5Uy+tXPVcpyxH3PYjfxaIQL+zZlhQrvmZ2ddNJyG0X/wUleBbd
-         YB9orDKWdsCemE8yUNPApIjsScCUeDGJ2k79Xx6NlVSFdnAl/XfFBm68MYsS2EQ3lv
-         aCbTbWpCjqIjKOb/SBKpE/utioMaoP0qUIbyNq1I=
+        b=WtW1FsDlO2Gti7+QwplS2oBJz7XOLTAAVrYIPg+FtjsoRvIihiAFlsu/UlQldJDco
+         WrxSXUGE4rejIDCOmGMIqeuQpXWT0ZIcFjxxwO9fnDB79fL7Ni88bJweSNqSsMW0X9
+         2pvBQFY4+2LieIJdzaNyDggI8HZv4tHG/Y1uqG/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunhao Tian <t123yh.xyz@gmail.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        stable@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        =?UTF-8?q?Alejandro=20Gonz=C3=A1lez?= 
+        <alejandro.gonzalez.correo@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0314/1095] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
-Date:   Mon, 15 Aug 2022 19:55:13 +0200
-Message-Id: <20220815180442.789065395@linuxfoundation.org>
+Subject: [PATCH 5.18 0296/1095] thermal/tools/tmon: Include pthread and time headers in tmon.h
+Date:   Mon, 15 Aug 2022 19:54:55 +0200
+Message-Id: <20220815180442.013503829@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,46 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunhao Tian <t123yh.xyz@gmail.com>
+From: Markus Mayer <mmayer@broadcom.com>
 
-[ Upstream commit 435c249008cba04ed6a7975e9411f3b934620204 ]
+[ Upstream commit 0cf51bfe999524377fbb71becb583b4ca6d07cfc ]
 
-In __spi_validate, there's a validation that no partial transfers
-are accepted (xfer->len % w_size must be zero). When
-max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
-bpw = 16), the transfer will be rejected.
+Include sys/time.h and pthread.h in tmon.h, so that types
+"pthread_mutex_t" and "struct timeval tv" are known when tmon.h
+references them.
 
-This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
-so that no partial transfer will occur.
+Without these headers, compiling tmon against musl-libc will fail with
+these errors:
 
-Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
+In file included from sysfs.c:31:0:
+tmon.h:47:8: error: unknown type name 'pthread_mutex_t'
+ extern pthread_mutex_t input_lock;
+        ^~~~~~~~~~~~~~~
+make[3]: *** [<builtin>: sysfs.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
+In file included from tui.c:31:0:
+tmon.h:54:17: error: field 'tv' has incomplete type
+  struct timeval tv;
+                 ^~
+make[3]: *** [<builtin>: tui.o] Error 1
+make[2]: *** [Makefile:83: tmon] Error 2
 
-Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
-Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220510030219.2486687-1-t123yh.xyz@gmail.com
+Signed-off-by: Markus Mayer <mmayer@broadcom.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Acked-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Tested-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal  subsystem")
+Link: https://lore.kernel.org/r/20220718031040.44714-1-f.fainelli@gmail.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ tools/thermal/tmon/tmon.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
-index 9314f2ead79f..09e4edb5a992 100644
---- a/drivers/gpu/drm/drm_mipi_dbi.c
-+++ b/drivers/gpu/drm/drm_mipi_dbi.c
-@@ -1199,6 +1199,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
- 	size_t chunk;
- 	int ret;
+diff --git a/tools/thermal/tmon/tmon.h b/tools/thermal/tmon/tmon.h
+index c9066ec104dd..44d16d778f04 100644
+--- a/tools/thermal/tmon/tmon.h
++++ b/tools/thermal/tmon/tmon.h
+@@ -27,6 +27,9 @@
+ #define NR_LINES_TZDATA 1
+ #define TMON_LOG_FILE "/var/tmp/tmon.log"
  
-+	/* In __spi_validate, there's a validation that no partial transfers
-+	 * are accepted (xfer->len % w_size must be zero).
-+	 * Here we align max_chunk to multiple of 2 (16bits),
-+	 * to prevent transfers from being rejected.
-+	 */
-+	max_chunk = ALIGN_DOWN(max_chunk, 2);
++#include <sys/time.h>
++#include <pthread.h>
 +
- 	spi_message_init_with_transfers(&m, &tr, 1);
- 
- 	while (len) {
+ extern unsigned long ticktime;
+ extern double time_elapsed;
+ extern unsigned long target_temp_user;
 -- 
 2.35.1
 
