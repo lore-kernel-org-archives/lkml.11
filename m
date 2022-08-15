@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3A1C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B82B9C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240463AbiHPAxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S241640AbiHPAxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240319AbiHPAoE (ORCPT
+        with ESMTP id S1345200AbiHPAoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:44:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5E0AED99;
-        Mon, 15 Aug 2022 13:40:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D5EAE21D;
+        Mon, 15 Aug 2022 13:40:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79B56B8114A;
-        Mon, 15 Aug 2022 20:40:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66C6C433C1;
-        Mon, 15 Aug 2022 20:40:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E8E96122E;
+        Mon, 15 Aug 2022 20:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72B45C433D6;
+        Mon, 15 Aug 2022 20:40:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596034;
-        bh=tFMruD26R0zJmsKIkmvOkf54yAsxhFD3bcYpfWVgLpc=;
+        s=korg; t=1660596024;
+        bh=Pyw799UMOd9W9JvMkl0+1zzeas8WDF0EpdwV1mZOenI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1Nfu9NYR1fctv/FDsZbh5nKas72CguQ7zUlgVziDe1ZotECg3MNQuu3Kgr9hHwKX
-         FYDQ4EfWCLXdigLs6z46n3dRSL+srviBUvahM2/RSXfbjYde6gCn0fYKeqpEDKwMgF
-         A/I0UqBZ1WzIfb1iWmA8djToma7c5EFoUBgYaB48=
+        b=p5SlELF3J/OHBzuVestKGu/k1J5+E2dnx9fIrXU1D/zpsRfw4u8zUWrLyYOYQV17E
+         aw9a1MKD4e0sdyTX/9qCBC4DFLuMqhQuP4figYtxg6RXI6RHLYHP3XRCFOjbOFUjY0
+         LbsYAy4Hj8cfXu8XsOjv4eaV1cpCAPqL1X1Pf+KM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0935/1157] MIPS: Loongson64: Fix section mismatch warning
-Date:   Mon, 15 Aug 2022 20:04:51 +0200
-Message-Id: <20220815180516.905931442@linuxfoundation.org>
+Subject: [PATCH 5.19 0950/1157] lib/bitmap: fix off-by-one in bitmap_to_arr64()
+Date:   Mon, 15 Aug 2022 20:05:06 +0200
+Message-Id: <20220815180517.578237375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,46 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tiezhu Yang <yangtiezhu@loongson.cn>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 08472f6ebdc23334ad11dcd761d2d52c32897793 ]
+[ Upstream commit 428bc098635680a664779f26f24fe9197d186172 ]
 
-prom_init_numa_memory() is annotated __init and not used by any module,
-thus don't export it.
+GENMASK*() family takes the first and the last bits of the mask
+*including* them. So, with the current code bitmap_to_arr64()
+doesn't clear the tail properly:
 
-Remove not needed EXPORT_SYMBOL for prom_init_numa_memory() to fix the
-following section mismatch warning:
+nbits %  exp             mask                must be
+1        GENMASK(1, 0)   0x3                 0x1
+...
+63       GENMASK(63, 0)  0xffffffffffffffff  0x7fffffffffffffff
 
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-WARNING: modpost: vmlinux.o(___ksymtab+prom_init_numa_memory+0x0): Section mismatch in reference
-from the variable __ksymtab_prom_init_numa_memory to the function .init.text:prom_init_numa_memory()
-The symbol prom_init_numa_memory is exported and annotated __init
-Fix this by removing the __init annotation of prom_init_numa_memory or drop the export.
+This was found by making the function always available instead of
+32-bit BE systems only (for reusing in some new functionality).
+Turn the number of bits into the last bit set by subtracting 1.
+@nbits is already checked to be positive beforehand.
 
-This is build on Linux 5.19-rc4.
-
-Fixes: 6fbde6b492df ("MIPS: Loongson64: Move files to the top-level directory")
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 0a97953fd221 ("lib: add bitmap_{from,to}_arr64")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/loongson64/numa.c | 1 -
- 1 file changed, 1 deletion(-)
+ lib/bitmap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
-index 69a533148efd..8f61e93c0c5b 100644
---- a/arch/mips/loongson64/numa.c
-+++ b/arch/mips/loongson64/numa.c
-@@ -196,7 +196,6 @@ void __init prom_init_numa_memory(void)
- 	pr_info("CP0_PageGrain: CP0 5.1 (0x%x)\n", read_c0_pagegrain());
- 	prom_meminit();
- }
--EXPORT_SYMBOL(prom_init_numa_memory);
+diff --git a/lib/bitmap.c b/lib/bitmap.c
+index b18e31ea6e66..e903e13c62e1 100644
+--- a/lib/bitmap.c
++++ b/lib/bitmap.c
+@@ -1564,7 +1564,7 @@ void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
  
- pg_data_t * __init arch_alloc_nodedata(int nid)
- {
+ 	/* Clear tail bits in the last element of array beyond nbits. */
+ 	if (nbits % 64)
+-		buf[-1] &= GENMASK_ULL(nbits % 64, 0);
++		buf[-1] &= GENMASK_ULL((nbits - 1) % 64, 0);
+ }
+ EXPORT_SYMBOL(bitmap_to_arr64);
+ #endif
 -- 
 2.35.1
 
