@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C71C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D8BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349810AbiHOVxN (ORCPT
+        id S1345160AbiHOVxT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
+        Mon, 15 Aug 2022 17:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349876AbiHOVsz (ORCPT
+        with ESMTP id S1349871AbiHOVsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:48:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119FF606B8;
-        Mon, 15 Aug 2022 12:32:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2842F65D;
+        Mon, 15 Aug 2022 12:32:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2640461133;
-        Mon, 15 Aug 2022 19:32:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D65C433C1;
-        Mon, 15 Aug 2022 19:32:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B731EB8107A;
+        Mon, 15 Aug 2022 19:32:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13883C433C1;
+        Mon, 15 Aug 2022 19:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591926;
-        bh=cRcGwfrIuzA+tBZlDTT6JWtbArYGci7x41RI+xWkygM=;
+        s=korg; t=1660591923;
+        bh=gzYtX3jUM3PkHakrG20VtWROjOwHdudeIMY7TqfKmB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f3+KWOYgzLfiZ2g/LTKQPdRQkL3Y5OJI5A5HJnSLYpwgVc8R+dtwBBUzKkglzJm88
-         efI7MXD9O2isrfneKHtJh+RlqyfXx/gJnpfmDsnl7zqpA5xy7zmGVtQT/QRGGXxy25
-         x4Qy+c6d07530W1zioSRaTsNIosCnsikon3/i+dc=
+        b=eK2fZO45Fr4D7MoUcA0In4H/wCKXBzGAq5jg1a5dBZSMzV82qJkT2hPvnZBnHFBHN
+         DJzvhOZI1DSmo+d1ZSjzceyNXYNztl2mWijojMABinAuVPS5VmjwITwlJUoUYXYB70
+         0CLYnH5+yOEEQqnzgE8/lwHKjsR+2IihM6Ss7234=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jenny Hack <jhack@hpe.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0705/1095] RDMA/rxe: Fix deadlock in rxe_do_local_ops()
-Date:   Mon, 15 Aug 2022 20:01:44 +0200
-Message-Id: <20220815180458.543648823@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0031/1157] KVM: Do not incorporate page offset into gfn=>pfn cache user address
+Date:   Mon, 15 Aug 2022 19:49:47 +0200
+Message-Id: <20220815180440.683624915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,54 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 7cb33d1bc1ac8e51fd88928f96674d392f8e07c4 ]
+commit 3ba2c95ea180740b16281fa43a3ee5f47279c0ed upstream.
 
-When a local operation (invalidate mr, reg mr, bind mw) is finished there
-will be no ack packet coming from a responder to cause the wqe to be
-completed. This may happen anyway if a subsequent wqe performs
-IO. Currently if the wqe is signalled the completer tasklet is scheduled
-immediately but not otherwise.
+Don't adjust the userspace address in the gfn=>pfn cache by the page
+offset from the gpa.  KVM should never use the user address directly, and
+all KVM operations that translate a user address to something else
+require the user address to be page aligned.  Ignoring the offset will
+allow the cache to reuse a gfn=>hva translation in the unlikely event
+that the page offset of the gpa changes, but the gfn does not.  And more
+importantly, not having to (un)adjust the user address will simplify a
+future bug fix.
 
-This leads to a deadlock if the next wqe has the fence bit set in send
-flags and the operation is not signalled. This patch removes the condition
-that the wqe must be signalled in order to schedule the completer tasklet
-which is the simplest fix for this deadlock and is fairly low cost. This
-is the analog for local operations of always setting the ackreq bit in all
-last or only request packets even if the operation is not signalled.
-
-Link: https://lore.kernel.org/r/20220523223251.15350-1-rpearsonhpe@gmail.com
-Reported-by: Jenny Hack <jhack@hpe.com>
-Fixes: c1a411268a4b ("RDMA/rxe: Move local ops to subroutine")
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429210025.3293691-6-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ virt/kvm/pfncache.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index 8a1cff80a68e..d574c47099b8 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -586,9 +586,11 @@ static int rxe_do_local_ops(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
- 	wqe->status = IB_WC_SUCCESS;
- 	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -274,8 +274,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 			ret = -EFAULT;
+ 			goto out;
+ 		}
+-
+-		gpc->uhva += page_offset;
+ 	}
  
--	if ((wqe->wr.send_flags & IB_SEND_SIGNALED) ||
--	    qp->sq_sig_type == IB_SIGNAL_ALL_WR)
--		rxe_run_task(&qp->comp.task, 1);
-+	/* There is no ack coming for local work requests
-+	 * which can lead to a deadlock. So go ahead and complete
-+	 * it now.
-+	 */
-+	rxe_run_task(&qp->comp.task, 1);
- 
- 	return 0;
- }
--- 
-2.35.1
-
+ 	/*
 
 
