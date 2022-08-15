@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85621C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA847C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240101AbiHOSS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
+        id S240121AbiHOSTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239768AbiHOSSP (ORCPT
+        with ESMTP id S239940AbiHOSSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:18:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E622AC72;
-        Mon, 15 Aug 2022 11:15:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3541F2B25B;
+        Mon, 15 Aug 2022 11:15:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73D45B80F99;
-        Mon, 15 Aug 2022 18:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B33D7C433C1;
-        Mon, 15 Aug 2022 18:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B628A61283;
+        Mon, 15 Aug 2022 18:15:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B234DC433D6;
+        Mon, 15 Aug 2022 18:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587336;
-        bh=Muz+6devd5UaSOJcMQZ9LRIIl260cRIsDAwDtiF54MI=;
+        s=korg; t=1660587342;
+        bh=L+tSva97cuH3Es/g7gFSul9AZ9NvOTMJ95gyvkU2tow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEOWEzZL325wHuNsKLTWQ+wJbcFpuwV1RUg3QSBlq1kDbtkLcK5nMXwrvQfHvKZiL
-         dLXaglrG1hMcnPM1OVjeM7TFm6bbEZ6zSly3NcddCVC7tA3D7yAIJzgSdUfySfVo6E
-         fnYnkc1SN+O8kk/ovYjgr8OcJKJbosOgPDp/rgvE=
+        b=zM8sSxfkGdY+HGXCkrNu09gh36gtHuacJOCqkY3Bnlr1pww/wpw7bWDsMdmQblDyr
+         oAICU90wHtZyd5i7I/63QBK8+gUcshgpBmHZ++iWMdUPRNYbOJFY1kkgIWjWguw4jD
+         fZI2q3kxGx3UpbiGyBe04oyFBDMebr6fqMQdX6D8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 051/779] parisc: Check the return value of ioremap() in lba_driver_probe()
-Date:   Mon, 15 Aug 2022 19:54:55 +0200
-Message-Id: <20220815180339.461010784@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 022/779] KVM: SVM: Dont BUG if userspace injects an interrupt with GIF=0
+Date:   Mon, 15 Aug 2022 19:54:26 +0200
+Message-Id: <20220815180338.163587480@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,39 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-commit cf59f34d7f978d14d6520fd80a78a5ad5cb8abf8 upstream.
+commit f17c31c48e5cde9895a491d91c424eeeada3e134 upstream.
 
-The function ioremap() in lba_driver_probe() can fail, so
-its return value should be checked.
+Don't BUG/WARN on interrupt injection due to GIF being cleared,
+since it's trivial for userspace to force the situation via
+KVM_SET_VCPU_EVENTS (even if having at least a WARN there would be correct
+for KVM internally generated injections).
 
-Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org> # v5.6+
+  kernel BUG at arch/x86/kvm/svm/svm.c:3386!
+  invalid opcode: 0000 [#1] SMP
+  CPU: 15 PID: 926 Comm: smm_test Not tainted 5.17.0-rc3+ #264
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:svm_inject_irq+0xab/0xb0 [kvm_amd]
+  Code: <0f> 0b 0f 1f 00 0f 1f 44 00 00 80 3d ac b3 01 00 00 55 48 89 f5 53
+  RSP: 0018:ffffc90000b37d88 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: ffff88810a234ac0 RCX: 0000000000000006
+  RDX: 0000000000000000 RSI: ffffc90000b37df7 RDI: ffff88810a234ac0
+  RBP: ffffc90000b37df7 R08: ffff88810a1fa410 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+  R13: ffff888109571000 R14: ffff88810a234ac0 R15: 0000000000000000
+  FS:  0000000001821380(0000) GS:ffff88846fdc0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f74fc550008 CR3: 000000010a6fe000 CR4: 0000000000350ea0
+  Call Trace:
+   <TASK>
+   inject_pending_event+0x2f7/0x4c0 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x791/0x17a0 [kvm]
+   kvm_vcpu_ioctl+0x26d/0x650 [kvm]
+   __x64_sys_ioctl+0x82/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+
+Fixes: 219b65dcf6c0 ("KVM: SVM: Improve nested interrupt injection")
+Cc: stable@vger.kernel.org
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Message-Id: <35426af6e123cbe91ec7ce5132ce72521f02b1b5.1651440202.git.maciej.szmigiero@oracle.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/parisc/lba_pci.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/svm.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/parisc/lba_pci.c
-+++ b/drivers/parisc/lba_pci.c
-@@ -1476,9 +1476,13 @@ lba_driver_probe(struct parisc_device *d
- 	u32 func_class;
- 	void *tmp_obj;
- 	char *version;
--	void __iomem *addr = ioremap(dev->hpa.start, 4096);
-+	void __iomem *addr;
- 	int max;
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3417,8 +3417,6 @@ static void svm_set_irq(struct kvm_vcpu
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
-+	addr = ioremap(dev->hpa.start, 4096);
-+	if (addr == NULL)
-+		return -ENOMEM;
-+
- 	/* Read HW Rev First */
- 	func_class = READ_REG32(addr + LBA_FCLASS);
+-	BUG_ON(!(gif_set(svm)));
+-
+ 	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+ 	++vcpu->stat.irq_injections;
  
 
 
