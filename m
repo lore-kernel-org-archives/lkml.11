@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B26C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B0AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355604AbiHOX5A (ORCPT
+        id S1355616AbiHOX5K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        Mon, 15 Aug 2022 19:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355290AbiHOXvr (ORCPT
+        with ESMTP id S1355304AbiHOXvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:51:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A6A91D07;
-        Mon, 15 Aug 2022 13:16:26 -0700 (PDT)
+        Mon, 15 Aug 2022 19:51:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C92891D1A;
+        Mon, 15 Aug 2022 13:16:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CE4FB810C5;
-        Mon, 15 Aug 2022 20:16:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F184DC433D6;
-        Mon, 15 Aug 2022 20:16:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 095796069F;
+        Mon, 15 Aug 2022 20:16:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C064C433D6;
+        Mon, 15 Aug 2022 20:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594584;
-        bh=4Ad6WHw+VEo7Yt24zjkg9al8JR/d0E217Ezuc9hpe3s=;
+        s=korg; t=1660594587;
+        bh=UiwS0woC9t2O9OGl5uIZCvA0IgPGyEzpElFJIVaIBUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aQTuVCQvRb6G4kaTJBXClG30dZUNULVxnIIzdftnV382+LLcpJaXfbK4/VbctqWGY
-         K909iC+Igd++X5ERCBAfIY/QKa45pd5q6CL6g1Zxebh7SDRSAPYsqqJRP11aB8zdA1
-         yKxW1GqnN/6yj2MLpfxLWFvbfcH4E5fwZpws/wSU=
+        b=m1nAOoezASS226ihH4SN0jfdsOdyUk9VRV8UYeALoo+lSU9Hd5JLC7SLZSsRTiObZ
+         3amKQsTclMIdxeYjhnyo/Zp1qAm+ui4b418OotBaSmKdLsD622TSMc8ZV8mlQqe5U3
+         plN+NcCsV4cWhttA42JKXDqeiKO7alBOAPLnmv0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, YN Chen <YN.Chen@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0495/1157] kunit: executor: Fix a memory leak on failure in kunit_filter_tests
-Date:   Mon, 15 Aug 2022 19:57:31 +0200
-Message-Id: <20220815180459.456122374@linuxfoundation.org>
+Subject: [PATCH 5.19 0478/1157] mt76: mt7921s: fix possible sdio deadlock in command fail
+Date:   Mon, 15 Aug 2022 19:57:14 +0200
+Message-Id: <20220815180458.747796390@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -55,55 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 94681e289bf5d10c9db9db143d1a22d8717205c5 ]
+[ Upstream commit 364718c94ac2ea4e51958ac0aa15c9092c785a3a ]
 
-It's possible that memory allocation for 'filtered' will fail, but for the
-copy of the suite to succeed. In this case, the copy could be leaked.
+Move sdio_release_host() to final resource handing
 
-Properly free 'copy' in the error case for the allocation of 'filtered'
-failing.
-
-Note that there may also have been a similar issue in
-kunit_filter_subsuites, before it was removed in "kunit: flatten
-kunit_suite*** to kunit_suite** in .kunit_test_suites".
-
-This was reported by clang-analyzer via the kernel test robot, here:
-https://lore.kernel.org/all/c8073b8e-7b9e-0830-4177-87c12f16349c@intel.com/
-
-And by smatch via Dan Carpenter and the kernel test robot:
-https://lore.kernel.org/all/202207101328.ASjx88yj-lkp@intel.com/
-
-Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: b12deb5e86fa ("mt76: mt7921s: fix mt7921s_mcu_[fw|drv]_pmctrl")
+Reported-by: YN Chen <YN.Chen@mediatek.com>
+Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/kunit/executor.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
-index 96f96e42ce06..16fb88c0aca3 100644
---- a/lib/kunit/executor.c
-+++ b/lib/kunit/executor.c
-@@ -76,8 +76,10 @@ kunit_filter_tests(struct kunit_suite *const suite, const char *test_glob)
- 	memcpy(copy, suite, sizeof(*copy));
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
+index 54a5c712a3c3..c572a3107b8b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
+@@ -136,8 +136,8 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
+ 	struct sdio_func *func = dev->mt76.sdio.func;
+ 	struct mt76_phy *mphy = &dev->mt76.phy;
+ 	struct mt76_connac_pm *pm = &dev->pm;
+-	int err = 0;
+ 	u32 status;
++	int err;
  
- 	filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
--	if (!filtered)
-+	if (!filtered) {
-+		kfree(copy);
- 		return ERR_PTR(-ENOMEM);
-+	}
+ 	sdio_claim_host(func);
  
- 	n = 0;
- 	kunit_suite_for_each_test_case(suite, test_case) {
+@@ -148,7 +148,7 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
+ 					 2000, 1000000);
+ 		if (err < 0) {
+ 			dev_err(dev->mt76.dev, "mailbox ACK not cleared\n");
+-			goto err;
++			goto out;
+ 		}
+ 	}
+ 
+@@ -156,18 +156,18 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
+ 
+ 	err = readx_poll_timeout(mt76s_read_pcr, &dev->mt76, status,
+ 				 !(status & WHLPCR_IS_DRIVER_OWN), 2000, 1000000);
++out:
+ 	sdio_release_host(func);
+ 
+-err:
+ 	if (err < 0) {
+ 		dev_err(dev->mt76.dev, "firmware own failed\n");
+ 		clear_bit(MT76_STATE_PM, &mphy->state);
+-		err = -EIO;
++		return -EIO;
+ 	}
+ 
+ 	pm->stats.last_doze_event = jiffies;
+ 	pm->stats.awake_time += pm->stats.last_doze_event -
+ 				pm->stats.last_wake_event;
+ 
+-	return err;
++	return 0;
+ }
 -- 
 2.35.1
 
