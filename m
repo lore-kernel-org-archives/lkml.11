@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C0EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF089C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349520AbiHOVoe (ORCPT
+        id S1349530AbiHOVok (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
+        Mon, 15 Aug 2022 17:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349303AbiHOVky (ORCPT
+        with ESMTP id S1349312AbiHOVkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:40:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D975A3E4;
-        Mon, 15 Aug 2022 12:28:55 -0700 (PDT)
+        Mon, 15 Aug 2022 17:40:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480A75A3F9;
+        Mon, 15 Aug 2022 12:28:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4E9D61089;
-        Mon, 15 Aug 2022 19:28:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC61C433C1;
-        Mon, 15 Aug 2022 19:28:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A9761089;
+        Mon, 15 Aug 2022 19:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3453C433D6;
+        Mon, 15 Aug 2022 19:28:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591734;
-        bh=iY2bOnNwwU/LTV/7DWrfsscKnAWaxqA/MNuZEkoDgjc=;
+        s=korg; t=1660591737;
+        bh=Crn7UfGD8TI4bN32FbgUjAZlJe0HbeYgeSEAu/snc6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yrp73DzBauZxeNykqpBblvQtw4NTM3Zn9MuzisckNDU6SGXrukgj927LfKHrFu7fh
-         FqEvJ7lgiv5M5F/siMW4Fb6oaFzxSGZZ2SiEcTlcsN7ESfMX9FKiaUhjcoaQtxAmcv
-         2vemBmKRTV6WgiG2AvYrll7wjLGvS3C992ZJf5qc=
+        b=MunsartTcujR8ctq+/7Z41qMfWAs7qhoKtdCkY/k8SJnbRFtmvnSkOYlH6M9YKwPe
+         P8vP6Pa9vpPUBgUTfpzpyogFeb59w1bL7+UcmrwA+FzH828d5HeyTQPp3BGXM6wCC+
+         KHDG2qtsiULWo3WNtbMtOGtlb7oq7UgD5QEr2Sck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.19 0001/1157] Makefile: link with -z noexecstack --no-warn-rwx-segments
-Date:   Mon, 15 Aug 2022 19:49:17 +0200
-Message-Id: <20220815180439.504474508@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0658/1095] iio: gyro: adxrs450: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:57 +0200
+Message-Id: <20220815180456.624957730@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,59 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
+[ Upstream commit 966d2f4ee7f6e189df47abf67223266ad31e201f ]
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: vmlinux has a LOAD segment with RWX permissions
+Fixes tag is inaccurate but unlikely anyone will be interested in
+backporting beyond that point.
 
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 53ac8500ba9b ("staging:iio:adxrs450: Move header file contents to main file")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-75-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Makefile |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iio/gyro/adxrs450.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -1033,6 +1033,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
- KBUILD_LDFLAGS_MODULE += --build-id=sha1
- LDFLAGS_vmlinux += --build-id=sha1
+diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
+index 04f350025215..f84438e0c42c 100644
+--- a/drivers/iio/gyro/adxrs450.c
++++ b/drivers/iio/gyro/adxrs450.c
+@@ -73,7 +73,7 @@ enum {
+ struct adxrs450_state {
+ 	struct spi_device	*us;
+ 	struct mutex		buf_lock;
+-	__be32			tx ____cacheline_aligned;
++	__be32			tx __aligned(IIO_DMA_MINALIGN);
+ 	__be32			rx;
  
-+KBUILD_LDFLAGS	+= -z noexecstack
-+ifeq ($(CONFIG_LD_IS_BFD),y)
-+KBUILD_LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
-+endif
-+
- ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
- LDFLAGS_vmlinux	+= $(call ld-option, -X,)
- endif
+ };
+-- 
+2.35.1
+
 
 
