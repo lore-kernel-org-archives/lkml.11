@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8ACC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3582C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244839AbiHOS7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
+        id S244854AbiHOS7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244944AbiHOS4V (ORCPT
+        with ESMTP id S244937AbiHOS4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09B53207D;
-        Mon, 15 Aug 2022 11:30:51 -0700 (PDT)
+        Mon, 15 Aug 2022 14:56:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452C964FD;
+        Mon, 15 Aug 2022 11:30:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 790B4B8106E;
-        Mon, 15 Aug 2022 18:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78B1C433D7;
-        Mon, 15 Aug 2022 18:30:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5C0160F9F;
+        Mon, 15 Aug 2022 18:30:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A1BC433D6;
+        Mon, 15 Aug 2022 18:30:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588249;
-        bh=0r83TGpcAX7q/Cw7qOMQx30enfCYni4wKmfou4vNh/8=;
+        s=korg; t=1660588246;
+        bh=QPTfQKqh2f76lb3mUBMoomoHcK9nZi9n8RF13z/wN6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TklbjKTtiFP9nY/y7iygYB6QalvVeN94EDyPnf3sjd7eooFAUuMkCrTd3x343dudC
-         cJChAegqi33PzwSGCaRlgc2DwdFuVcS/ZRn2wuaZ+chgPalnwqpWbujZORe7QMGLM9
-         VeSCUy564HfDG//dOHHuY567GDTKDwXj65NQV+PM=
+        b=HEDElQGt+prNOtlc0t8DjCOE8niGMB49FzBD+8NHY5TKUFRoxm4qRAlcKNONgDDZ9
+         BgN+sIEOmwd3YZZLHoXmz92mh/jwme12xwr5HGmac2C28jhs/KqpGHbwBPV2hdw2qj
+         YICGHXhpejnRMIrAB8rCq1Wo69mTzlvPBxVFtq7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org, Ezequiel Garcia <ezequiel@collabora.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 325/779] drm/msm/dpu: Fix for non-visible planes
-Date:   Mon, 15 Aug 2022 19:59:29 +0200
-Message-Id: <20220815180351.184909912@linuxfoundation.org>
+Subject: [PATCH 5.15 342/779] media: hantro: postproc: Fix motion vector space size
+Date:   Mon, 15 Aug 2022 19:59:46 +0200
+Message-Id: <20220815180351.888932267@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,49 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Ezequiel Garcia <ezequiel@collabora.com>
 
-[ Upstream commit cb77085b1f0a86ef9dfba86b5f3ed6c3340c2ea3 ]
+[ Upstream commit 9393761aec4c56b7f2f19d21f806d316731401c1 ]
 
-Fixes `kms_cursor_crc --run-subtest cursor-offscreen`.. when the cursor
-moves offscreen the plane becomes non-visible, so we need to skip over
-it in crtc atomic test and mixer setup.
+When the post-processor hardware block is enabled, the driver
+allocates an internal queue of buffers for the decoder enginer,
+and uses the vb2 queue for the post-processor engine.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Patchwork: https://patchwork.freedesktop.org/patch/492819/
-Link: https://lore.kernel.org/r/20220707212003.1710163-1-robdclark@gmail.com
+For instance, on a G1 core, the decoder engine produces NV12 buffers
+and the post-processor engine can produce YUY2 buffers. The decoder
+engine expects motion vectors to be appended to the NV12 buffers,
+but this is only required for CODECs that need motion vectors,
+such as H.264.
+
+Fix the post-processor logic accordingly.
+
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/staging/media/hantro/hantro_postproc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index 7706a7106122..2186fc947e5b 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -230,6 +230,9 @@ static void _dpu_crtc_blend_setup_mixer(struct drm_crtc *crtc,
- 		if (!state)
- 			continue;
+diff --git a/drivers/staging/media/hantro/hantro_postproc.c b/drivers/staging/media/hantro/hantro_postproc.c
+index ed8916c950a4..07842152003f 100644
+--- a/drivers/staging/media/hantro/hantro_postproc.c
++++ b/drivers/staging/media/hantro/hantro_postproc.c
+@@ -132,9 +132,10 @@ int hantro_postproc_alloc(struct hantro_ctx *ctx)
+ 	unsigned int num_buffers = cap_queue->num_buffers;
+ 	unsigned int i, buf_size;
  
-+		if (!state->visible)
-+			continue;
-+
- 		pstate = to_dpu_plane_state(state);
- 		fb = state->fb;
+-	buf_size = ctx->dst_fmt.plane_fmt[0].sizeimage +
+-		   hantro_h264_mv_size(ctx->dst_fmt.width,
+-				       ctx->dst_fmt.height);
++	buf_size = ctx->dst_fmt.plane_fmt[0].sizeimage;
++	if (ctx->vpu_src_fmt->fourcc == V4L2_PIX_FMT_H264_SLICE)
++		buf_size += hantro_h264_mv_size(ctx->dst_fmt.width,
++						ctx->dst_fmt.height);
  
-@@ -976,6 +979,9 @@ static int dpu_crtc_atomic_check(struct drm_crtc *crtc,
- 		if (cnt >= DPU_STAGE_MAX * 4)
- 			continue;
- 
-+		if (!pstate->visible)
-+			continue;
-+
- 		pstates[cnt].dpu_pstate = dpu_pstate;
- 		pstates[cnt].drm_pstate = pstate;
- 		pstates[cnt].stage = pstate->normalized_zpos;
+ 	for (i = 0; i < num_buffers; ++i) {
+ 		struct hantro_aux_buf *priv = &ctx->postproc.dec_q[i];
 -- 
 2.35.1
 
