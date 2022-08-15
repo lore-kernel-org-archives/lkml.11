@@ -2,111 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DB9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0713C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbiHOMfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41970 "EHLO
+        id S229763AbiHOMgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242247AbiHOMal (ORCPT
+        with ESMTP id S229623AbiHOMgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:30:41 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A026863EE;
-        Mon, 15 Aug 2022 05:30:40 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 21C9C3200947;
-        Mon, 15 Aug 2022 08:30:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 08:30:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1660566638; x=1660653038; bh=fnd7IRtL47oZ3GEXBeTqA34XltR+qlUApMq
-        Kfs2uGec=; b=oWNiRhjZ3jF76mANDWLqGxuvN+2Na6BQ/exB3v+jhP9nMjb6Ot+
-        HA45SHhepaE2bp86bOGKhWqExJSVYo0xH6ztMmDRp2fQULPDqvIlOOKVlEWFGiXR
-        gfawMKFi6RVZfMDLF7a5FhIZMLwH4K6sBjPNgvDsJTBC2Z+BH2XhTSIjbsga/IN4
-        xgy4ZTOtEN1/mNRlwMqdbksQijaDgrpLKQJqfaxLuJKcHYXRMN641g62NrbERKk/
-        Ht3v/wtovrXh3ASFgyt4dH4hEqt+Yh/jMeGXRsfYjGjbHdOONYraK3AYFSqrv/ZF
-        M506JZlGQsnl5L9BZ5j+MLqPcZKjVMTjyEQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1660566638; x=1660653038; bh=fnd7IRtL47oZ3
-        GEXBeTqA34XltR+qlUApMqKfs2uGec=; b=tuv49HflFNRBFlr+KNPeLJrt4UyJj
-        iXsztMJutTgG7QFQbAMFK+JDQBGAT5MA9r3bqpUmOsIDFnzE4AwDUVZaX0hg2JJT
-        sXkH9kSVQaLa9IwiAeiQSnJbXDgc17C1RuPZKdPlhLkURmt9z1WjtkQcqdyeZ3b6
-        1crlSA03yo17v04E2MM3xvr/9ugpvpP2BrsnbNmGdevsc2HmwKoF0VY5CYJoB7LH
-        s9zd8BRTkEiTSHftv+yyJhfmJBJ4Vn9ziiXJR2R98Ra1SWCcrncWnRbm3CYBm+UA
-        XyIda4Gqh1bEsR2Wl7AMV9igJDy/JgZkqFuCz4JeYg3/PODnYI+q3Utew==
-X-ME-Sender: <xms:bjz6Yl_AoWqXeprWOguqZn1RmUmcC5_V5QWl-BTmpljFDQsNK-FDGA>
-    <xme:bjz6YptePruN6zkcOGYTB_MndJAPZeMMSx-ZtMoGVHMwug-a5wJ1doh3RmQi4-RKY
-    zdDDngshLgtPLzDbg>
-X-ME-Received: <xmr:bjz6YjDi0Vq-lM-N4w2l2Xo2CJly3eP5N25XU2RAav9qzKi0qctBRS_93v3XZ-nKkugeeeGXgAhhjg-mVkT82fUbhuHZ7N7jh0Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgheefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefvohhmucfhihhtiihhvghnrhihuceothhomhesthhomhdq
-    fhhithiihhgvnhhrhidrmhgvrdhukheqnecuggftrfgrthhtvghrnhepudehfedtkefgfe
-    duieelgeegleettdehteefgfeuueegffelteeiiefftddutdevnecuffhomhgrihhnpehp
-    ihhnvgeigedrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehtohhmsehtohhmqdhfihhtiihhvghnrhihrdhmvgdruhhk
-X-ME-Proxy: <xmx:bjz6Ypfat6WJd7B5UNZ2vyUlZqgZGsnde-v3vom5n1CKlpffqIqe0Q>
-    <xmx:bjz6YqOAI29ZIvoNqRbXwkcOUHM2pwlFBehbuDSW8JLOOi_1n66mgQ>
-    <xmx:bjz6YrnT2qj7E5LY2RasVNJllyr-6ayZ5RJ3Dbv2-GZQyyCoA3enUg>
-    <xmx:bjz6YhnvfgL2Daj_vy4gPBULFnSDk9H98HSlgJhQHokqApwq5T1lqg>
-Feedback-ID: iefc945ae:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 08:30:34 -0400 (EDT)
-From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        heiko@sntech.de
-Cc:     martijn@brixit.nl, ayufan@ayufan.eu, megi@xff.cz,
-        tom@tom-fitzhenry.me.uk, devicetree@vger.kernel.org,
+        Mon, 15 Aug 2022 08:36:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130711A3BC;
+        Mon, 15 Aug 2022 05:36:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F0B611C6;
+        Mon, 15 Aug 2022 12:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1637DC433C1;
+        Mon, 15 Aug 2022 12:36:31 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, phone-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] dt-bindings: arm: rockchip: Add PinePhone Pro bindings
-Date:   Mon, 15 Aug 2022 22:30:03 +1000
-Message-Id: <20220815123004.252014-2-tom@tom-fitzhenry.me.uk>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815123004.252014-1-tom@tom-fitzhenry.me.uk>
-References: <20220815123004.252014-1-tom@tom-fitzhenry.me.uk>
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Feiyang Chen <chenfeiyang@loongson.cn>
+Subject: [PATCH V10 0/4] mm/sparse-vmemmap: Generalise helpers and enable for LoongArch
+Date:   Mon, 15 Aug 2022 20:36:09 +0800
+Message-Id: <20220815123613.3291770-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document board compatible names for Pine64 PinePhonePro.
+This series is in order to enable sparse-vmemmap for LoongArch. But
+LoongArch cannot use generic helpers directly because MIPS&LoongArch
+need to call pgd_init()/pud_init()/pmd_init() when populating page
+tables. So we adjust the prototypes of p?d_init() to make generic
+helpers can call them, then enable sparse-vmemmap with generic helpers,
+and to be further, generalise vmemmap_populate_hugepages() for ARM64,
+X86 and LoongArch.
 
-https://wiki.pine64.org/wiki/PinePhone_Pro
+V1 -> V2:
+Split ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP to a separate patch.
 
-Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+V2 -> V3:
+1, Change the Signed-off-by order of author and committer;
+2, Update commit message about the build error on LoongArch.
+
+V3 -> V4:
+Change pmd to pmdp for ARM64 for consistency.
+
+V4 -> V5:
+Add a detailed comment for no-fallback in the altmap case.
+
+V5 -> V6:
+1, Fix build error for NIOS2;
+2, Fix build error for allnoconfig;
+3, Update comment for no-fallback in the altmap case.
+
+V6 -> V7:
+Fix build warnings of "no previous prototype".
+
+V7 -> V8:
+Fix build error for MIPS pud_init().
+
+V8 -> V9:
+Remove redundant #include to avoid build error with latest upstream
+kernel.
+
+V9 -> V10:
+Fix build error due to VMEMMAP changes in 6.0-rc1.
+
+Huacai Chen and Feiyang Chen(4):
+ MIPS&LoongArch&NIOS2: Adjust prototypes of p?d_init().
+ LoongArch: Add sparse memory vmemmap support.
+ mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages().
+ LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP.
+
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn> 
 ---
- Documentation/devicetree/bindings/arm/rockchip.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
-index 7811ba64149cb..8ddedbd1ce317 100644
---- a/Documentation/devicetree/bindings/arm/rockchip.yaml
-+++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
-@@ -494,6 +494,11 @@ properties:
-           - const: pine64,pinenote
-           - const: rockchip,rk3566
- 
-+      - description: Pine64 PinePhonePro
-+        items:
-+          - const: pine64,pinephone-pro
-+          - const: rockchip,rk3399
-+
-       - description: Pine64 Rock64
-         items:
-           - const: pine64,rock64
--- 
-2.37.1
+ arch/arm64/mm/mmu.c                    | 53 ++++++--------------
+ arch/loongarch/Kconfig                 |  2 +
+ arch/loongarch/include/asm/pgalloc.h   | 13 +----
+ arch/loongarch/include/asm/pgtable.h   | 13 +++--
+ arch/loongarch/include/asm/sparsemem.h |  8 +++
+ arch/loongarch/kernel/numa.c           |  4 +-
+ arch/loongarch/mm/init.c               | 44 +++++++++++++++-
+ arch/loongarch/mm/pgtable.c            | 23 +++++----
+ arch/mips/include/asm/pgalloc.h        |  8 +--
+ arch/mips/include/asm/pgtable-64.h     |  8 +--
+ arch/mips/kvm/mmu.c                    |  3 +-
+ arch/mips/mm/pgtable-32.c              | 10 ++--
+ arch/mips/mm/pgtable-64.c              | 18 ++++---
+ arch/mips/mm/pgtable.c                 |  2 +-
+ arch/x86/mm/init_64.c                  | 92 ++++++++++++----------------------
+ include/linux/mm.h                     |  8 +++
+ include/linux/page-flags.h             |  1 +
+ mm/sparse-vmemmap.c                    | 64 +++++++++++++++++++++++
+ 18 files changed, 222 insertions(+), 152 deletions(-)
+--
+2.27.0
 
