@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D791DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B4CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244374AbiHOSxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
+        id S244388AbiHOSxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244185AbiHOSu0 (ORCPT
+        with ESMTP id S244291AbiHOSur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:50:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C085C4333A;
-        Mon, 15 Aug 2022 11:28:50 -0700 (PDT)
+        Mon, 15 Aug 2022 14:50:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0B143E63;
+        Mon, 15 Aug 2022 11:28:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89860B81062;
-        Mon, 15 Aug 2022 18:28:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0241C433D6;
-        Mon, 15 Aug 2022 18:28:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85E6C61024;
+        Mon, 15 Aug 2022 18:28:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F586C433D6;
+        Mon, 15 Aug 2022 18:28:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588127;
-        bh=FXcmKym8+v4WXGSA74E5HXWL4LuU9++qS5FPtliBTcI=;
+        s=korg; t=1660588133;
+        bh=hdV8J5AyuQITJCxcJPRnfcmvqD7I0mHvRmOnQModVmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GNuy19mQPr1E2jK2VETAJpclZx1djr8HXQCYEnNUJpISsnH8jIEwVabMj957FXVPE
-         2GLp0tT2Rx3rSkUuzl5AHaf9QTbB5T0h7pzWlDp794oM/GiLZzHKhZRY+cGYoADqvY
-         ymdgv/uwhhUYye/mVSOjR7Q4mQ1m2r0jFApaqzVM=
+        b=jCuZ2bQHLapVGuyH1wRsFpL4OYjpZosdy1myybw4JlNfVaEOZC/66o0kZUVTpCzsn
+         HBYRRytL6FZRjq84ZvgMkzA05jzcvIwUlw0LIPeNPvRKetiO3hddMtQp3R8YjyrnP+
+         4zqd0t1Ih9C2RHz5ALl9KTl71s8YuAW6uhVFLNZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        stable@vger.kernel.org, Dom Cobley <popcornmix@gmail.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 304/779] drm/vc4: dsi: Add correct stop condition to vc4_dsi_encoder_disable iteration
-Date:   Mon, 15 Aug 2022 19:59:08 +0200
-Message-Id: <20220815180350.288301178@linuxfoundation.org>
+Subject: [PATCH 5.15 306/779] drm/vc4: hdmi: Avoid full hdmi audio fifo writes
+Date:   Mon, 15 Aug 2022 19:59:10 +0200
+Message-Id: <20220815180350.370077660@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,40 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Dom Cobley <popcornmix@gmail.com>
 
-[ Upstream commit 7bcb9c8d0bc9f3cab8ac2634b056c2e6b63945ca ]
+[ Upstream commit 1c594eeccf92368177c2e22f1d3ee4933dfb8567 ]
 
-vc4_dsi_encoder_disable is partially an open coded version of
-drm_bridge_chain_disable, but it missed a termination condition
-in the loop for ->disable which meant that no post_disable
-calls were made.
+We are getting occasional VC4_HD_MAI_CTL_ERRORF in
+HDMI_MAI_CTL which seem to correspond with audio dropouts.
 
-Add in the termination clause.
+Reduce the threshold where we deassert DREQ to avoid the fifo
+overfilling
 
-Fixes: 033bfe7538a1 ("drm/vc4: dsi: Fix bridge chain handling")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-17-maxime@cerno.tech
+Fixes: bb7d78568814 ("drm/vc4: Add HDMI audio support")
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-21-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 333ea96fcde4..b7b2c76770dc 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -803,6 +803,9 @@ static void vc4_dsi_encoder_disable(struct drm_encoder *encoder)
- 	list_for_each_entry_reverse(iter, &dsi->bridge_chain, chain_node) {
- 		if (iter->funcs->disable)
- 			iter->funcs->disable(iter);
-+
-+		if (iter == dsi->bridge)
-+			break;
- 	}
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index e4533fe315bf..879245808e26 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1383,10 +1383,10 @@ static int vc4_hdmi_audio_prepare(struct device *dev, void *data,
  
- 	vc4_dsi_ulps(dsi, true);
+ 	/* Set the MAI threshold */
+ 	HDMI_WRITE(HDMI_MAI_THR,
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICHIGH) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_PANICLOW) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQHIGH) |
+-		   VC4_SET_FIELD(0x10, VC4_HD_MAI_THR_DREQLOW));
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICHIGH) |
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_PANICLOW) |
++		   VC4_SET_FIELD(0x06, VC4_HD_MAI_THR_DREQHIGH) |
++		   VC4_SET_FIELD(0x08, VC4_HD_MAI_THR_DREQLOW));
+ 
+ 	HDMI_WRITE(HDMI_MAI_CONFIG,
+ 		   VC4_HDMI_MAI_CONFIG_BIT_REVERSE |
 -- 
 2.35.1
 
