@@ -2,101 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75928C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEA2C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350754AbiHPASE (ORCPT
+        id S1344722AbiHPASM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55900 "EHLO
+        Mon, 15 Aug 2022 20:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353011AbiHPAJr (ORCPT
+        with ESMTP id S1346084AbiHPAKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:09:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5191741AD;
+        Mon, 15 Aug 2022 20:10:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CB521741BD
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660595364;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yF2p92c7UW45kbBlW38nCYzaIJh2lntG/FxhvA8qLXQ=;
+        b=gcIJuVRHhy3Z2I7GZw8Hg0B2LuC1ycK7lNWusdZ4/GX+AIp6KTq41j9bTXUWcJmFEvbBH8
+        zRgATha6SzWjdLf5CLGTF+C4JoIMYFHGdeBXh3ZPyoORGjL56x4WZoRgE6KYnWAItrCxDC
+        qxaPm5IGP4cIUjIVGg+vVjr5h06L5M4=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-127-nTXxZU6OOLSq_fbKk5Oosw-1; Mon, 15 Aug 2022 16:29:22 -0400
+X-MC-Unique: nTXxZU6OOLSq_fbKk5Oosw-1
+Received: by mail-qv1-f71.google.com with SMTP id dn2-20020a056214094200b0047491ead6a2so3126650qvb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:29:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=yF2p92c7UW45kbBlW38nCYzaIJh2lntG/FxhvA8qLXQ=;
+        b=lYgO2lrmhEmqNyAb5P4HBa8x/wD0HRLESXlC1ecSYfwmycou8+o8JrZUZ3z7kCzuPW
+         cep8/ziaJjA/TONIj/qDvpRPLob7arZjBJdIEFK2E5G56e+HEpcRNzKT864eFt4lUJcq
+         FDE7p3l1sSqb+mN73hLyukwgqEKPLSjrMc4Vt+YhiiK6uUnzQtKYhr8Y8Jzt2K8bOOwn
+         1XYiZe8HY46MRHzKhFcd29h1jyDyjZ2KkHpbID6P6anDEnKNyqVd/Wf9VguKLyEzrslE
+         tiMVOYQfYYTm5p/UPUgqPjanzbj6NE1CZjXFspE5ymzW36iCfQNw8VVANojcjzhisxxX
+         /YEA==
+X-Gm-Message-State: ACgBeo1XBa7Ip9D6qxCBBmm9xWPNVVJt4Kp3Kiw2TJE1pRA/rPqWRjDO
+        NMXmrNkESfsjJWhMdtpSRhEzM1iYuodBRzQKTh0M3+aHBdS0kSSlRst1L7lueZTutRjGVZQC8XX
+        3cGQ29LljTpScMk29CT4vn5+D
+X-Received: by 2002:a05:6214:4012:b0:476:f313:7fb with SMTP id kd18-20020a056214401200b00476f31307fbmr15152143qvb.130.1660595362282;
         Mon, 15 Aug 2022 13:29:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AD23B80EA8;
-        Mon, 15 Aug 2022 20:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86193C433D7;
-        Mon, 15 Aug 2022 20:29:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595359;
-        bh=bOmIgRM4vNz3Df9Jf/OuuxejBYT6qZkU/b0bYL8I7/w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZDrizdnsMRErkxuhlQw0CwwYrpPDXuMOcQ44meTBOh6RwC66CxnyvTCiD9OZLa1S
-         a/LaPxGW2eO9wEghn65PtFz2xRxKi2cZoxMtBIlntSaqCm4DL0ulLlN0aIiUcEX9TQ
-         bppow7XYtdf0Hc9rhxZogj+eX9EDP3BbhCMvVOU8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0740/1157] mtd: dataflash: Add SPI ID table
-Date:   Mon, 15 Aug 2022 20:01:36 +0200
-Message-Id: <20220815180509.082055892@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+X-Google-Smtp-Source: AA6agR7M2YNoyb3WxJwIyqbQOJCTtBR3o9E5qdm+nbEnRX6MOjsfXhK1hCLQcLdCsYq6SkZJarEQSQ==
+X-Received: by 2002:a05:6214:4012:b0:476:f313:7fb with SMTP id kd18-20020a056214401200b00476f31307fbmr15152125qvb.130.1660595362089;
+        Mon, 15 Aug 2022 13:29:22 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id o8-20020ac87c48000000b00343028a9425sm9464004qtv.16.2022.08.15.13.29.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 13:29:21 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 16:29:20 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>, linuxram@us.ibm.com,
+        paulus@ozlabs.org
+Subject: Re: [PATCH 1/2] mm/migrate_device.c: Copy pte dirty bit to page
+Message-ID: <YvqsoL7fKJzEqTA3@xz-m1.local>
+References: <a9daea363991c023d0364be22a762405b6c6f5c4.1660281458.git-series.apopple@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <a9daea363991c023d0364be22a762405b6c6f5c4.1660281458.git-series.apopple@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+Hi, Alistair,
 
-[ Upstream commit ac4f83482afbfd927d0fe118151b747cf175e724 ]
+On Fri, Aug 12, 2022 at 03:22:30PM +1000, Alistair Popple wrote:
+> migrate_vma_setup() has a fast path in migrate_vma_collect_pmd() that
+> installs migration entries directly if it can lock the migrating page.
+> When removing a dirty pte the dirty bit is supposed to be carried over
+> to the underlying page to prevent it being lost.
+> 
+> Currently migrate_vma_*() can only be used for private anonymous
+> mappings. That means loss of the dirty bit usually doesn't result in
+> data loss because these pages are typically not file-backed. However
+> pages may be backed by swap storage which can result in data loss if an
+> attempt is made to migrate a dirty page that doesn't yet have the
+> PageDirty flag set.
+> 
+> In this case migration will fail due to unexpected references but the
+> dirty pte bit will be lost. If the page is subsequently reclaimed data
+> won't be written back to swap storage as it is considered uptodate,
+> resulting in data loss if the page is subsequently accessed.
+> 
+> Prevent this by copying the dirty bit to the page when removing the pte
+> to match what try_to_migrate_one() does.
+> 
+> Signed-off-by: Alistair Popple <apopple@nvidia.com>
+> Reported-by: Peter Xu <peterx@redhat.com>
 
-Currently autoloading for SPI devices does not use the DT ID table, it uses
-SPI modalises. Supporting OF modalises is going to be difficult if not
-impractical, an attempt was made but has been reverted, so ensure that
-module autoloading works for this driver by adding an id_table listing the
-SPI IDs for everything.
+This line should be:
 
-Fixes: 96c8395e2166 ("spi: Revert modalias changes")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220620152313.708768-1-broonie@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mtd/devices/mtd_dataflash.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Reported-by: Huang Ying <ying.huang@intel.com>
 
-diff --git a/drivers/mtd/devices/mtd_dataflash.c b/drivers/mtd/devices/mtd_dataflash.c
-index 134e27328597..25bad4318305 100644
---- a/drivers/mtd/devices/mtd_dataflash.c
-+++ b/drivers/mtd/devices/mtd_dataflash.c
-@@ -112,6 +112,13 @@ static const struct of_device_id dataflash_dt_ids[] = {
- MODULE_DEVICE_TABLE(of, dataflash_dt_ids);
- #endif
- 
-+static const struct spi_device_id dataflash_spi_ids[] = {
-+	{ .name = "at45", },
-+	{ .name = "dataflash", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(spi, dataflash_spi_ids);
-+
- /* ......................................................................... */
- 
- /*
-@@ -936,6 +943,7 @@ static struct spi_driver dataflash_driver = {
- 
- 	.probe		= dataflash_probe,
- 	.remove		= dataflash_remove,
-+	.id_table	= dataflash_spi_ids,
- 
- 	/* FIXME:  investigate suspend and resume... */
- };
+Please also feel free to add:
+
+Acked-by: Peter Xu <peterx@redhat.com>
+
+Thanks,
+
 -- 
-2.35.1
-
-
+Peter Xu
 
