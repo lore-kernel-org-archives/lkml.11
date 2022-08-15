@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C03F4C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C79C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350933AbiHOWky (ORCPT
+        id S1351054AbiHOWlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
+        Mon, 15 Aug 2022 18:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350621AbiHOWgs (ORCPT
+        with ESMTP id S1350689AbiHOWgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:36:48 -0400
+        Mon, 15 Aug 2022 18:36:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1257D123C97;
-        Mon, 15 Aug 2022 12:50:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9301256CB;
+        Mon, 15 Aug 2022 12:50:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F4861206;
-        Mon, 15 Aug 2022 19:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49BD1C433D6;
-        Mon, 15 Aug 2022 19:50:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B984960FD8;
+        Mon, 15 Aug 2022 19:49:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4EEC433C1;
+        Mon, 15 Aug 2022 19:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593006;
-        bh=yS91eTGYnl0zjneEsllxzuD/65xXWIAvw+naJy6Lyrk=;
+        s=korg; t=1660592981;
+        bh=qV18CXrqDsPNUqyyYXpbc7vK2XRoYEx8HCVgIpmxHzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W8++TX5pmJGAgINK+eRxblb2AlrmtVroqHOG4jwlEzrZugHkUvdTcW2COekxGgcJp
-         Sl6nlzSCCwj8CUtb5WDF2YXqAKFKYddQ8yeRrvrZSc7NMWKGgszScqUCCnufhz27dQ
-         oopJi8fH/tZy7KhA9Nr4GX/dQOvHqqF/NPpJiFnU=
+        b=Tug0/G+4FZYzPQwoscaKg/Xj211j7DwQVzy7GEvl0cXB4AawNy6+HJvi/Vjtq7ljN
+         yrDJ/fS6d5X7pxGJ/Qi0ncAY8j6ZlVOJRmU0/4he7ZX1M8MrmjFWdF74ZVXBnw6lcw
+         W8RkfI9S7D4UvMCFSt/nQxzuD4kiVqfA/LvrovLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0199/1157] arm64: dts: renesas: beacon: Fix regulator node names
-Date:   Mon, 15 Aug 2022 19:52:35 +0200
-Message-Id: <20220815180447.653235166@linuxfoundation.org>
+Subject: [PATCH 5.18 0875/1095] MIPS: vdso: Utilize __pa() for gic_pfn
+Date:   Mon, 15 Aug 2022 20:04:34 +0200
+Message-Id: <20220815180505.557973427@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,58 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 7512af9f78dedea7e04225f665dad6750df7d095 ]
+[ Upstream commit 8baa65126e19af5ee9f3c07e7bb53da41c39e4b1 ]
 
-Currently there are two nodes named "regulator_camera".  This causes the
-former to be overwritten by the latter.
+The GIC user offset is mapped into every process' virtual address and is
+therefore part of the hot-path of arch_setup_additional_pages(). Utilize
+__pa() such that we are more optimal even when CONFIG_DEBUG_VIRTUAL is
+enabled, and while at it utilize PFN_DOWN() instead of open-coding the
+right shift by PAGE_SHIFT.
 
-Fix this by renaming them to unique names, using the preferred hyphen
-instead of an underscore.
-
-While at it, update the name of the audio regulator (which was added in
-the same commit) to use a hyphen.
-
-Fixes: a1d8a344f1ca0709 ("arm64: dts: renesas: Introduce r8a774a1-beacon-rzg2m-kit")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/a9ac82bdf108162487289d091c53a9b3de393f13.1652263918.git.geert+renesas@glider.be
+Reported-by: Greg Ungerer <gerg@kernel.org>
+Suggested-by: Serge Semin <fancer.lancer@gmail.com>
+Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Greg Ungerer <gerg@kernel.org>
+Tested-by: Greg Ungerer <gerg@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/mips/kernel/vdso.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-index 142e7ffbd2bd..63e7a39e100e 100644
---- a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-+++ b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
-@@ -146,7 +146,7 @@ rgb_panel: endpoint {
- 		};
- 	};
+diff --git a/arch/mips/kernel/vdso.c b/arch/mips/kernel/vdso.c
+index 3d0cf471f2fe..b2cc2c2dd4bf 100644
+--- a/arch/mips/kernel/vdso.c
++++ b/arch/mips/kernel/vdso.c
+@@ -159,7 +159,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+ 	/* Map GIC user page. */
+ 	if (gic_size) {
+ 		gic_base = (unsigned long)mips_gic_base + MIPS_GIC_USER_OFS;
+-		gic_pfn = virt_to_phys((void *)gic_base) >> PAGE_SHIFT;
++		gic_pfn = PFN_DOWN(__pa(gic_base));
  
--	reg_audio: regulator_audio {
-+	reg_audio: regulator-audio {
- 		compatible = "regulator-fixed";
- 		regulator-name = "audio-1.8V";
- 		regulator-min-microvolt = <1800000>;
-@@ -174,7 +174,7 @@ reg_lcd_reset: regulator-lcd-reset {
- 		vin-supply = <&reg_lcd>;
- 	};
- 
--	reg_cam0: regulator_camera {
-+	reg_cam0: regulator-cam0 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "reg_cam0";
- 		regulator-min-microvolt = <1800000>;
-@@ -183,7 +183,7 @@ reg_cam0: regulator_camera {
- 		enable-active-high;
- 	};
- 
--	reg_cam1: regulator_camera {
-+	reg_cam1: regulator-cam1 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "reg_cam1";
- 		regulator-min-microvolt = <1800000>;
+ 		ret = io_remap_pfn_range(vma, base, gic_pfn, gic_size,
+ 					 pgprot_noncached(vma->vm_page_prot));
 -- 
 2.35.1
 
