@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C842EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66083C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242024AbiHPAcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S244755AbiHPAcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346094AbiHPAaf (ORCPT
+        with ESMTP id S1347219AbiHPAaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:30:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248A518524C;
-        Mon, 15 Aug 2022 13:35:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3157537FA0;
+        Mon, 15 Aug 2022 13:35:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F530B80EA9;
-        Mon, 15 Aug 2022 20:35:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD18CC433D6;
-        Mon, 15 Aug 2022 20:35:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 936C4B80EAD;
+        Mon, 15 Aug 2022 20:35:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2B92C433C1;
+        Mon, 15 Aug 2022 20:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595753;
-        bh=nrWhq4iCZ7BN31NlTgoGvArbe2SU4K8P3fMYiYDV4vI=;
+        s=korg; t=1660595741;
+        bh=PQa41Dw1cLrvGbifrXo1+Q6UP14K5C3ONaexlLXM2xo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0U3H527qS3zHVQ8t4wNhl3cOL6ZIMUK6/Q5Bfd2PU9SfTKpkHYXLuCuJwo85IzyPf
-         dfD8Wj62BJVvNVeT+Ylb89MHTI52+JP8lNUA/sfJ5NIZjn1mhO5R6vrrppU7hwmQMj
-         CSardgsrzzPGRDfpgsDPbLm+LROQo6Yo3YruaFtE=
+        b=t3ZfCs+C/2gOY+8Q12x47dZHuunEQsBJkcHv2c4w6rIPCy9eeAnIoq/TqpqGppVRg
+         WWXzwFcQ7/zMpPVqpw6uuTmui9W8rdmDY4nd43O/Rt8FC2Z8TVwibzJmwM3kl4QAgO
+         bppFJ3G3i/LfKezvTSWpZuwtLtBcdl8SI0hypvEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0831/1157] clk: qcom: gdsc: Bump parent usage count when GDSC is found enabled
-Date:   Mon, 15 Aug 2022 20:03:07 +0200
-Message-Id: <20220815180512.735356534@linuxfoundation.org>
+Subject: [PATCH 5.19 0859/1157] platform/olpc: Fix uninitialized data in debugfs write
+Date:   Mon, 15 Aug 2022 20:03:35 +0200
+Message-Id: <20220815180513.832536957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,43 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 41fff779d7948147f2440c4bb134cdf8b45b22d7 ]
+[ Upstream commit 40ec787e1adf302c11668d4cc69838f4d584187d ]
 
-When a GDSC is found to be enabled at boot the pm_runtime state will
-be unbalanced as the GDSC is later turned off. Fix this by increasing
-the usage counter on the power-domain, in line with how we handled the
-regulator state.
+The call to:
 
-Fixes: 1b771839de05 ("clk: qcom: gdsc: enable optional power domain support")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Link: https://lore.kernel.org/r/20220713212818.130277-1-bjorn.andersson@linaro.org
+	size = simple_write_to_buffer(cmdbuf, sizeof(cmdbuf), ppos, buf, size);
+
+will succeed if at least one byte is written to the "cmdbuf" buffer.
+The "*ppos" value controls which byte is written.  Another problem is
+that this code does not check for errors so it's possible for the entire
+buffer to be uninitialized.
+
+Inintialize the struct to zero to prevent reading uninitialized stack
+data.
+
+Debugfs is normally only writable by root so the impact of this bug is
+very minimal.
+
+Fixes: 6cca83d498bd ("Platform: OLPC: move debugfs support from x86 EC driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YthIKn+TfZSZMEcM@kili
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gdsc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/platform/olpc/olpc-ec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
-index 44520efc6c72..2db0938f8dd3 100644
---- a/drivers/clk/qcom/gdsc.c
-+++ b/drivers/clk/qcom/gdsc.c
-@@ -420,6 +420,14 @@ static int gdsc_init(struct gdsc *sc)
- 				return ret;
- 		}
+diff --git a/drivers/platform/olpc/olpc-ec.c b/drivers/platform/olpc/olpc-ec.c
+index 4ff5c3a12991..921520475ff6 100644
+--- a/drivers/platform/olpc/olpc-ec.c
++++ b/drivers/platform/olpc/olpc-ec.c
+@@ -264,7 +264,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
+ 	int i, m;
+ 	unsigned char ec_cmd[EC_MAX_CMD_ARGS];
+ 	unsigned int ec_cmd_int[EC_MAX_CMD_ARGS];
+-	char cmdbuf[64];
++	char cmdbuf[64] = "";
+ 	int ec_cmd_bytes;
  
-+		/* ...and the power-domain */
-+		ret = gdsc_pm_runtime_get(sc);
-+		if (ret) {
-+			if (sc->rsupply)
-+				regulator_disable(sc->rsupply);
-+			return ret;
-+		}
-+
- 		/*
- 		 * Votable GDSCs can be ON due to Vote from other masters.
- 		 * If a Votable GDSC is ON, make sure we have a Vote.
+ 	mutex_lock(&ec_dbgfs_lock);
 -- 
 2.35.1
 
