@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BC3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37416C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbiHOWTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        id S1346928AbiHOWTT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343697AbiHOWPb (ORCPT
+        with ESMTP id S1346894AbiHOWPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:15:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D2B11F754;
-        Mon, 15 Aug 2022 12:39:43 -0700 (PDT)
+        Mon, 15 Aug 2022 18:15:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0886211FD05;
+        Mon, 15 Aug 2022 12:39:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E1D611F9;
-        Mon, 15 Aug 2022 19:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89969C433D6;
-        Mon, 15 Aug 2022 19:39:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A57B861089;
+        Mon, 15 Aug 2022 19:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94AAEC433D6;
+        Mon, 15 Aug 2022 19:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592360;
-        bh=gYJQV0CYwkY4S0gra6WnEjPpMfpNO/F+S1Ngd2WqFcI=;
+        s=korg; t=1660592388;
+        bh=E4IburYFyxNqjD2uNOcDErSh647TJxEvvwe2Jsd4HwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JxdayhxdAPNXDwvA1bR+DW2uYai+tQdDCtd7gyN/Et30i0yrE0zh33cYQh0ZAknIS
-         V9nAhkVaz/J64fDuqCOJRMX9HdnOeupp7QceU5I7CTRjAxpKVfIMHfKBD+zYqz7AoW
-         +COZGFCBJcoCrjKXCDs6xDe5rhWQJLIweO4RxcRc=
+        b=2j2ajrwWSDXDp1fACrh/0MGnogl68qPrjwO2JvHcNmvDQaPbwv+qiY+z9h4CpHoNB
+         4YkQ2BC/bS+iU0rn5wVihw1k9U3QFIQeZ/bBBsq4t5P8aUTTP9yHDuDrg2OuZjAyQ2
+         +dDK9TR+mbhQaBIXCW6SjZmQP657yHCcxB8UP+Jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0775/1095] clk: qcom: gcc-msm8939: Fix weird field spacing in ftbl_gcc_camss_cci_clk
-Date:   Mon, 15 Aug 2022 20:02:54 +0200
-Message-Id: <20220815180501.323380876@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Christophe Branchereau <cbranchereau@gmail.com>
+Subject: [PATCH 5.19 0085/1157] drm/ingenic: Use the highest possible DMA burst size
+Date:   Mon, 15 Aug 2022 19:50:41 +0200
+Message-Id: <20220815180442.945329316@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Paul Cercueil <paul@crapouillou.net>
 
-[ Upstream commit 2bc308ebc453ba22f3f120f777b9ac48f973ee80 ]
+commit f0dce5c4fdaf9e98dd2755ffb1363822854b6287 upstream.
 
-Adding a new item to this frequency table I see the existing indentation is
-incorrect.
+Until now, when running at the maximum resolution of 1280x720 at 32bpp
+on the JZ4770 SoC the output was garbled, the X/Y position of the
+top-left corner of the framebuffer warping to a random position with
+the whole image being offset accordingly, every time a new frame was
+being submitted.
 
-Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220712125922.3461675-2-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This problem can be eliminated by using a bigger burst size for the DMA.
+
+Set in each soc_info structure the maximum burst size supported by the
+corresponding SoC, and use it in the driver.
+
+Set the new value using regmap_update_bits() instead of
+regmap_set_bits(), since we do want to override the old value of the
+burst size. (Note that regmap_set_bits() wasn't really valid before for
+the same reason, but it never seemed to be a problem).
+
+Cc: <stable@vger.kernel.org>
+Fixes: 90b86fcc47b4 ("DRM: Add KMS driver for the Ingenic JZ47xx SoCs")
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220702230727.66704-1-paul@crapouillou.net
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Tested-by: Christophe Branchereau <cbranchereau@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-msm8939.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/ingenic/ingenic-drm-drv.c |   10 ++++++++--
+ drivers/gpu/drm/ingenic/ingenic-drm.h     |    3 +++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
-index c7377ec0f423..de0022e5450d 100644
---- a/drivers/clk/qcom/gcc-msm8939.c
-+++ b/drivers/clk/qcom/gcc-msm8939.c
-@@ -1014,7 +1014,7 @@ static struct clk_rcg2 blsp1_uart2_apps_clk_src = {
- };
+--- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
++++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+@@ -69,6 +69,7 @@ struct jz_soc_info {
+ 	bool map_noncoherent;
+ 	bool use_extended_hwdesc;
+ 	bool plane_f0_not_working;
++	u32 max_burst;
+ 	unsigned int max_width, max_height;
+ 	const u32 *formats_f0, *formats_f1;
+ 	unsigned int num_formats_f0, num_formats_f1;
+@@ -318,8 +319,9 @@ static void ingenic_drm_crtc_update_timi
+ 		regmap_write(priv->map, JZ_REG_LCD_REV, mode->htotal << 16);
+ 	}
  
- static const struct freq_tbl ftbl_gcc_camss_cci_clk[] = {
--	F(19200000,	P_XO, 1, 0,	0),
-+	F(19200000, P_XO, 1, 0, 0),
- 	{ }
- };
+-	regmap_set_bits(priv->map, JZ_REG_LCD_CTRL,
+-			JZ_LCD_CTRL_OFUP | JZ_LCD_CTRL_BURST_16);
++	regmap_update_bits(priv->map, JZ_REG_LCD_CTRL,
++			   JZ_LCD_CTRL_OFUP | JZ_LCD_CTRL_BURST_MASK,
++			   JZ_LCD_CTRL_OFUP | priv->soc_info->max_burst);
  
--- 
-2.35.1
-
+ 	/*
+ 	 * IPU restart - specify how much time the LCDC will wait before
+@@ -1518,6 +1520,7 @@ static const struct jz_soc_info jz4740_s
+ 	.map_noncoherent = false,
+ 	.max_width = 800,
+ 	.max_height = 600,
++	.max_burst = JZ_LCD_CTRL_BURST_16,
+ 	.formats_f1 = jz4740_formats,
+ 	.num_formats_f1 = ARRAY_SIZE(jz4740_formats),
+ 	/* JZ4740 has only one plane */
+@@ -1529,6 +1532,7 @@ static const struct jz_soc_info jz4725b_
+ 	.map_noncoherent = false,
+ 	.max_width = 800,
+ 	.max_height = 600,
++	.max_burst = JZ_LCD_CTRL_BURST_16,
+ 	.formats_f1 = jz4725b_formats_f1,
+ 	.num_formats_f1 = ARRAY_SIZE(jz4725b_formats_f1),
+ 	.formats_f0 = jz4725b_formats_f0,
+@@ -1541,6 +1545,7 @@ static const struct jz_soc_info jz4770_s
+ 	.map_noncoherent = true,
+ 	.max_width = 1280,
+ 	.max_height = 720,
++	.max_burst = JZ_LCD_CTRL_BURST_64,
+ 	.formats_f1 = jz4770_formats_f1,
+ 	.num_formats_f1 = ARRAY_SIZE(jz4770_formats_f1),
+ 	.formats_f0 = jz4770_formats_f0,
+@@ -1555,6 +1560,7 @@ static const struct jz_soc_info jz4780_s
+ 	.plane_f0_not_working = true,	/* REVISIT */
+ 	.max_width = 4096,
+ 	.max_height = 2048,
++	.max_burst = JZ_LCD_CTRL_BURST_64,
+ 	.formats_f1 = jz4770_formats_f1,
+ 	.num_formats_f1 = ARRAY_SIZE(jz4770_formats_f1),
+ 	.formats_f0 = jz4770_formats_f0,
+--- a/drivers/gpu/drm/ingenic/ingenic-drm.h
++++ b/drivers/gpu/drm/ingenic/ingenic-drm.h
+@@ -106,6 +106,9 @@
+ #define JZ_LCD_CTRL_BURST_4			(0x0 << 28)
+ #define JZ_LCD_CTRL_BURST_8			(0x1 << 28)
+ #define JZ_LCD_CTRL_BURST_16			(0x2 << 28)
++#define JZ_LCD_CTRL_BURST_32			(0x3 << 28)
++#define JZ_LCD_CTRL_BURST_64			(0x4 << 28)
++#define JZ_LCD_CTRL_BURST_MASK			(0x7 << 28)
+ #define JZ_LCD_CTRL_RGB555			BIT(27)
+ #define JZ_LCD_CTRL_OFUP			BIT(26)
+ #define JZ_LCD_CTRL_FRC_GRAYSCALE_16		(0x0 << 24)
 
 
