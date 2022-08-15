@@ -2,259 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F50C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98611C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243547AbiHOUSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        id S230397AbiHOUSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243529AbiHOUJf (ORCPT
+        with ESMTP id S231645AbiHOUJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:35 -0400
-Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E6EDEA
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1660589765; x=1692125765;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=V1iJTH7GEzKcPtxfy/9tnWQGVGcg7nbx15/9pWEV0IM=;
-  b=pitYxZyMLK+REI+EurRcy/tpWLEJDFEVJIi1FYF51fEvfSEDQOrS8/e3
-   g85WadfNH0rSJApoQ9Din4/odQQQW7LQox9zKQYh+RT5E8CzVjLvGUvJs
-   ROYZFpGo7iy2LlKAIjdQHEsasGO5KhckxwrKx0by4JPrtr1Vm05CX7Wh/
-   op1isfNkFQnJgljbYi0/GV8bWfoAXpKusAUzU80Z0MxQU1HiUazPSlxb+
-   kuLZpzyFyT2ZG60DIrBU4/VKKdSoExFYCYTgp4knfI69xRcWsgpCKiq+c
-   5MI4ge0ciNVjkrzvLhNTRGwkaPiSbKi8WDVe7KYujFLP4FIRQXftiQrIW
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,239,1654531200"; 
-   d="scan'208";a="320854674"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 16 Aug 2022 02:56:04 +0800
-IronPort-SDR: QPCAinqKYkgwWONS598Cp1X3hJ7ygMz3ivgsEF3p6z8utUre011BSWuVtoCViecXF5Oj9a3Jja
- ltHOd2+FaEPVisEVsy7AxCpgR7fT6Fivt0tP2aB1wdK9VoUEX/pdNR7pFOQh2F5Ds2aFmnbLtu
- Fxm1a4RnVMY4JRUkMrBbw/AnKQ9iJGTKVeQkzMY0kGWzPYzHjmSxmZYUaHoudJ3RHXGTJynngB
- TVYgCK0tVsp9rVHaWqdbGBvplL8OZSTXQpFRLRvxKAiVpzGJYPwICOLU0SXLjceHuYOPb3y0u7
- pax0Vx77+Yg7InVPRung0g0T
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Aug 2022 11:11:34 -0700
-IronPort-SDR: q5JvKtLj7EYeK3bnmJ2y6nykoFApnjzNXx9Rt0lHhSeRlYUzd6FYtddrCkQAlTUZkZNZc/Sj64
- 5h6LpPx8Ezrib8yWtpx78NNIApVMt9xfC1v0VgDqADIDAkyEud6cmWgHosik0KpICPn8ch001U
- tWRENYia1xc02ZDgopxDjayLwKVG8EALxoat2eGFAuXpoqvSr5JLHNG6Mie9KhHwaHmMeD65RB
- s+UnvEQZ5QZul3P8VkY9uQMPAWBzfScEDTmS97iU5KRi1WR/ZF2bofNMzQ/WAI3d3fiSyzSTBE
- Hno=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Aug 2022 11:56:05 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M63QX1tGMz1Rws4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:56:04 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1660589763; x=1663181764; bh=V1iJTH7GEzKcPtxfy/9tnWQGVGcg7nbx15/
-        9pWEV0IM=; b=cVDPi0Kzmzep2M8EqbqerFRmNFoCzwAWbOj49TmDAhX+LD4UCaY
-        Cu/8kISW5TTQjQoXXq5GIOG6cDv01dng/UeI8zZzrI7QOlT+Bs+E/55TUL4BKYks
-        TUVkhsU9i+QuCZCUKDcmfCnSl3gC4HeZNgOS0Ks4RuWeVYoZgZF46Gr5uJ/oElz0
-        AT1tRvaEpFm3UCnJTto+JubxBpyWER7qwvosuu75e+ozyN8f8uUz7qqfGdvf3Xjp
-        +UE2mjvKQtKTTuhao8LQoYETzhYUPGqQveWajxIvwokYLcuQxC4CcQAo1VLKbLwy
-        X3ZpKiTUFbceakcDnLArV9shPg/mZTqGRBA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id yUTCVRQyIPBm for <linux-kernel@vger.kernel.org>;
-        Mon, 15 Aug 2022 11:56:03 -0700 (PDT)
-Received: from [10.11.46.122] (c02drav6md6t.sdcorp.global.sandisk.com [10.11.46.122])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M63QT4j3Gz1RtVk;
-        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
-Message-ID: <d4735d9e-31b6-0872-82a7-acbbd0cb5af5@opensource.wdc.com>
-Date:   Mon, 15 Aug 2022 11:56:01 -0700
+        Mon, 15 Aug 2022 16:09:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E745E83F13;
+        Mon, 15 Aug 2022 11:56:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35A35B8105C;
+        Mon, 15 Aug 2022 18:55:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D315C433B5;
+        Mon, 15 Aug 2022 18:55:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589756;
+        bh=ykdKXs4qXCQoLzzTkpAnTym0LPHlNozcDOaKd/4WEhY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0mwq2KFQEUUdbj+L1/uXCiALmqZYwKc/vQbqI9ITomoAPMjuZgaiXvfImSbG2dvSD
+         rlLT4Nmk14QHFBwPdeYMOcRypy0qbsB8m5Jxb2EhveeeCTjSwnW+Bh9RdCNH+kHIF6
+         GK/sHsOKdpQKjFHNUGzDvr5PG3MCb5UBOLjw3AaU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kai Huang <kai.huang@intel.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0039/1095] KVM: x86: Tag kvm_mmu_x86_module_init() with __init
+Date:   Mon, 15 Aug 2022 19:50:38 +0200
+Message-Id: <20220815180431.026391216@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH v10 13/13] dm: add power-of-2 target for zoned devices
- with non power-of-2 zone sizes
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, snitzer@kernel.org,
-        axboe@kernel.dk, hch@lst.de, agk@redhat.com
-Cc:     linux-block@vger.kernel.org, Johannes.Thumshirn@wdc.com,
-        bvanassche@acm.org, matias.bjorling@wdc.com, hare@suse.de,
-        gost.dev@samsung.com, linux-nvme@lists.infradead.org,
-        jaegeuk@kernel.org, pankydev8@gmail.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Joel Granados <j.granados@samsung.com>
-References: <20220811143043.126029-1-p.raghav@samsung.com>
- <CGME20220811143058eucas1p247291685ffff7a75186947fd30b5c13f@eucas1p2.samsung.com>
- <20220811143043.126029-14-p.raghav@samsung.com>
- <bb4ab1f2-7e16-15a7-58b1-d37f6f3822fd@opensource.wdc.com>
- <b98ab80d-1bc0-a378-d438-09ef8b375836@samsung.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <b98ab80d-1bc0-a378-d438-09ef8b375836@samsung.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/08/15 6:38, Pankaj Raghav wrote:
-> Hi Damien,
-> 
->>> +static int dm_po2z_map_read_emulated_area(struct dm_po2z_target *dmh,
->>> +					  struct bio *bio)
->>
->> This really should be called dm_po2z_handle_read() since it handles both cases
->> of read commands, with and without the accept partial. Note that this is
->> retesting the need for a split after that was already tested in dm_po2z_map()
->> with bio_across_emulated_zone_area(). So the code should be better organized to
->> avoid that repetition.
->>
->> You can simplify the code by having bio_across_emulated_zone_area() return 0 for
->> a bio that does not cross the zone capacity and return the number of sectors up
->> to the zone capacity from the bio start if there is a cross. That value can then
-> The offset will also be zero if the BIO starts at the zone capacity and
-> dm_po2z_map will assume that the bio did not cross the emulated zone boundary.
-> 
->> be used to call dm_accept_partial_bio() directly in dm_po2z_map() for read
->> commands. That will make this function much simpler and essentially turn it into
->> dm_po2z_read_zeroes().
->>
->>> +{
-> 
-> What about something like this? We have one function:
-> bio_in_emulated_zone_area() that checks if a BIO is partly or completely in the
-> emulated zone area and also returns the offset from bio to the emulated zone
-> boundary (zone capacity of the device).
-> 
-> /**
->  * bio_in_emulated_zone_area - check if bio is in the emulated zone area
->  * @dmh:	pozone target data
->  * @bio:	bio
->  * @offset:	bio offset to emulated zone boundary
->  *
->  * Check if a @bio is partly or completely in the emulated zone area. If the
->  * @bio is partly in the emulated zone area, @offset
->  * can be used to split the @bio across the emulated zone boundary. @offset
->  * will be negative if the @bio completely lies in the emulated area.
->  *  */
-> static bool bio_in_emulated_zone_area(struct dm_po2z_target *dmh,
-> 					  struct bio *bio, int *offset)
-> {
-> 	unsigned int zone_idx = po2_zone_no(dmh, bio->bi_iter.bi_sector);
-> 	sector_t nr_sectors = bio->bi_iter.bi_size >> SECTOR_SHIFT;
-> 	sector_t relative_sect_in_zone =
+From: Sean Christopherson <seanjc@google.com>
 
-Nit: Could simply call this sector_offset.
+commit 982bae43f11c37b51d2f1961bb25ef7cac3746fa upstream.
 
-> 		bio->bi_iter.bi_sector - (zone_idx << dmh->zone_size_po2_shift);
-> 
-> 	*offset = dmh->zone_size - relative_sect_in_zone;
-> 
-> 	return (relative_sect_in_zone + nr_sectors) > dmh->zone_size;
+Mark kvm_mmu_x86_module_init() with __init, the entire reason it exists
+is to initialize variables when kvm.ko is loaded, i.e. it must never be
+called after module initialization.
 
-No need for the parenthesis.
+Fixes: 1d0e84806047 ("KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded")
+Cc: stable@vger.kernel.org
+Reviewed-by: Kai Huang <kai.huang@intel.com>
+Tested-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220803224957.1285926-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/kvm_host.h |    2 +-
+ arch/x86/kvm/mmu/mmu.c          |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> }
-> 
-> static int dm_po2z_read_zeroes(struct bio *bio)
-
-Make that an inline.
-
-> {
-> 	zero_fill_bio(bio);
-> 	bio_endio(bio);
-> 	return DM_MAPIO_SUBMITTED;
-> }
-> 
-> static int dm_po2z_remap_sector(struct dm_po2z_target *dmh, struct bio *bio)
-
-Inline this one too.
-
-> {
-> 	bio->bi_iter.bi_sector =
-> 		target_to_device_sect(dmh, bio->bi_iter.bi_sector);
-> 	return DM_MAPIO_REMAPPED;
-> }
-> 
-> static int dm_po2z_map(struct dm_target *ti, struct bio *bio)
-> {
-> 	struct dm_po2z_target *dmh = ti->private;
-> 
-> 	bio_set_dev(bio, dmh->dev->bdev);
-> 	if (bio_sectors(bio) || op_is_zone_mgmt(bio_op(bio))) {
-> 		int split_io_pos;
-
-Blank line needed here.
-
-> 		if (!bio_in_emulated_zone_area(dmh, bio, &split_io_pos)) {
-> 			return dm_po2z_remap_sector(dmh, bio);
-> 		}
-
-No need for the curly brackets.
-
-> 		/*
-> 		 * Read operation on the emulated zone area (between zone capacity
-> 		 * and zone size) will fill the bio with zeroes. Any other operation
-> 		 * in the emulated area should return an error.
-> 		 */
-> 		if (bio_op(bio) == REQ_OP_READ) {
-> 			if (split_io_pos > 0) {
-> 				dm_accept_partial_bio(bio, split_io_pos);
-> 				return dm_po2z_remap_sector(dmh, bio);
-> 			}
-> 			return dm_po2z_read_zeroes(bio);
-> 		}
-> 		return DM_MAPIO_KILL;
-> 	}
-> 	return DM_MAPIO_REMAPPED;
-> }
-> 
-> Let me know what you think.
-
-I think this is way better. But I would still reorganize this like this:
-
-static int dm_po2z_map(struct dm_target *ti, struct bio *bio)
-{
-        struct dm_po2z_target *dmh = ti->private;
-        int split_io_pos;
-
-        bio_set_dev(bio, dmh->dev->bdev);
-
-        if (op_is_zone_mgmt(bio_op(bio)))
-                return dm_po2z_remap_sector(dmh, bio);
-
-        if (!bio_sectors(bio))
-                return DM_MAPIO_REMAPPED;
-
-        /*
-         * Read operation on the emulated zone area (between zone capacity
-         * and zone size) will fill the bio with zeroes. Any other operation
-         * in the emulated area should return an error.
-         */
-        if (!bio_in_emulated_zone_area(dmh, bio, &split_io_pos))
-                return dm_po2z_remap_sector(dmh, bio);
-
-        if (bio_op(bio) == REQ_OP_READ) {
-                if (split_io_pos > 0) {
-                        dm_accept_partial_bio(bio, split_io_pos);
-                        return dm_po2z_remap_sector(dmh, bio);
-                }
-                return dm_po2z_read_zeroes(bio);
-        }
-
-        return DM_MAPIO_KILL;
-}
-
-I find the code easier to follow this way.
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1588,7 +1588,7 @@ static inline int kvm_arch_flush_remote_
+ #define kvm_arch_pmi_in_guest(vcpu) \
+ 	((vcpu) && (vcpu)->arch.handling_intr_from_guest)
+ 
+-void kvm_mmu_x86_module_init(void);
++void __init kvm_mmu_x86_module_init(void);
+ int kvm_mmu_vendor_module_init(void);
+ void kvm_mmu_vendor_module_exit(void);
+ 
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6264,7 +6264,7 @@ static int set_nx_huge_pages(const char
+  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
+  * its default value of -1 is technically undefined behavior for a boolean.
+  */
+-void kvm_mmu_x86_module_init(void)
++void __init kvm_mmu_x86_module_init(void)
+ {
+ 	if (nx_huge_pages == -1)
+ 		__set_nx_huge_pages(get_nx_auto_mode());
 
 
-
--- 
-Damien Le Moal
-Western Digital Research
