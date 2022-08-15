@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5C1C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68868C32762
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353259AbiHPAFu (ORCPT
+        id S1353544AbiHPAGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        Mon, 15 Aug 2022 20:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354798AbiHOX5T (ORCPT
+        with ESMTP id S1355295AbiHOX6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:57:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A6145059;
-        Mon, 15 Aug 2022 13:20:16 -0700 (PDT)
+        Mon, 15 Aug 2022 19:58:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE3C164420;
+        Mon, 15 Aug 2022 13:20:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E1460F71;
-        Mon, 15 Aug 2022 20:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C339C433C1;
-        Mon, 15 Aug 2022 20:20:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41C94B80EB1;
+        Mon, 15 Aug 2022 20:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DED2C433C1;
+        Mon, 15 Aug 2022 20:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594815;
-        bh=0k9//eBqNhDq78+Kg1GxWRhLI/u1l1Xl9phB5I/ycWs=;
+        s=korg; t=1660594808;
+        bh=WJJZjSRsNAmFjH1N2BZiZSDeHE3N2TcBII3rUzJ6/LA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SPlaY8KqSM5TyE6OLIuX5xSsnYqkV/mPh7sGvBIWK8djuhXsVKhL5C5t9J2SmsBHR
-         /bEv2LMHQsmJWGTQ241JOTNzCEXYd7ie2BYkBr6dHXNDhbZsxXxTCxWv9MIK7i9Z9E
-         pCldi5P+DFuoYFq6zXXZfoQP7KdYMcuzVWTSWF/Y=
+        b=HRMz+9nmz/s75Xfwg7XeGHiIv9qD9w9ZOOU1bh9aJ4awTNnY5mORWmGvElg3X9J4M
+         1bM30SI4mn0rrR17pJlCkO+tBrWQFWrQRwzD1sAVYbJr8+Ump2RitVaXuMD4PzPcaS
+         wC0z6wUEM5yLg7GdAwHlyFid5iMtppgsKyDd/wjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0567/1157] net: ice: fix error NETIF_F_HW_VLAN_CTAG_FILTER check in ice_vsi_sync_fltr()
-Date:   Mon, 15 Aug 2022 19:58:43 +0200
-Message-Id: <20220815180502.295591842@linuxfoundation.org>
+Subject: [PATCH 5.19 0548/1157] net/mlx5e: TC, Fix post_act to not match on in_port metadata
+Date:   Mon, 15 Aug 2022 19:58:24 +0200
+Message-Id: <20220815180501.568814195@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,38 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Maor Dickman <maord@nvidia.com>
 
-[ Upstream commit 7dc839fe47611e6995f370cae37b9797cf7d2672 ]
+[ Upstream commit 903f2194f74bbd289f3170114035d472a36a8ab4 ]
 
-vsi->current_netdev_flags is used store the current net device
-flags, not the active netdevice features. So it should use
-vsi->netdev->featurs, rather than vsi->current_netdev_flags
-to check NETIF_F_HW_VLAN_CTAG_FILTER.
+The cited commit changed CT to use multi table actions post act infrastructure instead
+of using it own post act infrastructure, this broke decap during VF tunnel offload
+(Stack devices) with CT due to wrong match on in_port metadata in the post act table.
+This changed only broke VF tunnel offload because it modify the packet in_port metadata
+to be VF metadata and it isn't propagate the post act creation.
 
-Fixes: 1babaf77f49d ("ice: Advertise 802.1ad VLAN filtering and offloads for PF netdev")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixed by modify post act rules to match only on fte_id and not match on in_port metadata
+which isn't needed.
+
+Fixes: a81283263bb0 ("net/mlx5e: Use multi table support for CT and sample actions")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9f02b60459f1..bc68dc5c6927 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -433,7 +433,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 						IFF_PROMISC;
- 					goto out_promisc;
- 				}
--				if (vsi->current_netdev_flags &
-+				if (vsi->netdev->features &
- 				    NETIF_F_HW_VLAN_CTAG_FILTER)
- 					vlan_ops->ena_rx_filtering(vsi);
- 			}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+index dea137dd744b..2b64dd557b5d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -128,6 +128,7 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
+ 	post_attr->inner_match_level = MLX5_MATCH_NONE;
+ 	post_attr->outer_match_level = MLX5_MATCH_NONE;
+ 	post_attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_DECAP;
++	post_attr->flags |= MLX5_ATTR_FLAG_NO_IN_PORT;
+ 
+ 	handle->ns_type = post_act->ns_type;
+ 	/* Splits were handled before post action */
 -- 
 2.35.1
 
