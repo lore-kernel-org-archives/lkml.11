@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED8FC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20591C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351838AbiHPAKi (ORCPT
+        id S1353307AbiHPAKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Mon, 15 Aug 2022 20:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356014AbiHPABy (ORCPT
+        with ESMTP id S1356025AbiHPABz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:01:54 -0400
+        Mon, 15 Aug 2022 20:01:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF761168147;
-        Mon, 15 Aug 2022 13:23:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5075C1677CB;
+        Mon, 15 Aug 2022 13:23:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D3E2B8119D;
-        Mon, 15 Aug 2022 20:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0BEAC433C1;
-        Mon, 15 Aug 2022 20:23:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01C56B8119B;
+        Mon, 15 Aug 2022 20:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38143C433D6;
+        Mon, 15 Aug 2022 20:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595001;
-        bh=deLeL89S1PDC0d+Bk9oRQzN77DD6XWdco28/ZFe8ajs=;
+        s=korg; t=1660594991;
+        bh=kWhCVLa2hIdt+6A4jmvdG3NihjyJlK0l95tur8Z+cTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JzSSULSCFbqaYPp1uD/t7XEuX0VgFv19PRGcj5kfOSBCFyZ8VmXFztP9rj7HNW2U+
-         oKCnRrYwgnDr9/Rd1KJjY/jYhkd3bA3yElTtkHPg88oKlope4xyZJARFt5WaRlbq6r
-         iJ6PUYgJ692+SffVxftpn1WRYMyZnFNioczbSUfE=
+        b=kK0tiwL3w4YX0/JVQBRau5glHJ9QixtKIeT6H57PbN0hbB+yqPg7bIdGq0fZqf1TI
+         k+Lb6BSQ9pZQxBBvYBUdcdr6EsiLfBN+wEk2LSVkK/+I03USPwtdXCQHJdjpddkdzj
+         9dbAWef231doIQvsf9okyqmf4UgVxwQI6H+BF7pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rajat Jain <rajatja@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0626/1157] platform/chrome: cros_ec: Always expose last resume result
-Date:   Mon, 15 Aug 2022 19:59:42 +0200
-Message-Id: <20220815180504.705824534@linuxfoundation.org>
+Subject: [PATCH 5.19 0591/1157] KVM: SVM: Stuff next_rip on emulated INT3 injection if NRIPS is supported
+Date:   Mon, 15 Aug 2022 19:59:07 +0200
+Message-Id: <20220815180503.302865620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -55,62 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 74bb746407bf0d7c7d126c7731dbcd66d467619b ]
+[ Upstream commit 3741aec4c38fa4123ab08ae552f05366d4fd05d8 ]
 
-The last resume result exposing logic in cros_ec_sleep_event()
-incorrectly requires S0ix support, which doesn't work on ARM based
-systems where S0ix doesn't exist. That's because cros_ec_sleep_event()
-only reports the last resume result when the EC indicates the last sleep
-event was an S0ix resume. On ARM systems, the last sleep event is always
-S3 resume, but the EC can still detect sleep hang events in case some
-other part of the AP is blocking sleep.
+If NRIPS is supported in hardware but disabled in KVM, set next_rip to
+the next RIP when advancing RIP as part of emulating INT3 injection.
+There is no flag to tell the CPU that KVM isn't using next_rip, and so
+leaving next_rip is left as is will result in the CPU pushing garbage
+onto the stack when vectoring the injected event.
 
-Always expose the last resume result if the EC supports it so that this
-works on all devices regardless of S0ix support. This fixes sleep hang
-detection on ARM based chromebooks like Trogdor.
-
-Cc: Rajat Jain <rajatja@chromium.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-Cc: Tzung-Bi Shih <tzungbi@kernel.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Evan Green <evgreen@chromium.org>
-Fixes: 7235560ac77a ("platform/chrome: Add support for v1 of host sleep event")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Link: https://lore.kernel.org/r/20220614075726.2729987-1-swboyd@chromium.org
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Message-Id: <cd328309a3b88604daa2359ad56f36cb565ce2d4.1651440202.git.maciej.szmigiero@oracle.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/svm/svm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index b3e94cdf7d1a..00381490dd3e 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -135,16 +135,16 @@ static int cros_ec_sleep_event(struct cros_ec_device *ec_dev, u8 sleep_event)
- 	buf.msg.command = EC_CMD_HOST_SLEEP_EVENT;
- 
- 	ret = cros_ec_cmd_xfer_status(ec_dev, &buf.msg);
--
--	/* For now, report failure to transition to S0ix with a warning. */
-+	/* Report failure to transition to system wide suspend with a warning. */
- 	if (ret >= 0 && ec_dev->host_sleep_v1 &&
--	    (sleep_event == HOST_SLEEP_EVENT_S0IX_RESUME)) {
-+	    (sleep_event == HOST_SLEEP_EVENT_S0IX_RESUME ||
-+	     sleep_event == HOST_SLEEP_EVENT_S3_RESUME)) {
- 		ec_dev->last_resume_result =
- 			buf.u.resp1.resume_response.sleep_transitions;
- 
- 		WARN_ONCE(buf.u.resp1.resume_response.sleep_transitions &
- 			  EC_HOST_RESUME_SLEEP_TIMEOUT,
--			  "EC detected sleep transition timeout. Total slp_s0 transitions: %d",
-+			  "EC detected sleep transition timeout. Total sleep transitions: %d",
- 			  buf.u.resp1.resume_response.sleep_transitions &
- 			  EC_HOST_RESUME_SLEEP_TRANSITIONS_MASK);
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fe8536c57fd7..92b30b4937fc 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -392,6 +392,10 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
+ 		 */
+ 		(void)svm_skip_emulated_instruction(vcpu);
+ 		rip = kvm_rip_read(vcpu);
++
++		if (boot_cpu_has(X86_FEATURE_NRIPS))
++			svm->vmcb->control.next_rip = rip;
++
+ 		svm->int3_rip = rip + svm->vmcb->save.cs.base;
+ 		svm->int3_injected = rip - old_rip;
  	}
+@@ -3702,7 +3706,7 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+ 	/*
+ 	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
+ 	 * injecting the soft exception/interrupt.  That advancement needs to
+-	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
++	 * be unwound if vectoring didn't complete.  Note, the new event may
+ 	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
+ 	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
+ 	 * be the reported vectored event, but RIP still needs to be unwound.
 -- 
 2.35.1
 
