@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CA8C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC682C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242805AbiHOT5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        id S1344114AbiHOT5k (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243313AbiHOTxz (ORCPT
+        with ESMTP id S1345520AbiHOTyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:53:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF6D45F50;
-        Mon, 15 Aug 2022 11:51:59 -0700 (PDT)
+        Mon, 15 Aug 2022 15:54:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D143F46D82;
+        Mon, 15 Aug 2022 11:52:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3EEDB810A1;
-        Mon, 15 Aug 2022 18:51:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5EBDC433D6;
-        Mon, 15 Aug 2022 18:51:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AD1D61231;
+        Mon, 15 Aug 2022 18:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE8BC433D6;
+        Mon, 15 Aug 2022 18:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589516;
-        bh=AJ9Cae9twUPm3oRt+U4Os2vYeJaUHtnMyscaHzAnWyY=;
+        s=korg; t=1660589522;
+        bh=JwXt754lUHTq1FlSGA1oDJZEx7coBxOMoSh2XBZ6ym4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bGvKYFnyM13mz3bm65rT9IyxHfGxxXGOZIQBzABL2bNy0ZT6o61Ci5BvPgGM6icsH
-         SqViV+XMDz39vFQvUYwqhLS74bBa+uSxG7XPpfztBdPm7A8JLiLQu5grAwQKStcSFb
-         DlTAaihp4zqOD7R0urSZPq9YNigI7gkkW7Inw4so=
+        b=VhbghhjimPRqktpcMrdsOC8fxivxbeON9dQ3+GyiKUubVgjpveqzpVQr5ClzpG+dR
+         jVEefUl/ydOONrf4bPEqoZcZEfpjxrj+9W6QjbkrhlHoEjUxZxcgbIL6lu9K4gvlVe
+         1H+C8ShvJQuV9PVWUDOZ1yGw7Su0P7Ok3wvsdbO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Jan Kara <jack@suse.cz>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
         "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 743/779] ext4: add EXT4_INODE_HAS_XATTR_SPACE macro in xattr.h
-Date:   Mon, 15 Aug 2022 20:06:27 +0200
-Message-Id: <20220815180409.224874033@linuxfoundation.org>
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 745/779] ext4: correct max_inline_xattr_value_size computing
+Date:   Mon, 15 Aug 2022 20:06:29 +0200
+Message-Id: <20220815180409.317249940@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,46 +54,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit 179b14152dcb6a24c3415200603aebca70ff13af ]
+[ Upstream commit c9fd167d57133c5b748d16913c4eabc55e531c73 ]
 
-When adding an xattr to an inode, we must ensure that the inode_size is
-not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad. Otherwise,
-the end position may be greater than the start position, resulting in UAF.
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
+Cc: stable@kernel.org
 Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
 Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220616021358.2504451-2-libaokun1@huawei.com
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/xattr.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ fs/ext4/inline.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/ext4/xattr.h b/fs/ext4/xattr.h
-index 77efb9a627ad..f885f362add4 100644
---- a/fs/ext4/xattr.h
-+++ b/fs/ext4/xattr.h
-@@ -95,6 +95,19 @@ struct ext4_xattr_entry {
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 28bc431cf5ba..38ad09e802e4 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -35,6 +35,9 @@ static int get_max_inline_xattr_value_size(struct inode *inode,
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
- #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
- 
-+/*
-+ * If we want to add an xattr to the inode, we should make sure that
-+ * i_extra_isize is not 0 and that the inode size is not less than
-+ * EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
-+ *   EXT4_GOOD_OLD_INODE_SIZE   extra_isize header   entry   pad  data
-+ * |--------------------------|------------|------|---------|---|-------|
-+ */
-+#define EXT4_INODE_HAS_XATTR_SPACE(inode)				\
-+	((EXT4_I(inode)->i_extra_isize != 0) &&				\
-+	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
-+	  sizeof(struct ext4_xattr_ibody_header) + EXT4_XATTR_PAD <=	\
-+	  EXT4_INODE_SIZE((inode)->i_sb)))
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
 +
- struct ext4_xattr_info {
- 	const char *name;
- 	const void *value;
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 -- 
 2.35.1
 
