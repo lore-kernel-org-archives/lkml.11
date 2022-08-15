@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B9DC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2321C2BB45
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357458AbiHPANi (ORCPT
+        id S1347874AbiHPAOI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Mon, 15 Aug 2022 20:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357134AbiHPADs (ORCPT
+        with ESMTP id S1354942AbiHPAAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:03:48 -0400
+        Mon, 15 Aug 2022 20:00:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6BC16DC79;
-        Mon, 15 Aug 2022 13:25:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11D897532;
+        Mon, 15 Aug 2022 13:21:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 065D3B811A2;
-        Mon, 15 Aug 2022 20:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36462C4314B;
-        Mon, 15 Aug 2022 20:25:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F822B80EAD;
+        Mon, 15 Aug 2022 20:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E9C6C433C1;
+        Mon, 15 Aug 2022 20:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595131;
-        bh=aXWX4uIi75Axp8sz2ki1tJ0BTgn2RakWK213rMs3cX8=;
+        s=korg; t=1660594915;
+        bh=9u+RPsdKAXeHUNT7S87LWCUibPX9fT0Xx0jOa0D91Us=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vyVRKY7I/e0XHHwp1oh55vokzFrT/LlP6LiSuq97UOC+ryerC1EJFgg6YqJ+4tKTA
-         a9k+UFzlxhXjbBpALsigOk9mde2bUJvHI9wFANr+ygxcpMfT/ituktnqj92ZNEvwE7
-         0h13fIhp6gLMMdKssJElzJueTWafY0P32uuRtEyE=
+        b=trJMyXhR9Mz21y/vNNA/PZ67Cb33rpg3lHRZiqOjN2g2ijU45rETqPcb9WAvQWCy7
+         KmMq5lmW7hJKv+fArmmq/c2/Wc0mxRtrKr+Vew1PyJHR3JEgF/LBt3u9XTXoNxYIAt
+         BrDA7f2Xj1jENAgqWv7YHaVTV1+cyCbZ8it2u7MM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0667/1157] iio: adc: ti-ads8688: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:23 +0200
-Message-Id: <20220815180506.395174373@linuxfoundation.org>
+Subject: [PATCH 5.19 0599/1157] mtd: parsers: ofpart: Fix refcount leak in bcm4908_partitions_fw_offset
+Date:   Mon, 15 Aug 2022 19:59:15 +0200
+Message-Id: <20220815180503.622591678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,36 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a2105d87eb8eb03591515df10102e04a1c9e0e46 ]
+[ Upstream commit e607879b0da18c451de5e91daf239cc2f2f8ff2d ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+of_find_node_by_path() returns a node pointer with refcount incremented,
+we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 3e87e7838328 ("iio: adc: Add TI ADS8688")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-39-jic23@kernel.org
+Fixes: bb17230c61a6 ("mtd: parsers: ofpart: support BCM4908 fixed partitions")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220605070726.5979-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-ads8688.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/parsers/ofpart_bcm4908.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 708cca0a63be..ef06a897421a 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -71,7 +71,7 @@ struct ads8688_state {
- 	union {
- 		__be32 d32;
- 		u8 d8[4];
--	} data[2] ____cacheline_aligned;
-+	} data[2] __aligned(IIO_DMA_MINALIGN);
- };
+diff --git a/drivers/mtd/parsers/ofpart_bcm4908.c b/drivers/mtd/parsers/ofpart_bcm4908.c
+index 0eddef4c198e..bb072a0940e4 100644
+--- a/drivers/mtd/parsers/ofpart_bcm4908.c
++++ b/drivers/mtd/parsers/ofpart_bcm4908.c
+@@ -35,12 +35,15 @@ static long long bcm4908_partitions_fw_offset(void)
+ 		err = kstrtoul(s + len + 1, 0, &offset);
+ 		if (err) {
+ 			pr_err("failed to parse %s\n", s + len + 1);
++			of_node_put(root);
+ 			return err;
+ 		}
  
- enum ads8688_id {
++		of_node_put(root);
+ 		return offset << 10;
+ 	}
+ 
++	of_node_put(root);
+ 	return -ENOENT;
+ }
+ 
 -- 
 2.35.1
 
