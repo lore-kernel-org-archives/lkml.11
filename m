@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22885C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E24C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345412AbiHOTwt (ORCPT
+        id S1345427AbiHOTwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        Mon, 15 Aug 2022 15:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345682AbiHOTvi (ORCPT
+        with ESMTP id S1345696AbiHOTvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:51:38 -0400
+        Mon, 15 Aug 2022 15:51:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0522BA198;
-        Mon, 15 Aug 2022 11:50:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCE613E8E;
+        Mon, 15 Aug 2022 11:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7054460C0B;
-        Mon, 15 Aug 2022 18:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7687AC433D7;
-        Mon, 15 Aug 2022 18:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D65C61222;
+        Mon, 15 Aug 2022 18:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723FBC433C1;
+        Mon, 15 Aug 2022 18:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589422;
-        bh=KA1uoX8dztzybu+oQwNd21XsNnUm0jus5zMhqtDVzq4=;
+        s=korg; t=1660589430;
+        bh=c0bClNS72sNAo2pxTQ9SWVynqPIMMbNhfPr2VEzrvv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TncGLM0/sxvqGhRvAOPDyl6xYhkTCCFQfS4Y8JoxH9XpPAMPAbKZ1oYddL6N3vCcM
-         qOtERdviljd/rMduSh0geJoKK9xjwHO3/GuJ52oUZ/kPC1fHc0LJOyT1QBuk1m0bQz
-         UN7JXeFyjYlFq167LCcWmrgrozi/3cO74V2G34Gc=
+        b=mSiOT0GJKaUS9rwianyWuNUa5EDDgGQzdKM60uTwWXd+1JvblyGmqKxqAch1KZrCV
+         rA/xY8OUkDgAGFSEWHckkMaCZJPgnl3gNnbLp8ahDXJ4VZFWCzy9hvm7HZICRI6P5F
+         VwveTMA5d+vvwM9ASJ30hHUV+/DAvbkQZOQYtXRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: [PATCH 5.15 696/779] usbnet: smsc95xx: Avoid link settings race on interrupt reception
-Date:   Mon, 15 Aug 2022 20:05:40 +0200
-Message-Id: <20220815180407.101084787@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 715/779] serial: 8250: Fold EndRun device support into OxSemi Tornado code
+Date:   Mon, 15 Aug 2022 20:05:59 +0200
+Message-Id: <20220815180408.028001214@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,120 +50,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 8960f878e39fadc03d74292a6731f1e914cf2019 ]
+[ Upstream commit 1f32c65bad24b9787d3e52843de375430e3df822 ]
 
-When a PHY interrupt is signaled, the SMSC LAN95xx driver updates the
-MAC full duplex mode and PHY flow control registers based on cached data
-in struct phy_device:
+The EndRun PTP/1588 dual serial port device is based on the Oxford
+Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+for EndRun Technologies and uses the same sequence to determine the
+number of ports available.  Despite that we have duplicate code
+specific to the EndRun device.
 
-  smsc95xx_status()                 # raises EVENT_LINK_RESET
-    usbnet_deferred_kevent()
-      smsc95xx_link_reset()         # uses cached data in phydev
+Remove redundant code then and factor out OxSemi Tornado device
+detection.
 
-Simultaneously, phylib polls link status once per second and updates
-that cached data:
-
-  phy_state_machine()
-    phy_check_link_status()
-      phy_read_status()
-        lan87xx_read_status()
-          genphy_read_status()      # updates cached data in phydev
-
-If smsc95xx_link_reset() wins the race against genphy_read_status(),
-the registers may be updated based on stale data.
-
-E.g. if the link was previously down, phydev->duplex is set to
-DUPLEX_UNKNOWN and that's what smsc95xx_link_reset() will use, even
-though genphy_read_status() may update it to DUPLEX_FULL afterwards.
-
-PHY interrupts are currently only enabled on suspend to trigger wakeup,
-so the impact of the race is limited, but we're about to enable them
-perpetually.
-
-Avoid the race by delaying execution of smsc95xx_link_reset() until
-phy_state_machine() has done its job and calls back via
-smsc95xx_handle_link_change().
-
-Signaling EVENT_LINK_RESET on wakeup is not necessary because phylib
-picks up link status changes through polling.  So drop the declaration
-of a ->link_reset() callback.
-
-Note that the semicolon on a line by itself added in smsc95xx_status()
-is a placeholder for a function call which will be added in a subsequent
-commit.  That function call will actually handle the INT_ENP_PHY_INT_
-interrupt.
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181516220.9383@angie.orcam.me.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/smsc95xx.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 76 ++++++++++--------------------
+ 1 file changed, 25 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index c33089168880..7cf9206638c3 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -564,7 +564,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev)
- 	return smsc95xx_write_reg(dev, AFC_CFG, afc_cfg);
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 1994d2db213c..20ce812a069c 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -994,41 +994,29 @@ static void pci_ite887x_exit(struct pci_dev *dev)
  }
  
--static int smsc95xx_link_reset(struct usbnet *dev)
-+static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
+ /*
+- * EndRun Technologies.
+- * Determine the number of ports available on the device.
++ * Oxford Semiconductor Inc.
++ * Check if an OxSemi device is part of the Tornado range of devices.
+  */
+ #define PCI_VENDOR_ID_ENDRUN			0x7401
+ #define PCI_DEVICE_ID_ENDRUN_1588	0xe100
+ 
+-static int pci_endrun_init(struct pci_dev *dev)
++static bool pci_oxsemi_tornado_p(struct pci_dev *dev)
  {
- 	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	unsigned long flags;
-@@ -581,14 +581,16 @@ static int smsc95xx_link_reset(struct usbnet *dev)
- 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
+-	u8 __iomem *p;
+-	unsigned long deviceID;
+-	unsigned int  number_uarts = 0;
++	/* OxSemi Tornado devices are all 0xCxxx */
++	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
++	    (dev->device & 0xf000) != 0xc000)
++		return false;
  
- 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
--	if (ret < 0)
--		return ret;
-+	if (ret < 0) {
-+		if (ret != -ENODEV)
-+			netdev_warn(dev->net,
-+				    "Error updating MAC full duplex mode\n");
-+		return;
-+	}
- 
- 	ret = smsc95xx_phy_update_flowcontrol(dev);
- 	if (ret < 0)
- 		netdev_warn(dev->net, "Error updating PHY flow control\n");
+-	/* EndRun device is all 0xexxx */
++	/* EndRun devices are all 0xExxx */
+ 	if (dev->vendor == PCI_VENDOR_ID_ENDRUN &&
+-		(dev->device & 0xf000) != 0xe000)
+-		return 0;
 -
--	return ret;
+-	p = pci_iomap(dev, 0, 5);
+-	if (p == NULL)
+-		return -ENOMEM;
++	    (dev->device & 0xf000) != 0xe000)
++		return false;
+ 
+-	deviceID = ioread32(p);
+-	/* EndRun device */
+-	if (deviceID == 0x07000200) {
+-		number_uarts = ioread8(p + 4);
+-		pci_dbg(dev, "%d ports detected on EndRun PCI Express device\n", number_uarts);
+-	}
+-	pci_iounmap(dev, p);
+-	return number_uarts;
++	return true;
  }
  
- static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
-@@ -605,7 +607,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
- 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+ /*
+- * Oxford Semiconductor Inc.
+- * Check that device is part of the Tornado range of devices, then determine
+- * the number of ports available on the device.
++ * Determine the number of ports available on a Tornado device.
+  */
+ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ {
+@@ -1036,9 +1024,7 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ 	unsigned long deviceID;
+ 	unsigned int  number_uarts = 0;
  
- 	if (intdata & INT_ENP_PHY_INT_)
--		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
-+		;
- 	else
- 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
- 			    intdata);
-@@ -1062,6 +1064,7 @@ static void smsc95xx_handle_link_change(struct net_device *net)
- 	struct usbnet *dev = netdev_priv(net);
+-	/* OxSemi Tornado devices are all 0xCxxx */
+-	if (dev->vendor == PCI_VENDOR_ID_OXSEMI &&
+-	    (dev->device & 0xF000) != 0xC000)
++	if (!pci_oxsemi_tornado_p(dev))
+ 		return 0;
  
- 	phy_print_status(net->phydev);
-+	smsc95xx_mac_update_fullduplex(dev);
- 	usbnet_defer_kevent(dev, EVENT_LINK_CHANGE);
- }
+ 	p = pci_iomap(dev, 0, 5);
+@@ -1049,7 +1035,10 @@ static int pci_oxsemi_tornado_init(struct pci_dev *dev)
+ 	/* Tornado device */
+ 	if (deviceID == 0x07000200) {
+ 		number_uarts = ioread8(p + 4);
+-		pci_dbg(dev, "%d ports detected on Oxford PCI Express device\n", number_uarts);
++		pci_dbg(dev, "%d ports detected on %s PCI Express device\n",
++			number_uarts,
++			dev->vendor == PCI_VENDOR_ID_ENDRUN ?
++			"EndRun" : "Oxford");
+ 	}
+ 	pci_iounmap(dev, p);
+ 	return number_uarts;
+@@ -2506,7 +2495,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.device		= PCI_ANY_ID,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_endrun_init,
++		.init		= pci_oxsemi_tornado_init,
+ 		.setup		= pci_default_setup,
+ 	},
+ 	/*
+@@ -2929,7 +2918,6 @@ enum pci_board_num_t {
+ 	pbn_panacom2,
+ 	pbn_panacom4,
+ 	pbn_plx_romulus,
+-	pbn_endrun_2_3906250,
+ 	pbn_oxsemi,
+ 	pbn_oxsemi_1_3906250,
+ 	pbn_oxsemi_2_3906250,
+@@ -3455,20 +3443,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.first_offset	= 0x03,
+ 	},
  
-@@ -1967,7 +1970,6 @@ static const struct driver_info smsc95xx_info = {
- 	.description	= "smsc95xx USB 2.0 Ethernet",
- 	.bind		= smsc95xx_bind,
- 	.unbind		= smsc95xx_unbind,
--	.link_reset	= smsc95xx_link_reset,
- 	.reset		= smsc95xx_reset,
- 	.check_connect	= smsc95xx_start_phy,
- 	.stop		= smsc95xx_stop,
+-	/*
+-	 * EndRun Technologies
+-	* Uses the size of PCI Base region 0 to
+-	* signal now many ports are available
+-	* 2 port 952 Uart support
+-	*/
+-	[pbn_endrun_2_3906250] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 3906250,
+-		.uart_offset	= 0x200,
+-		.first_offset	= 0x1000,
+-	},
+-
+ 	/*
+ 	 * This board uses the size of PCI Base region 0 to
+ 	 * signal now many ports are available
+@@ -4400,13 +4374,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_ROMULUS,
+ 		0x10b5, 0x106a, 0, 0,
+ 		pbn_plx_romulus },
+-	/*
+-	* EndRun Technologies. PCI express device range.
+-	*    EndRun PTP/1588 has 2 Native UARTs.
+-	*/
+-	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_endrun_2_3906250 },
+ 	/*
+ 	 * Quatech cards. These actually have configurable clocks but for
+ 	 * now we just use the default.
+@@ -4668,6 +4635,13 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_2_OX_IBM,
+ 		PCI_SUBVENDOR_ID_IBM, PCI_ANY_ID, 0, 0,
+ 		pbn_oxsemi_2_3906250 },
++	/*
++	 * EndRun Technologies. PCI express device range.
++	 * EndRun PTP/1588 has 2 Native UARTs utilizing OxSemi 952.
++	 */
++	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
++		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
++		pbn_oxsemi_2_3906250 },
+ 
+ 	/*
+ 	 * SBS Technologies, Inc. P-Octal and PMC-OCTPRO cards,
 -- 
 2.35.1
 
