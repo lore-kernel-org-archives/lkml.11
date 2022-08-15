@@ -2,119 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE42C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AD5C28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbiHOOpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54852 "EHLO
+        id S232394AbiHOOpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiHOOpd (ORCPT
+        with ESMTP id S231674AbiHOOpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:45:33 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7AF25D5;
-        Mon, 15 Aug 2022 07:45:29 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id y3so9855701eda.6;
-        Mon, 15 Aug 2022 07:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=2r6NzV5K6JWHUt1ICx2UuX4Y6Ch+fw7Dtg6Kfge6QGc=;
-        b=GbLvWxDIxgFLq5piP6F2dgRYWQ7rxguDDupe74SrAo+hBy5g3C1mk2+YmJ0k+PTxMQ
-         PL/jU34GR/M47O/iNmJg77vJxUJcZUPo0CyVNv/hL+A+XM9D9ci6LI79UjLt9Scwc/8V
-         Ru6Bds+2ciVWKzxnWXuIHak+rf47n2Hjw+zTz9JEZTyvH11eoEiS+BbTehbWr/9x6E2Y
-         bKatp+ABbIJ3XeAADXbpVBk5aoyFHe6Znbudn5TZapQexuNE6skwj3xkl2eZ8Asrn7Tl
-         JcmmSsWLqGcfrSOH+YpMQQpaSZt72DWQsvafSlK7vSuw0gzoGoqdhLm91dXRnMlIHQT8
-         vL3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=2r6NzV5K6JWHUt1ICx2UuX4Y6Ch+fw7Dtg6Kfge6QGc=;
-        b=rFVUZR5kwK2BSVn9mIuScrhFmsUpADFpjELiHrjLnf3vfBEBVTv5966NF4VxdA1o0G
-         EODqsPILm6p/M8cuVEHEoBHnrQVcZwit7VfOmHp7YU24CrmCIAOr2Y//Jf+2F9fOfJo9
-         rHB9/9aQ0JfT833N6ECkyz9ZZISIxMzxseKk2lSIW9gKCj2BGwtJVe1Mvv17Hd2Yz5YU
-         aBFozAuTI7tKMVDKzgihZDgyjqiOuOMTXzdVAXALdu1D4yYhI0oVA3tBE2tQYsrOnRmo
-         /1ItVg3HeQ5X8h+qw8hNEFvv+hif/DJ9uQ1XgyiERsvj8yKarz32WtLRoZpHlsw3HZCT
-         h0Tg==
-X-Gm-Message-State: ACgBeo16xEkt94tgkCnR82vB0qFE3Q8VT2eDg7fTD9K/naYtpIt5wPdI
-        y27nmrdyG6NdEwo/jylDQESgAGhsNd6UrePKA7Q=
-X-Google-Smtp-Source: AA6agR6sEWTbe+AyeLWfPPx+Mli/Iunqsj4kcwNNs+U3AAwcbcjUBRp3ZwsZF65gr3elWP/aT3KIeEXR6DWqUi1Ibt8=
-X-Received: by 2002:a05:6402:28cb:b0:43b:c6d7:ef92 with SMTP id
- ef11-20020a05640228cb00b0043bc6d7ef92mr15211708edb.333.1660574728199; Mon, 15
- Aug 2022 07:45:28 -0700 (PDT)
+        Mon, 15 Aug 2022 10:45:36 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2070.outbound.protection.outlook.com [40.107.94.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E65C25D5;
+        Mon, 15 Aug 2022 07:45:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nwu+ZFyz1j9cwafCgQU1eRn9AmyljWpyqaa99CHT/EhqkKFv7LDLqFzjalGyvUO+x3+i3VmprmcIwQAT2kz7x4jM8ugghySj1aSpwNc9ii3szIIvlVfGbPMAbmXSZjCDEKe3KjmChZDunHD+s2JBDrxFfo5RxhaHjtvykp3t/C+Q1U+sh01c7Y4KAL7IVQ5mIG+318yynBmQzX4nzC1rp4uAwjeaMTgg0yP6ibP7VqcF3EzJcIGx8ncey9YOjNmTvgp2/Hj7yYKAlpRDByoOTUisu+4zVmpEKN9M0xyT4LvOnEo7//FHFmMeT52BSGqkUSWrM6vyPqAY3hPnL9sEnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rV6aFZhwlMIKe8BW/4iD7Fc9HRKFVUHewdKVeTg9ruU=;
+ b=dgYmHyjj2ry/9pHotuLz++WDbw5REGzfCnQKF3vtH6lFrncydGY0g8Lcp7LdpgyO7/s3CSzi5r1g0hZVpvrFwNrAQ/lUiH6FH34r1YYB6wFJvK8SUu2vFahfSPDBq2PhwaGcxmmze2Ry6v99rjMqIBnycNTrlyj/Z2Sejaa4Pd5fscIDXKEcQhz4MtImz6P4xRJ2eKDcZZGnb1P1TTW83kHeIqgebU+buyp+TLYpQuYXMNugBFpzgRw/vuAaWw5sn6AfEIHDlVOMmx94qYIMgrbtp0xBXZjPYinNtBLaNnT2WINAkPlc3MLRxfdHM5/f2tEKAEtpo8xs6b24uO3gNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rV6aFZhwlMIKe8BW/4iD7Fc9HRKFVUHewdKVeTg9ruU=;
+ b=H589z16b7ptR8TAf77TnthvYj2dNQV+eOGstSZAJysrpLIPVWWRjsbf3b2H9zi7J0zpBFapC6QxVU/XSVb3M2TRM3gaX4T3aklgWqWcWmgF/78PiWRc5lpimbgaB8YwijhnYEiyhUMaQ8Wel9nRqh1M1fRIWA61KJ08SZMyN6vAypuh6yyL9ItpOQKk0BYbaJYQXmldVcJCOOq9nhj5UyXvbTqUpSAZNfuzL8l5ssHvENjP34pt5mmthRt6q7Oc9dEPgNA+HyJFLwV6GsNVhgn59wbp2hOLRmtXPp7PU5sStuTYSLy+9/UQYQRM7B/b3cmGBHNkmilcRDOAPTbDI8Q==
+Received: from BN9P221CA0012.NAMP221.PROD.OUTLOOK.COM (2603:10b6:408:10a::7)
+ by DM5PR12MB2424.namprd12.prod.outlook.com (2603:10b6:4:b7::34) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Mon, 15 Aug
+ 2022 14:45:32 +0000
+Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10a:cafe::b2) by BN9P221CA0012.outlook.office365.com
+ (2603:10b6:408:10a::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.16 via Frontend
+ Transport; Mon, 15 Aug 2022 14:45:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 14:45:32 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 15 Aug
+ 2022 14:45:31 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 15 Aug
+ 2022 07:45:30 -0700
+Received: from jilin-desktop.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Mon, 15 Aug 2022 07:45:28 -0700
+From:   Jim Lin <jilin@nvidia.com>
+To:     <jckuo@nvidia.com>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>
+CC:     <kishon@ti.com>, <vkoul@kernel.org>, <balbi@kernel.org>,
+        <gregkh@linuxfoundation.org>, <jilin@nvidia.com>,
+        <bhsieh@nvidia.com>, <linux-phy@lists.infradead.org>,
+        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>
+Subject: [PATCH 0/2] usb: tegra: power down UTMI pad
+Date:   Mon, 15 Aug 2022 22:44:47 +0800
+Message-ID: <20220815144449.9525-1-jilin@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-References: <20220722122548.2db543ca@gandalf.local.home> <YtsRD1Po3qJy3w3t@krava>
- <20220722174120.688768a3@gandalf.local.home> <YtxqjxJVbw3RD4jt@krava>
- <YvbDlwJCTDWQ9uJj@krava> <20220813150252.5aa63650@rorschach.local.home>
- <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net> <YvoVgMzMuQbAEayk@krava>
- <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net> <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
- <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
-In-Reply-To: <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 15 Aug 2022 07:45:16 -0700
-Message-ID: <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6e5feb56-3f6b-454d-0dd5-08da7eccce26
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2424:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: voCeQl3ucvl5cQXKTo6CybMF8/5ecmypcvT6NwcJ82X5rnzCKSzp65evS6CQ4WW5k8eoCRK7S7JaeuiCOcpjf+/EXWQvHMsx3TTRYZygzS4+vvz5Qo7/s6940CxWEyprzkOEKZ4aR3OvttBNbbmJiT6c82gGgTmS3RnuU1iEHjaVCFzJTP8+6Rvqi8IpoUsRSiOsjKGszrSJpRxu3QG/orGgdojMf9T2TJvx9ZmTjz8tOu6EhBP/Ixiubj1V9M6WcawCm/dpZR3aha5hlWNXUv7dSz7ILtLIceX53L/NGhvRVrhDH3xss8Z/GuwadZnmBHVS6mWZhYVJczNWG4Ayqsfe6DX41nsK9C0hGtFhginRMXj44qu+nhBqG57cB78LIo+bpfAgxjAewdOqRnOUYBSV4sKCENwelraPbcMwkqb1KgAEmD9cbkNZr/o5Qhply63BbCzYdqLseAxmZGPDt4SUbF2wT0JmlzW7hmwfCVtsmKkZqAtK53pWKOP0CONu9VnXAv+BeZ+ENhGxmaNKVy4zEMdxa/E/SofEiwd2Jctne9AOGFBPGBFXepcwF3vfN7/wt6L2ATGdMWE82Sr/R69Go/i5r/2t3leOe5/Mod/gQUZ4H80Z7b7XJTpJPZDFwhn3QeXNJfxY3ZCIMrn/NTuWgpSGvrxXMo+ImXXg2284zfD1YaaSjt35fYsgK4HUWhBQcnqSZFtaVcJkyAeA1JhYgLrq/MhM6KeUvOpXO0+WC5xqp1vjgMb8wudHz1OS2zuYXdq6pv8XcyY/qMCM86kybsayz7IAgy/OVuJmST4sARp8plnVRz6qCiBECo8Rvq1GmOThIR2Nk9uzMtU0kA==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(136003)(39860400002)(46966006)(36840700001)(40470700004)(40480700001)(36860700001)(83380400001)(40460700003)(81166007)(356005)(86362001)(82740400003)(70206006)(70586007)(316002)(478600001)(82310400005)(4326008)(8676002)(54906003)(6636002)(186003)(336012)(426003)(1076003)(7696005)(47076005)(26005)(5660300002)(110136005)(2906002)(2616005)(36756003)(8936002)(6666004)(4744005)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 14:45:32.1656
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e5feb56-3f6b-454d-0dd5-08da7eccce26
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2424
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 7:33 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Mon, Aug 15, 2022 at 07:25:24AM -0700, Alexei Starovoitov wrote:
-> > On Mon, Aug 15, 2022 at 5:37 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > >
-> > > On Mon, Aug 15, 2022 at 11:44:32AM +0200, Jiri Olsa wrote:
-> > > > On Mon, Aug 15, 2022 at 10:03:17AM +0200, Peter Zijlstra wrote:
-> > > > > On Sat, Aug 13, 2022 at 03:02:52PM -0400, Steven Rostedt wrote:
-> > > > > > On Fri, 12 Aug 2022 23:18:15 +0200
-> > > > > > Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > > > >
-> > > > > > > the patch below moves the bpf function into sepatate object and switches
-> > > > > > > off the -mrecord-mcount for it.. so the function gets profile call
-> > > > > > > generated but it's not visible to ftrace
-> > > > >
-> > > > > Why ?!?
-> > > >
-> > > > there's bpf dispatcher code that updates bpf_dispatcher_xdp_func
-> > > > function with bpf_arch_text_poke and that can race with ftrace update
-> > > > if the function is traced
-> > >
-> > > I thought bpf_arch_text_poke() wasn't allowed to touch kernel code and
-> > > ftrace is in full control of it ?
-> >
-> > ftrace is not in "full control" of nop5 and must not be.
->
-> It is in full control of the 'call __fentry__'. Absolute full NAK on you
-> trying to make it otherwise.
+1. Make functions to be generic and public for tegra host/gadget driver 
+ to power on/down UTMI pad
+2. For tegra gadget driver to power down pad after disconnected
 
-Don't mix 'call fentry' generated by the compiler with nop5 inserted
-by macroses or JITs.
+Jim Lin (2):
+  phy: tegra: xusb: add utmi pad power on/down ops
+  usb: gadget: tegra: Reduce pad power
 
-> > Soon we will have nop5 in the middle of the function.
-> > ftrace must not touch it.
->
-> How are you generating that NOP and what for?
+ drivers/phy/tegra/xusb-tegra186.c   | 19 ++++++++++++-------
+ drivers/phy/tegra/xusb.c            | 22 +++++++++++++++++++++-
+ drivers/phy/tegra/xusb.h            |  4 +++-
+ drivers/usb/gadget/udc/tegra-xudc.c |  4 ++++
+ include/linux/phy/tegra/xusb.h      |  2 ++
+ 5 files changed, 42 insertions(+), 9 deletions(-)
 
-We're generating nop5-s in JITed code to further
-attach to. For example when one bpf prog is being replaced by another.
-Currently it's in the func prologue only.
-In the future it will be anywhere in the body.
+-- 
+2.17.1
+
