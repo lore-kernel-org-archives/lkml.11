@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A15C0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5EF4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232452AbiHOVMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S231583AbiHOVMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347911AbiHOVHp (ORCPT
+        with ESMTP id S1347913AbiHOVHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:07:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CC452DFF;
-        Mon, 15 Aug 2022 12:16:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8683C8CB;
+        Mon, 15 Aug 2022 12:16:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F36D7B8107A;
-        Mon, 15 Aug 2022 19:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DC6C433C1;
-        Mon, 15 Aug 2022 19:16:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CC36B8107A;
+        Mon, 15 Aug 2022 19:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADA2C433D6;
+        Mon, 15 Aug 2022 19:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590986;
-        bh=4w1Henxr21HxdIOW24rJo+vlghp87PGzvVsvvHwWgHI=;
+        s=korg; t=1660590992;
+        bh=G6869hI4IspcflH37LO4N3qRMAFa9aQF+7X6uqFqdmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1A22LiW/6Ek29wZoGlLR1C0iaevQ7G4GBQobEhjnr+7wtqemaD8WUVCVr3wgTDXbY
-         Z4b1XjfHyPqCteNHmZ/sW+JllxBI6jBrLbxiUh7lwFGKj4BnS7Rp3yh2Utgyv7mslw
-         yssq77dSiHxiIgfDZSLuHXYQ22yLCA0K6oge7vA4=
+        b=eqmNSOG1IDQsuq8VErMfKgPK7VT/p+GZGJ1R3tzbTcePqc3AkHA8mvH70I7+lWu1m
+         Yx9pE1DolyQG5o6mrfTITaKQKhD9Lx83ovH/3zG7C5z+DIC7HV2FVfJKxGe6R+DPII
+         p0KNBwfBQdfm0IC6okXhxK9R4Oy0E1OnOa5yiOiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0404/1095] net: mscc: ocelot: delete ocelot_port :: xmit_template
-Date:   Mon, 15 Aug 2022 19:56:43 +0200
-Message-Id: <20220815180446.421996832@linuxfoundation.org>
+Subject: [PATCH 5.18 0430/1095] media: mediatek: vcodec: Initialize decoder parameters for each instance
+Date:   Mon, 15 Aug 2022 19:57:09 +0200
+Message-Id: <20220815180447.494572285@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,32 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit 15f6d01e4829cd2a2dc4f02a00c51d7cec1c736d ]
+[ Upstream commit fe3d651627d61210c6905339e5281d3b9db75033 ]
 
-This is no longer used since commit 7c4bb540e917 ("net: dsa: tag_ocelot:
-create separate tagger for Seville").
+The decoder parameters are stored in each instance's context data. This
+needs to be initialized per-instance, but a previous fix incorrectly
+changed it to only be initialized for the first opened instance. This
+resulted in subsequent instances not correctly signaling the requirement
+for the Requests API.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix this by calling the initializing function outside of the
+v4l2_fh_is_singular() conditional block.
+
+Fixes: faddaa735c20 ("media: mediatek: vcodec: Initialize decoder parameters after getting dec_capability")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/soc/mscc/ocelot.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 9b4e6c78d0f4..b191f0a7fe26 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -663,7 +663,6 @@ struct ocelot_port {
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+index d5c94845ea42..ff8f2a4829a3 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+@@ -211,11 +211,12 @@ static int fops_vcodec_open(struct file *file)
  
- 	phy_interface_t			phy_mode;
+ 		dev->dec_capability =
+ 			mtk_vcodec_fw_get_vdec_capa(dev->fw_handler);
+-		ctx->dev->vdec_pdata->init_vdec_params(ctx);
  
--	u8				*xmit_template;
- 	bool				is_dsa_8021q_cpu;
- 	bool				learn_ena;
+ 		mtk_v4l2_debug(0, "decoder capability %x", dev->dec_capability);
+ 	}
  
++	ctx->dev->vdec_pdata->init_vdec_params(ctx);
++
+ 	list_add(&ctx->list, &dev->ctx_list);
+ 
+ 	mutex_unlock(&dev->dev_mutex);
 -- 
 2.35.1
 
