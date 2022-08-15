@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FAAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5509C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345478AbiHOUjJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
+        id S244933AbiHOUjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345910AbiHOUeT (ORCPT
+        with ESMTP id S1346007AbiHOUei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:34:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BD82AE23;
-        Mon, 15 Aug 2022 12:06:07 -0700 (PDT)
+        Mon, 15 Aug 2022 16:34:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF994D16B;
+        Mon, 15 Aug 2022 12:06:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DBA61299;
-        Mon, 15 Aug 2022 19:06:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A2BC433D6;
-        Mon, 15 Aug 2022 19:06:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 755F2B81104;
+        Mon, 15 Aug 2022 19:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D37C433D6;
+        Mon, 15 Aug 2022 19:06:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590366;
-        bh=0b0R6RaL4DcQ7B6NQpB2BTI806Onu2sADIXafVLrug0=;
+        s=korg; t=1660590374;
+        bh=eYdIiq6i7+oz5kC9QwEqKLyINkLBLeu8q8JqoqMwYYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pffOw2tNFBoBeUHssfOJOc9JgDU14JeRB0y2tN+mf/QQb9o9VyAG0cvbw+rrl6LeC
-         9qpvGNtxFNGff7H9LLvfmmEHw2AqKmiM8Yan9uHUk22/++nl7la86MSElTs6oDS1Zu
-         6MpUyPgLJ9EU5SQRzzbVBYY0+M6r+ZlH0X3zLCpg=
+        b=ukW9UwdhDLduxJyF34lC/+cNsy/6OSCliNuOAgmzK4bxEsfxvPM3KBJOiSiSbaBPH
+         wRIddZuURn8ICYRGIEdSjdqs6GFKqCUmYKVMkvAbAB/o4tzWsgJCWjFKa76MQ5cedS
+         7K1QcrLp2Hw9mtM7wCU0zfCyt0ezY4lZrYa6lDPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0238/1095] ARM: dts: qcom-msm8974: Convert ADSP to a MMIO device
-Date:   Mon, 15 Aug 2022 19:53:57 +0200
-Message-Id: <20220815180439.629057638@linuxfoundation.org>
+Subject: [PATCH 5.18 0240/1095] ARM: dts: qcom-msm8974: fix irq type on blsp2_uart1
+Date:   Mon, 15 Aug 2022 19:53:59 +0200
+Message-Id: <20220815180439.717676342@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,99 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Luca Weiss <luca@z3ntu.xyz>
 
-[ Upstream commit 2daa785817dd35172b856c30fc5148b2773b6891 ]
+[ Upstream commit ab1489017aa7a9f02e24bee73cf9ec8079cd3909 ]
 
-The cx-supply has been removed as it's supposed to be set on a
-per-board basis.
+IRQ_TYPE_NONE is invalid, so use the correct interrupt type.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Fixes: b05f82b152c9 ("ARM: dts: qcom: msm8974: Add blsp2_uart7 for bluetooth on sirius")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220415115633.575010-17-konrad.dybcio@somainline.org
+Link: https://lore.kernel.org/r/20220522083618.17894-1-luca@z3ntu.xyz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8974.dtsi | 60 ++++++++++++++---------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index ea3491d47b9f..e6c9782e4670 100644
+index 0091a4c29fff..ed3e46e7f96d 100644
 --- a/arch/arm/boot/dts/qcom-msm8974.dtsi
 +++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -341,36 +341,6 @@ timer {
- 		clock-frequency = <19200000>;
- 	};
- 
--	remoteproc_adsp: adsp-pil {
--		compatible = "qcom,msm8974-adsp-pil";
--
--		interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
--				      <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
--				      <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
--				      <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
--				      <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
--		interrupt-names = "wdog", "fatal", "ready", "handover", "stop-ack";
--
--		cx-supply = <&pm8841_s2>;
--
--		clocks = <&xo_board>;
--		clock-names = "xo";
--
--		memory-region = <&adsp_region>;
--
--		qcom,smem-states = <&adsp_smp2p_out 0>;
--		qcom,smem-state-names = "stop";
--
--		smd-edge {
--			interrupts = <GIC_SPI 156 IRQ_TYPE_EDGE_RISING>;
--
--			qcom,ipc = <&apcs 8 8>;
--			qcom,smd-edge = <1>;
--
--			label = "lpass";
--		};
--	};
--
- 	smem {
- 		compatible = "qcom,smem";
- 
-@@ -1592,6 +1562,36 @@ dsi0_phy: dsi-phy@fd922a00 {
- 			};
- 		};
- 
-+		remoteproc_adsp: remoteproc@fe200000 {
-+			compatible = "qcom,msm8974-adsp-pil";
-+			reg = <0xfe200000 0x100>;
-+
-+			interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
-+					       <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
-+					       <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
-+					       <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
-+					       <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
-+			interrupt-names = "wdog", "fatal", "ready", "handover", "stop-ack";
-+
-+			clocks = <&xo_board>;
-+			clock-names = "xo";
-+
-+			memory-region = <&adsp_region>;
-+
-+			qcom,smem-states = <&adsp_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
-+
-+			smd-edge {
-+				interrupts = <GIC_SPI 156 IRQ_TYPE_EDGE_RISING>;
-+
-+				qcom,ipc = <&apcs 8 8>;
-+				qcom,smd-edge = <1>;
-+				label = "lpass";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
-+		};
-+
- 		imem: imem@fe805000 {
+@@ -562,7 +562,7 @@ blsp2_dma: dma-controller@f9944000 {
+ 		blsp2_uart1: serial@f995d000 {
+ 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+ 			reg = <0xf995d000 0x1000>;
+-			interrupts = <GIC_SPI 113 IRQ_TYPE_NONE>;
++			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&gcc GCC_BLSP2_UART1_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
+ 			clock-names = "core", "iface";
  			status = "disabled";
- 			compatible = "syscon", "simple-mfd";
 -- 
 2.35.1
 
