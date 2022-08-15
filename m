@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1997C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD17C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345473AbiHOTxb (ORCPT
+        id S1345482AbiHOTxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        Mon, 15 Aug 2022 15:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240661AbiHOTwN (ORCPT
+        with ESMTP id S1345315AbiHOTwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:52:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578DA101E6;
-        Mon, 15 Aug 2022 11:50:44 -0700 (PDT)
+        Mon, 15 Aug 2022 15:52:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B00B74CD9;
+        Mon, 15 Aug 2022 11:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 48DDBCE1279;
-        Mon, 15 Aug 2022 18:50:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE86CC433C1;
-        Mon, 15 Aug 2022 18:50:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1803B60C0B;
+        Mon, 15 Aug 2022 18:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2207EC433C1;
+        Mon, 15 Aug 2022 18:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589440;
-        bh=rDVCFEShSGxdUo+XdGyKcO4VNAALXJshOd6PFfNegSY=;
+        s=korg; t=1660589446;
+        bh=tIKz9+929NqT6PMMyUvDAwRYbPa62dFJflF7B2Y/k20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gnpZpXXOsydabcUO+iw1zONhNZrvZw2KOeYk4ASKWnZNGbJVoCFgGUyism/sqc26W
-         iEilsY5QNmU8kuOpYPkX6WocgN+GROH5bLxzjozu2agpd0lh9Bz4ERcS6XCaMV1C7f
-         8AK4M2ciCbSCZ1pFZABEkYwNlZYduIrb0WS4OAuU=
+        b=gqBh8Hu8ZmBT90NtKdPXWjgbIaeq82N5fL8YcqMHuQwBXiL4yfQ8UPebV5UpMx2EB
+         AHmgvZ+XT2uT6NSD/llPdRMdHjcNMei3T/hEd+Jtkj3mfdiXGwEBM+Hd7XhX93uC2H
+         OCbjZU62L/iw8ch20g9p/QJ3PTOwQkzA2LmBQcAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Luo Meng <luomeng12@huawei.com>,
         Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 718/779] dm writecache: set a default MAX_WRITEBACK_JOBS
-Date:   Mon, 15 Aug 2022 20:06:02 +0200
-Message-Id: <20220815180408.148101902@linuxfoundation.org>
+Subject: [PATCH 5.15 720/779] dm thin: fix use-after-free crash in dm_sm_register_threshold_callback
+Date:   Mon, 15 Aug 2022 20:06:04 +0200
+Message-Id: <20220815180408.240186221@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,39 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Luo Meng <luomeng12@huawei.com>
 
-[ Upstream commit ca7dc242e358e46d963b32f9d9dd829785a9e957 ]
+[ Upstream commit 3534e5a5ed2997ca1b00f44a0378a075bd05e8a3 ]
 
-dm-writecache has the capability to limit the number of writeback jobs
-in progress. However, this feature was off by default. As such there
-were some out-of-memory crashes observed when lowering the low
-watermark while the cache is full.
+Fault inject on pool metadata device reports:
+  BUG: KASAN: use-after-free in dm_pool_register_metadata_threshold+0x40/0x80
+  Read of size 8 at addr ffff8881b9d50068 by task dmsetup/950
 
-This commit enables writeback limit by default. It is set to 256MiB or
-1/16 of total system memory, whichever is smaller.
+  CPU: 7 PID: 950 Comm: dmsetup Tainted: G        W         5.19.0-rc6 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x34/0x44
+   print_address_description.constprop.0.cold+0xeb/0x3f4
+   kasan_report.cold+0xe6/0x147
+   dm_pool_register_metadata_threshold+0x40/0x80
+   pool_ctr+0xa0a/0x1150
+   dm_table_add_target+0x2c8/0x640
+   table_load+0x1fd/0x430
+   ctl_ioctl+0x2c4/0x5a0
+   dm_ctl_ioctl+0xa/0x10
+   __x64_sys_ioctl+0xb3/0xd0
+   do_syscall_64+0x35/0x80
+   entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
+This can be easily reproduced using:
+  echo offline > /sys/block/sda/device/state
+  dd if=/dev/zero of=/dev/mapper/thin bs=4k count=10
+  dmsetup load pool --table "0 20971520 thin-pool /dev/sda /dev/sdb 128 0 0"
+
+If a metadata commit fails, the transaction will be aborted and the
+metadata space maps will be destroyed. If a DM table reload then
+happens for this failed thin-pool, a use-after-free will occur in
+dm_sm_register_threshold_callback (called from
+dm_pool_register_metadata_threshold).
+
+Fix this by in dm_pool_register_metadata_threshold() by returning the
+-EINVAL error if the thin-pool is in fail mode. Also fail pool_ctr()
+with a new error message: "Error registering metadata threshold".
+
+Fixes: ac8c3f3df65e4 ("dm thin: generate event when metadata threshold passed")
 Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Luo Meng <luomeng12@huawei.com>
 Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-writecache.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-thin-metadata.c | 7 +++++--
+ drivers/md/dm-thin.c          | 4 +++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index c3e59d8af76f..dfb55fe09ce1 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -22,7 +22,7 @@
+diff --git a/drivers/md/dm-thin-metadata.c b/drivers/md/dm-thin-metadata.c
+index c88ed14d49e6..0ada99572b68 100644
+--- a/drivers/md/dm-thin-metadata.c
++++ b/drivers/md/dm-thin-metadata.c
+@@ -2073,10 +2073,13 @@ int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
+ 					dm_sm_threshold_fn fn,
+ 					void *context)
+ {
+-	int r;
++	int r = -EINVAL;
  
- #define HIGH_WATERMARK			50
- #define LOW_WATERMARK			45
--#define MAX_WRITEBACK_JOBS		0
-+#define MAX_WRITEBACK_JOBS		min(0x10000000 / PAGE_SIZE, totalram_pages() / 16)
- #define ENDIO_LATENCY			16
- #define WRITEBACK_LATENCY		64
- #define AUTOCOMMIT_BLOCKS_SSD		65536
+ 	pmd_write_lock_in_core(pmd);
+-	r = dm_sm_register_threshold_callback(pmd->metadata_sm, threshold, fn, context);
++	if (!pmd->fail_io) {
++		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
++						      threshold, fn, context);
++	}
+ 	pmd_write_unlock(pmd);
+ 
+ 	return r;
+diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
+index 4c67b77c23c1..0a85e4cd607c 100644
+--- a/drivers/md/dm-thin.c
++++ b/drivers/md/dm-thin.c
+@@ -3401,8 +3401,10 @@ static int pool_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 						calc_metadata_threshold(pt),
+ 						metadata_low_callback,
+ 						pool);
+-	if (r)
++	if (r) {
++		ti->error = "Error registering metadata threshold";
+ 		goto out_flags_changed;
++	}
+ 
+ 	dm_pool_register_pre_commit_callback(pool->pmd,
+ 					     metadata_pre_commit_callback, pool);
 -- 
 2.35.1
 
