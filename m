@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7E6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEA3C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348227AbiHPBIC (ORCPT
+        id S1347173AbiHPBIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
+        Mon, 15 Aug 2022 21:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348907AbiHPBCY (ORCPT
+        with ESMTP id S1349012AbiHPBC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:02:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6E4B9F86;
-        Mon, 15 Aug 2022 13:50:41 -0700 (PDT)
+        Mon, 15 Aug 2022 21:02:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72DEBA9DA;
+        Mon, 15 Aug 2022 13:51:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8AE5B811AC;
-        Mon, 15 Aug 2022 20:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412EFC433C1;
-        Mon, 15 Aug 2022 20:50:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 629BA61239;
+        Mon, 15 Aug 2022 20:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69092C433D6;
+        Mon, 15 Aug 2022 20:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596635;
-        bh=RZ1/XKi6ZZB/5Yh58YWyGEnCsTUCnClIq0g2pJhdLjQ=;
+        s=korg; t=1660596659;
+        bh=tWf8Wi3b7/Prk4onpT6cSotfSRDeTf1Vrw/VKciE+D0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbCXXetj665IUObSpC9/m5FxICqzUSIVf3ickhZboXVTeBvr/4mqb1n4C6gT3k/kJ
-         R/7doKoElLZ6ap1tjC8E0nr3iMkA3TsC1tEsiyzl66eIyAlVpP09pHsEsJ5jmzdwt8
-         VXgs1iOO9ml7dA7xqE7gYpRQUWs9CEvgHf2kGDJw=
+        b=OcFmjTcbTjRtDYUIJyxcLX7rSVCEyBdlRZzI9FUkqqretIM8sXvEmuexAmv7++bWi
+         LTDHIsV5ldCCQzrYcFA0/v555Uu/HtoEsz3xdX1oDxEKgN+F6qc72VoShgsvtm7UFR
+         KG95lEB+aM4p38nhc5Agp1NQHUvtogrkOXdb0i78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 1142/1157] raw: remove unused variables from raw6_icmp_error()
-Date:   Mon, 15 Aug 2022 20:08:18 +0200
-Message-Id: <20220815180526.163822703@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.19 1149/1157] wifi: nl80211: relax wdev mutex check in wdev_chandef()
+Date:   Mon, 15 Aug 2022 20:08:25 +0200
+Message-Id: <20220815180526.483944476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,41 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit c4fceb46add65481ef0dfb79cad24c3c269b4cad upstream.
+commit 31177127e067eb73d5ca46ce32a410e41333d42f upstream.
 
-saddr and daddr are set but not used.
+In many cases we might get here from driver code that's
+not really set up to care about the locking, and for the
+non-MLO cases we really don't care so much about it. So
+relax the checking here for now, perhaps we should even
+remove it completely since we might not really care if
+we point to an invalid link's chandef and can require
+the caller to check the link validity first.
 
-Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Link: https://lore.kernel.org/r/20220622032303.159394-1-edumazet@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/raw.c |    3 ---
- 1 file changed, 3 deletions(-)
+ net/wireless/chan.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -332,7 +332,6 @@ static void rawv6_err(struct sock *sk, s
- void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
- 		u8 type, u8 code, int inner_offset, __be32 info)
+--- a/net/wireless/chan.c
++++ b/net/wireless/chan.c
+@@ -1433,7 +1433,17 @@ EXPORT_SYMBOL(cfg80211_any_usable_channe
+ struct cfg80211_chan_def *wdev_chandef(struct wireless_dev *wdev,
+ 				       unsigned int link_id)
  {
--	const struct in6_addr *saddr, *daddr;
- 	struct net *net = dev_net(skb->dev);
- 	struct hlist_nulls_head *hlist;
- 	struct hlist_nulls_node *hnode;
-@@ -345,8 +344,6 @@ void raw6_icmp_error(struct sk_buff *skb
- 	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		/* Note: ipv6_hdr(skb) != skb->data */
- 		const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
--		saddr = &ip6h->saddr;
--		daddr = &ip6h->daddr;
+-	ASSERT_WDEV_LOCK(wdev);
++	/*
++	 * We need to sort out the locking here - in some cases
++	 * where we get here we really just don't care (yet)
++	 * about the valid links, but in others we do. But we
++	 * get here with various driver cases, so we cannot
++	 * easily require the wdev mutex.
++	 */
++	if (link_id || wdev->valid_links & BIT(0)) {
++		ASSERT_WDEV_LOCK(wdev);
++		WARN_ON(!(wdev->valid_links & BIT(link_id)));
++	}
  
- 		if (!raw_v6_match(net, sk, nexthdr, &ip6h->saddr, &ip6h->daddr,
- 				  inet6_iif(skb), inet6_iif(skb)))
+ 	switch (wdev->iftype) {
+ 	case NL80211_IFTYPE_MESH_POINT:
 
 
