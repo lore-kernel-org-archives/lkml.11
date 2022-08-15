@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0C9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7219C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343592AbiHOTT3 (ORCPT
+        id S1345154AbiHOTSU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
+        Mon, 15 Aug 2022 15:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344497AbiHOTQt (ORCPT
+        with ESMTP id S1343826AbiHOTO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:16:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABD954643;
-        Mon, 15 Aug 2022 11:38:24 -0700 (PDT)
+        Mon, 15 Aug 2022 15:14:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD8552451;
+        Mon, 15 Aug 2022 11:37:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C0FACE1269;
-        Mon, 15 Aug 2022 18:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D33C433C1;
-        Mon, 15 Aug 2022 18:38:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CD87610A4;
+        Mon, 15 Aug 2022 18:37:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8798FC433C1;
+        Mon, 15 Aug 2022 18:37:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588700;
-        bh=lSXbZ6qrGUKW9VxbcJdngjcM0H6A8XryCFumpFITXWo=;
+        s=korg; t=1660588659;
+        bh=Mg6Sn5bolJ4oeV46nSR5Urbra1kdWde0bOoiAeU8fPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WtdN5FzKHMba66ojOEFT6/HnALk357adhWFIPcyoJYCFVk4uuM0YtLmQz/U9wmKn7
-         vY/xknEEUu6ByBQ36dESKIbGCNzqCGnAksKWQQvTd8Nxp5Oce/580zPDW81m1JtIhM
-         LKI9NZjcxPhsxlncjpgDBVHJn+RTOX7KrNyU3tK8=
+        b=K97TVZ8a1cOzE/nsWec7dpKNX/akZV3tYdMkVU5REpn9db0qoZVFZL3oP2Py4FyDg
+         aYP0uMz9NTWTG7BbaUsPvEXnzxPREUD6NxZKZ3YSmnOJc3+SrFUaba82oMJ5P70f8Z
+         QqiHCdAI8jqbeCCidyBiTwPxoAVQPIBT06LU5+x0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 486/779] PCI: qcom: Set up rev 2.1.0 PARF_PHY before enabling clocks
-Date:   Mon, 15 Aug 2022 20:02:10 +0200
-Message-Id: <20220815180358.032735981@linuxfoundation.org>
+Subject: [PATCH 5.15 457/779] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
+Date:   Mon, 15 Aug 2022 20:01:41 +0200
+Message-Id: <20220815180356.812632127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,66 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Nikita Travkin <nikita@trvn.ru>
 
-[ Upstream commit 38f897ae3d44900f627cad708a15db498ce2ca31 ]
+[ Upstream commit d0696770cef35a1fd16ea2167e2198c18aa6fbfe ]
 
-We currently enable clocks BEFORE we write to PARF_PHY_CTRL reg to enable
-clocks and resets. This causes the driver to never set to a ready state
-with the error 'Phy link never came up'.
+Sometimes calculation of d value may result in 0 because of the
+rounding after integer division. This causes the following error:
 
-This is caused by the PHY clock getting enabled before setting the required
-bits in the PARF regs.
+[  113.969689] camss_gp1_clk_src: rcg didn't update its configuration.
+[  113.969754] WARNING: CPU: 3 PID: 35 at drivers/clk/qcom/clk-rcg2.c:122 update_config+0xc8/0xdc
 
-A workaround for this was set but with this new discovery we can drop
-the workaround and use a proper solution to the problem by just enabling
-the clock only AFTER the PARF_PHY_CTRL bit is set.
+Make sure that D value is never zero.
 
-This correctly sets up the PCIe link and makes it usable even when a
-bootloader leaves the PCIe link in an undefined state.
-
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Link: https://lore.kernel.org/r/20220708222743.27019-1-ansuelsmth@gmail.com
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for RCG")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220612145955.385787-3-nikita@trvn.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/clk-rcg2.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index b139a2e4af12..45210c6380b1 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -325,8 +325,6 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
- 	reset_control_assert(res->ext_reset);
- 	reset_control_assert(res->phy_reset);
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index ebdbc842b98a..c3823cc32edc 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -13,6 +13,7 @@
+ #include <linux/rational.h>
+ #include <linux/regmap.h>
+ #include <linux/math64.h>
++#include <linux/minmax.h>
+ #include <linux/slab.h>
  
--	writel(1, pcie->parf + PCIE20_PARF_PHY_CTRL);
--
- 	ret = regulator_bulk_enable(ARRAY_SIZE(res->supplies), res->supplies);
- 	if (ret < 0) {
- 		dev_err(dev, "cannot enable regulators\n");
-@@ -369,15 +367,15 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
- 		goto err_deassert_axi;
- 	}
+ #include <asm/div64.h>
+@@ -429,9 +430,11 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
+ 	/* Calculate 2d value */
+ 	d = DIV_ROUND_CLOSEST(n * duty_per * 2, 100);
  
--	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
--	if (ret)
--		goto err_clks;
--
- 	/* enable PCIe clocks and resets */
- 	val = readl(pcie->parf + PCIE20_PARF_PHY_CTRL);
- 	val &= ~BIT(0);
- 	writel(val, pcie->parf + PCIE20_PARF_PHY_CTRL);
+-	 /* Check bit widths of 2d. If D is too big reduce duty cycle. */
+-	if (d > mask)
+-		d = mask;
++	/*
++	 * Check bit widths of 2d. If D is too big reduce duty cycle.
++	 * Also make sure it is never zero.
++	 */
++	d = clamp_val(d, 1, mask);
  
-+	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
-+	if (ret)
-+		goto err_clks;
-+
- 	if (of_device_is_compatible(node, "qcom,pcie-ipq8064") ||
- 	    of_device_is_compatible(node, "qcom,pcie-ipq8064-v2")) {
- 		writel(PCS_DEEMPH_TX_DEEMPH_GEN1(24) |
+ 	if ((d / 2) > (n - m))
+ 		d = (n - m) * 2;
 -- 
 2.35.1
 
