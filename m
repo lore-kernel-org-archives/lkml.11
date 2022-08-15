@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772DEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B74C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347047AbiHOWAI (ORCPT
+        id S1345553AbiHOWAM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
+        Mon, 15 Aug 2022 18:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346807AbiHOV7S (ORCPT
+        with ESMTP id S244035AbiHOV7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:59:18 -0400
+        Mon, 15 Aug 2022 17:59:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F019310E94E;
-        Mon, 15 Aug 2022 12:35:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCB810E952;
+        Mon, 15 Aug 2022 12:35:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A591B80EAB;
-        Mon, 15 Aug 2022 19:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9698BC433D6;
-        Mon, 15 Aug 2022 19:34:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 751F5B80EA8;
+        Mon, 15 Aug 2022 19:35:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA44C433C1;
+        Mon, 15 Aug 2022 19:34:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592097;
-        bh=pTtIM64RdILeVy25ARrvbKCjUMJ6DkCoiulUOCyVutE=;
+        s=korg; t=1660592100;
+        bh=49uVIo5yxX6YOHCXdzDZ21EmAzU5bpz2xA4aVGHhjq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jv5Vibf4hcbmU/QEbt01McMU4n15WDT8G6dC6akDlHKRpph++FWOO9j+aC/CmgNHh
-         o86+djOpAhcS2iE6X4xOkHywfkeULIA3bfdlM62PME1PCpWywytonosBceQoAp/Vg+
-         q9JHP34R995Od1XKSBr2AqccNfujkaCpqwPOoeDM=
+        b=k6+2xmL2LESP2Rtlads+8xGoHogmQzhf2jI+5xHHgdLaXgP0El0orkodqZAyreNkU
+         7w7qmQhFcrU+/qgWCNlM9d9kLwTYCkfK2ngP7Mva0AOJJM4gcoIZ3p/TA828+8uCmM
+         JjiYPC0QsEZbanMAj1bSeNO9wRLfRiaaIlatmT4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 0058/1157] usbnet: Fix linkwatch use-after-free on disconnect
-Date:   Mon, 15 Aug 2022 19:50:14 +0200
-Message-Id: <20220815180441.803765540@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0734/1095] intel_th: Fix a resource leak in an error handling path
+Date:   Mon, 15 Aug 2022 20:02:13 +0200
+Message-Id: <20220815180459.755182054@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,85 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
+[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
 
-usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
-sleep.  On disconnect, completion of the work was originally awaited in
-->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
-commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
+If an error occurs after calling 'pci_alloc_irq_vectors()',
+'pci_free_irq_vectors()' must be called as already done in the remove
+function.
 
-  https://git.kernel.org/tglx/history/c/0f138bbfd83c
-
-The change was made because back then, the kernel's workqueue
-implementation did not allow waiting for a single work.  One had to wait
-for completion of *all* work by calling flush_scheduled_work(), and that
-could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
-held in ->ndo_stop().
-
-The commit solved one problem but created another:  It causes a
-use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
-ax88179_178a.c, ch9200.c and smsc75xx.c:
-
-* If the drivers receive a link change interrupt immediately before
-  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
-  ->status() callback and schedule usbnet_deferred_kevent().
-* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
-  which calls netif_carrier_{on,off}().
-* That in turn schedules the work linkwatch_event().
-
-Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
-netif_carrier_{on,off}() may operate on an unregistered netdev and
-linkwatch_event() may run after free_netdev(), causing a use-after-free.
-
-In 2010, usbnet was changed to only wait for a single instance of
-usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
-("drivers/net: don't use flush_scheduled_work()").
-
-Unfortunately the commit neglected to move the wait back to
-->ndo_stop().  Rectify that omission at long last.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/usbnet.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -849,13 +849,11 @@ int usbnet_stop (struct net_device *net)
+diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
+index 7da4f298ed01..fcd0aca75007 100644
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
+ 		}
  
- 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
+ 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
+-	if (IS_ERR(th))
+-		return PTR_ERR(th);
++	if (IS_ERR(th)) {
++		err = PTR_ERR(th);
++		goto err_free_irq;
++	}
  
--	/* deferred work (task, timer, softirq) must also stop.
--	 * can't flush_scheduled_work() until we drop rtnl (later),
--	 * else workers could deadlock; so make workers a NOP.
--	 */
-+	/* deferred work (timer, softirq, task) must also stop */
- 	dev->flags = 0;
- 	del_timer_sync (&dev->delay);
- 	tasklet_kill (&dev->bh);
-+	cancel_work_sync(&dev->kevent);
- 	if (!pm)
- 		usb_autopm_put_interface(dev->intf);
+ 	th->activate   = intel_th_pci_activate;
+ 	th->deactivate = intel_th_pci_deactivate;
+@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
+ 	pci_set_master(pdev);
  
-@@ -1619,8 +1617,6 @@ void usbnet_disconnect (struct usb_inter
- 	net = dev->net;
- 	unregister_netdev (net);
+ 	return 0;
++
++err_free_irq:
++	pci_free_irq_vectors(pdev);
++	return err;
+ }
  
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
- 	if (dev->driver_info->unbind)
+ static void intel_th_pci_remove(struct pci_dev *pdev)
+-- 
+2.35.1
+
 
 
