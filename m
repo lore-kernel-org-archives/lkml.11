@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240B5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8516C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353679AbiHOXhz (ORCPT
+        id S1353683AbiHOXiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
+        Mon, 15 Aug 2022 19:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346135AbiHOXds (ORCPT
+        with ESMTP id S1346140AbiHOXds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:33:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500653DF33;
-        Mon, 15 Aug 2022 13:08:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94003E75D;
+        Mon, 15 Aug 2022 13:08:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0612B80EAB;
-        Mon, 15 Aug 2022 20:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47CA4C433C1;
-        Mon, 15 Aug 2022 20:08:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65CFD6069E;
+        Mon, 15 Aug 2022 20:08:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560E2C433C1;
+        Mon, 15 Aug 2022 20:08:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594127;
-        bh=bjeh28CCsaCSegsI7JD1Z+8K+VqCVOxgFvTP1Iv6SyA=;
+        s=korg; t=1660594130;
+        bh=0le8guGcDs0hkYYHgSH5VlcQ39elFKC8ps3iIHcFQlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f7ssJzaw4ZcoHrNV6KxLCxWurvsAaZkQMF9BIFAPNPbalyOXGGYpMatKdzyPbybz2
-         KqBx/eHLseH9mo9QtC5ewNLGt0E3819y9aEnz6tFwYXV8kiyf8pakl9vPEK2dcdLNG
-         mkrUnD8BEiyMrUT4IR+OwF/iuDyzNxvi+wMX5bEo=
+        b=s7mkJoocQGVeXwqmK9liq/4QidBHK6m7XIZlVLHjWHFZOFdOggZldibzKQeas1m3C
+         5ThUtwfTHkLDDV00h3vJ9iGcm4SPRfpjlSGCSCDVExjdFM4ZMcDwEIj9hypfEcyk43
+         WcU28K3BKblZ7BjTJxBKRsJl/4OTrMsmfmYVZGF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1060/1095] ext4: fix warning in ext4_iomap_begin as race between bmap and write
-Date:   Mon, 15 Aug 2022 20:07:39 +0200
-Message-Id: <20220815180512.888049886@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0383/1157] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
+Date:   Mon, 15 Aug 2022 19:55:39 +0200
+Message-Id: <20220815180455.047494324@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,101 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit 51ae846cff568c8c29921b1b28eb2dfbcd4ac12d ]
+[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
 
-We got issue as follows:
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
-RIP: 0010:ext4_iomap_begin+0x182/0x5d0
-RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
-RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
-R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
-R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
-FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- iomap_apply+0x119/0x570
- iomap_bmap+0x124/0x150
- ext4_bmap+0x14f/0x250
- bmap+0x55/0x80
- do_vfs_ioctl+0x952/0xbd0
- __x64_sys_ioctl+0xc6/0x170
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+As a result of the execution of the inner while loop, the value
+of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
+is not checked after the loop and 'idx' is used to write the
+LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
+in the outer loop.
 
-Above issue may happen as follows:
-          bmap                    write
-bmap
-  ext4_bmap
-    iomap_bmap
-      ext4_iomap_begin
-                            ext4_file_write_iter
-			      ext4_buffered_write_iter
-			        generic_perform_write
-				  ext4_da_write_begin
-				    ext4_da_write_inline_data_begin
-				      ext4_prepare_inline_data
-				        ext4_create_inline_data
-					  ext4_set_inode_flag(inode,
-						EXT4_INODE_INLINE_DATA);
-      if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
+The fix is to check the new value of 'idx' inside the nested loop,
+and break both loops if index equals the size. Checking it at the
+start is now pointless, so let's remove it.
 
-To solved above issue hold inode lock in ext4_bamp.
+Detected using the static analysis tool - Svace.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Link: https://lore.kernel.org/r/20220617013935.397596-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/inode.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index e478cac3b8f2..9ef6f41a5250 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -3137,13 +3137,15 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
- {
- 	struct inode *inode = mapping->host;
- 	journal_t *journal;
-+	sector_t ret = 0;
- 	int err;
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+index 9dd2d890e35f..c62f299b9e0a 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+@@ -2403,7 +2403,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		/* Repeat initial/next rate.
+ 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
+ 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
+-		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
++		while (repeat_rate > 0) {
+ 			if (is_legacy(tbl_type.lq_type)) {
+ 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
+ 					ant_toggle_cnt++;
+@@ -2422,6 +2422,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 			    cpu_to_le32(new_rate);
+ 			repeat_rate--;
+ 			idx++;
++			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
++				goto out;
+ 		}
  
-+	inode_lock_shared(inode);
- 	/*
- 	 * We can get here for an inline file via the FIBMAP ioctl
- 	 */
- 	if (ext4_has_inline_data(inode))
--		return 0;
-+		goto out;
- 
- 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY) &&
- 			test_opt(inode->i_sb, DELALLOC)) {
-@@ -3182,10 +3184,14 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
- 		jbd2_journal_unlock_updates(journal);
- 
- 		if (err)
--			return 0;
-+			goto out;
+ 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
+@@ -2466,6 +2468,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		repeat_rate--;
  	}
  
--	return iomap_bmap(mapping, block, &ext4_iomap_ops);
-+	ret = iomap_bmap(mapping, block, &ext4_iomap_ops);
-+
 +out:
-+	inode_unlock_shared(inode);
-+	return ret;
- }
+ 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
+ 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
  
- static int ext4_readpage(struct file *file, struct page *page)
 -- 
 2.35.1
 
