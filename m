@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E07C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C41C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346082AbiHOUrY (ORCPT
+        id S1346285AbiHOUrd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        Mon, 15 Aug 2022 16:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344933AbiHOUpa (ORCPT
+        with ESMTP id S1346553AbiHOUqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:45:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C9BB5E7E;
-        Mon, 15 Aug 2022 12:08:17 -0700 (PDT)
+        Mon, 15 Aug 2022 16:46:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80871B69D6;
+        Mon, 15 Aug 2022 12:08:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB3BDB81106;
-        Mon, 15 Aug 2022 19:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19853C433C1;
-        Mon, 15 Aug 2022 19:08:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C93FB81109;
+        Mon, 15 Aug 2022 19:08:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BED6C433C1;
+        Mon, 15 Aug 2022 19:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590494;
-        bh=VgMoTdeM27KVRPXO4E7YPhY2Lw8hSEWmBEss6I8f9bw=;
+        s=korg; t=1660590513;
+        bh=AqWw4NkX98xkqBjylREhBx6pgKkIJpx7teXTXimUm/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zkuzDjsflpkzmchny+a8FdG8ff9zXnCAQzepkIsmDl8w16QQPWiD+h5QdTK5h9cjB
-         kByDvqVGOIGvRksUoFCbkcZJdZZL7kMAVd7UKlRihtb4cI7wEohig3ZLNH3y1RbBPP
-         Z+MPBraf3h+HcKfHrVIBizPyFXR7tAk1CUAmc+YY=
+        b=Y9xkU811CY2W6gqk3nGGRbOHXmzFBk7MMtbGbRAk25rdn1IXFzDWouQtC0dzkRdHz
+         m7vAd4RbEBpNkKje44Ux3Q77Sq5D7bKuueM2xl36AGuoPqi14MW3mC/p3Mwu9YiqP6
+         zxmGG6z09EWD6Ce6qCLtNHbwFkIdtPoiRzSwZ5g4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0278/1095] dm writecache: count number of blocks discarded, not number of discard bios
-Date:   Mon, 15 Aug 2022 19:54:37 +0200
-Message-Id: <20220815180441.281543770@linuxfoundation.org>
+Subject: [PATCH 5.18 0283/1095] arm64: dts: qcom: qcs404: Fix incorrect USB2 PHYs assignment
+Date:   Mon, 15 Aug 2022 19:54:42 +0200
+Message-Id: <20220815180441.489375888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,50 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Sumit Garg <sumit.garg@linaro.org>
 
-[ Upstream commit 2ee73ef60db4d79b9f9b8cd501e8188b5179449f ]
+[ Upstream commit 58577966a42fc0b660b5e2c7c9e5a2241363ea83 ]
 
-Change dm-writecache, so that it counts the number of blocks discarded
-instead of the number of discard bios. Make it consistent with the
-read and write statistics counters that were changed to count the
-number of blocks instead of bios.
+Currently the DT for QCS404 SoC has setup for 2 USB2 PHYs with one each
+assigned to USB3 controller and USB2 controller. This assignment is
+incorrect which only works by luck: as when each USB HCI comes up it
+configures the *other* controllers PHY which is enough to make them
+happy. If, for any reason, we were to disable one of the controllers then
+both would stop working.
 
-Fixes: e3a35d03407c ("dm writecache: add event counters")
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+This was a difficult inconsistency to be caught which was found while
+trying to enable USB support in u-boot. So with all the required drivers
+ported to u-boot, I couldn't get the same USB storage device enumerated
+in u-boot which was being enumerated fine by the kernel.
+
+The root cause of the problem came out to be that I wasn't enabling USB2
+PHY: "usb2_phy_prim" in u-boot. Then I realised that via simply disabling
+the same USB2 PHY currently assigned to USB2 host controller in the
+kernel disabled enumeration for USB3 host controller as well.
+
+So fix this inconsistency by correctly assigning USB2 PHYs.
+
+Fixes: 9375e7d719b3 ("arm64: dts: qcom: qcs404: Add USB devices and PHYs")
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220711083038.1518529-1-sumit.garg@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/device-mapper/writecache.rst | 2 +-
- drivers/md/dm-writecache.c                             | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/qcs404.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
-index 6c9a2c74df8a..724e028d1858 100644
---- a/Documentation/admin-guide/device-mapper/writecache.rst
-+++ b/Documentation/admin-guide/device-mapper/writecache.rst
-@@ -87,7 +87,7 @@ Status:
- 11. the number of write blocks that are allocated in the cache
- 12. the number of write requests that are blocked on the freelist
- 13. the number of flush requests
--14. the number of discard requests
-+14. the number of discarded blocks
- 
- Messages:
- 	flush
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index 98df6327990a..e5acb393f70b 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1513,7 +1513,7 @@ static enum wc_map_op writecache_map_flush(struct dm_writecache *wc, struct bio
- 
- static enum wc_map_op writecache_map_discard(struct dm_writecache *wc, struct bio *bio)
- {
--	wc->stats.discards++;
-+	wc->stats.discards += bio->bi_iter.bi_size >> wc->block_size_bits;
- 
- 	if (writecache_has_error(wc))
- 		return WC_MAP_ERROR;
+diff --git a/arch/arm64/boot/dts/qcom/qcs404.dtsi b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+index 3f06f7cd3cf2..65d71adee345 100644
+--- a/arch/arm64/boot/dts/qcom/qcs404.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+@@ -548,7 +548,7 @@ dwc3@7580000 {
+ 				compatible = "snps,dwc3";
+ 				reg = <0x07580000 0xcd00>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+-				phys = <&usb2_phy_sec>, <&usb3_phy>;
++				phys = <&usb2_phy_prim>, <&usb3_phy>;
+ 				phy-names = "usb2-phy", "usb3-phy";
+ 				snps,has-lpm-erratum;
+ 				snps,hird-threshold = /bits/ 8 <0x10>;
+@@ -577,7 +577,7 @@ dwc3@78c0000 {
+ 				compatible = "snps,dwc3";
+ 				reg = <0x078c0000 0xcc00>;
+ 				interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+-				phys = <&usb2_phy_prim>;
++				phys = <&usb2_phy_sec>;
+ 				phy-names = "usb2-phy";
+ 				snps,has-lpm-erratum;
+ 				snps,hird-threshold = /bits/ 8 <0x10>;
 -- 
 2.35.1
 
