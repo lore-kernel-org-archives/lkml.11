@@ -2,94 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD525C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBD7C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241317AbiHPBUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
+        id S239502AbiHPBVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245418AbiHPBUF (ORCPT
+        with ESMTP id S233373AbiHPBU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:20:05 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFB654CB4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:11:06 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 73so7520197pgb.9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:11:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=aYnevW0RKKz7AJ1R70lHY5ms4ueTX8/h0O+eGKTQjTE=;
-        b=eZEVHqhUJZBl8nnM5ouCSL9Q0e+bf2oEZJkP1a1mxAW7hqVjwHZHr8VZUjqxiwZ+2E
-         BMsqDv0TTpQdSdGtNtf9YCCSib1V/CngKZDbAOAiyNqqYt4akE7WI/OJYRvMmtTGJhdb
-         xnAdGOnl7YH7JqrMpeakQQ/vytav1iKi2jS3bEAtqh+KAzyu0VCMX7WEZLYO3kuHBDOZ
-         nYzTjeKVuIWOsP+r95Lbu/7404aYFBKgTmSmRBAiK6OmmiyFyeKAeabfG8K3Oz/niOW5
-         MH9L+NuHo43T00XN6O45rU7/CvvuRnBt8xsFcSr6h6dnmqvd+Qu9ktjzQb6KgwupPFOa
-         8jSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=aYnevW0RKKz7AJ1R70lHY5ms4ueTX8/h0O+eGKTQjTE=;
-        b=gyr8Sj694x80S/LU+BxIWX+z6gzH2fHbxBH2GJ3XD1VbA0Vtq5E5Yp1rSypi9dj41S
-         Nz+t6WW3era7TbxXvWkYAOGs4MweQhgnd77YOFNQo2Mn+RVzaWdlghqm20oV3TkMe3/b
-         XYrPj3YErWXx/J5RhiSgkCG81iroju7W34QRyxMgHNoAZXaGmIkWIbuIayKomCHMP7FQ
-         EKGAdMKBAld52o9gX0AWo0k790heYfqOcNddgqUcqajvvFzvwBz7dmi86YIZ+UTHg04V
-         WfZ16MTAFhjkMcZW94aBL8m6ss3vHST6Z/U0ivDFJbzH8g8uBFN2D8rIEi38YpoJsPMz
-         yl6g==
-X-Gm-Message-State: ACgBeo2Zp/XRtWL9r2s0/Edvg68FlhphA5Flf99TqaMrL48xevThmNjf
-        l2Lt5tWAmfZzP/97PUJr4S8=
-X-Google-Smtp-Source: AA6agR5IPlIw8spaOlrBboFpQYQvxkOKtVJJKYzds9edC2L6VjwqSrKFVlGfGNnYur7nRWeUOldhNw==
-X-Received: by 2002:a05:6a00:4147:b0:52d:fe84:2614 with SMTP id bv7-20020a056a00414700b0052dfe842614mr18404576pfb.10.1660597864064;
-        Mon, 15 Aug 2022 14:11:04 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:3a69])
-        by smtp.gmail.com with ESMTPSA id j9-20020a17090a2a8900b001f239783e3dsm4916818pjd.34.2022.08.15.14.11.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 14:11:03 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 15 Aug 2022 11:11:02 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 7/9] sched/fair: allow changing cgroup of new forked
- task
-Message-ID: <Yvq2ZiQL/iHNAaLh@slm.duckdns.org>
-References: <20220808125745.22566-1-zhouchengming@bytedance.com>
- <20220808125745.22566-8-zhouchengming@bytedance.com>
+        Mon, 15 Aug 2022 21:20:27 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643021C1865;
+        Mon, 15 Aug 2022 14:12:09 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 4480232004AE;
+        Mon, 15 Aug 2022 17:12:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 15 Aug 2022 17:12:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bur.io; h=cc:cc
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1660597926; x=1660684326; bh=duedlCLDEu
+        9t8HnT+Y8HmDQ++Q7DMuHbP3sR5+RPBD8=; b=ncmQW4mdway+eYunr02KKcLLnB
+        qeoRtm4heWV5bPDmXKCULOeCVxp5QfxYU0zRWVG25Bt9CTRduQaQyi2jQg/bSI9x
+        6UqH8JzoV47QuYxZvE7ccJCgudeCUjejz5HXfPudr0jVaK9qJcQr+D0vdMpao+Hr
+        sWpK4DZS8L5SL5IYs1laqKojYbOeQGfKRVmp5iUdwZCT3MXriwqeLY0w6QOdVhKQ
+        mhFZ98ngEMEkpfeyeD9DtuiR46txJtj0iwYxltZw4bdc8MGqvbsvuiiVGuXN5+1p
+        rOcHElfAIAFp37RVpVYJddz/PiO5NOz3PWOA4Vxsl0JGklAhBQyKpciOy4wQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660597926; x=1660684326; bh=duedlCLDEu9t8HnT+Y8HmDQ++Q7D
+        MuHbP3sR5+RPBD8=; b=UhY1MFd0BSHNck9qz+wHrdZjIu0VqjwBtM6eCdIM3+Pb
+        cTl1rqreTSh/XuQXip5V06QM6eD40t5yHnh//biLvoXoZE694dUn35EpbgrFUX54
+        In5lSMBtiNAaLY8LqDF9+EMet/6Um9Ok5MPNoOBbI7CVnRhCWRbbL4q7TH3LvCwM
+        c+vZ+aPBeWHIXooGtXegKlI9ymLZB5toK7H+gEjXxNsGrhJXkjL+fKkDuFGNbAwR
+        BY+RUJYoEWLcgi1+wjFdQ0jKANvcbc9t4H/Etp8YT7GKkgOWaSmHsY92Zu3kyNx8
+        EIY7RmcSjBupFEC//bQ7x1aw2IiArIRR7s1uJk/guw==
+X-ME-Sender: <xms:pbb6YqYdHobCAelZ7xNWnF5o0CwhRvUzh8W3KlRqsKaQ9lp8Sp2kZg>
+    <xme:pbb6Ytbfc7qcHL2O2PJyxXwqJujRiPRZuKNxYiamCFFaHOudoMGjRerj8i9_XG20i
+    HRyaBqyXZhQEQaM8Fw>
+X-ME-Received: <xmr:pbb6Yk_qGGPBERhlmIMHWnFnaL7j5w7XNX69dNUzxe9B9TefWhv9K79eT4oLzKqIOLl7E17Uk9UgeIlirpAFiRol0EuOcA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudeitdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvfevuffkfhggtggujgesth
+    dtredttddtvdenucfhrhhomhepuehorhhishcuuehurhhkohhvuceosghorhhishessghu
+    rhdrihhoqeenucggtffrrghtthgvrhhnpeekvdekffejleelhfevhedvjeduhfejtdfhvd
+    evieeiiedugfeugfdtjefgfeeljeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpegsohhrihhssegsuhhrrdhioh
+X-ME-Proxy: <xmx:pbb6Ysop1lsXOOFMHT1RA1DY5xfzrzTKFdekNZBcpZuS4MOm4FtzBw>
+    <xmx:pbb6YloLN3K-WvhF3UbI_yxBChNdwVW2Tv6JVCYVA1pGrnDqYCSurQ>
+    <xmx:pbb6YqRNgRn4GduhrhdTsxeWUA-h48zui3BBOKN7I70BIxQ9WaqGkQ>
+    <xmx:prb6Ymc4hqTqn1QZ7_5AC3aIOhL8qDEhmX0AifcitlFY_9TYjI5WWQ>
+Feedback-ID: i083147f8:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 17:12:05 -0400 (EDT)
+Date:   Mon, 15 Aug 2022 14:13:28 -0700
+From:   Boris Burkov <boris@bur.io>
+To:     Zixuan Fu <r33s3n6@gmail.com>
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: Re: [PATCH] fs: btrfs: fix possible memory leaks in
+ btrfs_get_dev_args_from_path()
+Message-ID: <Yvq2+EWVBc5L1LZH@zen>
+References: <20220815151606.3479183-1-r33s3n6@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220808125745.22566-8-zhouchengming@bytedance.com>
+In-Reply-To: <20220815151606.3479183-1-r33s3n6@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 08:57:43PM +0800, Chengming Zhou wrote:
-> commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
-> introduce a TASK_NEW state and an unnessary limitation that would fail
-> when changing cgroup of new forked task.
+On Mon, Aug 15, 2022 at 11:16:06PM +0800, Zixuan Fu wrote:
+> In btrfs_get_dev_args_from_path(), btrfs_get_bdev_and_sb() can fail if the
+> path is invalid. In this case, btrfs_get_dev_args_from_path() returns
+> directly without freeing args->uuid and args->fsid allocated before, which
+> causes memory leaks.
 > 
-> Because at that time, we can't handle task_change_group_fair() for new
-> forked fair task which hasn't been woken up by wake_up_new_task(),
-> which will cause detach on an unattached task sched_avg problem.
+> To fix these possible leaks, when btrfs_get_bdev_and_sb() fails, 
+> btrfs_put_dev_args_from_path() is called to clean up the memory.
 > 
-> This patch delete this unnessary limitation by adding check before do
-> detach or attach in task_change_group_fair().
+> Fixes: faa775c41d655 ("btrfs: add a btrfs_get_dev_args_from_path helper")
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Reviewed-by: Boris Burkov <boris@bur.io>
+> ---
+>  fs/btrfs/volumes.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> So cpu_cgrp_subsys.can_attach() has nothing to do for fair tasks,
-> only define it in #ifdef CONFIG_RT_GROUP_SCHED.
+> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+> index 272901514b0c..064ab2a79c80 100644
+> --- a/fs/btrfs/volumes.c
+> +++ b/fs/btrfs/volumes.c
+> @@ -2345,8 +2345,11 @@ int btrfs_get_dev_args_from_path(struct btrfs_fs_info *fs_info,
+>  
+>  	ret = btrfs_get_bdev_and_sb(path, FMODE_READ, fs_info->bdev_holder, 0,
+>  				    &bdev, &disk_super);
+> -	if (ret)
+> +	if (ret) {
+> +		btrfs_put_dev_args_from_path(args);
+>  		return ret;
+> +	}
+> +
+>  	args->devid = btrfs_stack_device_id(&disk_super->dev_item);
+>  	memcpy(args->uuid, disk_super->dev_item.uuid, BTRFS_UUID_SIZE);
+>  	if (btrfs_fs_incompat(fs_info, METADATA_UUID))
+> -- 
+> 2.25.1
 > 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-
-I don't know cfs enough to review this but it'd be really great to remove
-this restriction.
-
-Thanks.
-
--- 
-tejun
