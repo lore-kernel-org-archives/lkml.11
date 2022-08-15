@@ -2,146 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE230C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CA5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344907AbiHOUaS (ORCPT
+        id S1344911AbiHOUad (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        Mon, 15 Aug 2022 16:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347332AbiHOUWS (ORCPT
+        with ESMTP id S1347335AbiHOUWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:22:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FDE2CCBE;
-        Mon, 15 Aug 2022 12:02:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B7261281;
-        Mon, 15 Aug 2022 19:02:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A859EC433C1;
-        Mon, 15 Aug 2022 19:02:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590153;
-        bh=nogcyjDbxml/XTbmHH6bJemVBNIFkSKhtNm6psYUfCc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXfm5lzIk7WsMeVd/EmqW04KzcCDvvRCDx6f/gPMR8JjVudIUhIsJcHPTkKP1slq8
-         PqJrygYt+oKemwEI0+UOFjXx/OEvjt1CHAthebYJ4/QwWg1+9BR0PlJsAwdGmdCS8Y
-         U+rGUKqnijNANg2Lijh+GJ2wWP5Z9zvhPTW152o0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0136/1095] arch: make TRACE_IRQFLAGS_NMI_SUPPORT generic
-Date:   Mon, 15 Aug 2022 19:52:15 +0200
-Message-Id: <20220815180435.221415031@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935C033E2E;
+        Mon, 15 Aug 2022 12:02:40 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id c19-20020a17090ae11300b001f2f94ed5c6so12221211pjz.1;
+        Mon, 15 Aug 2022 12:02:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc;
+        bh=Mfaz1LfXGr/UvNceveiY5fzXa9npXeyxxs1DRSGlQXM=;
+        b=TJdHQlV13t5HaX6d59FUc8yeKaJbrW/xMo+z1XHIGdY7INXEbXfmYAMK8eywuM6ZDL
+         viQ7G5tjLNHqug/kuwOV28/G71gB7DJhEQ+od6NH+H1cKKhAkwiQx8fP8GcNrjDcP4L7
+         qoWsKGYKoz9X7HQj593QzsA/DnCMhn8w3CqijHLm8bYWeQvGD1+nhWmSd+4MAXMPn1hi
+         p7ItCQDUWPLdrn5DYKcOkCgiDQpP8Sh54XWLTKCPFVT3Ayc/OzWHg4qOfTVPnAwlJ5EH
+         K9Vd5GrPag980at0QRUDL7piVmgD38pB2hGAZFSls1FyIFz/eYWxXb4CGTpmE1Z3NBRm
+         y8TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc;
+        bh=Mfaz1LfXGr/UvNceveiY5fzXa9npXeyxxs1DRSGlQXM=;
+        b=TWa4B+DbVsNEkd+/ufxBNQrg+xJjHA+sJLLIztTzB2GJQTaqPjBT07wwGT8SjO0HX1
+         LCQiYR8KvRNG9uxuVw7I9WoTkHirORrQgjXpJTzxjIQKqCBM9WyWPdnkdDnKZBWqt5rx
+         TfkgmiSHaR/3tsGBjEOYDe6sa8vbkg/yPfdU9Q6jQeiAEyKFlVumChJXTctrwv6TguKD
+         NIYW8WlgiubUybmoRMx//pAeD7gpPhP+DcaMuTDembscPBYjyT/0uoyESLTbCmVYG7N5
+         d7W6Jhnp6Ux2kUJumBaeuxss49liLU26j47d8dO0KV1345exshnmB6CUZW/0CGRtoy7E
+         WbxQ==
+X-Gm-Message-State: ACgBeo0R614fqF4xpMmgZgq6cR+64FIYc/GTnSI/bZRAJ16ose150BNx
+        WbAjYl/EiOBJksgozVnoS3kqR8G5Wc04JQ==
+X-Google-Smtp-Source: AA6agR40RmTIFkna2ofomi+uvVaNt6zWBUj5/bra+glY6LQazm5zkKj+fzOFrggoGaTxiIwUA4OLCg==
+X-Received: by 2002:a17:902:c406:b0:16e:df76:5267 with SMTP id k6-20020a170902c40600b0016edf765267mr18295281plk.8.1660590159240;
+        Mon, 15 Aug 2022 12:02:39 -0700 (PDT)
+Received: from youngsil.svl.corp.google.com ([2620:15c:2d4:203:df3e:22e0:b905:822b])
+        by smtp.gmail.com with ESMTPSA id q13-20020a170902a3cd00b0016a4db13429sm7266926plb.192.2022.08.15.12.01.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 12:01:25 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 0/4] perf tools: Support reading PERF_FORMAT_LOST
+Date:   Mon, 15 Aug 2022 12:01:02 -0700
+Message-Id: <20220815190106.1293082-1-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+Hello,
 
-[ Upstream commit 4510bffb4d0246cdcc1f14c7367c026b807a862d ]
+The kernel v6.0 added PERF_FORMAT_LOST which can read a number of lost
+samples for the given event.  As it can change the output format of
+read(2) and perf sample data, it needs to access them carefully.
 
-On most architectures, IRQ flag tracing is disabled in NMI context, and
-architectures need to define and select TRACE_IRQFLAGS_NMI_SUPPORT in
-order to enable this.
+You can get the code from 'perf/read-lost-v1' brach on
 
-Commit:
+  git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
 
-  859d069ee1ddd878 ("lockdep: Prepare for NMI IRQ state tracking")
+Thanks,
+Namhyung
 
-Permitted IRQ flag tracing in NMI context, allowing lockdep to work in
-NMI context where an architecture had suitable entry logic. At the time,
-most architectures did not have such suitable entry logic, and this broke
-lockdep on such architectures. Thus, this was partially disabled in
-commit:
 
-  ed00495333ccc80f ("locking/lockdep: Fix TRACE_IRQFLAGS vs. NMIs")
+Namhyung Kim (4):
+  tools headers UAPI: Sync linux/perf_event.h with the kernel sources
+  tools lib perf: Handle read format in perf_evsel__read()
+  tools lib perf: Add a test case for read formats
+  perf tools: Support reading PERF_FORMAT_LOST
 
-... with architectures needing to select TRACE_IRQFLAGS_NMI_SUPPORT to
-enable IRQ flag tracing in NMI context.
+ tools/include/uapi/linux/perf_event.h         |   5 +-
+ tools/lib/perf/evsel.c                        |  72 ++++++++
+ tools/lib/perf/include/perf/event.h           |   3 +-
+ tools/lib/perf/include/perf/evsel.h           |   4 +-
+ tools/lib/perf/tests/test-evsel.c             | 161 ++++++++++++++++++
+ tools/perf/tests/sample-parsing.c             |  14 +-
+ tools/perf/util/event.h                       |  18 +-
+ tools/perf/util/evsel.c                       |  33 +++-
+ .../scripting-engines/trace-event-python.c    |  16 +-
+ tools/perf/util/session.c                     |  32 ++--
+ tools/perf/util/synthetic-events.c            |  34 +++-
+ 11 files changed, 354 insertions(+), 38 deletions(-)
 
-Currently TRACE_IRQFLAGS_NMI_SUPPORT is defined under
-arch/x86/Kconfig.debug. Move it to arch/Kconfig so architectures can
-select it without having to provide their own definition.
 
-Since the regular TRACE_IRQFLAGS_SUPPORT is selected by
-arch/x86/Kconfig, the select of TRACE_IRQFLAGS_NMI_SUPPORT is moved
-there too.
-
-There should be no functional change as a result of this patch.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220511131733.4074499-2-mark.rutland@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/Kconfig           | 3 +++
- arch/x86/Kconfig       | 1 +
- arch/x86/Kconfig.debug | 3 ---
- 3 files changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 31c4fdc4a4ba..ab45e0f6c21b 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -214,6 +214,9 @@ config HAVE_FUNCTION_DESCRIPTORS
- config TRACE_IRQFLAGS_SUPPORT
- 	bool
- 
-+config TRACE_IRQFLAGS_NMI_SUPPORT
-+	bool
-+
- #
- # An arch should select this if it provides all these things:
- #
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ce1f5a876cfe..04a9865dbdbf 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -272,6 +272,7 @@ config X86
- 	select SYSCTL_EXCEPTION_TRACE
- 	select THREAD_INFO_IN_TASK
- 	select TRACE_IRQFLAGS_SUPPORT
-+	select TRACE_IRQFLAGS_NMI_SUPPORT
- 	select USER_STACKTRACE_SUPPORT
- 	select VIRT_TO_BUS
- 	select HAVE_ARCH_KCSAN			if X86_64
-diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
-index d3a6f74a94bd..d4d6db4dde22 100644
---- a/arch/x86/Kconfig.debug
-+++ b/arch/x86/Kconfig.debug
-@@ -1,8 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- 
--config TRACE_IRQFLAGS_NMI_SUPPORT
--	def_bool y
--
- config EARLY_PRINTK_USB
- 	bool
- 
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-2.35.1
-
-
+2.37.1.595.g718a3a8f04-goog
 
