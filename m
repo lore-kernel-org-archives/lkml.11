@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9527EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D78C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350191AbiHOWmc (ORCPT
+        id S1350437AbiHOWmi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
+        Mon, 15 Aug 2022 18:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351038AbiHOWhc (ORCPT
+        with ESMTP id S1351059AbiHOWhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6846D72876;
+        Mon, 15 Aug 2022 18:37:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711AA123CAB;
         Mon, 15 Aug 2022 12:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9484960FD8;
-        Mon, 15 Aug 2022 19:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92852C433D6;
-        Mon, 15 Aug 2022 19:50:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53126B80EAB;
+        Mon, 15 Aug 2022 19:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9496BC433C1;
+        Mon, 15 Aug 2022 19:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593034;
-        bh=lwen1EgOL0WIJxndcyGGj6vv0zvik1mBKliZtD3eSSU=;
+        s=korg; t=1660593031;
+        bh=WYd78N6+cGqCZNCDwJNGzu9MD4xA9L78/Pgyr6dMArg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=srezJdxYtLl44m/LBzslARw3SN+EKAcV3Bm6IWN6KyZHf19ROhbZDkJGmzmeJa1/e
-         7WpEmxtD5IsjH5CzCeus/VPQsnZVEbRNXwcXVDDQEW5XO6rpr3oYRIrkULZZ5lvDV8
-         jjnHUatvnGo3ft0t0YwglrjHQONUFD0E1B7H8WqU=
+        b=IfvZY7xXj1MOUpeC3PHay8Bo9iNLk6gTm44cMHji+TB/2X0+etxn4ZtPHA1hjkbPF
+         1KC+DqTK2UIEdm57K10N793HlZlAIiXPOVTwSXMiu5g5xi2mj5aCRpZ6P1tmXlkivd
+         yeYrUTiwSEcO4jiCiGZGnvPSsfkG2XyXV6iJ8xqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0203/1157] ARM: dts: imx7d-colibri-emmc: add cpu1 supply
-Date:   Mon, 15 Aug 2022 19:52:39 +0200
-Message-Id: <20220815180447.792758299@linuxfoundation.org>
+        stable@vger.kernel.org, Sam Protsenko <semen.protsenko@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0882/1095] iommu/exynos: Handle failed IOMMU device registration properly
+Date:   Mon, 15 Aug 2022 20:04:41 +0200
+Message-Id: <20220815180505.830831911@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
 
-[ Upstream commit ba28db60d34271e8a3cf4d7158d71607e8b1e57f ]
+[ Upstream commit fce398d2d02c0a9a2bedf7c7201b123e153e8963 ]
 
-Each cpu-core is supposed to list its supply separately, add supply for
-cpu1.
+If iommu_device_register() fails in exynos_sysmmu_probe(), the previous
+calls have to be cleaned up. In this case, the iommu_device_sysfs_add()
+should be cleaned up, by calling its remove counterpart call.
 
-Fixes: 2d7401f8632f ("ARM: dts: imx7d: Add cpu1 supply")
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: d2c302b6e8b1 ("iommu/exynos: Make use of iommu_device_register interface")
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220714165550.8884-3-semen.protsenko@linaro.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7d-colibri-emmc.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/exynos-iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-index af39e5370fa1..045e4413d339 100644
---- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-+++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
-@@ -13,6 +13,10 @@ memory@80000000 {
- 	};
- };
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 71f2018e23fe..cd4b889d5537 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -630,7 +630,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
  
-+&cpu1 {
-+	cpu-supply = <&reg_DCDC2>;
-+};
+ 	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
+ 	if (ret)
+-		return ret;
++		goto err_iommu_register;
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+@@ -657,6 +657,10 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 
+ 	return 0;
 +
- &gpio6 {
- 	gpio-line-names = "",
- 			  "",
++err_iommu_register:
++	iommu_device_sysfs_remove(&data->iommu);
++	return ret;
+ }
+ 
+ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
 -- 
 2.35.1
 
