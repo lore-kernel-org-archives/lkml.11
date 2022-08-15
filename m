@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80562C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C8BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343682AbiHOTKB (ORCPT
+        id S1343688AbiHOTKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        Mon, 15 Aug 2022 15:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343554AbiHOTGh (ORCPT
+        with ESMTP id S245530AbiHOTFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:06:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD664E87B;
-        Mon, 15 Aug 2022 11:34:59 -0700 (PDT)
+        Mon, 15 Aug 2022 15:05:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9666237197;
+        Mon, 15 Aug 2022 11:34:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3579610AA;
-        Mon, 15 Aug 2022 18:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4889C433D6;
-        Mon, 15 Aug 2022 18:34:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AFA3B81081;
+        Mon, 15 Aug 2022 18:34:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AA8C433D7;
+        Mon, 15 Aug 2022 18:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588498;
-        bh=VYd2+ukN06xBcoLLYYMIChMdyu1WQeTPutYHfew0D6w=;
+        s=korg; t=1660588466;
+        bh=nU4IgZFphg6AoJaV+SrFVf3iKL/JaX8zy6tYKTj6tXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WeWwiSI1GN3THRh3LQGAnVPH0z6mRmP//fSkYi5FzIR9CwmK39FbKDzXSGFg33JDQ
-         lCVhKHjWk7ZE/QD2m8jKEwW5IFl5lDz93F0H1/DMCbD2fe4xyt+Wn9LJjmHP8lKbgn
-         kQqRH1Huavk7zVziRG60AxzU7xGm4F7HgrMcs5Ko=
+        b=PYt+gip9PTveLGstnxXginz+3wLmAnKFEO6vH6uUMZBuaYqgE5Q8MRUqVc4Kd+WEl
+         FOmsatQ4hmHIrYOJQqoa2Ge67hGSM8iGqoSCkuAMTRpTLXfFFDv/QJc/SBndMg3q3S
+         QPOGkmrJBxMZQiyzeVJpgl/ipY3LYTfwWcET4G6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 421/779] scsi: qla2xxx: edif: Fix no login after app start
-Date:   Mon, 15 Aug 2022 20:01:05 +0200
-Message-Id: <20220815180355.256894426@linuxfoundation.org>
+Subject: [PATCH 5.15 412/779] PCI: mediatek-gen3: Fix refcount leak in mtk_pcie_init_irq_domains()
+Date:   Mon, 15 Aug 2022 20:00:56 +0200
+Message-Id: <20220815180354.881759498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,44 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 24c796098f5395477f7f7ebf8e24f3f08a139f71 ]
+[ Upstream commit bf038503d5fe90189743124233fe7aeb0984e961 ]
 
-The scenario is this: User loaded driver but has not started authentication
-app. All sessions to secure device will exhaust all login attempts, fail,
-and in stay in deleted state. Then some time later the app is started. The
-driver will replenish the login retry count, trigger delete to prepare for
-secure login. After deletion, relogin is triggered.
+of_get_child_by_name() returns a node pointer with refcount incremented, so
+we should use of_node_put() on it when we don't need it anymore.
 
-For the session that is already deleted, the delete trigger is a no-op. If
-none of the sessions trigger a relogin, no progress is made.
+Add missing of_node_put() to avoid refcount leak.
 
-Add a relogin trigger.
-
-Link: https://lore.kernel.org/r/20220608115849.16693-5-njavali@marvell.com
-Fixes: 7ebb336e45ef ("scsi: qla2xxx: edif: Add start + stop bsgs")
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 814cceebba9b ("PCI: mediatek-gen3: Add INTx support")
+Link: https://lore.kernel.org/r/20220601041259.56185-1-linmq006@gmail.com
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Acked-by: Jianjun Wang <jianjun.wang@mediatek.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index f7953ce17678..c0971888a0a1 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -544,6 +544,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 			qlt_schedule_sess_for_deletion(fcport);
- 			qla_edif_sa_ctl_init(vha, fcport);
- 		}
-+		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 21207df680cc..36c8702439e9 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -600,7 +600,8 @@ static int mtk_pcie_init_irq_domains(struct mtk_pcie_port *port)
+ 						  &intx_domain_ops, port);
+ 	if (!port->intx_domain) {
+ 		dev_err(dev, "failed to create INTx IRQ domain\n");
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto out_put_node;
  	}
  
- 	if (vha->pur_cinfo.enode_flags != ENODE_ACTIVE) {
+ 	/* Setup MSI */
+@@ -623,6 +624,7 @@ static int mtk_pcie_init_irq_domains(struct mtk_pcie_port *port)
+ 		goto err_msi_domain;
+ 	}
+ 
++	of_node_put(intc_node);
+ 	return 0;
+ 
+ err_msi_domain:
+@@ -630,6 +632,8 @@ static int mtk_pcie_init_irq_domains(struct mtk_pcie_port *port)
+ err_msi_bottom_domain:
+ 	irq_domain_remove(port->intx_domain);
+ 
++out_put_node:
++	of_node_put(intc_node);
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
