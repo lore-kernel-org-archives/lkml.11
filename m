@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E825C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E60FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245299AbiHOTHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
+        id S245394AbiHOTHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245623AbiHOTC2 (ORCPT
+        with ESMTP id S245669AbiHOTCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:02:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDD14D172;
-        Mon, 15 Aug 2022 11:33:35 -0700 (PDT)
+        Mon, 15 Aug 2022 15:02:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2359A4D4CA;
+        Mon, 15 Aug 2022 11:33:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCF6761043;
-        Mon, 15 Aug 2022 18:33:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E686BC433C1;
-        Mon, 15 Aug 2022 18:33:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0BFA0CE1253;
+        Mon, 15 Aug 2022 18:33:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF894C433C1;
+        Mon, 15 Aug 2022 18:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588414;
-        bh=zbMaZtBiQRbwr/E8U3j7sNCx/+3EbBrLW62H8jk6Owc=;
+        s=korg; t=1660588417;
+        bh=Qd0WN9AbOZnHo0ee9xcyfLl0nqUxk4PoBCVtLLWpov0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dvzXRJ38j/CLNm/Dq2DDhv9w3gPHUrVf0ZgeCcJ+kPb/QnB5QIa0OdFOjO0OcvDYI
-         GAedT4DrDp2aoEipH/Eie1rsRtwJebr/Xe7M2u7fjEtZ1qPd3S0M2iIMYKfKX5D6Pa
-         ActICwrSBt8TCJjZZYndk3L0dq3If3WicfjvJhNc=
+        b=iGce04l3QZmxz5b6RV7ff/EpMM87/yL6hrfZXKUJVTetpZMJiJ18IjK40vWzPJula
+         x9PiiNrxbGxkgqolIR37cI3bBQhPL4tT8UwVay7qhz02wkUKAjeGfrHZZNVsaSbFsU
+         22fbRWyouZHcPSkcfm359w1srOE1VroibAR7MMgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takayuki Nagata <tnagata@redhat.com>,
-        Petr Stourac <pstourac@redhat.com>,
-        Jose Ignacio Tornos Martinez <jtornosm@redhat.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 365/779] wifi: iwlwifi: mvm: fix double list_add at iwl_mvm_mac_wake_tx_queue
-Date:   Mon, 15 Aug 2022 20:00:09 +0200
-Message-Id: <20220815180352.846319225@linuxfoundation.org>
+        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 356/779] can: kvaser_usb_hydra: do not report txerr and rxerr during bus-off
+Date:   Mon, 15 Aug 2022 20:00:00 +0200
+Message-Id: <20220815180352.447930198@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,68 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Ignacio Tornos Martinez <jtornosm@redhat.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 14a3aacf517a9de725dd3219dbbcf741e31763c4 ]
+[ Upstream commit 936e90595376e64b6247c72d3ea8b8b164b7ac96 ]
 
-After successfull station association, if station queues are disabled for
-some reason, the related lists are not emptied. So if some new element is
-added to the list in iwl_mvm_mac_wake_tx_queue, it can match with the old
-one and produce a BUG like this:
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-[   46.535263] list_add corruption. prev->next should be next (ffff94c1c318a360), but was 0000000000000000. (prev=ffff94c1d02d3388).
-[   46.535283] ------------[ cut here ]------------
-[   46.535284] kernel BUG at lib/list_debug.c:26!
-[   46.535290] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[   46.585304] CPU: 0 PID: 623 Comm: wpa_supplicant Not tainted 5.19.0-rc3+ #1
-[   46.592380] Hardware name: Dell Inc. Inspiron 660s/0478VN       , BIOS A07 08/24/2012
-[   46.600336] RIP: 0010:__list_add_valid.cold+0x3d/0x3f
-[   46.605475] Code: f2 4c 89 c1 48 89 fe 48 c7 c7 c8 40 67 93 e8 20 cc fd ff 0f 0b 48 89 d1 4c 89 c6 4c 89 ca 48 c7 c7 70 40 67 93 e8 09 cc fd ff <0f> 0b 48 89 fe 48 c7 c7 00 41 67 93 e8 f8 cb fd ff 0f 0b 48 89 d1
-[   46.624469] RSP: 0018:ffffb20800ab76d8 EFLAGS: 00010286
-[   46.629854] RAX: 0000000000000075 RBX: ffff94c1c318a0e0 RCX: 0000000000000000
-[   46.637105] RDX: 0000000000000201 RSI: ffffffff9365e100 RDI: 00000000ffffffff
-[   46.644356] RBP: ffff94c1c5f43370 R08: 0000000000000075 R09: 3064316334396666
-[   46.651607] R10: 3364323064316334 R11: 39666666663d7665 R12: ffff94c1c5f43388
-[   46.658857] R13: ffff94c1d02d3388 R14: ffff94c1c318a360 R15: ffff94c1cf2289c0
-[   46.666108] FS:  00007f65634ff7c0(0000) GS:ffff94c1da200000(0000) knlGS:0000000000000000
-[   46.674331] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   46.680170] CR2: 00007f7dfe984460 CR3: 000000010e894003 CR4: 00000000000606f0
-[   46.687422] Call Trace:
-[   46.689906]  <TASK>
-[   46.691950]  iwl_mvm_mac_wake_tx_queue+0xec/0x15c [iwlmvm]
-[   46.697601]  ieee80211_queue_skb+0x4b3/0x720 [mac80211]
-[   46.702973]  ? sta_info_get+0x46/0x60 [mac80211]
-[   46.707703]  ieee80211_tx+0xad/0x110 [mac80211]
-[   46.712355]  __ieee80211_tx_skb_tid_band+0x71/0x90 [mac80211]
-...
-
-In order to avoid this problem, we must also remove the related lists when
-station queues are disabled.
-
-Fixes: cfbc6c4c5b91c ("iwlwifi: mvm: support mac80211 TXQs model")
-Reported-by: Takayuki Nagata <tnagata@redhat.com>
-Reported-by: Petr Stourac <pstourac@redhat.com>
-Tested-by: Petr Stourac <pstourac@redhat.com>
-Signed-off-by: Jose Ignacio Tornos Martinez <jtornosm@redhat.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220719153542.81466-1-jtornosm@redhat.com
+Fixes: aec5fb2268b7 ("can: kvaser_usb: Add support for Kvaser USB hydra family")
+Link: https://lore.kernel.org/all/20220719143550.3681-8-mailhol.vincent@wanadoo.fr
+CC: Jimmy Assarsson <extja@kvaser.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-index a64874c05ced..1bb456daff9e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-@@ -1794,6 +1794,7 @@ static void iwl_mvm_disable_sta_queues(struct iwl_mvm *mvm,
- 			iwl_mvm_txq_from_mac80211(sta->txq[i]);
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
+index fce3f069cdbc..93d7ee6d17b6 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
+@@ -916,8 +916,10 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
+ 	    new_state < CAN_STATE_BUS_OFF)
+ 		priv->can.can_stats.restarts++;
  
- 		mvmtxq->txq_id = IWL_MVM_INVALID_QUEUE;
-+		list_del_init(&mvmtxq->list);
- 	}
- }
+-	cf->data[6] = bec->txerr;
+-	cf->data[7] = bec->rxerr;
++	if (new_state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = bec->txerr;
++		cf->data[7] = bec->rxerr;
++	}
  
+ 	stats = &netdev->stats;
+ 	stats->rx_packets++;
+@@ -1071,8 +1073,10 @@ kvaser_usb_hydra_error_frame(struct kvaser_usb_net_priv *priv,
+ 	shhwtstamps->hwtstamp = hwtstamp;
+ 
+ 	cf->can_id |= CAN_ERR_BUSERROR;
+-	cf->data[6] = bec.txerr;
+-	cf->data[7] = bec.rxerr;
++	if (new_state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = bec.txerr;
++		cf->data[7] = bec.rxerr;
++	}
+ 
+ 	stats->rx_packets++;
+ 	stats->rx_bytes += cf->len;
 -- 
 2.35.1
 
