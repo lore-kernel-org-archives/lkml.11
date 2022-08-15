@@ -2,73 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE480C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A10C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiHOPbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
+        id S232756AbiHOPb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231970AbiHOPbr (ORCPT
+        with ESMTP id S232138AbiHOPbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:31:47 -0400
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD7BDF67;
-        Mon, 15 Aug 2022 08:31:45 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id r83-20020a1c4456000000b003a5cb389944so4062993wma.4;
-        Mon, 15 Aug 2022 08:31:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=gonRmhzBVac2V2N8Fv8ujJ3D6QMP5i+tjLo2hj32lw4=;
-        b=gLTMRlI1B9Zpx08oiE9+slu2AbGchKdVomj+2n3wcCgY6pOtB4wbM6WFtZ2pxZTwkY
-         iy4731K+79Hu6KikJDW7t6bhyKSDmlTeSlsqGz/qyhWKASosak1qae67mW/sLHWxcQzq
-         +u0QRHtsDROcsuYxoMj/WswqoO4hzzOzKCVtmJYMZCA/rSp0atM1q+LAzVpGk+4CioHN
-         AcMzlxFI8RRZmVxYO380WBVqDSrQRO7t+A9EohJLOa6GUw937NJd7LyqKV6RDgG/HUQk
-         BkLVe9jSDXLlE3LqHLO096QSq+ck8+K98WjPSkAPg3WNtm3h9CrEkLFUphO2rNI3AANG
-         bJQA==
-X-Gm-Message-State: ACgBeo1DpgbFY2M5HAAmyMTckr7dcMTbKaNQ9F1VtnwkwfUy+QW7G0du
-        w230guKmfJiVA11IgeaXBIU=
-X-Google-Smtp-Source: AA6agR5L79QLI3YGa5B+0m46Py2UasglBE8LXVeQJmSlHlqi/6hGb0xgT4cwr3okO/5JqqMnu/q+rA==
-X-Received: by 2002:a7b:ca58:0:b0:3a5:3c1c:6d71 with SMTP id m24-20020a7bca58000000b003a53c1c6d71mr17045618wml.118.1660577503668;
-        Mon, 15 Aug 2022 08:31:43 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id o30-20020a05600c511e00b003a5dde32e4bsm9494372wms.37.2022.08.15.08.31.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 08:31:43 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 15:31:41 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Saurabh Sengar <ssengar@linux.microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] Drivers: hv: vmbus: Optimize vmbus_on_event
-Message-ID: <20220815153141.x7q6qryxv25gvjgy@liuwe-devbox-debian-v2>
-References: <1658741848-4210-1-git-send-email-ssengar@linux.microsoft.com>
+        Mon, 15 Aug 2022 11:31:49 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE25167D3;
+        Mon, 15 Aug 2022 08:31:47 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 63C043200657;
+        Mon, 15 Aug 2022 11:31:45 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 15 Aug 2022 11:31:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1660577504; x=
+        1660663904; bh=zDlYuKttoMMva0k5dTZ+8Vb+jrME1/H4pvpISkPn7Lg=; b=R
+        7FVtnuK3s2G9UnAjv4Tvy1spq9QYCS+kDbNeymJ9SM4ICGUfu57OJqOJZOur65DG
+        fowYJhI+NffD+F07ktE3h9Z4mTFJb0aH6Y646y0zZ2hNKubL/D04X7YlN/tJcBLM
+        iykLuLavlKa3m5VQS9EeFr0TCvsqSfoPj0zTckws91Ku5zY9S+s4gAIiFpgMcVl9
+        ss4v/GxcX91tVhlqSjD7jofz70opEeCKlURojelEF7FFz/TlVbnvUZXsGzIUSKAd
+        Umco9tcz5GqXpGkDSks6MnfBPGmUR7nL4MVmdW7KwOTsoVr+76kSHy5RLFTYzFKo
+        8WVdVb7Y+khT4mVysGjkw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660577504; x=
+        1660663904; bh=zDlYuKttoMMva0k5dTZ+8Vb+jrME1/H4pvpISkPn7Lg=; b=5
+        j+uTraAsefqk6eSBj8rukf/1tDHJ29C0JR7+1o+zJiwU/JO41wRaSRiGye7xzVzN
+        zEVuZD46kXLgpHfd/gSFGeKE63DyAqYr1vkcpHQpG43Sgy9TIKN05if+tdNdFRRM
+        08XKkTvfDEH5NrCCous39MgsVdpZNkcr1RgTdsiH0ilUuPl+vTfWaVdZ83H9ujpP
+        3wwCvpATmBqhlVhuzsN9Wo2Mey7O83119WQqgln6ASR0rAkDavgHrU4NUEcR1XHV
+        phtokOuru4ztF+7gw+Mypuc6c+C/MFbcp3HMzsShp7AEoCB2WJOmKMfY2c8MGwRe
+        xHDWhpdGcjN4JZDYQsLZA==
+X-ME-Sender: <xms:4Gb6Yt1mec6Y9AgVjOoKGbHFosWF2OpVel_stgV5vT-RqpBMFTQdPA>
+    <xme:4Gb6YkF2zb2J8KQdS9Y_FpRMl2OdmAi5v1Kof562elEr5ZCOvnG_KuE2nmWKktA9O
+    L6Hb_zXCJVpmXPovEU>
+X-ME-Received: <xmr:4Gb6Yt4XBsIe2pjMMNyaV0UXqholGNggi7oJ9dpxpJ8Nqsclo3QyZz2snV5X>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgledtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhggtgfogfesthekredtredtjeenucfhrhhomhepofgr
+    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
+    frrghtthgvrhhnpefgfffgteffuddulefhveeiffffudelvefggeekueetgfffjeehleel
+    keejfefhjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:4Gb6Yq0Jld-vO3YnvavfI5YwQCaC3X_bO2VqGpM46GbJdjicmhLyJw>
+    <xmx:4Gb6YgFR5kbQcfVXWQbktCBmJn6vwb0DSgLa4KFG1aZo0NKOLo6yLA>
+    <xmx:4Gb6Yr__qSjLnjG6blGlNr-z-F6l-nwypssaINF1qvO5_hkMuQnDQQ>
+    <xmx:4Gb6YmHZaYmRna6xYOIyjDP6_Obp0Qnajcv3jrqNKoXTZmAGT-E0Ng>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 11:31:43 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Scott Branden <sbranden@broadcom.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Emma Anholt <emma@anholt.net>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, Dom Cobley <popcornmix@gmail.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 2/7] clk: bcm: rpi: Add a function to retrieve the maximum
+Date:   Mon, 15 Aug 2022 17:31:24 +0200
+Message-Id: <20220815-rpi-fix-4k-60-v1-2-c52bd642f7c6@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220815-rpi-fix-4k-60-v1-0-c52bd642f7c6@cerno.tech>
+References: <20220815-rpi-fix-4k-60-v1-0-c52bd642f7c6@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1658741848-4210-1-git-send-email-ssengar@linux.microsoft.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-a76f5
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3364; i=maxime@cerno.tech; h=from:subject:message-id; bh=wAQVJMgLbRnifaGUTCUy+ZporTuJb2HjcXq358WgEfw=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDEm/0k7k61kV2XhfO/8gQ3a536KV+bJHJz7kVePKS7D+65rp vnRjRykLgxgXg6yYIkuMsPmSuFOzXney8c2DmcPKBDKEgYtTACZSa8nwT3+X3d6Zs7ROP5R9FyL55V S78UeNhIDPbod21As5/7y0eQrDP3tL2XNdthnvfvzqbnsgqinNciNZLOZGStfU/5sTJzTrsQEA
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 02:37:28AM -0700, Saurabh Sengar wrote:
-> In the vmbus_on_event loop, 2 jiffies timer will not serve the purpose if
-> callback_fn takes longer. For effective use move this check inside of
-> callback functions where needed. Out of all the VMbus drivers using
-> vmbus_on_event, only storvsc has a high packet volume, thus add this limit
-> only in storvsc callback for now.
-> There is no apparent benefit of loop itself because this tasklet will be
-> scheduled anyway again if there are packets left in ring buffer. This
-> patch removes this unnecessary loop as well.
-> 
-> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+The RaspberryPi firmware can be configured by the end user using the
+config.txt file.
 
-Unfortunately this missed the recent merge window so it will be picked
-up for the next release.
+Some of these options will affect the kernel capabilities, and we thus
+need to be able to detect it to operate reliably.
 
-Thanks,
-Wei.
+One of such parameters is the hdmi_enable_4kp60 parameter that will
+setup the clocks in a way that is suitable to reach the pixel
+frequencies required by the 4k at 60Hz and higher modes.
+
+If the user forgot to enable it, then those modes will simply not work
+but are still likely to be picked up by the userspace, which is a poor
+user-experience.
+
+The kernel can't access the config.txt file directly, but one of the
+effect that parameter has is that the core clock frequency maximum will
+be much higher. Thus we can infer whether it was enabled or not by
+querying the firmware for that maximum, and if it isn't prevent any of
+the modes that wouldn't work.
+
+The HDMI driver is already doing this, but was relying on a behaviour of
+clk_round_rate() that got changed recently, and doesn't return the
+result we would like anymore.
+
+We also considered introducing a CCF function to access the maximum of a
+given struct clk, but that wouldn't work if the clock is further
+constrained by another user.
+
+It was thus suggested to create a small, ad-hoc function to query the
+RaspberryPi firmware for the maximum rate a given clock has.
+
+Suggested-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+
+diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
+index 6c0a0fd6cd79..182e8817eac2 100644
+--- a/drivers/clk/bcm/clk-raspberrypi.c
++++ b/drivers/clk/bcm/clk-raspberrypi.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ 
++#include <soc/bcm2835/raspberrypi-clocks.h>
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+ 
+ enum rpi_firmware_clk_id {
+@@ -254,6 +255,33 @@ static int raspberrypi_fw_dumb_determine_rate(struct clk_hw *hw,
+ 	return 0;
+ }
+ 
++unsigned long rpi_firmware_clk_get_max_rate(struct clk *clk)
++{
++	const struct raspberrypi_clk_data *data;
++	struct raspberrypi_clk *rpi;
++	struct clk_hw *hw;
++	u32 max_rate;
++	int ret;
++
++	if (!clk)
++		return 0;
++
++	hw =  __clk_get_hw(clk);
++	if (!hw)
++		return 0;
++
++	data = clk_hw_to_data(hw);
++	rpi = data->rpi;
++	ret = raspberrypi_clock_property(rpi->firmware, data,
++					 RPI_FIRMWARE_GET_MAX_CLOCK_RATE,
++					 &max_rate);
++	if (ret)
++		return 0;
++
++	return max_rate;
++}
++EXPORT_SYMBOL_GPL(rpi_firmware_clk_get_max_rate);
++
+ static const struct clk_ops raspberrypi_firmware_clk_ops = {
+ 	.is_prepared	= raspberrypi_fw_is_prepared,
+ 	.recalc_rate	= raspberrypi_fw_get_rate,
+diff --git a/include/soc/bcm2835/raspberrypi-clocks.h b/include/soc/bcm2835/raspberrypi-clocks.h
+new file mode 100644
+index 000000000000..ff0b608b51a8
+--- /dev/null
++++ b/include/soc/bcm2835/raspberrypi-clocks.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __SOC_RASPBERRY_CLOCKS_H__
++#define __SOC_RASPBERRY_CLOCKS_H__
++
++#if IS_ENABLED(CONFIG_CLK_RASPBERRYPI)
++unsigned long rpi_firmware_clk_get_max_rate(struct clk *clk);
++#else
++static inline unsigned long rpi_firmware_clk_get_max_rate(struct clk *clk)
++{
++	return ULONG_MAX;
++}
++#endif
++
++#endif /* __SOC_RASPBERRY_CLOCKS_H__ */
+
+-- 
+b4 0.10.0-dev-a76f5
