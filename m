@@ -2,92 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F5CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACD0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244154AbiHOSws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
+        id S244176AbiHOSww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243811AbiHOSrT (ORCPT
+        with ESMTP id S243815AbiHOSrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:47:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF02C422D1;
-        Mon, 15 Aug 2022 11:28:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC336B81062;
-        Mon, 15 Aug 2022 18:28:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2836BC43140;
-        Mon, 15 Aug 2022 18:28:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588108;
-        bh=a31WYOj3u0YxhhWWPGE8uaQmFHl6yu7OQLekdTH58ts=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u+hawDHH3ocb5xzJ8ko/OWiNMzq6J4vgIVrEA2PBzm2sN0ok4HtbSE/HJJhkMBsX8
-         nGOUZAYot1FUGJwoUJ1VNn//7z3IdnIxEeIwthgmL9x1ITJfrpme/YQ4eGP9faxfFa
-         UYxlhqvhiphYZ+ruG1S9JVjZuTJcM94Wj50qE1UY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 290/779] media: hdpvr: fix error value returns in hdpvr_read
-Date:   Mon, 15 Aug 2022 19:58:54 +0200
-Message-Id: <20220815180349.674403989@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCEB422D3
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:32 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id u14so9434865oie.2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0+JtMsU2Pn0zu2wwFZknm1ETM7jmS8MJnZsirTHcweU=;
+        b=nRs9HJAXTO9lHEjOI+iq0RH9RlnXkpWR+GsFpey5SuNfCsZOfa5afRBNWWYYH+ZCJn
+         cqvw9AFg4owIoV6E+y4L0fTd0z5deLeCJN88M9Actjm0tlkMSWYZoYKrlgK6NAWyvAa5
+         CJ/PX0MgIjoRVIoZovsy8dh9PjLmq4U8R0QRnFoXpk0rXY563pu6rYBPeVSg5Akg8mcl
+         Y8xilbc/awP0bGBWZXLy7RZJGuWq0zrZgOYpM4FLkyiR6rEkw+tTkF6ZCxjbQotVtLBs
+         yevDp5JETYO3ZzTZsnrtsi8W0mJO+3kJNmjxmwJP0YlrKOIeptxKZnXZzxIFTI6bCQGc
+         MxEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0+JtMsU2Pn0zu2wwFZknm1ETM7jmS8MJnZsirTHcweU=;
+        b=MzAm3ryHxiHz4tn+EZvfob6+pXXKP3mwvAcTFIJqO9m3c4vVaYgBokv8vubyTMTlyP
+         ndFnHtbMAtJz5njnQOTUwgO55Jun660k4vW7PY0Hoz2dYzrf45HMgzdqoEWl5FFvpK73
+         AZkGOIc44zZuIC+zgamDZR50ifTzfg1X435J3cu9LOi7WP7ly8EW4i6BBrN5CW7KAqJk
+         /eWOKNJTZWgF/GUA9pNdJsqypNLmP1fYS0SQbN5mnXCb/UgS1R/kZfHDIrwQOZgfseKx
+         Ir1I4Wod20lBlu0FoYi8qGq4LeDTfv4QsDhCzmDyL8HKoMhGFNkpHLMbUJRG2cJsmba0
+         HkFw==
+X-Gm-Message-State: ACgBeo2LaaFvulSdWwBYc1Qm/nDNkO//eHvEeKqDxD+2b7eNX5/qG9Wo
+        KWRMnbAQ41XthBYoh0dWsIyHjbyOvLu1nVpNwW+dD72rqps=
+X-Google-Smtp-Source: AA6agR7626L/pa4dy2T0F2o05pWhrOkIvj3kHjOlc+z1xZzsmVzmd761YvyMaN1OAaQ7b/kRZm7xbmB9h6cdTERnlXQ=
+X-Received: by 2002:aca:5e89:0:b0:344:80ab:1351 with SMTP id
+ s131-20020aca5e89000000b0034480ab1351mr4589823oib.105.1660588111543; Mon, 15
+ Aug 2022 11:28:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220729100524.387-1-chevron.li@bayhubtech.com>
+In-Reply-To: <20220729100524.387-1-chevron.li@bayhubtech.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 15 Aug 2022 20:27:54 +0200
+Message-ID: <CAPDyKFqGhgiAwzsia7aXO8Rb+1xYwfQDtLRj0ArncX=Qt8Tg1A@mail.gmail.com>
+Subject: Re: [PATCH V2 1/1] mmc: sdhci-pci-o2micro: fix some SD cards
+ compatibility issue at DDR50 mode
+To:     Chevron Li <chevron.li@bayhubtech.com>
+Cc:     adrian.hunter@intel.com, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shaper.liu@bayhubtech.com,
+        shirley.her@bayhubtech.com, xiaoguang.yu@bayhubtech.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+On Fri, 29 Jul 2022 at 12:05, Chevron Li <chevron.li@bayhubtech.com> wrote:
+>
+> Bayhub chips have better compatibility support for SDR50 than DDR50
+> and both mode have the same R/W performance when clock frequency >= 100MHz.
+> Disable DDR50 mode and use SDR50 instead.
+>
+> Signed-off-by: Chevron Li <chevron.li@bayhubtech.com>
 
-[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
+Applied for next, thanks!
 
-Error return values are supposed to be negative in hdpvr_read. Most
-error returns are currently handled via an unsigned integer "ret". When
-setting a negative error value to "ret", the value actually becomes a
-large positive value, because "ret" is unsigned. Later on, the "ret"
-value is returned. But as ssize_t is a 64-bit signed number, the error
-return value stays a large positive integer instead of a negative
-integer. This can cause an error value to be interpreted as the read
-size, which can cause a buffer overread for applications relying on the
-returned size.
-
-Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index 60e57e0f1927..fd7d2a9d0449 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -409,7 +409,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
- 	struct hdpvr_device *dev = video_drvdata(file);
- 	struct hdpvr_buffer *buf = NULL;
- 	struct urb *urb;
--	unsigned int ret = 0;
-+	int ret = 0;
- 	int rem, cnt;
- 
- 	if (*pos)
--- 
-2.35.1
+Kind regards
+Uffe
 
 
 
+> ---
+> Changes on V1:
+> 1.Set quirks2 flag SDHCI_QUIRK2_BROKEN_DDR50 for bayhub chips.
+> 2.Use bayhub hardware input tuning for SDR50 mode instead of standard tuning flow.
+>
+> Changes on V2:
+> Update commit format and information.
+> ---
+>  drivers/mmc/host/sdhci-pci-o2micro.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/mmc/host/sdhci-pci-o2micro.c b/drivers/mmc/host/sdhci-pci-o2micro.c
+> index 0d4d343dbb77..ad457cd9cbaa 100644
+> --- a/drivers/mmc/host/sdhci-pci-o2micro.c
+> +++ b/drivers/mmc/host/sdhci-pci-o2micro.c
+> @@ -317,11 +317,12 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
+>         u32 reg_val;
+>
+>         /*
+> -        * This handler only implements the eMMC tuning that is specific to
+> +        * This handler implements the hardware tuning that is specific to
+>          * this controller.  Fall back to the standard method for other TIMING.
+>          */
+>         if ((host->timing != MMC_TIMING_MMC_HS200) &&
+> -               (host->timing != MMC_TIMING_UHS_SDR104))
+> +               (host->timing != MMC_TIMING_UHS_SDR104) &&
+> +               (host->timing != MMC_TIMING_UHS_SDR50))
+>                 return sdhci_execute_tuning(mmc, opcode);
+>
+>         if (WARN_ON((opcode != MMC_SEND_TUNING_BLOCK_HS200) &&
+> @@ -631,6 +632,8 @@ static int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
+>                 if (reg & 0x1)
+>                         host->quirks |= SDHCI_QUIRK_MULTIBLOCK_READ_ACMD12;
+>
+> +               host->quirks2 |= SDHCI_QUIRK2_BROKEN_DDR50;
+> +
+>                 sdhci_pci_o2_enable_msi(chip, host);
+>
+>                 if (chip->pdev->device == PCI_DEVICE_ID_O2_SEABIRD0) {
+>
+> base-commit: 68e77ffbfd06ae3ef8f2abf1c3b971383c866983
+> --
+> 2.32.0
+>
