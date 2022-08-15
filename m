@@ -2,46 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FADC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49A0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348419AbiHOWZb (ORCPT
+        id S1348575AbiHOWZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
+        Mon, 15 Aug 2022 18:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350816AbiHOWSi (ORCPT
+        with ESMTP id S1350812AbiHOWSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64E941D18;
-        Mon, 15 Aug 2022 12:42:23 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267A241D0B;
+        Mon, 15 Aug 2022 12:42:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4424A60FB9;
-        Mon, 15 Aug 2022 19:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDE1C433C1;
-        Mon, 15 Aug 2022 19:42:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAB88B80EA9;
+        Mon, 15 Aug 2022 19:42:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDFE7C433D6;
+        Mon, 15 Aug 2022 19:42:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592542;
-        bh=lgfKPFDQtQEogGOeGwA0Ha6ezymCN6n3CtRD7Q5DEYU=;
+        s=korg; t=1660592539;
+        bh=LI9xyrlxXoxri9GLybfnF+zXTFS4hqMK+A3lwjDVl7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n5ptbaLHK0nlH0Rnq30hH36A7+V0iKz8z2MJEI+CSTZM1QD0lCvUCiJEgxY93+qWB
-         94SFIUCPjLp8Lq6zx3k2XwbSr0kmmQl7VcugHglmB0SjW9ykQn5pu3s/MvUYZdLgbd
-         Uwplt4bOIm4bfiPulAiB5zNHmIO8MYPdlFkhQdUA=
+        b=xoKaxBbYYi5TgjXdNAAnkh+58Vn4o9pe7q9y46M7S3KLL74dRE79nAzbUUR9n+4RW
+         DY9q7GgHpgsvuQvA8JSWOmmn6Yvszx90miv4TqfDVKExEf6wrA+1EPiVcFOIh/bgFh
+         lRLOFqUpZJtiYJXMja3WtQdhjx+0n3A5FNdh6534=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.19 0127/1157] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-Date:   Mon, 15 Aug 2022 19:51:23 +0200
-Message-Id: <20220815180444.689903503@linuxfoundation.org>
+        syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Minchan Kim <minchan@kernel.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Todd Kjos <tkjos@android.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0805/1095] android: binder: stop saving a pointer to the VMA
+Date:   Mon, 15 Aug 2022 20:03:24 +0200
+Message-Id: <20220815180502.571614542@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,83 +60,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Liam R. Howlett <Liam.Howlett@oracle.com>
 
-commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
+[ Upstream commit a43cfc87caaf46710c8027a8c23b8a55f1078f19 ]
 
-By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
-Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
-board which has this pre-3.0 controller:
+Do not record a pointer to a VMA outside of the mmap_lock for later use.
+This is unsafe and there are a number of failure paths *after* the
+recorded VMA pointer may be freed during setup.  There is no callback to
+the driver to clear the saved pointer from generic mm code.  Furthermore,
+the VMA pointer may become stale if any number of VMA operations end up
+freeing the VMA so saving it was fragile to being with.
 
-  $ lspci -bvnn
-  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
-          !!! Invalid class 0b20 for header type 01
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+Instead, change the binder_alloc struct to record the start address of the
+VMA and use vma_lookup() to get the vma when needed.  Add lockdep
+mmap_lock checks on updates to the vma pointer to ensure the lock is held
+and depend on that lock for synchronization of readers and writers - which
+was already the case anyways, so the smp_wmb()/smp_rmb() was not
+necessary.
 
-Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
-Port to the Freescale specific PCIe register 0x474.
-
-With this change lspci -b output is:
-
-  $ lspci -bvnn
-  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
-
-Without any "Invalid class" error. So class code was properly reflected
-into standard (read-only) PCI register 0x08.
-
-Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
-http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
-
-Fix activated by U-Boot stay active also after booting Linux kernel.
-But boards which use older U-Boot version without that fix are affected and
-still require this fix.
-
-So implement this class code fix also in kernel fsl_pci.c driver.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[akpm@linux-foundation.org: fix drivers/android/binder_alloc_selftest.c]
+Link: https://lkml.kernel.org/r/20220621140212.vpkio64idahetbyf@revolver
+Fixes: da1b9564e85b ("android: binder: fix the race mmap and alloc_new_buf_locked")
+Reported-by: syzbot+58b51ac2b04e388ab7b0@syzkaller.appspotmail.com
+Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hridya Valsaraju <hridya@google.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Martijn Coenen <maco@android.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Todd Kjos <tkjos@android.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
- arch/powerpc/sysdev/fsl_pci.h |    1 +
- 2 files changed, 9 insertions(+)
+ drivers/android/binder_alloc.c          | 30 ++++++++++++-------------
+ drivers/android/binder_alloc.h          |  2 +-
+ drivers/android/binder_alloc_selftest.c |  2 +-
+ 3 files changed, 16 insertions(+), 18 deletions(-)
 
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -521,6 +521,7 @@ int fsl_add_bridge(struct platform_devic
- 	struct resource rsrc;
- 	const int *bus_range;
- 	u8 hdr_type, progif;
-+	u32 class_code;
- 	struct device_node *dev;
- 	struct ccsr_pci __iomem *pci;
- 	u16 temp;
-@@ -594,6 +595,13 @@ int fsl_add_bridge(struct platform_devic
- 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
- 		if (fsl_pcie_check_link(hose))
- 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
-+		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
-+		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
-+			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
-+			class_code &= 0xff;
-+			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-+			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
-+		}
- 	} else {
- 		/*
- 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
---- a/arch/powerpc/sysdev/fsl_pci.h
-+++ b/arch/powerpc/sysdev/fsl_pci.h
-@@ -18,6 +18,7 @@ struct platform_device;
+diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+index 2ac1008a5f39..a93a7d2a8caf 100644
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -213,7 +213,7 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
  
- #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
- #define PCIE_LTSSM_L0	0x16		/* L0 state */
-+#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
- #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
- #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
- #define PIWAR_EN		0x80000000	/* Enable */
+ 	if (mm) {
+ 		mmap_read_lock(mm);
+-		vma = alloc->vma;
++		vma = vma_lookup(mm, alloc->vma_addr);
+ 	}
+ 
+ 	if (!vma && need_mm) {
+@@ -313,16 +313,15 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
+ static inline void binder_alloc_set_vma(struct binder_alloc *alloc,
+ 		struct vm_area_struct *vma)
+ {
+-	if (vma)
++	unsigned long vm_start = 0;
++
++	if (vma) {
++		vm_start = vma->vm_start;
+ 		alloc->vma_vm_mm = vma->vm_mm;
+-	/*
+-	 * If we see alloc->vma is not NULL, buffer data structures set up
+-	 * completely. Look at smp_rmb side binder_alloc_get_vma.
+-	 * We also want to guarantee new alloc->vma_vm_mm is always visible
+-	 * if alloc->vma is set.
+-	 */
+-	smp_wmb();
+-	alloc->vma = vma;
++	}
++
++	mmap_assert_write_locked(alloc->vma_vm_mm);
++	alloc->vma_addr = vm_start;
+ }
+ 
+ static inline struct vm_area_struct *binder_alloc_get_vma(
+@@ -330,11 +329,9 @@ static inline struct vm_area_struct *binder_alloc_get_vma(
+ {
+ 	struct vm_area_struct *vma = NULL;
+ 
+-	if (alloc->vma) {
+-		/* Look at description in binder_alloc_set_vma */
+-		smp_rmb();
+-		vma = alloc->vma;
+-	}
++	if (alloc->vma_addr)
++		vma = vma_lookup(alloc->vma_vm_mm, alloc->vma_addr);
++
+ 	return vma;
+ }
+ 
+@@ -817,7 +814,8 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
+ 
+ 	buffers = 0;
+ 	mutex_lock(&alloc->mutex);
+-	BUG_ON(alloc->vma);
++	BUG_ON(alloc->vma_addr &&
++	       vma_lookup(alloc->vma_vm_mm, alloc->vma_addr));
+ 
+ 	while ((n = rb_first(&alloc->allocated_buffers))) {
+ 		buffer = rb_entry(n, struct binder_buffer, rb_node);
+diff --git a/drivers/android/binder_alloc.h b/drivers/android/binder_alloc.h
+index 7dea57a84c79..1e4fd37af5e0 100644
+--- a/drivers/android/binder_alloc.h
++++ b/drivers/android/binder_alloc.h
+@@ -100,7 +100,7 @@ struct binder_lru_page {
+  */
+ struct binder_alloc {
+ 	struct mutex mutex;
+-	struct vm_area_struct *vma;
++	unsigned long vma_addr;
+ 	struct mm_struct *vma_vm_mm;
+ 	void __user *buffer;
+ 	struct list_head buffers;
+diff --git a/drivers/android/binder_alloc_selftest.c b/drivers/android/binder_alloc_selftest.c
+index c2b323bc3b3a..43a881073a42 100644
+--- a/drivers/android/binder_alloc_selftest.c
++++ b/drivers/android/binder_alloc_selftest.c
+@@ -287,7 +287,7 @@ void binder_selftest_alloc(struct binder_alloc *alloc)
+ 	if (!binder_selftest_run)
+ 		return;
+ 	mutex_lock(&binder_selftest_lock);
+-	if (!binder_selftest_run || !alloc->vma)
++	if (!binder_selftest_run || !alloc->vma_addr)
+ 		goto done;
+ 	pr_info("STARTED\n");
+ 	binder_selftest_alloc_offset(alloc, end_offset, 0);
+-- 
+2.35.1
+
 
 
