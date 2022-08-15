@@ -2,150 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20FFC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3A4C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239558AbiHOUNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
+        id S1343644AbiHOUOC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346244AbiHOULF (ORCPT
+        with ESMTP id S243909AbiHOUJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB2DBC95;
-        Mon, 15 Aug 2022 11:57:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A363B810A0;
-        Mon, 15 Aug 2022 18:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1AE3C433D7;
-        Mon, 15 Aug 2022 18:57:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589836;
-        bh=xRlSvPTUNVqSQdwqQEuW5opyzEu8swTmbFnmAaZ7pcs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8BEsY5pAXFitbb1AM/UBI6mfmagvlQ1OOrkWxKZWW1hQd3+I1FVkQq9nO5BYbi8T
-         rNGQ0ffvg7nR45D3tU/R+wVcXswxpU1DnMJhQP+tSEcY7w2WbcKTgjcMiQKsmS77+8
-         0gVH34ALysXrHp2MIXFhxW4JolFnk2ZwqTyLwb8Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 0032/1095] KVM: x86: Split kvm_is_valid_cr4() and export only the non-vendor bits
-Date:   Mon, 15 Aug 2022 19:50:31 +0200
-Message-Id: <20220815180430.701684167@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:09:35 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005AC83F22;
+        Mon, 15 Aug 2022 11:56:05 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso15240941pjq.4;
+        Mon, 15 Aug 2022 11:56:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=1TWw7ByCFm6NhkDCyy6ya2eZRdPaW0G32WpVpASX5vg=;
+        b=iFemGX/6S2CEM0vc5Q7ZhA97VMtcnCohjPo5wTK/HWHqxK8N8QD+bkVVv0eRbEzJzH
+         HqNnewi3fYbCRLFexc2OOX6LZPISwiwwClyISPUI5KMeUWOZeNZVhgrVNoTh/Ef21AvD
+         inPVaZs72ziOBxRoTzzTlm+NfVEF+4Feqy2/CddIRYZtl8QSJ13XwO818UEDaiCRUVwz
+         nb4QhvVObgxonTmLBTxLoJJ/T2W7q5OkqOs2FzS77LEHAbNCL5hJhBuhcB2oBU5Jz7is
+         ge8YPVEk2wRZ+hVtTUqI862Ct1zgWNCA3b3a8uO8nl7FIulVV3gjzC6wH7UdYYgrFJGP
+         GdQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=1TWw7ByCFm6NhkDCyy6ya2eZRdPaW0G32WpVpASX5vg=;
+        b=hz5HnypV3T/LtTrgBjvhd3I8pl/zbE1/pvHAl2M6pupHmitrwAs+L5GRZGa83DVj3f
+         R2l7qJaZUDkjxOlAVgmXRScS4AmsVGA1sr+Z1LglZcWAsO8wPdIQHNIbkrOpkupT+ODp
+         7kyB+9/wOLiZ08KP42nhesNI5yKkF9bMZ5Ai1gZnX/Be0GhNdMTQPvmTnXivIWwHePtx
+         qOAMVrSzIoUPg3q9QZdrPFWym2l63waCpdPbqshnser9qRgU59rQLvxtPTzJaXuBdkQT
+         PxU/eSYJU3Frc9hQ6ffVsHJ8vLVdi1pdUMSWC6K95N1A3aSnXYkZjPZngoUTzktLp/Bq
+         ht9g==
+X-Gm-Message-State: ACgBeo1KDvaerjjaU3fynpu/+pzLYsb2uNFAy8mTLWJ7VF/i4rvpE5Jn
+        wH942hEhXexjJNT2V9gsYgSsBEapb282QAlW
+X-Google-Smtp-Source: AA6agR42uHmDMa0ZEOjeCzxe7g2crutPG+O6C4nHn1CNeAL6quQVHCY4QkzHACRNyGQNfrTk58qaWw==
+X-Received: by 2002:a17:902:cec6:b0:16e:ec03:ff1 with SMTP id d6-20020a170902cec600b0016eec030ff1mr18488768plg.96.1660589765161;
+        Mon, 15 Aug 2022 11:56:05 -0700 (PDT)
+Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
+        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 11:56:04 -0700 (PDT)
+From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+Subject: [PATCH 7/7] filemap: Remove find_get_pages_contig()
+Date:   Mon, 15 Aug 2022 11:54:52 -0700
+Message-Id: <20220815185452.37447-8-vishal.moola@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
+References: <20220815185452.37447-1-vishal.moola@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+All callers of find_get_pages_contig() have been removed, so it is no
+longer needed.
 
-commit c33f6f2228fe8517e38941a508e9f905f99ecba9 upstream.
-
-Split the common x86 parts of kvm_is_valid_cr4(), i.e. the reserved bits
-checks, into a separate helper, __kvm_is_valid_cr4(), and export only the
-inner helper to vendor code in order to prevent nested VMX from calling
-back into vmx_is_valid_cr4() via kvm_is_valid_cr4().
-
-On SVM, this is a nop as SVM doesn't place any additional restrictions on
-CR4.
-
-On VMX, this is also currently a nop, but only because nested VMX is
-missing checks on reserved CR4 bits for nested VM-Enter.  That bug will
-be fixed in a future patch, and could simply use kvm_is_valid_cr4() as-is,
-but nVMX has _another_ bug where VMXON emulation doesn't enforce VMX's
-restrictions on CR0/CR4.  The cleanest and most intuitive way to fix the
-VMXON bug is to use nested_host_cr{0,4}_valid().  If the CR4 variant
-routes through kvm_is_valid_cr4(), using nested_host_cr4_valid() won't do
-the right thing for the VMXON case as vmx_is_valid_cr4() enforces VMX's
-restrictions if and only if the vCPU is post-VMXON.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
 ---
- arch/x86/kvm/svm/nested.c |    3 ++-
- arch/x86/kvm/vmx/vmx.c    |    4 ++--
- arch/x86/kvm/x86.c        |   12 +++++++++---
- arch/x86/kvm/x86.h        |    2 +-
- 4 files changed, 14 insertions(+), 7 deletions(-)
+ include/linux/pagemap.h |  2 --
+ mm/filemap.c            | 60 -----------------------------------------
+ 2 files changed, 62 deletions(-)
 
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -292,7 +292,8 @@ static bool __nested_vmcb_check_save(str
- 			return false;
- 	}
- 
--	if (CC(!kvm_is_valid_cr4(vcpu, save->cr4)))
-+	/* Note, SVM doesn't have any additional restrictions on CR4. */
-+	if (CC(!__kvm_is_valid_cr4(vcpu, save->cr4)))
- 		return false;
- 
- 	if (CC(!kvm_valid_efer(vcpu, save->efer)))
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -3230,8 +3230,8 @@ static bool vmx_is_valid_cr4(struct kvm_
- {
- 	/*
- 	 * We operate under the default treatment of SMM, so VMX cannot be
--	 * enabled under SMM.  Note, whether or not VMXE is allowed at all is
--	 * handled by kvm_is_valid_cr4().
-+	 * enabled under SMM.  Note, whether or not VMXE is allowed at all,
-+	 * i.e. is a reserved bit, is handled by common x86 code.
- 	 */
- 	if ((cr4 & X86_CR4_VMXE) && is_smm(vcpu))
- 		return false;
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1066,7 +1066,7 @@ int kvm_emulate_xsetbv(struct kvm_vcpu *
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 8689c32d628b..09de43e36a64 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -720,8 +720,6 @@ unsigned filemap_get_folios(struct address_space *mapping, pgoff_t *start,
+ 		pgoff_t end, struct folio_batch *fbatch);
+ unsigned filemap_get_folios_contig(struct address_space *mapping,
+ 		pgoff_t *start, pgoff_t end, struct folio_batch *fbatch);
+-unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t start,
+-			       unsigned int nr_pages, struct page **pages);
+ unsigned find_get_pages_range_tag(struct address_space *mapping, pgoff_t *index,
+ 			pgoff_t end, xa_mark_t tag, unsigned int nr_pages,
+ 			struct page **pages);
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 3a497e178fde..100f36c9247c 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2267,66 +2267,6 @@ unsigned filemap_get_folios_contig(struct address_space *mapping,
  }
- EXPORT_SYMBOL_GPL(kvm_emulate_xsetbv);
+ EXPORT_SYMBOL(filemap_get_folios_contig);
  
--bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
-+bool __kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
- {
- 	if (cr4 & cr4_reserved_bits)
- 		return false;
-@@ -1074,9 +1074,15 @@ bool kvm_is_valid_cr4(struct kvm_vcpu *v
- 	if (cr4 & vcpu->arch.cr4_guest_rsvd_bits)
- 		return false;
- 
--	return static_call(kvm_x86_is_valid_cr4)(vcpu, cr4);
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(__kvm_is_valid_cr4);
-+
-+static bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
-+{
-+	return __kvm_is_valid_cr4(vcpu, cr4) &&
-+	       static_call(kvm_x86_is_valid_cr4)(vcpu, cr4);
- }
--EXPORT_SYMBOL_GPL(kvm_is_valid_cr4);
- 
- void kvm_post_set_cr4(struct kvm_vcpu *vcpu, unsigned long old_cr4, unsigned long cr4)
- {
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -407,7 +407,7 @@ static inline void kvm_machine_check(voi
- void kvm_load_guest_xsave_state(struct kvm_vcpu *vcpu);
- void kvm_load_host_xsave_state(struct kvm_vcpu *vcpu);
- int kvm_spec_ctrl_test_value(u64 value);
--bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4);
-+bool __kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4);
- int kvm_handle_memory_failure(struct kvm_vcpu *vcpu, int r,
- 			      struct x86_exception *e);
- int kvm_handle_invpcid(struct kvm_vcpu *vcpu, unsigned long type, gva_t gva);
-
+-/**
+- * find_get_pages_contig - gang contiguous pagecache lookup
+- * @mapping:	The address_space to search
+- * @index:	The starting page index
+- * @nr_pages:	The maximum number of pages
+- * @pages:	Where the resulting pages are placed
+- *
+- * find_get_pages_contig() works exactly like find_get_pages_range(),
+- * except that the returned number of pages are guaranteed to be
+- * contiguous.
+- *
+- * Return: the number of pages which were found.
+- */
+-unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t index,
+-			       unsigned int nr_pages, struct page **pages)
+-{
+-	XA_STATE(xas, &mapping->i_pages, index);
+-	struct folio *folio;
+-	unsigned int ret = 0;
+-
+-	if (unlikely(!nr_pages))
+-		return 0;
+-
+-	rcu_read_lock();
+-	for (folio = xas_load(&xas); folio; folio = xas_next(&xas)) {
+-		if (xas_retry(&xas, folio))
+-			continue;
+-		/*
+-		 * If the entry has been swapped out, we can stop looking.
+-		 * No current caller is looking for DAX entries.
+-		 */
+-		if (xa_is_value(folio))
+-			break;
+-
+-		if (!folio_try_get_rcu(folio))
+-			goto retry;
+-
+-		if (unlikely(folio != xas_reload(&xas)))
+-			goto put_page;
+-
+-again:
+-		pages[ret] = folio_file_page(folio, xas.xa_index);
+-		if (++ret == nr_pages)
+-			break;
+-		if (folio_more_pages(folio, xas.xa_index, ULONG_MAX)) {
+-			xas.xa_index++;
+-			folio_ref_inc(folio);
+-			goto again;
+-		}
+-		continue;
+-put_page:
+-		folio_put(folio);
+-retry:
+-		xas_reset(&xas);
+-	}
+-	rcu_read_unlock();
+-	return ret;
+-}
+-EXPORT_SYMBOL(find_get_pages_contig);
+-
+ /**
+  * find_get_pages_range_tag - Find and return head pages matching @tag.
+  * @mapping:	the address_space to search
+-- 
+2.36.1
 
