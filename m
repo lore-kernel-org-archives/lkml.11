@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92861C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8598C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242148AbiHOVN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        id S232112AbiHOVOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347934AbiHOVHr (ORCPT
+        with ESMTP id S1347947AbiHOVHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E13E2DAA0;
-        Mon, 15 Aug 2022 12:16:49 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405723B948;
+        Mon, 15 Aug 2022 12:16:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A8AA60F6A;
-        Mon, 15 Aug 2022 19:16:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11867C433C1;
-        Mon, 15 Aug 2022 19:16:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D19E66009B;
+        Mon, 15 Aug 2022 19:16:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C9AC433D6;
+        Mon, 15 Aug 2022 19:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591008;
-        bh=jYvjc2jx/tJWDFcenTX34W9Cgm5iRIk5XYyMQirFE00=;
+        s=korg; t=1660591018;
+        bh=ATE1cTmhzo7APlhk3egsok+n2wPA9FCysFJZ3kyQ6Hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCRPLe+IQ7z6aN6wgC4IaaJkadm6EB5o7BsseTY6bw82tfg99pnhoMj/sbGHbknzi
-         wMEu36pBoikg9yNuEOv+OkIteUuVgChM2yMn58FThxq8kVIMYFF2uouXuiT7dEujT8
-         QevN7CZpyoPHkd6aTd6NRfYBLNbO1nLxv9zpjv8w=
+        b=BgOd6ZBNG932AH47dswoXI7DhqyUJZlOeryx0ysKmtbn7VHEjZ66FGXeo/mostavi
+         zTo01FWfy9ie5Z3L18Z934M5XF5PENXscvQqK4kd6Annt7dc9gqgun1VbRUHL+RgY+
+         /96e3tFZxkNY7jRurB1akpuGdPrwOFnDL6JsN9U4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0443/1095] mt76: mt7615: do not update pm stats in case of error
-Date:   Mon, 15 Aug 2022 19:57:22 +0200
-Message-Id: <20220815180447.978286034@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ming Yen Hsieh <mingyen.hsieh@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0446/1095] mt76: mt7921: fix aggregation subframes setting to HE max
+Date:   Mon, 15 Aug 2022 19:57:25 +0200
+Message-Id: <20220815180448.089520156@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -48,40 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 79717c4eeeae9dec894794fbe8af72f08f03ebdd ]
+[ Upstream commit d5a50e6bd1972c481f82befa846dce0b9866f025 ]
 
-Do not update pm stats if mt7615_mcu_fw_pmctrl returns an error.
+mt7921/mt7922 support HE max aggregation subframes 256 for both tx/rx.
+Get better throughput then before.
 
-Fixes: abe912ae3cd42 ("mt76: mt7663: add awake and doze time accounting")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Fixes: 94bb18b03d43 ("mt76: mt7921: fix max aggregation subframes setting")
+Tested-by: Ming Yen Hsieh <mingyen.hsieh@mediatek.com>
+Reviewed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-index 97e2a85cb728..6f3efec58afe 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-@@ -350,10 +350,11 @@ static int mt7615_mcu_fw_pmctrl(struct mt7615_dev *dev)
- 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+index 91fc41922d95..2fb2a6295c06 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+@@ -49,8 +49,8 @@ mt7921_init_wiphy(struct ieee80211_hw *hw)
+ 	struct wiphy *wiphy = hw->wiphy;
  
- 	mt7622_trigger_hif_int(dev, false);
--
--	pm->stats.last_doze_event = jiffies;
--	pm->stats.awake_time += pm->stats.last_doze_event -
--				pm->stats.last_wake_event;
-+	if (!err) {
-+		pm->stats.last_doze_event = jiffies;
-+		pm->stats.awake_time += pm->stats.last_doze_event -
-+					pm->stats.last_wake_event;
-+	}
- out:
- 	mutex_unlock(&pm->mutex);
+ 	hw->queues = 4;
+-	hw->max_rx_aggregation_subframes = 64;
+-	hw->max_tx_aggregation_subframes = 128;
++	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
++	hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+ 	hw->netdev_features = NETIF_F_RXCSUM;
  
+ 	hw->radiotap_timestamp.units_pos =
 -- 
 2.35.1
 
