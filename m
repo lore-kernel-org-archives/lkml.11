@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C042EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B06C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240509AbiHOSVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        id S240618AbiHOSVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240054AbiHOSUB (ORCPT
+        with ESMTP id S240467AbiHOSUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:20:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D400A2C11B;
-        Mon, 15 Aug 2022 11:16:34 -0700 (PDT)
+        Mon, 15 Aug 2022 14:20:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430712C138;
+        Mon, 15 Aug 2022 11:16:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5C7B81063;
-        Mon, 15 Aug 2022 18:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F7DFC433D7;
-        Mon, 15 Aug 2022 18:16:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61C8A612B1;
+        Mon, 15 Aug 2022 18:16:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69E8EC43141;
+        Mon, 15 Aug 2022 18:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587391;
-        bh=hOfkL8bzpuf9W2WYWCtIcFLDb5Zso9JhM0Z5gYPhA08=;
+        s=korg; t=1660587394;
+        bh=/ETDo4V7GPQUwRsVjK5Nh+gt4dXLrxqWmPgcWmO53ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KNMVZNCmLfx6t/h3ryEwycZ0IEp/pt83OvBCEe5VVXipEXSbWvtikMTPBlwEaeMnp
-         f0axUTu5x937OJPFI+t0sI3qc4Vcz4Hc++0U9afvboBZEyVBMKIHyGL33RpWnfQBM3
-         XLf0sqbZarFyexkXQEzJe3pPn3uJeWLSsv3skJ3M=
+        b=XzFX/bgnhFbcUCkUfhymcc0hHFNdS1n3DrU6UV/lBYVKpV88WfDWOrmWJOWqvUFG+
+         NeSwsThjkhOzI7/6mCZGXZB2tVg02dvABDkGtNtXfkEWDxSXOLUgayN/wuDW2VeOND
+         /DQmHx5Af/RMQst8R4rN8ldysM34F30qS77pa2q8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atul Khare <atulkhare@rivosinc.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 054/779] dt-bindings: riscv: fix SiFive l2-caches cache-sets
-Date:   Mon, 15 Aug 2022 19:54:58 +0200
-Message-Id: <20220815180339.561978875@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kitaina <okitain@gmail.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.15 072/779] mtd: rawnand: arasan: Fix clock rate in NV-DDR
+Date:   Mon, 15 Aug 2022 19:55:16 +0200
+Message-Id: <20220815180340.367412598@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,64 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Olga Kitaina <okitain@gmail.com>
 
-commit b60cf8e59e61133b6c9514ff8d8c8d7049d040ef upstream.
+commit e16eceea863b417fd328588b1be1a79de0bc937f upstream.
 
-Fix device tree schema validation error messages for the SiFive
-Unmatched: ' cache-sets:0:0: 1024 was expected'.
+According to the Arasan NAND controller spec, the flash clock rate for SDR
+must be <= 100 MHz, while for NV-DDR it must be the same as the rate of the
+CLK line for the mode. The driver previously always set 100 MHz for NV-DDR,
+which would result in incorrect behavior for NV-DDR modes 0-4.
 
-The existing bindings allow for just 1024 cache-sets but the fu740 on
-Unmatched the has 2048 cache-sets. The ISA itself permits any arbitrary
-power of two, however this is not supported by dt-schema. The RTL for
-the IP, to which the number of cache-sets is a tunable parameter, has
-been released publicly so speculatively adding a small number of
-"reasonable" values seems unwise also.
+The appropriate clock rate can be calculated from the NV-DDR timing
+parameters as 1/tCK, or for rates measured in picoseconds,
+10^12 / nand_nvddr_timings->tCK_min.
 
-Instead, as the binding only supports two distinct controllers: add 2048
-and explicitly lock it to the fu740's l2 cache while limiting 1024 to
-the l2 cache on the fu540.
-
-Fixes: af951c3a113b ("dt-bindings: riscv: Update l2 cache DT documentation to add support for SiFive FU740")
-Reported-by: Atul Khare <atulkhare@rivosinc.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220803185359.942928-1-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 197b88fecc50 ("mtd: rawnand: arasan: Add new Arasan NAND controller")
+CC: stable@vger.kernel.org # 5.8+
+Signed-off-by: Olga Kitaina <okitain@gmail.com>
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220628154824.12222-3-amit.kumar-mahapatra@xilinx.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/arasan-nand-controller.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
-+++ b/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
-@@ -47,7 +47,7 @@ properties:
-     const: 2
+--- a/drivers/mtd/nand/raw/arasan-nand-controller.c
++++ b/drivers/mtd/nand/raw/arasan-nand-controller.c
+@@ -1043,7 +1043,13 @@ static int anfc_setup_interface(struct n
+ 				 DQS_BUFF_SEL_OUT(dqs_mode);
+ 	}
  
-   cache-sets:
--    const: 1024
-+    enum: [1024, 2048]
+-	anand->clk = ANFC_XLNX_SDR_DFLT_CORE_CLK;
++	if (nand_interface_is_sdr(conf)) {
++		anand->clk = ANFC_XLNX_SDR_DFLT_CORE_CLK;
++	} else {
++		/* ONFI timings are defined in picoseconds */
++		anand->clk = div_u64((u64)NSEC_PER_SEC * 1000,
++				     conf->timings.nvddr.tCK_min);
++	}
  
-   cache-size:
-     const: 2097152
-@@ -85,6 +85,8 @@ then:
-       description: |
-         Must contain entries for DirError, DataError and DataFail signals.
-       maxItems: 3
-+    cache-sets:
-+      const: 1024
- 
- else:
-   properties:
-@@ -92,6 +94,8 @@ else:
-       description: |
-         Must contain entries for DirError, DataError, DataFail, DirFail signals.
-       minItems: 4
-+    cache-sets:
-+      const: 2048
- 
- additionalProperties: false
- 
+ 	/*
+ 	 * Due to a hardware bug in the ZynqMP SoC, SDR timing modes 0-1 work
 
 
