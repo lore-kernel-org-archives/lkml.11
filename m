@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7375FC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8367FC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343909AbiHOTUh (ORCPT
+        id S1344179AbiHOTUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
+        Mon, 15 Aug 2022 15:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344802AbiHOTRa (ORCPT
+        with ESMTP id S1344848AbiHOTRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:17:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBE4550AD;
-        Mon, 15 Aug 2022 11:38:52 -0700 (PDT)
+        Mon, 15 Aug 2022 15:17:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C7B3CBCD;
+        Mon, 15 Aug 2022 11:38:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 924FCB8105C;
-        Mon, 15 Aug 2022 18:38:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6258C433C1;
-        Mon, 15 Aug 2022 18:38:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4AF0CCE1255;
+        Mon, 15 Aug 2022 18:38:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16758C433C1;
+        Mon, 15 Aug 2022 18:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588729;
-        bh=Ec5/oyhb00vaR4L1rErP9tSGFiWzLz6wckzSUZUh9pY=;
+        s=korg; t=1660588732;
+        bh=hwUVotYLPPfsowZItZNAHswZcEHPnU+JPQbbWO55Yh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKvcyYVNqLnvbBNboXL6aPeEihDSKypkeC0gS8nHpjvsSW6F65BmjdCTSAKtt7Jn/
-         IIy6Ll8JdI9ynBwnHGGmO11FDUzc3OsxebOqn/IGRWH+onOGag/fcGpQL9cuvAfoDk
-         LD6WeS71lzrUvRyfK1+K/HDFSNu9qVprHaFyrKRE=
+        b=GRlBNkgwFOU3dOB4Q5GkBBmQasZewk6GLGEOsd0hHO6Peb1c9AyqaJmq7xx3ZQrUP
+         n4mrjw8LPbvImb1GHIpZh/2oOQbKWiPaoY/kOR87INEVUgKO8zrgTitNnOaI3OxOoZ
+         DHb/L3a5xROLz/vJTFO2FfFptMFX66gNHbqcnNIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christopher Obbard <chris.obbard@collabora.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 489/779] xtensa: iss: fix handling error cases in iss_net_configure()
-Date:   Mon, 15 Aug 2022 20:02:13 +0200
-Message-Id: <20220815180358.171051787@linuxfoundation.org>
+Subject: [PATCH 5.15 498/779] um: random: Dont initialise hwrng struct with zero
+Date:   Mon, 15 Aug 2022 20:02:22 +0200
+Message-Id: <20220815180358.557509500@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,109 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Christopher Obbard <chris.obbard@collabora.com>
 
-[ Upstream commit 628ccfc8f5f79dd548319408fcc53949fe97b258 ]
+[ Upstream commit 9e70cbd11b03889c92462cf52edb2bd023c798fa ]
 
-The 'pdev' and 'netdev' need to be released in error cases of
-iss_net_configure().
+Initialising the hwrng struct with zeros causes a
+compile-time sparse warning:
 
-Change the return type of iss_net_configure() to void, because it's
-not used.
+ $ ARCH=um make -j10 W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+ ...
+ CHECK   arch/um/drivers/random.c
+ arch/um/drivers/random.c:31:31: sparse: warning: Using plain integer as NULL pointer
 
-Fixes: 7282bee78798 ("[PATCH] xtensa: Architecture support for Tensilica Xtensa Part 8")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fix the warning by not initialising the hwrng struct
+with zeros as it is initialised anyway during module
+init.
+
+Fixes: 72d3e093afae ("um: random: Register random as hwrng-core device")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/platforms/iss/network.c | 32 ++++++++++++++---------------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+ arch/um/drivers/random.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
-index 4801df4e73e1..08d70c868c13 100644
---- a/arch/xtensa/platforms/iss/network.c
-+++ b/arch/xtensa/platforms/iss/network.c
-@@ -511,16 +511,15 @@ static void iss_net_pdev_release(struct device *dev)
- 	free_netdev(lp->dev);
- }
+diff --git a/arch/um/drivers/random.c b/arch/um/drivers/random.c
+index 433a3f8f2ef3..32b3341fe970 100644
+--- a/arch/um/drivers/random.c
++++ b/arch/um/drivers/random.c
+@@ -28,7 +28,7 @@
+  * protects against a module being loaded twice at the same time.
+  */
+ static int random_fd = -1;
+-static struct hwrng hwrng = { 0, };
++static struct hwrng hwrng;
+ static DECLARE_COMPLETION(have_data);
  
--static int iss_net_configure(int index, char *init)
-+static void iss_net_configure(int index, char *init)
- {
- 	struct net_device *dev;
- 	struct iss_net_private *lp;
--	int err;
- 
- 	dev = alloc_etherdev(sizeof(*lp));
- 	if (dev == NULL) {
- 		pr_err("eth_configure: failed to allocate device\n");
--		return 1;
-+		return;
- 	}
- 
- 	/* Initialize private element. */
-@@ -549,7 +548,7 @@ static int iss_net_configure(int index, char *init)
- 	if (!tuntap_probe(lp, index, init)) {
- 		pr_err("%s: invalid arguments. Skipping device!\n",
- 		       dev->name);
--		goto errout;
-+		goto err_free_netdev;
- 	}
- 
- 	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
-@@ -557,7 +556,8 @@ static int iss_net_configure(int index, char *init)
- 	/* sysfs register */
- 
- 	if (!driver_registered) {
--		platform_driver_register(&iss_net_driver);
-+		if (platform_driver_register(&iss_net_driver))
-+			goto err_free_netdev;
- 		driver_registered = 1;
- 	}
- 
-@@ -568,7 +568,8 @@ static int iss_net_configure(int index, char *init)
- 	lp->pdev.id = index;
- 	lp->pdev.name = DRIVER_NAME;
- 	lp->pdev.dev.release = iss_net_pdev_release;
--	platform_device_register(&lp->pdev);
-+	if (platform_device_register(&lp->pdev))
-+		goto err_free_netdev;
- 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
- 
- 	dev->netdev_ops = &iss_netdev_ops;
-@@ -577,23 +578,20 @@ static int iss_net_configure(int index, char *init)
- 	dev->irq = -1;
- 
- 	rtnl_lock();
--	err = register_netdevice(dev);
--	rtnl_unlock();
--
--	if (err) {
-+	if (register_netdevice(dev)) {
-+		rtnl_unlock();
- 		pr_err("%s: error registering net device!\n", dev->name);
--		/* XXX: should we call ->remove() here? */
--		free_netdev(dev);
--		return 1;
-+		platform_device_unregister(&lp->pdev);
-+		return;
- 	}
-+	rtnl_unlock();
- 
- 	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
- 
--	return 0;
-+	return;
- 
--errout:
--	/* FIXME: unregister; free, etc.. */
--	return -EIO;
-+err_free_netdev:
-+	free_netdev(dev);
- }
- 
- /* ------------------------------------------------------------------------- */
+ static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
 -- 
 2.35.1
 
