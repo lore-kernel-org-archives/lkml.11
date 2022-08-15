@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB393C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3307FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346549AbiHOUQJ (ORCPT
+        id S1346597AbiHOUQN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        Mon, 15 Aug 2022 16:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346247AbiHOULF (ORCPT
+        with ESMTP id S1346016AbiHOUJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:05 -0400
+        Mon, 15 Aug 2022 16:09:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F082873A;
-        Mon, 15 Aug 2022 11:57:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D8B631E;
+        Mon, 15 Aug 2022 11:56:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 884B7B8109E;
-        Mon, 15 Aug 2022 18:57:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE1A3C43470;
-        Mon, 15 Aug 2022 18:57:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5303FB8105C;
+        Mon, 15 Aug 2022 18:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94DB7C433C1;
+        Mon, 15 Aug 2022 18:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589845;
-        bh=2CHC3svalq1Gyf9BQX3NmCndAGt4dNGgpMfHUiU2LWA=;
+        s=korg; t=1660589782;
+        bh=qQyraYE4LbhTbwMvV6lt7Z7x61Pv/yXQ96/5OMaQNNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kqRdFrQFyIwV0TVTsVorGSyqsEHMcQN1x7xRewh4LaaPdlatKoYMIMq6MsKiwk/de
-         1HKIyrw8cZel7kBtR3h8+Eh2+MuF1eAXLivzVlr1kmh7F8pjbBEKKKtwi5BTUc1hpn
-         d5bZF1UA9qBhQ/WdfmRyG5OCJZzcacc4XU+81SVU=
+        b=rO/jRrMmgFF6FQtbzDSnuLQHlXKfr2dNMaYdKEFoUABta23KXHXjRynW/bz53qw6t
+         mYwvK+pUIPKr8Dv73hvOsJRH3eRar0Bm16izF0Aldk46LNUae0NboQscjAc7L3oy0X
+         cOjJkCJs9gxTyqE6WG3kM+vI6moLubGow3Sca6Fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
         Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 0035/1095] KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
-Date:   Mon, 15 Aug 2022 19:50:34 +0200
-Message-Id: <20220815180430.838822104@linuxfoundation.org>
+Subject: [PATCH 5.18 0029/1095] KVM: Fully serialize gfn=>pfn cache refresh via mutex
+Date:   Mon, 15 Aug 2022 19:50:28 +0200
+Message-Id: <20220815180430.572594455@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,73 +52,103 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-commit c7d855c2aff2d511fd60ee2e356134c4fb394799 upstream.
+commit 93984f19e7bce4c18084a6ef3dacafb155b806ed upstream.
 
-Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
-per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
-on hardware to perform the checks, even for the few checks that have
-higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
-hardware while running the guest, (b) there may incompatible CR0/CR4 bits
-that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
-have further restricted the allowed CR0/CR4 values by manipulating the
-guest's nested VMX MSRs.
+Protect gfn=>pfn cache refresh with a mutex to fully serialize refreshes.
+The refresh logic doesn't protect against
 
-Note, despite a very strong desire to throw shade at Jim, commit
-70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
-is not to blame for the buggy behavior (though the comment...).  That
-commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
-(though it did erroneously drop the CPL check, but that has already been
-remedied).  KVM may force CR0.PE=1, but will do so only when also
-forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
+- concurrent unmaps, or refreshes with different GPAs (which may or may not
+  happen in practice, for example if a cache is only used under vcpu->mutex;
+  but it's allowed in the code)
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
-Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
-Reported-by: Eric Li <ercli@ucdavis.edu>
+- a false negative on the memslot generation.  If the first refresh sees
+  a stale memslot generation, it will refresh the hva and generation before
+  moving on to the hva=>pfn translation.  If it then drops gpc->lock, a
+  different user of the cache can come along, acquire gpc->lock, see that
+  the memslot generation is fresh, and skip the hva=>pfn update due to the
+  userspace address also matching (because it too was updated).
+
+The refresh path can already sleep during hva=>pfn resolution, so wrap
+the refresh with a mutex to ensure that any given refresh runs to
+completion before other callers can start their refresh.
+
 Cc: stable@vger.kernel.org
+Cc: Lai Jiangshan <jiangshanlai@gmail.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-4-seanjc@google.com>
+Message-Id: <20220429210025.3293691-7-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |   23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ include/linux/kvm_types.h |    2 ++
+ virt/kvm/pfncache.c       |   12 ++++++++++++
+ 2 files changed, 14 insertions(+)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4973,20 +4973,25 @@ static int handle_vmon(struct kvm_vcpu *
- 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
+--- a/include/linux/kvm_types.h
++++ b/include/linux/kvm_types.h
+@@ -19,6 +19,7 @@ struct kvm_memslots;
+ enum kvm_mr_change;
  
- 	/*
--	 * The Intel VMX Instruction Reference lists a bunch of bits that are
--	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
--	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
--	 * Otherwise, we should fail with #UD.  But most faulting conditions
--	 * have already been checked by hardware, prior to the VM-exit for
--	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
--	 * that bit set to 1 in non-root mode.
-+	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
-+	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
-+	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
-+	 * running the guest, i.e. KVM needs to check the _guest_ values.
-+	 *
-+	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
-+	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
-+	 * Mode, but KVM will never take the guest out of those modes.
- 	 */
--	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
-+	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
-+	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
- 		kvm_queue_exception(vcpu, UD_VECTOR);
- 		return 1;
- 	}
+ #include <linux/bits.h>
++#include <linux/mutex.h>
+ #include <linux/types.h>
+ #include <linux/spinlock_types.h>
  
--	/* CPL=0 must be checked manually. */
+@@ -69,6 +70,7 @@ struct gfn_to_pfn_cache {
+ 	struct kvm_vcpu *vcpu;
+ 	struct list_head list;
+ 	rwlock_t lock;
++	struct mutex refresh_lock;
+ 	void *khva;
+ 	kvm_pfn_t pfn;
+ 	enum pfn_cache_usage usage;
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -157,6 +157,13 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 	if (page_offset + len > PAGE_SIZE)
+ 		return -EINVAL;
+ 
 +	/*
-+	 * CPL=0 and all other checks that are lower priority than VM-Exit must
-+	 * be checked manually.
++	 * If another task is refreshing the cache, wait for it to complete.
++	 * There is no guarantee that concurrent refreshes will see the same
++	 * gpa, memslots generation, etc..., so they must be fully serialized.
 +	 */
- 	if (vmx_get_cpl(vcpu)) {
- 		kvm_inject_gp(vcpu, 0);
- 		return 1;
++	mutex_lock(&gpc->refresh_lock);
++
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	old_pfn = gpc->pfn;
+@@ -250,6 +257,8 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+  out:
+ 	write_unlock_irq(&gpc->lock);
+ 
++	mutex_unlock(&gpc->refresh_lock);
++
+ 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ 
+ 	return ret;
+@@ -261,6 +270,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 	void *old_khva;
+ 	kvm_pfn_t old_pfn;
+ 
++	mutex_lock(&gpc->refresh_lock);
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	gpc->valid = false;
+@@ -276,6 +286,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 	gpc->pfn = KVM_PFN_ERR_FAULT;
+ 
+ 	write_unlock_irq(&gpc->lock);
++	mutex_unlock(&gpc->refresh_lock);
+ 
+ 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ }
+@@ -290,6 +301,7 @@ int kvm_gfn_to_pfn_cache_init(struct kvm
+ 
+ 	if (!gpc->active) {
+ 		rwlock_init(&gpc->lock);
++		mutex_init(&gpc->refresh_lock);
+ 
+ 		gpc->khva = NULL;
+ 		gpc->pfn = KVM_PFN_ERR_FAULT;
 
 
