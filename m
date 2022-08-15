@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15656C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7EEC282E7
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245538AbiHOTat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54082 "EHLO
+        id S1343971AbiHOTbD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343953AbiHOT0S (ORCPT
+        with ESMTP id S1344094AbiHOT0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:26:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8856E2A95F;
-        Mon, 15 Aug 2022 11:41:55 -0700 (PDT)
+        Mon, 15 Aug 2022 15:26:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4328B2601;
+        Mon, 15 Aug 2022 11:42:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2685160FB8;
-        Mon, 15 Aug 2022 18:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2823C433B5;
-        Mon, 15 Aug 2022 18:41:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id ACD28CE126A;
+        Mon, 15 Aug 2022 18:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87667C433D7;
+        Mon, 15 Aug 2022 18:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588914;
-        bh=d9k79EkyQ2/BI9EEkP/6956Vb4q7VWRvrkWKgvW8sIU=;
+        s=korg; t=1660588927;
+        bh=LlWXzo+ay1TYd13G3nCLValj8epFIQqO5xQfwJDSVxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VmHT/nfTnaKx1Op5s8xwdmh2iMc1UQef3ojJgFDWtpKiyRM4v6XHcMG+fbMceDTVx
-         qQyA42qmXYnF+PO4EbzlscjF244/uS6ARehaycInHERYPYvcNBnNkfioto9SVfT8Eh
-         rmapXrcZnejGi3dnA6VSCIiMqPV5o0ko1kMHvuzM=
+        b=vd5oYoTYrxrVDtFp+0KBU73lpXedw6258QYPK4VKNW5YgiBI1diiyswuEjiqQbYLf
+         JtpJcbkKAT0RJUbuaRbj6jC6dcY/eVf767idWuoql6fgGxwDicGiFAjIUFlJNyJgSq
+         WYaJZJUCcYYRda8tbzHWGD3a8dCdb2KrDwRWSGSc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joel Granados <j.granados@samsung.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 553/779] nvme: catch -ENODEV from nvme_revalidate_zones again
-Date:   Mon, 15 Aug 2022 20:03:17 +0200
-Message-Id: <20220815180400.976145763@linuxfoundation.org>
+        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 526/779] HID: alps: Declare U1_UNICORN_LEGACY support
+Date:   Mon, 15 Aug 2022 20:02:50 +0200
+Message-Id: <20220815180359.750150241@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,71 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Artem Borisov <dedsa2002@gmail.com>
 
-[ Upstream commit e06b425bc835ead08b9fd935bf5e47eef473e7a0 ]
+[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
 
-nvme_revalidate_zones can also return -ENODEV if e.g. zone sizes aren't
-constant or not a power of two.  In that case we should jump to marking
-the gendisk hidden and only support pass through.
+U1_UNICORN_LEGACY id was added to the driver, but was not declared
+in the device id table, making it impossible to use.
 
-Fixes: 602e57c9799c ("nvme: also mark passthrough-only namespaces ready in nvme_update_ns_info")
-Reported-by: Joel Granados <j.granados@samsung.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Joel Granados <j.granados@samsung.com>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
+Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/hid/hid-alps.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index ddaad05ff043..ed2740585c5d 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1914,8 +1914,10 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 
- 	if (ns->head->ids.csi == NVME_CSI_ZNS) {
- 		ret = nvme_update_zone_info(ns, lbaf);
--		if (ret)
--			goto out_unfreeze;
-+		if (ret) {
-+			blk_mq_unfreeze_queue(ns->disk->queue);
-+			goto out;
-+		}
- 	}
- 
- 	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
-@@ -1926,7 +1928,7 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 	if (blk_queue_is_zoned(ns->queue)) {
- 		ret = nvme_revalidate_zones(ns);
- 		if (ret && !nvme_first_scan(ns->disk))
--			return ret;
-+			goto out;
- 	}
- 
- 	if (nvme_ns_head_multipath(ns->head)) {
-@@ -1941,9 +1943,9 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		disk_update_readahead(ns->head->disk);
- 		blk_mq_unfreeze_queue(ns->head->disk->queue);
- 	}
--	return 0;
- 
--out_unfreeze:
-+	ret = 0;
-+out:
- 	/*
- 	 * If probing fails due an unsupported feature, hide the block device,
- 	 * but still allow other access.
-@@ -1953,7 +1955,6 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		set_bit(NVME_NS_READY, &ns->flags);
- 		ret = 0;
- 	}
--	blk_mq_unfreeze_queue(ns->disk->queue);
- 	return ret;
- }
- 
+diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
+index 2b986d0dbde4..db146d0f7937 100644
+--- a/drivers/hid/hid-alps.c
++++ b/drivers/hid/hid-alps.c
+@@ -830,6 +830,8 @@ static const struct hid_device_id alps_id[] = {
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
++	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
++		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
+ 	{ }
 -- 
 2.35.1
 
