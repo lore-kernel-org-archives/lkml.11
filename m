@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FDEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A15C0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbiHOVM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        id S232452AbiHOVMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347877AbiHOVHm (ORCPT
+        with ESMTP id S1347911AbiHOVHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:42 -0400
+        Mon, 15 Aug 2022 17:07:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EE052DC5;
-        Mon, 15 Aug 2022 12:16:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CC452DFF;
+        Mon, 15 Aug 2022 12:16:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD0F7B810A3;
-        Mon, 15 Aug 2022 19:16:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06969C433C1;
-        Mon, 15 Aug 2022 19:16:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F36D7B8107A;
+        Mon, 15 Aug 2022 19:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DC6C433C1;
+        Mon, 15 Aug 2022 19:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590977;
-        bh=FSlNSLhvpoyiw9eFcM5g7ayib14ZGARLfiKQGyQtPDc=;
+        s=korg; t=1660590986;
+        bh=4w1Henxr21HxdIOW24rJo+vlghp87PGzvVsvvHwWgHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=or5MVeNaDHLyvahTYk8jm3RKn0dOmZQelv7FqKEFWutWN8u9f6dWlu8MqM54L0NWZ
-         33gSvLUil5nQnQLiaFJwzaM1FyQkRfxjVHqoHKq79T4QMYe/MmwDraOnk0MtcqFuby
-         RpjxVS5skLWAjh1PcySzkhB7VQFVDIv+O3bHe2Uk=
+        b=1A22LiW/6Ek29wZoGlLR1C0iaevQ7G4GBQobEhjnr+7wtqemaD8WUVCVr3wgTDXbY
+         Z4b1XjfHyPqCteNHmZ/sW+JllxBI6jBrLbxiUh7lwFGKj4BnS7Rp3yh2Utgyv7mslw
+         yssq77dSiHxiIgfDZSLuHXYQ22yLCA0K6oge7vA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0401/1095] mm: Account dirty folios properly during splits
-Date:   Mon, 15 Aug 2022 19:56:40 +0200
-Message-Id: <20220815180446.282386990@linuxfoundation.org>
+Subject: [PATCH 5.18 0404/1095] net: mscc: ocelot: delete ocelot_port :: xmit_template
+Date:   Mon, 15 Aug 2022 19:56:43 +0200
+Message-Id: <20220815180446.421996832@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,56 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit fb5c2029f8221e904e604938171c4a8ef169aadb ]
+[ Upstream commit 15f6d01e4829cd2a2dc4f02a00c51d7cec1c736d ]
 
-If the last folio in a file is split as a result of truncation,
-we simply clear the dirty bits for the pages we're discarding.
-That causes NR_FILE_DIRTY (among other counters) to be thrown off
-and eventually Linux will hang in balance_dirty_pages_ratelimited()
+This is no longer used since commit 7c4bb540e917 ("net: dsa: tag_ocelot:
+create separate tagger for Seville").
 
-Reported-by: Dave Chinner <dchinner@redhat.com>
-Tested-by: Dave Chinner <dchinner@redhat.com>
-Tested-by: Darrick J. Wong <djwong@kernel.org>
-Fixes: d68eccad3706 ("mm/filemap: Allow large folios to be added to the page cache")
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/huge_memory.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ include/soc/mscc/ocelot.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index b7d0697b1f26..e0c1cf3168d7 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -18,6 +18,7 @@
- #include <linux/shrinker.h>
- #include <linux/mm_inline.h>
- #include <linux/swapops.h>
-+#include <linux/backing-dev.h>
- #include <linux/dax.h>
- #include <linux/khugepaged.h>
- #include <linux/freezer.h>
-@@ -2389,11 +2390,15 @@ static void __split_huge_page(struct page *page, struct list_head *list,
- 		__split_huge_page_tail(head, i, lruvec, list);
- 		/* Some pages can be beyond EOF: drop them from page cache */
- 		if (head[i].index >= end) {
--			ClearPageDirty(head + i);
--			__delete_from_page_cache(head + i, NULL);
-+			struct folio *tail = page_folio(head + i);
-+
- 			if (shmem_mapping(head->mapping))
- 				shmem_uncharge(head->mapping->host, 1);
--			put_page(head + i);
-+			else if (folio_test_clear_dirty(tail))
-+				folio_account_cleaned(tail,
-+					inode_to_wb(folio->mapping->host));
-+			__filemap_remove_folio(tail, NULL);
-+			folio_put(tail);
- 		} else if (!PageAnon(page)) {
- 			__xa_store(&head->mapping->i_pages, head[i].index,
- 					head + i, 0);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 9b4e6c78d0f4..b191f0a7fe26 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -663,7 +663,6 @@ struct ocelot_port {
+ 
+ 	phy_interface_t			phy_mode;
+ 
+-	u8				*xmit_template;
+ 	bool				is_dsa_8021q_cpu;
+ 	bool				learn_ena;
+ 
 -- 
 2.35.1
 
