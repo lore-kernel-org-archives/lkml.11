@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643DBC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D4EC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347915AbiHOWUU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S229839AbiHOWU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348056AbiHOWQS (ORCPT
+        with ESMTP id S1348183AbiHOWQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:16:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E3D120A9C;
-        Mon, 15 Aug 2022 12:40:01 -0700 (PDT)
+        Mon, 15 Aug 2022 18:16:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9707A75C;
+        Mon, 15 Aug 2022 12:40:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 02E9FCE12E3;
-        Mon, 15 Aug 2022 19:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C55E2C433C1;
-        Mon, 15 Aug 2022 19:39:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C845B611F6;
+        Mon, 15 Aug 2022 19:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A74C433C1;
+        Mon, 15 Aug 2022 19:39:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592397;
-        bh=6iQ3c8g4QLzJzlAjpaRzfnF3Ohu+8PLvRf8ms+FV1Qg=;
+        s=korg; t=1660592394;
+        bh=Lt3I10bBaab6peJvJL+7PA1gYSbRnSA2Jze6Kx9+sVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mTEPk3zQaiJ33SH2wQWGuneyKaA0lVhBiDOdz614HZ6kCpIqyprSFIOD4q5xpTF7G
-         vrQKR1iEJJpYzbN03l7LJruAdiBxINuuZsts4cbWLytfVKWm2S5DV3HKRiqMj8/042
-         vjVmF1d6xrUtUkiH6Teu6ggfo6ZPEErCwAvqECkw=
+        b=PmPxvpXWHMww+jpn09hObe32/+sWaBSLvZ7thlNqmpfLropxZK6dISWyGD9dN7c+P
+         tm7V0nHNnFsMtPUdpKkV34o1ugNkrAPn5ssNzNR4zWu6khO8n0/tfGl0rgUuHwg5gd
+         KR2BtRu8YG7rPdLLpOmepxg9L5uTQ0iGt72UwHzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>,
-        Tony Battersby <tonyb@cybernetics.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 0104/1157] scsi: sg: Allow waiting for commands to complete on removed device
-Date:   Mon, 15 Aug 2022 19:51:00 +0200
-Message-Id: <20220815180443.795089487@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0780/1095] HID: amd_sfh: Add NULL check for hid device
+Date:   Mon, 15 Aug 2022 20:02:59 +0200
+Message-Id: <20220815180501.524385994@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,142 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Battersby <tonyb@cybernetics.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit 3455607fd7be10b449f5135c00dc306b85dc0d21 upstream.
+[ Upstream commit 06aa2a43c307cf4096f422dcb575e5d2913e528f ]
 
-When a SCSI device is removed while in active use, currently sg will
-immediately return -ENODEV on any attempt to wait for active commands that
-were sent before the removal.  This is problematic for commands that use
-SG_FLAG_DIRECT_IO since the data buffer may still be in use by the kernel
-when userspace frees or reuses it after getting ENODEV, leading to
-corrupted userspace memory (in the case of READ-type commands) or corrupted
-data being sent to the device (in the case of WRITE-type commands).  This
-has been seen in practice when logging out of a iscsi_tcp session, where
-the iSCSI driver may still be processing commands after the device has been
-marked for removal.
+On removal of hid device during SFH set report may cause NULL pointer
+exception. Hence add NULL check for hid device before accessing.
 
-Change the policy to allow userspace to wait for active sg commands even
-when the device is being removed.  Return -ENODEV only when there are no
-more responses to read.
-
-Link: https://lore.kernel.org/r/5ebea46f-fe83-2d0b-233d-d0dcb362dd0a@cybernetics.com
-Cc: <stable@vger.kernel.org>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sg.c |   53 +++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 33 insertions(+), 20 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/sg.c
-+++ b/drivers/scsi/sg.c
-@@ -195,7 +195,7 @@ static void sg_link_reserve(Sg_fd * sfp,
- static void sg_unlink_reserve(Sg_fd * sfp, Sg_request * srp);
- static Sg_fd *sg_add_sfp(Sg_device * sdp);
- static void sg_remove_sfp(struct kref *);
--static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id);
-+static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy);
- static Sg_request *sg_add_request(Sg_fd * sfp);
- static int sg_remove_request(Sg_fd * sfp, Sg_request * srp);
- static Sg_device *sg_get_dev(int dev);
-@@ -444,6 +444,7 @@ sg_read(struct file *filp, char __user *
- 	Sg_fd *sfp;
- 	Sg_request *srp;
- 	int req_pack_id = -1;
-+	bool busy;
- 	sg_io_hdr_t *hp;
- 	struct sg_header *old_hdr;
- 	int retval;
-@@ -466,20 +467,16 @@ sg_read(struct file *filp, char __user *
- 	if (retval)
- 		return retval;
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+index e2a9679e32be..54fe224050f9 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+@@ -100,11 +100,15 @@ static int amdtp_wait_for_response(struct hid_device *hid)
  
--	srp = sg_get_rq_mark(sfp, req_pack_id);
-+	srp = sg_get_rq_mark(sfp, req_pack_id, &busy);
- 	if (!srp) {		/* now wait on packet to arrive */
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
- 		if (filp->f_flags & O_NONBLOCK)
- 			return -EAGAIN;
- 		retval = wait_event_interruptible(sfp->read_wait,
--			(atomic_read(&sdp->detaching) ||
--			(srp = sg_get_rq_mark(sfp, req_pack_id))));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
--		if (retval)
--			/* -ERESTARTSYS as signal hit process */
--			return retval;
-+			((srp = sg_get_rq_mark(sfp, req_pack_id, &busy)) ||
-+			(!busy && atomic_read(&sdp->detaching))));
-+		if (!srp)
-+			/* signal or detaching */
-+			return retval ? retval : -ENODEV;
- 	}
- 	if (srp->header.interface_id != '\0')
- 		return sg_new_read(sfp, buf, count, srp);
-@@ -940,9 +937,7 @@ sg_ioctl_common(struct file *filp, Sg_de
- 		if (result < 0)
- 			return result;
- 		result = wait_event_interruptible(sfp->read_wait,
--			(srp_done(sfp, srp) || atomic_read(&sdp->detaching)));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
-+			srp_done(sfp, srp));
- 		write_lock_irq(&sfp->rq_list_lock);
- 		if (srp->done) {
- 			srp->done = 2;
-@@ -2079,19 +2074,28 @@ sg_unlink_reserve(Sg_fd * sfp, Sg_reques
- }
- 
- static Sg_request *
--sg_get_rq_mark(Sg_fd * sfp, int pack_id)
-+sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy)
+ void amdtp_hid_wakeup(struct hid_device *hid)
  {
- 	Sg_request *resp;
- 	unsigned long iflags;
+-	struct amdtp_hid_data *hid_data = hid->driver_data;
+-	struct amdtp_cl_data *cli_data = hid_data->cli_data;
++	struct amdtp_hid_data *hid_data;
++	struct amdtp_cl_data *cli_data;
  
-+	*busy = false;
- 	write_lock_irqsave(&sfp->rq_list_lock, iflags);
- 	list_for_each_entry(resp, &sfp->rq_list, entry) {
--		/* look for requests that are ready + not SG_IO owned */
--		if ((1 == resp->done) && (!resp->sg_io_owned) &&
-+		/* look for requests that are not SG_IO owned */
-+		if ((!resp->sg_io_owned) &&
- 		    ((-1 == pack_id) || (resp->header.pack_id == pack_id))) {
--			resp->done = 2;	/* guard against other readers */
--			write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
--			return resp;
-+			switch (resp->done) {
-+			case 0: /* request active */
-+				*busy = true;
-+				break;
-+			case 1: /* request done; response ready to return */
-+				resp->done = 2;	/* guard against other readers */
-+				write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+				return resp;
-+			case 2: /* response already being returned */
-+				break;
-+			}
- 		}
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-@@ -2145,6 +2149,15 @@ sg_remove_request(Sg_fd * sfp, Sg_reques
- 		res = 1;
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+
-+	/*
-+	 * If the device is detaching, wakeup any readers in case we just
-+	 * removed the last response, which would leave nothing for them to
-+	 * return other than -ENODEV.
-+	 */
-+	if (unlikely(atomic_read(&sfp->parentdp->detaching)))
-+		wake_up_interruptible_all(&sfp->read_wait);
-+
- 	return res;
+-	cli_data->request_done[cli_data->cur_hid_dev] = true;
+-	wake_up_interruptible(&hid_data->hid_wait);
++	if (hid) {
++		hid_data = hid->driver_data;
++		cli_data = hid_data->cli_data;
++		cli_data->request_done[cli_data->cur_hid_dev] = true;
++		wake_up_interruptible(&hid_data->hid_wait);
++	}
  }
  
+ static struct hid_ll_driver amdtp_hid_ll_driver = {
+-- 
+2.35.1
+
 
 
