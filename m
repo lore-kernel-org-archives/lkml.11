@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D201C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5BDC282E7
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344520AbiHOUhH (ORCPT
+        id S1345486AbiHOUhN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38656 "EHLO
+        Mon, 15 Aug 2022 16:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348180AbiHOUcN (ORCPT
+        with ESMTP id S1348212AbiHOUcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:32:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA891015;
-        Mon, 15 Aug 2022 12:05:19 -0700 (PDT)
+        Mon, 15 Aug 2022 16:32:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33D1DE84;
+        Mon, 15 Aug 2022 12:05:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 376A7B81104;
-        Mon, 15 Aug 2022 19:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D75CC433C1;
-        Mon, 15 Aug 2022 19:05:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A167D612A0;
+        Mon, 15 Aug 2022 19:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C6BC433D6;
+        Mon, 15 Aug 2022 19:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590313;
-        bh=LxLBhQg37nYyCKF7FOM1vntAWlZt+MmydoeTWUDvHYM=;
+        s=korg; t=1660590326;
+        bh=fYTU3xAkuYp+4+IwVoxMutIUJZyFE1eNTQZJ3+lhDbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HieGVS6sktLbQfY94dALI/vrmfdm2NIJZtkDP2V4+qXIH2e9DM8DZz6GdSqM9ITPC
-         eC06TQAwDipl/06vPsEdooV4OBAvFb4cHEahlg3u1ngrUIVTkjGVT0/MUk28W/cm5v
-         Ty7L9xw72f6n7q1jlaa7w57tMHcVE37NdhwSVZjU=
+        b=aGuRQudkWTYkRJJNrn7rvmsXGA+u7z4CyHO6SKW/wn/tMHjTFVLEwoND3eyowNIbO
+         V07WtAEyOorhyKT3ovLbRERog7M2KrSYGEMbU0Prth+qrVGqDRCdugSPhNUdfn9dX3
+         0osvhTMJN5/0js4oarHyoMQAiWp/GTg6zLr5Tx2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0220/1095] arm64: dts: renesas: r8a779m8: Drop operating points above 1.5 GHz
-Date:   Mon, 15 Aug 2022 19:53:39 +0200
-Message-Id: <20220815180438.789946180@linuxfoundation.org>
+Subject: [PATCH 5.18 0224/1095] ARM: dts: qcom: msm8974-lge-nexus5: move gpio-keys out of soc
+Date:   Mon, 15 Aug 2022 19:53:43 +0200
+Message-Id: <20220815180438.967772592@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,38 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit f48cb21a28c07d0754d5f2f85444cfb0e7b1fd05 ]
+[ Upstream commit d3eff0e174e5feecb8f45cf630a30f47f02f921c ]
 
-The highest-performance mode for the Cortex-A57 CPU cores supported on
-R-Car H3Ne (R8A779M8) is the Power Optimized (1.5 GHz) mode.  The Normal
-(1.6 GHz) and High Performance (1.7 GHz) modes are not supported.
+The GPIO keys are not part of SoC and they should be defined inside of
+the root node.
 
-Hence drop the "turbo-mode" entries from the operating points table
-inherited from r8a77951.dtsi.
-
-Fixes: 6e87525d751fac57 ("arm64: dts: renesas: Add Renesas R8A779M8 SoC support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/aeb4530f7fbac8329b334dcb169382c836a5f32d.1655458564.git.geert+renesas@glider.be
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220401201035.189106-5-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/r8a779m8.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 42 +++++++++----------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a779m8.dtsi b/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
-index 752440b0c40f..750bd8ccdb7f 100644
---- a/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
-@@ -10,3 +10,8 @@
- / {
- 	compatible = "renesas,r8a779m8", "renesas,r8a7795";
- };
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index 069136170198..6d5fb60e798f 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -19,6 +19,27 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	gpio-keys {
++		compatible = "gpio-keys";
 +
-+&cluster0_opp {
-+	/delete-node/ opp-1600000000;
-+	/delete-node/ opp-1700000000;
-+};
++		pinctrl-names = "default";
++		pinctrl-0 = <&gpio_keys_pin_a>;
++
++		volume-up {
++			label = "volume_up";
++			gpios = <&pm8941_gpios 2 GPIO_ACTIVE_LOW>;
++			linux,input-type = <1>;
++			linux,code = <KEY_VOLUMEUP>;
++		};
++
++		volume-down {
++			label = "volume_down";
++			gpios = <&pm8941_gpios 3 GPIO_ACTIVE_LOW>;
++			linux,input-type = <1>;
++			linux,code = <KEY_VOLUMEDOWN>;
++		};
++	};
++
+ 	smd {
+ 		rpm {
+ 			rpm_requests {
+@@ -448,27 +469,6 @@ bcrmf@1 {
+ 		};
+ 	};
+ 
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_keys_pin_a>;
+-
+-		volume-up {
+-			label = "volume_up";
+-			gpios = <&pm8941_gpios 2 GPIO_ACTIVE_LOW>;
+-			linux,input-type = <1>;
+-			linux,code = <KEY_VOLUMEUP>;
+-		};
+-
+-		volume-down {
+-			label = "volume_down";
+-			gpios = <&pm8941_gpios 3 GPIO_ACTIVE_LOW>;
+-			linux,input-type = <1>;
+-			linux,code = <KEY_VOLUMEDOWN>;
+-		};
+-	};
+-
+ 	serial@f9960000 {
+ 		status = "okay";
+ 
 -- 
 2.35.1
 
