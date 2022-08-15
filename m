@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC87C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49DCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244111AbiHOXY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        id S240581AbiHOXYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243565AbiHOXTw (ORCPT
+        with ESMTP id S245066AbiHOXUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:19:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F4014A1F0;
-        Mon, 15 Aug 2022 13:04:06 -0700 (PDT)
+        Mon, 15 Aug 2022 19:20:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A830F14A1F4;
+        Mon, 15 Aug 2022 13:04:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE3EB81135;
-        Mon, 15 Aug 2022 20:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 363D7C433D6;
-        Mon, 15 Aug 2022 20:04:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44E68612E8;
+        Mon, 15 Aug 2022 20:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC46C433D6;
+        Mon, 15 Aug 2022 20:04:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593843;
-        bh=SRi8kUHq7tGKlhz6xYUk1plavmbnQCBV5VrKeiUxa6k=;
+        s=korg; t=1660593846;
+        bh=PTZjMZz3dY7nGwXr/zmNJG3phN1LRfO3lK1lVY9wDPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x5RL2gfCQFM9tfDv+8mVfanov3AlS+RhVgAMWR9WQCXbOTE3SGh+RFvDQUZGDwNnG
-         zBJfKJXkDFCNbDODcjC0owNhDF3Zqb3F5Ii8MFtaBXeKM53PXUaepDUa/UAD516pof
-         XP/zk5l2SmKN2gJ30WTcY09gznA0vo4XIsmnx/G0=
+        b=ypWxWOvwn4gDr8s0uDyhRPlRAlaEa9s4G08qS26f2msANaR28armkDKCXPbvR3/Xm
+         3imAiZjZ78lmTcLB8Pxj40mbdsvU8x4qCnGIDJWtEzaA714f3hgc8FcYrONr75jpDT
+         9QZviPRj6KIuAmtZkcqNSkLlZQaiViIKsDybkRUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0334/1157] ath11k: Fix incorrect debug_mask mappings
-Date:   Mon, 15 Aug 2022 19:54:50 +0200
-Message-Id: <20220815180453.023958182@linuxfoundation.org>
+Subject: [PATCH 5.18 1015/1095] btrfs: reset block group chunk force if we have to wait
+Date:   Mon, 15 Aug 2022 20:06:54 +0200
+Message-Id: <20220815180511.083835595@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 9331f7d3c54a263bede5055e106e40b28d0bd937 ]
+[ Upstream commit 1314ca78b2c35d3e7d0f097268a2ee6dc0d369ef ]
 
-Currently a couple of debug_mask entries are mapped to the same value,
-this could enable unintended driver logging. If enabling DP_TX logs was
-the intention, then this could also enable PCI logs flooding the dmesg
-buffer or vice versa. Fix this by correctly assigning the debug masks.
+If you try to force a chunk allocation, but you race with another chunk
+allocation, you will end up waiting on the chunk allocation that just
+occurred and then allocate another chunk.  If you have many threads all
+doing this at once you can way over-allocate chunks.
 
-Found during code review.
+Fix this by resetting force to NO_FORCE, that way if we think we need to
+allocate we can, otherwise we don't force another chunk allocation if
+one is already happening.
 
-Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
-
-Fixes: aa2092a9bab3f ("ath11k: add raw mode and software crypto support")
-Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220602115621.15339-1-quic_mpubbise@quicinc.com
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+CC: stable@vger.kernel.org # 5.4+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/debug.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/block-group.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debug.h b/drivers/net/wireless/ath/ath11k/debug.h
-index fbbd5fe02aa8..91545640c47b 100644
---- a/drivers/net/wireless/ath/ath11k/debug.h
-+++ b/drivers/net/wireless/ath/ath11k/debug.h
-@@ -23,8 +23,8 @@ enum ath11k_debug_mask {
- 	ATH11K_DBG_TESTMODE	= 0x00000400,
- 	ATH11k_DBG_HAL		= 0x00000800,
- 	ATH11K_DBG_PCI		= 0x00001000,
--	ATH11K_DBG_DP_TX	= 0x00001000,
--	ATH11K_DBG_DP_RX	= 0x00002000,
-+	ATH11K_DBG_DP_TX	= 0x00002000,
-+	ATH11K_DBG_DP_RX	= 0x00004000,
- 	ATH11K_DBG_ANY		= 0xffffffff,
- };
- 
+diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+index 667b7025d503..1deca5164c23 100644
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -3724,6 +3724,7 @@ int btrfs_chunk_alloc(struct btrfs_trans_handle *trans, u64 flags,
+ 			 * attempt.
+ 			 */
+ 			wait_for_alloc = true;
++			force = CHUNK_ALLOC_NO_FORCE;
+ 			spin_unlock(&space_info->lock);
+ 			mutex_lock(&fs_info->chunk_mutex);
+ 			mutex_unlock(&fs_info->chunk_mutex);
 -- 
 2.35.1
 
