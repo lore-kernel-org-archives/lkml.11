@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D51C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C23D9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348719AbiHOWYl (ORCPT
+        id S1344705AbiHOWYt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
+        Mon, 15 Aug 2022 18:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350790AbiHOWSd (ORCPT
+        with ESMTP id S1350804AbiHOWSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6372865647;
-        Mon, 15 Aug 2022 12:41:48 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C973C65659;
+        Mon, 15 Aug 2022 12:42:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E9661089;
-        Mon, 15 Aug 2022 19:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB87FC433D6;
-        Mon, 15 Aug 2022 19:41:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E126068D;
+        Mon, 15 Aug 2022 19:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5675DC433D6;
+        Mon, 15 Aug 2022 19:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592507;
-        bh=R0wrMkXbfeQsqAlW1Rt+DoojY5n/s25qlPySHwrEnvI=;
+        s=korg; t=1660592526;
+        bh=KM2BqJ70Ryu+d2ZegbEKyHkGysngUz+E2aiY5tWpnY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1vULcDZoBL3t7zzSpIVTZ99DYTsMaoEGg//xophnsMoEH2Su2uzJNpBQD948Vr5i
-         Q/2SlkgSEIikv3YIbwHYNkC9Gb9/++k79FREok4xpub0wmmKBfiBq8pOGNd0o9dIz2
-         hFTg8AZ81hUGk+90glt2DrqtTrU73yO/c2BI6nf0=
+        b=F8tYOk7tEjqKk8eL79vuH1pQCiILCLwF0ALe6sqysCFyEc/FlRmdYbR61Bdy4bJEy
+         8otQkllor7kelUjm+fQPKsybkGtjZ3iM0M2HLuo+p7jryCyR8nFPdbwA2rlQHiPRuX
+         FyxIDZYED+1MA4HsYxOgSDoGH9qFqF+fAr7/4jH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Marek Vasut <marex@denx.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Michael Tretter <m.tretter@pengutronix.de>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.19 0122/1157] media: isl7998x: select V4L2_FWNODE to fix build error
-Date:   Mon, 15 Aug 2022 19:51:18 +0200
-Message-Id: <20220815180444.489804539@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0803/1095] RDMA/srpt: Introduce a reference count in struct srpt_device
+Date:   Mon, 15 Aug 2022 20:03:22 +0200
+Message-Id: <20220815180502.492835677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,39 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit 81e005842d0b8167c059553a1c29c36d8a7a9329 upstream.
+[ Upstream commit aa7dfbb41b5a60ab90e244d6f586b8cb5c791c3e ]
 
-Fix build error when VIDEO_ISL7998X=y and V4L2_FWNODE=m
-by selecting V4L2_FWNODE.
+This will be used to keep struct srpt_device around as long as either the
+RDMA port exists or a LIO target port is associated with the struct
+srpt_device.
 
-microblaze-linux-ld: drivers/media/i2c/isl7998x.o: in function `isl7998x_probe':
-(.text+0x8f4): undefined reference to `v4l2_fwnode_endpoint_parse'
-
-Cc: stable@vger.kernel.org # 5.18 and above
-Fixes: 51ef2be546e2 ("media: i2c: isl7998x: Add driver for Intersil ISL7998x")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Reviewed-by: Michael Tretter <m.tretter@pengutronix.de>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220727193415.1583860-3-bvanassche@acm.org
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/ulp/srpt/ib_srpt.c | 17 +++++++++++++++--
+ drivers/infiniband/ulp/srpt/ib_srpt.h |  2 ++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
---- a/drivers/media/i2c/Kconfig
-+++ b/drivers/media/i2c/Kconfig
-@@ -1178,6 +1178,7 @@ config VIDEO_ISL7998X
- 	depends on OF_GPIO
- 	select MEDIA_CONTROLLER
- 	select VIDEO_V4L2_SUBDEV_API
-+	select V4L2_FWNODE
- 	help
- 	  Support for Intersil ISL7998x analog to MIPI-CSI2 or
- 	  BT.656 decoder.
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
+index 8253d55b9c26..1fbce9225424 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.c
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
+@@ -3104,6 +3104,18 @@ static int srpt_use_srq(struct srpt_device *sdev, bool use_srq)
+ 	return ret;
+ }
+ 
++static void srpt_free_sdev(struct kref *refcnt)
++{
++	struct srpt_device *sdev = container_of(refcnt, typeof(*sdev), refcnt);
++
++	kfree(sdev);
++}
++
++static void srpt_sdev_put(struct srpt_device *sdev)
++{
++	kref_put(&sdev->refcnt, srpt_free_sdev);
++}
++
+ /**
+  * srpt_add_one - InfiniBand device addition callback function
+  * @device: Describes a HCA.
+@@ -3122,6 +3134,7 @@ static int srpt_add_one(struct ib_device *device)
+ 	if (!sdev)
+ 		return -ENOMEM;
+ 
++	kref_init(&sdev->refcnt);
+ 	sdev->device = device;
+ 	mutex_init(&sdev->sdev_mutex);
+ 
+@@ -3217,7 +3230,7 @@ static int srpt_add_one(struct ib_device *device)
+ 	srpt_free_srq(sdev);
+ 	ib_dealloc_pd(sdev->pd);
+ free_dev:
+-	kfree(sdev);
++	srpt_sdev_put(sdev);
+ 	pr_info("%s(%s) failed.\n", __func__, dev_name(&device->dev));
+ 	return ret;
+ }
+@@ -3261,7 +3274,7 @@ static void srpt_remove_one(struct ib_device *device, void *client_data)
+ 
+ 	ib_dealloc_pd(sdev->pd);
+ 
+-	kfree(sdev);
++	srpt_sdev_put(sdev);
+ }
+ 
+ static struct ib_client srpt_client = {
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
+index 3844a7058559..0cb867d580f1 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.h
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
+@@ -434,6 +434,7 @@ struct srpt_port {
+ 
+ /**
+  * struct srpt_device - information associated by SRPT with a single HCA
++ * @refcnt:	   Reference count for this device.
+  * @device:        Backpointer to the struct ib_device managed by the IB core.
+  * @pd:            IB protection domain.
+  * @lkey:          L_Key (local key) with write access to all local memory.
+@@ -449,6 +450,7 @@ struct srpt_port {
+  * @port:          Information about the ports owned by this HCA.
+  */
+ struct srpt_device {
++	struct kref		refcnt;
+ 	struct ib_device	*device;
+ 	struct ib_pd		*pd;
+ 	u32			lkey;
+-- 
+2.35.1
+
 
 
