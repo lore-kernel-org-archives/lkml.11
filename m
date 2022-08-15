@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC464C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AA1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243805AbiHOXeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        id S1346702AbiHOXeQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346702AbiHOX1Z (ORCPT
+        with ESMTP id S1347132AbiHOX12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:25 -0400
+        Mon, 15 Aug 2022 19:27:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770A182847;
-        Mon, 15 Aug 2022 13:07:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6BFD5E98;
+        Mon, 15 Aug 2022 13:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFCEEB810C5;
-        Mon, 15 Aug 2022 20:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19FA8C433D6;
-        Mon, 15 Aug 2022 20:07:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F203FB80EAD;
+        Mon, 15 Aug 2022 20:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 345BEC433C1;
+        Mon, 15 Aug 2022 20:07:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594030;
-        bh=bNA+L8ZtPWK90hlTA0ywsViACbAwVY8ybVjhT9qqLuk=;
+        s=korg; t=1660594033;
+        bh=k/jl+hiL7h61ReI0pIPxD1nbi8Tvs1yvqiCnRfOIhME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I94Oj4O5KQfKgfg20bAzWefJgwiammlyoeucnC0MI9a8TQN4X7QGVpPRYov7FxeCB
-         LvPy5Ro2vHzMhOwnIEmdCxGzJuirpnSOwo+bOodr1vorFGfV1UsU31X53haWksdltV
-         4kHSXiMY/EDlEfMnaah0eQRdmeLwvdYZfbvYxMoQ=
+        b=ob29ykvkrRfC0QIu3ygNtbXfq2rNmv8dGqKW5NuEv3Ush80Y/R4LjpKwqdga+gKe4
+         qqkO/VBueYo6SanGR8O7cDOXtMmXQVGrld42+0W3rp9dH9gZIN6yR7KLbFXeglfPrR
+         XMSDeRa4zqCLP3GW2HEXcGSdepp/uXaPuhL+8TRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mina Almasry <almasrymina@google.com>,
         Shakeel Butt <shakeelb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0364/1157] tcp: fix possible freeze in tx path under memory pressure
-Date:   Mon, 15 Aug 2022 19:55:20 +0200
-Message-Id: <20220815180454.279576717@linuxfoundation.org>
+Subject: [PATCH 5.18 1045/1095] hugetlb_cgroup: fix wrong hugetlb cgroup numa stat
+Date:   Mon, 15 Aug 2022 20:07:24 +0200
+Message-Id: <20220815180512.318076322@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,106 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 849b425cd091e1804af964b771761cfbefbafb43 ]
+[ Upstream commit 2727cfe4072a35ce813e3708f74c135de7da8897 ]
 
-Blamed commit only dealt with applications issuing small writes.
+We forget to set cft->private for numa stat file.  As a result, numa stat
+of hstates[0] is always showed for all hstates.  Encode the hstates index
+into cft->private to fix this issue.
 
-Issue here is that we allow to force memory schedule for the sk_buff
-allocation, but we have no guarantee that sendmsg() is able to
-copy some payload in it.
-
-In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
-
-For example, if we consider tcp_wmem[0] = 4096 (default on x86),
-and initial skb->truesize being 1280, tcp_sendmsg() is able to
-copy up to 2816 bytes under memory pressure.
-
-Before this patch a sendmsg() sending more than 2816 bytes
-would either block forever (if persistent memory pressure),
-or return -EAGAIN.
-
-For bigger MTU networks, it is advised to increase tcp_wmem[0]
-to avoid sending too small packets.
-
-v2: deal with zero copy paths.
-
-Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20220723073804.53035-1-linmiaohe@huawei.com
+Fixes: f47761999052 ("hugetlb: add hugetlb.*.numa_stat file")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Mina Almasry <almasrymina@google.com>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+ mm/hugetlb_cgroup.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 766881775abb..3ae2ea048883 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -952,6 +952,23 @@ static int tcp_downgrade_zcopy_pure(struct sock *sk, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int tcp_wmem_schedule(struct sock *sk, int copy)
-+{
-+	int left;
-+
-+	if (likely(sk_wmem_schedule(sk, copy)))
-+		return copy;
-+
-+	/* We could be in trouble if we have nothing queued.
-+	 * Use whatever is left in sk->sk_forward_alloc and tcp_wmem[0]
-+	 * to guarantee some progress.
-+	 */
-+	left = sock_net(sk)->ipv4.sysctl_tcp_wmem[0] - sk->sk_wmem_queued;
-+	if (left > 0)
-+		sk_forced_mem_schedule(sk, min(left, copy));
-+	return min(copy, sk->sk_forward_alloc);
-+}
-+
- static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 				      struct page *page, int offset, size_t *size)
- {
-@@ -987,7 +1004,11 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 		tcp_mark_push(tp, skb);
- 		goto new_segment;
- 	}
--	if (tcp_downgrade_zcopy_pure(sk, skb) || !sk_wmem_schedule(sk, copy))
-+	if (tcp_downgrade_zcopy_pure(sk, skb))
-+		return NULL;
-+
-+	copy = tcp_wmem_schedule(sk, copy);
-+	if (!copy)
- 		return NULL;
- 
- 	if (can_coalesce) {
-@@ -1336,8 +1357,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
--			if (tcp_downgrade_zcopy_pure(sk, skb) ||
--			    !sk_wmem_schedule(sk, copy))
-+			if (tcp_downgrade_zcopy_pure(sk, skb))
-+				goto wait_for_space;
-+
-+			copy = tcp_wmem_schedule(sk, copy);
-+			if (!copy)
- 				goto wait_for_space;
- 
- 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
-@@ -1364,7 +1388,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
- 
- 			if (!skb_zcopy_pure(skb)) {
--				if (!sk_wmem_schedule(sk, copy))
-+				copy = tcp_wmem_schedule(sk, copy);
-+				if (!copy)
- 					goto wait_for_space;
- 			}
+diff --git a/mm/hugetlb_cgroup.c b/mm/hugetlb_cgroup.c
+index f9942841df18..c86691c431fd 100644
+--- a/mm/hugetlb_cgroup.c
++++ b/mm/hugetlb_cgroup.c
+@@ -772,6 +772,7 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
+ 	/* Add the numa stat file */
+ 	cft = &h->cgroup_files_dfl[6];
+ 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.numa_stat", buf);
++	cft->private = MEMFILE_PRIVATE(idx, 0);
+ 	cft->seq_show = hugetlb_cgroup_read_numa_stat;
+ 	cft->flags = CFTYPE_NOT_ON_ROOT;
  
 -- 
 2.35.1
