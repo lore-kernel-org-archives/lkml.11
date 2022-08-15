@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F13DC32757
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA2DC28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbiHOVMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S245057AbiHOVLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347798AbiHOVHf (ORCPT
+        with ESMTP id S1347080AbiHOVGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F275451A35;
-        Mon, 15 Aug 2022 12:16:09 -0700 (PDT)
+        Mon, 15 Aug 2022 17:06:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FC063C9;
+        Mon, 15 Aug 2022 12:15:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25D7060FB9;
-        Mon, 15 Aug 2022 19:16:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35483C433C1;
-        Mon, 15 Aug 2022 19:16:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CCAD60FAD;
+        Mon, 15 Aug 2022 19:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64604C433D7;
+        Mon, 15 Aug 2022 19:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590968;
-        bh=+52ntI2e1KU5OBA4ew9V71YL6B2bJ+BVsws6QREl/Bc=;
+        s=korg; t=1660590929;
+        bh=nCWO8YIu1PEBiyHOTBnU4ZCYz8V+EBt7GoQJfXewjfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aa09H9oh7fehYSGwjtD8ucyMNdxYUNL3pSBicdOIxyWI2xwcE8bbR7HfugaKEAAHI
-         RH2/YvcDiPXt0HQJ29Ny0aG/U38CRQu+lB/kSZ6XU7z7x21IxguPgJd51Oe3JvADGl
-         tQrPBcHwx5Kw1Eet0lnZaSRFPzhmyBOK5YzKd8eg=
+        b=GW5mQoB6La+JbS3RDSb92X4gcetEorChrPHRUZMHiMcRgMTPZTEFXaKq8DJNcnqzm
+         uJx0fVbgLTPq/FVYbajHUuQpVIhRsifPdUjVRkN+FQBoNZYM0bjHoORgYfI2BsSyyp
+         Ty3xYMfTnBlTU4jk3/BgSkRvFGPG9IGg82kln34Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0428/1095] media: amphion: release core lock before reset vpu core
-Date:   Mon, 15 Aug 2022 19:57:07 +0200
-Message-Id: <20220815180447.417794125@linuxfoundation.org>
+Subject: [PATCH 5.18 0416/1095] net: dsa: felix: build as module when tc-taprio is module
+Date:   Mon, 15 Aug 2022 19:56:55 +0200
+Message-Id: <20220815180446.915381685@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,43 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit a621cc4bed97e49f5a8019f5215dec7e208a7c4d ]
+[ Upstream commit 10ed11ab6399813eb652137db9c378433c28a95c ]
 
-In reset vpu core, driver will wait for a response event,
-but if there are still some events unhandled,
-they will be handled first, driver may acquire core lock for that.
-So if we do reset in core lock, it may led to reset timeout.
+felix_vsc9959.c calls taprio_offload_get() and taprio_offload_free(),
+symbols exported by net/sched/sch_taprio.c. As such, we must disallow
+building the Felix driver as built-in when the symbol exported by
+tc-taprio isn't present in the kernel image.
 
-Fixes: 9f599f351e86a ("media: amphion: add vpu core driver")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 1c9017e44af2 ("net: dsa: felix: keep reference on entire tc-taprio config")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220704190241.1288847-2-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/amphion/vpu_core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/amphion/vpu_core.c b/drivers/media/platform/amphion/vpu_core.c
-index 68ad183925fd..51a764713159 100644
---- a/drivers/media/platform/amphion/vpu_core.c
-+++ b/drivers/media/platform/amphion/vpu_core.c
-@@ -455,8 +455,13 @@ int vpu_inst_unregister(struct vpu_inst *inst)
- 	}
- 	vpu_core_check_hang(core);
- 	if (core->state == VPU_CORE_HANG && !core->instance_mask) {
-+		int err;
-+
- 		dev_info(core->dev, "reset hang core\n");
--		if (!vpu_core_sw_reset(core)) {
-+		mutex_unlock(&core->lock);
-+		err = vpu_core_sw_reset(core);
-+		mutex_lock(&core->lock);
-+		if (!err) {
- 			core->state = VPU_CORE_ACTIVE;
- 			core->hang_mask = 0;
- 		}
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 220b0b027b55..08db9cf76818 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -6,6 +6,7 @@ config NET_DSA_MSCC_FELIX
+ 	depends on NET_VENDOR_FREESCALE
+ 	depends on HAS_IOMEM
+ 	depends on PTP_1588_CLOCK_OPTIONAL
++	depends on NET_SCH_TAPRIO || NET_SCH_TAPRIO=n
+ 	select MSCC_OCELOT_SWITCH_LIB
+ 	select NET_DSA_TAG_OCELOT_8021Q
+ 	select NET_DSA_TAG_OCELOT
 -- 
 2.35.1
 
