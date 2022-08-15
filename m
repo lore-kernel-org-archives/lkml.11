@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9ADC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C223C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243219AbiHOURj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S243408AbiHOURq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346196AbiHOULD (ORCPT
+        with ESMTP id S1346175AbiHOUK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:03 -0400
+        Mon, 15 Aug 2022 16:10:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B57A187;
-        Mon, 15 Aug 2022 11:57:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28635598;
+        Mon, 15 Aug 2022 11:56:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75C2F6123D;
-        Mon, 15 Aug 2022 18:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37B6C433D7;
-        Mon, 15 Aug 2022 18:56:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660589819;
-        bh=K7aRSGfKbZpZCxx9Aa4laIn4DrgTGdCFJK7d2L2MWhU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=DmNDGire7TyGMXUCep8i6GfVnqI3mDcHMZcpL15d5U+6Q4d2SacM+AqkoLR24WJ3T
-         KE//ju1GdArumc4cwAqVQMjWpX4wzH3KoLiGYvk88r3CKo8816FMT05fszVxSg9sjG
-         Ja1oCABuMtf5OfwYE2OTb0wXw312wp3PpWK093stbOWoXBZHUMFGGSBpvD0sxOHMZD
-         TbHWVifQXU9G40UeuozSQMDq1g6qZ1eCgS7azJsKphwdy7isAvYMPUaadtfLjCN1Qh
-         gNAk87lPo+4g7EAkogxkFYzx84Nhz1SgqtfsDRAmkirUQPcR7OabHeW89udXLa9W+V
-         qBt6Q9RNU95Dw==
-Date:   Mon, 15 Aug 2022 13:56:58 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Manyi Li <limanyi@uniontech.com>
-Cc:     bhelgaas@google.com, refactormyself@gmail.com, kw@linux.com,
-        rajatja@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI/ASPM: Should not report ASPM support to BIOS if FADT
- indicates ASPM is unsupported
-Message-ID: <20220815185658.GA1960534@bhelgaas>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 567506125B;
+        Mon, 15 Aug 2022 18:56:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D2BC433D7;
+        Mon, 15 Aug 2022 18:56:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589810;
+        bh=pqBJ1NWS1RN2vBwc3PaPKuwfdOzMrRfU7YsQ6GivFJc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=twz3rajwPB3oZ/nul8KbjYFrlrB4YQ6FuOHzyMnjhar8LSJ4/igoyO0UfrouT64iQ
+         tbnGE2gLotss/ZSuUVEzSohBi6zE7khBXibZvfa5ZVyx6OV7W2e63qb7hyhd+uzBoz
+         tYYJBjMuvCr0/LJUCz7kRNY1f1yqwAR6Ao9xqvIQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hongbo Yin <yinhongbo@bytedance.com>,
+        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
+        Tianci Zhang <zhangtianci.1997@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.18 0055/1095] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
+Date:   Mon, 15 Aug 2022 19:50:54 +0200
+Message-Id: <20220815180431.744923553@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713112612.6935-1-limanyi@uniontech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject line should say what the patch *does*, not what *should*
-happen.
+From: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
 
-On Wed, Jul 13, 2022 at 07:26:12PM +0800, Manyi Li wrote:
-> Startup log of ASUSTeK X456UJ Notebook show:
-> [    0.130563] ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
-> [   48.092472] pcieport 0000:00:1c.5: PCIe Bus Error: severity=Corrected, type=Physical Layer, (Receiver ID)
-> [   48.092479] pcieport 0000:00:1c.5:   device [8086:9d15] error status/mask=00000001/00002000
-> [   48.092481] pcieport 0000:00:1c.5:    [ 0] RxErr
-> [   48.092490] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
-> [   48.092504] pcieport 0000:00:1c.5: AER: can't find device of ID00e5
-> [   48.092506] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
+commit dd524b7f317de8d31d638cbfdc7be4cf9b770e42 upstream.
 
-No need for timestamps in commit log because they're not relevant to
-this issue.  Please use quote style, i.e., blank line before and after
-the quote and indent the quote two spaces:
+Some code paths cannot guarantee the inode have any dentry alias. So
+WARN_ON() all !dentry may flood the kernel logs.
 
-  Startup log of ... shows:
+For example, when an overlayfs inode is watched by inotifywait (1), and
+someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
+at that time if the dentry has been reclaimed by kernel (such as
+echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
+printed call stack would be like:
 
-    ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
-    ...
-    pcieport 0000:00:1c.5: PCIe Bus Error: severity=Corrected, type=Physical Layer, (Receiver ID)
+    ? show_mark_fhandle+0xf0/0xf0
+    show_mark_fhandle+0x4a/0xf0
+    ? show_mark_fhandle+0xf0/0xf0
+    ? seq_vprintf+0x30/0x50
+    ? seq_printf+0x53/0x70
+    ? show_mark_fhandle+0xf0/0xf0
+    inotify_fdinfo+0x70/0x90
+    show_fdinfo.isra.4+0x53/0x70
+    seq_show+0x130/0x170
+    seq_read+0x153/0x440
+    vfs_read+0x94/0x150
+    ksys_read+0x5f/0xe0
+    do_syscall_64+0x59/0x1e0
+    entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Can you please open a report at https://bugzilla.kernel.org and attach
-the complete dmesg log and the complete "sudo lspci -vv" output before
-and after this patch?  Then include the bugzilla URL in the commit
-log.
+So let's drop WARN_ON() to avoid kernel log flooding.
 
-I assume the patch prevents the RxErr from being reported, but I'd
-like to know why, or at least have a plausible explanation of how
-enabling ASPM might lead to a Receiver Error.
+Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
+Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
+Fixes: 8ed5eec9d6c4 ("ovl: encode pure upper file handles")
+Cc: <stable@vger.kernel.org> # v4.16
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/overlayfs/export.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'd also like to know why the "can't find device of ID00e5" happens.
+--- a/fs/overlayfs/export.c
++++ b/fs/overlayfs/export.c
+@@ -259,7 +259,7 @@ static int ovl_encode_fh(struct inode *i
+ 		return FILEID_INVALID;
+ 
+ 	dentry = d_find_any_alias(inode);
+-	if (WARN_ON(!dentry))
++	if (!dentry)
+ 		return FILEID_INVALID;
+ 
+ 	bytes = ovl_dentry_to_fid(ofs, dentry, fid, buflen);
 
-Since it's not obvious from the patch, mention that "reporting ASPM
-support to BIOS" happens via the _OSC Support field.
 
-> Signed-off-by: Manyi Li <limanyi@uniontech.com>
-> ---
->  drivers/pci/pcie/aspm.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> index a96b7424c9bc..b173d3c75ae7 100644
-> --- a/drivers/pci/pcie/aspm.c
-> +++ b/drivers/pci/pcie/aspm.c
-> @@ -1359,6 +1359,7 @@ void pcie_no_aspm(void)
->  	if (!aspm_force) {
->  		aspm_policy = POLICY_DEFAULT;
->  		aspm_disabled = 1;
-> +		aspm_support_enabled = false;
->  	}
->  }
->  
-> -- 
-> 2.20.1
-> 
-> 
-> 
