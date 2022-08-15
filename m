@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 509E1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9399FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244188AbiHOVWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        id S244613AbiHOVXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344479AbiHOVRa (ORCPT
+        with ESMTP id S1344456AbiHOVR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5585725B;
-        Mon, 15 Aug 2022 12:20:42 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C745724D;
+        Mon, 15 Aug 2022 12:20:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC1436009B;
-        Mon, 15 Aug 2022 19:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DD6C433C1;
-        Mon, 15 Aug 2022 19:20:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CEBA5CE12C8;
+        Mon, 15 Aug 2022 19:20:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7892DC433C1;
+        Mon, 15 Aug 2022 19:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591241;
-        bh=W8tKKp3uQ7QzLlBkW/w8MCeuiMzfHsJzpzwh8y5v5xk=;
+        s=korg; t=1660591238;
+        bh=2AIfHgwfeBKdGos6JvHSPfX/PD5vFVUIM0rHUicTW30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vfb3fZPYhRHw0YFxIHp6gjnEjTPZabG2TcaKZqwKzt7I8NGkAEW5LaoUbQ4ii5BvO
-         JPsGlD9r82B9HpItyvbMdNjfoQVF1JwRBXSDO+cem2/M9IlnAqtHqrw19LHw9i7bt8
-         xWImAGlb2Mtqpnkmv/JxJVY76zHZ+ZzIORfdJXhY=
+        b=bnKuzD7F04uozYGDNJCVKa5cqu09nGg1XSyI+/+Kyy0HFZPaJzZVWdTlxNQk43krF
+         TbntEMD+iLD7n4TmhUyQpSMAU7DegdQvLsFkVJQ5ULUhlnY047hjTuuK9xoD1l4aSW
+         gnzzmOnI2PHjVxKwaRk8GSWw0oySSrDyCk97zv/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Zhengping Jiang <jiangzp@google.com>,
+        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0499/1095] Bluetooth: hci_sync: Fix not updating privacy_mode
-Date:   Mon, 15 Aug 2022 19:58:18 +0200
-Message-Id: <20220815180450.170806979@linuxfoundation.org>
+Subject: [PATCH 5.18 0516/1095] net/mlx5e: Modify slow path rules to go to slow fdb
+Date:   Mon, 15 Aug 2022 19:58:35 +0200
+Message-Id: <20220815180450.888719957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,37 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-[ Upstream commit 0900b1c62f43e495d04ca4bebdf80b34f3c12432 ]
+[ Upstream commit c0063a43700fa8c98cac2637aa1afcf40bb9e403 ]
 
-When programming a new entry into the resolving list it shall default
-to network mode since the params may contain the mode programmed when
-the device was last added to the resolving list.
+While extending available range of supported chains/prios referenced commit
+also modified slow path rules to go to FT chain instead of actual slow FDB.
+However neither of existing users of the MLX5_ATTR_FLAG_SLOW_PATH
+flag (tunnel encap entries with invalid encap and flows with trap action)
+need to match on FT chain. After bridge offload was implemented packets of
+such flows can also be matched by bridge priority tables which is
+undesirable. Restore slow path flows implementation to redirect packets to
+slow_fdb.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=209745
-Fixes: 853b70b506a20 ("Bluetooth: hci_sync: Set Privacy Mode when updating the resolving list")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Tested-by: Zhengping Jiang <jiangzp@google.com>
+Fixes: 278d51f24330 ("net/mlx5: E-Switch, Increase number of chains and priorities")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 23 ++++++++++++++-----
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 99ef15167a81..6f901398132e 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -1612,6 +1612,9 @@ static int hci_le_add_resolve_list_sync(struct hci_dev *hdev,
- 	bacpy(&cp.bdaddr, &params->addr);
- 	memcpy(cp.peer_irk, irk->val, 16);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 796d97bcf1aa..c6546613f7d8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -230,10 +230,8 @@ esw_setup_ft_dest(struct mlx5_flow_destination *dest,
+ }
  
-+	/* Default privacy mode is always Network */
-+	params->privacy_mode = HCI_NETWORK_PRIVACY;
+ static void
+-esw_setup_slow_path_dest(struct mlx5_flow_destination *dest,
+-			 struct mlx5_flow_act *flow_act,
+-			 struct mlx5_fs_chains *chains,
+-			 int i)
++esw_setup_accept_dest(struct mlx5_flow_destination *dest, struct mlx5_flow_act *flow_act,
++		      struct mlx5_fs_chains *chains, int i)
+ {
+ 	if (mlx5_chains_ignore_flow_level_supported(chains))
+ 		flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+@@ -241,6 +239,16 @@ esw_setup_slow_path_dest(struct mlx5_flow_destination *dest,
+ 	dest[i].ft = mlx5_chains_get_tc_end_ft(chains);
+ }
+ 
++static void
++esw_setup_slow_path_dest(struct mlx5_flow_destination *dest, struct mlx5_flow_act *flow_act,
++			 struct mlx5_eswitch *esw, int i)
++{
++	if (MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, ignore_flow_level))
++		flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
++	dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
++	dest[i].ft = esw->fdb_table.offloads.slow_fdb;
++}
 +
- done:
- 	if (hci_dev_test_flag(hdev, HCI_PRIVACY))
- 		memcpy(cp.local_irk, hdev->irk, 16);
+ static int
+ esw_setup_chain_dest(struct mlx5_flow_destination *dest,
+ 		     struct mlx5_flow_act *flow_act,
+@@ -473,8 +481,11 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
+ 	} else if (attr->dest_ft) {
+ 		esw_setup_ft_dest(dest, flow_act, esw, attr, spec, *i);
+ 		(*i)++;
+-	} else if (mlx5e_tc_attr_flags_skip(attr->flags)) {
+-		esw_setup_slow_path_dest(dest, flow_act, chains, *i);
++	} else if (attr->flags & MLX5_ATTR_FLAG_SLOW_PATH) {
++		esw_setup_slow_path_dest(dest, flow_act, esw, *i);
++		(*i)++;
++	} else if (attr->flags & MLX5_ATTR_FLAG_ACCEPT) {
++		esw_setup_accept_dest(dest, flow_act, chains, *i);
+ 		(*i)++;
+ 	} else if (attr->dest_chain) {
+ 		err = esw_setup_chain_dest(dest, flow_act, chains, attr->dest_chain,
 -- 
 2.35.1
 
