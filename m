@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27551C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C642C2BB47
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355801AbiHPABj (ORCPT
+        id S1355847AbiHPABm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60088 "EHLO
+        Mon, 15 Aug 2022 20:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356178AbiHOXxx (ORCPT
+        with ESMTP id S1356222AbiHOXx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:53:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0526315E687;
-        Mon, 15 Aug 2022 13:18:37 -0700 (PDT)
+        Mon, 15 Aug 2022 19:53:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860EBC6B75;
+        Mon, 15 Aug 2022 13:18:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A10560DEB;
-        Mon, 15 Aug 2022 20:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F18BC433D6;
-        Mon, 15 Aug 2022 20:18:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73338B8115B;
+        Mon, 15 Aug 2022 20:18:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A5B1C433B5;
+        Mon, 15 Aug 2022 20:18:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594708;
-        bh=vYKQ+tCX8WDdMfseVHQsF3kvwn3B0p/f7dOk+AcTaPc=;
+        s=korg; t=1660594727;
+        bh=GOWshVnBwy6EwloCgplMH55chcLT2EZdBYc4L1saBCk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xIuxXP8nrRoJp8fM4ZbaGCpwKezvp2yOKlEVMMLQYq4flE1PMeWW11XDrTtR/iFbA
-         aaSOJKOCYUNgW5hLoXUS1iHtipX32S/Gmuy5UPlwcUM9wmSgM+JftmUWMlGqi0Rr0J
-         C+M61JecViA5zmRbueycpucLaUtQ2xrC2+GMWaIs=
+        b=sipzF46aevEhSKQYq1VcwZlzXl3Zzdr1TAvM8l4+3z3UYiSHvxlE5PKqQYpzQzir+
+         kAnYxRFitke8LEVqV28iHz5YV1HdHDp7OmrWLBFJZr4tFws9hZwamCD/lHU83nwk/H
+         //bZnGcdPsR76OwVLQciGf6GGL6pVC4Lf7AVRWeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0533/1157] i2c: cadence: Support PEC for SMBus block read
-Date:   Mon, 15 Aug 2022 19:58:09 +0200
-Message-Id: <20220815180500.971049898@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0539/1157] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
+Date:   Mon, 15 Aug 2022 19:58:15 +0200
+Message-Id: <20220815180501.225104355@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,75 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 9fdf6d97f03035ad5298e2d1635036c74c2090ed ]
+[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
 
-SMBus packet error checking (PEC) is implemented by appending one
-additional byte of checksum data at the end of the message. This provides
-additional protection and allows to detect data corruption on the I2C bus.
+In i2c_mux_probe(), we should call of_node_put() when breaking out
+of for_each_child_of_node() which will automatically increase and
+decrease the refcount.
 
-SMBus block reads support variable length reads. The first byte in the read
-message is the number of available data bytes.
-
-The combination of PEC and block read is currently not supported by the
-Cadence I2C driver.
- * When PEC is enabled the maximum transfer length for block reads
-   increases from 33 to 34 bytes.
- * The I2C core smbus emulation layer relies on the driver updating the
-   `i2c_msg` `len` field with the number of received bytes. The updated
-   length is used when checking the PEC.
-
-Add support to the Cadence I2C driver for handling SMBus block reads with
-PEC. To determine the maximum transfer length uses the initial `len` value
-of the `i2c_msg`. When PEC is enabled this will be 2, when it is disabled
-it will be 1.
-
-Once a read transfer is done also increment the `len` field by the amount
-of received data bytes.
-
-This change has been tested with a UCM90320 PMBus power monitor, which
-requires block reads to access certain data fields, but also has PEC
-enabled by default.
-
-Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Tested-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
+Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Peter Rosin <peda@axentia.se>
 Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 630cfa4ddd46..33f5588a50c0 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -573,8 +573,13 @@ static void cdns_i2c_mrecv(struct cdns_i2c *id)
- 	ctrl_reg = cdns_i2c_readreg(CDNS_I2C_CR_OFFSET);
- 	ctrl_reg |= CDNS_I2C_CR_RW | CDNS_I2C_CR_CLR_FIFO;
- 
-+	/*
-+	 * Receive up to I2C_SMBUS_BLOCK_MAX data bytes, plus one message length
-+	 * byte, plus one checksum byte if PEC is enabled. p_msg->len will be 2 if
-+	 * PEC is enabled, otherwise 1.
-+	 */
- 	if (id->p_msg->flags & I2C_M_RECV_LEN)
--		id->recv_count = I2C_SMBUS_BLOCK_MAX + 1;
-+		id->recv_count = I2C_SMBUS_BLOCK_MAX + id->p_msg->len;
- 
- 	id->curr_recv_count = id->recv_count;
- 
-@@ -789,6 +794,9 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	if (id->err_status & CDNS_I2C_IXR_ARB_LOST)
- 		return -EAGAIN;
- 
-+	if (msg->flags & I2C_M_RECV_LEN)
-+		msg->len += min_t(unsigned int, msg->buf[0], I2C_SMBUS_BLOCK_MAX);
-+
+diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
+index d3acd8d66c32..33024acaac02 100644
+--- a/drivers/i2c/muxes/i2c-mux-gpmux.c
++++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
+@@ -134,6 +134,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
  	return 0;
- }
  
+ err_children:
++	of_node_put(child);
+ 	i2c_mux_del_adapters(muxc);
+ err_parent:
+ 	i2c_put_adapter(parent);
 -- 
 2.35.1
 
