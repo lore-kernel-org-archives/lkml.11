@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C77C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAB0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352063AbiHOWwh (ORCPT
+        id S1352077AbiHOWwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        Mon, 15 Aug 2022 18:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352131AbiHOWu5 (ORCPT
+        with ESMTP id S1352208AbiHOWvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:50:57 -0400
+        Mon, 15 Aug 2022 18:51:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1BD13790B;
-        Mon, 15 Aug 2022 12:54:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7C4137927;
+        Mon, 15 Aug 2022 12:54:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB00FB80EB1;
-        Mon, 15 Aug 2022 19:54:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D60C7C433C1;
-        Mon, 15 Aug 2022 19:53:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4015B8114A;
+        Mon, 15 Aug 2022 19:54:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20844C433D6;
+        Mon, 15 Aug 2022 19:54:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593240;
-        bh=+5i3Ku8ynmuTRvV2CSEcO5qjFU81rtcPqBZQ8aw0a6o=;
+        s=korg; t=1660593243;
+        bh=LxLBhQg37nYyCKF7FOM1vntAWlZt+MmydoeTWUDvHYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tyshf22hQDUt7az4ejbPceFhmkoTyCGb+ibG+er91cwT9qEorcX2gyimiD4SzVlLx
-         NtjI6PzVQlpaqIYPZK6daVYfEMUThzmycwLHeByHiysSYRKkOc8jEryCo9Kbtml3Ej
-         6uyBp6ENqiN8ANXiUmP7Ryd2FMTrqPmLzAzUhUQI=
+        b=sTM+3xNotAVv0jf00RtMCC+BZqpSrHiwcHnKylKVdXeCfbtVMQ8HMdJFZsHLA8ZU8
+         jYHf8DlKivt3taDQGI20bHRLY1M7wV7hlWFnZggxExZBJYLRJD3vvb7m6qnem6DYZk
+         tbw1aq4O35RhPI2DHlRjv+gTWHPt/XWD4IbAUiiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0916/1095] powerpc/32s: Fix boot failure with KASAN + SMP + JUMP_LABEL_FEATURE_CHECK_DEBUG
-Date:   Mon, 15 Aug 2022 20:05:15 +0200
-Message-Id: <20220815180507.174163072@linuxfoundation.org>
+Subject: [PATCH 5.19 0235/1157] arm64: dts: renesas: r8a779m8: Drop operating points above 1.5 GHz
+Date:   Mon, 15 Aug 2022 19:53:11 +0200
+Message-Id: <20220815180448.971064403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 6042a1652d643d1d34fa89bb314cb102960c0800 ]
+[ Upstream commit f48cb21a28c07d0754d5f2f85444cfb0e7b1fd05 ]
 
-Since commit 4291d085b0b0 ("powerpc/32s: Make pte_update() non
-atomic on 603 core"), pte_update() has been using
-mmu_has_feature(MMU_FTR_HPTE_TABLE) to avoid a useless atomic
-operation on 603 cores.
+The highest-performance mode for the Cortex-A57 CPU cores supported on
+R-Car H3Ne (R8A779M8) is the Power Optimized (1.5 GHz) mode.  The Normal
+(1.6 GHz) and High Performance (1.7 GHz) modes are not supported.
 
-When kasan_early_init() sets up the early zero shadow, it uses
-__set_pte_at(). On book3s/32, __set_pte_at() calls pte_update()
-when CONFIG_SMP is selected in order to ensure the preservation of
-_PAGE_HASHPTE in case of concurrent update of the PTE. But that's
-too early for mmu_has_feature(), so when
-CONFIG_JUMP_LABEL_FEATURE_CHECK_DEBUG is selected, mmu_has_feature()
-calls printk(). That's too early to call printk() because KASAN
-early zero shadow page is not set up yet. It leads to a deadlock.
+Hence drop the "turbo-mode" entries from the operating points table
+inherited from r8a77951.dtsi.
 
-However, when kasan_early_init() is called, there is only one CPU
-running and no risk of concurrent PTE update. So __set_pte_at() can
-be called with the 'percpu' flag. With that flag set, the PTE is
-written directly instead of being written via pte_update().
-
-Fixes: 4291d085b0b0 ("powerpc/32s: Make pte_update() non atomic on 603 core")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/2ee707512b8b212b079b877f4ceb525a1606a3fb.1656655567.git.christophe.leroy@csgroup.eu
+Fixes: 6e87525d751fac57 ("arm64: dts: renesas: Add Renesas R8A779M8 SoC support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/aeb4530f7fbac8329b334dcb169382c836a5f32d.1655458564.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/kasan/kasan_init_32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/renesas/r8a779m8.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/powerpc/mm/kasan/kasan_init_32.c b/arch/powerpc/mm/kasan/kasan_init_32.c
-index f3e4d069e0ba..a70828a6d935 100644
---- a/arch/powerpc/mm/kasan/kasan_init_32.c
-+++ b/arch/powerpc/mm/kasan/kasan_init_32.c
-@@ -25,7 +25,7 @@ static void __init kasan_populate_pte(pte_t *ptep, pgprot_t prot)
- 	int i;
- 
- 	for (i = 0; i < PTRS_PER_PTE; i++, ptep++)
--		__set_pte_at(&init_mm, va, ptep, pfn_pte(PHYS_PFN(pa), prot), 0);
-+		__set_pte_at(&init_mm, va, ptep, pfn_pte(PHYS_PFN(pa), prot), 1);
- }
- 
- int __init kasan_init_shadow_page_tables(unsigned long k_start, unsigned long k_end)
+diff --git a/arch/arm64/boot/dts/renesas/r8a779m8.dtsi b/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
+index 752440b0c40f..750bd8ccdb7f 100644
+--- a/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a779m8.dtsi
+@@ -10,3 +10,8 @@
+ / {
+ 	compatible = "renesas,r8a779m8", "renesas,r8a7795";
+ };
++
++&cluster0_opp {
++	/delete-node/ opp-1600000000;
++	/delete-node/ opp-1700000000;
++};
 -- 
 2.35.1
 
