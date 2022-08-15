@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7123C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C58C2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346536AbiHOUlk (ORCPT
+        id S1346817AbiHOUmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
+        Mon, 15 Aug 2022 16:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345149AbiHOUfT (ORCPT
+        with ESMTP id S1345187AbiHOUhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:35:19 -0400
+        Mon, 15 Aug 2022 16:37:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFE3371A9;
-        Mon, 15 Aug 2022 12:06:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2375BABF12;
+        Mon, 15 Aug 2022 12:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91CBCB81104;
-        Mon, 15 Aug 2022 19:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC26DC433C1;
-        Mon, 15 Aug 2022 19:06:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43314B81062;
+        Mon, 15 Aug 2022 19:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96231C433D6;
+        Mon, 15 Aug 2022 19:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590384;
-        bh=CBgb56HFKBmdWIWJ/wiKMtuMrogElOROawwgv/vqOZY=;
+        s=korg; t=1660590418;
+        bh=4u9rt+QdDkILcLD1KYvH6bN5uEpsuSs4RqAANrQI8zM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yWJbzjvrDSJcqTgOPu/wmgfy2ksplL9vrknXwdakFAHj8hL/Yl/GHBs2UBGxcIHW7
-         OxJybGhwsLchzn9cxLoVCtqn6r2xmFT11nGqS1jzDuV9VuzXGo3kOLOgV6/a8SIyBT
-         kYPrXAVIhZtdnTs+c4quu0M830kxvx/7lDrXU21k=
+        b=m7eAMUjg5Goi/srgmpbrriyx7zf8GRcifBibL1xwp/RBcHJU68XlokQOQ3yBE5DZ0
+         OhPD8kcp5dLR2i9cZQxEGMkfomO3yPdoBY3FfFLwp6YvUSyCNQNuFck40/DUDZOrTM
+         oSUMhpuwzLeMyLx51arUZpbJxUKRf71Hc9+ON9HY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Chanho Park <chanho61.park@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0243/1095] ia64: fix typos in comments
-Date:   Mon, 15 Aug 2022 19:54:02 +0200
-Message-Id: <20220815180439.831224468@linuxfoundation.org>
+Subject: [PATCH 5.18 0253/1095] arm64: dts: exynosautov9: correct spi11 pin names
+Date:   Mon, 15 Aug 2022 19:54:12 +0200
+Message-Id: <20220815180440.211407251@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,85 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@inria.fr>
+From: Chanho Park <chanho61.park@samsung.com>
 
-[ Upstream commit 0af96a024f524a5318485cbada73ab7d874895d4 ]
+[ Upstream commit ba205449828f47f80532a1453beef5eed2982176 ]
 
-Various spelling mistakes in comments.
-Detected with the help of Coccinelle.
+They should be started with "gpp5-".
 
-Link: https://lkml.kernel.org/r/20220318103729.157574-1-Julia.Lawall@inria.fr
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 31bbac5263aa ("arm64: dts: exynos: add initial support for exynosautov9 SoC")
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220627005832.8709-1-chanho61.park@samsung.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/ia64/kernel/palinfo.c | 2 +-
- arch/ia64/kernel/traps.c   | 2 +-
- arch/ia64/mm/init.c        | 2 +-
- arch/ia64/mm/tlb.c         | 4 ++--
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/ia64/kernel/palinfo.c b/arch/ia64/kernel/palinfo.c
-index 64189f04c1a4..b9ae093bfe37 100644
---- a/arch/ia64/kernel/palinfo.c
-+++ b/arch/ia64/kernel/palinfo.c
-@@ -120,7 +120,7 @@ static const char *mem_attrib[]={
-  * Input:
-  *	- a pointer to a buffer to hold the string
-  *	- a 64-bit vector
-- * Ouput:
-+ * Output:
-  *	- a pointer to the end of the buffer
-  *
-  */
-diff --git a/arch/ia64/kernel/traps.c b/arch/ia64/kernel/traps.c
-index 753642366e12..53735b1d1be3 100644
---- a/arch/ia64/kernel/traps.c
-+++ b/arch/ia64/kernel/traps.c
-@@ -309,7 +309,7 @@ handle_fpu_swa (int fp_fault, struct pt_regs *regs, unsigned long isr)
- 			/*
- 			 * Lower 4 bits are used as a count. Upper bits are a sequence
- 			 * number that is updated when count is reset. The cmpxchg will
--			 * fail is seqno has changed. This minimizes mutiple cpus
-+			 * fail is seqno has changed. This minimizes multiple cpus
- 			 * resetting the count.
- 			 */
- 			if (current_jiffies > last.time)
-diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
-index 5d165607bf35..7ae1244ed8ec 100644
---- a/arch/ia64/mm/init.c
-+++ b/arch/ia64/mm/init.c
-@@ -451,7 +451,7 @@ mem_init (void)
- 	memblock_free_all();
+diff --git a/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
+index ef0349d1c3d0..68f4a0fae7cf 100644
+--- a/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
+@@ -1089,21 +1089,21 @@ spi10_cs_func: spi10-cs-func-pins {
  
- 	/*
--	 * For fsyscall entrpoints with no light-weight handler, use the ordinary
-+	 * For fsyscall entrypoints with no light-weight handler, use the ordinary
- 	 * (heavy-weight) handler, but mark it by setting bit 0, so the fsyscall entry
- 	 * code can tell them apart.
- 	 */
-diff --git a/arch/ia64/mm/tlb.c b/arch/ia64/mm/tlb.c
-index 135b5135cace..ca060e7a2a46 100644
---- a/arch/ia64/mm/tlb.c
-+++ b/arch/ia64/mm/tlb.c
-@@ -174,7 +174,7 @@ __setup("nptcg=", set_nptcg);
-  * override table (in which case we should ignore the value from
-  * PAL_VM_SUMMARY).
-  *
-- * Kernel parameter "nptcg=" overrides maximum number of simultanesous ptc.g
-+ * Kernel parameter "nptcg=" overrides maximum number of simultaneous ptc.g
-  * purges defined in either PAL_VM_SUMMARY or PAL override table. In this case,
-  * we should ignore the value from either PAL_VM_SUMMARY or PAL override table.
-  *
-@@ -516,7 +516,7 @@ int ia64_itr_entry(u64 target_mask, u64 va, u64 pte, u64 log_size)
- 	if (i >= per_cpu(ia64_tr_num, cpu))
- 		return -EBUSY;
+ 	/* PERIC1 USI11_SPI */
+ 	spi11_bus: spi11-pins {
+-		samsung,pins = "gpp3-6", "gpp3-5", "gpp3-4";
++		samsung,pins = "gpp5-6", "gpp5-5", "gpp5-4";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+ 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
+ 	};
  
--	/*Record tr info for mca hander use!*/
-+	/*Record tr info for mca handler use!*/
- 	if (i > per_cpu(ia64_tr_used, cpu))
- 		per_cpu(ia64_tr_used, cpu) = i;
+ 	spi11_cs: spi11-cs-pins {
+-		samsung,pins = "gpp3-7";
++		samsung,pins = "gpp5-7";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+ 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
+ 	};
  
+ 	spi11_cs_func: spi11-cs-func-pins {
+-		samsung,pins = "gpp3-7";
++		samsung,pins = "gpp5-7";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+ 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
 -- 
 2.35.1
 
