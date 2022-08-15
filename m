@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE1CC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71711C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbiHPEtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59698 "EHLO
+        id S232381AbiHPEtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbiHPEpn (ORCPT
+        with ESMTP id S232674AbiHPEpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:45:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9669EAEDAC;
-        Mon, 15 Aug 2022 13:42:33 -0700 (PDT)
+        Tue, 16 Aug 2022 00:45:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6F5AF0D9;
+        Mon, 15 Aug 2022 13:42:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 324626122B;
-        Mon, 15 Aug 2022 20:42:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266B3C433D6;
-        Mon, 15 Aug 2022 20:42:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20098B80EAD;
+        Mon, 15 Aug 2022 20:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694BFC433C1;
+        Mon, 15 Aug 2022 20:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596152;
-        bh=vo0TAGeRPJNhuCFG7rNuv/V9pYpe7Wt0kisbfUGzm10=;
+        s=korg; t=1660596155;
+        bh=1nxUEJqdGrmDbqMzj+vb/mQeqj5KZSqrH9pIU4WSL2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HUDO7eswnmuQQt8NGRcqJfaA3ODJw3o47JXDZFW1Rbx+mUz6/TJpGX3KVgBSzhqtT
-         ySYinR7J6pCzLDUYV0EV+dkUwqKQ5dLfgNfdBTZbt/HF/GfspBLitXGAhmNYq9S1ik
-         8FFwyrme9XHO2vTXvmhA9TBCHHbvcqQh7onKADsU=
+        b=UUWrEzwLcSz8QKeA3xG+KWWkXTXzLhxcBFwOGIeIVydEuX9xt/2cQbpVUBbPYXvYJ
+         hBEdNWuQbA2Z3iUPEoMvr4JaLLwnLOMwbtFbXylgLx15rRkjzm3dTx4u8GjUWFELtZ
+         uLnAXh9t714vYLac9LgJteRFpcNIlT3cNDx5riuM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0990/1157] video: fbdev: amba-clcd: Fix refcount leak bugs
-Date:   Mon, 15 Aug 2022 20:05:46 +0200
-Message-Id: <20220815180519.322641360@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        kvm@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0973/1157] perf tools: Fix dso_id inode generation comparison
+Date:   Mon, 15 Aug 2022 20:05:29 +0200
+Message-Id: <20220815180518.640417587@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,76 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 26c2b7d9fac42eb8317f3ceefa4c1a9a9170ca69 ]
+[ Upstream commit 68566a7cf56bf3148797c218ed45a9de078ef47c ]
 
-In clcdfb_of_init_display(), we should call of_node_put() for the
-references returned by of_graph_get_next_endpoint() and
-of_graph_get_remote_port_parent() which have increased the refcount.
+Synthesized MMAP events have zero ino_generation, so do not compare
+them to DSOs with a real ino_generation otherwise we end up with a DSO
+without a build id.
 
-Besides, we should call of_node_put() both in fail path or when
-the references are not used anymore.
-
-Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 0e3149f86b99ddab ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: kvm@vger.kernel.org
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220711093218.10967-2-adrian.hunter@intel.com
+[ Added clarification to the comment from Ian + more detailed explanation from Adrian ]
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/amba-clcd.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ tools/perf/util/dsos.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
-index 8080116aea84..f65c96d1394d 100644
---- a/drivers/video/fbdev/amba-clcd.c
-+++ b/drivers/video/fbdev/amba-clcd.c
-@@ -698,16 +698,18 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
- 		return -ENODEV;
+diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
+index b97366f77bbf..2bd23e4cf19e 100644
+--- a/tools/perf/util/dsos.c
++++ b/tools/perf/util/dsos.c
+@@ -23,8 +23,19 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
+ 	if (a->ino > b->ino) return -1;
+ 	if (a->ino < b->ino) return 1;
  
- 	panel = of_graph_get_remote_port_parent(endpoint);
--	if (!panel)
--		return -ENODEV;
-+	if (!panel) {
-+		err = -ENODEV;
-+		goto out_endpoint_put;
+-	if (a->ino_generation > b->ino_generation) return -1;
+-	if (a->ino_generation < b->ino_generation) return 1;
++	/*
++	 * Synthesized MMAP events have zero ino_generation, avoid comparing
++	 * them with MMAP events with actual ino_generation.
++	 *
++	 * I found it harmful because the mismatch resulted in a new
++	 * dso that did not have a build ID whereas the original dso did have a
++	 * build ID. The build ID was essential because the object was not found
++	 * otherwise. - Adrian
++	 */
++	if (a->ino_generation && b->ino_generation) {
++		if (a->ino_generation > b->ino_generation) return -1;
++		if (a->ino_generation < b->ino_generation) return 1;
 +	}
  
- 	err = clcdfb_of_get_backlight(&fb->dev->dev, fb->panel);
- 	if (err)
--		return err;
-+		goto out_panel_put;
- 
- 	err = clcdfb_of_get_mode(&fb->dev->dev, panel, fb->panel);
- 	if (err)
--		return err;
-+		goto out_panel_put;
- 
- 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
- 			&max_bandwidth);
-@@ -736,11 +738,21 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
- 
- 	if (of_property_read_u32_array(endpoint,
- 			"arm,pl11x,tft-r0g0b0-pads",
--			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0)
--		return -ENOENT;
-+			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0) {
-+		err = -ENOENT;
-+		goto out_panel_put;
-+	}
-+
-+	of_node_put(panel);
-+	of_node_put(endpoint);
- 
- 	return clcdfb_of_init_tft_panel(fb, tft_r0b0g0[0],
- 					tft_r0b0g0[1],  tft_r0b0g0[2]);
-+out_panel_put:
-+	of_node_put(panel);
-+out_endpoint_put:
-+	of_node_put(endpoint);
-+	return err;
+ 	return 0;
  }
- 
- static int clcdfb_of_vram_setup(struct clcd_fb *fb)
 -- 
 2.35.1
 
