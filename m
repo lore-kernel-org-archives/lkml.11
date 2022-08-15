@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1FFC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA23C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244816AbiHOTXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
+        id S245420AbiHOTX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344221AbiHOTUq (ORCPT
+        with ESMTP id S1344259AbiHOTUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:20:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D051759264;
-        Mon, 15 Aug 2022 11:40:03 -0700 (PDT)
+        Mon, 15 Aug 2022 15:20:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C169E59272;
+        Mon, 15 Aug 2022 11:40:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF3E9B81085;
-        Mon, 15 Aug 2022 18:40:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EAEAC433C1;
-        Mon, 15 Aug 2022 18:39:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D40D611C0;
+        Mon, 15 Aug 2022 18:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55B6AC433C1;
+        Mon, 15 Aug 2022 18:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588800;
-        bh=O4SfQ5D1AyxFTpjpSClFOyGOYUOzakR3Z6tmmpcgcDA=;
+        s=korg; t=1660588803;
+        bh=AcJrX1xUykEM0PUZFgTpse9dGF07x7CuOQftmr59ePw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L5nHUFxIGKThQNMn4Fdn1twwlH0yeNhOFoeMqQ6pqf3GVxgEjYSFQvFnEJy7uXhbB
-         jJRgTmO0DLd8rRRh6ntxxE9XwzIJtukaDFppT5gKjwtrbylWmZLcCJVmBiEFyEzr9O
-         KsTYTflxyrdOTjK/Axq29ctq8xNH/i96ciOE+x+8=
+        b=dXS6ic29dQJ7WOsGdnlgqqaxbXrhr107upUiwAYAWyV92ryyzFE6+SvzXf6YUcvdY
+         GGbypMxF6ITL0KKAqTktFFGo6wBExa6kxPRpcqcH1BITXMzonG9xf6Wps8tdjuKT48
+         O0sOR61UtmasABEkw5FDgdHnl7bmx5qLVhnTsoIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 491/779] usb: aspeed-vhub: Fix refcount leak bug in ast_vhub_init_desc()
-Date:   Mon, 15 Aug 2022 20:02:15 +0200
-Message-Id: <20220815180358.252561345@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 518/779] HID: mcp2221: prevent a buffer overflow in mcp_smbus_write()
+Date:   Mon, 15 Aug 2022 20:02:42 +0200
+Message-Id: <20220815180359.400204781@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,38 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit 220fafb4ed04187e9c17be4152da5a7f2ffbdd8c ]
+[ Upstream commit 62ac2473553a00229e67bdf3cb023b62cf7f5a9a ]
 
-We should call of_node_put() for the reference returned by
-of_get_child_by_name() which has increased the refcount.
+Smatch Warning:
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy()
+'&mcp->txbuf[5]' too small (59 vs 255)
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy() 'buf'
+too small (34 vs 255)
 
-Fixes: 30d2617fd7ed ("usb: gadget: aspeed: allow to set usb strings in device tree")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220713120528.368168-1-windhl@126.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The 'len' variable can take a value between 0-255 as it can come from
+data->block[0] and it is user data. So add an bound check to prevent a
+buffer overflow in memcpy().
+
+Fixes: 67a95c21463d ("HID: mcp2221: add usb to i2c-smbus host bridge")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/aspeed-vhub/hub.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/hid/hid-mcp2221.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/usb/gadget/udc/aspeed-vhub/hub.c b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
-index b9960fdd8a51..16a12d2d492e 100644
---- a/drivers/usb/gadget/udc/aspeed-vhub/hub.c
-+++ b/drivers/usb/gadget/udc/aspeed-vhub/hub.c
-@@ -1028,8 +1028,10 @@ static int ast_vhub_init_desc(struct ast_vhub *vhub)
- 	/* Initialize vhub String Descriptors. */
- 	INIT_LIST_HEAD(&vhub->vhub_str_desc);
- 	desc_np = of_get_child_by_name(vhub_np, "vhub-strings");
--	if (desc_np)
-+	if (desc_np) {
- 		ret = ast_vhub_of_parse_str_desc(vhub, desc_np);
-+		of_node_put(desc_np);
-+	}
- 	else
- 		ret = ast_vhub_str_alloc_add(vhub, &ast_vhub_strings);
- 
+diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
+index 4211b9839209..de52e9f7bb8c 100644
+--- a/drivers/hid/hid-mcp2221.c
++++ b/drivers/hid/hid-mcp2221.c
+@@ -385,6 +385,9 @@ static int mcp_smbus_write(struct mcp2221 *mcp, u16 addr,
+ 		data_len = 7;
+ 		break;
+ 	default:
++		if (len > I2C_SMBUS_BLOCK_MAX)
++			return -EINVAL;
++
+ 		memcpy(&mcp->txbuf[5], buf, len);
+ 		data_len = len + 5;
+ 	}
 -- 
 2.35.1
 
