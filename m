@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0F3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3619EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244937AbiHOTAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        id S244611AbiHOTAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245070AbiHOS4h (ORCPT
+        with ESMTP id S245061AbiHOS4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:56:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F501326C8;
-        Mon, 15 Aug 2022 11:31:28 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215202CC81;
+        Mon, 15 Aug 2022 11:31:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF0AD61029;
-        Mon, 15 Aug 2022 18:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A430DC433C1;
-        Mon, 15 Aug 2022 18:31:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93D1ACE125C;
+        Mon, 15 Aug 2022 18:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F6BC433C1;
+        Mon, 15 Aug 2022 18:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588287;
-        bh=SUa8h2m6mypWO7doBPbdoMm7YnhVBnsmn1EZLZBxgRA=;
+        s=korg; t=1660588284;
+        bh=b7hS5d454oaulv4KcfZU56i0AKfffymxFdCbBxiLZoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I5qyrZFftOzc6uhPh/wTRdMFU7lVeHg9rgn1j6KvzfbY4eOWSciZZQmogc3eBoeRr
-         WKE99Prz9gN0+OFA6gvhXUE8YCKmGFrUxTLdLn15Ud4NRoIAggp54GHEKwme9Oq2De
-         xIOf3QdGOkAckB16JfcxUlFEmssNdcd1deEdU9BI=
+        b=eU4IN1OcGYH02YASoYAXQwyUJekauG2bXCkWVNOesIEtGMNWogtmHrg9cC27h+kRS
+         KpeKIzX9CqCcpSGJ6hPBwG4yHPAzbfiauHdLP5X682HfsdSBE7aSl6UpOtPtU/LZyK
+         0AXfJwPvRbG8NHJG4E8YXrtYsFo61slEmocHx3d0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 353/779] can: sja1000: do not report txerr and rxerr during bus-off
-Date:   Mon, 15 Aug 2022 19:59:57 +0200
-Message-Id: <20220815180352.335672612@linuxfoundation.org>
+        stable@vger.kernel.org, Gergo Koteles <soyer@irl.hu>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 326/779] mt76: mt76x02u: fix possible memory leak in __mt76x02u_mcu_send_msg
+Date:   Mon, 15 Aug 2022 19:59:30 +0200
+Message-Id: <20220815180351.223926042@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,47 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
+[ Upstream commit cffd93411575afd987788e2ec3cb8eaff70f0215 ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+Free the skb if mt76u_bulk_msg fails in __mt76x02u_mcu_send_msg routine.
 
-Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
-Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 4c89ff2c74e39 ("mt76: split __mt76u_mcu_send_msg and mt76u_mcu_send_msg routines")
+Co-developed-by: Gergo Koteles <soyer@irl.hu>
+Signed-off-by: Gergo Koteles <soyer@irl.hu>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 3fad54646746..aae2677e24f9 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -404,9 +404,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 	txerr = priv->read_reg(priv, SJA1000_TXERR);
- 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
+index 2953df7d8388..c6c16fe8ee85 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
+@@ -108,7 +108,7 @@ __mt76x02u_mcu_send_msg(struct mt76_dev *dev, struct sk_buff *skb,
+ 	ret = mt76u_bulk_msg(dev, skb->data, skb->len, NULL, 500,
+ 			     MT_EP_OUT_INBAND_CMD);
+ 	if (ret)
+-		return ret;
++		goto out;
  
--	cf->data[6] = txerr;
--	cf->data[7] = rxerr;
--
- 	if (isrc & IRQ_DOI) {
- 		/* data overrun interrupt */
- 		netdev_dbg(dev, "data overrun interrupt\n");
-@@ -428,6 +425,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 		else
- 			state = CAN_STATE_ERROR_ACTIVE;
- 	}
-+	if (state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
-+	}
- 	if (isrc & IRQ_BEI) {
- 		/* bus error interrupt */
- 		priv->can.can_stats.bus_error++;
+ 	if (wait_resp)
+ 		ret = mt76x02u_mcu_wait_resp(dev, seq);
 -- 
 2.35.1
 
