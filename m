@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B55C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5739DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245443AbiHOTHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
+        id S245503AbiHOTHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245679AbiHOTCf (ORCPT
+        with ESMTP id S245699AbiHOTCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:02:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A38C4D158;
-        Mon, 15 Aug 2022 11:33:42 -0700 (PDT)
+        Mon, 15 Aug 2022 15:02:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487FD357DE;
+        Mon, 15 Aug 2022 11:33:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39737610A5;
-        Mon, 15 Aug 2022 18:33:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D118C433D7;
-        Mon, 15 Aug 2022 18:33:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB415B8106C;
+        Mon, 15 Aug 2022 18:33:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5750CC433D6;
+        Mon, 15 Aug 2022 18:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588420;
-        bh=dUu8ueBkoD9WU0J+cgsPNoGbfDPcl41stYx5RPPV8tc=;
+        s=korg; t=1660588423;
+        bh=xfN3aMUT72GVuYA0umVk3VuFaMgbIjj+rzjPO5QTWwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQKI4iC/1C8UVIKMVoDy9BJn1PPgJLC8kdypMdv0HscM8754s1PviccqN5/0WSSkW
-         /aArTsyuiuXoSDM93wlaAVp41a5MYFZyBuHSi1jeRajL6z5fQ2bUuGdQ662AUmMKVM
-         yv4VnVxmFEq6UGKiFKAeifTiq/Tl5/K1GvMw7Oso=
+        b=s5Ggvkf4lIJuQH8ZrftclfNj+Hir2PXCA+j4+167GUuVVsGoHPeefyqvv/46uDMjO
+         kGujbaptCYG5/GDwLfi5gBWpE2f2/xG4iX1BOdOO83eMbezow+xhyCL3g6J7PshTMs
+         PftPoRyoNUAXrolULPCtftLolbSnTd01GYx8brpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 390/779] mtd: maps: Fix refcount leak in of_flash_probe_versatile
-Date:   Mon, 15 Aug 2022 20:00:34 +0200
-Message-Id: <20220815180353.963800547@linuxfoundation.org>
+Subject: [PATCH 5.15 399/779] scsi: qla2xxx: edif: Add retry for ELS passthrough
+Date:   Mon, 15 Aug 2022 20:00:43 +0200
+Message-Id: <20220815180354.323284746@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,35 +50,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
+[ Upstream commit 0b3f3143d473b489a7aa0779c43bcdb344bd3014 ]
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Relating to EDIF, when sending IKE message, updating key or deleting key,
+driver can encounter IOCB queue full. Add additional retries to reduce
+higher level recovery.
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220607044627.19563-8-njavali@marvell.com
+Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/maps/physmap-versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_edif.c | 52 +++++++++++++++++++++++----------
+ drivers/scsi/qla2xxx/qla_os.c   |  2 +-
+ 2 files changed, 38 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
-index ad7cd9cfaee0..297a50957356 100644
---- a/drivers/mtd/maps/physmap-versatile.c
-+++ b/drivers/mtd/maps/physmap-versatile.c
-@@ -207,6 +207,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
+diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
+index bdcc38bd955a..ee8e1ae2c300 100644
+--- a/drivers/scsi/qla2xxx/qla_edif.c
++++ b/drivers/scsi/qla2xxx/qla_edif.c
+@@ -1274,6 +1274,8 @@ qla24xx_check_sadb_avail_slot(struct bsg_job *bsg_job, fc_port_t *fcport,
  
- 		versatile_flashprot = (enum versatile_flashprot)devid->data;
- 		rmap = syscon_node_to_regmap(sysnp);
-+		of_node_put(sysnp);
- 		if (IS_ERR(rmap))
- 			return PTR_ERR(rmap);
+ #define QLA_SA_UPDATE_FLAGS_RX_KEY      0x0
+ #define QLA_SA_UPDATE_FLAGS_TX_KEY      0x2
++#define EDIF_MSLEEP_INTERVAL 100
++#define EDIF_RETRY_COUNT  50
+ 
+ int
+ qla24xx_sadb_update(struct bsg_job *bsg_job)
+@@ -1286,7 +1288,7 @@ qla24xx_sadb_update(struct bsg_job *bsg_job)
+ 	struct edif_list_entry *edif_entry = NULL;
+ 	int			found = 0;
+ 	int			rval = 0;
+-	int result = 0;
++	int result = 0, cnt;
+ 	struct qla_sa_update_frame sa_frame;
+ 	struct srb_iocb *iocb_cmd;
+ 	port_id_t portid;
+@@ -1527,11 +1529,23 @@ qla24xx_sadb_update(struct bsg_job *bsg_job)
+ 	sp->done = qla2x00_bsg_job_done;
+ 	iocb_cmd = &sp->u.iocb_cmd;
+ 	iocb_cmd->u.sa_update.sa_frame  = sa_frame;
+-
++	cnt = 0;
++retry:
+ 	rval = qla2x00_start_sp(sp);
+-	if (rval != QLA_SUCCESS) {
++	switch (rval) {
++	case QLA_SUCCESS:
++		break;
++	case EAGAIN:
++		msleep(EDIF_MSLEEP_INTERVAL);
++		cnt++;
++		if (cnt < EDIF_RETRY_COUNT)
++			goto retry;
++
++		fallthrough;
++	default:
+ 		ql_log(ql_dbg_edif, vha, 0x70e3,
+-		    "qla2x00_start_sp failed=%d.\n", rval);
++		       "%s qla2x00_start_sp failed=%d.\n",
++		       __func__, rval);
+ 
+ 		qla2x00_rel_sp(sp);
+ 		rval = -EIO;
+@@ -2254,7 +2268,6 @@ qla24xx_issue_sa_replace_iocb(scsi_qla_host_t *vha, struct qla_work_evt *e)
+ 	rval = qla2x00_start_sp(sp);
+ 
+ 	if (rval != QLA_SUCCESS) {
+-		rval = QLA_FUNCTION_FAILED;
+ 		goto done_free_sp;
+ 	}
+ 
+@@ -3383,7 +3396,7 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 	fc_port_t *fcport = NULL;
+ 	struct qla_hw_data *ha = vha->hw;
+ 	srb_t *sp;
+-	int rval =  (DID_ERROR << 16);
++	int rval =  (DID_ERROR << 16), cnt;
+ 	port_id_t d_id;
+ 	struct qla_bsg_auth_els_request *p =
+ 	    (struct qla_bsg_auth_els_request *)bsg_job->request;
+@@ -3474,17 +3487,26 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 	sp->free = qla2x00_bsg_sp_free;
+ 	sp->done = qla2x00_bsg_job_done;
+ 
++	cnt = 0;
++retry:
+ 	rval = qla2x00_start_sp(sp);
+-
+-	ql_dbg(ql_dbg_edif, vha, 0x700a,
+-	    "%s %s %8phN xchg %x ctlflag %x hdl %x reqlen %xh bsg ptr %p\n",
+-	    __func__, sc_to_str(p->e.sub_cmd), fcport->port_name,
+-	    p->e.extra_rx_xchg_address, p->e.extra_control_flags,
+-	    sp->handle, sp->remap.req.len, bsg_job);
+-
+-	if (rval != QLA_SUCCESS) {
++	switch (rval) {
++	case QLA_SUCCESS:
++		ql_dbg(ql_dbg_edif, vha, 0x700a,
++		       "%s %s %8phN xchg %x ctlflag %x hdl %x reqlen %xh bsg ptr %p\n",
++		       __func__, sc_to_str(p->e.sub_cmd), fcport->port_name,
++		       p->e.extra_rx_xchg_address, p->e.extra_control_flags,
++		       sp->handle, sp->remap.req.len, bsg_job);
++		break;
++	case EAGAIN:
++		msleep(EDIF_MSLEEP_INTERVAL);
++		cnt++;
++		if (cnt < EDIF_RETRY_COUNT)
++			goto retry;
++		fallthrough;
++	default:
+ 		ql_log(ql_log_warn, vha, 0x700e,
+-		    "qla2x00_start_sp failed = %d\n", rval);
++		    "%s qla2x00_start_sp failed = %d\n", __func__, rval);
+ 		SET_DID_STATUS(bsg_reply->result, DID_IMM_RETRY);
+ 		rval = -EIO;
+ 		goto done_free_remap_rsp;
+diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
+index e683b1c01c9f..e87ad7e0dc94 100644
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -5466,7 +5466,7 @@ qla2x00_do_work(struct scsi_qla_host *vha)
+ 			    e->u.fcport.fcport, false);
+ 			break;
+ 		case QLA_EVT_SA_REPLACE:
+-			qla24xx_issue_sa_replace_iocb(vha, e);
++			rc = qla24xx_issue_sa_replace_iocb(vha, e);
+ 			break;
+ 		}
  
 -- 
 2.35.1
