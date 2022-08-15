@@ -2,134 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9191EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E59C25B0F
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiHPGFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
+        id S229630AbiHPGJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiHPGE0 (ORCPT
+        with ESMTP id S229684AbiHPGJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:04:26 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DC479EDB
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 16:37:00 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-33387bf0c4aso5655277b3.11
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 16:37:00 -0700 (PDT)
+        Tue, 16 Aug 2022 02:09:23 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F832F7F86;
+        Mon, 15 Aug 2022 16:48:35 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id i18so3458307ila.12;
+        Mon, 15 Aug 2022 16:48:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=fVxetOgUQ7E/da9h0YyyPZnmDSU85aoRWSOGJovfDo4=;
-        b=KTUwHeoXz1fmYUOVhvzKJVtvXyuG8JHUHX6QB6FOxUcDm+t/hWHwoYNXr85HrUdaEK
-         tILQMJn5QrnwvIaiiGvh/gmofiK9boSEgGXMH8Td1nph3IGh7K9bPlvKvjyubLDSc0aS
-         fgP5ZpT/qNqLdbxAcPOnXoC06oDNK7j8waNQN+CBuASLQjDxP44f8T2h1FoyDYuG2qG0
-         BpVB8cB/sRH0nhHBKOSHQriJwZq8WNgL2+bZYuBEh1Bbls5R4A/XDMEyrwthkWrfMF+H
-         T+itPy2imckkoWZbnfArIsJ7JKc+W9DP9rqWida20tZuDHZyrdibJlDrRnzcRORJzbga
-         q56w==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=GnjYZoPrOvqe0tvfDPHrHG6WFLEYg63zoMdPDc+FwkQ=;
+        b=pebHBj1Fh9oMsZP4JDQnEsell1or/JyvS/qrqEwn3tPv6bLnLeUktS1AQuN0/gvGrV
+         xF8POsYz2iMVJVb/4vUmpV+B9TT6Ex9Ki4Qz8X+Jqzx+euVlmOTrZJ8BnKZWVy6kFiWQ
+         G7QuM9Pr+EPYYokoLWQvr/gnFxgrm874Og0zi6hwYGI04C+jJPr73Lodjv1LELmLaGum
+         7xcvcYvdENFe/HbDcUTzrkiXjz9BnnrxIGP2H7Hno3BHIeSzFPX2c0UgMqJpG3jX34FC
+         xsUsF0VF0AZa84HKhV8SVcocW8lzU9qW6XNq0ieWU+uSxXfx70cde/5740FPybhwtJCB
+         s6FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=fVxetOgUQ7E/da9h0YyyPZnmDSU85aoRWSOGJovfDo4=;
-        b=boiPk7zxaV3Rar3lMfrFWTWn9kp1nyXRnk2Xgq4UDUK44PA2BBwGqN4C3CUjrhoQLW
-         qYXGfgfjnOx47hCO5ShwUMQ4X6WTMl2YO80nzuifKhz4IaWKmPZTCEV2/W6dWpdKZgcd
-         FhWugqtIF1Le+9oiI3FRUK0V250h+DZxygsnIh+v+Tp43uzikfz6JgM5MMsPXRSISqzp
-         +p7iNeVM5DH27pfFLoYB0d/vhHRmzChATsgB+gPt7AGMoO6iZxNaesVc8fvUMbUZyBlV
-         cnXgx4JYpEB6ooREJOEmGOh/09XU0iPs69rWv6OYdV5kSTakKfel4IeRyvZL0rurwYCq
-         MdtQ==
-X-Gm-Message-State: ACgBeo0ifvQ2jPFng3ZRU/KetbB+zPFeQp40vlZLhl4SsQm/u7NdaXeT
-        UDssINMKoVYeYBj8BoogLFQczX+eYX/3UKWd9PZp9w==
-X-Google-Smtp-Source: AA6agR5Np2WgcNsV8TjcwUEqg6oN6k4lKO8Wo6VF8E9ds7ny2Mlu9nLypvijdRBumVPbsaC27C1JZ/SudORTFk2byw8=
-X-Received: by 2002:a81:d8a:0:b0:333:38da:2a44 with SMTP id
- 132-20020a810d8a000000b0033338da2a44mr1203503ywn.518.1660606619221; Mon, 15
- Aug 2022 16:36:59 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=GnjYZoPrOvqe0tvfDPHrHG6WFLEYg63zoMdPDc+FwkQ=;
+        b=YTeXBfiq76czicCtLeMLKDSwf2I2lfYTFkvGmO3/hhjTyf74ctIux18N0gLRivsB4D
+         z11o5JZWmIX9CnNMdP94Ej2EDVr2Nc60srQa4D3KGRBS6s9CsnwSbpjHgDfEREEAQbmo
+         OvcuG0UT+j5y3OZzF9dUZxXIujEESOmFuPgJU/CQ6Dq+FL59tmSNUUAIklZQPDSAmK0C
+         v9T2453dVjZR519VDW3BEEWh8PjpwWFEmBkMZMAohsiX+5ufo6J8jPEsMF1saifMaxtN
+         Y5zLTBreUKNjD4e+zriWb6skI0kzzf95eOePnYVhOfBCMP8iyC/5Pp2GK8n3upM/3eYG
+         LfBg==
+X-Gm-Message-State: ACgBeo1k+5SEbPHQcASUO1WO4fjXbEVFOh1fG+X6VlDzq/LAhuRT/QMZ
+        YRVJFm5eGlvumlxCctW+lMY=
+X-Google-Smtp-Source: AA6agR49+UWBtN/y8LyoFT9mWepPjC8TKlglg/6ksaHFoi/H320BSJVyfC6a9Z+/mVboLAcaMzYBgw==
+X-Received: by 2002:a05:6e02:1a64:b0:2e5:cbab:bbdb with SMTP id w4-20020a056e021a6400b002e5cbabbbdbmr2494043ilv.268.1660607311351;
+        Mon, 15 Aug 2022 16:48:31 -0700 (PDT)
+Received: from hestia.gfnd.rcn-ee.org (208-107-176-7-dynamic.midco.net. [208.107.176.7])
+        by smtp.gmail.com with ESMTPSA id c16-20020a92cf50000000b002e5f6199babsm439965ilr.38.2022.08.15.16.48.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 16:48:30 -0700 (PDT)
+From:   Robert Nelson <robertcnelson@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Robert Nelson <robertcnelson@gmail.com>,
+        Rob Herring <robh@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Jason Kridner <jkridner@beagleboard.org>,
+        Drew Fustini <drew@beagleboard.org>
+Subject: [PATCH] dt-bindings: arm: ti: Add bindings for BeagleBone AI-64
+Date:   Mon, 15 Aug 2022 18:48:24 -0500
+Message-Id: <20220815234824.772836-1-robertcnelson@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220727185012.3255200-1-saravanak@google.com>
- <Yvonn9C/AFcRUefV@atomide.com> <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
-In-Reply-To: <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 15 Aug 2022 16:36:23 -0700
-Message-ID: <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
-Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state() for now
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, naresh.kamboju@linaro.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:57 AM Luca Weiss <luca.weiss@fairphone.com> wrote:
->
-> On Mon Aug 15, 2022 at 1:01 PM CEST, Tony Lindgren wrote:
-> > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > More fixes/changes are needed before driver_deferred_probe_check_state()
-> > > can be deleted. So, bring it back for now.
-> > >
-> > > Greg,
-> > >
-> > > Can we get this into 5.19? If not, it might not be worth picking up this
-> > > series. I could just do the other/more fixes in time for 5.20.
-> >
-> > Yes please pick this as fixes for v6.0-rc series, it fixes booting for
-> > me. I've replied with fixes tags for the two patches that were causing
-> > regressions for me.
-> >
->
-> Hi,
->
-> for me Patch 1+3 fix display probe on Qualcomm SM6350 (although display
-> for this SoC isn't upstream yet, there are lots of other SoCs with very
-> similar setup).
->
-> Probe for DPU silently fails, with CONFIG_DEBUG_DRIVER=y we get this:
->
-> msm-mdss ae00000.mdss: __genpd_dev_pm_attach() failed to find PM domain: -2
->
-> While I'm not familiar with the specifics of fw_devlink, the dtsi has
-> power-domains = <&dispcc MDSS_GDSC> for this node but it doesn't pick
-> that up for some reason.
->
-> We can also see that a bit later dispcc finally probes.
+This board is based on the ti,j721e
 
-Luca,
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+CC: Rob Herring <robh@kernel.org>
+CC: Nishanth Menon <nm@ti.com>
+CC: Jason Kridner <jkridner@beagleboard.org>
+CC: Drew Fustini <drew@beagleboard.org>
+---
+ Documentation/devicetree/bindings/arm/ti/k3.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Can you test with this series instead and see if it fixes this issue?
-https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
+diff --git a/Documentation/devicetree/bindings/arm/ti/k3.yaml b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+index 61c6ab4f52e2..ecb5fa9d4644 100644
+--- a/Documentation/devicetree/bindings/arm/ti/k3.yaml
++++ b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+@@ -36,6 +36,7 @@ properties:
+               - enum:
+                   - ti,j721e-evm
+                   - ti,j721e-sk
++                  - beagle,j721e-beagleboneai64
+               - const: ti,j721e
+ 
+       - description: K3 J7200 SoC
+-- 
+2.30.2
 
-You might also need to add this delta on top of the series if the
-series itself isn't sufficient.
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 2f012e826986..866755d8ad95 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device *con,
-                device_links_write_unlock();
-        }
-
--       sup_dev = get_dev_from_fwnode(sup_handle);
-+       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
-+               sup_dev = fwnode_get_next_parent_dev(sup_handle);
-+       else
-+               sup_dev = get_dev_from_fwnode(sup_handle);
-+
-        if (sup_dev) {
-                /*
-                 * If it's one of those drivers that don't actually bind to
-
--Saravana
