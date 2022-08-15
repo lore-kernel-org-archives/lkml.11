@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 882C3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C1BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344079AbiHOTPW (ORCPT
+        id S1344085AbiHOTP2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
+        Mon, 15 Aug 2022 15:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343860AbiHOTLJ (ORCPT
+        with ESMTP id S1344175AbiHOTLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:11:09 -0400
+        Mon, 15 Aug 2022 15:11:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AA742ACD;
-        Mon, 15 Aug 2022 11:36:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BFF501B9;
+        Mon, 15 Aug 2022 11:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A924B8105D;
-        Mon, 15 Aug 2022 18:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB9FC433C1;
-        Mon, 15 Aug 2022 18:36:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95998B81082;
+        Mon, 15 Aug 2022 18:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C38C433D7;
+        Mon, 15 Aug 2022 18:37:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588610;
-        bh=SsESgowbU490/ite9UQJ2/VF8eHcvsf//IiX5TmCguU=;
+        s=korg; t=1660588638;
+        bh=N3qyH8pGWQC5ePmuhX+7tI2CgB4S9Qep2kWgA+wiwOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nfc/ts6qw0Ik6sZfiVTCkqozNTC4Obcx5fKFrWp1n+kAgFv+kAkBTBX/l4r2PLBJd
-         +NfufzRoWawcTr16r63iH/9PlfONhz8vJrU0P6RDr7loi15QWDGfRqXhTe3nz+CcDU
-         Z/csyi1C3py9qrJ5KzZCSA+8eO+ZQBt+93+ignrA=
+        b=OD5MI6sUqQZ4lyiBUL514vQ9H35/P3bZlWIxj0zrboqzAoCNTeQHgPuqeLdWpzDQ0
+         l2Cd0b5xwhhETT8xaM2qz39je8LsE4JwZS2+KzJY0QagJaj6pvfNwppuP2jn6j93ps
+         TjAhaMcisxaQ0rs+vWgf/GLWWQ5LAURKWnITHyww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 428/779] clk: mediatek: reset: Fix written reset bit offset
-Date:   Mon, 15 Aug 2022 20:01:12 +0200
-Message-Id: <20220815180355.565929729@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 468/779] dmaengine: sf-pdma: Add multithread support for a DMA channel
+Date:   Mon, 15 Aug 2022 20:01:52 +0200
+Message-Id: <20220815180357.300353993@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -54,51 +50,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rex-BC Chen <rex-bc.chen@mediatek.com>
+From: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
 
-[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
+[ Upstream commit b2cc5c465c2cb8ab697c3fd6583c614e3f6cfbcc ]
 
-Original assert/deassert bit is BIT(0), but it's more resonable to modify
-them to BIT(id % 32) which is based on id.
+When we get a DMA channel and try to use it in multiple threads it
+will cause oops and hanging the system.
 
-This patch will not influence any previous driver because the reset is
-only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+% echo 64 > /sys/module/dmatest/parameters/threads_per_chan
+% echo 10000 > /sys/module/dmatest/parameters/iterations
+% echo 1 > /sys/module/dmatest/parameters/run
+[   89.480664] Unable to handle kernel NULL pointer dereference at virtual
+               address 00000000000000a0
+[   89.488725] Oops [#1]
+[   89.494708] CPU: 2 PID: 1008 Comm: dma0chan0-copy0 Not tainted
+               5.17.0-rc5
+[   89.509385] epc : vchan_find_desc+0x32/0x46
+[   89.513553]  ra : sf_pdma_tx_status+0xca/0xd6
 
-Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+This happens because of data race. Each thread rewrite channels's
+descriptor as soon as device_prep_dma_memcpy() is called. It leads to the
+situation when the driver thinks that it uses right descriptor that
+actually is freed or substituted for other one.
+
+With current fixes a descriptor changes its value only when it has
+been used. A new descriptor is acquired from vc->desc_issued queue that
+is already filled with descriptors that are ready to be sent. Threads
+have no direct access to DMA channel descriptor. Now it is just possible
+to queue a descriptor for further processing.
+
+Fixes: 6973886ad58e ("dmaengine: sf-pdma: add platform DMA support for HiFive Unleashed A00")
+Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
+Link: https://lore.kernel.org/r/20220701082942.12835-1-v.v.mitrofanov@yadro.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/mediatek/reset.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/dma/sf-pdma/sf-pdma.c | 44 ++++++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index e562dc3c10a4..d311da574499 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4);
+diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+index f12606aeff87..ab0ad7a2f201 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.c
++++ b/drivers/dma/sf-pdma/sf-pdma.c
+@@ -52,16 +52,6 @@ static inline struct sf_pdma_desc *to_sf_pdma_desc(struct virt_dma_desc *vd)
+ static struct sf_pdma_desc *sf_pdma_alloc_desc(struct sf_pdma_chan *chan)
+ {
+ 	struct sf_pdma_desc *desc;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&chan->lock, flags);
+-
+-	if (chan->desc && !chan->desc->in_use) {
+-		spin_unlock_irqrestore(&chan->lock, flags);
+-		return chan->desc;
+-	}
+-
+-	spin_unlock_irqrestore(&chan->lock, flags);
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
+ 	desc = kzalloc(sizeof(*desc), GFP_NOWAIT);
+ 	if (!desc)
+@@ -111,7 +101,6 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
+ 	desc->async_tx = vchan_tx_prep(&chan->vchan, &desc->vdesc, flags);
+ 
+ 	spin_lock_irqsave(&chan->vchan.lock, iflags);
+-	chan->desc = desc;
+ 	sf_pdma_fill_desc(desc, dest, src, len);
+ 	spin_unlock_irqrestore(&chan->vchan.lock, iflags);
+ 
+@@ -170,11 +159,17 @@ static size_t sf_pdma_desc_residue(struct sf_pdma_chan *chan,
+ 	unsigned long flags;
+ 	u64 residue = 0;
+ 	struct sf_pdma_desc *desc;
+-	struct dma_async_tx_descriptor *tx;
++	struct dma_async_tx_descriptor *tx = NULL;
+ 
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 
+-	tx = &chan->desc->vdesc.tx;
++	list_for_each_entry(vd, &chan->vchan.desc_submitted, node)
++		if (vd->tx.cookie == cookie)
++			tx = &vd->tx;
++
++	if (!tx)
++		goto out;
++
+ 	if (cookie == tx->chan->completed_cookie)
+ 		goto out;
+ 
+@@ -241,6 +236,19 @@ static void sf_pdma_enable_request(struct sf_pdma_chan *chan)
+ 	writel(v, regs->ctrl);
  }
  
- static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
-@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
- 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
++static struct sf_pdma_desc *sf_pdma_get_first_pending_desc(struct sf_pdma_chan *chan)
++{
++	struct virt_dma_chan *vchan = &chan->vchan;
++	struct virt_dma_desc *vdesc;
++
++	if (list_empty(&vchan->desc_issued))
++		return NULL;
++
++	vdesc = list_first_entry(&vchan->desc_issued, struct virt_dma_desc, node);
++
++	return container_of(vdesc, struct sf_pdma_desc, vdesc);
++}
++
+ static void sf_pdma_xfer_desc(struct sf_pdma_chan *chan)
+ {
+ 	struct sf_pdma_desc *desc = chan->desc;
+@@ -268,8 +276,11 @@ static void sf_pdma_issue_pending(struct dma_chan *dchan)
  
--	return regmap_write(data->regmap, reg, 1);
-+	return regmap_write(data->regmap, reg, BIT(id % 32));
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 
+-	if (vchan_issue_pending(&chan->vchan) && chan->desc)
++	if (!chan->desc && vchan_issue_pending(&chan->vchan)) {
++		/* vchan_issue_pending has made a check that desc in not NULL */
++		chan->desc = sf_pdma_get_first_pending_desc(chan);
+ 		sf_pdma_xfer_desc(chan);
++	}
+ 
+ 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
+ }
+@@ -298,6 +309,11 @@ static void sf_pdma_donebh_tasklet(struct tasklet_struct *t)
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 	list_del(&chan->desc->vdesc.node);
+ 	vchan_cookie_complete(&chan->desc->vdesc);
++
++	chan->desc = sf_pdma_get_first_pending_desc(chan);
++	if (chan->desc)
++		sf_pdma_xfer_desc(chan);
++
+ 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
  }
  
- static int mtk_reset_assert(struct reset_controller_dev *rcdev,
 -- 
 2.35.1
 
