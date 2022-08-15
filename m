@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C24C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A25C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiHOU6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        id S244220AbiHOU6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347018AbiHOU4N (ORCPT
+        with ESMTP id S1347024AbiHOU4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:56:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1472DA8E;
-        Mon, 15 Aug 2022 12:11:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3134F1AD;
+        Mon, 15 Aug 2022 12:11:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3757A60BC2;
-        Mon, 15 Aug 2022 19:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41571C433C1;
-        Mon, 15 Aug 2022 19:11:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 470AD60693;
+        Mon, 15 Aug 2022 19:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51967C433C1;
+        Mon, 15 Aug 2022 19:11:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590714;
-        bh=qd7DGm7gGOW9kfEJ46D2NiTS3ftZuyV6LqQZH+9ayTg=;
+        s=korg; t=1660590717;
+        bh=zfIZ+r3tJPCB2oToX0Vxr7pLYk/MjTYFsb8+1JVJSZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IN/vwRZReM78KSPc4Nqn6idmUscBBNNR5TMiWhK/KRLHrlZTKb1AHLMz+jUGy+P0V
-         1zTj2kpY6Ptgc42v8yLi9l7br5gAuYUVY4MyvSH0z0xTc6bn00pAiMT3o5RmlDpMYR
-         UyqLmsFSM4rCwD+v04UpxRtvz2+U9KmvW36Bvamw=
+        b=PqChKhPQ35WExOwi5LtjIPShv6SdSYClI4o05YcnsuRC2+xvCWVb9sgU4WG5A0yaF
+         kCknJe2dusXOkfX8jTWvvyloqNfedy0JVV27vNx1ALIGWWLj11ufLPUoNbaS0LjZJl
+         8bk7NAH9f+HhTJ8buDNZgi7oz5VxsYj9GezxgfLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0330/1095] virtio-gpu: fix a missing check to avoid NULL dereference
-Date:   Mon, 15 Aug 2022 19:55:29 +0200
-Message-Id: <20220815180443.434668603@linuxfoundation.org>
+Subject: [PATCH 5.18 0348/1095] media: camss: csid: fix wrong size passed to devm_kmalloc_array()
+Date:   Mon, 15 Aug 2022 19:55:47 +0200
+Message-Id: <20220815180444.171369033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,44 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit bd63f11f4c3c46afec07d821f74736161ff6e526 ]
+[ Upstream commit 4c25384d136642d72098e36201ca988533e73065 ]
 
-'cache_ent' could be set NULL inside virtio_gpu_cmd_get_capset()
-and it will lead to a NULL dereference by a lately use of it
-(i.e., ptr = cache_ent->caps_cache). Fix it with a NULL check.
+'supplies' is a pointer, the real size of struct regulator_bulk_data
+should be pass to devm_kmalloc_array().
 
-Fixes: 62fb7a5e10962 ("virtio-gpu: add 3d/virgl support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20220327050945.1614-1-xiam0nd.tong@gmail.com
-
-[ kraxel: minor codestyle fixup ]
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Fixes: 0d8140179715 ("media: camss: Add regulator_bulk support")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_ioctl.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/platform/qcom/camss/camss-csid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-index c708bab555c6..10f080060923 100644
---- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -579,8 +579,10 @@ static int virtio_gpu_get_caps_ioctl(struct drm_device *dev,
- 	spin_unlock(&vgdev->display_info_lock);
- 
- 	/* not in cache - need to talk to hw */
--	virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
--				  &cache_ent);
-+	ret = virtio_gpu_cmd_get_capset(vgdev, found_valid, args->cap_set_ver,
-+					&cache_ent);
-+	if (ret)
-+		return ret;
- 	virtio_gpu_notify(vgdev);
- 
- copy_exit:
+diff --git a/drivers/media/platform/qcom/camss/camss-csid.c b/drivers/media/platform/qcom/camss/camss-csid.c
+index f993f349b66b..80628801cf09 100644
+--- a/drivers/media/platform/qcom/camss/camss-csid.c
++++ b/drivers/media/platform/qcom/camss/camss-csid.c
+@@ -666,7 +666,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
+ 	if (csid->num_supplies) {
+ 		csid->supplies = devm_kmalloc_array(camss->dev,
+ 						    csid->num_supplies,
+-						    sizeof(csid->supplies),
++						    sizeof(*csid->supplies),
+ 						    GFP_KERNEL);
+ 		if (!csid->supplies)
+ 			return -ENOMEM;
 -- 
 2.35.1
 
