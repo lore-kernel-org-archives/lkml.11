@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9E8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6422C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240148AbiHOVIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        id S242757AbiHOVIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344317AbiHOVDr (ORCPT
+        with ESMTP id S1344445AbiHOVDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:03:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC7BD346F;
-        Mon, 15 Aug 2022 12:14:37 -0700 (PDT)
+        Mon, 15 Aug 2022 17:03:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A677DD3EC8;
+        Mon, 15 Aug 2022 12:14:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 53203CE12C7;
-        Mon, 15 Aug 2022 19:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 532BDC433D6;
-        Mon, 15 Aug 2022 19:14:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8371860F68;
+        Mon, 15 Aug 2022 19:14:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7562DC433C1;
+        Mon, 15 Aug 2022 19:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590873;
-        bh=QqpK5lGfpu6Sugnz3kv58SDcN45rswAEAFe5os5dbDY=;
+        s=korg; t=1660590879;
+        bh=zv4DZZibKAMRI0gVGHC/jrX5f2LnrYxkNA82LOX0cq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EkhjHWm2NQO+qdKozkXb2aIpz6qohmNKEPXtHkqBTG9ch7Z5XJXXYs1xFOx8sq/Mo
-         vtmMHxL54eJBsNZhQ13f0w3Wqr82qqtX20eWYF5iVQanq8RTfL3+J3JU+0lGqv8iiq
-         9/ECDK6TXkaaT0ABXH5rmvAGmKNc3tGiU7OWSQa4=
+        b=V1fKiarpTVHVFxy/EDPdR+zoGyTrZe4MaVv0M2q4TcdvuCUATzEBm/MAE+7jzNEUG
+         q1OyXPSzIIJ1+1vifRq8OzBhEAllE41AZJrwXFCF0C8Xlg9zKA48xZT2c6sVPmILtV
+         cdascGXjbVN7PC2FmALSb1yMTluT0HXXxB70cMh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frederic Weisbecker <frederic@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?J=C3=B6rn-Thorben=20Hinz?= <jthinz@mailbox.tu-berlin.de>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0367/1095] rcutorture: Fix ksoftirqd boosting timing and iteration
-Date:   Mon, 15 Aug 2022 19:56:06 +0200
-Message-Id: <20220815180444.902013702@linuxfoundation.org>
+Subject: [PATCH 5.18 0369/1095] selftests/bpf: Fix rare segfault in sock_fields prog test
+Date:   Mon, 15 Aug 2022 19:56:08 +0200
+Message-Id: <20220815180444.981359376@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,114 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
 
-[ Upstream commit 3002153a91a9732a6d1d0bb95138593c7da15743 ]
+[ Upstream commit 6dc7a0baf1a70b7d22662d38481824c14ddd80c5 ]
 
-The RCU priority boosting can fail in two situations:
+test_sock_fields__detach() got called with a null pointer here when one
+of the CHECKs or ASSERTs up to the test_sock_fields__open_and_load()
+call resulted in a jump to the "done" label.
 
-1) If (nr_cpus= > maxcpus=), which means if the total number of CPUs
-is higher than those brought online at boot, then torture_onoff() may
-later bring up CPUs that weren't online on boot. Now since rcutorture
-initialization only boosts the ksoftirqds of the CPUs that have been
-set online on boot, the CPUs later set online by torture_onoff won't
-benefit from the boost, making RCU priority boosting fail.
+A skeletons *__detach() is not safe to call with a null pointer, though.
+This led to a segfault.
 
-2) The ksoftirqd kthreads are boosted after the creation of
-rcu_torture_boost() kthreads, which opens a window large enough for these
-rcu_torture_boost() kthreads to wait (despite running at FIFO priority)
-for ksoftirqds that are still running at SCHED_NORMAL priority.
+Go the easy route and only call test_sock_fields__destroy() which is
+null-pointer safe and includes detaching.
 
-The issues can trigger for example with:
+Came across this while looking[1] to introduce the usage of
+bpf_tcp_helpers.h (included in progs/test_sock_fields.c) together with
+vmlinux.h.
 
-	./kvm.sh --configs TREE01 --kconfig "CONFIG_RCU_BOOST=y"
+[1] https://lore.kernel.org/bpf/629bc069dd807d7ac646f836e9dca28bbc1108e2.camel@mailbox.tu-berlin.de/
 
-	[   34.968561] rcu-torture: !!!
-	[   34.968627] ------------[ cut here ]------------
-	[   35.014054] WARNING: CPU: 4 PID: 114 at kernel/rcu/rcutorture.c:1979 rcu_torture_stats_print+0x5ad/0x610
-	[   35.052043] Modules linked in:
-	[   35.069138] CPU: 4 PID: 114 Comm: rcu_torture_sta Not tainted 5.18.0-rc1 #1
-	[   35.096424] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a-rebuilt.opensuse.org 04/01/2014
-	[   35.154570] RIP: 0010:rcu_torture_stats_print+0x5ad/0x610
-	[   35.198527] Code: 63 1b 02 00 74 02 0f 0b 48 83 3d 35 63 1b 02 00 74 02 0f 0b 48 83 3d 21 63 1b 02 00 74 02 0f 0b 48 83 3d 0d 63 1b 02 00 74 02 <0f> 0b 83 eb 01 0f 8e ba fc ff ff 0f 0b e9 b3 fc ff f82
-	[   37.251049] RSP: 0000:ffffa92a0050bdf8 EFLAGS: 00010202
-	[   37.277320] rcu: De-offloading 8
-	[   37.290367] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000001
-	[   37.290387] RDX: 0000000000000000 RSI: 00000000ffffbfff RDI: 00000000ffffffff
-	[   37.290398] RBP: 000000000000007b R08: 0000000000000000 R09: c0000000ffffbfff
-	[   37.290407] R10: 000000000000002a R11: ffffa92a0050bc18 R12: ffffa92a0050be20
-	[   37.290417] R13: ffffa92a0050be78 R14: 0000000000000000 R15: 000000000001bea0
-	[   37.290427] FS:  0000000000000000(0000) GS:ffff96045eb00000(0000) knlGS:0000000000000000
-	[   37.290448] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-	[   37.290460] CR2: 0000000000000000 CR3: 000000001dc0c000 CR4: 00000000000006e0
-	[   37.290470] Call Trace:
-	[   37.295049]  <TASK>
-	[   37.295065]  ? preempt_count_add+0x63/0x90
-	[   37.295095]  ? _raw_spin_lock_irqsave+0x12/0x40
-	[   37.295125]  ? rcu_torture_stats_print+0x610/0x610
-	[   37.295143]  rcu_torture_stats+0x29/0x70
-	[   37.295160]  kthread+0xe3/0x110
-	[   37.295176]  ? kthread_complete_and_exit+0x20/0x20
-	[   37.295193]  ret_from_fork+0x22/0x30
-	[   37.295218]  </TASK>
-
-Fix this with boosting the ksoftirqds kthreads from the boosting
-hotplug callback itself and before the boosting kthreads are created.
-
-Fixes: ea6d962e80b6 ("rcutorture: Judge RCU priority boosting on grace periods, not callbacks")
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
+Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Reviewed-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220621070116.307221-1-jthinz@mailbox.tu-berlin.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/rcutorture.c | 28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/sock_fields.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 55d049c39608..7c3a7f8c828b 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -2030,6 +2030,19 @@ static int rcutorture_booster_init(unsigned int cpu)
- 	if (boost_tasks[cpu] != NULL)
- 		return 0;  /* Already created, nothing more to do. */
+diff --git a/tools/testing/selftests/bpf/prog_tests/sock_fields.c b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
+index 9d211b5c22c4..7d23166c77af 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sock_fields.c
++++ b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
+@@ -394,7 +394,6 @@ void serial_test_sock_fields(void)
+ 	test();
  
-+	// Testing RCU priority boosting requires rcutorture do
-+	// some serious abuse.  Counter this by running ksoftirqd
-+	// at higher priority.
-+	if (IS_BUILTIN(CONFIG_RCU_TORTURE_TEST)) {
-+		struct sched_param sp;
-+		struct task_struct *t;
-+
-+		t = per_cpu(ksoftirqd, cpu);
-+		WARN_ON_ONCE(!t);
-+		sp.sched_priority = 2;
-+		sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
-+	}
-+
- 	/* Don't allow time recalculation while creating a new task. */
- 	mutex_lock(&boost_mutex);
- 	rcu_torture_disable_rt_throttle();
-@@ -3281,21 +3294,6 @@ rcu_torture_init(void)
- 		rcutor_hp = firsterr;
- 		if (torture_init_error(firsterr))
- 			goto unwind;
--
--		// Testing RCU priority boosting requires rcutorture do
--		// some serious abuse.  Counter this by running ksoftirqd
--		// at higher priority.
--		if (IS_BUILTIN(CONFIG_RCU_TORTURE_TEST)) {
--			for_each_online_cpu(cpu) {
--				struct sched_param sp;
--				struct task_struct *t;
--
--				t = per_cpu(ksoftirqd, cpu);
--				WARN_ON_ONCE(!t);
--				sp.sched_priority = 2;
--				sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
--			}
--		}
- 	}
- 	shutdown_jiffies = jiffies + shutdown_secs * HZ;
- 	firsterr = torture_shutdown_init(shutdown_secs, rcu_torture_cleanup);
+ done:
+-	test_sock_fields__detach(skel);
+ 	test_sock_fields__destroy(skel);
+ 	if (child_cg_fd >= 0)
+ 		close(child_cg_fd);
 -- 
 2.35.1
 
