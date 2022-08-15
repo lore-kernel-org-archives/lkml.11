@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67DEC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F87C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240806AbiHPAho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S1346161AbiHPAhs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350568AbiHPAgI (ORCPT
+        with ESMTP id S1350614AbiHPAgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:36:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B174E84D;
-        Mon, 15 Aug 2022 13:37:36 -0700 (PDT)
+        Mon, 15 Aug 2022 20:36:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2989718A09B;
+        Mon, 15 Aug 2022 13:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76D2EB80EA9;
-        Mon, 15 Aug 2022 20:37:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACAC8C433C1;
-        Mon, 15 Aug 2022 20:37:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AE71B80EA8;
+        Mon, 15 Aug 2022 20:37:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66116C433D6;
+        Mon, 15 Aug 2022 20:37:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595843;
-        bh=J7tXZQAKQ1Enn9d8Kao/WXR5L8k8qxeZb02P9k8WmdI=;
+        s=korg; t=1660595864;
+        bh=YSo1sfXbLmU7/IvZ22ZT7QbZpq+Sscru+IpxsROtCVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SDLQR2Ee4BWI71QtCKMh9IZyclVJgQjUpg6D/s+T+jmQuinyTq5EG7Q8pLx5K/x6d
-         BSpLbJQI/9TW0jB/7nmrQkXJcmi4tFmpdfft25Zp7FwIPsIGBz/063ZQDOY4MhZyvR
-         H/K9jpIUM2zI866muamL40PXDebzkjavK8AMdPME=
+        b=ngHfxaXSKtmmt1CYpw8lNgw4RM21vJmhntO9go+L2Jr2POQHyRaDQ8CHd/i48jnvR
+         CZCgNRU8YFYhmRj0w2iEW7vjApFDn9nRLYR3v/x+rhh186l6T/2YWL9VQF5skTySYT
+         awZDgH1od+sx5bM/rwFRkByoyb2dBcXalIh4m2dE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Sindelar <adam@wowsignal.io>,
-        David Vernet <void@manifault.com>,
-        Suren Baghdasaryan <surenb@google.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
         Shuah Khan <shuah@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0865/1157] selftests/vm: fix errno handling in mrelease_test
-Date:   Mon, 15 Aug 2022 20:03:41 +0200
-Message-Id: <20220815180514.070470167@linuxfoundation.org>
+Subject: [PATCH 5.19 0867/1157] selftest/vm: uninitialized variable in main()
+Date:   Mon, 15 Aug 2022 20:03:43 +0200
+Message-Id: <20220815180514.155562107@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,93 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Sindelar <adam@wowsignal.io>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 3b8e7f5c42d1aa44f71fd219717c80e34101361e ]
+[ Upstream commit 360b420dbded8ad5b70a41de98e77354dd9e7d36 ]
 
-mrelease_test should return KSFT_SKIP when process_mrelease is not
-defined, but due to a perror call consuming the errno, it returns
-KSFT_FAIL.
+Initialize "length" to zero by default.
 
-This patch decides the exit code before calling perror.
-
-[adam@wowsignal.io: fix remaining instances of errno mishandling]
-  Link: https://lkml.kernel.org/r/20220706141602.10159-1-adam@wowsignal.io
-Link: https://lkml.kernel.org/r/20220704173351.19595-1-adam@wowsignal.io
-Fixes: 33776141b812 ("selftests: vm: add process_mrelease tests")
-Signed-off-by: Adam Sindelar <adam@wowsignal.io>
-Reviewed-by: David Vernet <void@manifault.com>
-Reviewed-by: Suren Baghdasaryan <surenb@google.com>
+Link: https://lkml.kernel.org/r/YtZzjvHXVXMXxpXO@kili
+Fixes: ff712a627f72 ("selftests/vm: cleanup hugetlb file after mremap test")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Mina Almasry <almasrymina@google.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
 Cc: Shuah Khan <shuah@kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/mrelease_test.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ tools/testing/selftests/vm/hugepage-mremap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
-index 96671c2f7d48..6c62966ab5db 100644
---- a/tools/testing/selftests/vm/mrelease_test.c
-+++ b/tools/testing/selftests/vm/mrelease_test.c
-@@ -62,19 +62,22 @@ static int alloc_noexit(unsigned long nr_pages, int pipefd)
- /* The process_mrelease calls in this test are expected to fail */
- static void run_negative_tests(int pidfd)
+diff --git a/tools/testing/selftests/vm/hugepage-mremap.c b/tools/testing/selftests/vm/hugepage-mremap.c
+index 585978f181ed..e63a0214f639 100644
+--- a/tools/testing/selftests/vm/hugepage-mremap.c
++++ b/tools/testing/selftests/vm/hugepage-mremap.c
+@@ -107,7 +107,7 @@ static void register_region_with_uffd(char *addr, size_t len)
+ 
+ int main(int argc, char *argv[])
  {
-+	int res;
- 	/* Test invalid flags. Expect to fail with EINVAL error code. */
- 	if (!syscall(__NR_process_mrelease, pidfd, (unsigned int)-1) ||
- 			errno != EINVAL) {
-+		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
- 		perror("process_mrelease with wrong flags");
--		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
-+		exit(res);
- 	}
- 	/*
- 	 * Test reaping while process is alive with no pending SIGKILL.
- 	 * Expect to fail with EINVAL error code.
- 	 */
- 	if (!syscall(__NR_process_mrelease, pidfd, 0) || errno != EINVAL) {
-+		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
- 		perror("process_mrelease on a live process");
--		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
-+		exit(res);
- 	}
- }
+-	size_t length;
++	size_t length = 0;
  
-@@ -100,8 +103,9 @@ int main(void)
- 
- 	/* Test a wrong pidfd */
- 	if (!syscall(__NR_process_mrelease, -1, 0) || errno != EBADF) {
-+		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
- 		perror("process_mrelease with wrong pidfd");
--		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
-+		exit(res);
- 	}
- 
- 	/* Start the test with 1MB child memory allocation */
-@@ -156,8 +160,9 @@ int main(void)
- 	run_negative_tests(pidfd);
- 
- 	if (kill(pid, SIGKILL)) {
-+		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
- 		perror("kill");
--		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
-+		exit(res);
- 	}
- 
- 	success = (syscall(__NR_process_mrelease, pidfd, 0) == 0);
-@@ -172,9 +177,10 @@ int main(void)
- 		if (errno == ESRCH) {
- 			retry = (size <= MAX_SIZE_MB);
- 		} else {
-+			res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
- 			perror("process_mrelease");
- 			waitpid(pid, NULL, 0);
--			exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
-+			exit(res);
- 		}
- 	}
- 
+ 	if (argc != 2 && argc != 3) {
+ 		printf("Usage: %s [length_in_MB] <hugetlb_file>\n", argv[0]);
 -- 
 2.35.1
 
