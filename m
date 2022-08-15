@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1E4C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B73C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245317AbiHOVLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
+        id S245488AbiHOVLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347476AbiHOVG7 (ORCPT
+        with ESMTP id S1347575AbiHOVHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:06:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900918382;
-        Mon, 15 Aug 2022 12:15:36 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5229B1BEB9;
+        Mon, 15 Aug 2022 12:15:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8AAD2CE1087;
-        Mon, 15 Aug 2022 19:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF4FC433D7;
-        Mon, 15 Aug 2022 19:15:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92AAE60F6C;
+        Mon, 15 Aug 2022 19:15:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9938FC433C1;
+        Mon, 15 Aug 2022 19:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590932;
-        bh=VAXuy6qTweqSeZ0LUKOMiZxh54lrf8iikegCxcOJiFU=;
+        s=korg; t=1660590939;
+        bh=5D8R5ND/ejMtZ3MKYGCmT1b4bpEsntPeqRPpwjWiHjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M28j4xp9SPc96pMY7IJJDsA55IuUv0bZDTn1gF0GR3FbigyDcHU+4NdlFx7ENfRH2
-         Vrp+8yYphaAowB34OdaN5nJ8+XHMvr3pufQHYNt0dzrgnCIFbBA1xlI5nVyestEPGh
-         RjcjunVoE9WE+5HptYT7nDIOA70HF4Rl4OqEEmVM=
+        b=i7+Bs5w11QvtL6pJjPgGFKa9wYyLB50X3n9TGUTTq1D8iR46OtsqajGjRRdMlCMpr
+         vMduVIuYdRNZHXIJvX9TsvXpGKtsz43d/HrWUruvt4iWCnyyQuFyG3pno8D/Db7hRe
+         mRQyTNZP5rJkgegarFUf6c6W0vI4zQMbMZZgJPL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0417/1095] hinic: Use the bitmap API when applicable
-Date:   Mon, 15 Aug 2022 19:56:56 +0200
-Message-Id: <20220815180446.954268316@linuxfoundation.org>
+Subject: [PATCH 5.18 0419/1095] net: hinic: avoid kernel hung in hinic_get_stats64()
+Date:   Mon, 15 Aug 2022 19:56:58 +0200
+Message-Id: <20220815180447.040497555@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,54 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Qiao Ma <mqaio@linux.alibaba.com>
 
-[ Upstream commit 7c2c57263af41cfd8b5022274e6801542831bb69 ]
+[ Upstream commit 98f9fcdee35add80505b6c73f72de5f750d5c03c ]
 
-'vlan_bitmap' is a bitmap and is used as such. So allocate it with
-devm_bitmap_zalloc() and its explicit bit size (i.e. VLAN_N_VID).
+When using hinic device as a bond slave device, and reading device stats
+of master bond device, the kernel may hung.
 
-This avoids the need of the VLAN_BITMAP_SIZE macro which:
-   - needlessly has a 'nic_dev' parameter
-   - should be "long" (and not byte) aligned, so that the bitmap semantic
-     is respected
+The kernel panic calltrace as follows:
+Kernel panic - not syncing: softlockup: hung tasks
+Call trace:
+  native_queued_spin_lock_slowpath+0x1ec/0x31c
+  dev_get_stats+0x60/0xcc
+  dev_seq_printf_stats+0x40/0x120
+  dev_seq_show+0x1c/0x40
+  seq_read_iter+0x3c8/0x4dc
+  seq_read+0xe0/0x130
+  proc_reg_read+0xa8/0xe0
+  vfs_read+0xb0/0x1d4
+  ksys_read+0x70/0xfc
+  __arm64_sys_read+0x20/0x30
+  el0_svc_common+0x88/0x234
+  do_el0_svc+0x2c/0x90
+  el0_svc+0x1c/0x30
+  el0_sync_handler+0xa8/0xb0
+  el0_sync+0x148/0x180
 
-This is in fact not an issue because VLAN_N_VID is 4096 at the time
-being, but devm_bitmap_zalloc() is less verbose and easier to understand.
+And the calltrace of task that actually caused kernel hungs as follows:
+  __switch_to+124
+  __schedule+548
+  schedule+72
+  schedule_timeout+348
+  __down_common+188
+  __down+24
+  down+104
+  hinic_get_stats64+44 [hinic]
+  dev_get_stats+92
+  bond_get_stats+172 [bonding]
+  dev_get_stats+92
+  dev_seq_printf_stats+60
+  dev_seq_show+24
+  seq_read_iter+964
+  seq_read+220
+  proc_reg_read+164
+  vfs_read+172
+  ksys_read+108
+  __arm64_sys_read+28
+  el0_svc_common+132
+  do_el0_svc+40
+  el0_svc+24
+  el0_sync_handler+164
+  el0_sync+324
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/6ff7b7d21414240794a77dc2456914412718a145.1656260842.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+When getting device stats from bond, kernel will call bond_get_stats().
+It first holds the spinlock bond->stats_lock, and then call
+hinic_get_stats64() to collect hinic device's stats.
+However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
+protect its critical section, which may schedule current task out.
+And if system is under high pressure, the task cannot be woken up
+immediately, which eventually triggers kernel hung panic.
+
+Since previous patch has replaced hinic_dev.tx_stats/rx_stats with local
+variable in hinic_get_stats64(), there is nothing need to be protected
+by lock, so just removing down()/up() is ok.
+
+Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
+Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 05329292d940..56a89793f47d 100644
+index 89dc52510fdc..c23ee2ddbce3 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -62,8 +62,6 @@ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
+@@ -842,13 +842,9 @@ static void hinic_get_stats64(struct net_device *netdev,
+ 	struct hinic_rxq_stats nic_rx_stats = {};
+ 	struct hinic_txq_stats nic_tx_stats = {};
  
- #define HINIC_LRO_RX_TIMER_DEFAULT	16
- 
--#define VLAN_BITMAP_SIZE(nic_dev)       (ALIGN(VLAN_N_VID, 8) / 8)
+-	down(&nic_dev->mgmt_lock);
 -
- #define work_to_rx_mode_work(work)      \
- 		container_of(work, struct hinic_rx_mode_work, work)
+ 	if (nic_dev->flags & HINIC_INTF_UP)
+ 		gather_nic_stats(nic_dev, &nic_rx_stats, &nic_tx_stats);
  
-@@ -1242,9 +1240,8 @@ static int nic_dev_init(struct pci_dev *pdev)
- 	u64_stats_init(&tx_stats->syncp);
- 	u64_stats_init(&rx_stats->syncp);
- 
--	nic_dev->vlan_bitmap = devm_kzalloc(&pdev->dev,
--					    VLAN_BITMAP_SIZE(nic_dev),
--					    GFP_KERNEL);
-+	nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
-+						  GFP_KERNEL);
- 	if (!nic_dev->vlan_bitmap) {
- 		err = -ENOMEM;
- 		goto err_vlan_bitmap;
+-	up(&nic_dev->mgmt_lock);
+-
+ 	stats->rx_bytes   = nic_rx_stats.bytes;
+ 	stats->rx_packets = nic_rx_stats.pkts;
+ 	stats->rx_errors  = nic_rx_stats.errors;
 -- 
 2.35.1
 
