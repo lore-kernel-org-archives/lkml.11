@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC26C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7461C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345652AbiHOUhV (ORCPT
+        id S1345695AbiHOUhk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        Mon, 15 Aug 2022 16:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348270AbiHOUcY (ORCPT
+        with ESMTP id S1348271AbiHOUcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:32:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A8ABF69;
-        Mon, 15 Aug 2022 12:05:26 -0700 (PDT)
+        Mon, 15 Aug 2022 16:32:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E5D3C177;
+        Mon, 15 Aug 2022 12:05:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9CB3B81107;
-        Mon, 15 Aug 2022 19:05:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 386C7C433D7;
-        Mon, 15 Aug 2022 19:05:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC98E612A0;
+        Mon, 15 Aug 2022 19:05:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD08DC433D6;
+        Mon, 15 Aug 2022 19:05:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590322;
-        bh=K+svWRMsaEDa8GRYueGfU8Qrf+A3W7XHXheGz2uplTA=;
+        s=korg; t=1660590332;
+        bh=8vSjHVpVmaE8n11iZ1ypcPCHI5yaSqylemBc/YbUFbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y7dEWDRUUGy+bmQgZpEBs3dCusKhE5TNigGbss5QawP/LF9lJu0iQvheGH+1drxfH
-         0dmHUq1T+/1jRl/v+HJ3vR6ADeUHkoCOdHNmFpuhRTRuwlEg6YlPnBn1BsKEi2i45z
-         x1vEjwj/Iq594w3KUu845z56yxiW8vOkjJgD3Zl0=
+        b=gsB5Ok1o9mAPDRy+ovbLb0S4NgCM21trbBgwieVkOXkNqogn2TJJNFp8qK9jwEQso
+         xejfHRN8sDsNHY37M6LSQCiognftN8Qj3y0N09H4d79GDzPj6wXx8Wfep3DF0J+t50
+         aeoQiVxDSG43lV1sr3EhIJlqk/dJgx4jKvIWerSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Omar Avelar <omar.avelar@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0223/1095] ACPI: APEI: Fix _EINJ vs EFI_MEMORY_SP
-Date:   Mon, 15 Aug 2022 19:53:42 +0200
-Message-Id: <20220815180438.934104323@linuxfoundation.org>
+Subject: [PATCH 5.18 0225/1095] ARM: dts: qcom: msm8974-samsung-klte: move gpio-keys out of soc
+Date:   Mon, 15 Aug 2022 19:53:44 +0200
+Message-Id: <20220815180439.011443504@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,39 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit b13a3e5fd40b7d1b394c5ecbb5eb301a4c38e7b2 ]
+[ Upstream commit c19865df6b142276ec4371ad534a1eb6fef5782d ]
 
-When a platform marks a memory range as "special purpose" it is not
-onlined as System RAM by default. However, it is still suitable for
-error injection. Add IORES_DESC_SOFT_RESERVED to einj_error_inject() as
-a permissible memory type in the sanity checking of the arguments to
-_EINJ.
+The GPIO keys are not part of SoC and they should be defined inside of
+the root node.
 
-Fixes: 262b45ae3ab4 ("x86/efi: EFI soft reservation to E820 enumeration")
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Reported-by: Omar Avelar <omar.avelar@intel.com>
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220401201035.189106-6-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/einj.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../boot/dts/qcom-msm8974-samsung-klte.dts    | 64 +++++++++----------
+ 1 file changed, 32 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/acpi/apei/einj.c b/drivers/acpi/apei/einj.c
-index 95cc2a9f3e05..49b5e317e916 100644
---- a/drivers/acpi/apei/einj.c
-+++ b/drivers/acpi/apei/einj.c
-@@ -546,6 +546,8 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
- 				!= REGION_INTERSECTS) &&
- 	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_PERSISTENT_MEMORY)
- 				!= REGION_INTERSECTS) &&
-+	     (region_intersects(base_addr, size, IORESOURCE_MEM, IORES_DESC_SOFT_RESERVED)
-+				!= REGION_INTERSECTS) &&
- 	     !arch_is_platform_page(base_addr)))
- 		return -EINVAL;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+index 96e1c978b878..6e036a440532 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+@@ -20,6 +20,38 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
  
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&gpio_keys_pin_a>;
++
++		volume-down {
++			label = "volume_down";
++			gpios = <&pma8084_gpios 2 GPIO_ACTIVE_LOW>;
++			linux,input-type = <1>;
++			linux,code = <KEY_VOLUMEDOWN>;
++			debounce-interval = <15>;
++		};
++
++		home-key {
++			label = "home_key";
++			gpios = <&pma8084_gpios 3 GPIO_ACTIVE_LOW>;
++			linux,input-type = <1>;
++			linux,code = <KEY_HOMEPAGE>;
++			wakeup-source;
++			debounce-interval = <15>;
++		};
++
++		volume-up {
++			label = "volume_up";
++			gpios = <&pma8084_gpios 5 GPIO_ACTIVE_LOW>;
++			linux,input-type = <1>;
++			linux,code = <KEY_VOLUMEUP>;
++			debounce-interval = <15>;
++		};
++	};
++
+ 	smd {
+ 		rpm {
+ 			rpm_requests {
+@@ -347,38 +379,6 @@ bluetooth {
+ 		};
+ 	};
+ 
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_keys_pin_a>;
+-
+-		volume-down {
+-			label = "volume_down";
+-			gpios = <&pma8084_gpios 2 GPIO_ACTIVE_LOW>;
+-			linux,input-type = <1>;
+-			linux,code = <KEY_VOLUMEDOWN>;
+-			debounce-interval = <15>;
+-		};
+-
+-		home-key {
+-			label = "home_key";
+-			gpios = <&pma8084_gpios 3 GPIO_ACTIVE_LOW>;
+-			linux,input-type = <1>;
+-			linux,code = <KEY_HOMEPAGE>;
+-			wakeup-source;
+-			debounce-interval = <15>;
+-		};
+-
+-		volume-up {
+-			label = "volume_up";
+-			gpios = <&pma8084_gpios 5 GPIO_ACTIVE_LOW>;
+-			linux,input-type = <1>;
+-			linux,code = <KEY_VOLUMEUP>;
+-			debounce-interval = <15>;
+-		};
+-	};
+-
+ 	pinctrl@fd510000 {
+ 		blsp2_uart8_pins_active: blsp2-uart8-pins-active {
+ 			pins = "gpio45", "gpio46", "gpio47", "gpio48";
 -- 
 2.35.1
 
