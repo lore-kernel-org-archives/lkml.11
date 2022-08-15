@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E02F1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC04C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353938AbiHOXkA (ORCPT
+        id S1353722AbiHOXkI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
+        Mon, 15 Aug 2022 19:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353929AbiHOXg5 (ORCPT
+        with ESMTP id S1353684AbiHOXf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:36:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C72A152411;
-        Mon, 15 Aug 2022 13:09:34 -0700 (PDT)
+        Mon, 15 Aug 2022 19:35:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCF515175B;
+        Mon, 15 Aug 2022 13:09:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E67E260DE3;
-        Mon, 15 Aug 2022 20:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB6EBC433D7;
-        Mon, 15 Aug 2022 20:09:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAC7EB810C5;
+        Mon, 15 Aug 2022 20:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4341CC433D6;
+        Mon, 15 Aug 2022 20:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594173;
-        bh=kxzoYOEPOH9+Y+3lO+DaaJftUEo51nXgjw+Ns0g0fJM=;
+        s=korg; t=1660594148;
+        bh=Wv64WLePaMTiYT8GLdGRrBr0tGS1ZDL3nXXoLhy+o/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PBaGZb9ljwf2AccU0achhb3OJLG65Ratxl1Qt4XGE/5N6r8aTM6Yq4BXBW8QpWXVM
-         i96k1fOTu/2Zj00wiPgPpFvNSvFj6QtlTfKOFrIfMinl4L97xIaJ3ARxUzQKnlIA4k
-         HKiPliBgkuGWZKEgrKgWWNtLoGWWWUzcTLF5I1K4=
+        b=B064PjaZTQrG0HszkWjEF4LMgSQ+/SkHPZIN9ycaR1jR0qJio/wGS3owFxrd1HjYT
+         KEVQPxFfXiKjxrdpw2pHsEPqkRwKDesLyyJgAtdpMG4A3MKYGm+UpE0WKH2PXjgVBA
+         YtNBZ+hwLoz1dH756pbn3Mt4+GQ7+BdCjy7L5dwg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1067/1095] KEYS: asymmetric: enforce SM2 signature use pkey algo
-Date:   Mon, 15 Aug 2022 20:07:46 +0200
-Message-Id: <20220815180513.186363638@linuxfoundation.org>
+Subject: [PATCH 5.19 0386/1157] drm/amd: Dont show warning on reading vbios values for SMU13 3.1
+Date:   Mon, 15 Aug 2022 19:55:42 +0200
+Message-Id: <20220815180455.144048569@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 0815291a8fd66cdcf7db1445d4d99b0d16065829 ]
+[ Upstream commit 1320d6c7b0deb7219701a55397e93e6c73d00366 ]
 
-The signature verification of SM2 needs to add the Za value and
-recalculate sig->digest, which requires the detection of the pkey_algo
-in public_key_verify_signature(). As Eric Biggers said, the pkey_algo
-field in sig is attacker-controlled and should be use pkey->pkey_algo
-instead of sig->pkey_algo, and secondly, if sig->pkey_algo is NULL, it
-will also cause signature verification failure.
+Some APUs with SMU13 are showing the following message:
+`amdgpu 0000:63:00.0: amdgpu: Unexpected and unhandled version: 3.1`
 
-The software_key_determine_akcipher() already forces the algorithms
-are matched, so the SM3 algorithm is enforced in the SM2 signature,
-although this has been checked, we still avoid using any algorithm
-information in the signature as input.
+This warning isn't relevant for smu info 3.1, as no bootup information
+is present in the table.
 
-Fixes: 215525639631 ("X.509: support OSCCA SM2-with-SM3 certificate verification")
-Reported-by: Eric Biggers <ebiggers@google.com>
-Cc: stable@vger.kernel.org # v5.10+
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 593a54f18031 ("drm/amd/pm: correct the way for retrieving bootup clocks")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/asymmetric_keys/public_key.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/crypto/asymmetric_keys/public_key.c b/crypto/asymmetric_keys/public_key.c
-index 7c9e6be35c30..2f8352e88860 100644
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -304,6 +304,10 @@ static int cert_sig_digest_update(const struct public_key_signature *sig,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index ef9b56de143b..5aa08c031f72 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -714,6 +714,8 @@ int smu_v13_0_get_vbios_bootup_values(struct smu_context *smu)
+ 			smu->smu_table.boot_values.vclk = smu_info_v3_6->bootup_vclk_10khz;
+ 			smu->smu_table.boot_values.dclk = smu_info_v3_6->bootup_dclk_10khz;
+ 			smu->smu_table.boot_values.fclk = smu_info_v3_6->bootup_fclk_10khz;
++		} else if ((frev == 3) && (crev == 1)) {
++			return 0;
+ 		} else if ((frev == 4) && (crev == 0)) {
+ 			smu_info_v4_0 = (struct atom_smu_info_v4_0 *)header;
  
- 	BUG_ON(!sig->data);
- 
-+	/* SM2 signatures always use the SM3 hash algorithm */
-+	if (!sig->hash_algo || strcmp(sig->hash_algo, "sm3") != 0)
-+		return -EINVAL;
-+
- 	ret = sm2_compute_z_digest(tfm_pkey, SM2_DEFAULT_USERID,
- 					SM2_DEFAULT_USERID_LEN, dgst);
- 	if (ret)
-@@ -414,8 +418,7 @@ int public_key_verify_signature(const struct public_key *pkey,
- 	if (ret)
- 		goto error_free_key;
- 
--	if (sig->pkey_algo && strcmp(sig->pkey_algo, "sm2") == 0 &&
--	    sig->data_size) {
-+	if (strcmp(pkey->pkey_algo, "sm2") == 0 && sig->data_size) {
- 		ret = cert_sig_digest_update(sig, tfm);
- 		if (ret)
- 			goto error_free_key;
 -- 
 2.35.1
 
