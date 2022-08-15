@@ -2,107 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFE3C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7284CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241756AbiHONen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        id S242588AbiHONfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiHONel (ORCPT
+        with ESMTP id S242071AbiHONfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:34:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B114920F58;
-        Mon, 15 Aug 2022 06:34:40 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FDEIQ1027150;
-        Mon, 15 Aug 2022 13:32:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=uZ/gxg4vwNI6HXYTM5WtTwqBD5xiz145jUdLuTNzlO8=;
- b=K+vfDuUO+MnNMVtKMlY95pl7vMYTvxjNayVwBZPhe91x8k0IjdiCAxhUEmY4eyymlahh
- xUx/DwupRRNVtajezziJOYoHrmOL69zoivO8lPv2crRN4is4pFOphY/wRRiPiOwzMwqi
- 6rWDwM/B1BaFWUgBTggMmY88b6EhW3tDO89JB0pF03An5VOmXtbd6EgWDsCFbPzFQM6Q
- uZvGzoqtSAIk+sQZkzQz290aHr2cCMFGKfCUdQiw1i4M46leqJKQs36E3RicJtSRgvIw
- DlaQNyowDfmowsIkE2nBg/HlYfdFukxsVyLa2IyngNjOp0ecwHknE8Hflk/pe6BDkU7R jw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyny39s47-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:32:22 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FDTcdW019263;
-        Mon, 15 Aug 2022 13:32:21 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyny39s3v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:32:21 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FDM3Qr006945;
-        Mon, 15 Aug 2022 13:32:20 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma01dal.us.ibm.com with ESMTP id 3hx3ka76kc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:32:20 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FDWJVB35913988
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Aug 2022 13:32:19 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A55ECB2068;
-        Mon, 15 Aug 2022 13:32:19 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7EE68B2064;
-        Mon, 15 Aug 2022 13:32:19 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 13:32:19 +0000 (GMT)
-Message-ID: <94d1ba97-3fcf-bb75-ce3e-d6a8ca712ece@linux.ibm.com>
-Date:   Mon, 15 Aug 2022 09:32:19 -0400
+        Mon, 15 Aug 2022 09:35:09 -0400
+X-Greylist: delayed 347 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 06:35:07 PDT
+Received: from forward100o.mail.yandex.net (forward100o.mail.yandex.net [37.140.190.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB8320F68;
+        Mon, 15 Aug 2022 06:35:07 -0700 (PDT)
+Received: from forward503p.mail.yandex.net (forward503p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:122])
+        by forward100o.mail.yandex.net (Yandex) with ESMTP id 61BB052ABA4F;
+        Mon, 15 Aug 2022 16:24:02 +0300 (MSK)
+Received: from iva1-dcde80888020.qloud-c.yandex.net (iva1-dcde80888020.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7695:0:640:dcde:8088])
+        by forward503p.mail.yandex.net (Yandex) with ESMTP id 49E5511018E6;
+        Mon, 15 Aug 2022 16:22:59 +0300 (MSK)
+Received: by iva1-dcde80888020.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id BL0XdiM9S6-Mvi4Dxrs;
+        Mon, 15 Aug 2022 16:22:57 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1660569778;
+        bh=Pn3L6cXxvX9m7wl4hmev8LZGUCinVPWeTkQjWKkyw4Y=;
+        h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
+        b=Ic1PN/9REPOl1gnzimegeayVri/yEbacitqkG72vxi/iYEZbgZh/GKBJ8KVikBmVu
+         rNSIAhRerd+A+IZogTabK1I2VTuV5slOnQY3jdESYH19lPfT66eVvgeqk9upyoadN/
+         DKvVG/cM3V+9jPWQkpFx0fPPWYx3jNO7Vb6CYsQ4=
+Authentication-Results: iva1-dcde80888020.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, Anup Patel <anup@brainfault.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Kautuk Consul <kconsul@ventanamicro.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v6 1/3] perf tools riscv: Add support for get_cpuid_str function
+Date:   Mon, 15 Aug 2022 16:22:38 +0300
+Message-Id: <20220815132251.25702-2-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220815132251.25702-1-nikita.shubin@maquefel.me>
+References: <20220815132251.25702-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v7 0/6] tpm: Preserve TPM measurement log across kexec
- (ppc64)
-Content-Language: en-US
-To:     Coiby Xu <coxu@redhat.com>
-Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
-        nasastry@in.ibm.com, mpe@ellerman.id.au
-References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
- <20220815064813.77g6icbkygrbmapa@Rk>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220815064813.77g6icbkygrbmapa@Rk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4ptO3BKkSCoh7-5bQX2n7qnM51LmKpyR
-X-Proofpoint-ORIG-GUID: SjJwR0iv4r6SJJUKhXKap-xyAeb2ZD_C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- lowpriorityscore=0 clxscore=1015 mlxscore=0 spamscore=0 mlxlogscore=999
- phishscore=0 priorityscore=1501 suspectscore=0 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208150051
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nikita Shubin <n.shubin@yadro.com>
 
+The get_cpuid_str function returns the string that
+contains values of MVENDORID, MARCHID and MIMPID in
+hex format separated by coma.
 
-On 8/15/22 02:48, Coiby Xu wrote:
-> I can confirm this patch set fixes an issue that guest kdump kernel
-> crashes on POWER9 host by applying it to 5.19.1 (there is a conflict
-> when applying this patch set to latest kernel i.e. 6.0.0-rc1)
+The values themselves are taken from first cpu entry
+in "/proc/cpuid" that contains "mvendorid", "marchid"
+and "mimpid".
 
-I rebased it. 2 of the borrowed patches disappeared now since they are 
-upstream already and the rest applied without conflict...
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+Tested-by: Kautuk Consul <kconsul@ventanamicro.com>
+---
+ tools/perf/arch/riscv/util/Build    |   1 +
+ tools/perf/arch/riscv/util/header.c | 104 ++++++++++++++++++++++++++++
+ 2 files changed, 105 insertions(+)
+ create mode 100644 tools/perf/arch/riscv/util/header.c
 
-> 
-> Tested-by: Coiby Xu <coxu@redhat.com>
+diff --git a/tools/perf/arch/riscv/util/Build b/tools/perf/arch/riscv/util/Build
+index 7d3050134ae0..603dbb5ae4dc 100644
+--- a/tools/perf/arch/riscv/util/Build
++++ b/tools/perf/arch/riscv/util/Build
+@@ -1,4 +1,5 @@
+ perf-y += perf_regs.o
++perf-y += header.o
+ 
+ perf-$(CONFIG_DWARF) += dwarf-regs.o
+ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
+diff --git a/tools/perf/arch/riscv/util/header.c b/tools/perf/arch/riscv/util/header.c
+new file mode 100644
+index 000000000000..4a41856938a8
+--- /dev/null
++++ b/tools/perf/arch/riscv/util/header.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Implementation of get_cpuid().
++ *
++ * Author: Nikita Shubin <n.shubin@yadro.com>
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <api/fs/fs.h>
++#include <errno.h>
++#include "../../util/debug.h"
++#include "../../util/header.h"
++
++#define CPUINFO_MVEN	"mvendorid"
++#define CPUINFO_MARCH	"marchid"
++#define CPUINFO_MIMP	"mimpid"
++#define CPUINFO		"/proc/cpuinfo"
++
++static char *_get_field(const char *line)
++{
++	char *line2, *nl;
++
++	line2 = strrchr(line, ' ');
++	if (!line2)
++		return NULL;
++
++	line2++;
++	nl = strrchr(line, '\n');
++	if (!nl)
++		return NULL;
++
++	return strndup(line2, nl - line2);
++}
++
++static char *_get_cpuid(void)
++{
++	char *line = NULL;
++	char *mvendorid = NULL;
++	char *marchid = NULL;
++	char *mimpid = NULL;
++	char *cpuid = NULL;
++	int read;
++	unsigned long line_sz;
++	FILE *cpuinfo;
++
++	cpuinfo = fopen(CPUINFO, "r");
++	if (cpuinfo == NULL)
++		return cpuid;
++
++	while ((read = getline(&line, &line_sz, cpuinfo)) != -1) {
++		if (!strncmp(line, CPUINFO_MVEN, strlen(CPUINFO_MVEN))) {
++			mvendorid = _get_field(line);
++			if (!mvendorid)
++				goto free;
++		} else if (!strncmp(line, CPUINFO_MARCH, strlen(CPUINFO_MARCH))) {
++			marchid = _get_field(line);
++			if (!marchid)
++				goto free;
++		} else if (!strncmp(line, CPUINFO_MIMP, strlen(CPUINFO_MIMP))) {
++			mimpid = _get_field(line);
++			if (!mimpid)
++				goto free;
++
++			break;
++		}
++	}
++
++	if (!mvendorid || !marchid || !mimpid)
++		goto free;
++
++	if (asprintf(&cpuid, "%s-%s-%s", mvendorid, marchid, mimpid) < 0)
++		cpuid = NULL;
++
++free:
++	fclose(cpuinfo);
++	free(mvendorid);
++	free(marchid);
++	free(mimpid);
++
++	return cpuid;
++}
++
++int get_cpuid(char *buffer, size_t sz)
++{
++	char *cpuid = _get_cpuid();
++	int ret = 0;
++
++	if (sz < strlen(cpuid)) {
++		ret = -EINVAL;
++		goto free;
++	}
++
++	scnprintf(buffer, sz, "%s", cpuid);
++free:
++	free(cpuid);
++	return ret;
++}
++
++char *
++get_cpuid_str(struct perf_pmu *pmu __maybe_unused)
++{
++	return _get_cpuid();
++}
+-- 
+2.35.1
 
-Thanks.
