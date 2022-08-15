@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B17C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EEBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348318AbiHOWW4 (ORCPT
+        id S1348348AbiHOWXH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        Mon, 15 Aug 2022 18:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350642AbiHOWSJ (ORCPT
+        with ESMTP id S1350693AbiHOWSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87534123C94;
-        Mon, 15 Aug 2022 12:41:14 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8255123CA2;
+        Mon, 15 Aug 2022 12:41:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC4E960FB9;
-        Mon, 15 Aug 2022 19:41:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88B9C433D6;
-        Mon, 15 Aug 2022 19:41:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CB83B80EA8;
+        Mon, 15 Aug 2022 19:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3EA4C433D6;
+        Mon, 15 Aug 2022 19:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592473;
-        bh=Dh+emGNHm1D8DGNCBwnBuEUQw+j66ciJrWboMiUcFmQ=;
+        s=korg; t=1660592476;
+        bh=hwUVotYLPPfsowZItZNAHswZcEHPnU+JPQbbWO55Yh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2hbG9WGG4a9VKrgFlXqECyjd++5MFlOy1+Qj5h+2OI/SFB9zz1I91s9vy8BVIFTi
-         +p9f+IsC+a6+jBCmPHTXs1dzfijkh2Pr0zZjwRsJ3c1owln7iU1hkORpausK3I0B4g
-         C/ERQa1Bv7oQ0nS4R/9+ZLYRNO//c8V0hWVo8xac=
+        b=VYjiEfsLDucngGw8/pwzs5BOPfNtIpxWP2DQr8FgWaLidTsBdgrDkF6dZrAVy5TWK
+         qVaaD//4ORr83zkIN0QC1dPWnyp4j4L792Oj1wr78nxbmnJIUD+R9+l4i5ObqlO9Qd
+         CGaX3R4YDK+4/gmrenmMi5LsVKWOiVs7Qrr8Y188=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6e1efbd8efaaa6860e91@syzkaller.appspotmail.com,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.19 0115/1157] fuse: write inode in fuse_release()
-Date:   Mon, 15 Aug 2022 19:51:11 +0200
-Message-Id: <20220815180444.224814123@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christopher Obbard <chris.obbard@collabora.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0763/1095] um: random: Dont initialise hwrng struct with zero
+Date:   Mon, 15 Aug 2022 20:02:42 +0200
+Message-Id: <20220815180500.829772755@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Christopher Obbard <chris.obbard@collabora.com>
 
-commit 035ff33cf4db101250fb980a3941bf078f37a544 upstream.
+[ Upstream commit 9e70cbd11b03889c92462cf52edb2bd023c798fa ]
 
-A race between write(2) and close(2) allows pages to be dirtied after
-fuse_flush -> write_inode_now().  If these pages are not flushed from
-fuse_release(), then there might not be a writable open file later.  So any
-remaining dirty pages must be written back before the file is released.
+Initialising the hwrng struct with zeros causes a
+compile-time sparse warning:
 
-This is a partial revert of the blamed commit.
+ $ ARCH=um make -j10 W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+ ...
+ CHECK   arch/um/drivers/random.c
+ arch/um/drivers/random.c:31:31: sparse: warning: Using plain integer as NULL pointer
 
-Reported-by: syzbot+6e1efbd8efaaa6860e91@syzkaller.appspotmail.com
-Fixes: 36ea23374d1f ("fuse: write inode in fuse_vma_close() instead of fuse_release()")
-Cc: <stable@vger.kernel.org> # v5.16
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix the warning by not initialising the hwrng struct
+with zeros as it is initialised anyway during module
+init.
+
+Fixes: 72d3e093afae ("um: random: Register random as hwrng-core device")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/file.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/um/drivers/random.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -338,6 +338,15 @@ static int fuse_open(struct inode *inode
+diff --git a/arch/um/drivers/random.c b/arch/um/drivers/random.c
+index 433a3f8f2ef3..32b3341fe970 100644
+--- a/arch/um/drivers/random.c
++++ b/arch/um/drivers/random.c
+@@ -28,7 +28,7 @@
+  * protects against a module being loaded twice at the same time.
+  */
+ static int random_fd = -1;
+-static struct hwrng hwrng = { 0, };
++static struct hwrng hwrng;
+ static DECLARE_COMPLETION(have_data);
  
- static int fuse_release(struct inode *inode, struct file *file)
- {
-+	struct fuse_conn *fc = get_fuse_conn(inode);
-+
-+	/*
-+	 * Dirty pages might remain despite write_inode_now() call from
-+	 * fuse_flush() due to writes racing with the close.
-+	 */
-+	if (fc->writeback_cache)
-+		write_inode_now(inode, 1);
-+
- 	fuse_release_common(file, false);
- 
- 	/* return value is ignored by VFS */
+ static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
+-- 
+2.35.1
+
 
 
