@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC24C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31658C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245178AbiHOXZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
+        id S243474AbiHOXZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345398AbiHOXVA (ORCPT
+        with ESMTP id S1345663AbiHOXVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:21:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9CBB4EB8;
-        Mon, 15 Aug 2022 13:04:23 -0700 (PDT)
+        Mon, 15 Aug 2022 19:21:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA657E310;
+        Mon, 15 Aug 2022 13:04:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E52C260025;
-        Mon, 15 Aug 2022 20:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39EFC4314C;
-        Mon, 15 Aug 2022 20:04:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 825D0B80EAD;
+        Mon, 15 Aug 2022 20:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C81C433D6;
+        Mon, 15 Aug 2022 20:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593862;
-        bh=kAyO+nz/zUmhS98Qlahcj3U4y3xPvdN4M6aw9dZu9FM=;
+        s=korg; t=1660593865;
+        bh=6gCWjmv5tYGelzrU5oWEcn0Doq9gcjuvzlCs1uhKIrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EHkhlM4EBymbwUhrO6ZftZponsYfdUjs02q9U69llGuTdiDu3kfrQ61MNxQGMERcN
-         aYe4ptMTYj6QOQU5EkoOwZKwkkb+0hf8622LbTRYRzK/YTq3Y9jT1IrqJyokTaHfoq
-         BTylnmWYn/UjBa9r/GTrzfv4iMvGvuC0G1Ea+/U4=
+        b=E3siX/0DB7P1ba5duXs+jkWDnryQ4BdmZJ0bkSwFPxJfqgZnTHEF4D0B+XyuoKXqV
+         G1eIh/i/uP5t5u3bmHFg5mPeP/QgcQqU9Dlk8ONpynbtni2QkKJ5WRZG+gLsjY63DT
+         Ero2KUnNYgbhnBeQchX62EOZVT6FWKnV7viCQ2xs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Jocelyn Falempe <jfalempe@redhat.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>,
-        dri-devel@lists.freedesktop.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0310/1157] drm/mgag200: Acquire I/O lock while reading EDID
-Date:   Mon, 15 Aug 2022 19:54:26 +0200
-Message-Id: <20220815180452.062508070@linuxfoundation.org>
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0337/1157] drm/mediatek: Modify dsi funcs to atomic operations
+Date:   Mon, 15 Aug 2022 19:54:53 +0200
+Message-Id: <20220815180453.151425943@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,64 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-[ Upstream commit 5913ab941d6ea782e841234c76958c6872ea752d ]
+[ Upstream commit 7f6335c6a258edf4d5ff1b904bc033188dc7b48b ]
 
-DDC operation conflicts with concurrent mode setting. Acquire the
-driver's I/O lock in get_modes to prevent this. This change should
-have been part of commit 931e3f3a0e99 ("drm/mgag200: Protect
-concurrent access to I/O registers with lock"), but apparently got
-lost somewhere.
+Because .enable & .disable are deprecated.
+Use .atomic_enable & .atomic_disable instead.
 
-v3:
-	* fix commit message to say 'drm/mgag200' (Jocelyn)
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 931e3f3a0e99 ("drm/mgag200: Protect concurrent access to I/O registers with lock")
-Reviewed-by: Jocelyn Falempe <jfalempe@redhat.com>
-Tested-by: Jocelyn Falempe <jfalempe@redhat.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Jocelyn Falempe <jfalempe@redhat.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Dave Airlie <airlied@redhat.com>
-Cc: dri-devel@lists.freedesktop.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220516134343.6085-2-tzimmermann@suse.de
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-2-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mgag200/mgag200_mode.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/mgag200/mgag200_mode.c b/drivers/gpu/drm/mgag200/mgag200_mode.c
-index abde7655477d..4ad8d62c5631 100644
---- a/drivers/gpu/drm/mgag200/mgag200_mode.c
-+++ b/drivers/gpu/drm/mgag200/mgag200_mode.c
-@@ -667,16 +667,26 @@ static void mgag200_disable_display(struct mga_device *mdev)
- 
- static int mga_vga_get_modes(struct drm_connector *connector)
- {
-+	struct mga_device *mdev = to_mga_device(connector->dev);
- 	struct mga_connector *mga_connector = to_mga_connector(connector);
- 	struct edid *edid;
- 	int ret = 0;
- 
-+	/*
-+	 * Protect access to I/O registers from concurrent modesetting
-+	 * by acquiring the I/O-register lock.
-+	 */
-+	mutex_lock(&mdev->rmmio_lock);
-+
- 	edid = drm_get_edid(connector, &mga_connector->i2c->adapter);
- 	if (edid) {
- 		drm_connector_update_edid_property(connector, edid);
- 		ret = drm_add_edid_modes(connector, edid);
- 		kfree(edid);
- 	}
-+
-+	mutex_unlock(&mdev->rmmio_lock);
-+
- 	return ret;
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index d9f10a33e6fa..6e7793f935da 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -763,14 +763,16 @@ static void mtk_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	drm_display_mode_to_videomode(adjusted, &dsi->vm);
  }
+ 
+-static void mtk_dsi_bridge_disable(struct drm_bridge *bridge)
++static void mtk_dsi_bridge_atomic_disable(struct drm_bridge *bridge,
++					  struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+ 
+ 	mtk_output_dsi_disable(dsi);
+ }
+ 
+-static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
++static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
++					 struct drm_bridge_state *old_bridge_state)
+ {
+ 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+ 
+@@ -779,8 +781,8 @@ static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
+ 
+ static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
+ 	.attach = mtk_dsi_bridge_attach,
+-	.disable = mtk_dsi_bridge_disable,
+-	.enable = mtk_dsi_bridge_enable,
++	.atomic_disable = mtk_dsi_bridge_atomic_disable,
++	.atomic_enable = mtk_dsi_bridge_atomic_enable,
+ 	.mode_set = mtk_dsi_bridge_mode_set,
+ };
  
 -- 
 2.35.1
