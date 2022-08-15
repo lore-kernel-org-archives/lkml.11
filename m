@@ -2,133 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76CBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D03D2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346748AbiHOWJ7 (ORCPT
+        id S1346177AbiHOWKS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        Mon, 15 Aug 2022 18:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345784AbiHOWIN (ORCPT
+        with ESMTP id S1345798AbiHOWIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:08:13 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28119118474;
-        Mon, 15 Aug 2022 12:38:01 -0700 (PDT)
-Received: from dslb-188-096-143-237.188.096.pools.vodafone-ip.de ([188.96.143.237] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1oNfuO-000485-Fg; Mon, 15 Aug 2022 21:37:56 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Olivia Mackall <olivia@selenic.com>
-Cc:     linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 1/2] hwrng: imx-rngc - use devm_clk_get_enabled
-Date:   Mon, 15 Aug 2022 21:37:42 +0200
-Message-Id: <20220815193743.105926-2-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220815193743.105926-1-martin@kaiser.cx>
-References: <20220815193743.105926-1-martin@kaiser.cx>
+        Mon, 15 Aug 2022 18:08:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCA430F66;
+        Mon, 15 Aug 2022 12:38:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B72BB81136;
+        Mon, 15 Aug 2022 19:38:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DB49C433C1;
+        Mon, 15 Aug 2022 19:38:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660592281;
+        bh=Eu2Too71nkRvOCWXDlOSR3/DmXmFVsTh3FCCzEj3Lqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xpAfMpjXOcEOryS5oSqyddKpa2DMx+6RUEBoMUa5XDNB3flVbIriK8batxx/kC7Q5
+         GRnyggE0txKIZuiiqdAy4EBHHUp8fmvOq63G7TePuNP+oRplUWIy8VB+XomX+5Qfgi
+         DpT9GO1GM6pN4YKcM12XRnTNuscMCTArk2BjfvjM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vidya Sagar <vidyas@nvidia.com>, Rob Herring <robh@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0726/1095] PCI: dwc: Always enable CDM check if "snps,enable-cdm-check" exists
+Date:   Mon, 15 Aug 2022 20:02:05 +0200
+Message-Id: <20220815180459.405688322@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new devm_clk_get_enabled function to get our clock.
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-We don't have to disable and unprepare the clock ourselves any more in
-error paths and in the remove function.
+[ Upstream commit ec7b952f453ce7eabe7e1bea584626934d44f668 ]
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+If the "snps,enable-cdm-check" property exists, we should enable the CDM
+check.  But previously dw_pcie_setup() could exit before doing so if the
+"num-lanes" property was absent or invalid.
+
+Move the CDM enable earlier so we do it regardless of whether "num-lanes"
+is present.
+
+[bhelgaas: commit log]
+Fixes: 07f123def73e ("PCI: dwc: Add support to enable CDM register check")
+Link: https://lore.kernel.org/r/20220624143428.8334-7-Sergey.Semin@baikalelectronics.ru
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/imx-rngc.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/char/hw_random/imx-rngc.c b/drivers/char/hw_random/imx-rngc.c
-index 4345df012d8f..23f490204341 100644
---- a/drivers/char/hw_random/imx-rngc.c
-+++ b/drivers/char/hw_random/imx-rngc.c
-@@ -245,7 +245,7 @@ static int imx_rngc_probe(struct platform_device *pdev)
- 	if (IS_ERR(rngc->base))
- 		return PTR_ERR(rngc->base);
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index 347251bf87d0..5848cc520b52 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -740,6 +740,13 @@ void dw_pcie_setup(struct dw_pcie *pci)
+ 	val |= PORT_LINK_DLL_LINK_EN;
+ 	dw_pcie_writel_dbi(pci, PCIE_PORT_LINK_CONTROL, val);
  
--	rngc->clk = devm_clk_get(&pdev->dev, NULL);
-+	rngc->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(rngc->clk)) {
- 		dev_err(&pdev->dev, "Can not get rng_clk\n");
- 		return PTR_ERR(rngc->clk);
-@@ -255,26 +255,20 @@ static int imx_rngc_probe(struct platform_device *pdev)
- 	if (irq < 0)
- 		return irq;
- 
--	ret = clk_prepare_enable(rngc->clk);
--	if (ret)
--		return ret;
++	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
++		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
++		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
++		       PCIE_PL_CHK_REG_CHK_REG_START;
++		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
++	}
++
+ 	of_property_read_u32(np, "num-lanes", &pci->num_lanes);
+ 	if (!pci->num_lanes) {
+ 		dev_dbg(pci->dev, "Using h/w default number of lanes\n");
+@@ -786,11 +793,4 @@ void dw_pcie_setup(struct dw_pcie *pci)
+ 		break;
+ 	}
+ 	dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, val);
 -
- 	ver_id = readl(rngc->base + RNGC_VER_ID);
- 	rng_type = ver_id >> RNGC_TYPE_SHIFT;
- 	/*
- 	 * This driver supports only RNGC and RNGB. (There's a different
- 	 * driver for RNGA.)
- 	 */
--	if (rng_type != RNGC_TYPE_RNGC && rng_type != RNGC_TYPE_RNGB) {
--		ret = -ENODEV;
--		goto err;
+-	if (of_property_read_bool(np, "snps,enable-cdm-check")) {
+-		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
+-		val |= PCIE_PL_CHK_REG_CHK_REG_CONTINUOUS |
+-		       PCIE_PL_CHK_REG_CHK_REG_START;
+-		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
 -	}
-+	if (rng_type != RNGC_TYPE_RNGC && rng_type != RNGC_TYPE_RNGB)
-+		return -ENODEV;
- 
- 	ret = devm_request_irq(&pdev->dev,
- 			irq, imx_rngc_irq, 0, pdev->name, (void *)rngc);
- 	if (ret) {
- 		dev_err(rngc->dev, "Can't get interrupt working.\n");
--		goto err;
-+		return ret;
- 	}
- 
- 	init_completion(&rngc->rng_op_done);
-@@ -294,14 +288,14 @@ static int imx_rngc_probe(struct platform_device *pdev)
- 		ret = imx_rngc_self_test(rngc);
- 		if (ret) {
- 			dev_err(rngc->dev, "self test failed\n");
--			goto err;
-+			return ret;
- 		}
- 	}
- 
- 	ret = hwrng_register(&rngc->rng);
- 	if (ret) {
- 		dev_err(&pdev->dev, "hwrng registration failed\n");
--		goto err;
-+		return ret;
- 	}
- 
- 	dev_info(&pdev->dev,
-@@ -309,11 +303,6 @@ static int imx_rngc_probe(struct platform_device *pdev)
- 		rng_type == RNGC_TYPE_RNGB ? 'B' : 'C',
- 		(ver_id >> RNGC_VER_MAJ_SHIFT) & 0xff, ver_id & 0xff);
- 	return 0;
--
--err:
--	clk_disable_unprepare(rngc->clk);
--
--	return ret;
  }
- 
- static int __exit imx_rngc_remove(struct platform_device *pdev)
-@@ -322,8 +311,6 @@ static int __exit imx_rngc_remove(struct platform_device *pdev)
- 
- 	hwrng_unregister(&rngc->rng);
- 
--	clk_disable_unprepare(rngc->clk);
--
- 	return 0;
- }
- 
 -- 
-2.30.2
+2.35.1
+
+
 
