@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27727C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79C3C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243234AbiHOXXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54140 "EHLO
+        id S243569AbiHOXX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234174AbiHOXRH (ORCPT
+        with ESMTP id S241347AbiHOXRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:17:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA44149A15;
-        Mon, 15 Aug 2022 13:03:41 -0700 (PDT)
+        Mon, 15 Aug 2022 19:17:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C077CB58;
+        Mon, 15 Aug 2022 13:03:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59A7C612DA;
-        Mon, 15 Aug 2022 20:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6259DC433C1;
-        Mon, 15 Aug 2022 20:03:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23E1DB810C5;
+        Mon, 15 Aug 2022 20:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DFEEC433D6;
+        Mon, 15 Aug 2022 20:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593819;
-        bh=AwT3hcAJvFxenTj1NVvhczIFkFp0UrMMz3+/fm3VJqA=;
+        s=korg; t=1660593816;
+        bh=u+YTZMnI+mHY8ePME3H/NiQfW4K6V1KRiwc+uCFjTLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CLDQNZUrX6wFUFph7R5/J3kTquN8ReRyi3Kh5aL1Ow2WyRjspaQTmY6bW++Zaz1bA
-         4FiyUf+BER0Bv38Q8w6EvJnYSCySqrOz7+6+QdMIerCBYiNhgxhxXlRq47n6s6M2ri
-         kNmr3uyAB1ULvEHw8VDdZLNCDQ8FrHlFYKnYniVQ=
+        b=r2h0W4twkyg0RcPuzV6b7UGIyznxmqBq9PVOw54aDTeRQwJTZa8ZEgTKrF2mHa55j
+         762DJTGyL34B/c5grCZ62p48qPTa7b9KzlS2FOWnJPC/upSZrIttqded+mfcBvggNj
+         k/Liu3TvvqGrK74gE2CxwAUENeC5kYVtQ5UTivQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jinke Han <hanjinke.666@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1011/1095] block: dont allow the same type rq_qos add more than once
-Date:   Mon, 15 Aug 2022 20:06:50 +0200
-Message-Id: <20220815180510.943662166@linuxfoundation.org>
+Subject: [PATCH 5.19 0330/1157] sample: bpf: xdp_router_ipv4: Allow the kernel to send arp requests
+Date:   Mon, 15 Aug 2022 19:54:46 +0200
+Message-Id: <20220815180452.870580758@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,197 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinke Han <hanjinke.666@bytedance.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 14a6e2eb7df5c7897c15b109cba29ab0c4a791b6 ]
+[ Upstream commit 200a89e3e88786b52bc1dd5f26a310c097f4c6a7 ]
 
-In our test of iocost, we encountered some list add/del corruptions of
-inner_walk list in ioc_timer_fn.
+Forward the packet to the kernel if the gw router mac address is missing
+in to trigger ARP discovery.
 
-The reason can be described as follows:
-
-cpu 0					cpu 1
-ioc_qos_write				ioc_qos_write
-
-ioc = q_to_ioc(queue);
-if (!ioc) {
-        ioc = kzalloc();
-					ioc = q_to_ioc(queue);
-					if (!ioc) {
-						ioc = kzalloc();
-						...
-						rq_qos_add(q, rqos);
-					}
-        ...
-        rq_qos_add(q, rqos);
-        ...
-}
-
-When the io.cost.qos file is written by two cpus concurrently, rq_qos may
-be added to one disk twice. In that case, there will be two iocs enabled
-and running on one disk. They own different iocgs on their active list. In
-the ioc_timer_fn function, because of the iocgs from two iocs have the
-same root iocg, the root iocg's walk_list may be overwritten by each other
-and this leads to list add/del corruptions in building or destroying the
-inner_walk list.
-
-And so far, the blk-rq-qos framework works in case that one instance for
-one type rq_qos per queue by default. This patch make this explicit and
-also fix the crash above.
-
-Signed-off-by: Jinke Han <hanjinke.666@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220720093616.70584-1-hanjinke.666@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 85bf1f51691c ("samples: bpf: Convert xdp_router_ipv4 to XDP samples helper")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/60bde5496d108089080504f58199bcf1143ea938.1653471558.git.lorenzo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-iocost.c    | 20 +++++++++++++-------
- block/blk-iolatency.c | 18 +++++++++++-------
- block/blk-rq-qos.h    | 11 ++++++++++-
- block/blk-wbt.c       | 12 +++++++++++-
- 4 files changed, 45 insertions(+), 16 deletions(-)
+ samples/bpf/xdp_router_ipv4.bpf.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-index 16705fbd0699..a19f2db4eeb2 100644
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -2893,15 +2893,21 @@ static int blk_iocost_init(struct request_queue *q)
- 	 * called before policy activation completion, can't assume that the
- 	 * target bio has an iocg associated and need to test for NULL iocg.
- 	 */
--	rq_qos_add(q, rqos);
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free_ioc;
-+
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iocost);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		free_percpu(ioc->pcpu_stat);
--		kfree(ioc);
--		return ret;
--	}
-+	if (ret)
-+		goto err_del_qos;
- 	return 0;
-+
-+err_del_qos:
-+	rq_qos_del(q, rqos);
-+err_free_ioc:
-+	free_percpu(ioc->pcpu_stat);
-+	kfree(ioc);
-+	return ret;
- }
+diff --git a/samples/bpf/xdp_router_ipv4.bpf.c b/samples/bpf/xdp_router_ipv4.bpf.c
+index 248119ca7938..0643330d1d2e 100644
+--- a/samples/bpf/xdp_router_ipv4.bpf.c
++++ b/samples/bpf/xdp_router_ipv4.bpf.c
+@@ -150,6 +150,15 @@ int xdp_router_ipv4_prog(struct xdp_md *ctx)
  
- static struct blkcg_policy_data *ioc_cpd_alloc(gfp_t gfp)
-diff --git a/block/blk-iolatency.c b/block/blk-iolatency.c
-index 9568bf8dfe82..7845dca5fcfd 100644
---- a/block/blk-iolatency.c
-+++ b/block/blk-iolatency.c
-@@ -773,19 +773,23 @@ int blk_iolatency_init(struct request_queue *q)
- 	rqos->ops = &blkcg_iolatency_ops;
- 	rqos->q = q;
+ 				dest_mac = bpf_map_lookup_elem(&arp_table,
+ 							       &prefix_value->gw);
++				if (!dest_mac) {
++					/* Forward the packet to the kernel in
++					 * order to trigger ARP discovery for
++					 * the default gw.
++					 */
++					if (rec)
++						NO_TEAR_INC(rec->xdp_pass);
++					return XDP_PASS;
++				}
+ 			}
+ 		}
  
--	rq_qos_add(q, rqos);
--
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free;
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iolatency);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		kfree(blkiolat);
--		return ret;
--	}
-+	if (ret)
-+		goto err_qos_del;
- 
- 	timer_setup(&blkiolat->timer, blkiolatency_timer_fn, 0);
- 	INIT_WORK(&blkiolat->enable_work, blkiolatency_enable_work_fn);
- 
- 	return 0;
-+
-+err_qos_del:
-+	rq_qos_del(q, rqos);
-+err_free:
-+	kfree(blkiolat);
-+	return ret;
- }
- 
- static void iolatency_set_min_lat_nsec(struct blkcg_gq *blkg, u64 val)
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index 0e46052b018a..08b856570ad1 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -86,7 +86,7 @@ static inline void rq_wait_init(struct rq_wait *rq_wait)
- 	init_waitqueue_head(&rq_wait->wait);
- }
- 
--static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
-+static inline int rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- {
- 	/*
- 	 * No IO can be in-flight when adding rqos, so freeze queue, which
-@@ -98,6 +98,8 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 	blk_mq_freeze_queue(q);
- 
- 	spin_lock_irq(&q->queue_lock);
-+	if (rq_qos_id(q, rqos->id))
-+		goto ebusy;
- 	rqos->next = q->rq_qos;
- 	q->rq_qos = rqos;
- 	spin_unlock_irq(&q->queue_lock);
-@@ -109,6 +111,13 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 		blk_mq_debugfs_register_rqos(rqos);
- 		mutex_unlock(&q->debugfs_mutex);
- 	}
-+
-+	return 0;
-+ebusy:
-+	spin_unlock_irq(&q->queue_lock);
-+	blk_mq_unfreeze_queue(q);
-+	return -EBUSY;
-+
- }
- 
- static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
-diff --git a/block/blk-wbt.c b/block/blk-wbt.c
-index 0c119be0e813..ae6ea0b54579 100644
---- a/block/blk-wbt.c
-+++ b/block/blk-wbt.c
-@@ -820,6 +820,7 @@ int wbt_init(struct request_queue *q)
- {
- 	struct rq_wb *rwb;
- 	int i;
-+	int ret;
- 
- 	rwb = kzalloc(sizeof(*rwb), GFP_KERNEL);
- 	if (!rwb)
-@@ -846,7 +847,10 @@ int wbt_init(struct request_queue *q)
- 	/*
- 	 * Assign rwb and add the stats callback.
- 	 */
--	rq_qos_add(q, &rwb->rqos);
-+	ret = rq_qos_add(q, &rwb->rqos);
-+	if (ret)
-+		goto err_free;
-+
- 	blk_stat_add_callback(q, rwb->cb);
- 
- 	rwb->min_lat_nsec = wbt_default_latency_nsec(q);
-@@ -855,4 +859,10 @@ int wbt_init(struct request_queue *q)
- 	wbt_set_write_cache(q, test_bit(QUEUE_FLAG_WC, &q->queue_flags));
- 
- 	return 0;
-+
-+err_free:
-+	blk_stat_free_callback(rwb->cb);
-+	kfree(rwb);
-+	return ret;
-+
- }
 -- 
 2.35.1
 
