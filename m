@@ -2,353 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1ADC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42A5C2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241808AbiHOJDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        id S241846AbiHOJDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241659AbiHOJCy (ORCPT
+        with ESMTP id S241792AbiHOJC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:02:54 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BAF2126E;
-        Mon, 15 Aug 2022 02:02:43 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id bh13so6039718pgb.4;
-        Mon, 15 Aug 2022 02:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=YxtlsjuQ7jTdutXjJizluXBc5+9WLkbOgzJagCR+62Y=;
-        b=icZ7E7ZDumxIIhjv6ctLS6uP/+T1O/1OwSc61ZjvA0J1k2ubuU8bWjcJHR8Cq7VF9w
-         YR29OprILy+0WT0Z0yQYK2cKeUALJULIsFSY0/XGQpQUlPySVXHySBJjVBF+fv4TorZg
-         Njl8ZbMVdNXIZ23hiuWMjcj1M2riIrvQTnyPbr96JjPeJEwwuZFPVw+Lz9v1agvGDz4H
-         t6HK42ZKAGDN2Eq4QEPxCLBsKQmlflILO+sRgrIr3r660ploCAGeQ6CDgObdNXehFcFP
-         b8WYMw4txxS37VQOPfEJdJhp1W4llQ3bTYOIaiJWgPo+d7hxGboYpb+oxfTOYBF3hiu/
-         NjsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=YxtlsjuQ7jTdutXjJizluXBc5+9WLkbOgzJagCR+62Y=;
-        b=dJVnfDUgEz+aJI3uRQvRyZ/FhNAvlm20Kc39YQ8tUfS2WsmHPQR6fA5AYRKGUq61C3
-         gyAEJfHDKMLOA6R7DU2cuCwPUJYL3BjdZ2AQkd0uw4JR+789VAZBKWhbXjGxhbSb09Si
-         FjIbztmUyDCAJ6V/lIYzkHAcv6HrO8Q2zn+RYCffJyqxQNrit8c0Dwa5yK7F6Ev/ghoo
-         tRgYW5zkcSAF3i7aNFVfjieeXchEyQ8Aax0z0hXE7EYFdyfRwOfbOpDMBuP6wUM0P0ir
-         1xiJDLJj5JGTfazMXrO/i4uOt4rGvlBcN3KhVc1tT3eSc3yyYMVwxs+O+3ZewrYf9D29
-         CtWQ==
-X-Gm-Message-State: ACgBeo3iEajHz7j0ip0achEGZVae7jKPv7FPIKapzof0lWbO6Dz5dRjW
-        0O/aG4uWV1Qi8sVKBxliXT8=
-X-Google-Smtp-Source: AA6agR5RbPBN0nNQXIQZDEuPOHfGfRcawwH4f6GR3AXNeFvtAVErETXd+CQZ3U7YdHLNiUXSOCMksA==
-X-Received: by 2002:a05:6a00:1a49:b0:528:6ea0:14e2 with SMTP id h9-20020a056a001a4900b005286ea014e2mr15210498pfv.22.1660554163220;
-        Mon, 15 Aug 2022 02:02:43 -0700 (PDT)
-Received: from DESKTOP-IBN2BAQ.localdomain ([123.110.155.185])
-        by smtp.gmail.com with ESMTPSA id a17-20020a656411000000b00412a708f38asm5491612pgv.35.2022.08.15.02.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 02:02:42 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee@kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com,
-        pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        linux@roeck-us.net, heikki.krogerus@linux.intel.com, deller@gmx.de,
-        broonie@kernel.org, mazziesaccount@gmail.com, lgirdwood@gmail.com,
-        andriy.shevchenko@linux.intel.com
-Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [RESEND PATCH v8 07/12] usb: typec: tcpci_mt6370: Add MediaTek MT6370 tcpci driver
-Date:   Mon, 15 Aug 2022 17:01:20 +0800
-Message-Id: <20220815090125.27705-8-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220815090125.27705-1-peterwu.pub@gmail.com>
-References: <20220815090125.27705-1-peterwu.pub@gmail.com>
+        Mon, 15 Aug 2022 05:02:57 -0400
+Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419AC21E38;
+        Mon, 15 Aug 2022 02:02:45 -0700 (PDT)
+X-QQ-mid: bizesmtp70t1660554134t47qzo8d
+Received: from [10.4.23.219] ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 15 Aug 2022 17:02:13 +0800 (CST)
+X-QQ-SSF: 00400000002000B0I000B00A0000000
+X-QQ-FEAT: DRnj/z+Sqac/pDfMcGKewOhR8gwdyqv276yH3w/u2kw2jNHQieFeCF97uH08o
+        MgYYYfIP6Z23HyViNi3apYkWhX9dyjlh9tP6TnRDIdEk+EeZKdRY2M8KTLG/3bD6DsruTCF
+        FMxHIPzUzo17pO2CIrJv9TvrPlcDdONuNznoCaH6nNp0llct+cHEnzDWLeADHbezx7shODB
+        PQHA8q+lOMnz3ynakb4Vwfx5aRf3JZ55uamnAgd+lGF1h64p8i09hjDhLGyoR4N5CPcjP/H
+        29wYDhzNDPbBbS7FHfqD0PS80LEF1XjGOhiUjWNM4FTtiBLS9hU5sGT2MaiKyDC5d4WvhLY
+        S1kPMVukCIsIbZxrQ+8W1WR0CMgtSU5nESkrxjYcHoT/MR37bs2OweEEcHAmDpf2EsVs2t7
+        i5fn65HH14c=
+X-QQ-GoodBg: 2
+Message-ID: <6D38148AAA1F82C9+de98717f-8d03-7583-299e-f48050d11dba@uniontech.com>
+Date:   Mon, 15 Aug 2022 17:02:13 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] PCI/ASPM: Should not report ASPM support to BIOS if FADT
+ indicates ASPM is unsupported
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Rajat Jain <rajatja@google.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+References: <20220713112612.6935-1-limanyi@uniontech.com>
+ <20220713182852.GA841582@bhelgaas>
+ <CAAd53p7g2Md73=UU6Rp-TZkksc+H02KAX58bWCzsgQ__VwvJ+g@mail.gmail.com>
+ <62d11a02.1c69fb81.ee60c.b0efSMTPIN_ADDED_BROKEN@mx.google.com>
+ <CAJZ5v0gKMqOwg3JLx4PBksnpUhgaDDfahmE5RjJMTByOLAQOFg@mail.gmail.com>
+ <CAJZ5v0gt761WUPn-3HQ3sA+8N_s_yHrSkk6CH1gBW0gy1c_+KA@mail.gmail.com>
+From:   Manyi Li <limanyi@uniontech.com>
+In-Reply-To: <CAJZ5v0gt761WUPn-3HQ3sA+8N_s_yHrSkk6CH1gBW0gy1c_+KA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
 
-The MediaTek MT6370 is a highly-integrated smart power management IC,
-which includes a single cell Li-Ion/Li-Polymer switching battery
-charger, a USB Type-C & Power Delivery (PD) controller, dual
-Flash LED current sources, a RGB LED driver, a backlight WLED driver,
-a display bias driver and a general LDO for portable devices.
 
-Add support for the Type-C & Power Delivery controller in
-MediaTek MT6370 IC.
+在 2022/7/15 22:07, Rafael J. Wysocki 写道:
+> On Fri, Jul 15, 2022 at 2:24 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>>
+>> On Fri, Jul 15, 2022 at 9:40 AM Manyi Li <limanyi@uniontech.com> wrote:
+>>>
+>>>
+>>>
+>>> On 2022/7/14 11:20, Kai-Heng Feng wrote:
+>>>> [+Cc Matthew]
+>>>>
+>>>> On Thu, Jul 14, 2022 at 2:28 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>>>>>
+>>>>> [+cc Kai-Heng, Vidya, who also have ASPM patches in flight]
+>>>>>
+>>>>> On Wed, Jul 13, 2022 at 07:26:12PM +0800, Manyi Li wrote:
+>>>>>> Startup log of ASUSTeK X456UJ Notebook show:
+>>>>>> [    0.130563] ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
+>>>>>> [   48.092472] pcieport 0000:00:1c.5: PCIe Bus Error: severity=Corrected, type=Physical Layer, (Receiver ID)
+>>>>>> [   48.092479] pcieport 0000:00:1c.5:   device [8086:9d15] error status/mask=00000001/00002000
+>>>>>> [   48.092481] pcieport 0000:00:1c.5:    [ 0] RxErr
+>>>>>> [   48.092490] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
+>>>>>> [   48.092504] pcieport 0000:00:1c.5: AER: can't find device of ID00e5
+>>>>>> [   48.092506] pcieport 0000:00:1c.5: AER: Corrected error received: 0000:00:1c.5
+>>>>>
+>>>>> Can you elaborate on the connection between the FADT ASPM bit and the
+>>>>> AER logs above?
+>>>
+>>> Sorry,I don't know about that.
+>>>
+>>>>>
+>>>>> What problem are we solving here?  A single corrected error being
+>>>>> logged?  An infinite stream of errors?  A device that doesn't work at
+>>>>> all?
+>>>>
+>>>> Agree, what's the real symptom of the issue?
+>>>
+>>> Please see the details of this issus:
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=216245
+>>>
+>>>>
+>>>>>
+>>>>> We don't need the dmesg timestamps unless they contribute to
+>>>>> understanding the problem.  I don't think they do in this case.
+>>>>
+>>>> According to commit 387d37577fdd ("PCI: Don't clear ASPM bits when the
+>>>> FADT declares it's unsupported"), the bit means "just use the ASPM
+>>>> bits handed over by BIOS".
+>>>>
+>>>> However, I do wonder why both drivers/pci/pci-acpi.c and
+>>>> drivers/acpi/pci_root.c are doing the ACPI_FADT_NO_ASPM check,
+>>
+>> Because pci_root.c doesn't read aspm_disabled.
+> 
+> I've recalled a bit in the meantime.
+> 
+> First off, ACPI_FADT_NO_ASPM forbids the OS from enabling ASPM control
+> (quite literally).  It doesn't mean that the OS should not enumerate
+> ASPM and it doesn't mean that it should not report ASPM support to the
+> firmware via _OSC.  Moreover, there are (or at least there were)
+> systems where the firmware expected ASPM support to be reported via
+> _OSC anyway (see commit 8b8bae901ce2 PCI/ACPI: Report ASPM support to
+> BIOS if not disabled from command line).
+> 
+> Thus, if ASPM is not disabled from command line, it would be
+> consistent to carry out the _OSC negotiation as usual regardless of
+> ACPI_FADT_NO_ASPM and then handle the case in which it is set in the
+> same way as the case in which the firmware doesn't grant the kernel
+> control of some PCIe features.  Does this sound reasonable
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
----
- drivers/usb/typec/tcpm/Kconfig        |  11 ++
- drivers/usb/typec/tcpm/Makefile       |   1 +
- drivers/usb/typec/tcpm/tcpci_mt6370.c | 207 ++++++++++++++++++++++++++
- 3 files changed, 219 insertions(+)
- create mode 100644 drivers/usb/typec/tcpm/tcpci_mt6370.c
+This sound reasonable.
 
-diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
-index 073fd2ea5e0b..e6b88ca4a4b9 100644
---- a/drivers/usb/typec/tcpm/Kconfig
-+++ b/drivers/usb/typec/tcpm/Kconfig
-@@ -35,6 +35,17 @@ config TYPEC_MT6360
- 	  USB Type-C. It works with Type-C Port Controller Manager
- 	  to provide USB PD and USB Type-C functionalities.
- 
-+config TYPEC_TCPCI_MT6370
-+	tristate "MediaTek MT6370 Type-C driver"
-+	depends on MFD_MT6370
-+	help
-+	  MediaTek MT6370 is a multi-functional IC that includes
-+	  USB Type-C. It works with Type-C Port Controller Manager
-+	  to provide USB PD and USB Type-C functionalities.
-+
-+	  This driver can also be built as a module. The module
-+	  will be called "tcpci_mt6370".
-+
- config TYPEC_TCPCI_MAXIM
- 	tristate "Maxim TCPCI based Type-C chip driver"
- 	help
-diff --git a/drivers/usb/typec/tcpm/Makefile b/drivers/usb/typec/tcpm/Makefile
-index 7d499f3569fd..906d9dced8e7 100644
---- a/drivers/usb/typec/tcpm/Makefile
-+++ b/drivers/usb/typec/tcpm/Makefile
-@@ -6,4 +6,5 @@ typec_wcove-y				:= wcove.o
- obj-$(CONFIG_TYPEC_TCPCI)		+= tcpci.o
- obj-$(CONFIG_TYPEC_RT1711H)		+= tcpci_rt1711h.o
- obj-$(CONFIG_TYPEC_MT6360)		+= tcpci_mt6360.o
-+obj-$(CONFIG_TYPEC_TCPCI_MT6370)	+= tcpci_mt6370.o
- obj-$(CONFIG_TYPEC_TCPCI_MAXIM)		+= tcpci_maxim.o
-diff --git a/drivers/usb/typec/tcpm/tcpci_mt6370.c b/drivers/usb/typec/tcpm/tcpci_mt6370.c
-new file mode 100644
-index 000000000000..c5bb201a5163
---- /dev/null
-+++ b/drivers/usb/typec/tcpm/tcpci_mt6370.c
-@@ -0,0 +1,207 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 Richtek Technology Corp.
-+ *
-+ * Author: ChiYuan Huang <cy_huang@richtek.com>
-+ */
-+
-+#include <linux/bits.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_wakeup.h>
-+#include <linux/pm_wakeirq.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/usb/tcpci.h>
-+#include <linux/usb/tcpm.h>
-+
-+#define MT6370_REG_SYSCTRL8	0x9B
-+
-+#define MT6370_AUTOIDLE_MASK	BIT(3)
-+
-+#define MT6370_VENDOR_ID	0x29CF
-+#define MT6370_TCPC_DID_A	0x2170
-+
-+struct mt6370_priv {
-+	struct device *dev;
-+	struct regulator *vbus;
-+	struct tcpci *tcpci;
-+	struct tcpci_data tcpci_data;
-+};
-+
-+static const struct reg_sequence mt6370_reg_init[] = {
-+	REG_SEQ(0xA0, 0x1, 1000),
-+	REG_SEQ(0x81, 0x38, 0),
-+	REG_SEQ(0x82, 0x82, 0),
-+	REG_SEQ(0xBA, 0xFC, 0),
-+	REG_SEQ(0xBB, 0x50, 0),
-+	REG_SEQ(0x9E, 0x8F, 0),
-+	REG_SEQ(0xA1, 0x5, 0),
-+	REG_SEQ(0xA2, 0x4, 0),
-+	REG_SEQ(0xA3, 0x4A, 0),
-+	REG_SEQ(0xA4, 0x01, 0),
-+	REG_SEQ(0x95, 0x01, 0),
-+	REG_SEQ(0x80, 0x71, 0),
-+	REG_SEQ(0x9B, 0x3A, 1000),
-+};
-+
-+static int mt6370_tcpc_init(struct tcpci *tcpci, struct tcpci_data *data)
-+{
-+	u16 did;
-+	int ret;
-+
-+	ret = regmap_register_patch(data->regmap, mt6370_reg_init,
-+				    ARRAY_SIZE(mt6370_reg_init));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_raw_read(data->regmap, TCPC_BCD_DEV, &did, sizeof(u16));
-+	if (ret)
-+		return ret;
-+
-+	if (did == MT6370_TCPC_DID_A)
-+		return regmap_write(data->regmap, TCPC_FAULT_CTRL, 0x80);
-+
-+	return 0;
-+}
-+
-+static int mt6370_tcpc_set_vconn(struct tcpci *tcpci, struct tcpci_data *data,
-+				 bool enable)
-+{
-+	return regmap_update_bits(data->regmap, MT6370_REG_SYSCTRL8,
-+				  MT6370_AUTOIDLE_MASK,
-+				  enable ? 0 : MT6370_AUTOIDLE_MASK);
-+}
-+
-+static int mt6370_tcpc_set_vbus(struct tcpci *tcpci, struct tcpci_data *data,
-+				bool source, bool sink)
-+{
-+	struct mt6370_priv *priv = container_of(data, struct mt6370_priv,
-+						tcpci_data);
-+	int ret;
-+
-+	ret = regulator_is_enabled(priv->vbus);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret && !source)
-+		return regulator_disable(priv->vbus);
-+
-+	if (!ret && source)
-+		return regulator_enable(priv->vbus);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t mt6370_irq_handler(int irq, void *dev_id)
-+{
-+	struct mt6370_priv *priv = dev_id;
-+
-+	return tcpci_irq(priv->tcpci);
-+}
-+
-+static int mt6370_check_vendor_info(struct mt6370_priv *priv)
-+{
-+	struct regmap *regmap = priv->tcpci_data.regmap;
-+	u16 vid;
-+	int ret;
-+
-+	ret = regmap_raw_read(regmap, TCPC_VENDOR_ID, &vid, sizeof(u16));
-+	if (ret)
-+		return ret;
-+
-+	if (vid != MT6370_VENDOR_ID)
-+		return dev_err_probe(priv->dev, -ENODEV,
-+				     "Vendor ID not correct 0x%02x\n", vid);
-+
-+	return 0;
-+}
-+
-+static void mt6370_unregister_tcpci_port(void *tcpci)
-+{
-+	tcpci_unregister_port(tcpci);
-+}
-+
-+static int mt6370_tcpc_probe(struct platform_device *pdev)
-+{
-+	struct mt6370_priv *priv;
-+	struct device *dev = &pdev->dev;
-+	int irq, ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->dev = dev;
-+
-+	priv->tcpci_data.regmap = dev_get_regmap(dev->parent, NULL);
-+	if (!priv->tcpci_data.regmap)
-+		return dev_err_probe(dev, -ENODEV, "Failed to init regmap\n");
-+
-+	ret = mt6370_check_vendor_info(priv);
-+	if (ret)
-+		return ret;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return dev_err_probe(dev, irq, "Failed to get irq\n");
-+
-+	/* Assign TCPCI feature and ops */
-+	priv->tcpci_data.auto_discharge_disconnect = 1;
-+	priv->tcpci_data.init = mt6370_tcpc_init;
-+	priv->tcpci_data.set_vconn = mt6370_tcpc_set_vconn;
-+
-+	priv->vbus = devm_regulator_get_optional(dev, "vbus");
-+	if (!IS_ERR(priv->vbus))
-+		priv->tcpci_data.set_vbus = mt6370_tcpc_set_vbus;
-+
-+	priv->tcpci = tcpci_register_port(dev, &priv->tcpci_data);
-+	if (IS_ERR(priv->tcpci))
-+		return dev_err_probe(dev, PTR_ERR(priv->tcpci),
-+				     "Failed to register tcpci port\n");
-+
-+	ret = devm_add_action_or_reset(dev, mt6370_unregister_tcpci_port, priv->tcpci);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_request_threaded_irq(dev, irq, NULL, mt6370_irq_handler,
-+					IRQF_ONESHOT, dev_name(dev), priv);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to allocate irq\n");
-+
-+	device_init_wakeup(dev, true);
-+	dev_pm_set_wake_irq(dev, irq);
-+
-+	return 0;
-+}
-+
-+static int mt6370_tcpc_remove(struct platform_device *pdev)
-+{
-+	dev_pm_clear_wake_irq(&pdev->dev);
-+	device_init_wakeup(&pdev->dev, false);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mt6370_tcpc_devid_table[] = {
-+	{ .compatible = "mediatek,mt6370-tcpc" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, mt6370_tcpc_devid_table);
-+
-+static struct platform_driver mt6370_tcpc_driver = {
-+	.driver = {
-+		.name = "mt6370-tcpc",
-+		.of_match_table = mt6370_tcpc_devid_table,
-+	},
-+	.probe = mt6370_tcpc_probe,
-+	.remove = mt6370_tcpc_remove,
-+};
-+module_platform_driver(mt6370_tcpc_driver);
-+
-+MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
-+MODULE_DESCRIPTION("MT6370 USB Type-C Port Controller Interface Driver");
-+MODULE_LICENSE("GPL v2");
+> 
+> If it does, I think that ASPM should be enumerated regardless of
+> ACPI_FADT_NO_ASPM, but we need to ensure that its configuration is not
+> changed in any way if ACPI_FADT_NO_ASPM is set and I'm not sure if
+> that is the case now.
+> 
+> Of course, the same needs to happen when the kernel doesn't get full
+> control over PCIe features via _OSC, but AFAICS that case is handled
+> in the same way as the above already.
+> 
+>>>> maybe one of them should be removed?
+>>
+>> Arguably, pci_root.c could look at aspm_disabled instead of looking at
+>> the FADT flag directly.
+> 
+> Second, if the former does sound reasonable, I'd rather avoid setting
+> aspm_disabled from drivers/pci/pci-acpi.c upfront when
+> ACPI_FADT_NO_ASPM is set, because doing that is not consistent with
+> the above.
+> 
+> Now, there may be BIOSes that don't expect to be informed of the OS
+> support for ASPM via _OSC if ACPI_FADT_NO_ASPM is set, and the
+> question is what to do with them.  They clearly are at odds with the
+> BIOSes that do expect that to happen (mentioned above), so honestly
+> I'm not sure.
+
+I'm not sure my issues is caused by report ASPM support to the firmware 
+via _OSC.My issues is the same as this link:
+https://groups.google.com/g/fa.linux.kernel/c/0uz8Nr_NVOI
+
+Links to other discussions on this issue:
+https://lore.kernel.org/all/20151229155822.GA17321@localhost/T/#u
+https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1521173
+
+> 
+>>> I think duplicate work has been done, but comment
+>>> in drivers/acpi/pci_root.c is
+>>> * We want to disable ASPM here, but aspm_disabled
+>>> * needs to remain in its state from boot so that we
+>>> * properly handle PCIe 1.1 devices.  So we set this
+>>> * flag here, to defer the action until after the ACPI
+>>> * root scan.
+>>>
+>>> I don't understand this logic.
+>>
+>> This is about the case after failing acpi_pci_osc_control_set() and
+>> generally we need to defer setting aspm_disabled because of
+>> pcie_aspm_sanity_check().
+>>
+>>>>
+>>>>>
+>>>>>> Signed-off-by: Manyi Li <limanyi@uniontech.com>
+>>>>>> ---
+>>>>>>    drivers/pci/pcie/aspm.c | 1 +
+>>>>>>    1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+>>>>>> index a96b7424c9bc..b173d3c75ae7 100644
+>>>>>> --- a/drivers/pci/pcie/aspm.c
+>>>>>> +++ b/drivers/pci/pcie/aspm.c
+>>>>>> @@ -1359,6 +1359,7 @@ void pcie_no_aspm(void)
+>>>>>>         if (!aspm_force) {
+>>>>>>                 aspm_policy = POLICY_DEFAULT;
+>>>>>>                 aspm_disabled = 1;
+>>>>>> +             aspm_support_enabled = false;
+>>>>>
+>>>>> This makes pcie_no_aspm() work the same as booting with
+>>>>> "pcie_aspm=off".  That might be reasonable.
+>>>>>
+>>>>> I do wonder why we need both "aspm_disabled" and
+>>>>> "aspm_support_enabled".  And I wonder why we need to set "aspm_policy"
+>>>>> when we're disabling ASPM.  But those aren't really connected to your
+>>>>> change here.
+>>>>
+>>>>   From what I can understand "aspm_disabled" means "don't touch ASPM
+>>>> left by BIOS", and "aspm_support_enabled" means "whether ASPM is
+>>>> disabled via command line".
+>>>> There seems to be some overlaps though.
+>>>
+>>> According to commit 8b8bae901ce23 ("PCI/ACPI: Report ASPM support to
+>>> BIOS if not disabled from command line"), "aspm_support_enabled" means
+>>> whether or not report ASPM support to the BIOS through _OSC.
+>>
+>> Right.
+> 
+
 -- 
-2.34.1
-
+Manyi Li
