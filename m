@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA41C19F2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C56C00140
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350672AbiHOW1E (ORCPT
+        id S1350765AbiHOW1L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
+        Mon, 15 Aug 2022 18:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233475AbiHOWTM (ORCPT
+        with ESMTP id S1347284AbiHOWTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:19:12 -0400
+        Mon, 15 Aug 2022 18:19:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0C86AA0F;
-        Mon, 15 Aug 2022 12:43:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6036AA30;
+        Mon, 15 Aug 2022 12:43:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8A71B81141;
-        Mon, 15 Aug 2022 19:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAE6C433C1;
-        Mon, 15 Aug 2022 19:43:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6287B80EAB;
+        Mon, 15 Aug 2022 19:43:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27582C433C1;
+        Mon, 15 Aug 2022 19:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592592;
-        bh=yA9DHMFC1385fMRfRW8h8EJYiVdCQ+fwbnh7w5teX2k=;
+        s=korg; t=1660592595;
+        bh=+mp64Pr/EQHtTObpXJCI/YKDDO+OrIRtCHdSi07jgfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0KYxtaO2yi62WhRVLMFdpG346LN2gaRjx+7E6HZeNWh5/2/SwutAtbZPOx3k/Ih7e
-         UYgXhiD6EMtPmqvv/Pkn2B5tx18lVGDotDVr50foos0KTHhCzQeBTen/da4TL8LIoh
-         tq7QIgcgCfbq/KR6JggCObW/2Fx/EsCxKj3DfJKY=
+        b=MRv+ou73clbv2kF5coHX0LeUUSbnDsfgrpoGx/Vbxc5S/abIx/cohGbZz2kQAsW91
+         1/YmKkzGIg4s6o3tzKMDcQ2aFQRrMCkXesz1Vz94q88CP/plmoxP6hFn/bgEab0P2W
+         RUQ3jjHKrN6dhIA4pPhWCzd15mcXRW9XVeO+Zbvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
+        stable@vger.kernel.org, Itay Aveksis <itayav@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0795/1095] mtd: spi-nor: fix spi_nor_spimem_setup_op() call in spi_nor_erase_{sector,chip}()
-Date:   Mon, 15 Aug 2022 20:03:14 +0200
-Message-Id: <20220815180502.131812520@linuxfoundation.org>
+Subject: [PATCH 5.18 0813/1095] RDMA/mlx5: Add missing check for return value in get namespace flow
+Date:   Mon, 15 Aug 2022 20:03:32 +0200
+Message-Id: <20220815180502.902176457@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,62 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-[ Upstream commit f8cd9f632f4415b1e8838bdca8ab42cfb37a6584 ]
+[ Upstream commit c9776457bd5eaad4ce4ecb17af8d8f3cc6957c0b ]
 
-For erase operations, reg_proto must be used as indicated in
-struct spi_nor description in spi-nor.h.
+Add missing check for return value when calling to
+mlx5_ib_ft_type_to_namespace, even though it can't really fail in this
+specific call.
 
-This issue was found when DT property spi-tx-bus-width is set to 4.
-In this case the spi_mem_op->addr.buswidth is set to 4 for erase command
-which is not correct.
-
-Tested on stm32mp157c-ev1 board with mx66l51235f spi-nor.
-
-Fixes: 0e30f47232ab ("mtd: spi-nor: add support for DTR protocol")
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-[ta: use nor->reg_proto in spi_nor_controller_ops_erase()]
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Tested-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
-Link: https://lore.kernel.org/r/20220629133013.3382393-1-patrice.chotard@foss.st.com
+Fixes: 52438be44112 ("RDMA/mlx5: Allow inserting a steering rule to the FDB")
+Link: https://lore.kernel.org/r/7b9ceda217d9368a51dc47a46b769bad4af9ac92.1659256069.git.leonro@nvidia.com
+Reviewed-by: Itay Aveksis <itayav@nvidia.com>
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/spi-nor/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/mlx5/fs.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index c1630131c734..170182eb431e 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -177,7 +177,7 @@ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
+diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
+index 661ed2b44508..6092118de672 100644
+--- a/drivers/infiniband/hw/mlx5/fs.c
++++ b/drivers/infiniband/hw/mlx5/fs.c
+@@ -2265,12 +2265,10 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
+ 		if (err)
+ 			return err;
  
- static int spi_nor_controller_ops_erase(struct spi_nor *nor, loff_t offs)
- {
--	if (spi_nor_protocol_is_dtr(nor->write_proto))
-+	if (spi_nor_protocol_is_dtr(nor->reg_proto))
- 		return -EOPNOTSUPP;
+-		if (flags) {
+-			mlx5_ib_ft_type_to_namespace(
++		if (flags)
++			return mlx5_ib_ft_type_to_namespace(
+ 				MLX5_IB_UAPI_FLOW_TABLE_TYPE_NIC_TX,
+ 				&obj->ns_type);
+-			return 0;
+-		}
+ 	}
  
- 	return nor->controller_ops->erase(nor, offs);
-@@ -976,7 +976,7 @@ static int spi_nor_erase_chip(struct spi_nor *nor)
- 				   SPI_MEM_OP_NO_DUMMY,
- 				   SPI_MEM_OP_NO_DATA);
- 
--		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
-+		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
- 		ret = spi_mem_exec_op(nor->spimem, &op);
- 	} else {
-@@ -1121,7 +1121,7 @@ int spi_nor_erase_sector(struct spi_nor *nor, u32 addr)
- 				   SPI_MEM_OP_NO_DUMMY,
- 				   SPI_MEM_OP_NO_DATA);
- 
--		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
-+		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
- 		return spi_mem_exec_op(nor->spimem, &op);
- 	} else if (nor->controller_ops->erase) {
+ 	obj->ns_type = MLX5_FLOW_NAMESPACE_BYPASS;
 -- 
 2.35.1
 
