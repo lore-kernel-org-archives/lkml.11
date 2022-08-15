@@ -2,105 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68074C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA43EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245353AbiHOTe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        id S244437AbiHOTfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345067AbiHOT1o (ORCPT
+        with ESMTP id S1344011AbiHOT0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:27:44 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C715B7BA;
-        Mon, 15 Aug 2022 11:43:32 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FIMqc8011181;
-        Mon, 15 Aug 2022 18:43:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=qcppdkim1;
- bh=o+kWYs+yHIy8cJ5iha1yG+ss0RBqFGfmFO2EG/z78kI=;
- b=YzTCk5ku3uS01TIBJHL3qfgMV0OF5s1/eXFwVlAW4tNZ1r0hZ9fcj1aaTqf6ccJ7MQjZ
- xxoeqEL2YNRbvQZM8EDPqP7bsrUp7DGeonrMKR/kPayaEaO6wixXqhsuGbM0ONqDONsg
- dR1anINkN4mPsa5LPNpZSpIpCUDYqRe7fOnApqcxj+b+kOOBlT08g4QPQrRYUeErgEho
- 8qWCEUBcawgFz1GTWq/86359MNQuHIGmdbOZ2tVvn59wGw3gzqmsLsJMQhWJ5ULZcvub
- QmwOmv/vzqjgvOSQ0Ckc8VT/Cctn1Y7X3RJFPNUaN79Blblj6Y+VpxyxLm8VaAqRCDX+ nQ== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hx39re1vc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 18:43:26 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27FIhPXj032220
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 18:43:25 GMT
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 15 Aug 2022 11:43:23 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>
-CC:     <quic_carlv@quicinc.com>, <quic_ajitpals@quicinc.com>,
-        <quic_pkanojiy@quicinc.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [RFC PATCH 14/14] MAINTAINERS: Add entry for QAIC driver
-Date:   Mon, 15 Aug 2022 12:42:36 -0600
-Message-ID: <1660588956-24027-15-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660588956-24027-1-git-send-email-quic_jhugo@quicinc.com>
-References: <1660588956-24027-1-git-send-email-quic_jhugo@quicinc.com>
+        Mon, 15 Aug 2022 15:26:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2E32FD;
+        Mon, 15 Aug 2022 11:42:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50DA1B81081;
+        Mon, 15 Aug 2022 18:42:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94693C433D6;
+        Mon, 15 Aug 2022 18:42:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588921;
+        bh=K2mymVMllnaeMhMciQeht38cTlLrhvodPRgy0FCmX+I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aV7DWe4ssCI3e9qMGdeF6uJRl8TqshKU5p/Qyc6dfPTlblLSH7hobK1Err5HmDGfF
+         cryqTbtPU2HQSPGxxiXFbFassZ8GcLeNTfjNYHhl6HEQmDZ3cDWwe782+4ZWCswaLR
+         +5/jxCGfQzBiscxMMTkn37PAqtvQrM4mWa4av+ts=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 555/779] block: ensure iov_iter advances for added pages
+Date:   Mon, 15 Aug 2022 20:03:19 +0200
+Message-Id: <20220815180401.056459983@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: eLtFVYPA1KkZOT3NJpgLgaV1Y-huBgCh
-X-Proofpoint-GUID: eLtFVYPA1KkZOT3NJpgLgaV1Y-huBgCh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0
- spamscore=0 malwarescore=0 phishscore=0 mlxlogscore=936 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208150070
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MAINTAINERS entry for the Qualcomm Cloud AI 100 driver.
+From: Keith Busch <kbusch@kernel.org>
 
-Change-Id: I149dbe34f1dbaeeca449b4ebf97f274c7484ed27
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+[ Upstream commit 325347d965e7ccf5424a05398807a6d801846612 ]
+
+There are cases where a bio may not accept additional pages, and the iov
+needs to advance to the last data length that was accepted. The zone
+append used to handle this correctly, but was inadvertently broken when
+the setup was made common with the normal r/w case.
+
+Fixes: 576ed9135489c ("block: use bio_add_page in bio_iov_iter_get_pages")
+Fixes: c58c0074c54c2 ("block/bio: remove duplicate append pages code")
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Link: https://lore.kernel.org/r/20220712153256.2202024-1-kbusch@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+ block/bio.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cd0f68d..695654c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15962,6 +15962,13 @@ F:	Documentation/devicetree/bindings/clock/qcom,*
- F:	drivers/clk/qcom/
- F:	include/dt-bindings/clock/qcom,*
+diff --git a/block/bio.c b/block/bio.c
+index 0dd7aa1797f6..ba9120d4fe49 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1123,6 +1123,7 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	ssize_t size, left;
+ 	unsigned len, i;
+ 	size_t offset;
++	int ret = 0;
  
-+QUALCOMM CLOUD AI (QAIC) DRIVER
-+M:	Jeffrey Hugo <quic_jhugo@quicinc.com>
-+L:	linux-arm-msm@vger.kernel.org
-+S:	Supported
-+F:	drivers/gpu/drm/qaic/
-+F:	include/uapi/drm/qaic_drm.h
-+
- QUALCOMM CORE POWER REDUCTION (CPR) AVS DRIVER
- M:	Niklas Cassel <nks@flawful.org>
- L:	linux-pm@vger.kernel.org
+ 	/*
+ 	 * Move page array up in the allocated memory for the bio vecs as far as
+@@ -1138,7 +1139,6 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 
+ 	for (left = size, i = 0; left > 0; left -= len, i++) {
+ 		struct page *page = pages[i];
+-		int ret;
+ 
+ 		len = min_t(size_t, PAGE_SIZE - offset, left);
+ 		if (bio_op(bio) == REQ_OP_ZONE_APPEND)
+@@ -1149,13 +1149,13 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 
+ 		if (ret) {
+ 			bio_put_pages(pages + i, left, offset);
+-			return ret;
++			break;
+ 		}
+ 		offset = 0;
+ 	}
+ 
+-	iov_iter_advance(iter, size);
+-	return 0;
++	iov_iter_advance(iter, size - left);
++	return ret;
+ }
+ 
+ /**
 -- 
-2.7.4
+2.35.1
+
+
 
