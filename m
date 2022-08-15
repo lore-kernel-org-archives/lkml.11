@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6540C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85375C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233313AbiHOUpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        id S1344467AbiHOUpW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347520AbiHOUmx (ORCPT
+        with ESMTP id S1347686AbiHOUnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:42:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5E9B3B3C;
-        Mon, 15 Aug 2022 12:08:01 -0700 (PDT)
+        Mon, 15 Aug 2022 16:43:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7CCB56C5;
+        Mon, 15 Aug 2022 12:08:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5287B81107;
-        Mon, 15 Aug 2022 19:07:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BE3C433C1;
-        Mon, 15 Aug 2022 19:07:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5A98B81062;
+        Mon, 15 Aug 2022 19:08:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE8FBC433C1;
+        Mon, 15 Aug 2022 19:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590478;
-        bh=4fhb2oIdanX65ZK+ytJhPxGiRtvlMXTbF5uBC4SK5Cg=;
+        s=korg; t=1660590485;
+        bh=RJpMtkSYG/vXtAkOfRgXlbOp7ynizIaZM8ijsH0shiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C7XWL34Ya64m5V1zRTULeSy18uHFlmp0/Jz8u6V1yLp2Ov7aUyAerHlhjgoHuiUob
-         uSELAWXcmt8BIKz27iMNEtMWeaKgnRMtzmPG3IE/GygKb9avY5X4EfB6Ib/GyVmWTo
-         9hYXSb+RohFcOvkQzpqzsvwpwG8deWXnydl1xq0w=
+        b=QslqtIYRUkBewZbgB+JBPr1ED1tJPygrOmVuDK13eG0BjbJ/kYBYt0vqumMWzal6i
+         AJCylFKoxSZ2u1skNaLy6Trvcn2dZzDcFGqEzGS/vkWq/VxZf9vc6apnO0pkEpmKCo
+         rNn9OYdnznEOoPBH5NSY4TXjRv0z/aZQmHGgW6s0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junichi Nomura <junichi.nomura@nec.com>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
         Mike Snitzer <snitzer@kernel.org>,
-        Mike Christie <michael.christie@oracle.com>,
-        Li Zefan <lizf@cn.fujitsu.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0273/1095] blktrace: Trace remapped requests correctly
-Date:   Mon, 15 Aug 2022 19:54:32 +0200
-Message-Id: <20220815180441.043539071@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0275/1095] dm writecache: return void from functions
+Date:   Mon, 15 Aug 2022 19:54:34 +0200
+Message-Id: <20220815180441.138418446@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,41 +50,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 22c80aac882f712897b88b7ea8f5a74ea19019df ]
+[ Upstream commit 9bc0c92e4b82adb017026dbb2aa816b1ac2bef31 ]
 
-Trace the remapped operation and its flags instead of only the data
-direction of remapped operations. This issue was detected by analyzing
-the warnings reported by sparse related to the new blk_opf_t type.
+The functions writecache_map_remap_origin and writecache_bio_copy_ssd
+only return a single value, thus they can be made to return void.
 
-Reviewed-by: Jun'ichi Nomura <junichi.nomura@nec.com>
-Cc: Mike Snitzer <snitzer@kernel.org>
-Cc: Mike Christie <michael.christie@oracle.com>
-Cc: Li Zefan <lizf@cn.fujitsu.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>
-Fixes: 1b9a9ab78b0a ("blktrace: use op accessors")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Link: https://lore.kernel.org/r/20220714180729.1065367-11-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This helps simplify the following IO accounting changes.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/blktrace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-writecache.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
-index 4d5629196d01..f22219495541 100644
---- a/kernel/trace/blktrace.c
-+++ b/kernel/trace/blktrace.c
-@@ -1059,7 +1059,7 @@ static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
- 	r.sector_from = cpu_to_be64(from);
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index 5630b470ba42..688b6b3bcd7b 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -1328,8 +1328,8 @@ enum wc_map_op {
+ 	WC_MAP_ERROR,
+ };
  
- 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
--			rq_data_dir(rq), 0, BLK_TA_REMAP, 0,
-+			req_op(rq), rq->cmd_flags, BLK_TA_REMAP, 0,
- 			sizeof(r), &r, blk_trace_request_get_cgid(rq));
- 	rcu_read_unlock();
+-static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc, struct bio *bio,
+-						  struct wc_entry *e)
++static void writecache_map_remap_origin(struct dm_writecache *wc, struct bio *bio,
++					struct wc_entry *e)
+ {
+ 	if (e) {
+ 		sector_t next_boundary =
+@@ -1337,8 +1337,6 @@ static enum wc_map_op writecache_map_remap_origin(struct dm_writecache *wc, stru
+ 		if (next_boundary < bio->bi_iter.bi_size >> SECTOR_SHIFT)
+ 			dm_accept_partial_bio(bio, next_boundary);
+ 	}
+-
+-	return WC_MAP_REMAP_ORIGIN;
  }
+ 
+ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *bio)
+@@ -1365,14 +1363,15 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
+ 			map_op = WC_MAP_REMAP;
+ 		}
+ 	} else {
+-		map_op = writecache_map_remap_origin(wc, bio, e);
++		writecache_map_remap_origin(wc, bio, e);
++		map_op = WC_MAP_REMAP_ORIGIN;
+ 	}
+ 
+ 	return map_op;
+ }
+ 
+-static enum wc_map_op writecache_bio_copy_ssd(struct dm_writecache *wc, struct bio *bio,
+-					      struct wc_entry *e, bool search_used)
++static void writecache_bio_copy_ssd(struct dm_writecache *wc, struct bio *bio,
++				    struct wc_entry *e, bool search_used)
+ {
+ 	unsigned bio_size = wc->block_size;
+ 	sector_t start_cache_sec = cache_sector(wc, e);
+@@ -1418,8 +1417,6 @@ static enum wc_map_op writecache_bio_copy_ssd(struct dm_writecache *wc, struct b
+ 	} else {
+ 		writecache_schedule_autocommit(wc);
+ 	}
+-
+-	return WC_MAP_REMAP;
+ }
+ 
+ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio *bio)
+@@ -1457,7 +1454,8 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
+ direct_write:
+ 				wc->stats.writes_around++;
+ 				e = writecache_find_entry(wc, bio->bi_iter.bi_sector, WFE_RETURN_FOLLOWING);
+-				return writecache_map_remap_origin(wc, bio, e);
++				writecache_map_remap_origin(wc, bio, e);
++				return WC_MAP_REMAP_ORIGIN;
+ 			}
+ 			wc->stats.writes_blocked_on_freelist++;
+ 			writecache_wait_on_freelist(wc);
+@@ -1468,10 +1466,12 @@ static enum wc_map_op writecache_map_write(struct dm_writecache *wc, struct bio
+ 		wc->uncommitted_blocks++;
+ 		wc->stats.writes_allocate++;
+ bio_copy:
+-		if (WC_MODE_PMEM(wc))
++		if (WC_MODE_PMEM(wc)) {
+ 			bio_copy_block(wc, bio, memory_data(wc, e));
+-		else
+-			return writecache_bio_copy_ssd(wc, bio, e, search_used);
++		} else {
++			writecache_bio_copy_ssd(wc, bio, e, search_used);
++			return WC_MAP_REMAP;
++		}
+ 	} while (bio->bi_iter.bi_size);
+ 
+ 	if (unlikely(bio->bi_opf & REQ_FUA || wc->uncommitted_blocks >= wc->autocommit_blocks))
 -- 
 2.35.1
 
