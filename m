@@ -2,316 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2159FC2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F34DC2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346783AbiHOVSH (ORCPT
+        id S1347457AbiHOVSY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
+        Mon, 15 Aug 2022 17:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240133AbiHOVIp (ORCPT
+        with ESMTP id S244087AbiHOVJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:08:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121454645;
-        Mon, 15 Aug 2022 12:18:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A233E60FB9;
-        Mon, 15 Aug 2022 19:18:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99859C433D6;
-        Mon, 15 Aug 2022 19:18:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591121;
-        bh=xYO+TDFOfQODSrEx0HoMIGJBE32gT1/jzGDxoOV/ltY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tql5egFyVxl8bBl6zYmmQ5j9cOPj+nTsPoAnRGkLExsYJJs3z3Gh7Qun0fjFOLBT6
-         6egqfZ4xJYzEh1amBi3nAT8dmGcrXEuSy1vE89LjssJqD4wxa9RekdLPNkjFQvr7sG
-         fq6ROglsOmYmwOx0iqvk8BNVHaFb2vPGuf8fdwmE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0479/1095] bpf: Adapt copy_map_value for multiple offset case
-Date:   Mon, 15 Aug 2022 19:57:58 +0200
-Message-Id: <20220815180449.404334664@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 17:09:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D72D255082
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:18:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660591134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=trYiUZWGHSUh+Fi/mUD7Vj9TWPb8FmuPVtaP1Bo49SM=;
+        b=Sp3BtlDzZGXKUSB5ED1mDrxz5KXpE5SdfJnFXsyMdu9keO69E5vaxuC4c0/sahVHWvNmIb
+        Xssf6QUmC1z/cyIRyRZf7CpG5dEvoYywKz0jjb4S+tzgGayZT+DGD2Io7f24l4iI4qzOKC
+        31fKxjW8qO+IVIPhvcepG92DmWfEMrU=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-520-_zc38eWzOaCR0ifSMl8uyQ-1; Mon, 15 Aug 2022 15:18:53 -0400
+X-MC-Unique: _zc38eWzOaCR0ifSMl8uyQ-1
+Received: by mail-qk1-f198.google.com with SMTP id j19-20020a05620a289300b006b949aff6ddso7642890qkp.0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:18:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=trYiUZWGHSUh+Fi/mUD7Vj9TWPb8FmuPVtaP1Bo49SM=;
+        b=DPUrmudcmhvc21eIcK+YJAp+S6C4exydKKEb2zLxyRM5KP/TkWEjLAkQ0lQY0vaR6E
+         EcAa6h2hClwzBxfrB7A4s7Kld8UqZrcNLUBDQ+R1kdVaY2GR6XOZoxRdGGfU1kAO68n6
+         CBYzFlJx0dytE2p0yjLXv1IHX0aJphbTrY1XByc6EWtbB1uUUaKEJnGHmRFGItz8vl+h
+         9y3q7QZu/9j8jtSh0ZUve68hRGoNgZ1HwyfNxkr/66cO4G8uKd+vTje9gOtO+Df97LUI
+         jNmhWQTfatvBbACdYs6CAtJTnEYJu70tX+NBuqWP439TNixTOyHs/dJM1d66cGcxB8NN
+         w01A==
+X-Gm-Message-State: ACgBeo1GpJEatwPxZc+Ma/lQTSx5Qi7md2h/ueAFBTma+lmEmVbias2l
+        uA8XP0WhWzHsdnlkDiqpxLphg1xG5FXpUPrWPUm/R3qT+ymIA/DmTuhFaW9PJBrIYae7XMXz9ch
+        9MPPcU2l3rhfLf8s93fn5U5RW
+X-Received: by 2002:a05:622a:30d:b0:343:63d1:3751 with SMTP id q13-20020a05622a030d00b0034363d13751mr15450249qtw.679.1660591133251;
+        Mon, 15 Aug 2022 12:18:53 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6J0tMp+p84xYVRm1RNDQxrWF79DfIoMrksUSH4K5nPKwTdkxuhOXkdYZ5vNOGu4LScwGYtJQ==
+X-Received: by 2002:a05:622a:30d:b0:343:63d1:3751 with SMTP id q13-20020a05622a030d00b0034363d13751mr15450229qtw.679.1660591133009;
+        Mon, 15 Aug 2022 12:18:53 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id bs30-20020a05620a471e00b006b910e588a4sm9888488qkb.129.2022.08.15.12.18.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 12:18:52 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 15:18:50 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     "Huang, Ying" <ying.huang@intel.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andi Kleen <andi.kleen@intel.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Subject: Re: [PATCH v3 5/7] mm: Remember young/dirty bit for page migrations
+Message-ID: <YvqcGq44oonHNyCO@xz-m1.local>
+References: <20220809220100.20033-1-peterx@redhat.com>
+ <20220809220100.20033-6-peterx@redhat.com>
+ <YvUeB0jc6clz59z5@xz-m1.local>
+ <87pmh6dwdr.fsf@yhuang6-desk2.ccr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87pmh6dwdr.fsf@yhuang6-desk2.ccr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+On Fri, Aug 12, 2022 at 10:32:48AM +0800, Huang, Ying wrote:
+> Peter Xu <peterx@redhat.com> writes:
+> 
+> > On Tue, Aug 09, 2022 at 06:00:58PM -0400, Peter Xu wrote:
+> >> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+> >> index 27fb37d65476..699f821b8443 100644
+> >> --- a/mm/migrate_device.c
+> >> +++ b/mm/migrate_device.c
+> >> @@ -221,6 +221,10 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+> >>  			else
+> >>  				entry = make_readable_migration_entry(
+> >>  							page_to_pfn(page));
+> >> +			if (pte_young(pte))
+> >> +				entry = make_migration_entry_young(entry);
+> >> +			if (pte_dirty(pte))
+> >> +				entry = make_migration_entry_dirty(entry);
+> >>  			swp_pte = swp_entry_to_pte(entry);
+> >>  			if (pte_present(pte)) {
+> >>  				if (pte_soft_dirty(pte))
+> >
+> > This change needs to be wrapped with pte_present() at least..
+> >
+> > I also just noticed that this change probably won't help anyway because:
+> >
+> >   (1) When ram->device, the pte will finally be replaced with a device
+> >       private entry, and device private entry does not yet support A/D, it
+> >       means A/D will be dropped again,
+> >
+> >   (2) When device->ram, we are missing information on either A/D bits, or
+> >       even if device private entries start to suport A/D, it's still not
+> >       clear whether we should take device read/write into considerations
+> >       too on the page A/D bits to be accurate.
+> >
+> > I think I'll probably keep the code there for completeness, but I think it
+> > won't really help much until more things are done.
+> 
+> It appears that there are more issues.  Between "pte = *ptep" and pte
+> clear, CPU may set A/D bit in PTE, so we may need to update pte when
+> clearing PTE.
 
-[ Upstream commit 4d7d7f69f4b104b2ddeec6a1e7fcfd2d044ed8c4 ]
+Agreed, I didn't see it a huge problem with current code, but it should be
+better in that way.
 
-Since now there might be at most 10 offsets that need handling in
-copy_map_value, the manual shuffling and special case is no longer going
-to work. Hence, let's generalise the copy_map_value function by using
-a sorted array of offsets to skip regions that must be avoided while
-copying into and out of a map value.
+> And I don't find the TLB is flushed in some cases after PTE is cleared.
 
-When the map is created, we populate the offset array in struct map,
-Then, copy_map_value uses this sorted offset array is used to memcpy
-while skipping timer, spin lock, and kptr. The array is allocated as
-in most cases none of these special fields would be present in map
-value, hence we can save on space for the common case by not embedding
-the entire object inside bpf_map struct.
+I think it's okay to not flush tlb if pte not present.  But maybe you're
+talking about something else?
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220424214901.2743946-6-memxor@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/bpf.h  | 56 +++++++++++++++-------------
- kernel/bpf/syscall.c | 88 +++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 117 insertions(+), 27 deletions(-)
+Thanks,
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2f6e7fc474ea..a3fe7f53e567 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -158,6 +158,9 @@ struct bpf_map_ops {
- enum {
- 	/* Support at most 8 pointers in a BPF map value */
- 	BPF_MAP_VALUE_OFF_MAX = 8,
-+	BPF_MAP_OFF_ARR_MAX   = BPF_MAP_VALUE_OFF_MAX +
-+				1 + /* for bpf_spin_lock */
-+				1,  /* for bpf_timer */
- };
- 
- enum bpf_kptr_type {
-@@ -179,6 +182,12 @@ struct bpf_map_value_off {
- 	struct bpf_map_value_off_desc off[];
- };
- 
-+struct bpf_map_off_arr {
-+	u32 cnt;
-+	u32 field_off[BPF_MAP_OFF_ARR_MAX];
-+	u8 field_sz[BPF_MAP_OFF_ARR_MAX];
-+};
-+
- struct bpf_map {
- 	/* The first two cachelines with read-mostly members of which some
- 	 * are also accessed in fast-path (e.g. ops, max_entries).
-@@ -207,10 +216,7 @@ struct bpf_map {
- 	struct mem_cgroup *memcg;
- #endif
- 	char name[BPF_OBJ_NAME_LEN];
--	bool bypass_spec_v1;
--	bool frozen; /* write-once; write-protected by freeze_mutex */
--	/* 6 bytes hole */
--
-+	struct bpf_map_off_arr *off_arr;
- 	/* The 3rd and 4th cacheline with misc members to avoid false sharing
- 	 * particularly with refcounting.
- 	 */
-@@ -230,6 +236,8 @@ struct bpf_map {
- 		bool jited;
- 		bool xdp_has_frags;
- 	} owner;
-+	bool bypass_spec_v1;
-+	bool frozen; /* write-once; write-protected by freeze_mutex */
- };
- 
- static inline bool map_value_has_spin_lock(const struct bpf_map *map)
-@@ -253,37 +261,33 @@ static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
- 		memset(dst + map->spin_lock_off, 0, sizeof(struct bpf_spin_lock));
- 	if (unlikely(map_value_has_timer(map)))
- 		memset(dst + map->timer_off, 0, sizeof(struct bpf_timer));
-+	if (unlikely(map_value_has_kptrs(map))) {
-+		struct bpf_map_value_off *tab = map->kptr_off_tab;
-+		int i;
-+
-+		for (i = 0; i < tab->nr_off; i++)
-+			*(u64 *)(dst + tab->off[i].offset) = 0;
-+	}
- }
- 
- /* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
- static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
- {
--	u32 s_off = 0, s_sz = 0, t_off = 0, t_sz = 0;
-+	u32 curr_off = 0;
-+	int i;
- 
--	if (unlikely(map_value_has_spin_lock(map))) {
--		s_off = map->spin_lock_off;
--		s_sz = sizeof(struct bpf_spin_lock);
--	}
--	if (unlikely(map_value_has_timer(map))) {
--		t_off = map->timer_off;
--		t_sz = sizeof(struct bpf_timer);
-+	if (likely(!map->off_arr)) {
-+		memcpy(dst, src, map->value_size);
-+		return;
- 	}
- 
--	if (unlikely(s_sz || t_sz)) {
--		if (s_off < t_off || !s_sz) {
--			swap(s_off, t_off);
--			swap(s_sz, t_sz);
--		}
--		memcpy(dst, src, t_off);
--		memcpy(dst + t_off + t_sz,
--		       src + t_off + t_sz,
--		       s_off - t_off - t_sz);
--		memcpy(dst + s_off + s_sz,
--		       src + s_off + s_sz,
--		       map->value_size - s_off - s_sz);
--	} else {
--		memcpy(dst, src, map->value_size);
-+	for (i = 0; i < map->off_arr->cnt; i++) {
-+		u32 next_off = map->off_arr->field_off[i];
-+
-+		memcpy(dst + curr_off, src + curr_off, next_off - curr_off);
-+		curr_off += map->off_arr->field_sz[i];
- 	}
-+	memcpy(dst + curr_off, src + curr_off, map->value_size - curr_off);
- }
- void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
- 			   bool lock_src);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index dc49bd880ac0..811bc71b0906 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -30,6 +30,7 @@
- #include <linux/pgtable.h>
- #include <linux/bpf_lsm.h>
- #include <linux/poll.h>
-+#include <linux/sort.h>
- #include <linux/bpf-netns.h>
- #include <linux/rcupdate_trace.h>
- #include <linux/memcontrol.h>
-@@ -551,6 +552,7 @@ static void bpf_map_free_deferred(struct work_struct *work)
- 	struct bpf_map *map = container_of(work, struct bpf_map, work);
- 
- 	security_bpf_map_free(map);
-+	kfree(map->off_arr);
- 	bpf_map_free_kptr_off_tab(map);
- 	bpf_map_release_memcg(map);
- 	/* implementation dependent freeing */
-@@ -840,6 +842,84 @@ int map_check_no_btf(const struct bpf_map *map,
- 	return -ENOTSUPP;
- }
- 
-+static int map_off_arr_cmp(const void *_a, const void *_b, const void *priv)
-+{
-+	const u32 a = *(const u32 *)_a;
-+	const u32 b = *(const u32 *)_b;
-+
-+	if (a < b)
-+		return -1;
-+	else if (a > b)
-+		return 1;
-+	return 0;
-+}
-+
-+static void map_off_arr_swap(void *_a, void *_b, int size, const void *priv)
-+{
-+	struct bpf_map *map = (struct bpf_map *)priv;
-+	u32 *off_base = map->off_arr->field_off;
-+	u32 *a = _a, *b = _b;
-+	u8 *sz_a, *sz_b;
-+
-+	sz_a = map->off_arr->field_sz + (a - off_base);
-+	sz_b = map->off_arr->field_sz + (b - off_base);
-+
-+	swap(*a, *b);
-+	swap(*sz_a, *sz_b);
-+}
-+
-+static int bpf_map_alloc_off_arr(struct bpf_map *map)
-+{
-+	bool has_spin_lock = map_value_has_spin_lock(map);
-+	bool has_timer = map_value_has_timer(map);
-+	bool has_kptrs = map_value_has_kptrs(map);
-+	struct bpf_map_off_arr *off_arr;
-+	u32 i;
-+
-+	if (!has_spin_lock && !has_timer && !has_kptrs) {
-+		map->off_arr = NULL;
-+		return 0;
-+	}
-+
-+	off_arr = kmalloc(sizeof(*map->off_arr), GFP_KERNEL | __GFP_NOWARN);
-+	if (!off_arr)
-+		return -ENOMEM;
-+	map->off_arr = off_arr;
-+
-+	off_arr->cnt = 0;
-+	if (has_spin_lock) {
-+		i = off_arr->cnt;
-+
-+		off_arr->field_off[i] = map->spin_lock_off;
-+		off_arr->field_sz[i] = sizeof(struct bpf_spin_lock);
-+		off_arr->cnt++;
-+	}
-+	if (has_timer) {
-+		i = off_arr->cnt;
-+
-+		off_arr->field_off[i] = map->timer_off;
-+		off_arr->field_sz[i] = sizeof(struct bpf_timer);
-+		off_arr->cnt++;
-+	}
-+	if (has_kptrs) {
-+		struct bpf_map_value_off *tab = map->kptr_off_tab;
-+		u32 *off = &off_arr->field_off[off_arr->cnt];
-+		u8 *sz = &off_arr->field_sz[off_arr->cnt];
-+
-+		for (i = 0; i < tab->nr_off; i++) {
-+			*off++ = tab->off[i].offset;
-+			*sz++ = sizeof(u64);
-+		}
-+		off_arr->cnt += tab->nr_off;
-+	}
-+
-+	if (off_arr->cnt == 1)
-+		return 0;
-+	sort_r(off_arr->field_off, off_arr->cnt, sizeof(off_arr->field_off[0]),
-+	       map_off_arr_cmp, map_off_arr_swap, map);
-+	return 0;
-+}
-+
- static int map_check_btf(struct bpf_map *map, const struct btf *btf,
- 			 u32 btf_key_id, u32 btf_value_id)
- {
-@@ -1009,10 +1089,14 @@ static int map_create(union bpf_attr *attr)
- 			attr->btf_vmlinux_value_type_id;
- 	}
- 
--	err = security_bpf_map_alloc(map);
-+	err = bpf_map_alloc_off_arr(map);
- 	if (err)
- 		goto free_map;
- 
-+	err = security_bpf_map_alloc(map);
-+	if (err)
-+		goto free_map_off_arr;
-+
- 	err = bpf_map_alloc_id(map);
- 	if (err)
- 		goto free_map_sec;
-@@ -1035,6 +1119,8 @@ static int map_create(union bpf_attr *attr)
- 
- free_map_sec:
- 	security_bpf_map_free(map);
-+free_map_off_arr:
-+	kfree(map->off_arr);
- free_map:
- 	btf_put(map->btf);
- 	map->ops->map_free(map);
 -- 
-2.35.1
-
-
+Peter Xu
 
