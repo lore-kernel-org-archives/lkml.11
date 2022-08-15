@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23DEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C490C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346650AbiHOUWs (ORCPT
+        id S1346792AbiHOUXI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
+        Mon, 15 Aug 2022 16:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242813AbiHOUNO (ORCPT
+        with ESMTP id S243704AbiHOUNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:13:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5900132EF3;
-        Mon, 15 Aug 2022 11:59:10 -0700 (PDT)
+        Mon, 15 Aug 2022 16:13:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B628E440;
+        Mon, 15 Aug 2022 11:59:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86F70B810C5;
-        Mon, 15 Aug 2022 18:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE280C433C1;
-        Mon, 15 Aug 2022 18:59:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 665F4B8110A;
+        Mon, 15 Aug 2022 18:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEE98C433D7;
+        Mon, 15 Aug 2022 18:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589947;
-        bh=hFLdWtZlm6m47mimf7VH2hREI4jtWZfe2DLf4xlZbfc=;
+        s=korg; t=1660589950;
+        bh=PnK96AcJoNH02OrlMKcpheKhKI/ZKO5ifjdCqo9v2nI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oyr1DeKiXKi+f8q6NKgzXKdQJWpBpsjp+cRa8cZffpH2HpAjw0VQacGDYXPBv++fR
-         hqqpyHiXj6BYJ6mG/OmYAXY7lWFfQVbolwolnwEBOKmVY64OF9bqSoOyrgmg2t+7Hm
-         2V+XlX8juld8ud1xPfnWXDJymRV0L4lxJMYtVKHA=
+        b=2hiM3OAwNFzaHj3URPxpAl979YhbT3BBIibv3TiLBd00VyZSAE7+TgndvMnrtecKn
+         bZ5jyGYzC/Rbn8UJe6/8oHdwq3r0aPTwwZP/9gnqZEUCCSgRetQZ8sUCPytF9xdZp5
+         /ZIW4L+cpedi+kCKegb0/e2adYXgf+XTE1NCPFWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
+        stable@vger.kernel.org, Chen Lifu <chenlifu@huawei.com>,
+        Ben Dooks <ben.dooks@codethink.co.uk>,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 0070/1095] RISC-V: Fix SBI PMU calls for RV32
-Date:   Mon, 15 Aug 2022 19:51:09 +0200
-Message-Id: <20220815180432.414248634@linuxfoundation.org>
+Subject: [PATCH 5.18 0061/1095] riscv: lib: uaccess: fix CSR_STATUS SR_SUM bit
+Date:   Mon, 15 Aug 2022 19:51:00 +0200
+Message-Id: <20220815180432.031795086@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,62 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Chen Lifu <chenlifu@huawei.com>
 
-commit 0209b5830bea42dd3ce33ab0397231e67ec3b751 upstream.
+commit c08b4848f596fd95543197463b5162bd7bab2442 upstream.
 
-Some of the SBI PMU calls does not pass 64bit arguments
-correctly and not under RV32 compile time flags. Currently,
-this doesn't create any incorrect results as RV64 ignores
-any value in the additional register and qemu doesn't support
-raw events.
+Since commit 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+and commit ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code"),
+if __clear_user and __copy_user return from an fixup branch,
+CSR_STATUS SR_SUM bit will be set, it is a vulnerability, so that
+S-mode memory accesses to pages that are accessible by U-mode will success.
+Disable S-mode access to U-mode memory should clear SR_SUM bit.
 
-Fix those SBI calls in order to set correct values for RV32.
-
-Fixes: e9991434596f ("RISC-V: Add perf platform driver based on SBI PMU extension")
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
+Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+Fixes: ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code")
+Signed-off-by: Chen Lifu <chenlifu@huawei.com>
+Reviewed-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Link: https://lore.kernel.org/r/20220615014714.1650349-1-chenlifu@huawei.com
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220711174632.4186047-4-atishp@rivosinc.com
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/riscv_pmu_sbi.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/riscv/lib/uaccess.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index 3735337a4cfb..bae614c73b14 100644
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -274,8 +274,13 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
- 		cflags |= SBI_PMU_CFG_FLAG_SET_UINH;
- 
- 	/* retrieve the available counter index */
-+#if defined(CONFIG_32BIT)
-+	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
-+			cflags, hwc->event_base, hwc->config, hwc->config >> 32);
-+#else
- 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
- 			cflags, hwc->event_base, hwc->config, 0);
-+#endif
- 	if (ret.error) {
- 		pr_debug("Not able to find a counter for event %lx config %llx\n",
- 			hwc->event_base, hwc->config);
-@@ -417,8 +422,13 @@ static void pmu_sbi_ctr_start(struct perf_event *event, u64 ival)
- 	struct hw_perf_event *hwc = &event->hw;
- 	unsigned long flag = SBI_PMU_START_FLAG_SET_INIT_VALUE;
- 
-+#if defined(CONFIG_32BIT)
- 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
- 			1, flag, ival, ival >> 32, 0);
-+#else
-+	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
-+			1, flag, ival, 0, 0);
-+#endif
- 	if (ret.error && (ret.error != SBI_ERR_ALREADY_STARTED))
- 		pr_err("Starting counter idx %d failed with error %d\n",
- 			hwc->idx, sbi_err_map_linux_errno(ret.error));
--- 
-2.37.1
-
+--- a/arch/riscv/lib/uaccess.S
++++ b/arch/riscv/lib/uaccess.S
+@@ -175,7 +175,7 @@ ENTRY(__asm_copy_from_user)
+ 	/* Exception fixup code */
+ 10:
+ 	/* Disable access to user memory */
+-	csrs CSR_STATUS, t6
++	csrc CSR_STATUS, t6
+ 	mv a0, t5
+ 	ret
+ ENDPROC(__asm_copy_to_user)
+@@ -227,7 +227,7 @@ ENTRY(__clear_user)
+ 	/* Exception fixup code */
+ 11:
+ 	/* Disable access to user memory */
+-	csrs CSR_STATUS, t6
++	csrc CSR_STATUS, t6
+ 	mv a0, a1
+ 	ret
+ ENDPROC(__clear_user)
 
 
