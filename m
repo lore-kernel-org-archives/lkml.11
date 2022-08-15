@@ -2,445 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447F7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD239C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbiHOMhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S240393AbiHOMiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiHOMhm (ORCPT
+        with ESMTP id S229623AbiHOMiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:37:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C281520F6B;
-        Mon, 15 Aug 2022 05:37:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E976B80EA0;
-        Mon, 15 Aug 2022 12:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BD7C433C1;
-        Mon, 15 Aug 2022 12:37:32 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V10 1/4] MIPS&LoongArch&NIOS2: Adjust prototypes of p?d_init()
-Date:   Mon, 15 Aug 2022 20:36:10 +0800
-Message-Id: <20220815123613.3291770-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220815123613.3291770-1-chenhuacai@loongson.cn>
-References: <20220815123613.3291770-1-chenhuacai@loongson.cn>
+        Mon, 15 Aug 2022 08:38:02 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3E020F6E;
+        Mon, 15 Aug 2022 05:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=5Ly2/Q/Gj3PGUvgRwRp1buJOUgaq2gWZGs2NW4e5dCw=; b=j01s9Ia7TTbz0+edCRg71r8pvK
+        OPJ21hUqbOgDyr5Xs0qjReFV+8PmFn8bKn17bK2rIvIu5FF1WJCnsxqCFLlzZ5Uil0OtdU272EMJG
+        5vXELWjfKBx8OOyGHHjmRZQUU14/e3ve+NtHackjQ8hpIxoYaOlNwh9NFshwi02bZ1MvTGBx/Jmee
+        WYtCxOTOZ8usZd6IrqUQA9RV1YOVoqaB95HJQAp4aAA/8t5k9p3wSiNXm8W+dY3R+fdZ8wUdPxGNq
+        T4+ZATJnRe9FZN/Mk7ArdEbj780Kwm0tEJarX9kLfR171evapy3Zl58jpjSmrtnFsPqPMG/npfGGK
+        pKGPvrqQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNZLf-002fiF-9x; Mon, 15 Aug 2022 12:37:39 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4AF07980153; Mon, 15 Aug 2022 14:37:38 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 14:37:38 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+Message-ID: <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
+References: <CAADnVQ+hLnyztCi9aqpptjQk-P+ByAkyj2pjbdD45dsXwpZ0bw@mail.gmail.com>
+ <20220722120854.3cc6ec4b@gandalf.local.home>
+ <20220722122548.2db543ca@gandalf.local.home>
+ <YtsRD1Po3qJy3w3t@krava>
+ <20220722174120.688768a3@gandalf.local.home>
+ <YtxqjxJVbw3RD4jt@krava>
+ <YvbDlwJCTDWQ9uJj@krava>
+ <20220813150252.5aa63650@rorschach.local.home>
+ <Yvn9xR7qhXW7FnFL@worktop.programming.kicks-ass.net>
+ <YvoVgMzMuQbAEayk@krava>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvoVgMzMuQbAEayk@krava>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Mon, Aug 15, 2022 at 11:44:32AM +0200, Jiri Olsa wrote:
+> On Mon, Aug 15, 2022 at 10:03:17AM +0200, Peter Zijlstra wrote:
+> > On Sat, Aug 13, 2022 at 03:02:52PM -0400, Steven Rostedt wrote:
+> > > On Fri, 12 Aug 2022 23:18:15 +0200
+> > > Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > 
+> > > > the patch below moves the bpf function into sepatate object and switches
+> > > > off the -mrecord-mcount for it.. so the function gets profile call
+> > > > generated but it's not visible to ftrace
+> > 
+> > Why ?!?
+> 
+> there's bpf dispatcher code that updates bpf_dispatcher_xdp_func
+> function with bpf_arch_text_poke and that can race with ftrace update
+> if the function is traced
 
-We are preparing to add sparse vmemmap support to LoongArch. MIPS and
-LoongArch need to call pgd_init()/pud_init()/pmd_init() when populating
-page tables, so adjust their prototypes to make generic helpers can call
-them.
-
-NIOS2 declares pmd_init() but doesn't use, just remove it to avoid build
-errors.
-
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/pgalloc.h | 13 ++-----------
- arch/loongarch/include/asm/pgtable.h |  8 ++++----
- arch/loongarch/kernel/numa.c         |  4 ++--
- arch/loongarch/mm/pgtable.c          | 23 +++++++++++++----------
- arch/mips/include/asm/pgalloc.h      | 10 +++++-----
- arch/mips/include/asm/pgtable-64.h   |  8 ++++----
- arch/mips/kvm/mmu.c                  |  3 +--
- arch/mips/mm/pgtable-32.c            | 10 +++++-----
- arch/mips/mm/pgtable-64.c            | 18 ++++++++++--------
- arch/mips/mm/pgtable.c               |  2 +-
- arch/nios2/include/asm/pgalloc.h     |  5 -----
- 11 files changed, 47 insertions(+), 57 deletions(-)
-
-diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
-index 4bfeb3c9c9ac..af1d1e4a6965 100644
---- a/arch/loongarch/include/asm/pgalloc.h
-+++ b/arch/loongarch/include/asm/pgalloc.h
-@@ -42,15 +42,6 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
- 
- extern void pagetable_init(void);
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
--/*
-- * Initialize a new pgd / pmd table with invalid pointers.
-- */
--extern void pgd_init(unsigned long page);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, address)			\
-@@ -76,7 +67,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -92,7 +83,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_page(GFP_KERNEL);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index e03443abaf7d..700ce735c101 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -238,11 +238,11 @@ extern void set_pmd_at(struct mm_struct *mm, unsigned long addr, pmd_t *pmdp, pm
- #define pfn_pmd(pfn, prot)	__pmd(((pfn) << _PFN_SHIFT) | pgprot_val(prot))
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
-index a13f92593cfd..eb5d3a4c8a7a 100644
---- a/arch/loongarch/kernel/numa.c
-+++ b/arch/loongarch/kernel/numa.c
-@@ -78,7 +78,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pgd_populate(&init_mm, pgd, new);
- #ifndef __PAGETABLE_PUD_FOLDED
--		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
-+		pud_init(new);
- #endif
- 	}
- 
-@@ -89,7 +89,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pud_populate(&init_mm, pud, new);
- #ifndef __PAGETABLE_PMD_FOLDED
--		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
-+		pmd_init(new);
- #endif
- 	}
- 
-diff --git a/arch/loongarch/mm/pgtable.c b/arch/loongarch/mm/pgtable.c
-index ee179ccd3e3f..36a6dc0148ae 100644
---- a/arch/loongarch/mm/pgtable.c
-+++ b/arch/loongarch/mm/pgtable.c
-@@ -16,7 +16,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_page(GFP_KERNEL);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-@@ -25,7 +25,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- }
- EXPORT_SYMBOL_GPL(pgd_alloc);
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -38,7 +38,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -56,11 +56,12 @@ void pgd_init(unsigned long page)
- EXPORT_SYMBOL_GPL(pgd_init);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -79,9 +80,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -98,6 +100,7 @@ void pud_init(unsigned long addr, unsigned long pagetable)
- 		p[-1] = pagetable;
- 	} while (p != end);
- }
-+EXPORT_SYMBOL_GPL(pud_init);
- #endif
- 
- pmd_t mk_pmd(struct page *page, pgprot_t prot)
-@@ -119,12 +122,12 @@ void set_pmd_at(struct mm_struct *mm, unsigned long addr,
- void __init pagetable_init(void)
- {
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)invalid_pg_dir);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init(invalid_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- }
-diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
-index 796035784c73..f72e737dda21 100644
---- a/arch/mips/include/asm/pgalloc.h
-+++ b/arch/mips/include/asm/pgalloc.h
-@@ -33,7 +33,7 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- /*
-  * Initialize a new pmd table with invalid pointers.
-  */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pmd_init(void *addr);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
- 
-@@ -44,9 +44,9 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
-+extern void pgd_init(void *addr);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
-@@ -77,7 +77,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -93,7 +93,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_TABLE_ORDER);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/mips/include/asm/pgtable-64.h b/arch/mips/include/asm/pgtable-64.h
-index 436c29d698fa..c6310192b654 100644
---- a/arch/mips/include/asm/pgtable-64.h
-+++ b/arch/mips/include/asm/pgtable-64.h
-@@ -313,11 +313,11 @@ static inline pmd_t *pud_pgtable(pud_t pud)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/mips/kvm/mmu.c b/arch/mips/kvm/mmu.c
-index db17e870bdff..e0ba6f8c6767 100644
---- a/arch/mips/kvm/mmu.c
-+++ b/arch/mips/kvm/mmu.c
-@@ -122,8 +122,7 @@ static pte_t *kvm_mips_walk_pgd(pgd_t *pgd, struct kvm_mmu_memory_cache *cache,
- 		if (!cache)
- 			return NULL;
- 		new_pmd = kvm_mmu_memory_cache_alloc(cache);
--		pmd_init((unsigned long)new_pmd,
--			 (unsigned long)invalid_pte_table);
-+		pmd_init(new_pmd);
- 		pud_populate(NULL, pud, new_pmd);
- 	}
- 	pmd = pmd_offset(pud, addr);
-diff --git a/arch/mips/mm/pgtable-32.c b/arch/mips/mm/pgtable-32.c
-index 61891af25019..88819a21d97e 100644
---- a/arch/mips/mm/pgtable-32.c
-+++ b/arch/mips/mm/pgtable-32.c
-@@ -13,9 +13,9 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
--	unsigned long *p = (unsigned long *) page;
-+	unsigned long *p = (unsigned long *)addr;
- 	int i;
- 
- 	for (i = 0; i < USER_PTRS_PER_PGD; i+=8) {
-@@ -61,9 +61,9 @@ void __init pagetable_init(void)
- #endif
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)swapper_pg_dir
--		 + sizeof(pgd_t) * USER_PTRS_PER_PGD);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init((void *)((unsigned long)swapper_pg_dir
-+		 + sizeof(pgd_t) * USER_PTRS_PER_PGD));
- 
- 	pgd_base = swapper_pg_dir;
- 
-diff --git a/arch/mips/mm/pgtable-64.c b/arch/mips/mm/pgtable-64.c
-index 7536f7804c44..b4386a0e2ef8 100644
---- a/arch/mips/mm/pgtable-64.c
-+++ b/arch/mips/mm/pgtable-64.c
-@@ -13,7 +13,7 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -26,7 +26,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *) addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -43,11 +43,12 @@ void pgd_init(unsigned long page)
- }
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -66,9 +67,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -108,12 +110,12 @@ void __init pagetable_init(void)
- 	pgd_t *pgd_base;
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
-+	pgd_init(swapper_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- 	pgd_base = swapper_pg_dir;
- 	/*
-diff --git a/arch/mips/mm/pgtable.c b/arch/mips/mm/pgtable.c
-index 3b7590660a04..b13314be5d0e 100644
---- a/arch/mips/mm/pgtable.c
-+++ b/arch/mips/mm/pgtable.c
-@@ -15,7 +15,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_TABLE_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-diff --git a/arch/nios2/include/asm/pgalloc.h b/arch/nios2/include/asm/pgalloc.h
-index 3c4ae74d5798..ecd1657bb2ce 100644
---- a/arch/nios2/include/asm/pgalloc.h
-+++ b/arch/nios2/include/asm/pgalloc.h
-@@ -26,11 +26,6 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- 	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
- }
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, addr)				\
--- 
-2.31.1
-
+I thought bpf_arch_text_poke() wasn't allowed to touch kernel code and
+ftrace is in full control of it ?
