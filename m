@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B7CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E49EEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345592AbiHOU3A (ORCPT
+        id S1345247AbiHOU3I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        Mon, 15 Aug 2022 16:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347285AbiHOUWL (ORCPT
+        with ESMTP id S1347287AbiHOUWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:22:11 -0400
+        Mon, 15 Aug 2022 16:22:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760C22C117;
-        Mon, 15 Aug 2022 12:02:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B144B491;
+        Mon, 15 Aug 2022 12:02:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10EE461211;
-        Mon, 15 Aug 2022 19:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AF85C433D6;
-        Mon, 15 Aug 2022 19:01:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0540961281;
+        Mon, 15 Aug 2022 19:02:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B90CC433C1;
+        Mon, 15 Aug 2022 19:02:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590119;
-        bh=NENwG24tRUGPMj966BjJSCeyj20BLt/3D87ptVQFGCs=;
+        s=korg; t=1660590125;
+        bh=IPKnMKxqQ68ddxiIaGT4Let7EggUGK/RSbRJiij+NcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4HI2yUA8G/TaQylka42NWRHIlc1EUsRYW1qQ2w7COlBsuW0me5Gv50hFEv+vblDD
-         vwN0AgUMjK1mp5J9tOJCiv7t8C6Fggb3f2MsQZ05NOCI1yrmLPCxG9uqHeo45wzhJM
-         dsuhEOzaGhHZ1qH0yXulRaskbcabHozXpEjRlrvA=
+        b=RpQQU7ERYlD46RkxoyUCXTznUin2Bs4AWvpYlf4c8ViZidsvqzfVrkAqAvoJmuzvF
+         Voo4pwIO9LTsYaYMmb3JcTrizcc7/5oojS4YwEI7PHim+lQu/v0YSEqxhZLec0qgfd
+         toO0z7lGpKAuyHcDMDjvrCfkn/bOV3AakPSGc0Eo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.18 0130/1095] netfilter: nf_tables: do not allow SET_ID to refer to another table
-Date:   Mon, 15 Aug 2022 19:52:09 +0200
-Message-Id: <20220815180434.957432855@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0158/1095] ARM: dts: ux500: Fix Codina accelerometer mounting matrix
+Date:   Mon, 15 Aug 2022 19:52:37 +0200
+Message-Id: <20220815180436.104329128@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,57 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 470ee20e069a6d05ae549f7d0ef2bdbcee6a81b2 upstream.
+[ Upstream commit 0b2152e428ab91533a02888ff24e52e788dc4637 ]
 
-When doing lookups for sets on the same batch by using its ID, a set from a
-different table can be used.
+This was fixed wrong so fix it again. Now verified by using
+iio-sensor-proxy monitor-sensor test program.
 
-Then, when the table is removed, a reference to the set may be kept after
-the set is freed, leading to a potential use-after-free.
-
-When looking for sets by ID, use the table that was used for the lookup by
-name, and only return sets belonging to that same table.
-
-This fixes CVE-2022-2586, also reported as ZDI-CAN-17470.
-
-Reported-by: Team Orca of Sea Security (@seasecresponse)
-Fixes: 958bee14d071 ("netfilter: nf_tables: use new transaction infrastructure to handle sets")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220611204249.472250-1-linus.walleij@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/ste-ux500-samsung-codina.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3840,6 +3840,7 @@ static struct nft_set *nft_set_lookup_by
- }
- 
- static struct nft_set *nft_set_lookup_byid(const struct net *net,
-+					   const struct nft_table *table,
- 					   const struct nlattr *nla, u8 genmask)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -3851,6 +3852,7 @@ static struct nft_set *nft_set_lookup_by
- 			struct nft_set *set = nft_trans_set(trans);
- 
- 			if (id == nft_trans_set_id(trans) &&
-+			    set->table == table &&
- 			    nft_active_genmask(set, genmask))
- 				return set;
- 		}
-@@ -3871,7 +3873,7 @@ struct nft_set *nft_set_lookup_global(co
- 		if (!nla_set_id)
- 			return set;
- 
--		set = nft_set_lookup_byid(net, nla_set_id, genmask);
-+		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
- 	}
- 	return set;
- }
+diff --git a/arch/arm/boot/dts/ste-ux500-samsung-codina.dts b/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
+index 1c1725d31c7c..0a10fb0a3741 100644
+--- a/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
+@@ -566,8 +566,8 @@ lisd3dh@19 {
+ 				reg = <0x19>;
+ 				vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
+ 				vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
+-				mount-matrix = "0", "-1", "0",
+-					       "1", "0", "0",
++				mount-matrix = "0", "1", "0",
++					       "-1", "0", "0",
+ 					       "0", "0", "1";
+ 			};
+ 		};
+-- 
+2.35.1
+
 
 
