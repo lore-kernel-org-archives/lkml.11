@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE58C282E7
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6596C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiHPEaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        id S229661AbiHPEa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiHPE35 (ORCPT
+        with ESMTP id S229844AbiHPEaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:29:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAA915B175;
-        Mon, 15 Aug 2022 13:17:58 -0700 (PDT)
+        Tue, 16 Aug 2022 00:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D624FC6965;
+        Mon, 15 Aug 2022 13:17:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2621B81135;
-        Mon, 15 Aug 2022 20:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D489FC433C1;
-        Mon, 15 Aug 2022 20:17:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6590F60FBE;
+        Mon, 15 Aug 2022 20:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6713BC433B5;
+        Mon, 15 Aug 2022 20:17:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594670;
-        bh=Ck2+hCrQVgLQVzZ0ToyRALvKkwnPpjmXE+ci7kc4odo=;
+        s=korg; t=1660594663;
+        bh=rU1y07mAIyrTMQHU+dQcmkqMDRY7dbELlamSQsWDnxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eAIWzghYXMOFjmlJotjh5t9xpcOQ5ZTKPSSuUHN3vCFIAYPGi1gM71fmvl+nlDbTK
-         5+fzHydEEKc2/cFnxNxb8fz1lkbcB/x+038yCJqd7OF4rLE3uhNo0GyluevzhvAitJ
-         gY5a015EUxcdBJ9SAYzRW+m7gTEaZ4xbocRncGFs=
+        b=shvLvS+Eg/Hj3XI1Qlw29uq9r6VPpIRv2316IdeFcYUpzpWlw4fJ2O3Uki0QkcF+g
+         NeYSiyQigajbSb22mHh7as+tZlZhZ4Fq3oPiiGP88WB07u9azdvDwiVcueCl/o/+lS
+         sY7nkqUaylX4Mw/hJ7lj41XTLEj3vaSNz0d7vLe8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0522/1157] can: kvaser_usb_leaf: do not report txerr and rxerr during bus-off
-Date:   Mon, 15 Aug 2022 19:57:58 +0200
-Message-Id: <20220815180500.564140469@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0476/1157] mt76: mt7615: do not update pm stats in case of error
+Date:   Mon, 15 Aug 2022 19:57:12 +0200
+Message-Id: <20220815180458.670636541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,40 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a57732084e06791d37ea1ea447cca46220737abd ]
+[ Upstream commit 79717c4eeeae9dec894794fbe8af72f08f03ebdd ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+Do not update pm stats if mt7615_mcu_fw_pmctrl returns an error.
 
-Fixes: 7259124eac7d1 ("can: kvaser_usb: Split driver into kvaser_usb_core.c and kvaser_usb_leaf.c")
-Link: https://lore.kernel.org/all/20220719143550.3681-9-mailhol.vincent@wanadoo.fr
-CC: Jimmy Assarsson <extja@kvaser.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: abe912ae3cd42 ("mt76: mt7663: add awake and doze time accounting")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index cc809ecd1e62..f551fde16a70 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -853,8 +853,10 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
- 		break;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 8fb6c9d735dc..d2dd1260382c 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -350,10 +350,11 @@ static int mt7615_mcu_fw_pmctrl(struct mt7615_dev *dev)
  	}
  
--	cf->data[6] = es->txerr;
--	cf->data[7] = es->rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = es->txerr;
-+		cf->data[7] = es->rxerr;
+ 	mt7622_trigger_hif_int(dev, false);
+-
+-	pm->stats.last_doze_event = jiffies;
+-	pm->stats.awake_time += pm->stats.last_doze_event -
+-				pm->stats.last_wake_event;
++	if (!err) {
++		pm->stats.last_doze_event = jiffies;
++		pm->stats.awake_time += pm->stats.last_doze_event -
++					pm->stats.last_wake_event;
 +	}
+ out:
+ 	mutex_unlock(&pm->mutex);
  
- 	netif_rx(skb);
- }
 -- 
 2.35.1
 
