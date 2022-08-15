@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0257C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAA5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347974AbiHOV3X (ORCPT
+        id S1348039AbiHOV3b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        Mon, 15 Aug 2022 17:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345213AbiHOVXp (ORCPT
+        with ESMTP id S1346382AbiHOVY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:23:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CFBE68FC;
-        Mon, 15 Aug 2022 12:22:26 -0700 (PDT)
+        Mon, 15 Aug 2022 17:24:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AA6E725E;
+        Mon, 15 Aug 2022 12:22:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB951B81062;
-        Mon, 15 Aug 2022 19:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325F3C433D6;
-        Mon, 15 Aug 2022 19:22:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6463561024;
+        Mon, 15 Aug 2022 19:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CCFAC433D7;
+        Mon, 15 Aug 2022 19:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591343;
-        bh=MqocL5w8cz/Erg9VNDx9VYFSea4EQuI4Jiy03JZYY9k=;
+        s=korg; t=1660591349;
+        bh=YTl8WtGTSEAv6fEihigIAxYf6dV25myHpJqpS3uakVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEOMIr8DqrWnU6x5bY/n7jrsMY7iK9UeosSbnMNvB95xAO/QN7VP0bEyswixORZu3
-         2I0z1FnFcW9f4ADu18/9+BiWQ7Kex4Yiip4HGgYMhAENeAE0mtMM7+HYyvVGWrSndE
-         7POPycvJ7zq4BTzOGKdhDFzuMr6w4RDyxP784wkQ=
+        b=bju5ECkm5mDxyPZ2e+m5KAU0dvVE2YJWe2+7RT3vnvJtjBQbsA2O2E8bA9AXILwva
+         T+z2GKesYekXRuU6+BSknG0bCdMD+lmPk1x7m3RCfLYfKHJxtWFggrc0YzkMY3cv1g
+         hnnkgJrqJ5VJlujzFuMsixx8OSWS7ltWXKalzQ+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0550/1095] scsi: qla2xxx: edif: Add bsg interface to read doorbell events
-Date:   Mon, 15 Aug 2022 19:59:09 +0200
-Message-Id: <20220815180452.307276336@linuxfoundation.org>
+Subject: [PATCH 5.18 0552/1095] scsi: qla2xxx: edif: Synchronize NPIV deletion with authentication application
+Date:   Mon, 15 Aug 2022 19:59:11 +0200
+Message-Id: <20220815180452.395892404@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,442 +53,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 5ecd241bd7b1088a189581c0b560a13fe93621f6 ]
+[ Upstream commit cf79716e6636400ae38c37bc8a652b1e522abbba ]
 
-Add bsg interface for app to read doorbell events. This interface lets
-driver know how much app can read based on return buffer size. When the
-next event(s) occur, driver will return the bsg_job with the event(s) in
-the return buffer.
+Notify authentication application of a NPIV deletion event is about to
+occur. This allows app to perform cleanup.
 
-If there is no event to read, driver will hold on to the bsg_job up to few
-seconds as a way to control the polling interval.
-
-Link: https://lore.kernel.org/r/20220607044627.19563-5-njavali@marvell.com
-Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
+Link: https://lore.kernel.org/r/20220607044627.19563-7-njavali@marvell.com
+Fixes: 9efea843a906 ("scsi: qla2xxx: edif: Add detection of secure device")
 Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_dbg.h      |   2 +-
- drivers/scsi/qla2xxx/qla_edif.c     | 249 ++++++++++++++++++++--------
- drivers/scsi/qla2xxx/qla_edif.h     |   3 +-
- drivers/scsi/qla2xxx/qla_edif_bsg.h |  14 ++
- 4 files changed, 195 insertions(+), 73 deletions(-)
+ drivers/scsi/qla2xxx/qla_edif_bsg.h | 2 ++
+ drivers/scsi/qla2xxx/qla_mid.c      | 6 +++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_dbg.h b/drivers/scsi/qla2xxx/qla_dbg.h
-index f1f6c740bdcd..feeb1666227f 100644
---- a/drivers/scsi/qla2xxx/qla_dbg.h
-+++ b/drivers/scsi/qla2xxx/qla_dbg.h
-@@ -383,5 +383,5 @@ ql_mask_match(uint level)
- 	if (ql2xextended_error_logging == 1)
- 		ql2xextended_error_logging = QL_DBG_DEFAULT1_MASK;
- 
--	return (level & ql2xextended_error_logging) == level;
-+	return level && ((level & ql2xextended_error_logging) == level);
- }
-diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index 034c43a8bb9b..d9e3f145b162 100644
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -52,6 +52,31 @@ const char *sc_to_str(uint16_t cmd)
- 	return "unknown";
- }
- 
-+static struct edb_node *qla_edb_getnext(scsi_qla_host_t *vha)
-+{
-+	unsigned long   flags;
-+	struct edb_node *edbnode = NULL;
-+
-+	spin_lock_irqsave(&vha->e_dbell.db_lock, flags);
-+
-+	/* db nodes are fifo - no qualifications done */
-+	if (!list_empty(&vha->e_dbell.head)) {
-+		edbnode = list_first_entry(&vha->e_dbell.head,
-+					   struct edb_node, list);
-+		list_del_init(&edbnode->list);
-+	}
-+
-+	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
-+
-+	return edbnode;
-+}
-+
-+static void qla_edb_node_free(scsi_qla_host_t *vha, struct edb_node *node)
-+{
-+	list_del_init(&node->list);
-+	kfree(node);
-+}
-+
- static struct edif_list_entry *qla_edif_list_find_sa_index(fc_port_t *fcport,
- 		uint16_t handle)
- {
-@@ -1072,6 +1097,130 @@ qla_edif_ack(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 	return 0;
- }
- 
-+static int qla_edif_consume_dbell(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
-+{
-+	struct fc_bsg_reply	*bsg_reply = bsg_job->reply;
-+	u32 sg_skip, reply_payload_len;
-+	bool keep;
-+	struct edb_node *dbnode = NULL;
-+	struct edif_app_dbell ap;
-+	int dat_size = 0;
-+
-+	sg_skip = 0;
-+	reply_payload_len = bsg_job->reply_payload.payload_len;
-+
-+	while ((reply_payload_len - sg_skip) >= sizeof(struct edb_node)) {
-+		dbnode = qla_edb_getnext(vha);
-+		if (dbnode) {
-+			keep = true;
-+			dat_size = 0;
-+			ap.event_code = dbnode->ntype;
-+			switch (dbnode->ntype) {
-+			case VND_CMD_AUTH_STATE_SESSION_SHUTDOWN:
-+			case VND_CMD_AUTH_STATE_NEEDED:
-+				ap.port_id = dbnode->u.plogi_did;
-+				dat_size += sizeof(ap.port_id);
-+				break;
-+			case VND_CMD_AUTH_STATE_ELS_RCVD:
-+				ap.port_id = dbnode->u.els_sid;
-+				dat_size += sizeof(ap.port_id);
-+				break;
-+			case VND_CMD_AUTH_STATE_SAUPDATE_COMPL:
-+				ap.port_id = dbnode->u.sa_aen.port_id;
-+				memcpy(&ap.event_data, &dbnode->u,
-+				    sizeof(struct edif_sa_update_aen));
-+				dat_size += sizeof(struct edif_sa_update_aen);
-+				break;
-+			default:
-+				keep = false;
-+				ql_log(ql_log_warn, vha, 0x09102,
-+					"%s unknown DB type=%d %p\n",
-+					__func__, dbnode->ntype, dbnode);
-+				break;
-+			}
-+			ap.event_data_size = dat_size;
-+			/* 8 = sizeof(ap.event_code + ap.event_data_size) */
-+			dat_size += 8;
-+			if (keep)
-+				sg_skip += sg_copy_buffer(bsg_job->reply_payload.sg_list,
-+						bsg_job->reply_payload.sg_cnt,
-+						&ap, dat_size, sg_skip, false);
-+
-+			ql_dbg(ql_dbg_edif, vha, 0x09102,
-+				"%s Doorbell consumed : type=%d %p\n",
-+				__func__, dbnode->ntype, dbnode);
-+
-+			kfree(dbnode);
-+		} else {
-+			break;
-+		}
-+	}
-+
-+	SET_DID_STATUS(bsg_reply->result, DID_OK);
-+	bsg_reply->reply_payload_rcv_len = sg_skip;
-+	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-+
-+	return 0;
-+}
-+
-+static void __qla_edif_dbell_bsg_done(scsi_qla_host_t *vha, struct bsg_job *bsg_job,
-+	u32 delay)
-+{
-+	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
-+
-+	/* small sleep for doorbell events to accumulate */
-+	if (delay)
-+		msleep(delay);
-+
-+	qla_edif_consume_dbell(vha, bsg_job);
-+
-+	bsg_job_done(bsg_job, bsg_reply->result, bsg_reply->reply_payload_rcv_len);
-+}
-+
-+static void qla_edif_dbell_bsg_done(scsi_qla_host_t *vha)
-+{
-+	unsigned long flags;
-+	struct bsg_job *prev_bsg_job = NULL;
-+
-+	spin_lock_irqsave(&vha->e_dbell.db_lock, flags);
-+	if (vha->e_dbell.dbell_bsg_job) {
-+		prev_bsg_job = vha->e_dbell.dbell_bsg_job;
-+		vha->e_dbell.dbell_bsg_job = NULL;
-+	}
-+	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
-+
-+	if (prev_bsg_job)
-+		__qla_edif_dbell_bsg_done(vha, prev_bsg_job, 0);
-+}
-+
-+static int
-+qla_edif_dbell_bsg(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
-+{
-+	unsigned long flags;
-+	bool return_bsg = false;
-+
-+	/* flush previous dbell bsg */
-+	qla_edif_dbell_bsg_done(vha);
-+
-+	spin_lock_irqsave(&vha->e_dbell.db_lock, flags);
-+	if (list_empty(&vha->e_dbell.head) && DBELL_ACTIVE(vha)) {
-+		/*
-+		 * when the next db event happens, bsg_job will return.
-+		 * Otherwise, timer will return it.
-+		 */
-+		vha->e_dbell.dbell_bsg_job = bsg_job;
-+		vha->e_dbell.bsg_expire = jiffies + 10 * HZ;
-+	} else {
-+		return_bsg = true;
-+	}
-+	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
-+
-+	if (return_bsg)
-+		__qla_edif_dbell_bsg_done(vha, bsg_job, 1);
-+
-+	return 0;
-+}
-+
- int32_t
- qla_edif_app_mgmt(struct bsg_job *bsg_job)
- {
-@@ -1083,8 +1232,13 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
- 	bool done = true;
- 	int32_t         rval = 0;
- 	uint32_t	vnd_sc = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
-+	u32 level = ql_dbg_edif;
- 
--	ql_dbg(ql_dbg_edif, vha, 0x911d, "%s vnd subcmd=%x\n",
-+	/* doorbell is high traffic */
-+	if (vnd_sc == QL_VND_SC_READ_DBELL)
-+		level = 0;
-+
-+	ql_dbg(level, vha, 0x911d, "%s vnd subcmd=%x\n",
- 	    __func__, vnd_sc);
- 
- 	sg_copy_to_buffer(bsg_job->request_payload.sg_list,
-@@ -1093,7 +1247,7 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
- 
- 	if (!vha->hw->flags.edif_enabled ||
- 		test_bit(VPORT_DELETE, &vha->dpc_flags)) {
--		ql_dbg(ql_dbg_edif, vha, 0x911d,
-+		ql_dbg(level, vha, 0x911d,
- 		    "%s edif not enabled or vp delete. bsg ptr done %p. dpc_flags %lx\n",
- 		    __func__, bsg_job, vha->dpc_flags);
- 
-@@ -1102,7 +1256,7 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
- 	}
- 
- 	if (!qla_edif_app_check(vha, appcheck)) {
--		ql_dbg(ql_dbg_edif, vha, 0x911d,
-+		ql_dbg(level, vha, 0x911d,
- 		    "%s app checked failed.\n",
- 		    __func__);
- 
-@@ -1137,6 +1291,10 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
- 	case QL_VND_SC_AEN_COMPLETE:
- 		rval = qla_edif_ack(vha, bsg_job);
- 		break;
-+	case QL_VND_SC_READ_DBELL:
-+		rval = qla_edif_dbell_bsg(vha, bsg_job);
-+		done = false;
-+		break;
- 	default:
- 		ql_dbg(ql_dbg_edif, vha, 0x911d, "%s unknown cmd=%x\n",
- 		    __func__,
-@@ -1148,7 +1306,7 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
- 
- done:
- 	if (done) {
--		ql_dbg(ql_dbg_user, vha, 0x7009,
-+		ql_dbg(level, vha, 0x7009,
- 		    "%s: %d  bsg ptr done %p\n", __func__, __LINE__, bsg_job);
- 		bsg_job_done(bsg_job, bsg_reply->result,
- 		    bsg_reply->reply_payload_rcv_len);
-@@ -1860,30 +2018,6 @@ qla_edb_init(scsi_qla_host_t *vha)
- 	/* initialize lock which protects doorbell & init list */
- 	spin_lock_init(&vha->e_dbell.db_lock);
- 	INIT_LIST_HEAD(&vha->e_dbell.head);
--
--	/* create and initialize doorbell */
--	init_completion(&vha->e_dbell.dbell);
--}
--
--static void
--qla_edb_node_free(scsi_qla_host_t *vha, struct edb_node *node)
--{
--	/*
--	 * releases the space held by this edb node entry
--	 * this function does _not_ free the edb node itself
--	 * NB: the edb node entry passed should not be on any list
--	 *
--	 * currently for doorbell there's no additional cleanup
--	 * needed, but here as a placeholder for furture use.
--	 */
--
--	if (!node) {
--		ql_dbg(ql_dbg_edif, vha, 0x09122,
--		    "%s error - no valid node passed\n", __func__);
--		return;
--	}
--
--	node->ntype = N_UNDEF;
- }
- 
- static void qla_edb_clear(scsi_qla_host_t *vha, port_id_t portid)
-@@ -1930,11 +2064,8 @@ static void qla_edb_clear(scsi_qla_host_t *vha, port_id_t portid)
- 	}
- 	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
- 
--	list_for_each_entry_safe(e, tmp, &edb_list, list) {
-+	list_for_each_entry_safe(e, tmp, &edb_list, list)
- 		qla_edb_node_free(vha, e);
--		list_del_init(&e->list);
--		kfree(e);
--	}
- }
- 
- /* function called when app is stopping */
-@@ -1962,14 +2093,10 @@ qla_edb_stop(scsi_qla_host_t *vha)
- 		    "%s freeing edb_node type=%x\n",
- 		    __func__, node->ntype);
- 		qla_edb_node_free(vha, node);
--		list_del(&node->list);
--
--		kfree(node);
- 	}
- 	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
- 
--	/* wake up doorbell waiters - they'll be dismissed with error code */
--	complete_all(&vha->e_dbell.dbell);
-+	qla_edif_dbell_bsg_done(vha);
- }
- 
- static struct edb_node *
-@@ -2007,9 +2134,6 @@ qla_edb_node_add(scsi_qla_host_t *vha, struct edb_node *ptr)
- 	list_add_tail(&ptr->list, &vha->e_dbell.head);
- 	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
- 
--	/* ring doorbell for waiters */
--	complete(&vha->e_dbell.dbell);
--
- 	return true;
- }
- 
-@@ -2078,43 +2202,24 @@ qla_edb_eventcreate(scsi_qla_host_t *vha, uint32_t dbtype,
- 	default:
- 		ql_dbg(ql_dbg_edif, vha, 0x09102,
- 			"%s unknown type: %x\n", __func__, dbtype);
--		qla_edb_node_free(vha, edbnode);
- 		kfree(edbnode);
- 		edbnode = NULL;
- 		break;
- 	}
- 
--	if (edbnode && (!qla_edb_node_add(vha, edbnode))) {
-+	if (edbnode) {
-+		if (!qla_edb_node_add(vha, edbnode)) {
-+			ql_dbg(ql_dbg_edif, vha, 0x09102,
-+			    "%s unable to add dbnode\n", __func__);
-+			kfree(edbnode);
-+			return;
-+		}
- 		ql_dbg(ql_dbg_edif, vha, 0x09102,
--		    "%s unable to add dbnode\n", __func__);
--		qla_edb_node_free(vha, edbnode);
--		kfree(edbnode);
--		return;
--	}
--	if (edbnode && fcport)
--		fcport->edif.auth_state = dbtype;
--	ql_dbg(ql_dbg_edif, vha, 0x09102,
--	    "%s Doorbell produced : type=%d %p\n", __func__, dbtype, edbnode);
--}
--
--static struct edb_node *
--qla_edb_getnext(scsi_qla_host_t *vha)
--{
--	unsigned long	flags;
--	struct edb_node	*edbnode = NULL;
--
--	spin_lock_irqsave(&vha->e_dbell.db_lock, flags);
--
--	/* db nodes are fifo - no qualifications done */
--	if (!list_empty(&vha->e_dbell.head)) {
--		edbnode = list_first_entry(&vha->e_dbell.head,
--		    struct edb_node, list);
--		list_del(&edbnode->list);
-+		    "%s Doorbell produced : type=%d %p\n", __func__, dbtype, edbnode);
-+		qla_edif_dbell_bsg_done(vha);
-+		if (fcport)
-+			fcport->edif.auth_state = dbtype;
- 	}
--
--	spin_unlock_irqrestore(&vha->e_dbell.db_lock, flags);
--
--	return edbnode;
- }
- 
- void
-@@ -2142,6 +2247,9 @@ qla_edif_timer(scsi_qla_host_t *vha)
- 			ha->edif_post_stop_cnt_down = 60;
- 		}
- 	}
-+
-+	if (vha->e_dbell.dbell_bsg_job && time_after_eq(jiffies, vha->e_dbell.bsg_expire))
-+		qla_edif_dbell_bsg_done(vha);
- }
- 
- /*
-@@ -2209,7 +2317,6 @@ edif_doorbell_show(struct device *dev, struct device_attribute *attr,
- 				"%s Doorbell consumed : type=%d %p\n",
- 				__func__, dbnode->ntype, dbnode);
- 			/* we're done with the db node, so free it up */
--			qla_edb_node_free(vha, dbnode);
- 			kfree(dbnode);
- 		} else {
- 			break;
-diff --git a/drivers/scsi/qla2xxx/qla_edif.h b/drivers/scsi/qla2xxx/qla_edif.h
-index a965ca8e47ce..3561e22b8f0f 100644
---- a/drivers/scsi/qla2xxx/qla_edif.h
-+++ b/drivers/scsi/qla2xxx/qla_edif.h
-@@ -51,7 +51,8 @@ struct edif_dbell {
- 	enum db_flags_t		db_flags;
- 	spinlock_t		db_lock;
- 	struct  list_head	head;
--	struct	completion	dbell;
-+	struct bsg_job *dbell_bsg_job;
-+	unsigned long bsg_expire;
- };
- 
- #define SA_UPDATE_IOCB_TYPE            0x71    /* Security Association Update IOCB entry */
 diff --git a/drivers/scsi/qla2xxx/qla_edif_bsg.h b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-index 301523e4f483..110843b13767 100644
+index 110843b13767..0931f4e4e127 100644
 --- a/drivers/scsi/qla2xxx/qla_edif_bsg.h
 +++ b/drivers/scsi/qla2xxx/qla_edif_bsg.h
-@@ -183,6 +183,20 @@ struct qla_sa_update_frame {
- #define	QL_VND_SC_GET_FCINFO	7
- #define	QL_VND_SC_GET_STATS	8
- #define QL_VND_SC_AEN_COMPLETE  9
-+#define QL_VND_SC_READ_DBELL	10
+@@ -253,4 +253,6 @@ struct aen_complete_cmd {
+ 
+ #define RX_DELAY_DELETE_TIMEOUT 20
+ 
++#define FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN  1
 +
-+/*
-+ * bsg caller to provide empty buffer for doorbell events.
-+ *
-+ * sg_io_v4.din_xferp  = empty buffer for door bell events
-+ * sg_io_v4.dout_xferp = struct edif_read_dbell *buf
-+ */
-+struct edif_read_dbell {
-+	struct app_id app_info;
-+	uint8_t version;
-+	uint8_t pad[VND_CMD_PAD_SIZE];
-+	uint8_t reserved[VND_CMD_APP_RESERVED_SIZE];
-+};
+ #endif	/* QLA_EDIF_BSG_H */
+diff --git a/drivers/scsi/qla2xxx/qla_mid.c b/drivers/scsi/qla2xxx/qla_mid.c
+index e6b5c4ccce97..eb43a5f1b399 100644
+--- a/drivers/scsi/qla2xxx/qla_mid.c
++++ b/drivers/scsi/qla2xxx/qla_mid.c
+@@ -166,9 +166,13 @@ qla24xx_disable_vp(scsi_qla_host_t *vha)
+ 	int ret = QLA_SUCCESS;
+ 	fc_port_t *fcport;
  
+-	if (vha->hw->flags.edif_enabled)
++	if (vha->hw->flags.edif_enabled) {
++		if (DBELL_ACTIVE(vha))
++			qla2x00_post_aen_work(vha, FCH_EVT_VENDOR_UNIQUE,
++			    FCH_EVT_VENDOR_UNIQUE_VPORT_DOWN);
+ 		/* delete sessions and flush sa_indexes */
+ 		qla2x00_wait_for_sess_deletion(vha);
++	}
  
- /* Application interface data structure for rtn data */
+ 	if (vha->hw->flags.fw_started)
+ 		ret = qla24xx_control_vp(vha, VCE_COMMAND_DISABLE_VPS_LOGO_ALL);
 -- 
 2.35.1
 
