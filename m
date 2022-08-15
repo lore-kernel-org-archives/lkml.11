@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A9EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9981FC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbiHOVCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60432 "EHLO
+        id S233169AbiHOVDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344940AbiHOVAs (ORCPT
+        with ESMTP id S1346751AbiHOVA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:00:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E5D5071C;
-        Mon, 15 Aug 2022 12:13:08 -0700 (PDT)
+        Mon, 15 Aug 2022 17:00:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CE7C6EB7;
+        Mon, 15 Aug 2022 12:13:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5413A6009B;
-        Mon, 15 Aug 2022 19:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21716C433C1;
-        Mon, 15 Aug 2022 19:13:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75F11B810C6;
+        Mon, 15 Aug 2022 19:13:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92981C433C1;
+        Mon, 15 Aug 2022 19:13:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590786;
-        bh=yUTNofOgq1olQPMANgZ2ZGeArnRYj09pXtkAyVjYFhA=;
+        s=korg; t=1660590793;
+        bh=l1JNBUW67c3Haepi31TlKOHIL3hpGY4BFuc6oaKik5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0xG5M90HE9CAjcvSLS7o7OLfz1q3ggl3NbxQpD6PmsZ6L7X3/uAiBiGJh/hb3vYaO
-         qfnYvDJceyZOYpYZ9KtGphaEoO4FQeBOT2rgmRlgvSKr4fgqxICUQshaSmhUM/3f1O
-         7Pkb5VAeRDFih2ZUJo+FBoNrmmcaPqG2GMBH4WIE=
+        b=h7Pig7x5uZRF7dFmwGasHxDDRB27Ieqasusrk/zFQtZLvXS5ndOfyjlS/O8a8DNM0
+         uk54o1HL+PTgpCy33iehEAA7n2MGnyWOsyDbXNNG8znc743+Z+qHZa5KNkXBOfMAsS
+         7mEsIrmzJSW11b2N9TL5eo84SkDMBwbMqrvUfpqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0371/1095] drm: bridge: adv7511: Add check for mipi_dsi_driver_register
-Date:   Mon, 15 Aug 2022 19:56:10 +0200
-Message-Id: <20220815180445.066576965@linuxfoundation.org>
+Subject: [PATCH 5.18 0373/1095] media: amphion: output firmware error message
+Date:   Mon, 15 Aug 2022 19:56:12 +0200
+Message-Id: <20220815180445.151333958@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,55 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Ming Qian <ming.qian@nxp.com>
 
-[ Upstream commit 831463667b5f4f1e5bce9c3b94e9e794d2bc8923 ]
+[ Upstream commit 89e3f3fb3d9014efa59ed6bb526d5f1a00168452 ]
 
-As mipi_dsi_driver_register could return error if fails,
-it should be better to check the return value and return error
-if fails.
-Moreover, if i2c_add_driver fails,  mipi_dsi_driver_register
-should be reverted.
+Firmware may send the error event with some error message,
+and it help locate the firmware error,
+so output the error message if it exists
 
-Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220602103401.2980938-1-jiasheng@iscas.ac.cn
+Fixes: 61cbf1c1fa6d7 ("media: amphion: implement vpu core communication based on mailbox")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/media/platform/amphion/vpu_msgs.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index fba6ad3bb6ad..f4d6359f6219 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1384,10 +1384,21 @@ static struct i2c_driver adv7511_driver = {
+diff --git a/drivers/media/platform/amphion/vpu_msgs.c b/drivers/media/platform/amphion/vpu_msgs.c
+index 58502c51ddb3..077644bc1d7c 100644
+--- a/drivers/media/platform/amphion/vpu_msgs.c
++++ b/drivers/media/platform/amphion/vpu_msgs.c
+@@ -150,7 +150,12 @@ static void vpu_session_handle_eos(struct vpu_inst *inst, struct vpu_rpc_event *
  
- static int __init adv7511_init(void)
+ static void vpu_session_handle_error(struct vpu_inst *inst, struct vpu_rpc_event *pkt)
  {
--	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
--		mipi_dsi_driver_register(&adv7533_dsi_driver);
-+	int ret;
+-	dev_err(inst->dev, "unsupported stream\n");
++	char *str = (char *)pkt->data;
 +
-+	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
-+		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
-+		if (ret)
-+			return ret;
-+	}
- 
--	return i2c_add_driver(&adv7511_driver);
-+	ret = i2c_add_driver(&adv7511_driver);
-+	if (ret) {
-+		if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
-+			mipi_dsi_driver_unregister(&adv7533_dsi_driver);
-+	}
-+
-+	return ret;
++	if (strlen(str))
++		dev_err(inst->dev, "instance %d firmware error : %s\n", inst->id, str);
++	else
++		dev_err(inst->dev, "instance %d is unsupported stream\n", inst->id);
+ 	call_void_vop(inst, event_notify, VPU_MSG_ID_UNSUPPORTED, NULL);
+ 	vpu_v4l2_set_error(inst);
  }
- module_init(adv7511_init);
- 
 -- 
 2.35.1
 
