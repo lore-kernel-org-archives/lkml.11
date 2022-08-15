@@ -2,123 +2,390 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86528C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6348EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241553AbiHOI2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 04:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
+        id S231256AbiHOI3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 04:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiHOI2n (ORCPT
+        with ESMTP id S231685AbiHOI2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 04:28:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F9B11F639
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660552117;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lEHWMXFZ2uct4Ktk4KY1ISQiitnDvCq9CZGYvT11o94=;
-        b=ToM+WyNED1xHXruOEy9GT37AeCQV7Yme3ZiIbz7dDJ5xgMUQvA7+UkFM1zvDe4Nz8teDGJ
-        3YVG5o+R+5boNVTpiNwp/fCQA0ujaPQ+iREOE5dK/mOVISKMYUq58NU9A8K2sRmHXfXFRn
-        csAjQLqmpyIZEN2nJIo8TvuuIwtU8MQ=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-619-zfq21Dw_P-6oy3bysp51dw-1; Mon, 15 Aug 2022 04:28:35 -0400
-X-MC-Unique: zfq21Dw_P-6oy3bysp51dw-1
-Received: by mail-ej1-f71.google.com with SMTP id ga16-20020a1709070c1000b007331af32d3aso940766ejc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:28:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=lEHWMXFZ2uct4Ktk4KY1ISQiitnDvCq9CZGYvT11o94=;
-        b=SrohP0WFJ7IlQmxaaKYyDhbj1yswBklZjG5etCOZ9Df9NJctaR/hi1GCKrkLgmqrea
-         4qbnTyAJqr6TJyTGrmC7xNN97N0TWa14r3T6xttthhyWmCqS05Qwj/hDUA1HO5kqBuld
-         QGDUHGHsRtaKZ7SSqX8Mf/HStGm/8YS/Zm9SGgmOBL7HN3ueYXf8knqTVuAgzV1bLAU+
-         z5BkAu9oOh3blheOZ6Hn6N5cxUHRbvERbEWOUAwcMf8axdFp1hFtcOGDVb+ttE184mIJ
-         /+dTm+5gmnmxlrW2hGuiGeIo2dT3VMBavKZzK8+ifZ5VrjGwGSLl3atNdKJvjaOiCqcj
-         c3sw==
-X-Gm-Message-State: ACgBeo0XsibVPtQDPBGjFrre03GDZyJMNnR/aBw2fOfXPyxEZhGs3mZF
-        cDLktAQiJ876KApPlRaf+V/XMS5rdr71PnkCLfGUh+pRh4YPPFy1NBm2mx4cyBC+bW6nN7AmSyj
-        r34Vd4KttcC9BvhEE8ajl5wuS
-X-Received: by 2002:a17:906:5a4f:b0:730:825a:d860 with SMTP id my15-20020a1709065a4f00b00730825ad860mr9738655ejc.143.1660552114219;
-        Mon, 15 Aug 2022 01:28:34 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4tAIkoXvkWgmRems/JupsfZUMzrxVWgjeYGv5FVIVL7IdG83ARhP2VC6LbArZAKXBv+CG2fg==
-X-Received: by 2002:a17:906:5a4f:b0:730:825a:d860 with SMTP id my15-20020a1709065a4f00b00730825ad860mr9738642ejc.143.1660552114023;
-        Mon, 15 Aug 2022 01:28:34 -0700 (PDT)
-Received: from redhat.com ([2.54.169.49])
-        by smtp.gmail.com with ESMTPSA id n18-20020aa7c452000000b0043ba437fe04sm6236573edr.78.2022.08.15.01.28.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 01:28:33 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 04:28:29 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Andres Freund <andres@anarazel.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815042623-mutt-send-email-mst@kernel.org>
-References: <20220814212610.GA3690074@roeck-us.net>
- <CAHk-=wgf2EfLHui6A5NbWoaVBB2f8t-XBUiOMkyjN2NU41t6eA@mail.gmail.com>
- <20220814223743.26ebsbnrvrjien4f@awork3.anarazel.de>
- <CAHk-=wi6raoJE-1cyRU0YxJ+9ReO1eXmOAq0FwKAyZS7nhvk9w@mail.gmail.com>
- <1c057afa-92df-ee3c-5978-3731d3db9345@kernel.dk>
- <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
- <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
- <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
- <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
+        Mon, 15 Aug 2022 04:28:50 -0400
+Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0C41F624;
+        Mon, 15 Aug 2022 01:28:48 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 3C651BFADB;
+        Mon, 15 Aug 2022 10:28:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1660552125; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding:in-reply-to:references;
+        bh=sl6SUxmAvCtP4OCDbrUpoCUjEKmSThZ1ykVQkty4PkY=;
+        b=ERH0izhw41NwQGgY3f8bYUY5SceyY9Z5TY1NsyeRlxzk/bqt2ZG3IsvH3nxL2DcjIQCRaY
+        1ZTUw6YiT6BVgUpnWVgfrpLqiJ+xzgnaJr1C3L6tgS4YYGi0MRSHD/l7oMnQQ1vvmaawim
+        XCDu+5N1WGU79y1FjTTaK5BjYd6W3p0lAjOhBHZIo6lAYONlTbinBv+TwDRI8wdJc8pY3G
+        3zAWYyEuZIT7JC5T19sjPw52aFlBANPG9GKohw60QJuxwdyVKd15EyabasriPX78cLfE5B
+        neVZyN6XTAdjvEUwzOZKyWtdiu076Slb2tZ4lWn+af+SlBA/Bus9+KLkhojLhg==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, soc@kernel.org
+Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Denys Drozdov <denys.drozdov@toradex.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH v3 2/3] ARM: dts: imx6ul-kontron: Simplify devicetree structure
+Date:   Mon, 15 Aug 2022 10:28:11 +0200
+Message-Id: <20220815082814.27651-3-frieder@fris.de>
+In-Reply-To: <20220815082814.27651-1-frieder@fris.de>
+References: <20220815082814.27651-1-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 01:15:27AM -0700, Andres Freund wrote:
-> Hi,
-> 
-> On 2022-08-15 03:51:34 -0400, Michael S. Tsirkin wrote:
-> > It is possible that GCP gets confused if ring size is smaller than the
-> > device maximum simply because no one did it in the past.
-> > 
-> > So I pushed just the revert of 762faee5a267 to the test branch.
-> > Could you give it a spin?
-> 
-> Seems to fix the issue, at least to the extent I can determine at 1am... :)
-> 
-> Greetings,
-> 
-> Andres Freund
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-So you tested this:
+There is no need in differentiating between the different SoM versions
+that only differ in memory size, etc. It's much cleaner to simplify
+the devicetrees and let them be more generic.
 
-commit 13df5a7eaeb22561d39354b576bc98a7e2c389f9 (HEAD, kernel.org/test)
-Author: Michael S. Tsirkin <mst@redhat.com>
-Date:   Mon Aug 15 03:44:38 2022 -0400
+If necessary the bootloader will update the devicetree dynamically
+to contain the correct size of the memory.
 
-    Revert "virtio_net: set the default max ring size by find_vqs()"
-    
-    This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
-    
-    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+We also get rid of the N6xxx notation in the compatibles and file
+names, as they are not really used anymore and often result in
+confusion.
 
-and it fixes both issues right? No crashes no networking issue?
+This is a breaking change, but the impact shouldn't be too big and it
+makes usage and maintenance easier in the future.
 
-Just making sure before I send this upstream as a stop-gap.
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+ arch/arm/boot/dts/Makefile                    |  4 +-
+ ...6310-s-43.dts => imx6ul-kontron-bl-43.dts} |  8 ++--
+ ...x-s.dtsi => imx6ul-kontron-bl-common.dtsi} |  0
+ ...tron-n6310-s.dts => imx6ul-kontron-bl.dts} |  9 ++---
+ .../boot/dts/imx6ul-kontron-n6311-som.dtsi    | 40 -------------------
+ ...mon.dtsi => imx6ul-kontron-sl-common.dtsi} | 15 +++++++
+ ...-n6310-som.dtsi => imx6ul-kontron-sl.dtsi} | 33 ++-------------
+ ...ron-n6411-s.dts => imx6ull-kontron-bl.dts} |  9 ++---
+ .../boot/dts/imx6ull-kontron-n6411-som.dtsi   | 40 -------------------
+ ...on-n6311-s.dts => imx6ull-kontron-sl.dtsi} | 11 ++---
+ 10 files changed, 36 insertions(+), 133 deletions(-)
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6310-s-43.dts => imx6ul-kontron-bl-43.dts} (93%)
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6x1x-s.dtsi => imx6ul-kontron-bl-common.dtsi} (100%)
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6310-s.dts => imx6ul-kontron-bl.dts} (52%)
+ delete mode 100644 arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6x1x-som-common.dtsi => imx6ul-kontron-sl-common.dtsi} (90%)
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6310-som.dtsi => imx6ul-kontron-sl.dtsi} (28%)
+ rename arch/arm/boot/dts/{imx6ull-kontron-n6411-s.dts => imx6ull-kontron-bl.dts} (43%)
+ delete mode 100644 arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
+ rename arch/arm/boot/dts/{imx6ul-kontron-n6311-s.dts => imx6ull-kontron-sl.dtsi} (41%)
 
-We need to figure out what is going on since I think there's a GCP
-hypervisor bug that we need to find a way to detect and work around but
-that can wait.
-
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 5112f493f494..6627aed26fd6 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -696,8 +696,8 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+ 	imx6ul-geam.dtb \
+ 	imx6ul-isiot-emmc.dtb \
+ 	imx6ul-isiot-nand.dtb \
+-	imx6ul-kontron-n6310-s.dtb \
+-	imx6ul-kontron-n6310-s-43.dtb \
++	imx6ul-kontron-bl.dtb \
++	imx6ul-kontron-bl-43.dtb \
+ 	imx6ul-liteboard.dtb \
+ 	imx6ul-tqma6ul1-mba6ulx.dtb \
+ 	imx6ul-tqma6ul2-mba6ulx.dtb \
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dts b/arch/arm/boot/dts/imx6ul-kontron-bl-43.dts
+similarity index 93%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dts
+rename to arch/arm/boot/dts/imx6ul-kontron-bl-43.dts
+index 5bfad4655b22..0c643706a158 100644
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dts
++++ b/arch/arm/boot/dts/imx6ul-kontron-bl-43.dts
+@@ -5,12 +5,12 @@
+  * Copyright (c) 2019 Krzysztof Kozlowski <krzk@kernel.org>
+  */
+ 
+-#include "imx6ul-kontron-n6310-s.dts"
++#include "imx6ul-kontron-bl.dts"
+ 
+ / {
+-	model = "Kontron N6310 S 43";
+-	compatible = "kontron,imx6ul-n6310-s-43", "kontron,imx6ul-n6310-s",
+-		     "kontron,imx6ul-n6310-som", "fsl,imx6ul";
++	model = "Kontron BL i.MX6UL 43 (N631X S 43)";
++	compatible = "kontron,bl-imx6ul-43", "kontron,bl-imx6ul",
++		     "kontron,sl-imx6ul", "fsl,imx6ul";
+ 
+ 	backlight {
+ 		compatible = "pwm-backlight";
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6x1x-s.dtsi b/arch/arm/boot/dts/imx6ul-kontron-bl-common.dtsi
+similarity index 100%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6x1x-s.dtsi
+rename to arch/arm/boot/dts/imx6ul-kontron-bl-common.dtsi
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6310-s.dts b/arch/arm/boot/dts/imx6ul-kontron-bl.dts
+similarity index 52%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6310-s.dts
+rename to arch/arm/boot/dts/imx6ul-kontron-bl.dts
+index 5a3e06d6219b..dadf6d3d5f52 100644
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6310-s.dts
++++ b/arch/arm/boot/dts/imx6ul-kontron-bl.dts
+@@ -7,11 +7,10 @@
+ 
+ /dts-v1/;
+ 
+-#include "imx6ul-kontron-n6310-som.dtsi"
+-#include "imx6ul-kontron-n6x1x-s.dtsi"
++#include "imx6ul-kontron-sl.dtsi"
++#include "imx6ul-kontron-bl-common.dtsi"
+ 
+ / {
+-	model = "Kontron N6310 S";
+-	compatible = "kontron,imx6ul-n6310-s", "kontron,imx6ul-n6310-som",
+-		     "fsl,imx6ul";
++	model = "Kontron BL i.MX6UL (N631X S)";
++	compatible = "kontron,bl-imx6ul", "kontron,sl-imx6ul", "fsl,imx6ul";
+ };
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi b/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
+deleted file mode 100644
+index 29ed38dce580..000000000000
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
++++ /dev/null
+@@ -1,40 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * Copyright (C) 2017 exceet electronics GmbH
+- * Copyright (C) 2018 Kontron Electronics GmbH
+- */
+-
+-#include "imx6ul.dtsi"
+-#include "imx6ul-kontron-n6x1x-som-common.dtsi"
+-
+-/ {
+-	model = "Kontron N6311 SOM";
+-	compatible = "kontron,imx6ul-n6311-som", "fsl,imx6ul";
+-
+-	memory@80000000 {
+-		reg = <0x80000000 0x20000000>;
+-		device_type = "memory";
+-	};
+-};
+-
+-&qspi {
+-	flash@0 {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		compatible = "spi-nand";
+-		spi-max-frequency = <104000000>;
+-		spi-tx-bus-width = <4>;
+-		spi-rx-bus-width = <4>;
+-		reg = <0>;
+-
+-		partition@0 {
+-			label = "ubi1";
+-			reg = <0x00000000 0x08000000>;
+-		};
+-
+-		partition@8000000 {
+-			label = "ubi2";
+-			reg = <0x08000000 0x18000000>;
+-		};
+-	};
+-};
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi b/arch/arm/boot/dts/imx6ul-kontron-sl-common.dtsi
+similarity index 90%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi
+rename to arch/arm/boot/dts/imx6ul-kontron-sl-common.dtsi
+index 09a83dbdf651..dcf88f610346 100644
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi
++++ b/arch/arm/boot/dts/imx6ul-kontron-sl-common.dtsi
+@@ -11,6 +11,11 @@ / {
+ 	chosen {
+ 		stdout-path = &uart4;
+ 	};
++
++	memory@80000000 {
++		reg = <0x80000000 0x10000000>;
++		device_type = "memory";
++	};
+ };
+ 
+ &ecspi2 {
+@@ -55,6 +60,16 @@ &qspi {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_qspi>;
+ 	status = "okay";
++
++	spi-flash@0 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "spi-nand";
++		spi-max-frequency = <104000000>;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
++		reg = <0>;
++	};
+ };
+ 
+ &wdog1 {
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi b/arch/arm/boot/dts/imx6ul-kontron-sl.dtsi
+similarity index 28%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi
+rename to arch/arm/boot/dts/imx6ul-kontron-sl.dtsi
+index acd936540d89..0580d043e5ae 100644
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi
++++ b/arch/arm/boot/dts/imx6ul-kontron-sl.dtsi
+@@ -6,36 +6,9 @@
+  */
+ 
+ #include "imx6ul.dtsi"
+-#include "imx6ul-kontron-n6x1x-som-common.dtsi"
++#include "imx6ul-kontron-sl-common.dtsi"
+ 
+ / {
+-	model = "Kontron N6310 SOM";
+-	compatible = "kontron,imx6ul-n6310-som", "fsl,imx6ul";
+-
+-	memory@80000000 {
+-		reg = <0x80000000 0x10000000>;
+-		device_type = "memory";
+-	};
+-};
+-
+-&qspi {
+-	flash@0 {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		compatible = "spi-nand";
+-		spi-max-frequency = <108000000>;
+-		spi-tx-bus-width = <4>;
+-		spi-rx-bus-width = <4>;
+-		reg = <0>;
+-
+-		partition@0 {
+-			label = "ubi1";
+-			reg = <0x00000000 0x08000000>;
+-		};
+-
+-		partition@8000000 {
+-			label = "ubi2";
+-			reg = <0x08000000 0x08000000>;
+-		};
+-	};
++	model = "Kontron SL i.MX6UL (N631X SOM)";
++	compatible = "kontron,sl-imx6ul", "fsl,imx6ul";
+ };
+diff --git a/arch/arm/boot/dts/imx6ull-kontron-n6411-s.dts b/arch/arm/boot/dts/imx6ull-kontron-bl.dts
+similarity index 43%
+rename from arch/arm/boot/dts/imx6ull-kontron-n6411-s.dts
+rename to arch/arm/boot/dts/imx6ull-kontron-bl.dts
+index 57588a5e1e34..fa016465cdbc 100644
+--- a/arch/arm/boot/dts/imx6ull-kontron-n6411-s.dts
++++ b/arch/arm/boot/dts/imx6ull-kontron-bl.dts
+@@ -6,11 +6,10 @@
+ 
+ /dts-v1/;
+ 
+-#include "imx6ull-kontron-n6411-som.dtsi"
+-#include "imx6ul-kontron-n6x1x-s.dtsi"
++#include "imx6ull-kontron-sl.dtsi"
++#include "imx6ul-kontron-bl-common.dtsi"
+ 
+ / {
+-	model = "Kontron N6411 S";
+-	compatible = "kontron,imx6ull-n6411-s", "kontron,imx6ull-n6411-som",
+-		     "fsl,imx6ull";
++	model = "Kontron BL i.MX6ULL (N641X S)";
++	compatible = "kontron,bl-imx6ull", "kontron,sl-imx6ull", "fsl,imx6ull";
+ };
+diff --git a/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi b/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
+deleted file mode 100644
+index d000606c0704..000000000000
+--- a/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
++++ /dev/null
+@@ -1,40 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * Copyright (C) 2017 exceet electronics GmbH
+- * Copyright (C) 2018 Kontron Electronics GmbH
+- */
+-
+-#include "imx6ull.dtsi"
+-#include "imx6ul-kontron-n6x1x-som-common.dtsi"
+-
+-/ {
+-	model = "Kontron N6411 SOM";
+-	compatible = "kontron,imx6ull-n6311-som", "fsl,imx6ull";
+-
+-	memory@80000000 {
+-		reg = <0x80000000 0x20000000>;
+-		device_type = "memory";
+-	};
+-};
+-
+-&qspi {
+-	flash@0 {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		compatible = "spi-nand";
+-		spi-max-frequency = <104000000>;
+-		spi-tx-bus-width = <4>;
+-		spi-rx-bus-width = <4>;
+-		reg = <0>;
+-
+-		partition@0 {
+-			label = "ubi1";
+-			reg = <0x00000000 0x08000000>;
+-		};
+-
+-		partition@8000000 {
+-			label = "ubi2";
+-			reg = <0x08000000 0x18000000>;
+-		};
+-	};
+-};
+diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6311-s.dts b/arch/arm/boot/dts/imx6ull-kontron-sl.dtsi
+similarity index 41%
+rename from arch/arm/boot/dts/imx6ul-kontron-n6311-s.dts
+rename to arch/arm/boot/dts/imx6ull-kontron-sl.dtsi
+index 239a1af3aeaa..93f10eb3494f 100644
+--- a/arch/arm/boot/dts/imx6ul-kontron-n6311-s.dts
++++ b/arch/arm/boot/dts/imx6ull-kontron-sl.dtsi
+@@ -4,13 +4,10 @@
+  * Copyright (C) 2018 Kontron Electronics GmbH
+  */
+ 
+-/dts-v1/;
+-
+-#include "imx6ul-kontron-n6311-som.dtsi"
+-#include "imx6ul-kontron-n6x1x-s.dtsi"
++#include "imx6ull.dtsi"
++#include "imx6ul-kontron-sl-common.dtsi"
+ 
+ / {
+-	model = "Kontron N6311 S";
+-	compatible = "kontron,imx6ul-n6311-s", "kontron,imx6ul-n6311-som",
+-		     "fsl,imx6ul";
++	model = "Kontron SL i.MX6ULL (N641X SOM)";
++	compatible = "kontron,sl-imx6ull", "fsl,imx6ull";
+ };
 -- 
-MST
+2.37.1
 
