@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB6E2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B60CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240454AbiHOSUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        id S239940AbiHOSUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240053AbiHOSSy (ORCPT
+        with ESMTP id S239819AbiHOSS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:18:54 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9A62AC52;
-        Mon, 15 Aug 2022 11:16:17 -0700 (PDT)
-Received: from [192.168.1.138] ([37.4.248.80]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MRCFw-1o2px33fJk-00NDs7; Mon, 15 Aug 2022 20:15:57 +0200
-Message-ID: <2ecf22d4-3b46-4469-28af-e26f44cf2952@i2se.com>
-Date:   Mon, 15 Aug 2022 20:15:56 +0200
+        Mon, 15 Aug 2022 14:18:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7012BB15;
+        Mon, 15 Aug 2022 11:16:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64FB7B81063;
+        Mon, 15 Aug 2022 18:16:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD08DC433D6;
+        Mon, 15 Aug 2022 18:16:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660587380;
+        bh=lk6E3HO1m9rC2T2mQWrxN4dvmUWts8HkHyFZ9zjhZVE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U+Ib1274h5jvs5GsXXjw59HXOi8rgX7PNXLFtL2icL1rsjvyrWiScbXauQhg+qn7R
+         55bbJO2GHsPYzl6ofZAH60krJ+UmlHDMVUUsEgVtZvYxCXZvVN/ZQKV6FA7LK0xPlm
+         hnpQEjh+8KcjBm1/jitWVOqz0Ztfe54o3kt+PUz8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Subject: [PATCH 5.15 068/779] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
+Date:   Mon, 15 Aug 2022 19:55:12 +0200
+Message-Id: <20220815180340.188431192@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/3] clk: bcm: rpi: Fixes and improvement
-Content-Language: en-US
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Ivan T. Ivanov" <iivanov@suse.de>
-References: <20220713154953.3336-1-stefan.wahren@i2se.com>
- <20220725081838.nd2tsjcw4uiapl5k@suse>
- <c7fea2e5-eeb7-cd66-dc42-9fea98cfda9d@gmail.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <c7fea2e5-eeb7-cd66-dc42-9fea98cfda9d@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:tYrByavhS5DN9ADGYh/BJj7BmbkVJN/qbkuasfPCAd6ke5CsPmI
- Nn6TbD2ij+Kd8F6HnOR7xKAq1W89cDEBR9mKH+GHp5lwoiL7ED24ahXshrvEq57ACwVmHX/
- VlVCYmlpZJ8b2P9vWtqiJOSTI6HgMKVIJbVOj3HbdLsgi+EfoLJg27JO08UZ9DylTn1m0YS
- bSr54wKHKgorefqEfhlUA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:HWcY4MT2eKM=:Jy7QyZ8oSsYX903pK4KB7f
- RLdCKmK9Fw7vhpthtqIXP/hrj6jgandfNQadD7GABv+6gbl1+uy5xJm7f8SgQQOekoZ4mS3L5
- DKCTRmiM2lakD96Jf03bP30SD6R2l8e7b9X3plOBe4ahmb23fXIw5XY7WE4VEMN2e1fQbqWHe
- tCVDX6jcdMTMWqBg/ZGXCzpjmfvzxbmZLpb5TDj8ILnYXca3HJCHpNV6rUvwGlpI6QWZX/agj
- LiG6K0IrQsfkUA3/DDGgssWFFAmo41bYYAFMvhU5evPkfgxQTxyXRnrB32HiP46AHm3ZRmsx4
- xhvotMkGq26WpBzcBRoqf7/Y+a/Lj5AB4p4DFszL1/KD94t2U5Mu2MRzbJoKruNAnl+Mck8PM
- zp8y0cjD4qYwp0Wm2CUxVK8T0itsk/mlof8q1cHPy2RpvLoESqESQBzqAg9wyIEqTU1OwS+dQ
- kS2H8FigIAStQzK1hAlq1EtwJGTSAV6IF8JCd1jhATiLAgGnmQEhjoqj+FpiQ7lpuI7VbFi6J
- +x0Ob7gyGUZ7xqjhSZhzpfq3VSTnILY77skqe/tKdF1Uso5OI2ebi3rbE/ha47VJIc96kPBt6
- ByDj/cP0Fj3wUYdyBzfNT1ofg+TUIf7OpvHjdVYxVLpIJsFtUbDF+802XRL+FEkcM9cbpWMNF
- GCxoJKSkG61wPSRIvlKaJcSmxpguVBtxPJh/068yuB3gLOBwYk+1R9CYJcp0MMWFdLxpZdq/a
- vZ5I2imy7U4jGOVFLMMRapbKW5z7MDfr+oVdab7CS4Cj9s0eUEsrvt8F9Is=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+From: Leo Li <sunpeng.li@amd.com>
 
-Am 04.08.22 um 19:58 schrieb Florian Fainelli:
-> On 7/25/22 01:18, Ivan T. Ivanov wrote:
->> Hi,
->>
->> On 07-13 17:49, Stefan Wahren wrote:
->>> This series tries to fix and improvement the Raspberry Pi firmware clock
->>> driver. This mostly focus on clock discovery mechanism.
->>>
->>> Just a note patch #3 depends on patch #2.
->>>
->>> Stefan Wahren (3):
->>>    clk: bcm: rpi: Prevent out-of-bounds access
->>>    clk: bcm: rpi: Add missing newline
->>>    clk: bcm: rpi: Show clock id limit in error case
->>>
->> Maybe is little bit late, but still :-)
->>
->> Reviewed-by: Ivan T. Ivanov <iivanov@suse.de>
-> Stephen, can you apply those patches? Thanks!
+commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
 
-should i resend this series?
+When pinning a buffer, we should check to see if there are any
+additional restrictions imposed by bo->preferred_domains. This will
+prevent the BO from being moved to an invalid domain when pinning.
 
-Best regards
+For example, this can happen if the user requests to create a BO in GTT
+domain for display scanout. amdgpu_dm will allow pinning to either VRAM
+or GTT domains, since DCN can scanout from either or. However, in
+amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
+adequate carveout. This can lead to pinning to VRAM despite the user
+requesting GTT placement for the BO.
+
+v2: Allow the kernel to override the domain, which can happen when
+    exporting a BO to a V4L camera (for example).
+
+Signed-off-by: Leo Li <sunpeng.li@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -912,6 +912,10 @@ int amdgpu_bo_pin_restricted(struct amdg
+ 	if (WARN_ON_ONCE(min_offset > max_offset))
+ 		return -EINVAL;
+ 
++	/* Check domain to be pinned to against preferred domains */
++	if (bo->preferred_domains & domain)
++		domain = bo->preferred_domains & domain;
++
+ 	/* A shared bo cannot be migrated to VRAM */
+ 	if (bo->tbo.base.import_attach) {
+ 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
+
 
