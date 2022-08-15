@@ -2,193 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A76C1C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5027EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244746AbiHPAoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
+        id S233456AbiHPAoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349973AbiHPAlj (ORCPT
+        with ESMTP id S1349986AbiHPAlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:41:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A80BACA24;
-        Mon, 15 Aug 2022 13:39:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DC086122B;
-        Mon, 15 Aug 2022 20:39:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A537C433B5;
-        Mon, 15 Aug 2022 20:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595960;
-        bh=U76y3Rv3ep988f+n4BPNFIOh+pQ6ZOtqlLZcSVvFxDE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dpVKLhvV6rOB3Cmys5zaxETfd3QzG1mlvLGyqHzn3VPGWsMUPQ7QmA6Zs9GEI0TCX
-         ZAClr8ORNZ8RRN56BTtMo6+EBDw+fMInN2BRBlPATInez2RP3y2Zp/U9GQ2ArFIm5F
-         Ee1f1L5NthE51zvWrJR5/f76rzJ5b4A1wbYEZkLc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0928/1157] tty: n_gsm: fix missing timer to handle stalled links
-Date:   Mon, 15 Aug 2022 20:04:44 +0200
-Message-Id: <20220815180516.589107632@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C94B18F58B
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660595960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Ju82h2Seq9g+C5kY2YGtQXKyGbfylxp+FKU0h7Nrc0=;
+        b=cwwCc7/rxrEHBebZtedKTnX3ahM/5qWBBk9EmA7LfmHf2FqWR7/9FxdzMLpBHEL9lFmOsA
+        ZWoIu2doMRaqrxovOtl2nQaicM1i8ZC9whiBJKXP/NBFX8CwmYs1of6qHwQkQt3fCrulPV
+        93+IKQltwDU2y4k2FaCJoDyMXpDgQsI=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-187-st66-UjhMyGcY5pika732Q-1; Mon, 15 Aug 2022 16:39:17 -0400
+X-MC-Unique: st66-UjhMyGcY5pika732Q-1
+Received: by mail-ed1-f70.google.com with SMTP id m22-20020a056402431600b0043d6a88130aso5348880edc.18
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:39:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=1Ju82h2Seq9g+C5kY2YGtQXKyGbfylxp+FKU0h7Nrc0=;
+        b=4tDH7lmuQWtQmh30ci9FO8eTZdRSPTCHc+XGDxEPdeuECmMrzoeH0Hs5zNylAzdYES
+         O0s+hNUExpX7MmDLTDY5bTCGDQEYvd+kXQWrg3DCOGxz4Eg9n6IU5G8OlkHAYy2BCNxq
+         hyyvIEvpZXPgBd99Hu05DLuF21oWj+tTgsAa4t/8fFHo+OKxORta8rOIZ7fr/wXY/Mth
+         ng/oV1Mc6685jx+yRAmVA25suDGgHrmVC+vVtVSZjvaMOtGuRh253Fd6IB8I5rNshvmv
+         uvKz/iL0aacednIF1TXuW++QGX/rOVoi05pYUl+SKDyLgD73HgwmDOg1jwj3yCwI0xZQ
+         /lLQ==
+X-Gm-Message-State: ACgBeo3csJ4WsxwazpoTRV57mFVCM3fRLs0OxZr6p4mOt4wW2iRW9aCB
+        r4rwrf1atQhMpeB/lu4AKUgK5Hkt6OyCXxOOPJjAjN2f5u+peTS2Wc7NtQjGaePd5cBuI/14hah
+        25ilB4CXCT/47rWKUAIfQVl6z
+X-Received: by 2002:aa7:dc10:0:b0:440:b446:c0cc with SMTP id b16-20020aa7dc10000000b00440b446c0ccmr15993697edu.34.1660595956283;
+        Mon, 15 Aug 2022 13:39:16 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR45Fuir9EoNpEYCDZwTaOCu5+yshYNzN86x9kBq/JCQrW+g/Q8mhFtNHXDl7fhQaOWy+suhNw==
+X-Received: by 2002:aa7:dc10:0:b0:440:b446:c0cc with SMTP id b16-20020aa7dc10000000b00440b446c0ccmr15993678edu.34.1660595956040;
+        Mon, 15 Aug 2022 13:39:16 -0700 (PDT)
+Received: from redhat.com ([2.55.43.215])
+        by smtp.gmail.com with ESMTPSA id m17-20020a1709066d1100b007305b8aa36bsm4417030ejr.157.2022.08.15.13.39.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 13:39:15 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 16:39:08 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <20220815162524-mutt-send-email-mst@kernel.org>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1660362668.git.bobby.eshleman@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
+> Hey everybody,
+> 
+> This series introduces datagrams, packet scheduling, and sk_buff usage
+> to virtio vsock.
+> 
+> The usage of struct sk_buff benefits users by a) preparing vsock to use
+> other related systems that require sk_buff, such as sockmap and qdisc,
+> b) supporting basic congestion control via sock_alloc_send_skb, and c)
+> reducing copying when delivering packets to TAP.
+> 
+> The socket layer no longer forces errors to be -ENOMEM, as typically
+> userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
+> messages are being sent with option MSG_DONTWAIT.
+> 
+> The datagram work is based off previous patches by Jiang Wang[1].
+> 
+> The introduction of datagrams creates a transport layer fairness issue
+> where datagrams may freely starve streams of queue access. This happens
+> because, unlike streams, datagrams lack the transactions necessary for
+> calculating credits and throttling.
+> 
+> Previous proposals introduce changes to the spec to add an additional
+> virtqueue pair for datagrams[1]. Although this solution works, using
+> Linux's qdisc for packet scheduling leverages already existing systems,
+> avoids the need to change the virtio specification, and gives additional
+> capabilities. The usage of SFQ or fq_codel, for example, may solve the
+> transport layer starvation problem. It is easy to imagine other use
+> cases as well. For example, services of varying importance may be
+> assigned different priorities, and qdisc will apply appropriate
+> priority-based scheduling. By default, the system default pfifo qdisc is
+> used. The qdisc may be bypassed and legacy queuing is resumed by simply
+> setting the virtio-vsock%d network device to state DOWN. This technique
+> still allows vsock to work with zero-configuration.
+> 
+> In summary, this series introduces these major changes to vsock:
+> 
+> - virtio vsock supports datagrams
+> - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
+>   - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
+>     which applies the throttling threshold sk_sndbuf.
+> - The vsock socket layer supports returning errors other than -ENOMEM.
+>   - This is used to return -EAGAIN when the sk_sndbuf threshold is
+>     reached.
+> - virtio vsock uses a net_device, through which qdisc may be used.
+>  - qdisc allows scheduling policies to be applied to vsock flows.
+>   - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
+>     it may avoid datagrams from flooding out stream flows. The benefit
+>     to this is that additional virtqueues are not needed for datagrams.
+>   - The net_device and qdisc is bypassed by simply setting the
+>     net_device state to DOWN.
+> 
+> [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
 
-[ Upstream commit c568f7086c6e771c77aad13d727c70ef70e07243 ]
+Given this affects the driver/device interface I'd like to
+ask you to please copy virtio-dev mailing list on these patches.
+Subscriber only I'm afraid you will need to subscribe :(
 
-The current implementation does not handle the situation that no data is in
-the internal queue and needs to be sent out while the user tty fifo is
-full.
-Add a timer that moves more data from user tty down to the internal queue
-which is then serialized on the ldisc. This timer is triggered if no data
-was moved from a user tty to the internal queue within 10 * T1.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701061652.39604-4-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/n_gsm.c | 43 +++++++++++++++++++++++++++++++++++--------
- 1 file changed, 35 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index d056b15b4d61..a01225819b92 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -244,6 +244,7 @@ struct gsm_mux {
- 	struct list_head tx_list;	/* Pending data packets */
- 
- 	/* Control messages */
-+	struct timer_list kick_timer;	/* Kick TX queuing on timeout */
- 	struct timer_list t2_timer;	/* Retransmit timer for commands */
- 	int cretries;			/* Command retry counter */
- 	struct gsm_control *pending_cmd;/* Our current pending command */
-@@ -850,6 +851,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 	list_add_tail(&msg->list, &gsm->tx_list);
- 	gsm->tx_bytes += msg->len;
- 	gsm_data_kick(gsm, dlci);
-+	mod_timer(&gsm->kick_timer, jiffies + 10 * gsm->t1 * HZ / 100);
- }
- 
- /**
-@@ -902,9 +904,6 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 	size = len + h;
- 
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--	/* FIXME: need a timer or something to kick this so it can't
--	 * get stuck with no work outstanding and no buffer free
--	 */
- 	if (!msg)
- 		return -ENOMEM;
- 	dp = msg->data;
-@@ -981,9 +980,6 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
- 
- 	size = len + overhead;
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--
--	/* FIXME: need a timer or something to kick this so it can't
--	   get stuck with no work outstanding and no buffer free */
- 	if (msg == NULL) {
- 		skb_queue_tail(&dlci->skb_list, dlci->skb);
- 		dlci->skb = NULL;
-@@ -1079,9 +1075,9 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
-  *	renegotiate DLCI priorities with optional stuff. Needs optimising.
-  */
- 
--static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
-+static int gsm_dlci_data_sweep(struct gsm_mux *gsm)
- {
--	int len;
-+	int len, ret = 0;
- 	/* Priority ordering: We should do priority with RR of the groups */
- 	int i = 1;
- 
-@@ -1104,7 +1100,11 @@ static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
- 		/* DLCI empty - try the next */
- 		if (len == 0)
- 			i++;
-+		else
-+			ret++;
- 	}
-+
-+	return ret;
- }
- 
- /**
-@@ -1823,6 +1823,30 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
- 	}
- }
- 
-+/**
-+ *	gsm_kick_timer	-	transmit if possible
-+ *	@t: timer contained in our gsm object
-+ *
-+ *	Transmit data from DLCIs if the queue is empty. We can't rely on
-+ *	a tty wakeup except when we filled the pipe so we need to fire off
-+ *	new data ourselves in other cases.
-+ */
-+static void gsm_kick_timer(struct timer_list *t)
-+{
-+	struct gsm_mux *gsm = from_timer(gsm, t, kick_timer);
-+	unsigned long flags;
-+	int sent = 0;
-+
-+	spin_lock_irqsave(&gsm->tx_lock, flags);
-+	/* If we have nothing running then we need to fire up */
-+	if (gsm->tx_bytes < TX_THRESH_LO)
-+		sent = gsm_dlci_data_sweep(gsm);
-+	spin_unlock_irqrestore(&gsm->tx_lock, flags);
-+
-+	if (sent && debug & 4)
-+		pr_info("%s TX queue stalled\n", __func__);
-+}
-+
- /*
-  *	Allocate/Free DLCI channels
-  */
-@@ -2274,6 +2298,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	}
- 
- 	/* Finish outstanding timers, making sure they are done */
-+	del_timer_sync(&gsm->kick_timer);
- 	del_timer_sync(&gsm->t2_timer);
- 
- 	/* Free up any link layer users and finally the control channel */
-@@ -2306,6 +2331,7 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	struct gsm_dlci *dlci;
- 	int ret;
- 
-+	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
- 	spin_lock_init(&gsm->control_lock);
-@@ -2710,6 +2736,7 @@ static int gsmld_open(struct tty_struct *tty)
- 
- 	gsmld_attach_gsm(tty, gsm);
- 
-+	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 
- 	return 0;
--- 
-2.35.1
-
-
+> Bobby Eshleman (5):
+>   vsock: replace virtio_vsock_pkt with sk_buff
+>   vsock: return errors other than -ENOMEM to socket
+>   vsock: add netdev to vhost/virtio vsock
+>   virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+>   virtio/vsock: add support for dgram
+> 
+> Jiang Wang (1):
+>   vsock_test: add tests for vsock dgram
+> 
+>  drivers/vhost/vsock.c                   | 238 ++++----
+>  include/linux/virtio_vsock.h            |  73 ++-
+>  include/net/af_vsock.h                  |   2 +
+>  include/uapi/linux/virtio_vsock.h       |   2 +
+>  net/vmw_vsock/af_vsock.c                |  30 +-
+>  net/vmw_vsock/hyperv_transport.c        |   2 +-
+>  net/vmw_vsock/virtio_transport.c        | 237 +++++---
+>  net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
+>  net/vmw_vsock/vmci_transport.c          |   9 +-
+>  net/vmw_vsock/vsock_loopback.c          |  51 +-
+>  tools/testing/vsock/util.c              | 105 ++++
+>  tools/testing/vsock/util.h              |   4 +
+>  tools/testing/vsock/vsock_test.c        | 195 ++++++
+>  13 files changed, 1176 insertions(+), 543 deletions(-)
+> 
+> -- 
+> 2.35.1
 
