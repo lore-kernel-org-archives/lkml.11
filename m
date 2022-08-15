@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21100C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72EBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349891AbiHOWeg (ORCPT
+        id S1348647AbiHOWep (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
+        Mon, 15 Aug 2022 18:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351067AbiHOW1c (ORCPT
+        with ESMTP id S1351061AbiHOW1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BB96CF79;
-        Mon, 15 Aug 2022 12:46:44 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91116CF7D;
+        Mon, 15 Aug 2022 12:46:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 807F36122B;
-        Mon, 15 Aug 2022 19:46:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85477C433D6;
-        Mon, 15 Aug 2022 19:46:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58A976122C;
+        Mon, 15 Aug 2022 19:46:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 436A4C433D6;
+        Mon, 15 Aug 2022 19:46:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592803;
-        bh=yL9JrACkjVTIEMIH6qNEY4LXIxEtqVAeLLxT0WWprIU=;
+        s=korg; t=1660592800;
+        bh=EixTL5yY3x6DpFjd9mtu7FvtvO6e++FT6rEJn0V1IyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ObkOfHfsEIZ7cFVB6ShVbnfQXOzTYpaIWoTSm9g/jzSHQVC+XOjSPP9yqy+43N5yY
-         cxLvRlpjpZpD/FUgbDcs2qGjusatg45TMcZ8xBB66ZAej9EniLoQ5XrcC/ZWQYj1uZ
-         NvT4VQFEWDNxSqB8031apGhEyt+kGdCbDYh0BTe8=
+        b=sau4JvbKwFvYa0BCrxcCjBz/heZBXnxcYtMToLbcgVrySPsDYRfAiTWu66XQeDF5M
+         BnA3QRMRysw2vfdFAwWBfWUcLf+9JEq+XjuIIdvjPPlkvS0WNh7+dlM6s8ZnwVJiea
+         HBJQ6bH1Un2M9oV/5m4DjeOyllTF2aDfkjOjvzsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0847/1095] ASoC: samsung: h1940_uda1380: include proepr GPIO consumer header
-Date:   Mon, 15 Aug 2022 20:04:06 +0200
-Message-Id: <20220815180504.372349915@linuxfoundation.org>
+Subject: [PATCH 5.19 0166/1157] ARM: dts: imx6ul: fix csi node compatible
+Date:   Mon, 15 Aug 2022 19:52:02 +0200
+Message-Id: <20220815180446.344176802@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit bd10b0dafdcf0ec1677cad70101e1f97b9e28f2e ]
+[ Upstream commit e0aca931a2c7c29c88ebf37f9c3cd045e083483d ]
 
-h1940_uda1380 uses gpiod*/GPIOD* so it should include GPIO consumer
-header.
+"fsl,imx6ul-csi" was never listed as compatible to "fsl,imx7-csi", neither
+in yaml bindings, nor previous txt binding. Remove the imx7 part. Fixes
+the dt schema check warning:
+csi@21c4000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-csi', 'fsl,imx7-csi'] is too long
+Additional items are not allowed ('fsl,imx7-csi' was unexpected)
+'fsl,imx8mm-csi' was expected
 
-Fixes: 9666e27f90b9 ("ASoC: samsung: h1940: turn into platform driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627141900.470469-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/h1940_uda1380.c | 2 +-
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/samsung/h1940_uda1380.c b/sound/soc/samsung/h1940_uda1380.c
-index c994e67d1eaf..ca086243fcfd 100644
---- a/sound/soc/samsung/h1940_uda1380.c
-+++ b/sound/soc/samsung/h1940_uda1380.c
-@@ -8,7 +8,7 @@
- // Based on version from Arnaud Patard <arnaud.patard@rtp-net.org>
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index df8b4ad62418..367657a9a99f 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -999,7 +999,7 @@ cpu_speed_grade: speed-grade@10 {
+ 			};
  
- #include <linux/types.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/module.h>
- 
- #include <sound/soc.h>
+ 			csi: csi@21c4000 {
+-				compatible = "fsl,imx6ul-csi", "fsl,imx7-csi";
++				compatible = "fsl,imx6ul-csi";
+ 				reg = <0x021c4000 0x4000>;
+ 				interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_CSI>;
 -- 
 2.35.1
 
