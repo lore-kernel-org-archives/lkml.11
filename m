@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B6CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3FEC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351220AbiHPAXR (ORCPT
+        id S1350328AbiHPAX0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        Mon, 15 Aug 2022 20:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356573AbiHPARD (ORCPT
+        with ESMTP id S1356926AbiHPARU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C248A263D;
-        Mon, 15 Aug 2022 13:31:08 -0700 (PDT)
+        Mon, 15 Aug 2022 20:17:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391CCA220F;
+        Mon, 15 Aug 2022 13:31:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEA5B61135;
-        Mon, 15 Aug 2022 20:31:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75CCFC433D6;
-        Mon, 15 Aug 2022 20:31:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60CD0B80EA8;
+        Mon, 15 Aug 2022 20:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CCBC433C1;
+        Mon, 15 Aug 2022 20:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595467;
-        bh=5pNFoN4WOMyki5qA2Bm4cNzOEWj8zNu3HxHNC6RFfe8=;
+        s=korg; t=1660595460;
+        bh=ecmKP+DYRKqfBr6/umZkZvg2tAeCCDhHa8GE40xc3nA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rImMHcCHKkrITecWreLBVzGvexSkWABdXqSAMYDbDOxwzQYAbxBKnCwQfL+JlVQHH
-         PypfCH0BnKuY07Fjp9RTTtQ/jFjOBDhxLLQ5Nu4Xct6R3FiWiorPv047Ox7vygh+8F
-         K/BWYQw8sECntKEPtag6PdNv1B+VhdmDQatoYQBc=
+        b=SN6oetOBMuq59au5279TU39snJrftOO5PRo1FnGyR/hDOqTAsmdAqLcIrtznU3MDN
+         pD1MyoeVkwcKnIXgv8p7HUWYCDhsmpxzigIq6H0swMd8z9MPZs3KUCuO9ijjM7ofK4
+         j7nWrIW6ljfRzlDsU71hTpE+z4nD4N1mxrDMIVyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0774/1157] PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
-Date:   Mon, 15 Aug 2022 20:02:10 +0200
-Message-Id: <20220815180510.449594581@linuxfoundation.org>
+Subject: [PATCH 5.19 0772/1157] PCI: dwc: Add unroll iATU space support to dw_pcie_disable_atu()
+Date:   Mon, 15 Aug 2022 20:02:08 +0200
+Message-Id: <20220815180510.372844734@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,30 +54,23 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 777e7c3ab73036105e6fc4a67ed950179dbffbab ]
+[ Upstream commit d1cf738f2b65a5640234e1da90a68d3523fbed83 ]
 
-We program the 64-bit ATU limit address (in PCIE_ATU_LIMIT/
-PCIE_ATU_UPPER_LIMIT or PCIE_ATU_UNR_LOWER_LIMIT/PCIE_ATU_UNR_UPPER_LIMIT),
-but in addition, the PCIE_ATU_INCREASE_REGION_SIZE bit must be set if the
-upper 32 bits of the limit address differ from the upper 32 bits of the
-base address (see [1,2]).
+dw_pcie_disable_atu() was introduced by f8aed6ec624f ("PCI: dwc:
+designware: Add EP mode support") and supported only the viewport version
+of the iATU CSRs.
 
-5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU") set
-PCIE_ATU_INCREASE_REGION_SIZE, but only when the *size* was greater than
-4GB.  It did not set it when a smaller region crossed a 4GB boundary, e.g.,
-[mem 0x0_f0000000-0x1_0fffffff].
+DW PCIe IP cores v4.80a and newer also support unrolled iATU/eDMA space.
+Callers of dw_pcie_disable_atu(), including pci_epc_ops.clear_bar(),
+pci_epc_ops.unmap_addr(), and dw_pcie_setup_rc(), don't work correctly when
+it is enabled.
 
-Set PCIE_ATU_INCREASE_REGION_SIZE whenever PCIE_ATU_UPPER_LIMIT is
-greater than PCIE_ATU_UPPER_BASE.
-
-[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-36, p.175
-[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-37, p.176
+Add dw_pcie_disable_atu() support for controllers with unrolled iATU CSRs
+enabled.
 
 [bhelgaas: commit log]
-Fixes: 5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU")
-Link: https://lore.kernel.org/r/20220624143428.8334-5-Sergey.Semin@baikalelectronics.ru
+Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
+Link: https://lore.kernel.org/r/20220624143428.8334-3-Sergey.Semin@baikalelectronics.ru
 Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
@@ -85,64 +78,43 @@ Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 84fef21efdbc..347251bf87d0 100644
+index d92c8a25094f..84fef21efdbc 100644
 --- a/drivers/pci/controller/dwc/pcie-designware.c
 +++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -287,8 +287,8 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_UPPER_TARGET,
- 				 upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = upper_32_bits(size - 1) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
-@@ -315,6 +315,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 					u64 pci_addr, u64 size)
+@@ -491,7 +491,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 			 enum dw_pcie_region_type type)
  {
- 	u32 retries, val;
-+	u64 limit_addr;
+-	int region;
++	u32 region;
  
- 	if (pci->ops && pci->ops->cpu_addr_fixup)
- 		cpu_addr = pci->ops->cpu_addr_fixup(pci, cpu_addr);
-@@ -325,6 +326,8 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 	switch (type) {
+ 	case DW_PCIE_REGION_INBOUND:
+@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
  		return;
  	}
  
-+	limit_addr = cpu_addr + size - 1;
-+
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT,
- 			   PCIE_ATU_REGION_OUTBOUND | index);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_BASE,
-@@ -332,17 +335,18 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_BASE,
- 			   upper_32_bits(cpu_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
--			   lower_32_bits(cpu_addr + size - 1));
-+			   lower_32_bits(limit_addr));
- 	if (pci->version >= 0x460A)
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
--				   upper_32_bits(cpu_addr + size - 1));
-+				   upper_32_bits(limit_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
- 			   lower_32_bits(pci_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_TARGET,
- 			   upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = ((upper_32_bits(size - 1)) && (pci->version >= 0x460A)) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
-+	    pci->version >= 0x460A)
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	if (pci->iatu_unroll_enabled) {
++		if (region == PCIE_ATU_REGION_INBOUND) {
++			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		} else {
++			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		}
++	} else {
++		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
++		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	}
+ }
+ 
+ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 -- 
 2.35.1
 
