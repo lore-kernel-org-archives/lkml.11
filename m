@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F09ABC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D54C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354073AbiHOXoq (ORCPT
+        id S1354188AbiHOXot (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
+        Mon, 15 Aug 2022 19:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354188AbiHOXlg (ORCPT
+        with ESMTP id S1354194AbiHOXlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7052B83F33;
-        Mon, 15 Aug 2022 13:11:05 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5950783F3A;
+        Mon, 15 Aug 2022 13:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2016EB80EA9;
-        Mon, 15 Aug 2022 20:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC8FC433C1;
-        Mon, 15 Aug 2022 20:11:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D466B80EAD;
+        Mon, 15 Aug 2022 20:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7027CC433D7;
+        Mon, 15 Aug 2022 20:11:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594262;
-        bh=iYfeC75j6U9orOtsHn0ahFpgAnuaEkZWkuIbvo+iqNg=;
+        s=korg; t=1660594265;
+        bh=a4msX/u+y+7Zrc3gwU7scUBR6sDo4jLQHCMw3wNXdzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u64gb0jRgJoe0w7lPzZ388S6+U4QUaZQ/R13i9ixk+lIGyFmnPOFuPWGAW2EfgZeV
-         yUczRPdpnMT3+rhCfZkmC8styx/pFF8AMrwjllGsmXKFGlYkOZ1CAKCFYzwwTHeSGL
-         QDEz00Vd4R8p27pwkEpW0Tlo3EMBUAG00mYmRLx4=
+        b=cnOsOVUziZU3EJMzVey8ADgxFYK2EVylhehW86LevX1xf49Q7cKYUS26u+m3efZii
+         r11gS1SHX3R8yUQoTrwwDup+enoIbW4blkyjyvLc3BT/72NFcw5ltdG7oS8wuXW/hB
+         coHpcLsyPRcY2USfLtfWo6mEBngCObZi9qy0/0YQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Sperbeck <jsperbeck@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 1080/1095] raw: fix a typo in raw_icmp_error()
-Date:   Mon, 15 Aug 2022 20:07:59 +0200
-Message-Id: <20220815180513.710889691@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jian Zhang <zhangjian210@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0403/1157] media: driver/nxp/imx-jpeg: fix a unexpected return value problem
+Date:   Mon, 15 Aug 2022 19:55:59 +0200
+Message-Id: <20220815180455.790165113@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jian Zhang <zhangjian210@huawei.com>
 
-commit 97a4d46b1516250d640c1ae0c9e7129d160d6a1c upstream.
+[ Upstream commit 5b304046a81eda221b5d06a9c62f7b5e45530fa5 ]
 
-I accidentally broke IPv4 traceroute, by swapping iph->saddr
-and iph->daddr.
+In function mxc_jpeg_probe(), when devm_clk_get() fail, the return value
+will be unexpected, and it should be the devm_clk_get's error code.
 
-Probably because raw_icmp_error() and raw_v4_input()
-use different order for iph->saddr and iph->daddr.
-
-Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-Reported-by: John Sperbeck <jsperbeck@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220623193540.2851799-1-edumazet@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4c2e5156d9fa6 ("media: imx-jpeg: Add pm-runtime support for imx-jpeg")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/raw.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -278,7 +278,7 @@ void raw_icmp_error(struct sk_buff *skb,
- 	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		iph = (const struct iphdr *)skb->data;
- 		if (!raw_v4_match(net, sk, iph->protocol,
--				  iph->saddr, iph->daddr, dif, sdif))
-+				  iph->daddr, iph->saddr, dif, sdif))
- 			continue;
- 		raw_err(sk, skb, info);
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+index 35a7cb936653..b2ea57b45028 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+@@ -2145,12 +2145,14 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
+ 	jpeg->clk_ipg = devm_clk_get(dev, "ipg");
+ 	if (IS_ERR(jpeg->clk_ipg)) {
+ 		dev_err(dev, "failed to get clock: ipg\n");
++		ret = PTR_ERR(jpeg->clk_ipg);
+ 		goto err_clk;
  	}
+ 
+ 	jpeg->clk_per = devm_clk_get(dev, "per");
+ 	if (IS_ERR(jpeg->clk_per)) {
+ 		dev_err(dev, "failed to get clock: per\n");
++		ret = PTR_ERR(jpeg->clk_per);
+ 		goto err_clk;
+ 	}
+ 
+-- 
+2.35.1
+
 
 
