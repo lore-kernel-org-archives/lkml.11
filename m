@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEBCC28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71697C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345077AbiHOUn2 (ORCPT
+        id S1345208AbiHOUnd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:43:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        Mon, 15 Aug 2022 16:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233790AbiHOUiB (ORCPT
+        with ESMTP id S1345710AbiHOUju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:38:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364DFADCD2;
-        Mon, 15 Aug 2022 12:07:07 -0700 (PDT)
+        Mon, 15 Aug 2022 16:39:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95758ABF1C;
+        Mon, 15 Aug 2022 12:07:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82940B8107A;
-        Mon, 15 Aug 2022 19:07:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC54BC433C1;
-        Mon, 15 Aug 2022 19:07:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8B6612CD;
+        Mon, 15 Aug 2022 19:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B2EC433C1;
+        Mon, 15 Aug 2022 19:07:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590424;
-        bh=UZHIizdr5sPbVxj0LzXonL82Cx1mUWDggRzlm6WmWnk=;
+        s=korg; t=1660590434;
+        bh=L3ApvKRzOF3hbSDCVnYDFeM8CBFfmNYx6ZzEKkNECgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X6eKU8KKluitpny5kHUmavvvWOFIYhS0agsXC9uUUni41BRg/f4KIGLfYDSUkLVA5
-         cURRMqrKboNLvB+8eEAwrXMI0P7Dqq55Wu1t8HUQmwFkeGORRQ+jeydhVHMSKU2ZaB
-         FnzES02kwLk1RGzwesFoWEOroOKsCBebaR3I2T1o=
+        b=j/MWAWdYYvgwjwgrqyyZhxtkT6nB4j9x5W7vyp6SHZV04klyEf67K+Glcfy58TbA4
+         UPM/j503/Jm9W3RcfUyrvtot9Fz5dvl58Eb44DlBeyin+9O6sA4tWCqUEcDwYUkJP/
+         bsLI4QBUV6ZAJ31mw0sR1gCRdKhbPLMzRmLeWtqI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0255/1095] arm64: dts: qcom: sm6125: Move sdc2 pinctrl from seine-pdx201 to sm6125
-Date:   Mon, 15 Aug 2022 19:54:14 +0200
-Message-Id: <20220815180440.305485923@linuxfoundation.org>
+Subject: [PATCH 5.18 0231/1095] ARM: dts: qcom-msm8974*: Rename msmgpio to tlmm
+Date:   Mon, 15 Aug 2022 19:53:50 +0200
+Message-Id: <20220815180439.307388299@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,137 +51,293 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 6990640a93ba4e76dd62ca3ea1082a7354db09d7 ]
+[ Upstream commit 087c9704d5bb322dd5db52938416caeaf4cdc3c3 ]
 
-Both the sdc2-on and sdc2-off pinctrl nodes are used by the
-sdhci@4784000 node in sm6125.dtsi.  Surprisingly sdc2-off is defined in
-sm6125, yet its sdc2-on counterpart is only defined in board-specific DT
-for the Sony Seine PDX201 board/device resulting in an "undefined label
-&sdc2_state_on" error if sm6125.dtsi were included elsewhere.
-This sm6125 base dtsi should not rely on externally defined labels; the
-properties referencing it should then also be written externally.
-Since the sdc2-on pin configuration is board-independent just like
-sdc2-off, move it from seine-pdx201.dts into sm6125.dtsi.
+Rename the label to match new the style used in newer DTs.
 
-The SDCard-detect pin (gpio98) is however board-specific, and remains as
-an overwrite in seine-pdx201.dts for both the on and off state.
-
-As a drive-by cleanup, reorder bias- and drive-strength properties.
-
-Fixes: cff4bbaf2a2d ("arm64: dts: qcom: Add support for SM6125")
-Fixes: 82e1783890b7 ("arm64: dts: qcom: sm6125: Add support for Sony Xperia 10II")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220508100336.127176-1-marijn.suijten@somainline.org
+Link: https://lore.kernel.org/r/20220415115633.575010-8-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../qcom/sm6125-sony-xperia-seine-pdx201.dts  | 34 +++++--------------
- arch/arm64/boot/dts/qcom/sm6125.dtsi          | 24 +++++++++++--
- 2 files changed, 30 insertions(+), 28 deletions(-)
+ .../arm/boot/dts/qcom-apq8074-dragonboard.dts |  2 +-
+ .../boot/dts/qcom-msm8974-fairphone-fp2.dts   |  2 +-
+ .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 18 ++++++++---------
+ .../boot/dts/qcom-msm8974-samsung-klte.dts    | 20 +++++++++----------
+ .../dts/qcom-msm8974-sony-xperia-amami.dts    |  2 +-
+ .../dts/qcom-msm8974-sony-xperia-castor.dts   | 10 +++++-----
+ .../dts/qcom-msm8974-sony-xperia-honami.dts   |  4 ++--
+ arch/arm/boot/dts/qcom-msm8974.dtsi           |  4 ++--
+ 8 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
-index 871ccbba445b..4916e6c8b625 100644
---- a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
-+++ b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
-@@ -91,8 +91,16 @@ &hsusb_phy1 {
- &sdc2_state_off {
- 	sd-cd {
- 		pins = "gpio98";
-+		drive-strength = <2>;
- 		bias-disable;
-+	};
-+};
-+
-+&sdc2_state_on {
-+	sd-cd {
-+		pins = "gpio98";
- 		drive-strength = <2>;
-+		bias-pull-up;
+diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+index e2b4e4fc6377..9076a24408c6 100644
+--- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
++++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+@@ -35,7 +35,7 @@ sdhci@f9824900 {
+ 		};
+ 
+ 		sdhci@f98a4900 {
+-			cd-gpios = <&msmgpio 62 0x1>;
++			cd-gpios = <&tlmm 62 0x1>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
+ 			bus-width = <4>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+index 9dbfc9f8646a..1e947bab06b6 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+@@ -51,7 +51,7 @@ volume-up {
+ 
+ 	vibrator {
+ 		compatible = "gpio-vibrator";
+-		enable-gpios = <&msmgpio 86 GPIO_ACTIVE_HIGH>;
++		enable-gpios = <&tlmm 86 GPIO_ACTIVE_HIGH>;
+ 		vcc-supply = <&pm8941_l18>;
  	};
- };
  
-@@ -102,32 +110,6 @@ &sdhc_1 {
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index dd2d0647d4be..4154ffb207ac 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -250,7 +250,7 @@ vreg_wlan: wlan-regulator {
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
  
- &tlmm {
- 	gpio-reserved-ranges = <22 2>, <28 6>;
--
--	sdc2_state_on: sdc2-on {
--		clk {
--			pins = "sdc2_clk";
--			bias-disable;
--			drive-strength = <16>;
--		};
--
--		cmd {
--			pins = "sdc2_cmd";
--			bias-pull-up;
--			drive-strength = <10>;
--		};
--
--		data {
--			pins = "sdc2_data";
--			bias-pull-up;
--			drive-strength = <10>;
--		};
--
--		sd-cd {
--			pins = "gpio98";
--			bias-pull-up;
--			drive-strength = <2>;
--		};
--	};
- };
+-		gpio = <&msmgpio 26 GPIO_ACTIVE_HIGH>;
++		gpio = <&tlmm 26 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
  
- &usb3 {
-diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-index e81b2a7794fb..3fadf5196c4d 100644
---- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-@@ -389,20 +389,40 @@ tlmm: pinctrl@500000 {
- 			sdc2_state_off: sdc2-off {
- 				clk {
- 					pins = "sdc2_clk";
--					bias-disable;
- 					drive-strength = <2>;
-+					bias-disable;
+ 		pinctrl-names = "default";
+@@ -482,9 +482,9 @@ bluetooth {
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&bt_pin>;
+ 
+-			host-wakeup-gpios = <&msmgpio 42 GPIO_ACTIVE_HIGH>;
+-			device-wakeup-gpios = <&msmgpio 62 GPIO_ACTIVE_HIGH>;
+-			shutdown-gpios = <&msmgpio 41 GPIO_ACTIVE_HIGH>;
++			host-wakeup-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
++			device-wakeup-gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
++			shutdown-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+ 		};
+ 	};
+ 
+@@ -522,7 +522,7 @@ i2c@f9968000 {
+ 		mpu6515@68 {
+ 			compatible = "invensense,mpu6515";
+ 			reg = <0x68>;
+-			interrupts-extended = <&msmgpio 73 IRQ_TYPE_EDGE_FALLING>;
++			interrupts-extended = <&tlmm 73 IRQ_TYPE_EDGE_FALLING>;
+ 			vddio-supply = <&pm8941_lvs1>;
+ 
+ 			pinctrl-names = "default";
+@@ -538,7 +538,7 @@ i2c-gate {
+ 				ak8963@f {
+ 					compatible = "asahi-kasei,ak8963";
+ 					reg = <0x0f>;
+-					gpios = <&msmgpio 67 0>;
++					gpios = <&tlmm 67 0>;
+ 					vid-supply = <&pm8941_lvs1>;
+ 					vdd-supply = <&pm8941_l17>;
  				};
+@@ -577,7 +577,7 @@ fuelgauge: max17048@36 {
+ 			maxim,double-soc;
+ 			maxim,rcomp = /bits/ 8 <0x4d>;
  
- 				cmd {
- 					pins = "sdc2_cmd";
-+					drive-strength = <2>;
- 					bias-pull-up;
-+				};
-+
-+				data {
-+					pins = "sdc2_data";
- 					drive-strength = <2>;
-+					bias-pull-up;
-+				};
-+			};
-+
-+			sdc2_state_on: sdc2-on {
-+				clk {
-+					pins = "sdc2_clk";
-+					drive-strength = <16>;
-+					bias-disable;
-+				};
-+
-+				cmd {
-+					pins = "sdc2_cmd";
-+					drive-strength = <10>;
-+					bias-pull-up;
- 				};
+-			interrupt-parent = <&msmgpio>;
++			interrupt-parent = <&tlmm>;
+ 			interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
  
- 				data {
- 					pins = "sdc2_data";
-+					drive-strength = <10>;
- 					bias-pull-up;
--					drive-strength = <2>;
- 				};
+ 			pinctrl-names = "default";
+@@ -600,7 +600,7 @@ synaptics@70 {
+ 			compatible = "syna,rmi4-i2c";
+ 			reg = <0x70>;
+ 
+-			interrupts-extended = <&msmgpio 5 IRQ_TYPE_EDGE_FALLING>;
++			interrupts-extended = <&tlmm 5 IRQ_TYPE_EDGE_FALLING>;
+ 			vdd-supply = <&pm8941_l22>;
+ 			vio-supply = <&pm8941_lvs3>;
+ 
+@@ -632,7 +632,7 @@ i2c@f9925000 {
+ 		avago_apds993@39 {
+ 			compatible = "avago,apds9930";
+ 			reg = <0x39>;
+-			interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
++			interrupts-extended = <&tlmm 61 IRQ_TYPE_EDGE_FALLING>;
+ 			vdd-supply = <&pm8941_l17>;
+ 			vddio-supply = <&pm8941_lvs1>;
+ 			led-max-microamp = <100000>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+index 3ee2508b20fb..60244e0c37ba 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
+@@ -247,8 +247,8 @@ i2c-gpio-touchkey {
+ 		compatible = "i2c-gpio";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		sda-gpios = <&msmgpio 95 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+-		scl-gpios = <&msmgpio 96 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		sda-gpios = <&tlmm 95 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&tlmm 96 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&i2c_touchkey_pins>;
+ 
+@@ -272,8 +272,8 @@ i2c-gpio-led {
+ 		compatible = "i2c-gpio";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		scl-gpios = <&msmgpio 121 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+-		sda-gpios = <&msmgpio 120 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&tlmm 121 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		sda-gpios = <&tlmm 120 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&i2c_led_gpioex_pins>;
+ 
+@@ -291,7 +291,7 @@ gpio_expander: gpio@20 {
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&gpioex_pin>;
+ 
+-			reset-gpios = <&msmgpio 145 GPIO_ACTIVE_LOW>;
++			reset-gpios = <&tlmm 145 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		led-controller@30 {
+@@ -371,9 +371,9 @@ bluetooth {
+ 			max-speed = <3000000>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&bt_pins>;
+-			device-wakeup-gpios = <&msmgpio 91 GPIO_ACTIVE_HIGH>;
++			device-wakeup-gpios = <&tlmm 91 GPIO_ACTIVE_HIGH>;
+ 			shutdown-gpios = <&gpio_expander 9 GPIO_ACTIVE_HIGH>;
+-			interrupt-parent = <&msmgpio>;
++			interrupt-parent = <&tlmm>;
+ 			interrupts = <75 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "host-wakeup";
+ 		};
+@@ -563,7 +563,7 @@ sdhci@f9864900 {
+ 		 */
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&sdhc2_pin_a /* &sdhc2_cd_pin */>;
+-		// cd-gpios = <&msmgpio 62 GPIO_ACTIVE_LOW>;
++		// cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+ 	};
+ 
+ 	sdhci@f98a4900 {
+@@ -587,7 +587,7 @@ wifi@1 {
+ 			reg = <1>;
+ 			compatible = "brcm,bcm4329-fmac";
+ 
+-			interrupt-parent = <&msmgpio>;
++			interrupt-parent = <&tlmm>;
+ 			interrupts = <92 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "host-wake";
+ 
+@@ -818,7 +818,7 @@ panel: panel@0 {
+ 				vddr-supply = <&vreg_panel>;
+ 
+ 				reset-gpios = <&pma8084_gpios 17 GPIO_ACTIVE_LOW>;
+-				te-gpios = <&msmgpio 12 GPIO_ACTIVE_HIGH>;
++				te-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+ 
+ 				port {
+ 					panel_in: endpoint {
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
+index 8cace789fb26..6545917dd489 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-amami.dts
+@@ -280,7 +280,7 @@ sdhci@f98a4900 {
+ 		vmmc-supply = <&pm8941_l21>;
+ 		vqmmc-supply = <&pm8941_l13>;
+ 
+-		cd-gpios = <&msmgpio 62 GPIO_ACTIVE_LOW>;
++		cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
+index e27b360951fd..352689237140 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dts
+@@ -239,7 +239,7 @@ vreg_bl_vddio: lcd-backlight-vddio {
+ 		regulator-min-microvolt = <3150000>;
+ 		regulator-max-microvolt = <3150000>;
+ 
+-		gpio = <&msmgpio 69 0>;
++		gpio = <&tlmm 69 0>;
+ 		enable-active-high;
+ 
+ 		vin-supply = <&pm8941_s3>;
+@@ -323,7 +323,7 @@ sdhci@f98a4900 {
+ 		vmmc-supply = <&pm8941_l21>;
+ 		vqmmc-supply = <&pm8941_l13>;
+ 
+-		cd-gpios = <&msmgpio 62 GPIO_ACTIVE_LOW>;
++		cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
+@@ -351,8 +351,8 @@ bluetooth {
+ 				    <&bt_dev_wake_pin>,
+ 				    <&bt_reg_on_pin>;
+ 
+-			host-wakeup-gpios = <&msmgpio 95 GPIO_ACTIVE_HIGH>;
+-			device-wakeup-gpios = <&msmgpio 96 GPIO_ACTIVE_HIGH>;
++			host-wakeup-gpios = <&tlmm 95 GPIO_ACTIVE_HIGH>;
++			device-wakeup-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+ 			shutdown-gpios = <&pm8941_gpios 16 GPIO_ACTIVE_HIGH>;
+ 		};
+ 	};
+@@ -566,7 +566,7 @@ synaptics@2c {
+ 			compatible = "syna,rmi4-i2c";
+ 			reg = <0x2c>;
+ 
+-			interrupt-parent = <&msmgpio>;
++			interrupt-parent = <&tlmm>;
+ 			interrupts = <86 IRQ_TYPE_EDGE_FALLING>;
+ 
+ 			#address-cells = <1>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
+index f4a2e2560777..313c755f590f 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-honami.dts
+@@ -305,7 +305,7 @@ sdhci@f98a4900 {
+ 		vmmc-supply = <&pm8941_l21>;
+ 		vqmmc-supply = <&pm8941_l13>;
+ 
+-		cd-gpios = <&msmgpio 62 GPIO_ACTIVE_LOW>;
++		cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
+@@ -331,7 +331,7 @@ synaptics@2c {
+ 			compatible = "syna,rmi4-i2c";
+ 			reg = <0x2c>;
+ 
+-			interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
++			interrupts-extended = <&tlmm 61 IRQ_TYPE_EDGE_FALLING>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index d8a1ba5b845c..2182d2755926 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -955,11 +955,11 @@ wifi {
  			};
  		};
+ 
+-		msmgpio: pinctrl@fd510000 {
++		tlmm: pinctrl@fd510000 {
+ 			compatible = "qcom,msm8974-pinctrl";
+ 			reg = <0xfd510000 0x4000>;
+ 			gpio-controller;
+-			gpio-ranges = <&msmgpio 0 0 146>;
++			gpio-ranges = <&tlmm 0 0 146>;
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
 -- 
 2.35.1
 
