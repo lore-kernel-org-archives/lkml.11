@@ -2,155 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B8FC282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E28C28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346227AbiHOUNW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
+        id S240478AbiHOUN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346498AbiHOULa (ORCPT
+        with ESMTP id S233632AbiHOUJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50B148E8C;
-        Mon, 15 Aug 2022 11:57:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F03C5B81082;
-        Mon, 15 Aug 2022 18:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C7BC43140;
-        Mon, 15 Aug 2022 18:57:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589866;
-        bh=lyksit9egkFgQzevi8lT0Oeq5R1tu5DzG6yzRvGK+bk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SjU6+90tOHUf63uoiwgQy29OBhfMyeh5sTHFvrm0sIQBaCF7pm7BhMHNfehTQwac3
-         04b0Px0b50IzPGeZ6HUCjC6JF7Si1k8PGpFZ20+LLlxmCDkO2jHGPSltYvbi1TJO7z
-         X6hvnhAWdbTdzhMyZlL0/BxB+HQRVSed7U9xmXtY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mathew McBride <matt@traverse.com.au>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.18 0074/1095] rtc: rx8025: fix 12/24 hour mode detection on RX-8035
-Date:   Mon, 15 Aug 2022 19:51:13 +0200
-Message-Id: <20220815180432.583993518@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:09:32 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBA183F24;
+        Mon, 15 Aug 2022 11:56:02 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id ha11so7689066pjb.2;
+        Mon, 15 Aug 2022 11:56:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=+TETRuQREbWQMsK22eWvupq1sOQwbs1H5QXxZ2DEAgU=;
+        b=f3E/ojiaz0NM63zgkJ6u7+tDQzLKIRRocWMkYaGqPGppzv5A2CRcZ4klgHcqLpTBNO
+         UngXV4EWEHYrgvCn+TOgh3V4yIN6sgOaH9C/2fJz3k8+uUYVbNPlrkVIIFQfMIJMKIOg
+         Zx+3dLSWUqr0a7/Y+/TzyPM78llRWrbfD1OHttkjC8QErSmtqZAWVFzrxI6dRuUcxfZ9
+         McsQaV5CDmB3AXS4JCgfoDnPbukLWfrjty6MFRUZTI0z/GMVNZHiomZxIDdgiAh3o0lm
+         dAaIbaqHz2liQhdZWWPXXok0hv8bdHGpgBBAGWHIz5lNBWv1Eioqe3n7Vu92977ImC7r
+         0b5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=+TETRuQREbWQMsK22eWvupq1sOQwbs1H5QXxZ2DEAgU=;
+        b=QRJgZuTVUBW13FCsTgkT7cPOvG9X9a6VU7PWideJaHlmy0/DMfzf+0XpdGCQP9Nctj
+         ERFpqG5xfY3Bo/Y4Kpq3UrRjHx5wOxcK9DkxJ1FuXbUaJtHlwnOWyGwxpHGVdFdL0fxb
+         oVdXxQICS4m9YSJfAoPgyymIR0/SbkBPp9hSPc2/WF5NY0qrFYnHB+Q/xUKaNzxTq5xj
+         E2UX7uHNIffifgpNZJiz0TGSJNpWa5yUgdpktsLgde6iVQqju4d5xB1ymmWOGy+pHI0L
+         isZuPwKJ33nlYgvbihxt48OF1czcSvb/+/XJ3RqV8Jmy6vwq1NFOPOi7hOcl0gbgGp8Q
+         Fhaw==
+X-Gm-Message-State: ACgBeo0HEzyAQWZyi6rqTcJnS/nIh/WaHT3Fs4A/MBSVNFgXItlHnp9n
+        dC8DLmmDG0eXyJCdVAdaLTP+Kg9gtHwyiMCr
+X-Google-Smtp-Source: AA6agR7CudSG0LqZx+wKC4C1PIGfjK9cuqlus0vYtBkYoxZbg+jdJMDMCTln1TB5lc5Wk4KfUxJMvQ==
+X-Received: by 2002:a17:90a:317:b0:1f3:8ad:52aa with SMTP id 23-20020a17090a031700b001f308ad52aamr20072887pje.106.1660589761635;
+        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
+Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
+        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
+From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+Subject: [PATCH 4/7] btrfs: Convert process_page_range() to use filemap_get_folios_contig()
+Date:   Mon, 15 Aug 2022 11:54:49 -0700
+Message-Id: <20220815185452.37447-5-vishal.moola@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
+References: <20220815185452.37447-1-vishal.moola@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathew McBride <matt@traverse.com.au>
+Converted function to use folios throughout. This is in preparation for
+the removal of find_get_pages_contig(). Now also supports large folios.
 
-commit 71af91565052214ad86f288e0d8ffb165f790995 upstream.
+Since we may receive more than nr_pages pages, nr_pages may underflow.
+Since nr_pages > 0 is equivalent to index <= end_index, we replaced it
+with this check instead.
 
-The 12/24hr flag in the RX-8035 can be found in the hour register,
-instead of the CTRL1 on the RX-8025. This was overlooked when
-support for the RX-8035 was added, and was causing read errors when
-the hour register 'overflowed'.
+Also minor comment renaming for consistency in subpage.
 
-To deal with the relevant register not always being visible in
-the relevant functions, determine the 12/24 mode at startup and
-store it in the driver state.
-
-Signed-off-by: Mathew McBride <matt@traverse.com.au>
-Fixes: f120e2e33ac8 ("rtc: rx8025: implement RX-8035 support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220706074236.24011-1-matt@traverse.com.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
 ---
- drivers/rtc/rtc-rx8025.c |   22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ fs/btrfs/subpage.c               |  2 +-
+ fs/btrfs/tests/extent-io-tests.c | 31 ++++++++++++++++---------------
+ 2 files changed, 17 insertions(+), 16 deletions(-)
 
---- a/drivers/rtc/rtc-rx8025.c
-+++ b/drivers/rtc/rtc-rx8025.c
-@@ -55,6 +55,8 @@
- #define RX8025_BIT_CTRL2_XST	BIT(5)
- #define RX8025_BIT_CTRL2_VDET	BIT(6)
+diff --git a/fs/btrfs/subpage.c b/fs/btrfs/subpage.c
+index 6fc2b77ae5c3..9a176af847d7 100644
+--- a/fs/btrfs/subpage.c
++++ b/fs/btrfs/subpage.c
+@@ -337,7 +337,7 @@ bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
+  *
+  * Even with 0 returned, the page still need extra check to make sure
+  * it's really the correct page, as the caller is using
+- * find_get_pages_contig(), which can race with page invalidating.
++ * filemap_get_folios_contig(), which can race with page invalidating.
+  */
+ int btrfs_page_start_writer_lock(const struct btrfs_fs_info *fs_info,
+ 		struct page *page, u64 start, u32 len)
+diff --git a/fs/btrfs/tests/extent-io-tests.c b/fs/btrfs/tests/extent-io-tests.c
+index a232b15b8021..530073868916 100644
+--- a/fs/btrfs/tests/extent-io-tests.c
++++ b/fs/btrfs/tests/extent-io-tests.c
+@@ -4,6 +4,7 @@
+  */
  
-+#define RX8035_BIT_HOUR_1224	BIT(7)
+ #include <linux/pagemap.h>
++#include <linux/pagevec.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/sizes.h>
+@@ -20,39 +21,39 @@ static noinline int process_page_range(struct inode *inode, u64 start, u64 end,
+ 				       unsigned long flags)
+ {
+ 	int ret;
+-	struct page *pages[16];
++	struct folio_batch fbatch;
+ 	unsigned long index = start >> PAGE_SHIFT;
+ 	unsigned long end_index = end >> PAGE_SHIFT;
+-	unsigned long nr_pages = end_index - index + 1;
+ 	int i;
+ 	int count = 0;
+ 	int loops = 0;
+ 
+-	while (nr_pages > 0) {
+-		ret = find_get_pages_contig(inode->i_mapping, index,
+-				     min_t(unsigned long, nr_pages,
+-				     ARRAY_SIZE(pages)), pages);
++	folio_batch_init(&fbatch);
 +
- /* Clock precision adjustment */
- #define RX8025_ADJ_RESOLUTION	3050 /* in ppb */
- #define RX8025_ADJ_DATA_MAX	62
-@@ -78,6 +80,7 @@ struct rx8025_data {
- 	struct rtc_device *rtc;
- 	enum rx_model model;
- 	u8 ctrl1;
-+	int is_24;
- };
- 
- static s32 rx8025_read_reg(const struct i2c_client *client, u8 number)
-@@ -226,7 +229,7 @@ static int rx8025_get_time(struct device
- 
- 	dt->tm_sec = bcd2bin(date[RX8025_REG_SEC] & 0x7f);
- 	dt->tm_min = bcd2bin(date[RX8025_REG_MIN] & 0x7f);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x3f);
- 	else
- 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x1f) % 12
-@@ -254,7 +257,7 @@ static int rx8025_set_time(struct device
- 	 */
- 	date[RX8025_REG_SEC] = bin2bcd(dt->tm_sec);
- 	date[RX8025_REG_MIN] = bin2bcd(dt->tm_min);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		date[RX8025_REG_HOUR] = bin2bcd(dt->tm_hour);
- 	else
- 		date[RX8025_REG_HOUR] = (dt->tm_hour >= 12 ? 0x20 : 0)
-@@ -279,6 +282,7 @@ static int rx8025_init_client(struct i2c
- 	struct rx8025_data *rx8025 = i2c_get_clientdata(client);
- 	u8 ctrl[2], ctrl2;
- 	int need_clear = 0;
-+	int hour_reg;
- 	int err;
- 
- 	err = rx8025_read_regs(client, RX8025_REG_CTRL1, 2, ctrl);
-@@ -303,6 +307,16 @@ static int rx8025_init_client(struct i2c
- 
- 		err = rx8025_write_reg(client, RX8025_REG_CTRL2, ctrl2);
++	while (index <= end_index) {
++		ret = filemap_get_folios_contig(inode->i_mapping, &index,
++				end_index, &fbatch);
+ 		for (i = 0; i < ret; i++) {
++			struct folio *folio = fbatch.folios[i];
+ 			if (flags & PROCESS_TEST_LOCKED &&
+-			    !PageLocked(pages[i]))
++			    !folio_test_locked(folio))
+ 				count++;
+-			if (flags & PROCESS_UNLOCK && PageLocked(pages[i]))
+-				unlock_page(pages[i]);
+-			put_page(pages[i]);
++			if (flags & PROCESS_UNLOCK && folio_test_locked(folio))
++				folio_unlock(folio);
+ 			if (flags & PROCESS_RELEASE)
+-				put_page(pages[i]);
++				folio_put(folio);
+ 		}
+-		nr_pages -= ret;
+-		index += ret;
++		folio_batch_release(&fbatch);
+ 		cond_resched();
+ 		loops++;
+ 		if (loops > 100000) {
+ 			printk(KERN_ERR
+-		"stuck in a loop, start %llu, end %llu, nr_pages %lu, ret %d\n",
+-				start, end, nr_pages, ret);
++		"stuck in a loop, start %llu, end %llu, ret %d\n",
++				start, end, ret);
+ 			break;
+ 		}
  	}
 +
-+	if (rx8025->model == model_rx_8035) {
-+		/* In RX-8035, 12/24 flag is in the hour register */
-+		hour_reg = rx8025_read_reg(client, RX8025_REG_HOUR);
-+		if (hour_reg < 0)
-+			return hour_reg;
-+		rx8025->is_24 = (hour_reg & RX8035_BIT_HOUR_1224);
-+	} else {
-+		rx8025->is_24 = (ctrl[1] & RX8025_BIT_CTRL1_1224);
-+	}
- out:
- 	return err;
+ 	return count;
  }
-@@ -329,7 +343,7 @@ static int rx8025_read_alarm(struct devi
- 	/* Hardware alarms precision is 1 minute! */
- 	t->time.tm_sec = 0;
- 	t->time.tm_min = bcd2bin(ald[0] & 0x7f);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		t->time.tm_hour = bcd2bin(ald[1] & 0x3f);
- 	else
- 		t->time.tm_hour = bcd2bin(ald[1] & 0x1f) % 12
-@@ -350,7 +364,7 @@ static int rx8025_set_alarm(struct devic
- 	int err;
  
- 	ald[0] = bin2bcd(t->time.tm_min);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		ald[1] = bin2bcd(t->time.tm_hour);
- 	else
- 		ald[1] = (t->time.tm_hour >= 12 ? 0x20 : 0)
-
+-- 
+2.36.1
 
