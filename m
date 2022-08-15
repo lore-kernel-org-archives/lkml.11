@@ -2,108 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59E5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2674AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241956AbiHOJXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
+        id S241976AbiHOJ0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233074AbiHOJXx (ORCPT
+        with ESMTP id S230431AbiHOJ0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:23:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FE8A3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:23:52 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M5pdR0rHVzXdh2;
-        Mon, 15 Aug 2022 17:19:39 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 17:23:49 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 17:23:48 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2] ARM: Remove the special printing format of pc and lr in __show_regs()
-Date:   Mon, 15 Aug 2022 17:21:37 +0800
-Message-ID: <20220815092137.1819-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        Mon, 15 Aug 2022 05:26:06 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F01613F8B;
+        Mon, 15 Aug 2022 02:26:05 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id z6so9875998lfu.9;
+        Mon, 15 Aug 2022 02:26:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=m64dCm5y6abMgyqwAQFCPVcLqHA6yb02EbRC6+noQbw=;
+        b=nnmZdSGgeYdNQlt7klf2KWrMATSS13t2yHEkVMt+x0DICtLrR28QtzNdoDTRaEmPom
+         z+Gs8Dqq57cX383CEv81ElNXe4hwEdFC/yx/espCw2xpTQameFuDpE7JbCuTbWB+Kbol
+         yO27DHFvxupX+VcmZM86sl6boJZeqggbNf4o8YzZtEaZQeYGSShIxAUkWIBfNtoTsM9T
+         Cr27BqXZo98/XfG56V1Yvc/jztezBrzouNmTZvHA/wtgonY4MU0pci1t+I+tRr3mf5HO
+         sdAx6MpIxbc1GK37dE/4nGERixFc6AjZOLsoU/8XHkj2Yc63r6S/c5WZxknVrcBXx/3D
+         7pig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=m64dCm5y6abMgyqwAQFCPVcLqHA6yb02EbRC6+noQbw=;
+        b=RT6YJPAJueei7w63vVPs9dVCRx4QBOfpXclsM4r//GL8EYpiBly6Xu4QKMs8NNVE6H
+         o8F4fHgrQt/4fAn0axpS/aDhv0q0qHnc090DR/mqNB4SLdLb7EayCyCjc58BOIKe6TIM
+         NGSirZkSUAXUmj5MGKMlr6oF1l357jLYtLHkaP9lowxWqqp/9zHu1kwb0TMLxC1Srf/X
+         QrYT1oRsKWRFaPpFl/1cieJS0ff7j8Jj2Qv/ilCYnXQxT1E924OwTEulNX8bCtI/HSLX
+         R7d3gJNpMw2i/pO/U9qorihpa5qt8qb2RUY7woVaDoDGemCtYHLh8ZwcB+EQr2xh1q8Q
+         eDkw==
+X-Gm-Message-State: ACgBeo3Y/6eknJtqCYI3SgozN9+pUujbs9w/KxY8UWWnIk0U9QE8VLkg
+        Kklc77WFYZcCtYfGwfxpN8YoLgZYwV5v7fiihYk=
+X-Google-Smtp-Source: AA6agR6CMLudliLU8DkPuETG1wkoC+cdz48zIm15B0wjSPjwtbMMftxqAWoUVL/mbhEco5kEFVzLgUqmqMD3Vr4rsnk=
+X-Received: by 2002:a05:6512:168d:b0:491:3206:b63 with SMTP id
+ bu13-20020a056512168d00b0049132060b63mr3115806lfb.149.1660555563305; Mon, 15
+ Aug 2022 02:26:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+References: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
+ <26d0e4cc-be0e-2c12-6174-dfbb1edb1ed6@oracle.com> <bbc01477-231b-3dbb-3e09-9338f5413f06@oracle.com>
+ <ba48eac5-8ef7-251b-11fe-8163bb7a2d54@quicinc.com> <224b19f3-912d-b858-7af4-185b8e55bc66@quicinc.com>
+ <YthDz4BnfYHce1od@slm.duckdns.org> <YuGTBLkFerUboctl@slm.duckdns.org>
+ <dc0cff0e-b744-9d5d-e727-70d1c31b2a74@quicinc.com> <20220815090556.GB27407@blackbody.suse.cz>
+In-Reply-To: <20220815090556.GB27407@blackbody.suse.cz>
+From:   Xuewen Yan <xuewen.yan94@gmail.com>
+Date:   Mon, 15 Aug 2022 17:25:52 +0800
+Message-ID: <CAB8ipk90LxNNbq5OKamd-ArkqhEZjxS1fFZJXtnbQwGzyyJ3wQ@mail.gmail.com>
+Subject: Re: Query regarding deadlock involving cgroup_threadgroup_rwsem and cpu_hotplug_lock
+To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     Mukesh Ojha <quic_mojha@quicinc.com>, Tejun Heo <tj@kernel.org>,
+        Imran Khan <imran.f.khan@oracle.com>, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, tglx@linutronix.de, steven.price@arm.com,
+        peterz@infradead.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_KALLSYMS is set, the parsed symbols of 'pc' and 'lr' are
-printed. Otherwise, the raw content of 'pc' and 'lr' are printed in the
-lines: "PC is at" and "LR is at". If at this point they are printed in
-format [<%08lx>], the subsequent printing of 'pc' and 'lr' does not need
-to follow this format again. This allows the register list to be printed
-neatly.
+Hi Michal
 
-For example:
-CONFIG_KALLSYMS=y before:
-PC is at test+0x58/0x74
-LR is at test+0x28/0x74
-pc : [<802f3868>]    lr : [<802f3838>]    psr: 60000013
-sp : cabc5da8  ip : 00002ff4  fp : 00000001
-r10: 81951018  r9 : 00400cc0  r8 : 7ffff000
+On Mon, Aug 15, 2022 at 5:06 PM Michal Koutn=C3=BD <mkoutny@suse.com> wrote=
+:
+>
+> +Cc: Zhao Gongyi <zhaogongyi@huawei.com>, Zhang Qiao <zhangqiao22@huawei.=
+com>
+>
+> On Fri, Aug 12, 2022 at 03:57:00PM +0530, Mukesh Ojha <quic_mojha@quicinc=
+.com> wrote:
+> > The original patch of yours [1]  and the revert of [2] is fixing the is=
+sue
+> > and it is also confirmed here [3].
+> > Can we get proper fix merge on your tree?
+> >
+> > [1] https://lore.kernel.org/lkml/YuGbYCfAG81mZBnN@slm.duckdns.org/
+> >
+> > [2]
+> > https://lore.kernel.org/all/20220121101210.84926-1-zhangqiao22@huawei.c=
+om/
+>
+> The revert + Tejun's patch looks fine wrt the problem of the reverted
+> patch (just moves cpus_read_lock to upper callers).
 
-CONFIG_KALLSYMS=n after:
-PC is at [<802f369c>]
-LR is at [<802f366c>]
-pc : 802f369c  lr : 802f366c  psr: 60000013
-sp : cabd9da8  ip : 00002ff4  fp : 00000001
-r10: 827e6018  r9 : 00400cc0  r8 : 7ffff000
+Your means is that the problem should be fixed by [1]+[2]'s revert ?
+I just tested the case which reverted the [2]. Need I test with [1] and [2]=
+?
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
-KernelVersion: v6.0-rc1
- arch/arm/kernel/process.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+Thanks!
 
-v1 --> v2:
-On the basis of v1, print the instruction pointers in the lines of
-"PC is at" and "LR is at" in format [<%08lx>] if CONFIG_KALLSYMS=n,
-as is done in dump_backtrace_entry(). To make sure that tools like
-scripts/decode_stacktrace.sh can output the symbols of 'pc' and 'lr'.
-
-v1:
-Change the format of "pc:" and "lr:" from [<%08lx>] to %08lx.
-
-diff --git a/arch/arm/kernel/process.c b/arch/arm/kernel/process.c
-index 96f3fbd51764292..f9f4e31393a6f56 100644
---- a/arch/arm/kernel/process.c
-+++ b/arch/arm/kernel/process.c
-@@ -134,9 +134,15 @@ void __show_regs(struct pt_regs *regs)
- 
- 	show_regs_print_info(KERN_DEFAULT);
- 
-+#ifdef CONFIG_KALLSYMS
- 	printk("PC is at %pS\n", (void *)instruction_pointer(regs));
- 	printk("LR is at %pS\n", (void *)regs->ARM_lr);
--	printk("pc : [<%08lx>]    lr : [<%08lx>]    psr: %08lx\n",
-+#else
-+	printk("PC is at [<%08lx>]\n", instruction_pointer(regs));
-+	printk("LR is at [<%08lx>]\n", regs->ARM_lr);
-+#endif
-+
-+	printk("pc : %08lx  lr : %08lx  psr: %08lx\n",
- 	       regs->ARM_pc, regs->ARM_lr, regs->ARM_cpsr);
- 	printk("sp : %08lx  ip : %08lx  fp : %08lx\n",
- 	       regs->ARM_sp, regs->ARM_ip, regs->ARM_fp);
--- 
-2.25.1
-
+>
+> I'd just suggest a comment that'd explicitly document also the lock
+> order that we stick to, IIUC, it should be:
+>
+>         cpu_hotplug_lock // cpus_read_lock
+>         cgroup_threadgroup_rwsem
+>         cpuset_rwsem
+>
+> Michal
+>
+> >
+> > [3] https://lore.kernel.org/lkml/CAB8ipk-72V-bYRfL-VcSRSyXTeQqkBVj+1d5M=
+HSVV5CTar9a0Q@mail.gmail.com/
+> >
+> > -Mukesh
