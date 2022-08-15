@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC91C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9BBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240283AbiHOSTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S240309AbiHOSTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbiHOSSZ (ORCPT
+        with ESMTP id S238887AbiHOSS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:18:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947282B279;
-        Mon, 15 Aug 2022 11:16:02 -0700 (PDT)
+        Mon, 15 Aug 2022 14:18:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DC32B633;
+        Mon, 15 Aug 2022 11:16:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E676B8106C;
-        Mon, 15 Aug 2022 18:16:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9093EC433C1;
-        Mon, 15 Aug 2022 18:15:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC3A261299;
+        Mon, 15 Aug 2022 18:16:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E70C433C1;
+        Mon, 15 Aug 2022 18:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587360;
-        bh=h2a++vB7rUxdHLPrp5od/YYDptU4FG5vuzzKULCmoS4=;
+        s=korg; t=1660587363;
+        bh=4qlNeIHgUazwweJK0KQBHpXgXwP8gTAiqf2xf6WlGYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EUln6dXNOR3sp6RKvoLLBPcX9/8ufaNcNi7VvniOExxqI/G3x7nKsJV4Fnd92mjz+
-         OV7x8MhgDJjKcCKb2Ny556rWrwet1B3hh2Vj+YUdGBe7/hBAwIOac3xZoJIud6MxSf
-         DYpsed7RGjuVh513iVe7uNr8EoPx6NA/uJhGdz0U=
+        b=NLzZYstLOxwxKmjc1tVEGDYYkHBmAMS++69dL2mVGqsKeIYQGkL1mtCzsJwx7rhCY
+         Qi3nPJ0OPnUIdeHO3QRdKNXXBxEq3jvW/59cZZoLXvFujUub+9AY3Vbd1jjRXgrefK
+         vIjjN7BrXpyoKFd/m963Nw4jPhxR2SmUMvEJvr4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yipeng Zou <zouyipeng@huawei.com>,
-        Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 053/779] riscv:uprobe fix SR_SPIE set/clear handling
-Date:   Mon, 15 Aug 2022 19:54:57 +0200
-Message-Id: <20220815180339.528971437@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.15 062/779] drm/vc4: hdmi: Disable audio if dmas property is present but empty
+Date:   Mon, 15 Aug 2022 19:55:06 +0200
+Message-Id: <20220815180339.909034261@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,73 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yipeng Zou <zouyipeng@huawei.com>
+From: Phil Elwell <phil@raspberrypi.org>
 
-commit 3dbe5829408bc1586f75b4667ef60e5aab0209c7 upstream.
+commit db2b927f8668adf3ac765e0921cd2720f5c04172 upstream.
 
-In riscv the process of uprobe going to clear spie before exec
-the origin insn,and set spie after that.But When access the page
-which origin insn has been placed a page fault may happen and
-irq was disabled in arch_uprobe_pre_xol function,It cause a WARN
-as follows.
-There is no need to clear/set spie in arch_uprobe_pre/post/abort_xol.
-We can just remove it.
+The dmas property is used to hold the dmaengine channel used for audio
+output.
 
-[   31.684157] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1488
-[   31.684677] in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 76, name: work
-[   31.684929] preempt_count: 0, expected: 0
-[   31.685969] CPU: 2 PID: 76 Comm: work Tainted: G
-[   31.686542] Hardware name: riscv-virtio,qemu (DT)
-[   31.686797] Call Trace:
-[   31.687053] [<ffffffff80006442>] dump_backtrace+0x30/0x38
-[   31.687699] [<ffffffff80812118>] show_stack+0x40/0x4c
-[   31.688141] [<ffffffff8081817a>] dump_stack_lvl+0x44/0x5c
-[   31.688396] [<ffffffff808181aa>] dump_stack+0x18/0x20
-[   31.688653] [<ffffffff8003e454>] __might_resched+0x114/0x122
-[   31.688948] [<ffffffff8003e4b2>] __might_sleep+0x50/0x7a
-[   31.689435] [<ffffffff80822676>] down_read+0x30/0x130
-[   31.689728] [<ffffffff8000b650>] do_page_fault+0x166/x446
-[   31.689997] [<ffffffff80003c0c>] ret_from_exception+0x0/0xc
+Older device trees were missing that property, so if it's not there we
+disable the audio output entirely.
 
-Fixes: 74784081aac8 ("riscv: Add uprobes supported")
-Signed-off-by: Yipeng Zou <zouyipeng@huawei.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220721065820.245755-1-zouyipeng@huawei.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+However, some overlays have set an empty value to that property, mostly
+to workaround the fact that overlays cannot remove a property. Let's add
+a test for that case and if it's empty, let's disable it as well.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Link: https://lore.kernel.org/r/20220613144800.326124-18-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/probes/uprobes.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/riscv/kernel/probes/uprobes.c
-+++ b/arch/riscv/kernel/probes/uprobes.c
-@@ -59,8 +59,6 @@ int arch_uprobe_pre_xol(struct arch_upro
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1470,12 +1470,12 @@ static int vc4_hdmi_audio_init(struct vc
+ 	struct device *dev = &vc4_hdmi->pdev->dev;
+ 	struct platform_device *codec_pdev;
+ 	const __be32 *addr;
+-	int index;
++	int index, len;
+ 	int ret;
  
- 	instruction_pointer_set(regs, utask->xol_vaddr);
+-	if (!of_find_property(dev->of_node, "dmas", NULL)) {
++	if (!of_find_property(dev->of_node, "dmas", &len) || !len) {
+ 		dev_warn(dev,
+-			 "'dmas' DT property is missing, no HDMI audio\n");
++			 "'dmas' DT property is missing or empty, no HDMI audio\n");
+ 		return 0;
+ 	}
  
--	regs->status &= ~SR_SPIE;
--
- 	return 0;
- }
- 
-@@ -72,8 +70,6 @@ int arch_uprobe_post_xol(struct arch_upr
- 
- 	instruction_pointer_set(regs, utask->vaddr + auprobe->insn_size);
- 
--	regs->status |= SR_SPIE;
--
- 	return 0;
- }
- 
-@@ -111,8 +107,6 @@ void arch_uprobe_abort_xol(struct arch_u
- 	 * address.
- 	 */
- 	instruction_pointer_set(regs, utask->vaddr);
--
--	regs->status &= ~SR_SPIE;
- }
- 
- bool arch_uretprobe_is_alive(struct return_instance *ret, enum rp_check ctx,
 
 
