@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B10C32765
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF028C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351460AbiHOWmT (ORCPT
+        id S1351425AbiHOWmN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        Mon, 15 Aug 2022 18:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350962AbiHOWhX (ORCPT
+        with ESMTP id S1350928AbiHOWhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:23 -0400
+        Mon, 15 Aug 2022 18:37:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688725E308;
-        Mon, 15 Aug 2022 12:50:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B29C2DE8;
+        Mon, 15 Aug 2022 12:50:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15789B81144;
-        Mon, 15 Aug 2022 19:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A258C433D6;
-        Mon, 15 Aug 2022 19:50:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E773B81154;
+        Mon, 15 Aug 2022 19:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5254AC433D7;
+        Mon, 15 Aug 2022 19:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593021;
-        bh=4za+avW1T/NnoFjLu6YyZVhW3X3P6uxrYzP7gGEKha0=;
+        s=korg; t=1660593003;
+        bh=tkqliisyWlw//YEyiwGGxb+HGB3tuKHQvqGhfE8nTOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pPjRL9dXaRjIUk30Om5ushrdgXIzA7EJpyvrTvIN29sbfg2L3v7D2YEx4cMk7xDgb
-         YbN7c0lKod4UCjWb1naHR3mrNe73zBXGLzrFcGAjVDzt5vFQ4HBqf9LeSnhQxXgQMN
-         z1GbnwWBvHW4mVFzN/RBAbXmjKniEUJ+ZMkU5s4Y=
+        b=P8yHJUQ4ZNrSQrP6BCP9wS6eQM3e1EuMZT1FzTMSQLLWHgFiTYuPlhGEd7sHFQ98u
+         uzMbsxU62Npbbk5X3hRgWpuhoqUC/JkOsdE8GzCeVcXW7rGd0lxNfMmEnkt3WGDH+U
+         pYDWASujksCo7oC/3uO8PmrC8H6/7WijkfMBSk/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org,
+        Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0201/1157] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
-Date:   Mon, 15 Aug 2022 19:52:37 +0200
-Message-Id: <20220815180447.715935139@linuxfoundation.org>
+Subject: [PATCH 5.18 0878/1095] ASoC: SOF: ipc3-topology: Prevent double freeing of ipc_control_data via load_bytes
+Date:   Mon, 15 Aug 2022 20:04:37 +0200
+Message-Id: <20220815180505.688938280@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit cb23389a2458c2e4bfd6c86a513cbbe1c4d35e76 ]
+[ Upstream commit d5bd47f3ca124058a8e87eae4508afeda2132611 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+We have sanity checks for byte controls and if any of the fail the locally
+allocated scontrol->ipc_control_data is freed up, but not set to NULL.
 
-Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+On a rollback path of the error the higher level code will also try to free
+the scontrol->ipc_control_data which will eventually going to lead to
+memory corruption as double freeing memory is not a good thing.
+
+Fixes: b5cee8feb1d4 ("ASoC: SOF: topology: Make control parsing IPC agnostic")
+Reported-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220712130103.31514-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-bcm/bcm_kona_smc.c | 1 +
+ sound/soc/sof/ipc3-topology.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-bcm/bcm_kona_smc.c b/arch/arm/mach-bcm/bcm_kona_smc.c
-index 43829e49ad93..347bfb7f03e2 100644
---- a/arch/arm/mach-bcm/bcm_kona_smc.c
-+++ b/arch/arm/mach-bcm/bcm_kona_smc.c
-@@ -52,6 +52,7 @@ int __init bcm_kona_smc_init(void)
- 		return -ENODEV;
- 
- 	prop_val = of_get_address(node, 0, &prop_size, NULL);
-+	of_node_put(node);
- 	if (!prop_val)
- 		return -EINVAL;
+diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
+index 80fb82ece38d..74c230fbcf68 100644
+--- a/sound/soc/sof/ipc3-topology.c
++++ b/sound/soc/sof/ipc3-topology.c
+@@ -1629,6 +1629,7 @@ static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_
+ 	return 0;
+ err:
+ 	kfree(scontrol->ipc_control_data);
++	scontrol->ipc_control_data = NULL;
+ 	return ret;
+ }
  
 -- 
 2.35.1
