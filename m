@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FEACC2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BF8C32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347784AbiHOU0h (ORCPT
+        id S1347887AbiHOU0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
+        Mon, 15 Aug 2022 16:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346705AbiHOUU6 (ORCPT
+        with ESMTP id S1347184AbiHOUWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:20:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01EFF98593;
-        Mon, 15 Aug 2022 12:00:56 -0700 (PDT)
+        Mon, 15 Aug 2022 16:22:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CF833417;
+        Mon, 15 Aug 2022 12:01:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5478661296;
-        Mon, 15 Aug 2022 19:00:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64917C433D7;
-        Mon, 15 Aug 2022 19:00:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FAA561299;
+        Mon, 15 Aug 2022 19:01:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350C1C433C1;
+        Mon, 15 Aug 2022 19:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590055;
-        bh=OXZCHrkyCbLkl9jdNZjncEsvl/fTVJvTADUZUqZjCQU=;
+        s=korg; t=1660590073;
+        bh=dL0Ydp8evCTHHeruYxpd94EwuBGQvyrxTcjrzl+PG+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aN1BkbY+KLSQkrTgvUEdYovoo16s5rceueAAgF3lQGRh3NBZKlEqgy+3QCNUbZqad
-         dJ4RkAwJ9BeeRmdg+PdJFXp85KDe2bPlfYTiiKcdIckA7wnr/fHjl+as69LDyWfwJ8
-         ccAhNdp5Zhdwr6lPtK4TjvoV4lZQ3xgQkOy8hTSo=
+        b=cNYnvalNY1Hn21oB+J7U8AJZq+2W0bKB3TQG0BzzVZjaJ2PabWTBlFVwBX1x37lpD
+         1RN3waSnaCu0pAU9gAeiBA1U7dqM0Rzc6e3iFiSiICZIiqmCtkjaYPbvKow/1dAXbh
+         zfv1Qlgb81s+2+6ZVzvpnjxDCqWZoMRqhb0ho1CI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0137/1095] arm64: Do not forget syscall when starting a new thread.
-Date:   Mon, 15 Aug 2022 19:52:16 +0200
-Message-Id: <20220815180435.259796503@linuxfoundation.org>
+        Antonio Borneo <antonio.borneo@foss.st.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0143/1095] genirq: Dont return error on missing optional irq_request_resources()
+Date:   Mon, 15 Aug 2022 19:52:22 +0200
+Message-Id: <20220815180435.501857120@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,38 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francis Laniel <flaniel@linux.microsoft.com>
+From: Antonio Borneo <antonio.borneo@foss.st.com>
 
-[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
+[ Upstream commit 95001b756467ecc9f5973eb5e74e97699d9bbdf1 ]
 
-Enable tracing of the execve*() system calls with the
-syscalls:sys_exit_execve tracepoint by removing the call to
-forget_syscall() when starting a new thread and preserving the value of
-regs->syscallno across exec.
+Function irq_chip::irq_request_resources() is reported as optional
+in the declaration of struct irq_chip.
+If the parent irq_chip does not implement it, we should ignore it
+and return.
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Don't return error if the functions is missing.
+
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220512160544.13561-1-antonio.borneo@foss.st.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/processor.h | 3 ++-
+ kernel/irq/chip.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 6b1a12c23fe7..7058bf047fa5 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -250,8 +250,9 @@ void tls_preserve_current_state(void);
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 54af0deb239b..eb921485930f 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1513,7 +1513,8 @@ int irq_chip_request_resources_parent(struct irq_data *data)
+ 	if (data->chip->irq_request_resources)
+ 		return data->chip->irq_request_resources(data);
  
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
- {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
+-	return -ENOSYS;
++	/* no error on missing optional irq_chip::irq_request_resources */
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(irq_chip_request_resources_parent);
  
- 	if (system_uses_irq_prio_masking())
 -- 
 2.35.1
 
