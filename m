@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC20C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 882C3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344067AbiHOTPM (ORCPT
+        id S1344079AbiHOTPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
+        Mon, 15 Aug 2022 15:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344160AbiHOTLw (ORCPT
+        with ESMTP id S1343860AbiHOTLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:11:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB5450718;
-        Mon, 15 Aug 2022 11:37:22 -0700 (PDT)
+        Mon, 15 Aug 2022 15:11:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AA742ACD;
+        Mon, 15 Aug 2022 11:36:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15F7360FC4;
-        Mon, 15 Aug 2022 18:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8C6C433D7;
-        Mon, 15 Aug 2022 18:37:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A924B8105D;
+        Mon, 15 Aug 2022 18:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB9FC433C1;
+        Mon, 15 Aug 2022 18:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588641;
-        bh=sT5pL6cUl6cZxcolgG5Lty5iulljWSDOK+DQZab1v8I=;
+        s=korg; t=1660588610;
+        bh=SsESgowbU490/ite9UQJ2/VF8eHcvsf//IiX5TmCguU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gZgpwNRGPncyC6KhrIjcPYPe3zAxzX+xdVQrwrIGuna5I/8smZg4k2ozEFtpEFw17
-         GT9dvyKe4g7x9EtjFaIv8DAZ7wWe1yngtxzkHfBeQLY8QWkoox1owL6h+Butq8FHWR
-         B6zOzPCMjbV076VTBuYMnpsBA5mIKeSgF9tB//iI=
+        b=nfc/ts6qw0Ik6sZfiVTCkqozNTC4Obcx5fKFrWp1n+kAgFv+kAkBTBX/l4r2PLBJd
+         +NfufzRoWawcTr16r63iH/9PlfONhz8vJrU0P6RDr7loi15QWDGfRqXhTe3nz+CcDU
+         Z/csyi1C3py9qrJ5KzZCSA+8eO+ZQBt+93+ignrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shunsuke Mie <mie@igel.co.jp>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 469/779] PCI: endpoint: Dont stop controller when unbinding endpoint function
-Date:   Mon, 15 Aug 2022 20:01:53 +0200
-Message-Id: <20220815180357.348803001@linuxfoundation.org>
+Subject: [PATCH 5.15 428/779] clk: mediatek: reset: Fix written reset bit offset
+Date:   Mon, 15 Aug 2022 20:01:12 +0200
+Message-Id: <20220815180355.565929729@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,39 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shunsuke Mie <mie@igel.co.jp>
+From: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-[ Upstream commit 1bc2b7bfba6e2f64edf5e246f3af2967261f6c3d ]
+[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
 
-Unbinding an endpoint function from the endpoint controller shouldn't stop
-the controller.  This is especially a problem for multi-function endpoints
-where other endpoints may still be active.
+Original assert/deassert bit is BIT(0), but it's more resonable to modify
+them to BIT(id % 32) which is based on id.
 
-Don't stop the controller when unbinding one of its endpoints.  Normally
-the controller is stopped via configfs.
+This patch will not influence any previous driver because the reset is
+only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
 
-Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
-Link: https://lore.kernel.org/r/20220622040924.113279-1-mie@igel.co.jp
-Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/clk/mediatek/reset.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 5b833f00e980..a5ed779b0a51 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -627,7 +627,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index e562dc3c10a4..d311da574499 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4);
  
- 	cancel_delayed_work(&epf_test->cmd_handler);
- 	pci_epf_test_clean_dma_chan(epf_test);
--	pci_epc_stop(epc);
- 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
- 		epf_bar = &epf->bar[bar];
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
  
+ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
+ 
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
+ 
+ static int mtk_reset_assert(struct reset_controller_dev *rcdev,
 -- 
 2.35.1
 
