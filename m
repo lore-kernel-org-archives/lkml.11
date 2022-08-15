@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D0FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFABC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346826AbiHOVYp (ORCPT
+        id S1346858AbiHOVYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        Mon, 15 Aug 2022 17:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346418AbiHOVSE (ORCPT
+        with ESMTP id S1346566AbiHOVSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:18:04 -0400
+        Mon, 15 Aug 2022 17:18:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7172E9D9;
-        Mon, 15 Aug 2022 12:21:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F77100;
+        Mon, 15 Aug 2022 12:21:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F6D1B81120;
-        Mon, 15 Aug 2022 19:21:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D20C433C1;
-        Mon, 15 Aug 2022 19:21:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A67AB81109;
+        Mon, 15 Aug 2022 19:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D837DC433C1;
+        Mon, 15 Aug 2022 19:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591280;
-        bh=yvkrzACW/qrxgj1lX7sug5NglxA19jWHmopMFD2FfTY=;
+        s=korg; t=1660591287;
+        bh=CjcsINQYa6VArzm2wXQ8YIirX6aD5SJf3S+UBgXgnuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQanQNQcWxSOWebk+7djiyA4tLMIX79x0PUb1N/W0huSnFseTo29b/EBnzyjRTZwl
-         Us+IPsXLL5gJ47Xzp7s2IFovuP94JgKDx4SOg7BPwClm7Eokyh3fGixtfd5nb5BF1L
-         NjX7xjEI6cl1Q7qABkIp8wtwPSwtY17XVcdwHD3k=
+        b=WzGPHx89VEUsOfuedTqiC/tmB07O8DIfxV/9pIHZQ9KsIMJdodTD1WBZG8Q939VAb
+         Bz985+H8+7YYoCQKqt/fq9Py1SbkDDa/gBMsv5//oe64O2h8w9gDU3CMVPtbtQn3Yb
+         rNl26ETYqpQtfYTP1xBHz8znvgaPP6Ry0ri6s3DU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0528/1095] wifi: rtw88: check the return value of alloc_workqueue()
-Date:   Mon, 15 Aug 2022 19:58:47 +0200
-Message-Id: <20220815180451.387059444@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0530/1095] iavf: Fix tc qdisc show listing too many queues
+Date:   Mon, 15 Aug 2022 19:58:49 +0200
+Message-Id: <20220815180451.468305203@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,40 +55,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-[ Upstream commit 42bbf810e155efc6129a3a648ae5300f00b79d7b ]
+[ Upstream commit 93cb804edab1b9a5bb7bb7b6824012dbb20abf22 ]
 
-The function alloc_workqueue() in rtw_core_init() can fail, but
-there is no check of its return value. To fix this bug, its return value
-should be checked with new error handling code.
+Fix tc qdisc show dev <ethX> root displaying too many fq_codel qdiscs.
+tc_modify_qdisc, which is caller of ndo_setup_tc, expects driver to call
+netif_set_real_num_tx_queues, which prepares qdiscs.
+Without this patch, fq_codel qdiscs would not be adjusted to number of
+queues on VF.
+e.g.:
+tc qdisc show dev <ethX>
+qdisc mq 0: root
+qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
+tc qdisc show dev <ethX>
+qdisc mqprio 8003: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+             queues:(0:0) (1:1)
+             mode:channel
+             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
+qdisc fq_codel 0: parent 8003:4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent 8003:3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent 8003:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent 8003:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
 
-Fixes: fe101716c7c9d ("rtw88: replace tx tasklet with work queue")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220723063756.2956189-1-williamsukatube@163.com
+While after fix:
+tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
+tc qdisc show dev <ethX> #should show 2, shows 4
+qdisc mqprio 8004: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+             queues:(0:0) (1:1)
+             mode:channel
+             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
+qdisc fq_codel 0: parent 8004:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent 8004:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+
+Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Co-developed-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Co-developed-by: Kiran Patil <kiran.patil@intel.com>
+Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/intel/iavf/iavf.h      |  5 +++++
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 21 +++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index 8b9899e41b0b..ded952913ae6 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1974,6 +1974,10 @@ int rtw_core_init(struct rtw_dev *rtwdev)
- 	timer_setup(&rtwdev->tx_report.purge_timer,
- 		    rtw_tx_report_purge_timer, 0);
- 	rtwdev->tx_wq = alloc_workqueue("rtw_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
-+	if (!rtwdev->tx_wq) {
-+		rtw_warn(rtwdev, "alloc_workqueue rtw_tx_wq failed\n");
-+		return -ENOMEM;
-+	}
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index c241fbc30f93..a988c08e906f 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -431,6 +431,11 @@ struct iavf_adapter {
+ 	/* lock to protect access to the cloud filter list */
+ 	spinlock_t cloud_filter_list_lock;
+ 	u16 num_cloud_filters;
++	/* snapshot of "num_active_queues" before setup_tc for qdisc add
++	 * is invoked. This information is useful during qdisc del flow,
++	 * to restore correct number of queues
++	 */
++	int orig_num_active_queues;
  
- 	INIT_DELAYED_WORK(&rtwdev->watch_dog_work, rtw_watch_dog_work);
- 	INIT_DELAYED_WORK(&coex->bt_relink_work, rtw_coex_bt_relink_work);
+ #define IAVF_MAX_FDIR_FILTERS 128	/* max allowed Flow Director filters */
+ 	u16 fdir_active_fltr;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 51ae10eb348c..3dbfaead2ac7 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3429,6 +3429,7 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
+ 			netif_tx_disable(netdev);
+ 			iavf_del_all_cloud_filters(adapter);
+ 			adapter->aq_required = IAVF_FLAG_AQ_DISABLE_CHANNELS;
++			total_qps = adapter->orig_num_active_queues;
+ 			goto exit;
+ 		} else {
+ 			return -EINVAL;
+@@ -3472,7 +3473,21 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
+ 				adapter->ch_config.ch_info[i].offset = 0;
+ 			}
+ 		}
++
++		/* Take snapshot of original config such as "num_active_queues"
++		 * It is used later when delete ADQ flow is exercised, so that
++		 * once delete ADQ flow completes, VF shall go back to its
++		 * original queue configuration
++		 */
++
++		adapter->orig_num_active_queues = adapter->num_active_queues;
++
++		/* Store queue info based on TC so that VF gets configured
++		 * with correct number of queues when VF completes ADQ config
++		 * flow
++		 */
+ 		adapter->ch_config.total_qps = total_qps;
++
+ 		netif_tx_stop_all_queues(netdev);
+ 		netif_tx_disable(netdev);
+ 		adapter->aq_required |= IAVF_FLAG_AQ_ENABLE_CHANNELS;
+@@ -3489,6 +3504,12 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
+ 		}
+ 	}
+ exit:
++	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
++		return 0;
++
++	netif_set_real_num_rx_queues(netdev, total_qps);
++	netif_set_real_num_tx_queues(netdev, total_qps);
++
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
