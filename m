@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D699CC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADE3C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346229AbiHOUyy (ORCPT
+        id S1346303AbiHOUzD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        Mon, 15 Aug 2022 16:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346078AbiHOUyF (ORCPT
+        with ESMTP id S1346180AbiHOUyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:54:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7891ABD113;
-        Mon, 15 Aug 2022 12:10:43 -0700 (PDT)
+        Mon, 15 Aug 2022 16:54:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49391A8966;
+        Mon, 15 Aug 2022 12:10:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2877360693;
-        Mon, 15 Aug 2022 19:10:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32209C433C1;
-        Mon, 15 Aug 2022 19:10:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A6AE60ACE;
+        Mon, 15 Aug 2022 19:10:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91718C433C1;
+        Mon, 15 Aug 2022 19:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590635;
-        bh=mEJcYFqxbaLpd70A3pl4J4Nih1wGRQcFljgUuJNShsw=;
+        s=korg; t=1660590648;
+        bh=N836QlaP8EZTDQ0E+HF1nAvtsij5ua2T/dw7TqgbLH4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KQ0A8LBV5ZefFQzipieclZ3vMHqkZ5orn0ednu917IeaiY30aPUeAIo05JDUXOWVC
-         JKT0ObauP88vvIFOBL4Bx4S9Eq9Fhs+EgngMiB3kSbcyo/1ROadqK1x7LSmOXsuwof
-         f2uE50WJpTzpXauTa6lpojuu3hWqQYY4uEqhm7OQ=
+        b=GqLDgwQC9AdglK0AhRfAmYBdGeBuXC4ZgkzHOEzK0tsiZKVVxTa1MB1Z8cJWtJw6D
+         B5Zmq9+WMxNB/HWaSaIxN4f9wCc55xB83oXbNVYEF+iWdXBNot26iycXd8c9qwtAJy
+         fPO4fWWahLAE0ke2z3aoO8iuLDKSno1kAdxvTwDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0322/1095] drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
-Date:   Mon, 15 Aug 2022 19:55:21 +0200
-Message-Id: <20220815180443.115017259@linuxfoundation.org>
+Subject: [PATCH 5.18 0325/1095] drm/meson: encoder_hdmi: Fix refcount leak in meson_encoder_hdmi_init
+Date:   Mon, 15 Aug 2022 19:55:24 +0200
+Message-Id: <20220815180443.235697319@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,127 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit cde7e2e35c2866d22a3a012e72a41052dfcc255d ]
+[ Upstream commit d82a5a4aae9d0203234737caed1bf470aa317568 ]
 
-In order to match the changes of "Use the drm_panel_bridge API",
-the poweron/poweroff of dsi is extracted from enable/disable and
-defined as new funcs (atomic_pre_enable/atomic_post_disable).
+of_graph_get_remote_node() returns remote device nodepointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Since dsi_poweron is moved from dsi_enable to pre_enable function, in
-order to avoid poweron failure, the operation of dsi register fails to
-cause bus hang. Therefore, the protection mechanism is added to the
-dsi_enable function.
-
-Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-3-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: e67f6037ae1b ("drm/meson: split out encoder from meson_dw_hdmi")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220601033927.47814-3-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 53 +++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 19 deletions(-)
+ drivers/gpu/drm/meson/meson_encoder_hdmi.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 7a98ae100c06..3a6ee6e9ad2c 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -679,16 +679,6 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	if (--dsi->refcount != 0)
- 		return;
+diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+index de87f02cd388..a7692584487c 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
++++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+@@ -365,7 +365,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 	meson_encoder_hdmi->next_bridge = of_drm_find_bridge(remote);
+ 	if (!meson_encoder_hdmi->next_bridge) {
+ 		dev_err(priv->dev, "Failed to find HDMI transceiver bridge\n");
+-		return -EPROBE_DEFER;
++		ret = -EPROBE_DEFER;
++		goto err_put_node;
+ 	}
  
--	/*
--	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
--	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
--	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
--	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
--	 * after dsi is fully set.
--	 */
--	mtk_dsi_stop(dsi);
--
--	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-@@ -703,17 +693,9 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	/* HDMI Encoder Bridge */
+@@ -383,7 +384,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 				      DRM_MODE_ENCODER_TMDS);
+ 	if (ret) {
+ 		dev_err(priv->dev, "Failed to init HDMI encoder: %d\n", ret);
+-		return ret;
++		goto err_put_node;
+ 	}
  
- static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
- {
--	int ret;
--
- 	if (dsi->enabled)
- 		return;
+ 	meson_encoder_hdmi->encoder.possible_crtcs = BIT(0);
+@@ -393,7 +394,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+ 	if (ret) {
+ 		dev_err(priv->dev, "Failed to attach bridge: %d\n", ret);
+-		return ret;
++		goto err_put_node;
+ 	}
  
--	ret = mtk_dsi_poweron(dsi);
--	if (ret < 0) {
--		DRM_ERROR("failed to power on dsi\n");
--		return;
--	}
--
- 	mtk_dsi_set_mode(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 1);
+ 	/* Initialize & attach Bridge Connector */
+@@ -401,7 +402,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 							&meson_encoder_hdmi->encoder);
+ 	if (IS_ERR(meson_encoder_hdmi->connector)) {
+ 		dev_err(priv->dev, "Unable to create HDMI bridge connector\n");
+-		return PTR_ERR(meson_encoder_hdmi->connector);
++		ret = PTR_ERR(meson_encoder_hdmi->connector);
++		goto err_put_node;
+ 	}
+ 	drm_connector_attach_encoder(meson_encoder_hdmi->connector,
+ 				     &meson_encoder_hdmi->encoder);
+@@ -428,6 +430,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 	meson_encoder_hdmi->connector->ycbcr_420_allowed = true;
  
-@@ -727,7 +709,16 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
- 	if (!dsi->enabled)
- 		return;
+ 	pdev = of_find_device_by_node(remote);
++	of_node_put(remote);
+ 	if (pdev) {
+ 		struct cec_connector_info conn_info;
+ 		struct cec_notifier *notifier;
+@@ -446,4 +449,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 	dev_dbg(priv->dev, "HDMI encoder initialized\n");
  
--	mtk_dsi_poweroff(dsi);
-+	/*
-+	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
-+	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
-+	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
-+	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
-+	 * after dsi is fully set.
-+	 */
-+	mtk_dsi_stop(dsi);
+ 	return 0;
 +
-+	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 
- 	dsi->enabled = false;
++err_put_node:
++	of_node_put(remote);
++	return ret;
  }
-@@ -764,13 +755,37 @@ static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
-+	if (dsi->refcount == 0)
-+		return;
-+
- 	mtk_output_dsi_enable(dsi);
- }
- 
-+static void mtk_dsi_bridge_atomic_pre_enable(struct drm_bridge *bridge,
-+					     struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+	int ret;
-+
-+	ret = mtk_dsi_poweron(dsi);
-+	if (ret < 0)
-+		DRM_ERROR("failed to power on dsi\n");
-+}
-+
-+static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge *bridge,
-+					       struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+
-+	mtk_dsi_poweroff(dsi);
-+}
-+
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
- 	.atomic_disable = mtk_dsi_bridge_atomic_disable,
- 	.atomic_enable = mtk_dsi_bridge_atomic_enable,
-+	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
-+	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
- 	.mode_set = mtk_dsi_bridge_mode_set,
- };
- 
 -- 
 2.35.1
 
