@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A59CDC32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1CCC28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347919AbiHOU0t (ORCPT
+        id S1347748AbiHOU0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        Mon, 15 Aug 2022 16:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347195AbiHOUWC (ORCPT
+        with ESMTP id S1346519AbiHOUUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:22:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A009927D;
-        Mon, 15 Aug 2022 12:01:22 -0700 (PDT)
+        Mon, 15 Aug 2022 16:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E2997D50;
+        Mon, 15 Aug 2022 12:00:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D36B3B810A2;
-        Mon, 15 Aug 2022 19:01:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E207C433D6;
-        Mon, 15 Aug 2022 19:01:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 963136122B;
+        Mon, 15 Aug 2022 19:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E544C433D7;
+        Mon, 15 Aug 2022 19:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590079;
-        bh=iyij/7Rda9GzVqk1fhaYf1o1xG310pgMr6a/apnunPY=;
+        s=korg; t=1660590053;
+        bh=q6objEWJqQalE6qrNAA/Zzot4pb3FshImXwWMJLY6gM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0BDDDgIMCX4bD7Hd3tLgE3JZX+x++HnOO6eCDrdgrHh4lhbnf3NglVOqXPqvaqsnE
-         YOY1N/LjwQjb5idN5GckaVIAACAEtcT+VAAXhX/PWo441nzZLJFlojJobgU/aGdxQ2
-         ZucGaB1PYJ44Qj/ndEQoZgI1yXL3xhhGzEA9Zc/Y=
+        b=ze2Y664KhBYGW1JCZoaNYQDpX/SUNK4+1LXNat03vUJvBVtraE/KVJVLbG84YoWc8
+         csSAS/UwZvbXt7vxixYIcLVP7OZq5v7Ps2lh7Iw1CaNqXyoDGl80V276Li9eqBU5zg
+         +NNzCB8JHfhUBK0C0AVyHZ/JR87wSAaJ3W17vE2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0145/1095] genirq: GENERIC_IRQ_IPI depends on SMP
-Date:   Mon, 15 Aug 2022 19:52:24 +0200
-Message-Id: <20220815180435.590938208@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH 5.18 0128/1095] usb: dwc3: gadget: refactor dwc3_repare_one_trb
+Date:   Mon, 15 Aug 2022 19:52:07 +0200
+Message-Id: <20220815180434.882377454@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,51 +49,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
+commit 23385cec5f354794dadced7f28c31da7ae3eb54c upstream.
 
-The generic IPI code depends on the IRQ affinity mask being allocated
-and initialized. This will not be the case if SMP is disabled. Fix up
-the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
+The function __dwc3_prepare_one_trb has many parameters. Since it is
+only used in dwc3_prepare_one_trb there is no point in keeping the
+function. We merge both functions and get rid of the big list of
+parameters.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 40d829fb2ec6 ("usb: dwc3: gadget: Correct ISOC DATA PIDs for short packets")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20220704141812.1532306-2-m.grzeschik@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/Kconfig | 2 +-
- kernel/irq/Kconfig      | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/usb/dwc3/gadget.c |   92 ++++++++++++++++++++--------------------------
+ 1 file changed, 40 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index d43d25a411dd..1af26c409cb1 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -177,7 +177,7 @@ config MADERA_IRQ
- config IRQ_MIPS_CPU
- 	bool
- 	select GENERIC_IRQ_CHIP
--	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
-+	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
- 	select IRQ_DOMAIN
- 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -1181,17 +1181,49 @@ static u32 dwc3_calc_trbs_left(struct dw
+ 	return trbs_left;
+ }
  
-diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-index 10929eda9825..fc760d064a65 100644
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
- # Generic IRQ IPI support
- config GENERIC_IRQ_IPI
- 	bool
-+	depends on SMP
- 	select IRQ_DOMAIN_HIERARCHY
+-static void __dwc3_prepare_one_trb(struct dwc3_ep *dep, struct dwc3_trb *trb,
+-		dma_addr_t dma, unsigned int length, unsigned int chain,
+-		unsigned int node, unsigned int stream_id,
+-		unsigned int short_not_ok, unsigned int no_interrupt,
+-		unsigned int is_last, bool must_interrupt)
++/**
++ * dwc3_prepare_one_trb - setup one TRB from one request
++ * @dep: endpoint for which this request is prepared
++ * @req: dwc3_request pointer
++ * @trb_length: buffer size of the TRB
++ * @chain: should this TRB be chained to the next?
++ * @node: only for isochronous endpoints. First TRB needs different type.
++ * @use_bounce_buffer: set to use bounce buffer
++ * @must_interrupt: set to interrupt on TRB completion
++ */
++static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
++		struct dwc3_request *req, unsigned int trb_length,
++		unsigned int chain, unsigned int node, bool use_bounce_buffer,
++		bool must_interrupt)
+ {
++	struct dwc3_trb		*trb;
++	dma_addr_t		dma;
++	unsigned int		stream_id = req->request.stream_id;
++	unsigned int		short_not_ok = req->request.short_not_ok;
++	unsigned int		no_interrupt = req->request.no_interrupt;
++	unsigned int		is_last = req->request.is_last;
+ 	struct dwc3		*dwc = dep->dwc;
+ 	struct usb_gadget	*gadget = dwc->gadget;
+ 	enum usb_device_speed	speed = gadget->speed;
  
- # Generic MSI interrupt support
--- 
-2.35.1
-
+-	trb->size = DWC3_TRB_SIZE_LENGTH(length);
++	if (use_bounce_buffer)
++		dma = dep->dwc->bounce_addr;
++	else if (req->request.num_sgs > 0)
++		dma = sg_dma_address(req->start_sg);
++	else
++		dma = req->request.dma;
++
++	trb = &dep->trb_pool[dep->trb_enqueue];
++
++	if (!req->trb) {
++		dwc3_gadget_move_started_request(req);
++		req->trb = trb;
++		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
++	}
++
++	req->num_trbs++;
++
++	trb->size = DWC3_TRB_SIZE_LENGTH(trb_length);
+ 	trb->bpl = lower_32_bits(dma);
+ 	trb->bph = upper_32_bits(dma);
+ 
+@@ -1231,10 +1263,10 @@ static void __dwc3_prepare_one_trb(struc
+ 				unsigned int mult = 2;
+ 				unsigned int maxp = usb_endpoint_maxp(ep->desc);
+ 
+-				if (length <= (2 * maxp))
++				if (trb_length <= (2 * maxp))
+ 					mult--;
+ 
+-				if (length <= maxp)
++				if (trb_length <= maxp)
+ 					mult--;
+ 
+ 				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
+@@ -1308,50 +1340,6 @@ static void __dwc3_prepare_one_trb(struc
+ 	trace_dwc3_prepare_trb(dep, trb);
+ }
+ 
+-/**
+- * dwc3_prepare_one_trb - setup one TRB from one request
+- * @dep: endpoint for which this request is prepared
+- * @req: dwc3_request pointer
+- * @trb_length: buffer size of the TRB
+- * @chain: should this TRB be chained to the next?
+- * @node: only for isochronous endpoints. First TRB needs different type.
+- * @use_bounce_buffer: set to use bounce buffer
+- * @must_interrupt: set to interrupt on TRB completion
+- */
+-static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+-		struct dwc3_request *req, unsigned int trb_length,
+-		unsigned int chain, unsigned int node, bool use_bounce_buffer,
+-		bool must_interrupt)
+-{
+-	struct dwc3_trb		*trb;
+-	dma_addr_t		dma;
+-	unsigned int		stream_id = req->request.stream_id;
+-	unsigned int		short_not_ok = req->request.short_not_ok;
+-	unsigned int		no_interrupt = req->request.no_interrupt;
+-	unsigned int		is_last = req->request.is_last;
+-
+-	if (use_bounce_buffer)
+-		dma = dep->dwc->bounce_addr;
+-	else if (req->request.num_sgs > 0)
+-		dma = sg_dma_address(req->start_sg);
+-	else
+-		dma = req->request.dma;
+-
+-	trb = &dep->trb_pool[dep->trb_enqueue];
+-
+-	if (!req->trb) {
+-		dwc3_gadget_move_started_request(req);
+-		req->trb = trb;
+-		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
+-	}
+-
+-	req->num_trbs++;
+-
+-	__dwc3_prepare_one_trb(dep, trb, dma, trb_length, chain, node,
+-			stream_id, short_not_ok, no_interrupt, is_last,
+-			must_interrupt);
+-}
+-
+ static bool dwc3_needs_extra_trb(struct dwc3_ep *dep, struct dwc3_request *req)
+ {
+ 	unsigned int maxp = usb_endpoint_maxp(dep->endpoint.desc);
 
 
