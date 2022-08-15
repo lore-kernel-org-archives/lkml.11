@@ -2,57 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B56C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557FDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbiHOLCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 07:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
+        id S242554AbiHOLCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 07:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242389AbiHOLCd (ORCPT
+        with ESMTP id S242006AbiHOLCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 07:02:33 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8A2524BDC;
-        Mon, 15 Aug 2022 04:02:24 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 74E9480FB;
-        Mon, 15 Aug 2022 10:55:33 +0000 (UTC)
-Date:   Mon, 15 Aug 2022 14:02:22 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, naresh.kamboju@linaro.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 2/3] Revert "net: mdio: Delete usage of
- driver_deferred_probe_check_state()"
-Message-ID: <YvonvrjWsntpWic3@atomide.com>
-References: <20220727185012.3255200-1-saravanak@google.com>
- <20220727185012.3255200-3-saravanak@google.com>
+        Mon, 15 Aug 2022 07:02:34 -0400
+Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2698224095;
+        Mon, 15 Aug 2022 04:02:30 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id B8926BFC15;
+        Mon, 15 Aug 2022 13:02:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1660561347; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding; bh=di9qAzMMt0Uch8kPIvSmTcNkx/O6Br+B8hRhRF4lYGs=;
+        b=krvljssHeJ6ZlYsMS9O9emhoDvEBaxp0Pugx2H+g7k3oMNwALh8w3y+bwJ7C1rKPSbNl4m
+        +pJOuJwF+2LJ1FGq0/Ke1iuDLy0SpYnOExZD01nfhYM0Z8wfj1BGs/9Lamt2jtWnUuJljV
+        pVozdiXnlFSxcJlUQ3HpmNFXNdgP9lx37NhtZ+Sl/6IADT/9nkLa13Gl0Q4PlOgPIz4qo5
+        +k89kX7ekkge0zBDegRb2rPx2dDUVfXM1XQbaeFccdWoOKNVkXkMaBpmFaZ5OQNyWEVub1
+        4bRl1TvcDkYETHiou+xZ5rC5FcSsDtxdKXPyuojPNPvP3RbiGn6HSZIo9Cyduw==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v3 0/8] arm64: dts: imx8mm-kontron: Improvements and OSM board support
+Date:   Mon, 15 Aug 2022 13:01:23 +0200
+Message-Id: <20220815110134.49683-1-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727185012.3255200-3-saravanak@google.com>
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> This reverts commit f8217275b57aa48d98cc42051c2aac34152718d6.
-> 
-> There are a few more issues to fix that have been reported in the thread
-> for the original series [1]. We'll need to fix those before this will
-> work. So, revert it for now.
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Reviewed-by: Tony Lindgren <tony@atomide.com>
+This set contains a few improvements for the imx8mm-kontron devicetrees
+(patch 3-7) and support for a new SoM (patch 8, including baseboard) that
+complies to the Open Standard Module (OSM) 1.0 hardware specification, size S
+(https://sget.org/standards/osm).
+
+It also includes binding changes in patch 1 and 2.
+
+Changes in v3:
+* drop patch for 2 which was applied separately
+* rebase on v6.0-rc1
+* rename compatibles and file names
+
+Changes in v2:
+* move binding changes to beginning of patchset
+* Allow arbitrary regulator names in PCA9450 bindings
+* Use voltage rail names from schematic for PMIC regulator-names
+* Add SPI NOR partition layout to devicetree
+* Remove unneeded header include
+* Add tags
+
+Frieder Schrempf (8):
+  dt-bindings: arm: fsl: Rename compatibles for Kontron i.MX8MM
+    SoM/board
+  dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
+  arm64: dts: imx8mm-kontron: Adjust compatibles, file names and model
+    strings
+  arm64: dts: imx8mm-kontron: Use the VSELECT signal to switch SD card
+    IO voltage
+  arm64: dts: imx8mm-kontron: Remove low DDRC operating point
+  arm64: dts: imx8mm-kontron: Use voltage rail names from schematic for
+    PMIC regulator-names
+  arm64: dts: imx8mm-kontron: Add SPI NOR partition layout
+  arm64: dts: Add support for Kontron SL/BL i.MX8MM OSM-S
+
+ .../devicetree/bindings/arm/fsl.yaml          |  13 +-
+ arch/arm64/boot/dts/freescale/Makefile        |   3 +-
+ .../dts/freescale/imx8mm-kontron-bl-osm-s.dts | 376 ++++++++++++++++++
+ ...tron-n801x-s.dts => imx8mm-kontron-bl.dts} |   7 +-
+ .../dts/freescale/imx8mm-kontron-osm-s.dtsi   | 330 +++++++++++++++
+ ...-n801x-som.dtsi => imx8mm-kontron-sl.dtsi} |  53 ++-
+ 6 files changed, 757 insertions(+), 25 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-bl-osm-s.dts
+ rename arch/arm64/boot/dts/freescale/{imx8mm-kontron-n801x-s.dts => imx8mm-kontron-bl.dts} (96%)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-osm-s.dtsi
+ rename arch/arm64/boot/dts/freescale/{imx8mm-kontron-n801x-som.dtsi => imx8mm-kontron-sl.dtsi} (87%)
+
+-- 
+2.37.1
+
