@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E5FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D479C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348401AbiHOWaF (ORCPT
+        id S1348620AbiHOWaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        Mon, 15 Aug 2022 18:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348287AbiHOWYv (ORCPT
+        with ESMTP id S1347966AbiHOWZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:24:51 -0400
+        Mon, 15 Aug 2022 18:25:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63759125D73;
-        Mon, 15 Aug 2022 12:44:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B95126946;
+        Mon, 15 Aug 2022 12:44:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F724B80EAB;
-        Mon, 15 Aug 2022 19:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E440CC433C1;
-        Mon, 15 Aug 2022 19:44:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA3B5B80EA9;
+        Mon, 15 Aug 2022 19:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B4C2C433C1;
+        Mon, 15 Aug 2022 19:44:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592658;
-        bh=sWem4P/NPWh3xaM32TtZWFwItHMbGgeKGUW+8VSoeHg=;
+        s=korg; t=1660592661;
+        bh=XxpeVCfO3+MxzdRH2WGmrs76DgLei8x/GzgiJQYmjQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DBJSlpB9CC2IdruCRC4QImZVt3fYWMqmlbZlEXVph1i2w5f9FiffLSqCGMgJSVMnm
-         +tPjF2i6MDWYQJWSM4NcEqtySImO+nPPR6MUdi58q+fRx1Bv5jcIHA2rUrQKTRlk+c
-         TRJr/uVPN+mLmLYTWV64lrehVodWw6MCmwzpOXE0=
+        b=C10aj8u4JhRUr9S9IvkuJxGT8NGQzbW6TgotJdgfxXbzD7H5jSOC+sFHFc1i8OxoQ
+         t1JRStwI07GrP/IcG72u6ZvAbyVldQzq5nkn7wNpLiCAyaBNiRwQI3agx8TBrx8H+e
+         WoluwP2ozhD4c31S/k6PMsYk+pMT5IpG5njEK73g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 0144/1157] netfilter: nf_tables: disallow jump to implicit chain from set element
-Date:   Mon, 15 Aug 2022 19:51:40 +0200
-Message-Id: <20220815180445.395122647@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Peter Suti <peter.suti@streamunlimited.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0796/1095] staging: fbtft: core: set smem_len before fb_deferred_io_init call
+Date:   Mon, 15 Aug 2022 20:03:15 +0200
+Message-Id: <20220815180502.179602518@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,61 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Peter Suti <peter.suti@streamunlimited.com>
 
-commit f323ef3a0d49e147365284bc1f02212e617b7f09 upstream.
+[ Upstream commit 81e878887ff82a7dd42f22951391069a5d520627 ]
 
-Extend struct nft_data_desc to add a flag field that specifies
-nft_data_init() is being called for set element data.
+The fbtft_framebuffer_alloc() calls fb_deferred_io_init() before
+initializing info->fix.smem_len.  It is set to zero by the
+framebuffer_alloc() function.  It will trigger a WARN_ON() at the
+start of fb_deferred_io_init() and the function will not do anything.
 
-Use it to disallow jump to implicit chain from set element, only jump
-to chain via immediate expression is allowed.
-
-Fixes: d0e2c7de92c7 ("netfilter: nf_tables: add NFT_CHAIN_BINDING")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 856082f021a2 ("fbdev: defio: fix the pagelist corruption")
+Signed-off-by: Peter Suti <peter.suti@streamunlimited.com>
+Link: https://lore.kernel.org/r/20220727073550.1491126-1-peter.suti@streamunlimited.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_tables.h |    5 +++++
- net/netfilter/nf_tables_api.c     |    4 ++++
- 2 files changed, 9 insertions(+)
+ drivers/staging/fbtft/fbtft-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -206,10 +206,15 @@ struct nft_ctx {
- 	bool				report;
- };
+diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
+index 9c4d797e7ae4..4137c1a51e1b 100644
+--- a/drivers/staging/fbtft/fbtft-core.c
++++ b/drivers/staging/fbtft/fbtft-core.c
+@@ -656,7 +656,6 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+ 	fbdefio->delay =           HZ / fps;
+ 	fbdefio->sort_pagelist =   true;
+ 	fbdefio->deferred_io =     fbtft_deferred_io;
+-	fb_deferred_io_init(info);
  
-+enum nft_data_desc_flags {
-+	NFT_DATA_DESC_SETELEM	= (1 << 0),
-+};
-+
- struct nft_data_desc {
- 	enum nft_data_types		type;
- 	unsigned int			size;
- 	unsigned int			len;
-+	unsigned int			flags;
- };
+ 	snprintf(info->fix.id, sizeof(info->fix.id), "%s", dev->driver->name);
+ 	info->fix.type =           FB_TYPE_PACKED_PIXELS;
+@@ -667,6 +666,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+ 	info->fix.line_length =    width * bpp / 8;
+ 	info->fix.accel =          FB_ACCEL_NONE;
+ 	info->fix.smem_len =       vmem_size;
++	fb_deferred_io_init(info);
  
- int nft_data_init(const struct nft_ctx *ctx, struct nft_data *data,
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5226,6 +5226,7 @@ static int nft_setelem_parse_data(struct
- 	desc->type = dtype;
- 	desc->size = NFT_DATA_VALUE_MAXLEN;
- 	desc->len = set->dlen;
-+	desc->flags = NFT_DATA_DESC_SETELEM;
- 
- 	return nft_data_init(ctx, data, desc, attr);
- }
-@@ -9611,6 +9612,9 @@ static int nft_verdict_init(const struct
- 			return PTR_ERR(chain);
- 		if (nft_is_base_chain(chain))
- 			return -EOPNOTSUPP;
-+		if (desc->flags & NFT_DATA_DESC_SETELEM &&
-+		    chain->flags & NFT_CHAIN_BINDING)
-+			return -EINVAL;
- 
- 		chain->use++;
- 		data->verdict.chain = chain;
+ 	info->var.rotate =         pdata->rotate;
+ 	info->var.xres =           width;
+-- 
+2.35.1
+
 
 
