@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DEBC28B2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5CBC2BB41
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356699AbiHPAMJ (ORCPT
+        id S1357342AbiHPANX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
+        Mon, 15 Aug 2022 20:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356647AbiHPACn (ORCPT
+        with ESMTP id S1357067AbiHPADi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:02:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F62169C6B;
-        Mon, 15 Aug 2022 13:24:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5048DB8119A;
-        Mon, 15 Aug 2022 20:24:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E701C433D7;
-        Mon, 15 Aug 2022 20:24:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595042;
-        bh=lsmzj/AJNxpW82MJ0n7UhPVJrrdtR21WmrkW9gz57Pg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1QaLmzDPas2Z4rNg2QvXsBVM8iIndZoVWKEQLB9eiUFmbL0ZLVmt2duyba0x6P0PE
-         AiIOR03//2e+oSYwRHOKuKfIqarX5SUCmElmrP0HdxwTWPDFQLWpQ4sqhX/uEga1zC
-         bNfJrffK9jHBN/unG/5Lu5etTCXOlw0uELsb1Ups=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0638/1157] iio: adc: ad7266: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 19:59:54 +0200
-Message-Id: <20220815180505.228977864@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 20:03:38 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C165716E620
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:25:42 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-11be650aaccso1978820fac.6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:25:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=4dtzTFOnMPiWvS9NLNA0mqLFC7hsFAHAm90iIPVobYc=;
+        b=SeFZ79e0Ib2qe8lWGXWbtJnO1uoeTkXxuyOheUHiRumZOEHdQ89jRkc6vdvRF88xO2
+         0Q4WYBhfDHleGxaz7VEEdJub6/39aUSVuRtjj/iz4GfWVibrycWLP9p7CE8N1TJdzl4d
+         qhgEgwEFHJndse9bYsrgVCgE+K0BCAgLTLlWW1gzXtQ8bmaF20ywDRNiRWy1bZFRPsHG
+         0toLbWcpLKKazTOTp3TvkQW/FdV3lFfIE4wYErDaXHpUgSfYGrDAfhCBLMZv/v3Iv0cM
+         ziNo0d3c97R3XwyxAKdIQSO4xdgM/1+2YjQcXlnBn8tkfDubyPNVAMyQioPLNvin9y3g
+         UWKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=4dtzTFOnMPiWvS9NLNA0mqLFC7hsFAHAm90iIPVobYc=;
+        b=Z8S67mU6DmrKmNhsbLsqpPB0PRUpL4y9mFJtYC++5QL+2csYwbYvYjHfgm95uHHxDW
+         JT8CzN1dhJjddNdgPpBDxoQF8Eu5RYg2sryvwsyACEQzBOEQjLf8fMNvOnxnUwkp1k9G
+         9EOXUmA+AHos6bbdjll3qNmHStbUn6/v8PMW8moyJ7eIjyKFX2LJFN+Uj/tREjBLqSYH
+         SAqfrgNV4ZZR/3jeyrshSg9K+8NLeppwTWNKsoEmqvo0yv11JhsGvUKbIoGyVZ9kAq6b
+         AfInlKUynvJkl+AzUWUEZ2VndNITL4VI8PRus8eAKm3Ebpq2ns1+P+0OgGr3iaJTYDqW
+         69ww==
+X-Gm-Message-State: ACgBeo1oX37gH9TXYRcW/kZHoDKVB6zdinifkqiA8/jLgm/SdWrZy8cT
+        EUPaxDux/wMzhNt+NtHH8JoPafuc8VtC1PJ7hAA=
+X-Google-Smtp-Source: AA6agR6bJkCopn47V4nY1QH2wV548mliE5H5Sqfe/Al4hqBtReFyVjXia6hjtMitXPe9oKY4lE/EfAxJW9M+RkLGNrg=
+X-Received: by 2002:a05:6870:e98b:b0:10d:fe5c:f818 with SMTP id
+ r11-20020a056870e98b00b0010dfe5cf818mr7637447oao.106.1660595141685; Mon, 15
+ Aug 2022 13:25:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220813153421.4754-1-tangmin@cdjrlc.com>
+In-Reply-To: <20220813153421.4754-1-tangmin@cdjrlc.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 15 Aug 2022 16:25:30 -0400
+Message-ID: <CADnq5_O0CD0s0=Rf7+c4FDg_Gte7NPdh7OVrBda=Wq6mDOzz4g@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: Unneeded semicolon
+To:     min tang <tangmin@cdjrlc.com>
+Cc:     airlied@linux.ie, daniel@ffwll.ch, Charlene.Liu@amd.com,
+        sunpeng.li@amd.com, qingqing.zhuo@amd.com,
+        Rodrigo.Siqueira@amd.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Applied.  Thanks!
 
-[ Upstream commit b990cdfe7536a8da7e134d516350402981300016 ]
-
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
-
-Update the comment to reflect that DMA safety 'may' require separate
-cachelines.
-
-Fixes: 54e018da3141 ("iio:ad7266: Mark transfer buffer as __be16")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-10-jic23@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/adc/ad7266.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index f20d39f0bc01..468c2656d2be 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -37,7 +37,7 @@ struct ad7266_state {
- 	struct gpio_desc	*gpios[3];
- 
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 * The buffer needs to be large enough to hold two samples (4 bytes) and
- 	 * the naturally aligned timestamp (8 bytes).
-@@ -45,7 +45,7 @@ struct ad7266_state {
- 	struct {
- 		__be16 sample[2];
- 		s64 timestamp;
--	} data ____cacheline_aligned;
-+	} data __aligned(IIO_DMA_MINALIGN);
- };
- 
- static int ad7266_wakeup(struct ad7266_state *st)
--- 
-2.35.1
-
-
-
+On Sat, Aug 13, 2022 at 11:35 AM min tang <tangmin@cdjrlc.com> wrote:
+>
+> There is no semicolon after '}' in line 510.
+>
+> Signed-off-by: min tang <tangmin@cdjrlc.com>
+> ---
+>  drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+> index 27501b735a9c..c87cf8771c6d 100644
+> --- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+> +++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+> @@ -505,7 +505,7 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
+>                 bw_params->clk_table.entries[i].dispclk_mhz = clock_table->DispClocks[i];
+>                 bw_params->clk_table.entries[i].dppclk_mhz = clock_table->DppClocks[i];
+>                 bw_params->clk_table.entries[i].wck_ratio = 1;
+> -       };
+> +       }
+>
+>         /* Make sure to include at least one entry and highest pstate */
+>         if (max_pstate != min_pstate || i == 0) {
+> --
+> 2.17.1
+>
