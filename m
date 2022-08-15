@@ -2,90 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474C4C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC78C48BE4
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244293AbiHOSur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S244425AbiHOSvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243942AbiHOSqI (ORCPT
+        with ESMTP id S244090AbiHOSqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:46:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849283135F;
-        Mon, 15 Aug 2022 11:27:53 -0700 (PDT)
+        Mon, 15 Aug 2022 14:46:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1A1402F7
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C4160EEB;
-        Mon, 15 Aug 2022 18:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D1FC433D6;
-        Mon, 15 Aug 2022 18:27:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588072;
-        bh=r3gFHJXvMQTsie8xZMIS5wiBAkPF8wfD8WAJ2H1V96E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KT/kHU47yC9mC6wAz4WfoMX2LSvUvs5aiRI05ObHGS4VVD5C0IHKxhYHdNS+Rj87K
-         K8BoJGDkBlVtUg/nD6xKsCUdRSlMDoKvePqGAwvZP/FQaM08gLpNFxYhp8EMkuxoj9
-         XR3k+kSwgGfdfSM1M9qEbbgOwop2+RlFXvuZiL6c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 285/779] test_bpf: fix incorrect netdev features
-Date:   Mon, 15 Aug 2022 19:58:49 +0200
-Message-Id: <20220815180349.484552952@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EA2960EEB
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 18:28:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3F4C433C1;
+        Mon, 15 Aug 2022 18:28:04 +0000 (UTC)
+Date:   Mon, 15 Aug 2022 14:28:10 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Kent Overstreet <kent.overstreet@linux.dev>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: [PATCH 07/11] tracing: trace_events_synth: Convert to printbuf
+Message-ID: <20220815142810.3f4e03a6@gandalf.local.home>
+In-Reply-To: <20220815175830.pndfli32u5lfa4ww@moria.home.lan>
+References: <20220815172613.621627-1-kent.overstreet@linux.dev>
+        <20220815172613.621627-8-kent.overstreet@linux.dev>
+        <20220815134314.32f3d3fc@gandalf.local.home>
+        <20220815175830.pndfli32u5lfa4ww@moria.home.lan>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+On Mon, 15 Aug 2022 13:58:30 -0400
+Kent Overstreet <kent.overstreet@linux.dev> wrote:
 
-[ Upstream commit 9676feccacdb0571791c88b23e3b7ac4e7c9c457 ]
+> You specified the other tracing patch, you did not specify this one.
 
-The prototype of .features is netdev_features_t, it should use
-NETIF_F_LLTX and NETIF_F_HW_VLAN_STAG_TX, not NETIF_F_LLTX_BIT
-and NETIF_F_HW_VLAN_STAG_TX_BIT.
+I said: "As I said. Feel free to move seq_buf.c back into the tracing directory (but
+         still need to keep seq_buf.h in include/linux), and feel free to convert
+         all the other users besides tracing, to printbuf."
 
-Fixes: cf204a718357 ("bpf, testing: Introduce 'gso_linear_no_head_frag' skb_segment test")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/r/20220622135002.8263-1-shenjian15@huawei.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- lib/test_bpf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This is one of the tracing patches.
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 68d125b409f2..84f5dd3b0fc7 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -8890,9 +8890,9 @@ static struct skb_segment_test skb_segment_tests[] __initconst = {
- 		.build_skb = build_test_skb_linear_no_head_frag,
- 		.features = NETIF_F_SG | NETIF_F_FRAGLIST |
- 			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_GSO |
--			    NETIF_F_LLTX_BIT | NETIF_F_GRO |
-+			    NETIF_F_LLTX | NETIF_F_GRO |
- 			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
--			    NETIF_F_HW_VLAN_STAG_TX_BIT
-+			    NETIF_F_HW_VLAN_STAG_TX
- 	}
- };
- 
--- 
-2.35.1
+> 
+> Andrew, I just reran the tracing tests with this patch dropped - you can just
+> drop it, no other fixups are required.
 
+Thanks,
 
-
+-- Steve
