@@ -2,204 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C35C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBC7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245141AbiHOTdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
+        id S245204AbiHOTd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344918AbiHOT12 (ORCPT
+        with ESMTP id S1344909AbiHOT11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:27:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D8E5B78C;
-        Mon, 15 Aug 2022 11:43:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45524B81084;
-        Mon, 15 Aug 2022 18:43:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE3AC433D6;
-        Mon, 15 Aug 2022 18:43:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588995;
-        bh=pJnMWDnMzy10rYH7E792Cl5WrTV1NQgSAUWHLyCQRbQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zpzEUYV63E6u7PDHNdQscTVoeo/bmVuc8Zd/4lLqqLgcaTiFC+seYeWQTJ8OMP2jz
-         KUHOBxrUf1PAGAVnABD/Wsl0LodtBkgeK0fLezgKjetRH4WMSUHzW1qHamssASdGYI
-         k272xNP9El/pgGLSOQ2SUtzC9yEJJswCnOWVAiAc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 580/779] powerpc/perf: Optimize clearing the pending PMI and remove WARN_ON for PMI check in power_pmu_disable
-Date:   Mon, 15 Aug 2022 20:03:44 +0200
-Message-Id: <20220815180402.130977064@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 15:27:27 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820655B789
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:43:17 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id 130so7043966pfy.6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:43:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=EU6K+sVa6W0a7O9upd2Yf0LoGVDPysQI+lhW2bpO+II=;
+        b=Ghqf4iMDV+Aih0e2T3tonmRVv6/jPS7ebwaApTEj1IOUWhtSugxx7jwCkxykQMVM3v
+         N9LYTzHfrRo30hcVuUKtq1bxWF0QDn8HeTRVGJSIkH6/mB8tEVhFLPhYjhodXmBUrKRv
+         HDlhPAyTqAeWInnHnZqT4B1sa1asj9kV/jTBTO7SpwpIi5JBGUr9cTB16lSqWu4VhMcD
+         cJZpJRZ/YIIcAAsoVbyVv3yMagfzipBqfoAwM2ASJuELGhIQh1YGyFYj3alWsd3Iib6T
+         qJDGGnAPaugy6XbPEqzwKiFizWIsMBVpu2kjiKVcZOgIcHBqEPv4wvJoMxWC3sDnjzJV
+         etSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=EU6K+sVa6W0a7O9upd2Yf0LoGVDPysQI+lhW2bpO+II=;
+        b=HYcLpKee27QxnE6M+gN4pHoSBnlf/wgnmw/D5+Ef7+0U8/zTnUwzTbm65pS8OJ2vpx
+         TbMRo+ab0uFeVwL0Z+L13sYVs1uZLDJNFt36guVeitdfcaCX6EFLypJjyrbB7p8Dl7iK
+         Pzrpc5cgG4Y6fPz2U2/Kn/zm6gXJ/45svFdHq9M+4gWOZjP2UZ3LaUOmW7Y1fn+zzsC0
+         4To95LKBzM5Lx2/aa8y+n9hTbOKTHuGq9Kp8Vgquo9jFY3goAiO9QMpS67G761Aap4lB
+         wfxKLto5QMmjDfgE+WjbJDVmZ9Psh/FP/UOKsA9Wz0mL4g9uVQ9olXsQbX/vhbWMB/bk
+         cWYg==
+X-Gm-Message-State: ACgBeo1bIiipy+As677WmetnDaVkF2YTfBLq4B00dUWvp2D6g3lt3LGa
+        f7fx/IjZtHsC4JeoyGvOgrGLRA==
+X-Google-Smtp-Source: AA6agR7kVTsxhemScH4L4843BSFTf80xCn10CgpGE2t1gEfEaBXMn3iB5F9Ga4gRwQNHXleei9jwcw==
+X-Received: by 2002:a05:6a00:e85:b0:52b:5db8:f3df with SMTP id bo5-20020a056a000e8500b0052b5db8f3dfmr17746780pfb.14.1660588996681;
+        Mon, 15 Aug 2022 11:43:16 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:2e7e:eaac:df8:6465])
+        by smtp.gmail.com with ESMTPSA id f5-20020a170902ce8500b0016ee3d7220esm7344480plg.24.2022.08.15.11.43.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 11:43:15 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:43:10 -0700
+From:   Isaac Manjarres <isaacmanjarres@google.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@armlinux.org.uk, kernel-team@android.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] amba: Remove deferred device addition
+Message-ID: <YvqTvuqSll30Rv2k@google.com>
+References: <1196e002-c07d-44fd-b07a-aa5ae446ea0b@roeck-us.net>
+ <YvQnbq2RhMOElQE3@google.com>
+ <225747de-4348-58b3-19be-8b14356ab3a0@roeck-us.net>
+ <CAGETcx895=9wPF+jnUfiycJ0k8d1S3BA0HLz42nCegtMBeo3LQ@mail.gmail.com>
+ <971799be-8c15-fc81-ec71-bbca6483207d@roeck-us.net>
+ <YvUzpSAQDktDPRbR@google.com>
+ <YvVWEIn8veGL9Psa@google.com>
+ <20220811195234.GA4018948@roeck-us.net>
+ <YvXhJRlHN9OAIA5l@google.com>
+ <1c20eedf-4fa9-9cb1-b232-3bc490c1be7c@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1c20eedf-4fa9-9cb1-b232-3bc490c1be7c@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+On Fri, Aug 12, 2022 at 08:30:46AM -0700, Guenter Roeck wrote:
+> After more testing: the changes above result in qemu sx1 boot failures.
+> There is no crash, boot just hangs.
+> 
+> qemu command line:
+> 
+> qemu-system-arm -M sx1 -kernel arch/arm/boot/zImage -no-reboot \
+> 	-initrd rootfs-armv4.cpio \
+> 	--append "rdinit=/sbin/init console=ttyS0,115200 earlycon=uart8250,mmio32,0xfffb0000,115200n8" \
+> 	-nographic -monitor null -serial stdio
+> 
+> with configuration from
+> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm/qemu_sx1_defconfig
+> and root file system from
+> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm/rootfs-armv4.cpio.gz
+> 
+> This is with your other patch applied.
+> 
+> Guenter
 
-[ Upstream commit 890005a7d98f7452cfe86dcfb2aeeb7df01132ce ]
+Thanks for testing out the patch and sharing the qemu commandline you
+used for the new issue. I was able to reproduce it on my end :) Can you
+please try the following patch instead of the second patch I gave you?
+This worked for me on sx1 and versatileab:
 
-commit 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear
-pending PMI before resetting an overflown PMC") added a new
-function "pmi_irq_pending" in hw_irq.h. This function is to check
-if there is a PMI marked as pending in Paca (PACA_IRQ_PMI).This is
-used in power_pmu_disable in a WARN_ON. The intention here is to
-provide a warning if there is PMI pending, but no counter is found
-overflown.
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 32b0e0b930c1..110a535648d2 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -209,6 +209,7 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+        struct amba_device *pcdev = to_amba_device(dev);
+        struct amba_driver *pcdrv = to_amba_driver(drv);
 
-During some of the perf runs, below warning is hit:
++       mutex_lock(&pcdev->periphid_lock);
+        if (!pcdev->periphid) {
+                int ret = amba_read_periphid(pcdev);
 
-WARNING: CPU: 36 PID: 0 at arch/powerpc/perf/core-book3s.c:1332 power_pmu_disable+0x25c/0x2c0
- Modules linked in:
- -----
+@@ -218,11 +219,14 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+                 * permanent failure in reading pid and cid, simply map it to
+                 * -EPROBE_DEFER.
+                 */
+-               if (ret)
++               if (ret) {
++                       mutex_unlock(&pcdev->periphid_lock);
+                        return -EPROBE_DEFER;
++               }
+                dev_set_uevent_suppress(dev, false);
+                kobject_uevent(&dev->kobj, KOBJ_ADD);
+        }
++       mutex_unlock(&pcdev->periphid_lock);
 
- NIP [c000000000141c3c] power_pmu_disable+0x25c/0x2c0
- LR [c000000000141c8c] power_pmu_disable+0x2ac/0x2c0
- Call Trace:
- [c000000baffcfb90] [c000000000141c8c] power_pmu_disable+0x2ac/0x2c0 (unreliable)
- [c000000baffcfc10] [c0000000003e2f8c] perf_pmu_disable+0x4c/0x60
- [c000000baffcfc30] [c0000000003e3344] group_sched_out.part.124+0x44/0x100
- [c000000baffcfc80] [c0000000003e353c] __perf_event_disable+0x13c/0x240
- [c000000baffcfcd0] [c0000000003dd334] event_function+0xc4/0x140
- [c000000baffcfd20] [c0000000003d855c] remote_function+0x7c/0xa0
- [c000000baffcfd50] [c00000000026c394] flush_smp_call_function_queue+0xd4/0x300
- [c000000baffcfde0] [c000000000065b24] smp_ipi_demux_relaxed+0xa4/0x100
- [c000000baffcfe20] [c0000000000cb2b0] xive_muxed_ipi_action+0x20/0x40
- [c000000baffcfe40] [c000000000207c3c] __handle_irq_event_percpu+0x8c/0x250
- [c000000baffcfee0] [c000000000207e2c] handle_irq_event_percpu+0x2c/0xa0
- [c000000baffcff10] [c000000000210a04] handle_percpu_irq+0x84/0xc0
- [c000000baffcff40] [c000000000205f14] generic_handle_irq+0x54/0x80
- [c000000baffcff60] [c000000000015740] __do_irq+0x90/0x1d0
- [c000000baffcff90] [c000000000016990] __do_IRQ+0xc0/0x140
- [c0000009732f3940] [c000000bafceaca8] 0xc000000bafceaca8
- [c0000009732f39d0] [c000000000016b78] do_IRQ+0x168/0x1c0
- [c0000009732f3a00] [c0000000000090c8] hardware_interrupt_common_virt+0x218/0x220
+        /* When driver_override is set, only bind to the matching driver */
+        if (pcdev->driver_override)
+@@ -532,6 +536,7 @@ static void amba_device_release(struct device *dev)
 
-This means that there is no PMC overflown among the active events
-in the PMU, but there is a PMU pending in Paca. The function
-"any_pmc_overflown" checks the PMCs on active events in
-cpuhw->n_events. Code snippet:
+        if (d->res.parent)
+                release_resource(&d->res);
++       mutex_destroy(&d->periphid_lock);
+        kfree(d);
+ }
 
-<<>>
-if (any_pmc_overflown(cpuhw))
- 	clear_pmi_irq_pending();
- else
- 	WARN_ON(pmi_irq_pending());
-<<>>
+@@ -584,6 +589,7 @@ static void amba_device_initialize(struct amba_device *dev, const char *name)
+        dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
+        dev->dev.dma_parms = &dev->dma_parms;
+        dev->res.name = dev_name(&dev->dev);
++       mutex_init(&dev->periphid_lock);
+ }
 
-Here the PMC overflown is not from active event. Example: When we do
-perf record, default cycles and instructions will be running on PMC6
-and PMC5 respectively. It could happen that overflowed event is currently
-not active and pending PMI is for the inactive event. Debug logs from
-trace_printk:
-
-<<>>
-any_pmc_overflown: idx is 5: pmc value is 0xd9a
-power_pmu_disable: PMC1: 0x0, PMC2: 0x0, PMC3: 0x0, PMC4: 0x0, PMC5: 0xd9a, PMC6: 0x80002011
-<<>>
-
-Here active PMC (from idx) is PMC5 , but overflown PMC is PMC6(0x80002011).
-When we handle PMI interrupt for such cases, if the PMC overflown is
-from inactive event, it will be ignored. Reference commit:
-commit bc09c219b2e6 ("powerpc/perf: Fix finding overflowed PMC in interrupt")
-
-Patch addresses two changes:
-1) Fix 1 : Removal of warning ( WARN_ON(pmi_irq_pending()); )
-   We were printing warning if no PMC is found overflown among active PMU
-   events, but PMI pending in PACA. But this could happen in cases where
-   PMC overflown is not in active PMC. An inactive event could have caused
-   the overflow. Hence the warning is not needed. To know pending PMI is
-   from an inactive event, we need to loop through all PMC's which will
-   cause more SPR reads via mfspr and increase in context switch. Also in
-   existing function: perf_event_interrupt, already we ignore PMI's
-   overflown when it is from an inactive PMC.
-
-2) Fix 2: optimization in clearing pending PMI.
-   Currently we check for any active PMC overflown before clearing PMI
-   pending in Paca. This is causing additional SPR read also. From point 1,
-   we know that if PMI pending in Paca from inactive cases, that is going
-   to be ignored during replay. Hence if there is pending PMI in Paca, just
-   clear it irrespective of PMC overflown or not.
-
-In summary, remove the any_pmc_overflown check entirely in
-power_pmu_disable. ie If there is a pending PMI in Paca, clear it, since
-we are in pmu_disable. There could be cases where PMI is pending because
-of inactive PMC ( which later when replayed also will get ignored ), so
-WARN_ON could give false warning. Hence removing it.
-
-Fixes: 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear pending PMI before resetting an overflown PMC")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220522142256.24699-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/perf/core-book3s.c | 35 ++++++++++++++-------------------
- 1 file changed, 15 insertions(+), 20 deletions(-)
-
-diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
-index e78de7050947..1078784b74c9 100644
---- a/arch/powerpc/perf/core-book3s.c
-+++ b/arch/powerpc/perf/core-book3s.c
-@@ -1320,27 +1320,22 @@ static void power_pmu_disable(struct pmu *pmu)
- 		 * a PMI happens during interrupt replay and perf counter
- 		 * values are cleared by PMU callbacks before replay.
- 		 *
--		 * If any PMC corresponding to the active PMU events are
--		 * overflown, disable the interrupt by clearing the paca
--		 * bit for PMI since we are disabling the PMU now.
--		 * Otherwise provide a warning if there is PMI pending, but
--		 * no counter is found overflown.
-+		 * Disable the interrupt by clearing the paca bit for PMI
-+		 * since we are disabling the PMU now. Otherwise provide a
-+		 * warning if there is PMI pending, but no counter is found
-+		 * overflown.
-+		 *
-+		 * Since power_pmu_disable runs under local_irq_save, it
-+		 * could happen that code hits a PMC overflow without PMI
-+		 * pending in paca. Hence only clear PMI pending if it was
-+		 * set.
-+		 *
-+		 * If a PMI is pending, then MSR[EE] must be disabled (because
-+		 * the masked PMI handler disabling EE). So it is safe to
-+		 * call clear_pmi_irq_pending().
- 		 */
--		if (any_pmc_overflown(cpuhw)) {
--			/*
--			 * Since power_pmu_disable runs under local_irq_save, it
--			 * could happen that code hits a PMC overflow without PMI
--			 * pending in paca. Hence only clear PMI pending if it was
--			 * set.
--			 *
--			 * If a PMI is pending, then MSR[EE] must be disabled (because
--			 * the masked PMI handler disabling EE). So it is safe to
--			 * call clear_pmi_irq_pending().
--			 */
--			if (pmi_irq_pending())
--				clear_pmi_irq_pending();
--		} else
--			WARN_ON(pmi_irq_pending());
-+		if (pmi_irq_pending())
-+			clear_pmi_irq_pending();
- 
- 		val = mmcra = cpuhw->mmcr.mmcra;
- 
--- 
-2.35.1
+ /**
+diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+index e94cdf235f1d..5001e14c5c06 100644
+--- a/include/linux/amba/bus.h
++++ b/include/linux/amba/bus.h
+@@ -67,6 +67,7 @@ struct amba_device {
+        struct clk              *pclk;
+        struct device_dma_parameters dma_parms;
+        unsigned int            periphid;
++       struct mutex            periphid_lock;
+        unsigned int            cid;
+        struct amba_cs_uci_id   uci;
+        unsigned int            irq[AMBA_NR_IRQS];
 
 
-
+Thanks,
+Isaac
