@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9547BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BD8C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244397AbiHPAs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
+        id S243292AbiHPAtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346635AbiHPApp (ORCPT
+        with ESMTP id S1346765AbiHPApr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:45 -0400
+        Mon, 15 Aug 2022 20:45:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D2EAED82;
-        Mon, 15 Aug 2022 13:42:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA5DAE9CC;
+        Mon, 15 Aug 2022 13:41:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C0361234;
-        Mon, 15 Aug 2022 20:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C15CC433D6;
-        Mon, 15 Aug 2022 20:42:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BC160F60;
+        Mon, 15 Aug 2022 20:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D947C433C1;
+        Mon, 15 Aug 2022 20:41:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596127;
-        bh=ELguIUk4SGcF73osMAg65DOO9y8WrYs9XvjG4oFTOso=;
+        s=korg; t=1660596062;
+        bh=f1yBoZdlxrrj+e56t5SpYyY3+I6Cwa8ohg4maem5XqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HP6yYHEaM0izOG7KQsfF3KJ8aPX9rrPf2r5zzUFdU4lbVwOZxJ/ZVm95yTgYtcLFi
-         YbD1X5mYph/HVVRB1fYtYs3fblbhb8j5iR5tMHKOQVYZomDqb60So4qacn+2BR8pIj
-         Wv9RjHwbPynpMofOCr9NQLS1IJmn3rOVjba61/UE=
+        b=hCg77N3uWRv3i5OGBIU+BlsJtnt8CkfmnVPoY9zWAnx8YkPnu6dexyO9UAD9PRY1C
+         Wf0oKfKJQtbOg88WtucKDrh8RwXXgkdBI49mAGkpRX1lZRAhYpnbWCTGysDBTyDsFp
+         5U6cQHWhBuAfLhOmRPTY6mkbW1LZdJ5pJEGuIp0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0982/1157] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
-Date:   Mon, 15 Aug 2022 20:05:38 +0200
-Message-Id: <20220815180519.024150803@linuxfoundation.org>
+Subject: [PATCH 5.19 0961/1157] MIPS: Fixed __debug_virt_addr_valid()
+Date:   Mon, 15 Aug 2022 20:05:17 +0200
+Message-Id: <20220815180518.081863333@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,35 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
+[ Upstream commit 8a2b456665d1e797123669581524cbb095fb003b ]
 
-find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
-So 'idx' should be tested with ">=" or the test can't match.
+It is permissible for kernel code to call virt_to_phys() against virtual
+addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
+types. Rewrite the test condition to ensure that the kernel virtual
+addresses are above PAGE_OFFSET which they must be, and below KSEG2
+where the non-linear mapping starts.
 
-Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mark Brown <broonie@kernel.org>
+For EVA, there is not much that we can do given the linear address range
+that is offered, so just return any virtual address as being valid.
+
+Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
+to be valid as well.
+
+Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/qdsp6/q6adm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/mm/physaddr.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
-index 72c5719f1d25..a0678e8cf20a 100644
---- a/sound/soc/qcom/qdsp6/q6adm.c
-+++ b/sound/soc/qcom/qdsp6/q6adm.c
-@@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
- 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
- 				  MAX_COPPS_PER_PORT);
+diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
+index a1ced5e44951..f9b8c85e9843 100644
+--- a/arch/mips/mm/physaddr.c
++++ b/arch/mips/mm/physaddr.c
+@@ -5,6 +5,7 @@
+ #include <linux/mmdebug.h>
+ #include <linux/mm.h>
  
--	if (idx > MAX_COPPS_PER_PORT)
-+	if (idx >= MAX_COPPS_PER_PORT)
- 		return ERR_PTR(-EBUSY);
++#include <asm/addrspace.h>
+ #include <asm/sections.h>
+ #include <asm/io.h>
+ #include <asm/page.h>
+@@ -12,15 +13,6 @@
  
- 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+ static inline bool __debug_virt_addr_valid(unsigned long x)
+ {
+-	/* high_memory does not get immediately defined, and there
+-	 * are early callers of __pa() against PAGE_OFFSET
+-	 */
+-	if (!high_memory && x >= PAGE_OFFSET)
+-		return true;
+-
+-	if (high_memory && x >= PAGE_OFFSET && x < (unsigned long)high_memory)
+-		return true;
+-
+ 	/*
+ 	 * MAX_DMA_ADDRESS is a virtual address that may not correspond to an
+ 	 * actual physical address. Enough code relies on
+@@ -30,7 +22,9 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
+ 	if (x == MAX_DMA_ADDRESS)
+ 		return true;
+ 
+-	return false;
++	return x >= PAGE_OFFSET && (KSEGX(x) < KSEG2 ||
++	       IS_ENABLED(CONFIG_EVA) ||
++	       !IS_ENABLED(CONFIG_HIGHMEM));
+ }
+ 
+ phys_addr_t __virt_to_phys(volatile const void *x)
 -- 
 2.35.1
 
