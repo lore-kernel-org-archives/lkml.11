@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED186C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E149C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349339AbiHOVpR (ORCPT
+        id S1349584AbiHOVpW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        Mon, 15 Aug 2022 17:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349533AbiHOVlW (ORCPT
+        with ESMTP id S1349559AbiHOVl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:41:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F08F5B04D;
-        Mon, 15 Aug 2022 12:29:06 -0700 (PDT)
+        Mon, 15 Aug 2022 17:41:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CAC5B7B1;
+        Mon, 15 Aug 2022 12:29:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3223B81120;
-        Mon, 15 Aug 2022 19:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A6DC4347C;
-        Mon, 15 Aug 2022 19:29:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71C6761120;
+        Mon, 15 Aug 2022 19:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F59C433C1;
+        Mon, 15 Aug 2022 19:29:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591743;
-        bh=OGgxQ17kbTAjlDXcvrJNKg7QpRLoW/u7knJvE6gaHwU=;
+        s=korg; t=1660591752;
+        bh=1zVo5EEaQatHXI3wYiQzTgBe1L4ws1B/mp02biI9KXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0lI1IQoHx4iUPADIDhmK/jr6+xptuv/cxpo5Ja9qJGWXV9czDWdlrgi7brp5st1Za
-         oU2m5URzACw2PWU3IqMn6mu/CdxPvpuT8CpW1F/MKzbxw6Iusglum2bX5zUzXnowR/
-         IyJk+6lJkE2qJeQ8KnQDi3CaPAtNxYkAceFp4Qtk=
+        b=I2byXRrT1hJJyNn8R+BE3wQWvI731WlrVgdittIgIlzBS2cRX8ME3fqreVLslX1mB
+         mVoNZy7lIU6/+vTNyuZhZjZxDbg6su3VHlr2HVt0rtt8YEpjB3K+VhWNN4wghTf7Pn
+         cIDeNRHOQ0J9MyEouTR1zI3FOPsLlSbDuDU9JYco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.19 0002/1157] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-Date:   Mon, 15 Aug 2022 19:49:18 +0200
-Message-Id: <20220815180439.556638580@linuxfoundation.org>
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Jacky Bai <ping.bai@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        Abel Vesa <abel.vesa@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0676/1095] clk: imx93: use adc_root as the parent clock of adc1
+Date:   Mon, 15 Aug 2022 20:01:15 +0200
+Message-Id: <20220815180457.344062796@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,82 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
+[ Upstream commit 18d6d8fe4f24938985844d52c481b86fcce9d102 ]
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+When debug, find after system boot up, all adc register operation
+will trigger system hang, this is because the internal adc ipg
+clock is gate off. In dts, only reference the IMX93_CLK_ADC1_GATE,
+which is adc1, no one touch the adc_root, so adc_root will be gate
+off automatically after system boot up.
 
-  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
-
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 24defbe194b6 ("clk: imx: add i.MX93 clk")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
+Link: https://lore.kernel.org/r/20220609132902.3504651-2-peng.fan@oss.nxp.com
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/boot/Makefile            |    2 +-
- arch/x86/boot/compressed/Makefile |    4 ++++
- arch/x86/entry/vdso/Makefile      |    2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/clk/imx/clk-imx93.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/boot/Makefile
-+++ b/arch/x86/boot/Makefile
-@@ -103,7 +103,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
- AFLAGS_header.o += -I$(objtree)/$(obj)
- $(obj)/header.o: $(obj)/zoffset.h
- 
--LDFLAGS_setup.elf	:= -m elf_i386 -T
-+LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
- $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
- 	$(call if_changed,ld)
- 
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -69,6 +69,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
- ifdef CONFIG_LD_ORPHAN_WARN
- LDFLAGS_vmlinux += --orphan-handling=warn
- endif
-+LDFLAGS_vmlinux += -z noexecstack
-+ifeq ($(CONFIG_LD_IS_BFD),y)
-+LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
-+endif
- LDFLAGS_vmlinux += -T
- 
- hostprogs	:= mkpiggy
---- a/arch/x86/entry/vdso/Makefile
-+++ b/arch/x86/entry/vdso/Makefile
-@@ -180,7 +180,7 @@ quiet_cmd_vdso = VDSO    $@
- 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
- 
- VDSO_LDFLAGS = -shared --hash-style=both --build-id=sha1 \
--	$(call ld-option, --eh-frame-hdr) -Bsymbolic
-+	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
- GCOV_PROFILE := n
- 
- quiet_cmd_vdso_and_check = VDSO    $@
+diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
+index edcc87661d1f..172cd56c9610 100644
+--- a/drivers/clk/imx/clk-imx93.c
++++ b/drivers/clk/imx/clk-imx93.c
+@@ -150,7 +150,7 @@ static const struct imx93_clk_ccgr {
+ 	{ IMX93_CLK_A55_GATE,		"a55",		"a55_root",		0x8000, },
+ 	/* M33 critical clk for system run */
+ 	{ IMX93_CLK_CM33_GATE,		"cm33",		"m33_root",		0x8040, CLK_IS_CRITICAL },
+-	{ IMX93_CLK_ADC1_GATE,		"adc1",		"osc_24m",		0x82c0, },
++	{ IMX93_CLK_ADC1_GATE,		"adc1",		"adc_root",		0x82c0, },
+ 	{ IMX93_CLK_WDOG1_GATE,		"wdog1",	"osc_24m",		0x8300, },
+ 	{ IMX93_CLK_WDOG2_GATE,		"wdog2",	"osc_24m",		0x8340, },
+ 	{ IMX93_CLK_WDOG3_GATE,		"wdog3",	"osc_24m",		0x8380, },
+-- 
+2.35.1
+
 
 
