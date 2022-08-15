@@ -2,87 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C0FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE328C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiHODwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
+        id S232714AbiHODzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiHODwg (ORCPT
+        with ESMTP id S229668AbiHODza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:52:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AB913F47
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:52:34 -0700 (PDT)
+        Sun, 14 Aug 2022 23:55:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF80062CF
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:55:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 815C3B80CF1
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:52:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E67C433D6;
-        Mon, 15 Aug 2022 03:52:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C9A6101B
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:55:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B4DC2C43470;
+        Mon, 15 Aug 2022 03:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660535552;
-        bh=x8mswgoGqL/z1c3stv7WymTX1bkbDAeAwck9N1MfYS0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cGj6y/eJLhf7nsTgC7aSqktLSsEdswIC18PEZUrpeELK4uChjmCRTernzEtYJfczD
-         zcHGxIqyIOG2DR6+Q+z0gLM6QVMw0rUr8u88f6eHt4wdD8G9cpojJ78ij2/FJs1bDG
-         42xq8vbVpILU76o+m/NyGbp/WSuj/u5AiM36GFh5ucLLqsvycpPnx0DJKtlyp/OgDA
-         OjiczQKGG/PHQO6VI2SW8AZxe90myMJSW8YJBvZRqfspOog0IFKC2gqJxaEfNMdYnN
-         /I1YHBOecfiDbZ1qktoNtAvZiirc4Z05vXkDlGYL5TrOxwxgNuhfZH0j0vCPhvQmTh
-         KK4lfYKUt1pfw==
-Message-ID: <65562b32-505f-796e-305a-d1b03baeb388@kernel.org>
-Date:   Mon, 15 Aug 2022 11:52:28 +0800
+        s=k20201202; t=1660535728;
+        bh=Vx25ahkT7ReKmBbFzek0zpHkCrN+s7kbUGG8w9rRCiY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kEq77R36zbKSA2qL6r186mf8eU0oanZrICw6YYbO3rN5umL2VCmTI2PCNyNTVbiuH
+         AyyGvhB41jqCI20lL0C8EGBuHY0MVzbgT+0PHSWhZCSo6JpwNnsSMK4+obQg4CPtJs
+         36WSSe7GiXadaEuTfZCc8c5k4VY9F+zJdd3U0ad+TfuCHe8DxQOfHbkbWf2Msm9600
+         6HFqvYmG2HfT0GlCcKMs6Jut9TxyupCFpyhytPOViOUmddgYDHDAhDkEykEBIFjMw4
+         shwKeddiMrPJC6bqd5+SzjfNYJGrUIspUAVrTt7I8jRhltc77tRPGxXafvYU7I3UYM
+         Vpo5edvJrVngw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98C8FE2A04D;
+        Mon, 15 Aug 2022 03:55:28 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [f2fs-dev] [PATCH] f2fs: fix wrong continue condition in GC
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     stable@kernel.org
-References: <20220813143709.11909-1-jaegeuk@kernel.org>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220813143709.11909-1-jaegeuk@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] chrome-platform changes for v5.20
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <166053572862.30867.2875149894587725461.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Aug 2022 03:55:28 +0000
+References: <Yun1yFEsqpF59Tdy@google.com>
+In-Reply-To: <Yun1yFEsqpF59Tdy@google.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     torvalds@linux-foundation.org, pmalani@chromium.org,
+        bleung@chromium.org, groeck@chromium.org,
+        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/13 22:37, Jaegeuk Kim wrote:
-> We should decrease the frozen counter.
+Hello:
+
+This pull request was applied to chrome-platform/linux.git (for-next)
+by Linus Torvalds <torvalds@linux-foundation.org>:
+
+On Wed, 3 Aug 2022 04:12:56 +0000 you wrote:
+> Linus,
 > 
-> Cc: stable@kernel.org
-> Fixes: 325163e9892b ("f2fs: add gc_urgent_high_remaining sysfs node")
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-> ---
->   fs/f2fs/gc.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Please pull chrome-platform updates for v5.20.
 > 
-> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-> index 6da21d405ce1..7e4b41240d59 100644
-> --- a/fs/f2fs/gc.c
-> +++ b/fs/f2fs/gc.c
-> @@ -102,7 +102,7 @@ static int gc_thread_func(void *data)
->   					sbi->gc_urgent_high_limited = false;
->   					spin_unlock(&sbi->gc_urgent_high_lock);
->   					sbi->gc_mode = GC_NORMAL;
-> -					continue;
-> +					goto next;
->   				}
->   				sbi->gc_urgent_high_remaining--;
->   			}
+> Thanks,
+> TzungBi
+> 
+> [...]
 
-Why not:
+Here is the summary with links:
+  - [GIT,PULL] chrome-platform changes for v5.20
+    https://git.kernel.org/chrome-platform/c/5bb3bf24b0aa
 
-	if (!sbi->gc_urgent_high_remaining) {
-		sbi->gc_urgent_high_limited = false;
-		spin_unlock(&sbi->gc_urgent_high_lock);
-		sbi->gc_mode = GC_NORMAL;
-	} else {
-		sbi->gc_urgent_high_remaining--;
-	}
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks,
+
