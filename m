@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8FFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAFA0C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354373AbiHOXoz (ORCPT
+        id S1354380AbiHOXo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        Mon, 15 Aug 2022 19:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354228AbiHOXll (ORCPT
+        with ESMTP id S1354202AbiHOXli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CD960D1;
-        Mon, 15 Aug 2022 13:11:17 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF272705;
+        Mon, 15 Aug 2022 13:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 374BDB81135;
-        Mon, 15 Aug 2022 20:11:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0A1C433D6;
-        Mon, 15 Aug 2022 20:11:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A1E60B9B;
+        Mon, 15 Aug 2022 20:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF9AC433C1;
+        Mon, 15 Aug 2022 20:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594274;
-        bh=CNC3RHZtr4Vx0ECyRUs2YPM5WBx6e2DmCYMF7MiujFQ=;
+        s=korg; t=1660594268;
+        bh=UsI/1rvqLECPRbEyqNSSrEWNvQrZbquWROC02DqDgvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qXIN2ilr6pfr6eJHmLDcvYd+JnWm1YLklqEBP8eTbdAndzYgM4TQUSg06tMe5spiL
-         0utEjqNaf3aGLZ/RTmX+/I095pvj3rDcdPB/9dvXnedBsul3s0dTgL3N8nj0Q5wa/5
-         zFFAaaMXcv+bVzCe0ycvCyJBjaafy+qFCEGMSKTk=
+        b=xSiu7KmR+75O08RVUGFCu0rEEjaxTtdG2qq/lxvaOuWsAnViKDLnWHBhiyGldILeJ
+         FNSSTLpdZ2gVz3jMivUOBvxgRao9yNk85lX13DxjrpOEAC3OckgAQ4dNpdj1Dk7aUi
+         mY4azbbGBluaSU5ptGn5v1pNTpUbU5BwJszerSUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0376/1157] media: imx-jpeg: Correct some definition according specification
-Date:   Mon, 15 Aug 2022 19:55:32 +0200
-Message-Id: <20220815180454.765446069@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Brian Norris <briannorris@chromium.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH 5.18 1081/1095] Revert "mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv"
+Date:   Mon, 15 Aug 2022 20:08:00 +0200
+Message-Id: <20220815180513.748936524@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 5a601f89e846c1b6005ab274d039e5036fc22015 ]
+commit 5f8954e099b8ae96e7de1bb95950e00c85bedd40 upstream.
 
-the register CAST_NOMFRSIZE_LO should be equal to CAST_STATUS16
-the register CAST_NOMFRSIZE_HI should be equal to CAST_STATUS17
-the register CAST_OFBSIZE_LO should be equal to CAST_STATUS18
-the register CAST_OFBSIZE_HI should be equal to CAST_STATUS19
+This reverts commit a52ed4866d2b90dd5e4ae9dabd453f3ed8fa3cbc as it
+causes build problems in linux-next.  It needs to be reintroduced in a
+way that can allow the api to evolve and not require a "flag day" to
+catch all users.
 
-Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220623160723.7a44b573@canb.auug.org.au
+Cc: Duoming Zhou <duoming@zju.edu.cn>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/init.c      |    9 ++++-----
+ drivers/net/wireless/marvell/mwifiex/main.h      |    3 +--
+ drivers/net/wireless/marvell/mwifiex/sta_event.c |    6 +++---
+ 3 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-index d838e875616c..5f64cbbe0fa9 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
-@@ -53,10 +53,10 @@
- #define CAST_REC_REGS_SEL		CAST_STATUS4
- #define CAST_LUMTH			CAST_STATUS5
- #define CAST_CHRTH			CAST_STATUS6
--#define CAST_NOMFRSIZE_LO		CAST_STATUS7
--#define CAST_NOMFRSIZE_HI		CAST_STATUS8
--#define CAST_OFBSIZE_LO			CAST_STATUS9
--#define CAST_OFBSIZE_HI			CAST_STATUS10
-+#define CAST_NOMFRSIZE_LO		CAST_STATUS16
-+#define CAST_NOMFRSIZE_HI		CAST_STATUS17
-+#define CAST_OFBSIZE_LO			CAST_STATUS18
-+#define CAST_OFBSIZE_HI			CAST_STATUS19
+--- a/drivers/net/wireless/marvell/mwifiex/init.c
++++ b/drivers/net/wireless/marvell/mwifiex/init.c
+@@ -63,10 +63,9 @@ static void wakeup_timer_fn(struct timer
+ 		adapter->if_ops.card_reset(adapter);
+ }
  
- #define MXC_MAX_SLOTS	1 /* TODO use all 4 slots*/
- /* JPEG-Decoder Wrapper Slot Registers 0..3 */
--- 
-2.35.1
-
+-static void fw_dump_work(struct work_struct *work)
++static void fw_dump_timer_fn(struct timer_list *t)
+ {
+-	struct mwifiex_adapter *adapter =
+-		container_of(work, struct mwifiex_adapter, devdump_work.work);
++	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
+ 
+ 	mwifiex_upload_device_dump(adapter);
+ }
+@@ -322,7 +321,7 @@ static void mwifiex_init_adapter(struct
+ 	adapter->active_scan_triggered = false;
+ 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
+ 	adapter->devdump_len = 0;
+-	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
++	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
+ }
+ 
+ /*
+@@ -401,7 +400,7 @@ static void
+ mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
+ {
+ 	del_timer(&adapter->wakeup_timer);
+-	cancel_delayed_work_sync(&adapter->devdump_work);
++	del_timer_sync(&adapter->devdump_timer);
+ 	mwifiex_cancel_all_pending_cmd(adapter);
+ 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
+ 	wake_up_interruptible(&adapter->hs_activate_wait_q);
+--- a/drivers/net/wireless/marvell/mwifiex/main.h
++++ b/drivers/net/wireless/marvell/mwifiex/main.h
+@@ -49,7 +49,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/of_irq.h>
+-#include <linux/workqueue.h>
+ 
+ #include "decl.h"
+ #include "ioctl.h"
+@@ -1056,7 +1055,7 @@ struct mwifiex_adapter {
+ 	/* Device dump data/length */
+ 	void *devdump_data;
+ 	int devdump_len;
+-	struct delayed_work devdump_work;
++	struct timer_list devdump_timer;
+ 
+ 	bool ignore_btcoex_events;
+ };
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -623,8 +623,8 @@ mwifiex_fw_dump_info_event(struct mwifie
+ 		 * transmission event get lost, in this cornel case,
+ 		 * user would still get partial of the dump.
+ 		 */
+-		schedule_delayed_work(&adapter->devdump_work,
+-				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
++		mod_timer(&adapter->devdump_timer,
++			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
+ 	}
+ 
+ 	/* Overflow check */
+@@ -643,7 +643,7 @@ mwifiex_fw_dump_info_event(struct mwifie
+ 	return;
+ 
+ upload_dump:
+-	cancel_delayed_work_sync(&adapter->devdump_work);
++	del_timer_sync(&adapter->devdump_timer);
+ 	mwifiex_upload_device_dump(adapter);
+ }
+ 
 
 
