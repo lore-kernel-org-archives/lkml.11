@@ -2,168 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC53C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52B0C2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349982AbiHOW0O (ORCPT
+        id S1350075AbiHOW0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        Mon, 15 Aug 2022 18:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350852AbiHOWSn (ORCPT
+        with ESMTP id S1350871AbiHOWSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12606580B;
-        Mon, 15 Aug 2022 12:42:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D433B80EA9;
-        Mon, 15 Aug 2022 19:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC16C433C1;
-        Mon, 15 Aug 2022 19:42:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592570;
-        bh=0LWknksfOpS8e6YkW3M3ixXPi6jwfA7UCN/Od+f5rkQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lDUbK4x8vBm1zSkEkAnoBPKAhFoVZ+zaXOuPNZQS+cd4y90LoLgQBOGtUOvYFBWHp
-         DmuCbbX0FtDsOGgbVqWgr/IeC/WgSEUB4hnDLPqIo4h7WuZN6kdRfu+CCfhkgCp0Tw
-         5KIG0VYSHHRaCQS0oTEszZlC0vh0JQxFZ8BpBhPE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: [PATCH 5.19 0131/1157] coresight: Clear the connection field properly
-Date:   Mon, 15 Aug 2022 19:51:27 +0200
-Message-Id: <20220815180444.864322882@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:18:45 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B31065674;
+        Mon, 15 Aug 2022 12:42:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660592576; x=1692128576;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=usNUddUUWfRW5fxZ/YvPTTVtcqbBCceUIBBBTXLlnJU=;
+  b=Uj2aTg5zZPXs6qXDJC6PPEIjslNntEdtpCzZBxjtzaZL6ESsb0L7AOGX
+   OSrb6nQfDXAP7GPc1bcpsvK1r4Bw/Afx/mjKYrk6Ed/f+J9ZQ7Z0tks00
+   TsNpvlICrHCymNIwIhQIN2E3Lim/w8I606nbu+NCZmlF5Q5ea9hE8+OnR
+   EuKo1MgZpgRw4T+TA3j8K9RbllKNLdhFAkYgAXZogjPyk9DUUL2PsrjQJ
+   jFdJchq7eFuvhKAcZrsuzfGY2wnbiJ+sz2O4p9TtGPz/gqMIY2ASw5SN7
+   kwc6q7VL43p/vZ+1mZf0G4BGQXBYMejf19YV26w1eOzob7tRAV+KcLAA8
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
+   d="scan'208";a="109131845"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Aug 2022 12:42:54 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 15 Aug 2022 12:42:52 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Mon, 15 Aug 2022 12:42:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jB/SQrps76X09kMEKlaKckLve4rLPPwDIHf+dwFXaUWw4B7uJpbSzar6QVqCmCVFcvLe2WeyEi7X6YpZZLBjPFAmGql74yL017hLOdaT89lKJ74dFA+xamVJe2mZTDByniDQsPWJa7TKX12pxWJ9gP+LAw6WUz9mluw0QRpqjPcg3qyhMAzHdMl6ObfG3i+bFoAJW6FitW6ej30My+allywpTWgosoPk9pm7D2sVaPuDfNbe+pRaVIjuv0euas4N43dN8GXJW8Sv6fLythEHKuoo8RskwGiEty9JHk60FOR6fJK7/CP5SmR0t8HTfqldIxlr5Kg6fNcrUZXvNv0uhg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=usNUddUUWfRW5fxZ/YvPTTVtcqbBCceUIBBBTXLlnJU=;
+ b=ROIgJ3mXXPas2IfX7FlF0rtOnJ02d8v9Cwv0tYXph6fC+p3tOjpupDLgTY7FJI6V6HFVx83qcv/1KoGsf2KMUed5YKMTQEehgOZDAvftpbbjsZp+jUK8XppfO2ZMTlpYQee5LOx/Dpdk/GgBqh4Do153ASrF0MYKgfAKSSlGOLtB/dfpMMQ7vRq20LdzVr/GlGPKJ6uXcenm4+29rjo0gFfsA3b/pFoo45zRvc59TfTfvKF8vOYIGn18hdZsx69qhUF+Jjx1qH17csQ3m7M/PD/ga4D3YSs1SiiW3gD8+ofCN/oiDh8Mda8nWk+VEnj5ke5Tbrxz03XpvMLFICzfJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=usNUddUUWfRW5fxZ/YvPTTVtcqbBCceUIBBBTXLlnJU=;
+ b=ZWLsr5PEBYYa2qeR9508tfT4edaYtnWoUsOi1hsXZu4ga8T6b6wxDq5GexBUxiQnEvybksN/pCXBas+w4uudOiZxZE5GE7whCr4A0v9+yvBAIcx57m2W7kIczBhQMN8OGhzjcgtMYqdNxzZq4JWkBWtqXjgPAvQwCoCo2YCJxu4=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by DM4PR11MB6286.namprd11.prod.outlook.com (2603:10b6:8:a7::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5504.28; Mon, 15 Aug 2022 19:42:50 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3%8]) with mapi id 15.20.5525.011; Mon, 15 Aug 2022
+ 19:42:49 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <prabhakar.csengg@gmail.com>, <Conor.Dooley@microchip.com>
+CC:     <prabhakar.mahadev-lad.rj@bp.renesas.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <paul.walmsley@sifive.com>,
+        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
+        <geert+renesas@glider.be>, <anup@brainfault.org>,
+        <linux-renesas-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v2 3/8] dt-bindings: soc: renesas: renesas.yaml: Document
+ Renesas RZ/Five SoC
+Thread-Topic: [PATCH v2 3/8] dt-bindings: soc: renesas: renesas.yaml: Document
+ Renesas RZ/Five SoC
+Thread-Index: AQHYsLn3v99KeFhKkECk1bkoK2HiZq2wVRAAgAAHPACAAACmgA==
+Date:   Mon, 15 Aug 2022 19:42:49 +0000
+Message-ID: <ad39d430-2d11-e74f-e0a6-20ec08d13b0b@microchip.com>
+References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220815151451.23293-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <57e17d1e-e809-065e-831f-cdd3a8602e0a@microchip.com>
+ <CA+V-a8vDP8k9c8VM++68uKjQLGURC=pe571+QrmPb+tBo0j7Jw@mail.gmail.com>
+In-Reply-To: <CA+V-a8vDP8k9c8VM++68uKjQLGURC=pe571+QrmPb+tBo0j7Jw@mail.gmail.com>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6345ead3-9b57-40cf-8e4f-08da7ef6562f
+x-ms-traffictypediagnostic: DM4PR11MB6286:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gVmR7vEPIC+BR8byPbTIDLCbGAGtr9ObBccKU2ivk2Y6MHvAptL47BUImCpqFx2WjXVsFA/P57P94O0FyaAFeZ2Pe54ZIlvBigemv+aXjCkMP0HbMenNmfJjTOx1WHC2iAadxhWuf4iIacdGdOdoUSrjD9bLddTWd3QOGgxL+AzyPbC/s2CuT+lGeWlw0Z2X7eTPoifn4pYzRblms2WPKK73Avm5pdHgF20RX6eZwMTgRoC4XmoNBYIln8Gb2qR5m9nH5dA/UIdIYADiYZV8cDm6XiODeu/XgVSuHXs9wmPVRndwqzkBo1SNk9RgrP4Pkg8uTMGjNL+27qN6cBQYUo6+hSvXFBS3KAIXq0g7+YgcQ+5jsCsxbJQM/fse8mgd8JOxzhquvzWi+nW6Ug6J5KbitH8NBYT1OV/hNcNfDOAvv/i76fweiRP9TT9445tLxmFPGTH6I/z7vlCjYiVmFYl5HEBYkpm+ISvHni1SIJYAsvc1mZ/P4FIiyf24YH7ROFJNc52CXYBCKkEBOcTrjJC5Cy78ocFebyFX2nVMvLuC1WPdCsC50WnHY65hoICGz0Ly6UnioE4oYDC6auKT4HmSovj5vZ3vXhvmlmc5zMslLIstrYGNEkgsKciMBcRmRhxE3fhwefJAkBku+kxCgZpEGka5kyvF1tFp1qEJHhFVhZVEPVtqs+pxxBjU6hMASxaetTTGO1zuRN4+Gh9pOBwTCMcuosHolMtCiThPsH51SLwT5VGtYzK8RdCp7wrbjA21JJBVoH49/SpQ4+2IZPbtmOE57PbTlZBkz3kB6DT7RaxyxV31VJyENqH7lABQPZUn51h3mBgKTOvES42ioqFaZCc8Vw+VWuAxpRoSs9G6DLqFyA4EVxS6f2F2G/FVOYG5f7LCRtmU42ZRsY1mHA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39860400002)(346002)(366004)(396003)(136003)(66946007)(38100700002)(122000001)(38070700005)(5660300002)(66446008)(64756008)(76116006)(26005)(66556008)(66476007)(91956017)(186003)(478600001)(71200400001)(53546011)(2616005)(41300700001)(8676002)(6512007)(966005)(6486002)(6506007)(4326008)(83380400001)(54906003)(316002)(110136005)(31686004)(7416002)(36756003)(8936002)(31696002)(2906002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cjNRRUs4ZzVpWXJsUzJ2cEF2WkZUNVRBVDcwVmM1d3loaE9acGI3Zkc4bG4y?=
+ =?utf-8?B?b1NZa1FLOVZybm9VRlh4QXRRWmtJK1JDY2NpTXREVnh1TnkwSFVmWGo3eDBz?=
+ =?utf-8?B?TFFmb0VSeHR0K3JFYjExbmV1aTFFbnVLR0tFbnBiZ00wZXJreFQwN3hFQ2FX?=
+ =?utf-8?B?a2x4Qk5hbUVNb0FUODhaY0VHK3BUUDZHaDFUQWRGeURNSURVMmNyNzlVNUwz?=
+ =?utf-8?B?OE9YQnB0Y3QrZFFxZUxneWhEVkVHa1IvZDFtSXVNTnVSREttWnVmK2hlRmJv?=
+ =?utf-8?B?RXBVb29GaWJTMFZ4MEptaHZTMFo5Q0RQMlozYXd2WGEyQkpsNmFMNlEwei9B?=
+ =?utf-8?B?MDdhcUl2WHFteGV5SkpHbFlWVmR6TDBBVjBJeVRmb2tMTzg0ajU2VENCRENu?=
+ =?utf-8?B?R1hjSUVndllXM0ZpRzBZcHZWMTJta1hHUG5YTENETEpOSzZXNlJ2cC9IT3B0?=
+ =?utf-8?B?NHhnWjNXSWlFSzRVSEltclg3bWlqc2NQcytXeDJST2k4QnJocjJxOCtFZkJ0?=
+ =?utf-8?B?L0kyTUdWbm90aitMbHF2UEUvNnVXZTE1djEyTTFUSlBzRUphMis5NjZBTDc4?=
+ =?utf-8?B?bmVpUGhoTUtXNUVBQ3FHVmlSVnVWaFYwMzQ4VlRvK0VDSUFCWUxERmNDQkFw?=
+ =?utf-8?B?dkdtOUNxWGZEV1llQTFmQ3J2OG9zNVdBMDJBTkN2NS84SUNDREc5SGJsWk5i?=
+ =?utf-8?B?aUxrOUFhVW9Ib2VneFRRWmM1NmZVQ3BLR1k0WVIrU0ZpRE80aGlXUTVYV29T?=
+ =?utf-8?B?ZWdWbkxBRzd1K0RPY2liZlkvS3hzTzVDOWFieFpMNHBIMVFMNUgyQU1heGxV?=
+ =?utf-8?B?WEU0WFh2M1UxbGFFNzRyc2QxeUV0Nmdha3pBR3pmMWZYeUQ1WkdLL0Zoa1hD?=
+ =?utf-8?B?dFJ0RHdtaklEVnBJamNIbkM3VnJNam92OWpKY253emQrNGtRdzhQZFJ2Y0RG?=
+ =?utf-8?B?K2xscnFzaDVTVHFmNEt5WWJYeHRJU1dCejJPVDV1YkM3YTR6TDFScnZ1NW1S?=
+ =?utf-8?B?WVd2eUJDN3o4Q1RNaVNlcmdJSER4elFBWE53dXJQYWtOTWErOC9vc3VOZno4?=
+ =?utf-8?B?MDZGM2plV1R4UXRTY3lqdXV0RjJwckJYS1VCQ2R0T09NY3k0U1RSUUZPcXlt?=
+ =?utf-8?B?c0RBMXV0Tm56dE55elE1MjA3M2pXRllrWmJsWHFta3pvbVZhcktBSEI5QlZB?=
+ =?utf-8?B?YUdqTG5LSE1MTVRYSS96QjhrYnZRL3hWN0tyUGRzcjl6OCtYWEJBTCtIOFhQ?=
+ =?utf-8?B?QVFlWnF6S2JQS3NDVzVtWDFpNzBnVGtTY0tnN2lLbUlaTzErQWxObXpoSElr?=
+ =?utf-8?B?b0RPRGdJZS9lL20vT2grbzNmRWdSWVdjQUY3WGEzemd3UGlMWXRMUU5ucGlS?=
+ =?utf-8?B?WG1mMDMzSmVFOHpJYUZMd1ZpRWl4SFRrUjFMT1NtVDVZc1l4Qk9PbFlFK2Vr?=
+ =?utf-8?B?TlBsSERUeTRLNGpOb056cVNpNzltMG5iTnFEaXkvZW00dlVnMEtMMFFES2xX?=
+ =?utf-8?B?UzIrZEp5MUNqZk9xV2liTzZjZzhYRGlvZUFWYi9veEdmRXJVbzkwbDlKaE1i?=
+ =?utf-8?B?OU9rUVhHM0hldlVsckF5WEFjOUExK1dVeWZ2MHRKd1ZON0R5TG1Cd212dm5a?=
+ =?utf-8?B?MDRLZTVmcDQxeTFOSEI0Y0g0WXNLYm1wYVZ3bVZHWXpHeUNXSU5USjBFWkNT?=
+ =?utf-8?B?RE10cHBDa1lkWXltSGYrMU83cWs3NnU1UlY5RUtmUE1qQnFscnAwM1VtWHk1?=
+ =?utf-8?B?K2NxVVFCYlNqZmdEbXZ4cE9kam9BOTJKOWg3WlJpa3ZYRHhvenJheVhSNFB3?=
+ =?utf-8?B?bUJOSm1jLzJkbkNEeTNGTUpqakhScDh4cm40NHVBbWlTeUVMeHc1VjN4cW0r?=
+ =?utf-8?B?ZkJlalBMamxXcFJKNmNOWHFFWmUyaHZkNlQ0a2xJSWxFRzBEMGFQM1FnaEdr?=
+ =?utf-8?B?YkdiZjVxNnVEY1I5YkxmWTQrR0tTU2dQSnZEQjl2VEZwMzljSnhRZnI4cWRP?=
+ =?utf-8?B?ZUFWTjRPNDN6Nk9rclBjOVVNUGVnMVZpQm4vRnNpWXRGTC9LS0R3SDc3ZEtV?=
+ =?utf-8?B?amdjMEdjTmNpL0NGTDJ6bWFCWENqYlNORzhxVzB3ZHRtQURMNWVrRXlnVGM3?=
+ =?utf-8?Q?bX2587dWrhCsb1jz5El8TW8iE?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D6CF77038D40614AA59CCE45E02E05FD@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6345ead3-9b57-40cf-8e4f-08da7ef6562f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2022 19:42:49.9202
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7LDLX1nsd8aAGWCT9cP2bJJiWnOfWeSDiux80SgWTEGydjVDoGFfWHg1SxE/1xKmZ+t340cXDb8yY4gUfZsQOrjtFJ6aZuWWEBifLHqx/Q0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6286
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-
-commit 2af89ebacf299b7fba5f3087d35e8a286ec33706 upstream.
-
-coresight devices track their connections (output connections) and
-hold a reference to the fwnode. When a device goes away, we walk through
-the devices on the coresight bus and make sure that the references
-are dropped. This happens both ways:
- a) For all output connections from the device, drop the reference to
-    the target device via coresight_release_platform_data()
-
-b) Iterate over all the devices on the coresight bus and drop the
-   reference to fwnode if *this* device is the target of the output
-   connection, via coresight_remove_conns()->coresight_remove_match().
-
-However, the coresight_remove_match() doesn't clear the fwnode field,
-after dropping the reference, this causes use-after-free and
-additional refcount drops on the fwnode.
-
-e.g., if we have two devices, A and B, with a connection, A -> B.
-If we remove B first, B would clear the reference on B, from A
-via coresight_remove_match(). But when A is removed, it still has
-a connection with fwnode still pointing to B. Thus it tries to  drops
-the reference in coresight_release_platform_data(), raising the bells
-like :
-
-[   91.990153] ------------[ cut here ]------------
-[   91.990163] refcount_t: addition on 0; use-after-free.
-[   91.990212] WARNING: CPU: 0 PID: 461 at lib/refcount.c:25 refcount_warn_saturate+0xa0/0x144
-[   91.990260] Modules linked in: coresight_funnel coresight_replicator coresight_etm4x(-)
- crct10dif_ce coresight ip_tables x_tables ipv6 [last unloaded: coresight_cpu_debug]
-[   91.990398] CPU: 0 PID: 461 Comm: rmmod Tainted: G        W       T 5.19.0-rc2+ #53
-[   91.990418] Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development Platform, BIOS EDK II Feb  1 2019
-[   91.990434] pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   91.990454] pc : refcount_warn_saturate+0xa0/0x144
-[   91.990476] lr : refcount_warn_saturate+0xa0/0x144
-[   91.990496] sp : ffff80000c843640
-[   91.990509] x29: ffff80000c843640 x28: ffff800009957c28 x27: ffff80000c8439a8
-[   91.990560] x26: ffff00097eff1990 x25: ffff8000092b6ad8 x24: ffff00097eff19a8
-[   91.990610] x23: ffff80000c8439a8 x22: 0000000000000000 x21: ffff80000c8439c2
-[   91.990659] x20: 0000000000000000 x19: ffff00097eff1a10 x18: ffff80000ab99c40
-[   91.990708] x17: 0000000000000000 x16: 0000000000000000 x15: ffff80000abf6fa0
-[   91.990756] x14: 000000000000001d x13: 0a2e656572662d72 x12: 657466612d657375
-[   91.990805] x11: 203b30206e6f206e x10: 6f69746964646120 x9 : ffff8000081aba28
-[   91.990854] x8 : 206e6f206e6f6974 x7 : 69646461203a745f x6 : 746e756f63666572
-[   91.990903] x5 : ffff00097648ec58 x4 : 0000000000000000 x3 : 0000000000000027
-[   91.990952] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00080260ba00
-[   91.991000] Call trace:
-[   91.991012]  refcount_warn_saturate+0xa0/0x144
-[   91.991034]  kobject_get+0xac/0xb0
-[   91.991055]  of_node_get+0x2c/0x40
-[   91.991076]  of_fwnode_get+0x40/0x60
-[   91.991094]  fwnode_handle_get+0x3c/0x60
-[   91.991116]  fwnode_get_nth_parent+0xf4/0x110
-[   91.991137]  fwnode_full_name_string+0x48/0xc0
-[   91.991158]  device_node_string+0x41c/0x530
-[   91.991178]  pointer+0x320/0x3ec
-[   91.991198]  vsnprintf+0x23c/0x750
-[   91.991217]  vprintk_store+0x104/0x4b0
-[   91.991238]  vprintk_emit+0x8c/0x360
-[   91.991257]  vprintk_default+0x44/0x50
-[   91.991276]  vprintk+0xcc/0xf0
-[   91.991295]  _printk+0x68/0x90
-[   91.991315]  of_node_release+0x13c/0x14c
-[   91.991334]  kobject_put+0x98/0x114
-[   91.991354]  of_node_put+0x24/0x34
-[   91.991372]  of_fwnode_put+0x40/0x5c
-[   91.991390]  fwnode_handle_put+0x38/0x50
-[   91.991411]  coresight_release_platform_data+0x74/0xb0 [coresight]
-[   91.991472]  coresight_unregister+0x64/0xcc [coresight]
-[   91.991525]  etm4_remove_dev+0x64/0x78 [coresight_etm4x]
-[   91.991563]  etm4_remove_amba+0x1c/0x2c [coresight_etm4x]
-[   91.991598]  amba_remove+0x3c/0x19c
-
-Reproducible by: (Build all coresight components as modules):
-
-  #!/bin/sh
-  while true
-  do
-     for m in tmc stm cpu_debug etm4x replicator funnel
-     do
-     	modprobe coresight_${m}
-     done
-
-     for m in tmc stm cpu_debug etm4x replicator funnel
-     do
-     	rmmode coresight_${m}
-     done
-  done
-
-Cc: stable@vger.kernel.org
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Fixes: 37ea1ffddffa ("coresight: Use fwnode handle instead of device names")
-Link: https://lore.kernel.org/r/20220614214024.3005275-1-suzuki.poulose@arm.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/hwtracing/coresight/coresight-core.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/hwtracing/coresight/coresight-core.c
-+++ b/drivers/hwtracing/coresight/coresight-core.c
-@@ -1424,6 +1424,7 @@ static int coresight_remove_match(struct
- 			 * platform data.
- 			 */
- 			fwnode_handle_put(conn->child_fwnode);
-+			conn->child_fwnode = NULL;
- 			/* No need to continue */
- 			break;
- 		}
-
-
+T24gMTUvMDgvMjAyMiAyMDo0MCwgTGFkLCBQcmFiaGFrYXIgd3JvdGU6DQo+IEhpIENvbm9yLA0K
+PiANCj4gVGhhbmsgeW91IGZvciB0aGUgcmV2aWV3Lg0KPiANCj4gT24gTW9uLCBBdWcgMTUsIDIw
+MjIgYXQgODoxNCBQTSA8Q29ub3IuRG9vbGV5QG1pY3JvY2hpcC5jb20+IHdyb3RlOg0KPj4NCj4+
+IE9uIDE1LzA4LzIwMjIgMTY6MTQsIExhZCBQcmFiaGFrYXIgd3JvdGU6DQo+Pj4gZHQtYmluZGlu
+Z3M6IHNvYzogcmVuZXNhczogcmVuZXNhcy55YW1sOiBEb2N1bWVudCBSZW5lc2FzIFJaL0ZpdmUg
+U29DDQo+Pg0KPj4gSGV5IExhZCwNCj4+DQo+PiBNYXliZSBJIGFtIG1pc3Npbmcgc29tZXRoaW5n
+IG9uIHRoZSBhcm0gc2lkZSwgYnV0ICJzb2MiPw0KPj4gV2FzIHRoZSBpbnRlbnQgdG8gbW92ZSB0
+aGlzIHRvIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zb2MNCj4+IGJ1dCB5b3Ug
+bW92ZWQgaXQgYmFjayB0byBhcm0gYnkgYWNjaWRlbnQ/DQo+Pg0KPiBPdWNoIEkgc2VudCBvdXQg
+dGhlIG9sZGVyIHZlcnNpb24gb2YgbXkgcGF0Y2ggZm9yIHRoaXMuIEkgZGlkIGFjdHVhbGx5DQo+
+IHNlbmQgb3V0IGEgcGF0Y2ggd2hpY2ggbW92ZXMgYXJtIHJlbmVzYXMueWFtbCB0byB0aGUgc29j
+IGZvbGRlci4NCg0KQ29vbCB0aG91Z2h0IEkgc2F3IG9uZSBvZiB0aG9zZSB0aGlzIG1vcm5pbmcu
+DQoNCj4gDQo+IENoZWVycywNCj4gUHJhYmhha2FyDQo+IA0KPj4gVGhhbmtzLA0KPj4gQ29ub3Iu
+DQo+Pg0KPj4NCj4+PiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4g
+YXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4+Pg0KPj4+
+IERvY3VtZW50IFJlbmVzYXMgUlovRml2ZSAoUjlBMDdHMDQzKSBTb0MuDQo+Pj4NCj4+PiBNb3Jl
+IGluZm8gYWJvdXQgUlovRml2ZSBTb0M6DQo+Pj4gaHR0cHM6Ly93d3cucmVuZXNhcy5jb20vdXMv
+ZW4vcHJvZHVjdHMvbWljcm9jb250cm9sbGVycy1taWNyb3Byb2Nlc3NvcnMvcnotbXB1cy9yemZp
+dmUtcmlzYy12LWdlbmVyYWwtcHVycG9zZS1taWNyb3Byb2Nlc3NvcnMtcmlzYy12LWNwdS1jb3Jl
+LWFuZGVzLWF4NDVtcC1zaW5nbGUtMTAtZ2h6LTJjaC1naWdhYml0LWV0aGVybmV0DQo+Pj4NCj4+
+PiBTaWduZWQtb2ZmLWJ5OiBMYWQgUHJhYmhha2FyIDxwcmFiaGFrYXIubWFoYWRldi1sYWQucmpA
+YnAucmVuZXNhcy5jb20+DQo+Pj4gLS0tDQo+Pj4gdjEtPnYyDQo+Pj4gKiBOZXcgcGF0Y2gNCj4+
+PiAtLS0NCj4+PiAgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9yZW5lc2Fz
+LnlhbWwgfCAzICsrLQ0KPj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAxIGRl
+bGV0aW9uKC0pDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL2FybS9yZW5lc2FzLnlhbWwgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvYXJtL3JlbmVzYXMueWFtbA0KPj4+IGluZGV4IGZmODAxNTJmMDkyZi4uMjMzODQ3ZWIy
+M2ZkIDEwMDY0NA0KPj4+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9h
+cm0vcmVuZXNhcy55YW1sDQo+Pj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL2FybS9yZW5lc2FzLnlhbWwNCj4+PiBAQCAtNDE1LDExICs0MTUsMTIgQEAgcHJvcGVydGll
+czoNCj4+PiAgICAgICAgICAgICAgICAtIHJlbmVzYXMscnpuMWQ0MDAtZGIgIyBSWk4xRC1EQiAo
+UlovTjFEIERlbW8gQm9hcmQgZm9yIHRoZSBSWi9OMUQgNDAwIHBpbnMgcGFja2FnZSkNCj4+PiAg
+ICAgICAgICAgIC0gY29uc3Q6IHJlbmVzYXMscjlhMDZnMDMyDQo+Pj4NCj4+PiAtICAgICAgLSBk
+ZXNjcmlwdGlvbjogUlovRzJVTCAoUjlBMDdHMDQzKQ0KPj4+ICsgICAgICAtIGRlc2NyaXB0aW9u
+OiBSWi9GaXZlIGFuZCBSWi9HMlVMIChSOUEwN0cwNDMpDQo+Pj4gICAgICAgICAgaXRlbXM6DQo+
+Pj4gICAgICAgICAgICAtIGVudW06DQo+Pj4gICAgICAgICAgICAgICAgLSByZW5lc2FzLHNtYXJj
+LWV2ayAjIFNNQVJDIEVWSw0KPj4+ICAgICAgICAgICAgLSBlbnVtOg0KPj4+ICsgICAgICAgICAg
+ICAgIC0gcmVuZXNhcyxyOWEwN2cwNDNmMDEgIyBSWi9GaXZlIChSSVNDLVYgY29yZSkNCj4+PiAg
+ICAgICAgICAgICAgICAtIHJlbmVzYXMscjlhMDdnMDQzdTExICMgUlovRzJVTCBUeXBlLTENCj4+
+PiAgICAgICAgICAgICAgICAtIHJlbmVzYXMscjlhMDdnMDQzdTEyICMgUlovRzJVTCBUeXBlLTIN
+Cj4+PiAgICAgICAgICAgIC0gY29uc3Q6IHJlbmVzYXMscjlhMDdnMDQzDQo+Pj4gLS0NCj4+PiAy
+LjI1LjENCj4+Pg0KPj4NCj4gDQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fDQo+IGxpbnV4LXJpc2N2IG1haWxpbmcgbGlzdA0KPiBsaW51eC1yaXNjdkBs
+aXN0cy5pbmZyYWRlYWQub3JnDQo+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
+bGlzdGluZm8vbGludXgtcmlzY3YNCg==
