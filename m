@@ -2,389 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F67C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B708AC282E7
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242914AbiHONYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
+        id S242068AbiHONZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242988AbiHONYG (ORCPT
+        with ESMTP id S241432AbiHONZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:24:06 -0400
-Received: from forward108j.mail.yandex.net (forward108j.mail.yandex.net [5.45.198.253])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829221CB16;
-        Mon, 15 Aug 2022 06:24:05 -0700 (PDT)
-Received: from forward502j.mail.yandex.net (forward502j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::112])
-        by forward108j.mail.yandex.net (Yandex) with ESMTP id 999273F21D2C;
-        Mon, 15 Aug 2022 16:24:00 +0300 (MSK)
-Received: from iva1-dcde80888020.qloud-c.yandex.net (iva1-dcde80888020.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7695:0:640:dcde:8088])
-        by forward502j.mail.yandex.net (Yandex) with ESMTP id C5F0611220D4;
-        Mon, 15 Aug 2022 16:23:17 +0300 (MSK)
-Received: by iva1-dcde80888020.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id BL0XdiM9S6-NFi43JgY;
-        Mon, 15 Aug 2022 16:23:16 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1660569796;
-        bh=RAkhKkqKjCwKcANcEidTlittrFwUuUmayhzCnj2pejg=;
-        h=Cc:Message-Id:References:Date:In-Reply-To:Subject:To:From;
-        b=U4H/jPfOhDf4pmT0RhrcydepAENX+xGihB8pnGvHMekkxz7P+up+M04xR2QM8sjxf
-         S4UyKX1o8zjnNVq8GjwcUE3b7spC7ij7xw3BbJhJ5A+pE1o8HfQCTK2KV9SzpeW5nC
-         LvDwiTOtoiseBf5Yf1nM2L9UkbKVRPHWLsimRXZA=
-Authentication-Results: iva1-dcde80888020.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     linux@yadro.com, Anup Patel <anup@brainfault.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
-        <joao.mario@tecnico.ulisboa.pt>,
-        Nikita Shubin <n.shubin@yadro.com>,
-        Kautuk Consul <kconsul@ventanamicro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v6 3/3] perf vendor events riscv: add Sifive U74 JSON file
-Date:   Mon, 15 Aug 2022 16:22:40 +0300
-Message-Id: <20220815132251.25702-4-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220815132251.25702-1-nikita.shubin@maquefel.me>
-References: <20220815132251.25702-1-nikita.shubin@maquefel.me>
+        Mon, 15 Aug 2022 09:25:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 230FA5FC0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:25:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660569921;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dIIzjPxeddzxMn7RZ9/iKALDcfamsWN+Y3QvwDD0LAQ=;
+        b=HQkC9+r428EDkWPmbBpUhX/NXorfdxCkf1gETUN/ra99SNJI4t+f/TUdFlrK4/xW3by+zE
+        eFvpNYrYu57+pwRsB65hiJ2icMYdbf+SXSrEZQuDnTuVOthulBBt2SLMI3wI+tt4QDBf96
+        2/et5c+ppWNYhM//T58+qpy9fT7pRy4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-37-nIvCrt5HOHu_dvSAN2j5yw-1; Mon, 15 Aug 2022 09:25:20 -0400
+X-MC-Unique: nIvCrt5HOHu_dvSAN2j5yw-1
+Received: by mail-ed1-f72.google.com with SMTP id x20-20020a05640226d400b0043d50aadf3fso4811331edd.23
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:25:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=dIIzjPxeddzxMn7RZ9/iKALDcfamsWN+Y3QvwDD0LAQ=;
+        b=3kyuKB17Ph69kiRiA0TvZmL245NvWijQAkNdjiwp9oF0DhyoxwBFZ8jLNVvJkgGopD
+         OFuu2tRiqYxugzGNuW41pX4mShtZW8N9rk1vfzE8RDnE0W5CDjj49n6LSWLFBgbEC3/U
+         pEQJDnBSldzeY7mwt4UMsSW40eQpFnVU0B9HTaPg1cYZswKR1cQlL/67KDm0IzkaJWEo
+         F/O1Ytyd7/KeUMH/eSiSZ5HJtvwzIkebmRfs0fgO9Auu5yDEKT5W3fDVP+eMYMUOOtfi
+         j23HuX++WNUDQl9PBEpaI/OSR5N1OEOhdYzDrcUL9sKJiguW8LMorpWOVLzSlKWxhkHr
+         pk5w==
+X-Gm-Message-State: ACgBeo2vM2u26FJqkdDMsHIEeBOApJgpUngn0i2YbGzTONg176Tnwfv7
+        Gtv4otc4fGcbL789ik9s2ozxtYp0Z9ylU9277xzHFS6insyvfPdc5wGwOsC+xXmgMOZEiNfsoCd
+        98V8B3x9K2IbbJHqfe5PgP+Gd
+X-Received: by 2002:a17:907:a06b:b0:730:9496:4f63 with SMTP id ia11-20020a170907a06b00b0073094964f63mr10323126ejc.238.1660569916908;
+        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7Np8EHjN3xV6j5gtUKKxrJruO/oaY6oPl7sUzHkQj7ymdHJKpTA67SMUruPrbigSRKc8zgyg==
+X-Received: by 2002:a17:907:a06b:b0:730:9496:4f63 with SMTP id ia11-20020a170907a06b00b0073094964f63mr10323118ejc.238.1660569916757;
+        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id j4-20020aa7ca44000000b0043d1a9f6e4asm6703036edt.9.2022.08.15.06.25.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
+Message-ID: <fc250b82-c7c7-9215-f3dd-be87e0a72edd@redhat.com>
+Date:   Mon, 15 Aug 2022 15:25:15 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/6] Fixes 98829e84dc67 ("asus-wmi: Add dgpu disable
+ method")
+Content-Language: en-US
+To:     "Luke D. Jones" <luke@ljones.dev>
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220812222509.292692-1-luke@ljones.dev>
+ <20220812222509.292692-2-luke@ljones.dev>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220812222509.292692-2-luke@ljones.dev>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+Hi Luke,
 
-This patch add the Sifive U74 JSON file.
+On 8/13/22 00:25, Luke D. Jones wrote:
+> The dgpu_disable attribute was not documented, this adds the
+> required documentation.
+> 
+> Signed-off-by: Luke D. Jones <luke@ljones.dev>
 
-Derived-from-code-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
-Link: https://sifive.cdn.prismic.io/sifive/ad5577a0-9a00-45c9-a5d0-424a3d586060_u74_core_complex_manual_21G3.pdf
-Tested-by: Kautuk Consul <kconsul@ventanamicro.com>
----
- tools/perf/pmu-events/arch/riscv/mapfile.csv  | 17 ++++
- .../arch/riscv/sifive/u74/firmware.json       | 68 ++++++++++++++
- .../arch/riscv/sifive/u74/instructions.json   | 92 +++++++++++++++++++
- .../arch/riscv/sifive/u74/memory.json         | 32 +++++++
- .../arch/riscv/sifive/u74/microarch.json      | 57 ++++++++++++
- 5 files changed, 266 insertions(+)
- create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json
+Thanks for the patch. Note that the Fixes tag should be above your
+signed-off-by and then the patch should otherwise have a normal
+subject + body. I've changed the commit msg to the following
+while merging this:
 
-diff --git a/tools/perf/pmu-events/arch/riscv/mapfile.csv b/tools/perf/pmu-events/arch/riscv/mapfile.csv
-new file mode 100644
-index 000000000000..c61b3d6ef616
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/mapfile.csv
-@@ -0,0 +1,17 @@
-+# Format:
-+#	MVENDORID-MARCHID-MIMPID,Version,JSON/file/pathname,Type
-+#
-+# where
-+#	MVENDORID	JEDEC code of the core provider
-+#	MARCHID		base microarchitecture of the hart
-+#	MIMPID		unique encoding of the version
-+#			of the processor implementation
-+#	Version could be used to track version of JSON file
-+#		but currently unused.
-+#	JSON/file/pathname is the path to JSON file, relative
-+#		to tools/perf/pmu-events/arch/riscv/.
-+#	Type is core, uncore etc
-+#
-+#
-+#MVENDORID-MARCHID-MIMPID,Version,Filename,EventType
-+0x489-0x8000000000000007-0x[[:xdigit:]]+,v1,sifive/u74,core
-diff --git a/tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json b/tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json
-new file mode 100644
-index 000000000000..9b4a032186a7
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json
-@@ -0,0 +1,68 @@
-+[
-+  {
-+    "ArchStdEvent": "FW_MISALIGNED_LOAD"
-+  },
-+  {
-+    "ArchStdEvent": "FW_MISALIGNED_STORE"
-+  },
-+  {
-+    "ArchStdEvent": "FW_ACCESS_LOAD"
-+  },
-+  {
-+    "ArchStdEvent": "FW_ACCESS_STORE"
-+  },
-+  {
-+    "ArchStdEvent": "FW_ILLEGAL_INSN"
-+  },
-+  {
-+    "ArchStdEvent": "FW_SET_TIMER"
-+  },
-+  {
-+    "ArchStdEvent": "FW_IPI_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_IPI_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_FENCE_I_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_FENCE_I_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_SFENCE_VMA_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_SFENCE_VMA_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_SFENCE_VMA_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_SFENCE_VMA_ASID_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_GVMA_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_GVMA_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_GVMA_VMID_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_GVMA_VMID_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_VVMA_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_VVMA_RECEIVED"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_VVMA_ASID_SENT"
-+  },
-+  {
-+    "ArchStdEvent": "FW_HFENCE_VVMA_ASID_RECEIVED"
-+  }
-+]
-diff --git a/tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json b/tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json
-new file mode 100644
-index 000000000000..5eab718c9256
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/sifive/u74/instructions.json
-@@ -0,0 +1,92 @@
-+[
-+  {
-+    "EventName": "EXCEPTION_TAKEN",
-+    "EventCode": "0x0000100",
-+    "BriefDescription": "Exception taken"
-+  },
-+  {
-+    "EventName": "INTEGER_LOAD_RETIRED",
-+    "EventCode": "0x0000200",
-+    "BriefDescription": "Integer load instruction retired"
-+  },
-+  {
-+    "EventName": "INTEGER_STORE_RETIRED",
-+    "EventCode": "0x0000400",
-+    "BriefDescription": "Integer store instruction retired"
-+  },
-+  {
-+    "EventName": "ATOMIC_MEMORY_RETIRED",
-+    "EventCode": "0x0000800",
-+    "BriefDescription": "Atomic memory operation retired"
-+  },
-+  {
-+    "EventName": "SYSTEM_INSTRUCTION_RETIRED",
-+    "EventCode": "0x0001000",
-+    "BriefDescription": "System instruction retired"
-+  },
-+  {
-+    "EventName": "INTEGER_ARITHMETIC_RETIRED",
-+    "EventCode": "0x0002000",
-+    "BriefDescription": "Integer arithmetic instruction retired"
-+  },
-+  {
-+    "EventName": "CONDITIONAL_BRANCH_RETIRED",
-+    "EventCode": "0x0004000",
-+    "BriefDescription": "Conditional branch retired"
-+  },
-+  {
-+    "EventName": "JAL_INSTRUCTION_RETIRED",
-+    "EventCode": "0x0008000",
-+    "BriefDescription": "JAL instruction retired"
-+  },
-+  {
-+    "EventName": "JALR_INSTRUCTION_RETIRED",
-+    "EventCode": "0x0010000",
-+    "BriefDescription": "JALR instruction retired"
-+  },
-+  {
-+    "EventName": "INTEGER_MULTIPLICATION_RETIRED",
-+    "EventCode": "0x0020000",
-+    "BriefDescription": "Integer multiplication instruction retired"
-+  },
-+  {
-+    "EventName": "INTEGER_DIVISION_RETIRED",
-+    "EventCode": "0x0040000",
-+    "BriefDescription": "Integer division instruction retired"
-+  },
-+  {
-+    "EventName": "FP_LOAD_RETIRED",
-+    "EventCode": "0x0080000",
-+    "BriefDescription": "Floating-point load instruction retired"
-+  },
-+  {
-+    "EventName": "FP_STORE_RETIRED",
-+    "EventCode": "0x0100000",
-+    "BriefDescription": "Floating-point store instruction retired"
-+  },
-+  {
-+    "EventName": "FP_ADDITION_RETIRED",
-+    "EventCode": "0x0200000",
-+    "BriefDescription": "Floating-point addition retired"
-+  },
-+  {
-+    "EventName": "FP_MULTIPLICATION_RETIRED",
-+    "EventCode": "0x0400000",
-+    "BriefDescription": "Floating-point multiplication retired"
-+  },
-+  {
-+    "EventName": "FP_FUSEDMADD_RETIRED",
-+    "EventCode": "0x0800000",
-+    "BriefDescription": "Floating-point fused multiply-add retired"
-+  },
-+  {
-+    "EventName": "FP_DIV_SQRT_RETIRED",
-+    "EventCode": "0x1000000",
-+    "BriefDescription": "Floating-point division or square-root retired"
-+  },
-+  {
-+    "EventName": "OTHER_FP_RETIRED",
-+    "EventCode": "0x2000000",
-+    "BriefDescription": "Other floating-point instruction retired"
-+  }
-+]
-\ No newline at end of file
-diff --git a/tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json b/tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json
-new file mode 100644
-index 000000000000..be1a46312ac3
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json
-@@ -0,0 +1,32 @@
-+[
-+  {
-+    "EventName": "ICACHE_RETIRED",
-+    "EventCode": "0x0000102",
-+    "BriefDescription": "Instruction cache miss"
-+  },
-+  {
-+    "EventName": "DCACHE_MISS_MMIO_ACCESSES",
-+    "EventCode": "0x0000202",
-+    "BriefDescription": "Data cache miss or memory-mapped I/O access"
-+  },
-+  {
-+    "EventName": "DCACHE_WRITEBACK",
-+    "EventCode": "0x0000402",
-+    "BriefDescription": "Data cache write-back"
-+  },
-+  {
-+    "EventName": "INST_TLB_MISS",
-+    "EventCode": "0x0000802",
-+    "BriefDescription": "Instruction TLB miss"
-+  },
-+  {
-+    "EventName": "DATA_TLB_MISS",
-+    "EventCode": "0x0001002",
-+    "BriefDescription": "Data TLB miss"
-+  },
-+  {
-+    "EventName": "UTLB_MISS",
-+    "EventCode": "0x0002002",
-+    "BriefDescription": "UTLB miss"
-+  }
-+]
-\ No newline at end of file
-diff --git a/tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json b/tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json
-new file mode 100644
-index 000000000000..50ffa55418cb
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/sifive/u74/microarch.json
-@@ -0,0 +1,57 @@
-+[
-+  {
-+    "EventName": "ADDRESSGEN_INTERLOCK",
-+    "EventCode": "0x0000101",
-+    "BriefDescription": "Address-generation interlock"
-+  },
-+  {
-+    "EventName": "LONGLAT_INTERLOCK",
-+    "EventCode": "0x0000201",
-+    "BriefDescription": "Long-latency interlock"
-+  },
-+  {
-+    "EventName": "CSR_READ_INTERLOCK",
-+    "EventCode": "0x0000401",
-+    "BriefDescription": "CSR read interlock"
-+  },
-+  {
-+    "EventName": "ICACHE_ITIM_BUSY",
-+    "EventCode": "0x0000801",
-+    "BriefDescription": "Instruction cache/ITIM busy"
-+  },
-+  {
-+    "EventName": "DCACHE_DTIM_BUSY",
-+    "EventCode": "0x0001001",
-+    "BriefDescription": "Data cache/DTIM busy"
-+  },
-+  {
-+    "EventName": "BRANCH_DIRECTION_MISPREDICTION",
-+    "EventCode": "0x0002001",
-+    "BriefDescription": "Branch direction misprediction"
-+  },
-+  {
-+    "EventName": "BRANCH_TARGET_MISPREDICTION",
-+    "EventCode": "0x0004001",
-+    "BriefDescription": "Branch/jump target misprediction"
-+  },
-+  {
-+    "EventName": "PIPE_FLUSH_CSR_WRITE",
-+    "EventCode": "0x0008001",
-+    "BriefDescription": "Pipeline flush from CSR write"
-+  },
-+  {
-+    "EventName": "PIPE_FLUSH_OTHER_EVENT",
-+    "EventCode": "0x0010001",
-+    "BriefDescription": "Pipeline flush from other event"
-+  },
-+  {
-+    "EventName": "INTEGER_MULTIPLICATION_INTERLOCK",
-+    "EventCode": "0x0020001",
-+    "BriefDescription": "Integer multiplication interlock"
-+  },
-+  {
-+    "EventName": "FP_INTERLOCK",
-+    "EventCode": "0x0040001",
-+    "BriefDescription": "Floating-point interlock"
-+  }
-+]
-\ No newline at end of file
--- 
-2.35.1
+"""
+platform/x86: asus-wmi: Document the dgpu_disable sysfs attribute
+    
+The dgpu_disable attribute was not documented, this adds the
+required documentation.
+    
+Fixes 98829e84dc67 ("asus-wmi: Add dgpu disable method")
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+"""
+
+and I will make similar changes to patch 2/6 and 3/6
+> ---
+>  Documentation/ABI/testing/sysfs-platform-asus-wmi | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-platform-asus-wmi b/Documentation/ABI/testing/sysfs-platform-asus-wmi
+> index 04885738cf15..0f932fd60f4a 100644
+> --- a/Documentation/ABI/testing/sysfs-platform-asus-wmi
+> +++ b/Documentation/ABI/testing/sysfs-platform-asus-wmi
+> @@ -57,3 +57,12 @@ Description:
+>  			* 0 - default,
+>  			* 1 - overboost,
+>  			* 2 - silent
+> +
+> +What:          /sys/devices/platform/<platform>/dgpu_disable
+> +Date:          Aug 2022
+> +KernelVersion: 5.17
+> +Contact:       "Luke Jones" <luke@ljones.dev>
+> +Description:
+> +               Disable discrete GPU:
+> +                       * 0 - Enable dGPU,
+> +                       * 1 - Disable dGPU,
+> \ No newline at end of file
+
+Next time please make sure the file always ends with a newline
+even in intermediate patches.
+
+Regards,
+
+Hans
+
 
