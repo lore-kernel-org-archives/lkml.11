@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BFAC49EC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFB6C32763
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356612AbiHPAHo (ORCPT
+        id S1356656AbiHPAHt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        Mon, 15 Aug 2022 20:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352027AbiHPAAX (ORCPT
+        with ESMTP id S1352126AbiHPAAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0773D43E5B;
-        Mon, 15 Aug 2022 13:21:22 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378D1165715;
+        Mon, 15 Aug 2022 13:21:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9560161007;
-        Mon, 15 Aug 2022 20:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D831C433D6;
-        Mon, 15 Aug 2022 20:21:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6E3EB80EA8;
+        Mon, 15 Aug 2022 20:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BC8C433C1;
+        Mon, 15 Aug 2022 20:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594881;
-        bh=FX9Ax3Z/cmlPDDEf6qOtcz300bPFrJUo0VquF6pu9PY=;
+        s=korg; t=1660594874;
+        bh=2Wgq8qY/SEwnYEC3euAXi6f1iOUx8n9AbuUp4mRrAVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bh8E6bmX5bt9hFSRYiT+Jcsi+1IVqUfezjltrry+AQ9Z1qYzeSO2J/fJoLAO4v3db
-         HKqonC3KbROjB782bc+P5EfQzTiCTuHquZvf4RWW0x0BzPsRAeLAbgg5+njlrIW8Rc
-         uNlsOKl1uT7IGOUXVuMvbUGFt8l/3Gvbm6BOIw/s=
+        b=IOx4uJtKmSo9JoMHphns2wEkrMkPfOx46fZDaud10PmqcJuJgR3DRHzOqlq4LkNUU
+         SNVOEDWGY0zuR55RjW0+pRtYS6mCx7Mc70950FwjxeE4q6n3rnIRCdLMjkhjKKC8Bg
+         sLGXyvwRnshyIX50ph25XuB4rnTi+ttZC3uHKasU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
+        stable@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0555/1157] net/mlx5: Fix driver use of uninitialized timeout
-Date:   Mon, 15 Aug 2022 19:58:31 +0200
-Message-Id: <20220815180501.828367540@linuxfoundation.org>
+Subject: [PATCH 5.19 0553/1157] net/mlx5: Adjust log_max_qp to be 18 at most
+Date:   Mon, 15 Aug 2022 19:58:29 +0200
+Message-Id: <20220815180501.759624810@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,85 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-[ Upstream commit 42b4f7f66a43cdb9216e76e595c8a9af154806da ]
+[ Upstream commit a6e9085d791f8306084fd5bc44dd3fdd4e1ac27b ]
 
-Currently, driver is setting default values to all timeouts during
-function setup. The offending commit is using a timeout before
-function setup, meaning: the timeout is 0 (or garbage), since no
-value have been set.
-This may result in failure to probe the driver:
-mlx5_function_setup:1034:(pid 69850): Firmware over 4294967296 MS in pre-initializing state, aborting
-probe_one:1591:(pid 69850): mlx5_init_one failed with error code -16
+The cited commit limited log_max_qp to be 17 due to FW capabilities.
+Recently, it turned out that there are old FW versions that supported
+more than 17, so the cited commit caused a degradation.
 
-Hence, set default values to timeouts during tout_init()
+Thus, set the maximum log_max_qp back to 18 as it was before the
+cited commit.
 
-Fixes: 37ca95e62ee2 ("net/mlx5: Increase FW pre-init timeout for health recovery")
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Fixes: 7f839965b2d7 ("net/mlx5: Update log_max_qp value to be 17 at most")
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c | 11 ++++-------
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  2 --
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
-index d758848d34d0..696e45e2bd06 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
-@@ -32,20 +32,17 @@ static void tout_set(struct mlx5_core_dev *dev, u64 val, enum mlx5_timeouts_type
- 	dev->timeouts->to[type] = val;
- }
- 
--void mlx5_tout_set_def_val(struct mlx5_core_dev *dev)
-+int mlx5_tout_init(struct mlx5_core_dev *dev)
- {
- 	int i;
- 
--	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
--		tout_set(dev, tout_def_sw_val[i], i);
--}
--
--int mlx5_tout_init(struct mlx5_core_dev *dev)
--{
- 	dev->timeouts = kmalloc(sizeof(*dev->timeouts), GFP_KERNEL);
- 	if (!dev->timeouts)
- 		return -ENOMEM;
- 
-+	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
-+		tout_set(dev, tout_def_sw_val[i], i);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
-index 257c03eeab36..bc9e9aeda847 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
-@@ -35,7 +35,6 @@ int mlx5_tout_init(struct mlx5_core_dev *dev);
- void mlx5_tout_cleanup(struct mlx5_core_dev *dev);
- void mlx5_tout_query_iseg(struct mlx5_core_dev *dev);
- int mlx5_tout_query_dtor(struct mlx5_core_dev *dev);
--void mlx5_tout_set_def_val(struct mlx5_core_dev *dev);
- u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
- 
- #define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 95f26624b57c..ba2e5232b90b 100644
+index c9b4e50a593e..95f26624b57c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1023,8 +1023,6 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
- 	if (mlx5_core_is_pf(dev))
- 		pcie_print_link_status(dev->pdev);
+@@ -524,7 +524,7 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
  
--	mlx5_tout_set_def_val(dev);
--
- 	/* wait for firmware to accept initialization segments configurations
- 	 */
- 	err = wait_fw_init(dev, timeout,
+ 	/* Check log_max_qp from HCA caps to set in current profile */
+ 	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
+-		prof->log_max_qp = min_t(u8, 17, MLX5_CAP_GEN_MAX(dev, log_max_qp));
++		prof->log_max_qp = min_t(u8, 18, MLX5_CAP_GEN_MAX(dev, log_max_qp));
+ 	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
+ 		mlx5_core_warn(dev, "log_max_qp value in current profile is %d, changing it to HCA capability limit (%d)\n",
+ 			       prof->log_max_qp,
 -- 
 2.35.1
 
