@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EBCC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22459C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiHPEm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        id S232097AbiHPEnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231795AbiHPEk0 (ORCPT
+        with ESMTP id S231838AbiHPEk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:40:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57021A50D0;
-        Mon, 15 Aug 2022 13:31:41 -0700 (PDT)
+        Tue, 16 Aug 2022 00:40:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71237A50D7;
+        Mon, 15 Aug 2022 13:31:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A8D6CCE1345;
-        Mon, 15 Aug 2022 20:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96331C433C1;
-        Mon, 15 Aug 2022 20:31:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C25F61135;
+        Mon, 15 Aug 2022 20:31:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA508C433C1;
+        Mon, 15 Aug 2022 20:31:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595498;
-        bh=ULVdn1u+eHqJzYIKptQEe/KzAAMdb1EsJ3McvUFHKhg=;
+        s=korg; t=1660595504;
+        bh=R/At1t9T/s5vQ8EISqjT+r83HIzdpkzNvMU24MJzUtg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xm8jB3pjjGvX/q25U/ifYlzgQOEyxKGLYwtiYC1iFcz+Pa92CoH5jPMeVjRPtaVG6
-         q/Rl2VPd1uQ1K/e08SPwrqe5swlD0JYnddnLBzFDxCtgn/ZniWO8NBEZbIHhqZ8QV4
-         yTKQkY9S/KwvCYLhScWjzAzpHtpN38mMzzusKOcE=
+        b=UgkqSJz3GORjINSj6JW8RyzqzZgpSsFTvIiSo4l6xtL7L9bWbp0sNX7Mf611UEY4j
+         y7rsmNcC5zP8GGStYOF3xRpqs9fKmU0ep8olnGa05ys3Lm94DL6P2FlzMsjniS54Sf
+         MpPbXf5kwPN3LHBUFO3urY+Qj8HsDz5IqXT13FBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0783/1157] scsi: qla2xxx: Check correct variable in qla24xx_async_gffid()
-Date:   Mon, 15 Aug 2022 20:02:19 +0200
-Message-Id: <20220815180510.811465162@linuxfoundation.org>
+Subject: [PATCH 5.19 0785/1157] scsi: lpfc: Revert RSCN_MEMENTO workaround for misbehaved configuration
+Date:   Mon, 15 Aug 2022 20:02:21 +0200
+Message-Id: <20220815180510.890411088@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,38 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 7c33e477bd883f79cccec418980cb8f7f2d50347 ]
+[ Upstream commit ffc566411aded3c12c63e1310fb23830e9608c59 ]
 
-There is a copy and paste bug here.  It should check ".rsp" instead of
-".req".  The error message is copy and pasted as well so update that too.
+The RSCN_MEMENTO logic was to workaround a target that does not register
+both FCP and NVMe FC4 types at the same time.  This caused the
+configuration to not produce a second RSCN for the NVMe FC4 type
+registration in a timely manner.  The intention of the RSCN_MEMENTO flag
+was to always signal to try NVMe PRLI.
 
-Link: https://lore.kernel.org/r/YrK1A/t3L6HKnswO@kili
-Fixes: 9c40c36e75ff ("scsi: qla2xxx: edif: Reduce Initiator-Initiator thrashing")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+However, there are other FCP-only target arrays in correctly behaved
+configurations that reject the NVMe PRLI followed by a LOGO leading to
+never rediscovering the target after an issue_lip (as LOGO causes a repeat
+of PLOGI/PRLIs).
+
+Revert the RSCN_MEMENTO patch as it is causing correctly behaved configs to
+fail while it exists only to succeed on a misbehaved config.
+
+Link: https://lore.kernel.org/r/20220701211425.2708-9-jsmart2021@gmail.com
+Fixes: 1045592fc968 ("scsi: lpfc: Introduce FC_RSCN_MEMENTO flag for tracking post RSCN completion")
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_gs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc.h         | 1 -
+ drivers/scsi/lpfc/lpfc_els.c     | 8 ++------
+ drivers/scsi/lpfc/lpfc_hbadisc.c | 3 +--
+ 3 files changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_gs.c b/drivers/scsi/qla2xxx/qla_gs.c
-index 574251b2e0ef..c914b5df9c12 100644
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -3386,9 +3386,9 @@ int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport, bool wait)
- 				sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
- 				&sp->u.iocb_cmd.u.ctarg.rsp_dma,
- 	    GFP_KERNEL);
--	if (!sp->u.iocb_cmd.u.ctarg.req) {
-+	if (!sp->u.iocb_cmd.u.ctarg.rsp) {
- 		ql_log(ql_log_warn, vha, 0xd041,
--		       "%s: Failed to allocate ct_sns request.\n",
-+		       "%s: Failed to allocate ct_sns response.\n",
- 		       __func__);
- 		goto done_free_sp;
+diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
+index da9070cdad91..212f9b962187 100644
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -604,7 +604,6 @@ struct lpfc_vport {
+ #define FC_VFI_REGISTERED	0x800000 /* VFI is registered */
+ #define FC_FDISC_COMPLETED	0x1000000/* FDISC completed */
+ #define FC_DISC_DELAYED		0x2000000/* Delay NPort discovery */
+-#define FC_RSCN_MEMENTO		0x4000000/* RSCN cmd processed */
+ 
+ 	uint32_t ct_flags;
+ #define FC_CT_RFF_ID		0x1	 /* RFF_ID accepted by switch */
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index 3fababb7c181..c904e9486b92 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -1886,7 +1886,6 @@ lpfc_end_rscn(struct lpfc_vport *vport)
+ 		else {
+ 			spin_lock_irq(shost->host_lock);
+ 			vport->fc_flag &= ~FC_RSCN_MODE;
+-			vport->fc_flag |= FC_RSCN_MEMENTO;
+ 			spin_unlock_irq(shost->host_lock);
+ 		}
  	}
+@@ -2434,14 +2433,13 @@ lpfc_issue_els_prli(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 	u32 local_nlp_type, elscmd;
+ 
+ 	/*
+-	 * If discovery was kicked off from RSCN mode,
+-	 * the FC4 types supported from a
++	 * If we are in RSCN mode, the FC4 types supported from a
+ 	 * previous GFT_ID command may not be accurate. So, if we
+ 	 * are a NVME Initiator, always look for the possibility of
+ 	 * the remote NPort beng a NVME Target.
+ 	 */
+ 	if (phba->sli_rev == LPFC_SLI_REV4 &&
+-	    vport->fc_flag & (FC_RSCN_MODE | FC_RSCN_MEMENTO) &&
++	    vport->fc_flag & FC_RSCN_MODE &&
+ 	    vport->nvmei_support)
+ 		ndlp->nlp_fc4_type |= NLP_FC4_NVME;
+ 	local_nlp_type = ndlp->nlp_fc4_type;
+@@ -7915,7 +7913,6 @@ lpfc_els_rcv_rscn(struct lpfc_vport *vport, struct lpfc_iocbq *cmdiocb,
+ 		if ((rscn_cnt < FC_MAX_HOLD_RSCN) &&
+ 		    !(vport->fc_flag & FC_RSCN_DISCOVERY)) {
+ 			vport->fc_flag |= FC_RSCN_MODE;
+-			vport->fc_flag &= ~FC_RSCN_MEMENTO;
+ 			spin_unlock_irq(shost->host_lock);
+ 			if (rscn_cnt) {
+ 				cmd = vport->fc_rscn_id_list[rscn_cnt-1]->virt;
+@@ -7965,7 +7962,6 @@ lpfc_els_rcv_rscn(struct lpfc_vport *vport, struct lpfc_iocbq *cmdiocb,
+ 
+ 	spin_lock_irq(shost->host_lock);
+ 	vport->fc_flag |= FC_RSCN_MODE;
+-	vport->fc_flag &= ~FC_RSCN_MEMENTO;
+ 	spin_unlock_irq(shost->host_lock);
+ 	vport->fc_rscn_id_list[vport->fc_rscn_id_cnt++] = pcmd;
+ 	/* Indicate we are done walking fc_rscn_id_list on this vport */
+diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
+index fb36f26170e4..5cd838eac455 100644
+--- a/drivers/scsi/lpfc/lpfc_hbadisc.c
++++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
+@@ -1354,8 +1354,7 @@ lpfc_linkup_port(struct lpfc_vport *vport)
+ 
+ 	spin_lock_irq(shost->host_lock);
+ 	vport->fc_flag &= ~(FC_PT2PT | FC_PT2PT_PLOGI | FC_ABORT_DISCOVERY |
+-			    FC_RSCN_MEMENTO | FC_RSCN_MODE |
+-			    FC_NLP_MORE | FC_RSCN_DISCOVERY);
++			    FC_RSCN_MODE | FC_NLP_MORE | FC_RSCN_DISCOVERY);
+ 	vport->fc_flag |= FC_NDISC_ACTIVE;
+ 	vport->fc_ns_retry = 0;
+ 	spin_unlock_irq(shost->host_lock);
 -- 
 2.35.1
 
