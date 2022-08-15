@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94EEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F86C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348457AbiHOW2n (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
+        id S244641AbiHOW3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350058AbiHOWVn (ORCPT
+        with ESMTP id S1345968AbiHOWWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:21:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8216124F61;
-        Mon, 15 Aug 2022 12:43:55 -0700 (PDT)
+        Mon, 15 Aug 2022 18:22:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CD26B65D;
+        Mon, 15 Aug 2022 12:43:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13A41B80EA7;
-        Mon, 15 Aug 2022 19:43:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51B3FC433C1;
-        Mon, 15 Aug 2022 19:43:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7052BCE12C4;
+        Mon, 15 Aug 2022 19:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBDEC433D7;
+        Mon, 15 Aug 2022 19:43:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592632;
-        bh=s0y8jrw/NpxTFVmtaDbYnEuZmzyn1sGmwDxqVD6MMgo=;
+        s=korg; t=1660592635;
+        bh=i8C6Dc6qGwwea9fahLykl8aMjWmt2PqEQCvALcK+vZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOR///Pufx/C5mgXDNZgBsRLLQwiwTxSNh5GKsMga6xe0NZf6yEh8+mJ2mqEHST1z
-         VPnLNcsdU+aQ2Hf76jBWEHlL76JgQaU4dhsE6SV8SVEGbklDKr56WHXE5UG72GP6W+
-         LQNJNibc7NDMPbBL1Fs/qwq9q5tH7BwvDi02EsX0=
+        b=AcwLGf+jnK70hsiHQxnptOuheAJs0dIG/iGykdNIbf/CiM+GgHse0u4bv06+RSsg9
+         s8lqSol9TF5AF8EVGuu/TJUCnM8Y04WRMx6GR8BNTU43hjxs3qY6p0GhYOwk9ttmXh
+         MYNHWdF+giPMPkbtOi3ZUowpvIGKz+khNi4QHKEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 0140/1157] netfilter: nf_tables: do not allow SET_ID to refer to another table
-Date:   Mon, 15 Aug 2022 19:51:36 +0200
-Message-Id: <20220815180445.220401630@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Granados <j.granados@samsung.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0819/1095] nvme: catch -ENODEV from nvme_revalidate_zones again
+Date:   Mon, 15 Aug 2022 20:03:38 +0200
+Message-Id: <20220815180503.162495247@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 470ee20e069a6d05ae549f7d0ef2bdbcee6a81b2 upstream.
+[ Upstream commit e06b425bc835ead08b9fd935bf5e47eef473e7a0 ]
 
-When doing lookups for sets on the same batch by using its ID, a set from a
-different table can be used.
+nvme_revalidate_zones can also return -ENODEV if e.g. zone sizes aren't
+constant or not a power of two.  In that case we should jump to marking
+the gendisk hidden and only support pass through.
 
-Then, when the table is removed, a reference to the set may be kept after
-the set is freed, leading to a potential use-after-free.
-
-When looking for sets by ID, use the table that was used for the lookup by
-name, and only return sets belonging to that same table.
-
-This fixes CVE-2022-2586, also reported as ZDI-CAN-17470.
-
-Reported-by: Team Orca of Sea Security (@seasecresponse)
-Fixes: 958bee14d071 ("netfilter: nf_tables: use new transaction infrastructure to handle sets")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 602e57c9799c ("nvme: also mark passthrough-only namespaces ready in nvme_update_ns_info")
+Reported-by: Joel Granados <j.granados@samsung.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Joel Granados <j.granados@samsung.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3842,6 +3842,7 @@ static struct nft_set *nft_set_lookup_by
- }
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index cf7be9b4f5d3..a58a69999dbc 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -1897,8 +1897,10 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
  
- static struct nft_set *nft_set_lookup_byid(const struct net *net,
-+					   const struct nft_table *table,
- 					   const struct nlattr *nla, u8 genmask)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -3853,6 +3854,7 @@ static struct nft_set *nft_set_lookup_by
- 			struct nft_set *set = nft_trans_set(trans);
- 
- 			if (id == nft_trans_set_id(trans) &&
-+			    set->table == table &&
- 			    nft_active_genmask(set, genmask))
- 				return set;
- 		}
-@@ -3873,7 +3875,7 @@ struct nft_set *nft_set_lookup_global(co
- 		if (!nla_set_id)
- 			return set;
- 
--		set = nft_set_lookup_byid(net, nla_set_id, genmask);
-+		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
+ 	if (ns->head->ids.csi == NVME_CSI_ZNS) {
+ 		ret = nvme_update_zone_info(ns, lbaf);
+-		if (ret)
+-			goto out_unfreeze;
++		if (ret) {
++			blk_mq_unfreeze_queue(ns->disk->queue);
++			goto out;
++		}
  	}
- 	return set;
+ 
+ 	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
+@@ -1909,7 +1911,7 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 	if (blk_queue_is_zoned(ns->queue)) {
+ 		ret = nvme_revalidate_zones(ns);
+ 		if (ret && !nvme_first_scan(ns->disk))
+-			return ret;
++			goto out;
+ 	}
+ 
+ 	if (nvme_ns_head_multipath(ns->head)) {
+@@ -1924,9 +1926,9 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 		disk_update_readahead(ns->head->disk);
+ 		blk_mq_unfreeze_queue(ns->head->disk->queue);
+ 	}
+-	return 0;
+ 
+-out_unfreeze:
++	ret = 0;
++out:
+ 	/*
+ 	 * If probing fails due an unsupported feature, hide the block device,
+ 	 * but still allow other access.
+@@ -1936,7 +1938,6 @@ static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
+ 		set_bit(NVME_NS_READY, &ns->flags);
+ 		ret = 0;
+ 	}
+-	blk_mq_unfreeze_queue(ns->disk->queue);
+ 	return ret;
  }
+ 
+-- 
+2.35.1
+
 
 
