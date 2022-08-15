@@ -2,253 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EDBC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 02:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531F9C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 02:05:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240285AbiHPCEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 22:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58864 "EHLO
+        id S233407AbiHPCE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 22:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233845AbiHPCDB (ORCPT
+        with ESMTP id S233144AbiHPCEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 22:03:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AD30220BB9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660600434;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7KUDnR7ITSXzGuGHvfD+T/glFccQWZ3L+AQhNkH7LGU=;
-        b=BQuKQikjiaSo0bcOOm6/xl6hlPgWOy5O+GwhXOt0KbAkqK0t6867P1EmVJInz+cWPu5Rn1
-        iTI0e0vqzeItrgp3cPFPyhURxK0ISCKgFoHBYwdMWo/yxmJ2goCnYRZhnL5wpoGAa2j3hr
-        0T/DLWSojwHz1MXctzwtHvoy6SrVTqw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-52-CfeRcB5rNB2JIkqp3xY8Mg-1; Mon, 15 Aug 2022 17:53:53 -0400
-X-MC-Unique: CfeRcB5rNB2JIkqp3xY8Mg-1
-Received: by mail-wm1-f72.google.com with SMTP id f18-20020a05600c4e9200b003a5f81299caso947351wmq.7
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:53:52 -0700 (PDT)
+        Mon, 15 Aug 2022 22:04:35 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0948A2230BF
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:54:49 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 12so7617940pga.1
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:54:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=fE+O/3kXgE+dfXX70zlf5gVmTreUt0ffvp9RAaWF4P4=;
+        b=GDo1cXAgIfU3xQO9g+UJaDIXYnd6qyBfZkeZBTu/XEGa3fsc642NUadPJU9PDcUMxt
+         3LT1l6boMp7QBD0xlSQjQYOKR5oxzAsEQ92APE0voe82Ep98mKUgaQpjaTiG0ovc1yA+
+         ilWEluzTPd59bDIKNf5CULsNvrHig0oE16T8InjQH3yXzl7IVhxsC/SBdM1QlM2nMjcN
+         ciOEqIkDHvdROr1YK31FVCwU9E2vNv0Pe0Xiri3i9DZJL9EVqbMokxi8STCcZUk/b7sv
+         w6Dd4G8xNF1e3mAh2D+8OpNcCnKli4r0lWaJXKi55fpQ9sUTpm8ZWBaamWc+PF6mBOR9
+         rUwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=7KUDnR7ITSXzGuGHvfD+T/glFccQWZ3L+AQhNkH7LGU=;
-        b=IpYH+7D0v6KTjisdVAwvjr12Bgz0qJbFgRbSVVDeHzfdFFVbhLtVes+e09FPURDh0A
-         qfHWnlep8Jpo9jBUN7xrzcZon/p0q6L1CPg1FZ2U9xbfMA5pwcM6+kMMzBjJs7wnU5hL
-         KUvmYQZ3LOpEp5b5SfqfSmRDxmJhMLRmedYPOF5Wbbk3mUmNpMrK43wtulVEexSOHllo
-         jNpEZZxaPS5Zg+6GKz/JcSksqbrNDkOTQZMa3ekSdhtKjSGLmQyCYg7WTUp70EvyUdNh
-         WcM+XYH6gpZOZ1fU5+Vf17QbKOl/7hFMC5UdhJKEsovmq2Uvke1QlJbcnC1Sa6ZO5Ehh
-         Gr7w==
-X-Gm-Message-State: ACgBeo3HJMMLKuKylAJT62REDANkKINUtSwqzrRYygQPb5zpRj4aLPlJ
-        CD1OV+XinOV5kymJMZvZAxJBT7DQTCZqLp8HiN9O8nUOZu/o/uFIJa41oZ50wMceMFI/dD32PQk
-        XGh6JZam1KZGrRC3tXiUb+SSIkWse0QTWndFAjB3qFAn07ku9erRDnlx+cIVJI4EIFkzuoQ==
-X-Received: by 2002:a05:600c:350:b0:3a5:3473:1c23 with SMTP id u16-20020a05600c035000b003a534731c23mr11674303wmd.9.1660600430117;
-        Mon, 15 Aug 2022 14:53:50 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR53rMzE4U5pnUK7BCCMlD2tXkJnPNsZxIff5xbTlNR7OU7KWTxyNA44s3F5a7zCujaD/ntPbw==
-X-Received: by 2002:a05:600c:350:b0:3a5:3473:1c23 with SMTP id u16-20020a05600c035000b003a534731c23mr11674278wmd.9.1660600429861;
-        Mon, 15 Aug 2022 14:53:49 -0700 (PDT)
-Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id z1-20020adfec81000000b0021e51c039c5sm8409417wrn.80.2022.08.15.14.53.47
+        bh=fE+O/3kXgE+dfXX70zlf5gVmTreUt0ffvp9RAaWF4P4=;
+        b=LqYlRzENbYJ9MWaN2Nrr3/HGORGPFi5f4GmypowGL9qtYhfKzqfQvsk41yym1pV+Ec
+         Kr5KmlXxoNV4FjxpFKK+E8mLmHyEk93cBKepRvPWjhMzVuHUNOkFultMR1tCxo9yZODT
+         YFEonDchN+8rw3wbSn3hLtTiOogtoIW/XUKFz6UvaY74pY1jT+QxYUlv0wm3WdHkayvv
+         gGDxV2B/TW3K52yywBFA6zxxv4qv4NTsYvN7Z8kuwDO0OEYMlXjLSmqk1MnjiR+5GrdT
+         3L4BRTowV3XwkZLl2vvEZw/HCkspcth/4EY9uiz/4DYJ+yvVAKuVXR0sLpL9WeUw/nV9
+         Rj2Q==
+X-Gm-Message-State: ACgBeo3ohJLNy/VSHqSzGpUiPsdePkcD5cxhlRRD8Ap3O7JTxTScooBg
+        p0IWAxFaLwqwbk9QitANFHRpQA==
+X-Google-Smtp-Source: AA6agR4LEfebbNxgwZm00oHENwptapxAdoFIvEJrRB8wE/oRxdrmd9As66oLGQflSobKmeTJwzNSPw==
+X-Received: by 2002:a63:cd4b:0:b0:421:95f3:1431 with SMTP id a11-20020a63cd4b000000b0042195f31431mr15336377pgj.486.1660600487602;
+        Mon, 15 Aug 2022 14:54:47 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id c139-20020a624e91000000b0052dddf69db2sm6966296pfb.57.2022.08.15.14.54.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 14:53:49 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 17:53:46 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andres Freund <andres@anarazel.de>
-Subject: [PATCH v2 4/5] virtio_pci: Revert "virtio_pci: support the arg sizes
- of find_vqs()"
-Message-ID: <20220815215251.154451-7-mst@redhat.com>
-References: <20220815215251.154451-1-mst@redhat.com>
+        Mon, 15 Aug 2022 14:54:47 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 21:54:43 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Yan Zhao <yan.y.zhao@intel.com>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH v3 3/8] KVM: x86/mmu: Rename NX huge pages
+ fields/functions for consistency
+Message-ID: <YvrAoyhgNzTcvzkU@google.com>
+References: <20220805230513.148869-1-seanjc@google.com>
+ <20220805230513.148869-4-seanjc@google.com>
+ <YvhL6jKfKCj0+74w@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815215251.154451-1-mst@redhat.com>
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+In-Reply-To: <YvhL6jKfKCj0+74w@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit cdb44806fca2d0ad29ca644cbf1505433902ee0c: the legacy
-path is wrong and in fact can not support the proposed API since for a
-legacy device we never communicate the vq size to the hypervisor.
+On Sun, Aug 14, 2022, Mingwei Zhang wrote:
+> On Fri, Aug 05, 2022, Sean Christopherson wrote:
+> > Rename most of the variables/functions involved in the NX huge page
+> > mitigation to provide consistency, e.g. lpage vs huge page, and NX huge
+> > vs huge NX, and also to provide clarity, e.g. to make it obvious the flag
+> > applies only to the NX huge page mitigation, not to any condition that
+> > prevents creating a huge page.
+> > 
+> > Leave the nx_lpage_splits stat alone as the name is ABI and thus set in
+> > stone.
+> > 
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >  arch/x86/include/asm/kvm_host.h |  8 ++--
+> >  arch/x86/kvm/mmu/mmu.c          | 70 +++++++++++++++++----------------
+> >  arch/x86/kvm/mmu/mmu_internal.h | 22 +++++++----
+> >  arch/x86/kvm/mmu/paging_tmpl.h  |  2 +-
+> >  arch/x86/kvm/mmu/tdp_mmu.c      |  8 ++--
+> >  5 files changed, 59 insertions(+), 51 deletions(-)
+> > 
+> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> > index e8281d64a431..5634347e5d05 100644
+> > --- a/arch/x86/include/asm/kvm_host.h
+> > +++ b/arch/x86/include/asm/kvm_host.h
+> > @@ -1143,7 +1143,7 @@ struct kvm_arch {
+> >  	struct hlist_head mmu_page_hash[KVM_NUM_MMU_PAGES];
+> >  	struct list_head active_mmu_pages;
+> >  	struct list_head zapped_obsolete_pages;
+> > -	struct list_head lpage_disallowed_mmu_pages;
+> > +	struct list_head possible_nx_huge_pages;
+> 
+> Honestly, I am struggling to understand this one. 'possible_*' indicates
+> that there are other possibilities. But what are those possibilities?
 
-Reported-by: Andres Freund <andres@anarazel.de>
-Fixes: cdb44806fca2 ("virtio_pci: support the arg sizes of find_vqs()")
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/virtio/virtio_pci_common.c | 18 ++++++++----------
- drivers/virtio/virtio_pci_common.h |  1 -
- drivers/virtio/virtio_pci_legacy.c |  6 +-----
- drivers/virtio/virtio_pci_modern.c | 10 +++-------
- 4 files changed, 12 insertions(+), 23 deletions(-)
+No, possible is being used as an adjective in this case.  possible_nx_huge_pages
+is the list of shadow pages for which it's possible to replace the shadow page
+with an NX huge page.
 
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index 00ad476a815d..7ad734584823 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -174,7 +174,6 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
- static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned int index,
- 				     void (*callback)(struct virtqueue *vq),
- 				     const char *name,
--				     u32 size,
- 				     bool ctx,
- 				     u16 msix_vec)
- {
-@@ -187,7 +186,7 @@ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned int in
- 	if (!info)
- 		return ERR_PTR(-ENOMEM);
- 
--	vq = vp_dev->setup_vq(vp_dev, info, index, callback, name, size, ctx,
-+	vq = vp_dev->setup_vq(vp_dev, info, index, callback, name, ctx,
- 			      msix_vec);
- 	if (IS_ERR(vq))
- 		goto out_info;
-@@ -284,7 +283,7 @@ void vp_del_vqs(struct virtio_device *vdev)
- 
- static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
- 		struct virtqueue *vqs[], vq_callback_t *callbacks[],
--		const char * const names[], u32 sizes[], bool per_vq_vectors,
-+		const char * const names[], bool per_vq_vectors,
- 		const bool *ctx,
- 		struct irq_affinity *desc)
- {
-@@ -327,8 +326,8 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
- 		else
- 			msix_vec = VP_MSIX_VQ_VECTOR;
- 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
--				     sizes ? sizes[i] : 0,
--				     ctx ? ctx[i] : false, msix_vec);
-+				     ctx ? ctx[i] : false,
-+				     msix_vec);
- 		if (IS_ERR(vqs[i])) {
- 			err = PTR_ERR(vqs[i]);
- 			goto error_find;
-@@ -358,7 +357,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
- 
- static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned int nvqs,
- 		struct virtqueue *vqs[], vq_callback_t *callbacks[],
--		const char * const names[], u32 sizes[], const bool *ctx)
-+		const char * const names[], const bool *ctx)
- {
- 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
- 	int i, err, queue_idx = 0;
-@@ -380,7 +379,6 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned int nvqs,
- 			continue;
- 		}
- 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
--				     sizes ? sizes[i] : 0,
- 				     ctx ? ctx[i] : false,
- 				     VIRTIO_MSI_NO_VECTOR);
- 		if (IS_ERR(vqs[i])) {
-@@ -404,15 +402,15 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
- 	int err;
- 
- 	/* Try MSI-X with one vector per queue. */
--	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, sizes, true, ctx, desc);
-+	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, true, ctx, desc);
- 	if (!err)
- 		return 0;
- 	/* Fallback: MSI-X with one vector for config, one shared for queues. */
--	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, sizes, false, ctx, desc);
-+	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, false, ctx, desc);
- 	if (!err)
- 		return 0;
- 	/* Finally fall back to regular interrupts. */
--	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, sizes, ctx);
-+	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, ctx);
- }
- 
- const char *vp_bus_name(struct virtio_device *vdev)
-diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
-index c0448378b698..a5ff838b85a5 100644
---- a/drivers/virtio/virtio_pci_common.h
-+++ b/drivers/virtio/virtio_pci_common.h
-@@ -80,7 +80,6 @@ struct virtio_pci_device {
- 				      unsigned int idx,
- 				      void (*callback)(struct virtqueue *vq),
- 				      const char *name,
--				      u32 size,
- 				      bool ctx,
- 				      u16 msix_vec);
- 	void (*del_vq)(struct virtio_pci_vq_info *info);
-diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
-index d75e5c4e637f..2257f1b3d8ae 100644
---- a/drivers/virtio/virtio_pci_legacy.c
-+++ b/drivers/virtio/virtio_pci_legacy.c
-@@ -112,7 +112,6 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 				  unsigned int index,
- 				  void (*callback)(struct virtqueue *vq),
- 				  const char *name,
--				  u32 size,
- 				  bool ctx,
- 				  u16 msix_vec)
- {
-@@ -126,13 +125,10 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 	if (!num || vp_legacy_get_queue_enable(&vp_dev->ldev, index))
- 		return ERR_PTR(-ENOENT);
- 
--	if (!size || size > num)
--		size = num;
--
- 	info->msix_vector = msix_vec;
- 
- 	/* create the vring */
--	vq = vring_create_virtqueue(index, size,
-+	vq = vring_create_virtqueue(index, num,
- 				    VIRTIO_PCI_VRING_ALIGN, &vp_dev->vdev,
- 				    true, false, ctx,
- 				    vp_notify, callback, name);
-diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-index f7965c5dd36b..be51ec849252 100644
---- a/drivers/virtio/virtio_pci_modern.c
-+++ b/drivers/virtio/virtio_pci_modern.c
-@@ -293,7 +293,6 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 				  unsigned int index,
- 				  void (*callback)(struct virtqueue *vq),
- 				  const char *name,
--				  u32 size,
- 				  bool ctx,
- 				  u16 msix_vec)
- {
-@@ -311,18 +310,15 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 	if (!num || vp_modern_get_queue_enable(mdev, index))
- 		return ERR_PTR(-ENOENT);
- 
--	if (!size || size > num)
--		size = num;
--
--	if (size & (size - 1)) {
--		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", size);
-+	if (num & (num - 1)) {
-+		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", num);
- 		return ERR_PTR(-EINVAL);
- 	}
- 
- 	info->msix_vector = msix_vec;
- 
- 	/* create the vring */
--	vq = vring_create_virtqueue(index, size,
-+	vq = vring_create_virtqueue(index, num,
- 				    SMP_CACHE_BYTES, &vp_dev->vdev,
- 				    true, true, ctx,
- 				    vp_notify, callback, name);
--- 
-MST
+The noun version would yield a name like nx_huge_page_possiblities.
 
+> I feel this name is more confusing than the original one. Maybe just keep
+
+Ignoring lpage => huge_page, the current name is terribly inaccurate.  The list
+doesn't contain all disallowed huge pages, nor does it even contain all disallowed
+NX huge pages, it specifically tracks shadow pages that might be able to be
+replaced with an NX huge page.
+
+I'm open to other names, but whatever we choose should be paired with
+account_nx_huge_page()'s param that is currently named "nx_huge_page_possible".
