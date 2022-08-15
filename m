@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED0FC2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A4CC2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350548AbiHOWgn (ORCPT
+        id S1350507AbiHOWgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        Mon, 15 Aug 2022 18:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351039AbiHOW1a (ORCPT
+        with ESMTP id S1350976AbiHOW1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48A219006;
-        Mon, 15 Aug 2022 12:46:20 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F401512A54C;
+        Mon, 15 Aug 2022 12:45:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA59B80EB2;
-        Mon, 15 Aug 2022 19:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 798B2C433D6;
-        Mon, 15 Aug 2022 19:46:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB6E8B80EA7;
+        Mon, 15 Aug 2022 19:45:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01708C433D6;
+        Mon, 15 Aug 2022 19:45:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592778;
-        bh=iErS5oo2Oc5DNTVd9UDyKVUFsYmh4vo+LGU2SJ245lM=;
+        s=korg; t=1660592752;
+        bh=6ACOjqndLQ3Ih+OOe30yxTbZi6HcEEwp2lVFUhXVsv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VfZRar0anHv9PgwuEQaLz5t29prNGmduatse0/zCN4BdK0nDAn9bVIgKGwxtn69B
-         VVfGjo2wHn3156MD4duwlkcluFeRXUf7l5vbwISg0iDdw81jTiyRwAl+NW2B9DhAxr
-         ah+zuEh+MW8H/B0LHEIzryNZA0aVCq3sGKwzc3A8=
+        b=IeJJ0VjE2v8vHYmDKiQrD39UAj00laEBFlQ02FjbR7uiYb1ZOCb0oWPzQRqyVzMGH
+         ubE4U/qc7C3RNBJzqtmvQbtgiyFcoqE9RPPp7kwbfLog+GkJ6dJWlwZVOorf1UnqQ1
+         PS73dldZaDuQ241CxNxiglJ07MdYKacfdMJRl/KE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0163/1157] ARM: dts: imx6ul: add missing properties for sram
-Date:   Mon, 15 Aug 2022 19:51:59 +0200
-Message-Id: <20220815180446.204500812@linuxfoundation.org>
+Subject: [PATCH 5.18 0840/1095] rpmsg: char: Add mutex protection for rpmsg_eptdev_open()
+Date:   Mon, 15 Aug 2022 20:03:59 +0200
+Message-Id: <20220815180504.090182580@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
+[ Upstream commit abe13e9a561d6b3e82b21362c0d6dd3ecd8a5b13 ]
 
-All 3 properties are required by sram.yaml. Fixes the dtbs_check
-warning:
-sram@900000: '#address-cells' is a required property
-sram@900000: '#size-cells' is a required property
-sram@900000: 'ranges' is a required property
+There is no mutex protection for rpmsg_eptdev_open(),
+especially for eptdev->ept read and write operation.
+It may cause issues when multiple instances call
+rpmsg_eptdev_open() in parallel,the return state
+may be success or EBUSY.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 964e8bedd5a1 ("rpmsg: char: Return an error if device already open")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/rpmsg/rpmsg_char.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index afeec01f6522..1d435a46fc5c 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -149,6 +149,9 @@ soc {
- 		ocram: sram@900000 {
- 			compatible = "mmio-sram";
- 			reg = <0x00900000 0x20000>;
-+			ranges = <0 0x00900000 0x20000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 		};
+diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
+index b6183d4f62a2..4f2189111494 100644
+--- a/drivers/rpmsg/rpmsg_char.c
++++ b/drivers/rpmsg/rpmsg_char.c
+@@ -120,8 +120,11 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
+ 	struct rpmsg_device *rpdev = eptdev->rpdev;
+ 	struct device *dev = &eptdev->dev;
  
- 		intc: interrupt-controller@a01000 {
+-	if (eptdev->ept)
++	mutex_lock(&eptdev->ept_lock);
++	if (eptdev->ept) {
++		mutex_unlock(&eptdev->ept_lock);
+ 		return -EBUSY;
++	}
+ 
+ 	get_device(dev);
+ 
+@@ -137,11 +140,13 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
+ 	if (!ept) {
+ 		dev_err(dev, "failed to open %s\n", eptdev->chinfo.name);
+ 		put_device(dev);
++		mutex_unlock(&eptdev->ept_lock);
+ 		return -EINVAL;
+ 	}
+ 
+ 	eptdev->ept = ept;
+ 	filp->private_data = eptdev;
++	mutex_unlock(&eptdev->ept_lock);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
