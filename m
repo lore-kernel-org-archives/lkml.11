@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2078C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E073C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243688AbiHPAtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        id S244238AbiHPAt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346890AbiHPAps (ORCPT
+        with ESMTP id S1347029AbiHPApu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:48 -0400
+        Mon, 15 Aug 2022 20:45:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3847739B96;
-        Mon, 15 Aug 2022 13:42:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B015D477F;
+        Mon, 15 Aug 2022 13:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEFE8B8113E;
-        Mon, 15 Aug 2022 20:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2280BC433D6;
-        Mon, 15 Aug 2022 20:42:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B04B8114A;
+        Mon, 15 Aug 2022 20:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67BFEC433C1;
+        Mon, 15 Aug 2022 20:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596130;
-        bh=iLeyVKw30Yurlo2472vxw9O6/4uq54uc70v/ViiSn4M=;
+        s=korg; t=1660596059;
+        bh=D6XnQg1CsGu7Vx9lk0X2XQu5E8oNyv90wVb7G96iflc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxEvkxxq2Bt+7okCal0yYQRDs/IUpaUUnlHTlRlYsJ+IRNgc0CNbhAwuT+NhBW3+5
-         vliFRxFUDbzjMlfO5QPt7DSGOqVV91TVAsi/i5tTqAeDbsB7mceSXqX1lSNui8BNbs
-         SZleGU7MnYKVWBvKo+EeAVtBYT3wEwT1xoD4tvvw=
+        b=j60y1S9hQGWzVmxjE/cxXoxV1Dn3ZJl5uoNjLbSmMHHUEw0Zr8QXqZwJiDMXy+p3j
+         0zqn+y9ziJFxPUGwA6Hm8DeDGP+Q0bjZ5VfGqqkYF6jjBmFcpkEHzI/rEmRfMFkl3t
+         JofCCdYf8Hi/6Z3hazXrYQgluSOFjcQwB4n1BlsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Miklos Szeredi <mszeredi@redhat.com>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0983/1157] fuse: Remove the control interface for virtio-fs
-Date:   Mon, 15 Aug 2022 20:05:39 +0200
-Message-Id: <20220815180519.056755357@linuxfoundation.org>
+Subject: [PATCH 5.19 0960/1157] net: 9p: fix refcount leak in p9_read_work() error handling
+Date:   Mon, 15 Aug 2022 20:05:16 +0200
+Message-Id: <20220815180518.042090237@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,48 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
+[ Upstream commit 4ac7573e1f9333073fa8d303acc941c9b7ab7f61 ]
 
-The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
-unmount") tries to remove the control interface for virtio-fs since it does
-not support aborting requests which are being processed. But it doesn't
-work now.
+p9_req_put need to be called when m->rreq->rc.sdata is NULL to avoid
+temporary refcount leak.
 
-This patch fixes it by skipping creating the control interface if
-fuse_conn->no_control is set.
-
-Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Link: https://lkml.kernel.org/r/20220712104438.30800-1-hbh25y@gmail.com
+Fixes: 728356dedeff ("9p: Add refcount to p9_req_t")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+[Dominique: commit wording adjustments, p9_req_put argument fixes for rebase]
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/control.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/9p/trans_fd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/fuse/control.c b/fs/fuse/control.c
-index 7cede9a3bc96..247ef4f76761 100644
---- a/fs/fuse/control.c
-+++ b/fs/fuse/control.c
-@@ -258,7 +258,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
- 	struct dentry *parent;
- 	char name[32];
- 
--	if (!fuse_control_sb)
-+	if (!fuse_control_sb || fc->no_control)
- 		return 0;
- 
- 	parent = fuse_control_sb->s_root;
-@@ -296,7 +296,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
- {
- 	int i;
- 
--	if (!fuse_control_sb)
-+	if (!fuse_control_sb || fc->no_control)
- 		return;
- 
- 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 007c3f45fe05..e758978b44be 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -343,6 +343,7 @@ static void p9_read_work(struct work_struct *work)
+ 			p9_debug(P9_DEBUG_ERROR,
+ 				 "No recv fcall for tag %d (req %p), disconnecting!\n",
+ 				 m->rc.tag, m->rreq);
++			p9_req_put(m->client, m->rreq);
+ 			m->rreq = NULL;
+ 			err = -EIO;
+ 			goto error;
 -- 
 2.35.1
 
