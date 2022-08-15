@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE823C2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F188BC2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350287AbiHOWbh (ORCPT
+        id S1350494AbiHOWbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
+        Mon, 15 Aug 2022 18:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350112AbiHOW0U (ORCPT
+        with ESMTP id S1350228AbiHOW0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:26:20 -0400
+        Mon, 15 Aug 2022 18:26:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29DD12845E;
-        Mon, 15 Aug 2022 12:45:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CA9128EC6;
+        Mon, 15 Aug 2022 12:45:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E224610A3;
-        Mon, 15 Aug 2022 19:45:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592E1C433D6;
-        Mon, 15 Aug 2022 19:45:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F3061222;
+        Mon, 15 Aug 2022 19:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C411C43140;
+        Mon, 15 Aug 2022 19:45:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592701;
-        bh=8SMpDs+qLkU3eSZtrCGgQx5CHK2Yl0vTWXKJJG+w0B0=;
+        s=korg; t=1660592711;
+        bh=GoIK9W5tFF1ThOTmt9iGmRMGayudum/t1PMhPQgfubw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFlR+iTf3cQ00Cd2suObW9DjbN9r/TBzyWaITUewwOKORRY9Ayv4GFLiLiORcMliZ
-         yel2YoHI+hrw/QsyFMOIztjGFrlOf8XCAYnsgFvyQs4CehrqYwyhwMDXC/lHmomijd
-         8Azn5AoI20jbaNjFnnxGgLLndtwZ1kX5ShutJPdQ=
+        b=tDtR42bB7zSmpLIWurUL9CscBs8PSxD6eW/iyaHnRsWM8hMUcib8giUEOqsZTgr7i
+         kHTMrEM4/xJgN+daIoAFEbJploEOec5K1Aq5b+04QDpU6dzmJU15RDwwsIZzj1Z/Mh
+         rRhWDSSQuPZHpzdLe/CQ3OrA3zhgvQXxSyEFsDws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, hewenliang <hewenliang4@huawei.com>,
-        Haibin Zhang <haibinzhang@tencent.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0152/1157] arm64: fix oops in concurrently setting insn_emulation sysctls
-Date:   Mon, 15 Aug 2022 19:51:48 +0200
-Message-Id: <20220815180445.747084825@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0834/1095] serial: pic32: free up irq names correctly
+Date:   Mon, 15 Aug 2022 20:03:53 +0200
+Message-Id: <20220815180503.829667712@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: haibinzhang (张海斌) <haibinzhang@tencent.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
+[ Upstream commit fe36fa18ca77ca3ca9f90aab6cf39031416e432b ]
 
-emulation_proc_handler() changes table->data for proc_dointvec_minmax
-and can generate the following Oops if called concurrently with itself:
+struct pic32_sport contains built-up names for irqs. These are freed
+only in error path of pic32_uart_startup(). And even there, the freeing
+happens before free_irq().
 
- | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- | Internal error: Oops: 96000006 [#1] SMP
- | Call trace:
- | update_insn_emulation_mode+0xc0/0x148
- | emulation_proc_handler+0x64/0xb8
- | proc_sys_call_handler+0x9c/0xf8
- | proc_sys_write+0x18/0x20
- | __vfs_write+0x20/0x48
- | vfs_write+0xe4/0x1d0
- | ksys_write+0x70/0xf8
- | __arm64_sys_write+0x20/0x28
- | el0_svc_common.constprop.0+0x7c/0x1c0
- | el0_svc_handler+0x2c/0xa0
- | el0_svc+0x8/0x200
+So fix this by:
+* moving frees after free_irq(), and
+* add frees to pic32_uart_shutdown() -- the opposite of
+  pic32_uart_startup().
 
-To fix this issue, keep the table->data as &insn->current_mode and
-use container_of() to retrieve the insn pointer. Another mutex is
-used to protect against the current_mode update but not for retrieving
-insn_emulation as table->data is no longer changing.
-
-Co-developed-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
-Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220503063122.20957-11-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/pic32_uart.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
-index 6875a16b09d2..fb0e7c7b2e20 100644
---- a/arch/arm64/kernel/armv8_deprecated.c
-+++ b/arch/arm64/kernel/armv8_deprecated.c
-@@ -59,6 +59,7 @@ struct insn_emulation {
- static LIST_HEAD(insn_emulation);
- static int nr_insn_emulated __initdata;
- static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
-+static DEFINE_MUTEX(insn_emulation_mutex);
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index b7a3a1b959b1..e3535bd8c8a2 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -493,14 +493,14 @@ static int pic32_uart_startup(struct uart_port *port)
+ 	return 0;
  
- static void register_emulation_hooks(struct insn_emulation_ops *ops)
- {
-@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 				  loff_t *ppos)
- {
- 	int ret = 0;
--	struct insn_emulation *insn = (struct insn_emulation *) table->data;
-+	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
- 	enum insn_emulation_mode prev_mode = insn->current_mode;
- 
--	table->data = &insn->current_mode;
-+	mutex_lock(&insn_emulation_mutex);
- 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- 
- 	if (ret || !write || prev_mode == insn->current_mode)
-@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 		update_insn_emulation_mode(insn, INSN_UNDEF);
- 	}
- ret:
--	table->data = insn;
-+	mutex_unlock(&insn_emulation_mutex);
+ out_t:
+-	kfree(sport->irq_tx_name);
+ 	free_irq(sport->irq_tx, port);
++	kfree(sport->irq_tx_name);
+ out_r:
+-	kfree(sport->irq_rx_name);
+ 	free_irq(sport->irq_rx, port);
++	kfree(sport->irq_rx_name);
+ out_f:
+-	kfree(sport->irq_fault_name);
+ 	free_irq(sport->irq_fault, port);
++	kfree(sport->irq_fault_name);
+ out_done:
  	return ret;
  }
+@@ -519,8 +519,11 @@ static void pic32_uart_shutdown(struct uart_port *port)
  
-@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
- 		sysctl->maxlen = sizeof(int);
+ 	/* free all 3 interrupts for this UART */
+ 	free_irq(sport->irq_fault, port);
++	kfree(sport->irq_fault_name);
+ 	free_irq(sport->irq_tx, port);
++	kfree(sport->irq_tx_name);
+ 	free_irq(sport->irq_rx, port);
++	kfree(sport->irq_rx_name);
+ }
  
- 		sysctl->procname = insn->ops->name;
--		sysctl->data = insn;
-+		sysctl->data = &insn->current_mode;
- 		sysctl->extra1 = &insn->min;
- 		sysctl->extra2 = &insn->max;
- 		sysctl->proc_handler = emulation_proc_handler;
+ /* serial core request to change current uart setting */
 -- 
 2.35.1
 
