@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EEBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFBAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348348AbiHOWXH (ORCPT
+        id S1348005AbiHOWXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
+        Mon, 15 Aug 2022 18:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350693AbiHOWSN (ORCPT
+        with ESMTP id S1350726AbiHOWSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8255123CA2;
-        Mon, 15 Aug 2022 12:41:18 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508D2124203;
+        Mon, 15 Aug 2022 12:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CB83B80EA8;
-        Mon, 15 Aug 2022 19:41:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3EA4C433D6;
-        Mon, 15 Aug 2022 19:41:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73A92B80EA9;
+        Mon, 15 Aug 2022 19:41:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC9DC433C1;
+        Mon, 15 Aug 2022 19:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592476;
-        bh=hwUVotYLPPfsowZItZNAHswZcEHPnU+JPQbbWO55Yh0=;
+        s=korg; t=1660592479;
+        bh=VZdlmM1yI6DDiCaE7reYOZ8qKqKYhTpxSZQNW8mwYrA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VYjiEfsLDucngGw8/pwzs5BOPfNtIpxWP2DQr8FgWaLidTsBdgrDkF6dZrAVy5TWK
-         qVaaD//4ORr83zkIN0QC1dPWnyp4j4L792Oj1wr78nxbmnJIUD+R9+l4i5ObqlO9Qd
-         CGaX3R4YDK+4/gmrenmMi5LsVKWOiVs7Qrr8Y188=
+        b=x+Y5fbziQhKsn//QXaDcGNghp+kyOY5yRCSRH/8HoerahCmtbBCSgtEARoD9ZdK2b
+         ch3risgZj+SJmQ8z1+pEuIboDYtDYJQIqgsMseruJRn37xCG5hupBo58K4JTna378l
+         szBWfvhF179ACqDCKT0RF0K6hZ3+ilXZOeBboz7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christopher Obbard <chris.obbard@collabora.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0763/1095] um: random: Dont initialise hwrng struct with zero
-Date:   Mon, 15 Aug 2022 20:02:42 +0200
-Message-Id: <20220815180500.829772755@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-hyperv@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>
+Subject: [PATCH 5.19 0087/1157] drm/hyperv-drm: Include framebuffer and EDID headers
+Date:   Mon, 15 Aug 2022 19:50:43 +0200
+Message-Id: <20220815180443.041121873@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christopher Obbard <chris.obbard@collabora.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-[ Upstream commit 9e70cbd11b03889c92462cf52edb2bd023c798fa ]
+commit 009a3a52791f31c57d755a73f6bc66fbdd8bd76c upstream.
 
-Initialising the hwrng struct with zeros causes a
-compile-time sparse warning:
+Fix a number of compile errors by including the correct header
+files. Examples are shown below.
 
- $ ARCH=um make -j10 W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
- ...
- CHECK   arch/um/drivers/random.c
- arch/um/drivers/random.c:31:31: sparse: warning: Using plain integer as NULL pointer
+  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_blit_to_vram_rect':
+  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:25:48: error: invalid use of undefined type 'struct drm_framebuffer'
+   25 |         struct hyperv_drm_device *hv = to_hv(fb->dev);
+      |                                                ^~
 
-Fix the warning by not initialising the hwrng struct
-with zeros as it is initialised anyway during module
-init.
+  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_connector_get_modes':
+  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:59:17: error: implicit declaration of function 'drm_add_modes_noedid' [-Werror=implicit-function-declaration]
+   59 |         count = drm_add_modes_noedid(connector,
+      |                 ^~~~~~~~~~~~~~~~~~~~
 
-Fixes: 72d3e093afae ("um: random: Register random as hwrng-core device")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:62:9: error: implicit declaration of function 'drm_set_preferred_mode'; did you mean 'drm_mm_reserve_node'? [-Werror=implicit-function-declaration]
+   62 |         drm_set_preferred_mode(connector, hv->preferred_width,
+      |         ^~~~~~~~~~~~~~~~~~~~~~
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic video device")
+Fixes: 720cf96d8fec ("drm: Drop drm_framebuffer.h from drm_crtc.h")
+Fixes: 255490f9150d ("drm: Drop drm_edid.h from drm_crtc.h")
+Cc: Deepak Rawat <drawat.floss@gmail.com>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: linux-hyperv@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v5.14+
+Acked-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220622083413.12573-1-tzimmermann@suse.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/hyperv/hyperv_drm_modeset.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/um/drivers/random.c b/arch/um/drivers/random.c
-index 433a3f8f2ef3..32b3341fe970 100644
---- a/arch/um/drivers/random.c
-+++ b/arch/um/drivers/random.c
-@@ -28,7 +28,7 @@
-  * protects against a module being loaded twice at the same time.
-  */
- static int random_fd = -1;
--static struct hwrng hwrng = { 0, };
-+static struct hwrng hwrng;
- static DECLARE_COMPLETION(have_data);
+--- a/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
++++ b/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
+@@ -7,9 +7,11 @@
  
- static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
--- 
-2.35.1
-
+ #include <drm/drm_damage_helper.h>
+ #include <drm/drm_drv.h>
++#include <drm/drm_edid.h>
+ #include <drm/drm_fb_helper.h>
+ #include <drm/drm_format_helper.h>
+ #include <drm/drm_fourcc.h>
++#include <drm/drm_framebuffer.h>
+ #include <drm/drm_gem_atomic_helper.h>
+ #include <drm/drm_gem_framebuffer_helper.h>
+ #include <drm/drm_gem_shmem_helper.h>
 
 
