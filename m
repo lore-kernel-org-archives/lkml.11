@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF7EC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0D4C282E7
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344909AbiHOTps (ORCPT
+        id S1344982AbiHOTp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        Mon, 15 Aug 2022 15:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345078AbiHOTmV (ORCPT
+        with ESMTP id S1345187AbiHOTme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:42:21 -0400
+        Mon, 15 Aug 2022 15:42:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D3D6AA17;
-        Mon, 15 Aug 2022 11:48:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B1F6B646;
+        Mon, 15 Aug 2022 11:48:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41C25B810A7;
-        Mon, 15 Aug 2022 18:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49357C433D6;
-        Mon, 15 Aug 2022 18:47:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0C4CB810A0;
+        Mon, 15 Aug 2022 18:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3464FC433C1;
+        Mon, 15 Aug 2022 18:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589279;
-        bh=yvmeV3EfBEO14uIQ/mpXL74P8WfYvkvN0eh0Mv9qcl8=;
+        s=korg; t=1660589288;
+        bh=5AooMPA3ZrJcRMxrL843yoAkL5TcRwMlZgvuvKA3e4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X2UddrWvequf87pzJ39LNvHWlwtXQUtxvJNxp0d60r95RDhgu93cEpAKStk4bDVFA
-         4/trO4hL/smyzYXyctWAAXOLfyNoiBeE8lGFA64/GpQeyBCdGm7jUGhimf/hJuUMUH
-         Yz366+56Qxdr0sKkzioM/B5tTBr+lpyH2adHWoMQ=
+        b=NKzL1YqfnYZX2lx6BNn87/mGOQaJrrYuk1Phqswj64Q1zT4su6yBhHQvlVeDHByOe
+         kd4Mhxim+nKhsf8EGGFvbcOPOsDWuwMRrZ6no1ZysgL93hIXzAELeEVub+kBsvGjN7
+         VvDaxF4LJJJo8Jos6Id4+EcIgFbJWJ3ni2zy1eHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tianchen Ding <dtcccc@linux.alibaba.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 661/779] sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is idle
-Date:   Mon, 15 Aug 2022 20:05:05 +0200
-Message-Id: <20220815180405.614039131@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 672/779] scsi: qla2xxx: Fix discovery issues in FC-AL topology
+Date:   Mon, 15 Aug 2022 20:05:16 +0200
+Message-Id: <20220815180406.063549006@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,235 +52,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianchen Ding <dtcccc@linux.alibaba.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit f3dd3f674555bd9455c5ae7fafce0696bd9931b3 ]
+commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
 
-Wakelist can help avoid cache bouncing and offload the overhead of waker
-cpu. So far, using wakelist within the same llc only happens on
-WF_ON_CPU, and this limitation could be removed to further improve
-wakeup performance.
+A direct attach tape device, when gets swapped with another, was not
+discovered. Fix this by looking at loop map and reinitialize link if there
+are devices present.
 
-The commit 518cd6234178 ("sched: Only queue remote wakeups when
-crossing cache boundaries") disabled queuing tasks on wakelist when
-the cpus share llc. This is because, at that time, the scheduler must
-send IPIs to do ttwu_queue_wakelist. Nowadays, ttwu_queue_wakelist also
-supports TIF_POLLING, so this is not a problem now when the wakee cpu is
-in idle polling.
-
-Benefits:
-  Queuing the task on idle cpu can help improving performance on waker cpu
-  and utilization on wakee cpu, and further improve locality because
-  the wakee cpu can handle its own rq. This patch helps improving rt on
-  our real java workloads where wakeup happens frequently.
-
-  Consider the normal condition (CPU0 and CPU1 share same llc)
-  Before this patch:
-
-         CPU0                                       CPU1
-
-    select_task_rq()                                idle
-    rq_lock(CPU1->rq)
-    enqueue_task(CPU1->rq)
-    notify CPU1 (by sending IPI or CPU1 polling)
-
-                                                    resched()
-
-  After this patch:
-
-         CPU0                                       CPU1
-
-    select_task_rq()                                idle
-    add to wakelist of CPU1
-    notify CPU1 (by sending IPI or CPU1 polling)
-
-                                                    rq_lock(CPU1->rq)
-                                                    enqueue_task(CPU1->rq)
-                                                    resched()
-
-  We see CPU0 can finish its work earlier. It only needs to put task to
-  wakelist and return.
-  While CPU1 is idle, so let itself handle its own runqueue data.
-
-This patch brings no difference about IPI.
-  This patch only takes effect when the wakee cpu is:
-  1) idle polling
-  2) idle not polling
-
-  For 1), there will be no IPI with or without this patch.
-
-  For 2), there will always be an IPI before or after this patch.
-  Before this patch: waker cpu will enqueue task and check preempt. Since
-  "idle" will be sure to be preempted, waker cpu must send a resched IPI.
-  After this patch: waker cpu will put the task to the wakelist of wakee
-  cpu, and send an IPI.
-
-Benchmark:
-We've tested schbench, unixbench, and hachbench on both x86 and arm64.
-
-On x86 (Intel Xeon Platinum 8269CY):
-  schbench -m 2 -t 8
-
-    Latency percentiles (usec)              before        after
-        50.0000th:                             8            6
-        75.0000th:                            10            7
-        90.0000th:                            11            8
-        95.0000th:                            12            8
-        *99.0000th:                           13           10
-        99.5000th:                            15           11
-        99.9000th:                            18           14
-
-  Unixbench with full threads (104)
-                                            before        after
-    Dhrystone 2 using register variables  3011862938    3009935994  -0.06%
-    Double-Precision Whetstone              617119.3      617298.5   0.03%
-    Execl Throughput                         27667.3       27627.3  -0.14%
-    File Copy 1024 bufsize 2000 maxblocks   785871.4      784906.2  -0.12%
-    File Copy 256 bufsize 500 maxblocks     210113.6      212635.4   1.20%
-    File Copy 4096 bufsize 8000 maxblocks  2328862.2     2320529.1  -0.36%
-    Pipe Throughput                      145535622.8   145323033.2  -0.15%
-    Pipe-based Context Switching           3221686.4     3583975.4  11.25%
-    Process Creation                        101347.1      103345.4   1.97%
-    Shell Scripts (1 concurrent)            120193.5      123977.8   3.15%
-    Shell Scripts (8 concurrent)             17233.4       17138.4  -0.55%
-    System Call Overhead                   5300604.8     5312213.6   0.22%
-
-  hackbench -g 1 -l 100000
-                                            before        after
-    Time                                     3.246        2.251
-
-On arm64 (Ampere Altra):
-  schbench -m 2 -t 8
-
-    Latency percentiles (usec)              before        after
-        50.0000th:                            14           10
-        75.0000th:                            19           14
-        90.0000th:                            22           16
-        95.0000th:                            23           16
-        *99.0000th:                           24           17
-        99.5000th:                            24           17
-        99.9000th:                            28           25
-
-  Unixbench with full threads (80)
-                                            before        after
-    Dhrystone 2 using register variables  3536194249    3537019613   0.02%
-    Double-Precision Whetstone              629383.6      629431.6   0.01%
-    Execl Throughput                         65920.5       65846.2  -0.11%
-    File Copy 1024 bufsize 2000 maxblocks  1063722.8     1064026.8   0.03%
-    File Copy 256 bufsize 500 maxblocks     322684.5      318724.5  -1.23%
-    File Copy 4096 bufsize 8000 maxblocks  2348285.3     2328804.8  -0.83%
-    Pipe Throughput                      133542875.3   131619389.8  -1.44%
-    Pipe-based Context Switching           3215356.1     3576945.1  11.25%
-    Process Creation                        108520.5      120184.6  10.75%
-    Shell Scripts (1 concurrent)            122636.3        121888  -0.61%
-    Shell Scripts (8 concurrent)             17462.1       17381.4  -0.46%
-    System Call Overhead                   4429998.9     4435006.7   0.11%
-
-  hackbench -g 1 -l 100000
-                                            before        after
-    Time                                     4.217        2.916
-
-Our patch has improvement on schbench, hackbench
-and Pipe-based Context Switching of unixbench
-when there exists idle cpus,
-and no obvious regression on other tests of unixbench.
-This can help improve rt in scenes where wakeup happens frequently.
-
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220608233412.327341-3-dtcccc@linux.alibaba.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
+Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reported-by: Tony Battersby <tonyb@cybernetics.com>
+Tested-by: Tony Battersby <tonyb@cybernetics.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c  | 26 ++++++++++++++------------
- kernel/sched/sched.h |  1 -
- 2 files changed, 14 insertions(+), 13 deletions(-)
+ drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
+ drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
+ drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 892c06ff9dd0..4499b58ac2ca 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3714,7 +3714,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
- 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
+--- a/drivers/scsi/qla2xxx/qla_gbl.h
++++ b/drivers/scsi/qla2xxx/qla_gbl.h
+@@ -433,7 +433,8 @@ extern int
+ qla2x00_get_resource_cnts(scsi_qla_host_t *);
+ 
+ extern int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
++qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
++		u8 *num_entries);
+ 
+ extern int
+ qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5510,6 +5510,22 @@ static int qla2x00_configure_n2n_loop(sc
+ 	return QLA_FUNCTION_FAILED;
  }
  
--static inline bool ttwu_queue_cond(int cpu, int wake_flags)
-+static inline bool ttwu_queue_cond(int cpu)
- {
- 	/*
- 	 * Do not complicate things with the async wake_list while the CPU is
-@@ -3730,17 +3730,21 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	if (!cpus_share_cache(smp_processor_id(), cpu))
- 		return true;
- 
-+	if (cpu == smp_processor_id())
-+		return false;
++static void
++qla_reinitialize_link(scsi_qla_host_t *vha)
++{
++	int rval;
 +
- 	/*
--	 * If the task is descheduling and the only running task on the
--	 * CPU then use the wakelist to offload the task activation to
--	 * the soon-to-be-idle CPU as the current CPU is likely busy.
--	 * nr_running is checked to avoid unnecessary task stacking.
-+	 * If the wakee cpu is idle, or the task is descheduling and the
-+	 * only running task on the CPU, then use the wakelist to offload
-+	 * the task activation to the idle (or soon-to-be-idle) CPU as
-+	 * the current CPU is likely busy. nr_running is checked to
-+	 * avoid unnecessary task stacking.
- 	 *
- 	 * Note that we can only get here with (wakee) p->on_rq=0,
- 	 * p->on_cpu can be whatever, we've done the dequeue, so
- 	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
-+	if (!cpu_rq(cpu)->nr_running)
- 		return true;
++	atomic_set(&vha->loop_state, LOOP_DOWN);
++	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
++	rval = qla2x00_full_login_lip(vha);
++	if (rval == QLA_SUCCESS) {
++		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
++	} else {
++		ql_dbg(ql_dbg_disc, vha, 0xd051,
++			"Link reinitialization failed (%d)\n", rval);
++	}
++}
++
+ /*
+  * qla2x00_configure_local_loop
+  *	Updates Fibre Channel Device Database with local loop devices.
+@@ -5561,6 +5577,19 @@ qla2x00_configure_local_loop(scsi_qla_ho
+ 		spin_unlock_irqrestore(&vha->work_lock, flags);
  
- 	return false;
-@@ -3748,10 +3752,7 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 
- static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
++			u8 loop_map_entries = 0;
++			int rc;
++
++			rc = qla2x00_get_fcal_position_map(vha, NULL,
++						&loop_map_entries);
++			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
++				/*
++				 * There are devices that are still not logged
++				 * in. Reinitialize to give them a chance.
++				 */
++				qla_reinitialize_link(vha);
++				return QLA_FUNCTION_FAILED;
++			}
+ 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
+ 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -3062,7 +3062,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
+  *	Kernel context.
+  */
+ int
+-qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
++qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
++		u8 *num_entries)
  {
--	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu, wake_flags)) {
--		if (WARN_ON_ONCE(cpu == smp_processor_id()))
--			return false;
--
-+	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
- 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
- 		__ttwu_queue_wakelist(p, cpu, wake_flags);
- 		return true;
-@@ -4073,7 +4074,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
- 	 * scheduling.
- 	 */
- 	if (smp_load_acquire(&p->on_cpu) &&
--	    ttwu_queue_wakelist(p, task_cpu(p), wake_flags | WF_ON_CPU))
-+	    ttwu_queue_wakelist(p, task_cpu(p), wake_flags))
- 		goto unlock;
+ 	int rval;
+ 	mbx_cmd_t mc;
+@@ -3102,6 +3103,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
  
- 	/*
-@@ -4589,7 +4590,8 @@ static inline void prepare_task(struct task_struct *next)
- 	 * Claim the task as running, we do this before switching to it
- 	 * such that any running task will have this set.
- 	 *
--	 * See the ttwu() WF_ON_CPU case and its ordering comment.
-+	 * See the smp_load_acquire(&p->on_cpu) case in ttwu() and
-+	 * its ordering comment.
- 	 */
- 	WRITE_ONCE(next->on_cpu, 1);
- #endif
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 2bbf1f006d63..e49902898253 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2052,7 +2052,6 @@ static inline int task_on_rq_migrating(struct task_struct *p)
+ 		if (pos_map)
+ 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
++		if (num_entries)
++			*num_entries = pmap[0];
+ 	}
+ 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
  
- #define WF_SYNC     0x10 /* Waker goes to sleep after wakeup */
- #define WF_MIGRATED 0x20 /* Internal use, task got migrated */
--#define WF_ON_CPU   0x40 /* Wakee is on_cpu */
- 
- #ifdef CONFIG_SMP
- static_assert(WF_EXEC == SD_BALANCE_EXEC);
--- 
-2.35.1
-
 
 
