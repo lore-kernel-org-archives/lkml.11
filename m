@@ -2,89 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F482C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD225C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbiHOLDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 07:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        id S242603AbiHOLDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 07:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242564AbiHOLC4 (ORCPT
+        with ESMTP id S231551AbiHOLAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 07:02:56 -0400
-Received: from mail.fris.de (mail.fris.de [116.203.77.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B2524BD4;
-        Mon, 15 Aug 2022 04:02:55 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 68F40C012C;
-        Mon, 15 Aug 2022 13:02:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1660561374; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=DWFAWhIpY/WASigIlLwyV1sUn/XN9i+sYTmP//PqvJw=;
-        b=GIDHld7b3PkUVctagQq6RR3YYAi9hURpSos+yGCzn99q1i44z2MvdXteXzFeIJeVNFl+GP
-        7vyqsXHFak8t2kbt39Ir1HVRIbbDBKhJi6tM765KDZzGJtoXxDJcKDcoDVhZdBEXCCYU+M
-        XH2Qq9GSzkcRUa5737RezavCvm0UiyZBsOO+PA8Drfs2GZUvfNRPcOugI8rD27nzL3XYYN
-        J5uleI5jvxMPwOMdZZIAD5F6WWTHXYJ+QEQUXROQWw9HZOuf2jjgHNSKnYYDl/ff7mY0vH
-        PqYpqB46KP4oGpeuXHb9oS/Fjz/tfnhPPTV5oSZ2F7OjTLqhT8wLeXWbL/GKYw==
-From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: [PATCH v3 5/8] arm64: dts: imx8mm-kontron: Remove low DDRC operating point
-Date:   Mon, 15 Aug 2022 13:01:28 +0200
-Message-Id: <20220815110134.49683-6-frieder@fris.de>
-In-Reply-To: <20220815110134.49683-1-frieder@fris.de>
-References: <20220815110134.49683-1-frieder@fris.de>
+        Mon, 15 Aug 2022 07:00:41 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B4BDDFD;
+        Mon, 15 Aug 2022 04:00:39 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id D181380FB;
+        Mon, 15 Aug 2022 10:53:47 +0000 (UTC)
+Date:   Mon, 15 Aug 2022 14:00:37 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, naresh.kamboju@linaro.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 3/3] Revert "PM: domains: Delete usage of
+ driver_deferred_probe_check_state()"
+Message-ID: <YvonVUjlF5CS8QD5@atomide.com>
+References: <20220727185012.3255200-1-saravanak@google.com>
+ <20220727185012.3255200-4-saravanak@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727185012.3255200-4-saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+* Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> This reverts commit 5a46079a96451cfb15e4f5f01f73f7ba24ef851a.
+> 
+> There are a few more issues to fix that have been reported in the thread
+> for the original series [1]. We'll need to fix those before this will
+> work. So, revert it for now.
 
-For some reason there is a problem with finding a DDR configuration
-that works on all operating points and all LPDDR4 types used on the
-SoM. Therefore the bootloader currently doesn't configure the lowest
-of the three operating points. Let's also skip this in the kernel
-devicetree to make sure it isn't used.
+This fixes booting for several TI 32-bit ARM SoCs such as am335x and dra7.
 
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
----
-Changes in v3:
-* rebase on v6.0-rc1
+Please add a proper fixes tag for this patch though:
 
-Changes in v2:
-* none
----
- arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+Fixes: 5a46079a9645 ("PM: domains: Delete usage of driver_deferred_probe_check_state()")
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-index 33179157f619..96ecdce67059 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-sl.dtsi
-@@ -46,10 +46,6 @@ &ddrc {
- 	ddrc_opp_table: opp-table {
- 		compatible = "operating-points-v2";
- 
--		opp-25M {
--			opp-hz = /bits/ 64 <25000000>;
--		};
--
- 		opp-100M {
- 			opp-hz = /bits/ 64 <100000000>;
- 		};
--- 
-2.37.1
-
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Tony Lindgren <tony@atomide.com>
