@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D55C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E23C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343920AbiHOTfz (ORCPT
+        id S1344076AbiHOTgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
+        Mon, 15 Aug 2022 15:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244222AbiHOT2T (ORCPT
+        with ESMTP id S244202AbiHOT32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:28:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C384A5D0CF;
-        Mon, 15 Aug 2022 11:43:51 -0700 (PDT)
+        Mon, 15 Aug 2022 15:29:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A355E32A;
+        Mon, 15 Aug 2022 11:44:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 392D7611E7;
-        Mon, 15 Aug 2022 18:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B929C433D6;
-        Mon, 15 Aug 2022 18:43:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB07B611DD;
+        Mon, 15 Aug 2022 18:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21D3C433D6;
+        Mon, 15 Aug 2022 18:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589030;
-        bh=DQYpAKgxnwyRGtLDlzQC5Y75d+Ggep7f0vdNwu/fXAw=;
+        s=korg; t=1660589043;
+        bh=yhuN0DL0yv2xRFCMow4wX3R8JWRCMkUfnbUAKDjrUfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FdUwHOY61+PEYG7wzMlImxL1maXq+mc99hUvGTsgadK3zvuJzKfausZ1r46YSREhY
-         B1gdi9WOJN4ypfg4dYeUxjW4E1EblqzCnI3cavn0xk83ZRu2nuzpaRNSVG8Un44p9t
-         qaagi0Hb8emC2TSU2fGLPSvab2LYivhW6siEehnQ=
+        b=fkfOykeIpBV7596KxMb/efFs6T1mJtJNkiF1chrmu2gZZ5rM1+44FIqN189xhNE2T
+         Tfm2Cxl6tN6VtXjleUXEgiJ4YjKGw4DhYahU5FkvT+Zh/KuMFkM7MXsZHXJDT5p61D
+         qaSYyohjZB8ETGnF1yVjfiVAm2xj9DKxNHibhnU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 590/779] tty: n_gsm: fix resource allocation order in gsm_activate_mux()
-Date:   Mon, 15 Aug 2022 20:03:54 +0200
-Message-Id: <20220815180402.560197049@linuxfoundation.org>
+Subject: [PATCH 5.15 563/779] ASoC: imx-audmux: Silence a clang warning
+Date:   Mon, 15 Aug 2022 20:03:27 +0200
+Message-Id: <20220815180401.386328352@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,50 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 7349660438603ed19282e75949561406531785a5 ]
+[ Upstream commit 2f4a8171da06609bb6a063630ed546ee3d93dad7 ]
 
-Within gsm_activate_mux() all timers and locks are initiated before the
-actual resource for the control channel is allocated. This can lead to race
-conditions.
+Change the of_device_get_match_data() cast to (uintptr_t)
+to silence the following clang warning:
 
-Allocate the control channel DLCI object first to avoid race conditions.
+sound/soc/fsl/imx-audmux.c:301:16: warning: cast to smaller integer type 'enum imx_audmux_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701122332.2039-2-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 6a8b8b582db1 ("ASoC: imx-audmux: Remove unused .id_table")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220526010543.1164793-1-festevam@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/soc/fsl/imx-audmux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 23fcb34240ac..b5ce10b0656f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2435,6 +2435,10 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	struct gsm_dlci *dlci;
- 	int ret;
+diff --git a/sound/soc/fsl/imx-audmux.c b/sound/soc/fsl/imx-audmux.c
+index dfa05d40b276..a8e5e0f57faf 100644
+--- a/sound/soc/fsl/imx-audmux.c
++++ b/sound/soc/fsl/imx-audmux.c
+@@ -298,7 +298,7 @@ static int imx_audmux_probe(struct platform_device *pdev)
+ 		audmux_clk = NULL;
+ 	}
  
-+	dlci = gsm_dlci_alloc(gsm, 0);
-+	if (dlci == NULL)
-+		return -ENOMEM;
-+
- 	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
-@@ -2450,9 +2454,6 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	if (ret)
- 		return ret;
+-	audmux_type = (enum imx_audmux_type)of_device_get_match_data(&pdev->dev);
++	audmux_type = (uintptr_t)of_device_get_match_data(&pdev->dev);
  
--	dlci = gsm_dlci_alloc(gsm, 0);
--	if (dlci == NULL)
--		return -ENOMEM;
- 	gsm->has_devices = true;
- 	gsm->dead = false;		/* Tty opens are now permissible */
- 	return 0;
+ 	switch (audmux_type) {
+ 	case IMX31_AUDMUX:
 -- 
 2.35.1
 
