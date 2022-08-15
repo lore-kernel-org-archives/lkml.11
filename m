@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 608C6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF28C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347583AbiHOWDp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        id S244833AbiHOWDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348552AbiHOWBR (ORCPT
+        with ESMTP id S1348684AbiHOWBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:17 -0400
+        Mon, 15 Aug 2022 18:01:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C751A8277A;
-        Mon, 15 Aug 2022 12:35:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ADBAEDA1;
+        Mon, 15 Aug 2022 12:35:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 991E56114B;
-        Mon, 15 Aug 2022 19:35:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98152C433D6;
-        Mon, 15 Aug 2022 19:35:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BDA06113B;
+        Mon, 15 Aug 2022 19:35:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92945C433C1;
+        Mon, 15 Aug 2022 19:35:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592147;
-        bh=DjhUQ8cm8P60U+l9dj6IIm427jOlJO/2HHQIDVr5GKw=;
+        s=korg; t=1660592132;
+        bh=7M4uIosGCQ+JVXn5ixS/gPXhPLLzxgVy6nzH25ETjwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytorR74/mMZZcy6mdoqNP6htQPS3BSPflVs8SJcJ3EolcS3k2ZYD21uQBQUeuO0SS
-         AleKEGpldgBINKyII+/1itiygYoThp/4J2uDjRvsETx3QhOO9YF4agZ0zv+iqFAKB4
-         807gNvCgbM2jhqgYVRmdWHNDLsp1v93SgQCY8hs0=
+        b=fSeUHA5XEMkRfPwD/Z03uDeFEfb0tZcHw5mSHuiAyy8uYcZ68DMphwGrd2evma83m
+         6eSpNO3mSjrBDFotn9ZFW7BZsOm1G+IPQQy/5rE6dOSD+sf7+BILma50anEG+e8THi
+         TmTh8CCFjfMz0/c+6tskQi5G6ip+/G7OSFY0HkeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0741/1095] mmc: mxcmmc: Silence a clang warning
-Date:   Mon, 15 Aug 2022 20:02:20 +0200
-Message-Id: <20220815180500.028237189@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.19 0063/1157] parisc: Fix device names in /proc/iomem
+Date:   Mon, 15 Aug 2022 19:50:19 +0200
+Message-Id: <20220815180442.022281406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 7dc65e3c0ef4b746a583b7c58f99873fddf5ccfa ]
+commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
 
-Change the of_device_get_match_data() cast to (uintptr_t)
-to silence the following clang warning:
+Fix the output of /proc/iomem to show the real hardware device name
+including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
+Up to now only the pa_pathname ("[8:16.0]") was shown.
 
-drivers/mmc/host/mxcmmc.c:1028:18: warning: cast to smaller integer type 'enum mxcmci_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 8223e885e74b ("mmc: mxc: Convert the driver to DT-only")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/20220526010022.1163483-1-festevam@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v4.9+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/mxcmmc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/parisc/kernel/drivers.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mmc/host/mxcmmc.c b/drivers/mmc/host/mxcmmc.c
-index 40b6878bea6c..b5940083a108 100644
---- a/drivers/mmc/host/mxcmmc.c
-+++ b/drivers/mmc/host/mxcmmc.c
-@@ -1025,7 +1025,7 @@ static int mxcmci_probe(struct platform_device *pdev)
- 	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
- 	mmc->max_seg_size = mmc->max_req_size;
+--- a/arch/parisc/kernel/drivers.c
++++ b/arch/parisc/kernel/drivers.c
+@@ -520,7 +520,6 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
+ 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
+ 			(iodc_data[5] << 8) | iodc_data[6];
+-	dev->hpa.name = parisc_pathname(dev);
+ 	dev->hpa.start = hpa;
+ 	/* This is awkward.  The STI spec says that gfx devices may occupy
+ 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
+@@ -534,10 +533,10 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 		dev->hpa.end = hpa + 0xfff;
+ 	}
+ 	dev->hpa.flags = IORESOURCE_MEM;
+-	name = parisc_hardware_description(&dev->id);
+-	if (name) {
+-		strlcpy(dev->name, name, sizeof(dev->name));
+-	}
++	dev->hpa.name = dev->name;
++	name = parisc_hardware_description(&dev->id) ? : "unknown";
++	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
++		name, parisc_pathname(dev));
  
--	host->devtype = (enum mxcmci_type)of_device_get_match_data(&pdev->dev);
-+	host->devtype = (uintptr_t)of_device_get_match_data(&pdev->dev);
- 
- 	/* adjust max_segs after devtype detection */
- 	if (!is_mpc512x_mmc(host))
--- 
-2.35.1
-
+ 	/* Silently fail things like mouse ports which are subsumed within
+ 	 * the keyboard controller
 
 
