@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D7F9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01114C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243614AbiHOXXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        id S243717AbiHOXXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344690AbiHOXR5 (ORCPT
+        with ESMTP id S242854AbiHOXSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:17:57 -0400
+        Mon, 15 Aug 2022 19:18:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAD27CB7F;
-        Mon, 15 Aug 2022 13:03:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D98A47B90;
+        Mon, 15 Aug 2022 13:03:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 204FBB80EB1;
-        Mon, 15 Aug 2022 20:03:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A63EC433C1;
-        Mon, 15 Aug 2022 20:03:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1787AB81154;
+        Mon, 15 Aug 2022 20:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8DBC433D6;
+        Mon, 15 Aug 2022 20:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593822;
-        bh=abYdGz99G+a8NjFTk64PqU1lQ3mOkmqE+lQJmz80CzY=;
+        s=korg; t=1660593825;
+        bh=FxJJEqP1tmkFWKmlZHUmnsWUH7SsVvsMr/bvbkSXlck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KN1TY495V2gEAj+8IVrUzc00RpeuYY6V82QWSSyQcrn9wzNFFRHi91OZRadEbKkug
-         NWiEBjTncStkjBfyXFqKVbpwArbavTuhFQauruON08E91OB4JYMZleqTLTNZ3k765V
-         Nrz2BNozZOmt5EHq3rXrGD6cr1yoMTo6KTaVMCnA=
+        b=kebNOPonG/+e9wXEqahaT+FRwnQgXMRatHRcUVGPUVAyGpTgEeuJMs1aHurjTuvI2
+         ZL/uj/X8EQIq7kC5tRmyny9QgddBXTarh0oNUe0IvbUCE7D5uRSZ8XWF3JXQHilbua
+         3fv6PQY9lDuunDd/OkhUgbUwvE/rFYUMURVMRnpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0331/1157] selftests/bpf: Fix tc_redirect_dtime
-Date:   Mon, 15 Aug 2022 19:54:47 +0200
-Message-Id: <20220815180452.905032391@linuxfoundation.org>
+Subject: [PATCH 5.18 1012/1095] btrfs: tree-log: make the return value for log syncing consistent
+Date:   Mon, 15 Aug 2022 20:06:51 +0200
+Message-Id: <20220815180510.972639183@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,181 +50,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin KaFai Lau <kafai@fb.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit e6ff92f41b65fce07365f1066fb13b5e42aca08d ]
+[ Upstream commit f31f09f6be1c6c1a673e0566e258281a7bbaaa51 ]
 
-tc_redirect_dtime was reported flaky from time to time.  It
-always fails at the udp test and complains about the bpf@tc-ingress
-got a skb->tstamp when handling udp packet.  It is unexpected
-because the skb->tstamp should have been cleared when crossing
-different netns.
+Currently we will return 1 or -EAGAIN if we decide we need to commit
+the transaction rather than sync the log.  In practice this doesn't
+really matter, we interpret any !0 and !BTRFS_NO_LOG_SYNC as needing to
+commit the transaction.  However this makes it hard to figure out what
+the correct thing to do is.
 
-The most likely cause is that the skb is actually a tcp packet
-from the earlier tcp test.  It could be the final TCP_FIN handling.
+Fix this up by defining BTRFS_LOG_FORCE_COMMIT and using this in all the
+places where we want to force the transaction to be committed.
 
-This patch tightens the skb->tstamp check in the bpf prog.  It ensures
-the skb is the current testing traffic.  First, it checks that skb
-matches the IPPROTO of the running test (i.e. tcp vs udp).
-Second, it checks the server port (dst_ns_port).  The server
-port is unique for each test (50000 + test_enum).
-
-Also fixed a typo in test_udp_dtime(): s/P100/P101/
-
-Fixes: c803475fd8dd ("bpf: selftests: test skb->tstamp in redirect_neigh")
-Reported-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220601234050.2572671-1-kafai@fb.com
+CC: stable@vger.kernel.org # 5.15+
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/prog_tests/tc_redirect.c    |  8 +--
- .../selftests/bpf/progs/test_tc_dtime.c       | 53 ++++++++++++++++++-
- 2 files changed, 55 insertions(+), 6 deletions(-)
+ fs/btrfs/file.c     |  2 +-
+ fs/btrfs/tree-log.c | 18 +++++++++---------
+ fs/btrfs/tree-log.h |  3 +++
+ 3 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 958dae769c52..cb6a53b3e023 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -646,7 +646,7 @@ static void test_tcp_clear_dtime(struct test_tc_dtime *skel)
- 	__u32 *errs = skel->bss->errs[t];
- 
- 	skel->bss->test = t;
--	test_inet_dtime(AF_INET6, SOCK_STREAM, IP6_DST, 0);
-+	test_inet_dtime(AF_INET6, SOCK_STREAM, IP6_DST, 50000 + t);
- 
- 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
- 		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-@@ -683,7 +683,7 @@ static void test_tcp_dtime(struct test_tc_dtime *skel, int family, bool bpf_fwd)
- 	errs = skel->bss->errs[t];
- 
- 	skel->bss->test = t;
--	test_inet_dtime(family, SOCK_STREAM, addr, 0);
-+	test_inet_dtime(family, SOCK_STREAM, addr, 50000 + t);
- 
- 	/* fwdns_prio100 prog does not read delivery_time_type, so
- 	 * kernel puts the (rcv) timetamp in __sk_buff->tstamp
-@@ -715,13 +715,13 @@ static void test_udp_dtime(struct test_tc_dtime *skel, int family, bool bpf_fwd)
- 	errs = skel->bss->errs[t];
- 
- 	skel->bss->test = t;
--	test_inet_dtime(family, SOCK_DGRAM, addr, 0);
-+	test_inet_dtime(family, SOCK_DGRAM, addr, 50000 + t);
- 
- 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
- 		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
- 	/* non mono delivery time is not forwarded */
- 	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
--		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P101));
- 	for (i = EGRESS_FWDNS_P100; i < SET_DTIME; i++)
- 		ASSERT_GT(dtimes[i], 0, dtime_cnt_str(t, i));
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_dtime.c b/tools/testing/selftests/bpf/progs/test_tc_dtime.c
-index 06f300d06dbd..b596479a9ebe 100644
---- a/tools/testing/selftests/bpf/progs/test_tc_dtime.c
-+++ b/tools/testing/selftests/bpf/progs/test_tc_dtime.c
-@@ -11,6 +11,8 @@
- #include <linux/in.h>
- #include <linux/ip.h>
- #include <linux/ipv6.h>
-+#include <linux/tcp.h>
-+#include <linux/udp.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_endian.h>
- #include <sys/socket.h>
-@@ -115,6 +117,19 @@ static bool bpf_fwd(void)
- 	return test < TCP_IP4_RT_FWD;
- }
- 
-+static __u8 get_proto(void)
-+{
-+	switch (test) {
-+	case UDP_IP4:
-+	case UDP_IP6:
-+	case UDP_IP4_RT_FWD:
-+	case UDP_IP6_RT_FWD:
-+		return IPPROTO_UDP;
-+	default:
-+		return IPPROTO_TCP;
-+	}
-+}
-+
- /* -1: parse error: TC_ACT_SHOT
-  *  0: not testing traffic: TC_ACT_OK
-  * >0: first byte is the inet_proto, second byte has the netns
-@@ -122,11 +137,16 @@ static bool bpf_fwd(void)
-  */
- static int skb_get_type(struct __sk_buff *skb)
- {
-+	__u16 dst_ns_port = __bpf_htons(50000 + test);
- 	void *data_end = ctx_ptr(skb->data_end);
- 	void *data = ctx_ptr(skb->data);
- 	__u8 inet_proto = 0, ns = 0;
- 	struct ipv6hdr *ip6h;
-+	__u16 sport, dport;
- 	struct iphdr *iph;
-+	struct tcphdr *th;
-+	struct udphdr *uh;
-+	void *trans;
- 
- 	switch (skb->protocol) {
- 	case __bpf_htons(ETH_P_IP):
-@@ -138,6 +158,7 @@ static int skb_get_type(struct __sk_buff *skb)
- 		else if (iph->saddr == ip4_dst)
- 			ns = DST_NS;
- 		inet_proto = iph->protocol;
-+		trans = iph + 1;
- 		break;
- 	case __bpf_htons(ETH_P_IPV6):
- 		ip6h = data + sizeof(struct ethhdr);
-@@ -148,15 +169,43 @@ static int skb_get_type(struct __sk_buff *skb)
- 		else if (v6_equal(ip6h->saddr, (struct in6_addr)ip6_dst))
- 			ns = DST_NS;
- 		inet_proto = ip6h->nexthdr;
-+		trans = ip6h + 1;
- 		break;
- 	default:
- 		return 0;
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index 153920acd226..2d24f2dcc0ea 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -2344,7 +2344,7 @@ int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
+ 	btrfs_release_log_ctx_extents(&ctx);
+ 	if (ret < 0) {
+ 		/* Fallthrough and commit/free transaction. */
+-		ret = 1;
++		ret = BTRFS_LOG_FORCE_COMMIT;
  	}
  
--	if ((inet_proto != IPPROTO_TCP && inet_proto != IPPROTO_UDP) || !ns)
-+	/* skb is not from src_ns or dst_ns.
-+	 * skb is not the testing IPPROTO.
-+	 */
-+	if (!ns || inet_proto != get_proto())
- 		return 0;
+ 	/* we've logged all the items and now have a consistent
+diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
+index e65633686378..08917069a125 100644
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -171,7 +171,7 @@ static int start_log_trans(struct btrfs_trans_handle *trans,
+ 		int index = (root->log_transid + 1) % 2;
  
--	return (ns << 8 | inet_proto);
-+	switch (inet_proto) {
-+	case IPPROTO_TCP:
-+		th = trans;
-+		if (th + 1 > data_end)
-+			return -1;
-+		sport = th->source;
-+		dport = th->dest;
-+		break;
-+	case IPPROTO_UDP:
-+		uh = trans;
-+		if (uh + 1 > data_end)
-+			return -1;
-+		sport = uh->source;
-+		dport = uh->dest;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	/* The skb is the testing traffic */
-+	if ((ns == SRC_NS && dport == dst_ns_port) ||
-+	    (ns == DST_NS && sport == dst_ns_port))
-+		return (ns << 8 | inet_proto);
-+
-+	return 0;
- }
+ 		if (btrfs_need_log_full_commit(trans)) {
+-			ret = -EAGAIN;
++			ret = BTRFS_LOG_FORCE_COMMIT;
+ 			goto out;
+ 		}
  
- /* format: direction@iface@netns
+@@ -194,7 +194,7 @@ static int start_log_trans(struct btrfs_trans_handle *trans,
+ 		 * writing.
+ 		 */
+ 		if (zoned && !created) {
+-			ret = -EAGAIN;
++			ret = BTRFS_LOG_FORCE_COMMIT;
+ 			goto out;
+ 		}
+ 
+@@ -3122,7 +3122,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
+ 
+ 	/* bail out if we need to do a full commit */
+ 	if (btrfs_need_log_full_commit(trans)) {
+-		ret = -EAGAIN;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		mutex_unlock(&root->log_mutex);
+ 		goto out;
+ 	}
+@@ -3223,7 +3223,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
+ 		}
+ 		btrfs_wait_tree_log_extents(log, mark);
+ 		mutex_unlock(&log_root_tree->log_mutex);
+-		ret = -EAGAIN;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		goto out;
+ 	}
+ 
+@@ -3262,7 +3262,7 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
+ 		blk_finish_plug(&plug);
+ 		btrfs_wait_tree_log_extents(log, mark);
+ 		mutex_unlock(&log_root_tree->log_mutex);
+-		ret = -EAGAIN;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		goto out_wake_log_root;
+ 	}
+ 
+@@ -5849,7 +5849,7 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
+ 	    inode_only == LOG_INODE_ALL &&
+ 	    inode->last_unlink_trans >= trans->transid) {
+ 		btrfs_set_log_full_commit(trans);
+-		ret = 1;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		goto out_unlock;
+ 	}
+ 
+@@ -6563,12 +6563,12 @@ static int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
+ 	bool log_dentries = false;
+ 
+ 	if (btrfs_test_opt(fs_info, NOTREELOG)) {
+-		ret = 1;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		goto end_no_trans;
+ 	}
+ 
+ 	if (btrfs_root_refs(&root->root_item) == 0) {
+-		ret = 1;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 		goto end_no_trans;
+ 	}
+ 
+@@ -6666,7 +6666,7 @@ static int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
+ end_trans:
+ 	if (ret < 0) {
+ 		btrfs_set_log_full_commit(trans);
+-		ret = 1;
++		ret = BTRFS_LOG_FORCE_COMMIT;
+ 	}
+ 
+ 	if (ret)
+diff --git a/fs/btrfs/tree-log.h b/fs/btrfs/tree-log.h
+index 1620f8170629..57ab5f3b8dc7 100644
+--- a/fs/btrfs/tree-log.h
++++ b/fs/btrfs/tree-log.h
+@@ -12,6 +12,9 @@
+ /* return value for btrfs_log_dentry_safe that means we don't need to log it at all */
+ #define BTRFS_NO_LOG_SYNC 256
+ 
++/* We can't use the tree log for whatever reason, force a transaction commit */
++#define BTRFS_LOG_FORCE_COMMIT				(1)
++
+ struct btrfs_log_ctx {
+ 	int log_ret;
+ 	int log_transid;
 -- 
 2.35.1
 
