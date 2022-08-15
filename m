@@ -2,147 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3100C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0F0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242934AbiHONXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
+        id S231828AbiHONX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242920AbiHONXK (ORCPT
+        with ESMTP id S242943AbiHONXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:23:10 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3786618E34;
-        Mon, 15 Aug 2022 06:23:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=01VYwKsEP5PHOAwrwZ5OBrhS5+NLvCnbkbUBqarEJ4U=;
-        b=GHRQmSN19o//wsUsvtHrKo0k+Vq1RdK+mrvR0o7WGAgeEL2TUOEXKqp3deegzQFhwZsTtjaQmxmzu
-         b9xjcEwlOwDy7ZL+IPzvKoeDrppX6qX9UCIetcayg7ctwahlNF0vMiE59qVSi1WEmYhX9vJGhBE+xE
-         opxHtJJyayjFsz4Yz8Ku97GBqXvnUtRFeRpsrQzhw30XdykEluro3+RYuDQ+6cO8vzPAue5jeMrukd
-         mEd0Usu2199N4ctgzBUBKcQvhbVyD+sVFT+QJhIFAHFjw5LQor0uQfPuH9ChKjZVcC9z092XClVgRY
-         HZK/eVt3PW4CeosMeuxhXZbGT19f8Uw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.011094)], BW: [Enabled, t: (0.000016,0.000001)], RTDA: [Enabled, t: (0.113868), Hit: No, Details: v2.41.0; Id: 15.52ka1c.1gagqnrn6.5tr2; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 15 Aug 2022 16:22:53 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, dg@emlix.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v6 2/2] dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
-Date:   Mon, 15 Aug 2022 16:21:57 +0300
-Message-Id: <20220815132157.8083-3-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
-References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
+        Mon, 15 Aug 2022 09:23:13 -0400
+Received: from forward108j.mail.yandex.net (forward108j.mail.yandex.net [5.45.198.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE4E1CB33;
+        Mon, 15 Aug 2022 06:23:11 -0700 (PDT)
+Received: from forward502p.mail.yandex.net (forward502p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:121])
+        by forward108j.mail.yandex.net (Yandex) with ESMTP id 1E2DE3F1FC33;
+        Mon, 15 Aug 2022 16:23:09 +0300 (MSK)
+Received: from iva1-dcde80888020.qloud-c.yandex.net (iva1-dcde80888020.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7695:0:640:dcde:8088])
+        by forward502p.mail.yandex.net (Yandex) with ESMTP id E0917B80F79;
+        Mon, 15 Aug 2022 16:23:05 +0300 (MSK)
+Received: by iva1-dcde80888020.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id BL0XdiM9S6-N3i4TfZ0;
+        Mon, 15 Aug 2022 16:23:04 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1660569784;
+        bh=LGRYFPPAmfj8X4XSMNybmhYCQW3I5BPKT7pd/kdr0YI=;
+        h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
+        b=Tw1DOz6d2T+nxlwDX/gXFgupKtLHGpCTcjTvOfe6K/0knM3EKAVwWaCcmfXFNCWaU
+         s038K6Si9EPQ6YZRZmaL2xq+3S45L3PKVD3oiHz2DY2HvQxF4gIXCq4OQXRrnGR00r
+         l+0Dql6Ce86KitGq9HGA/RKTkDK1R29+vhQKtfck=
+Authentication-Results: iva1-dcde80888020.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, Anup Patel <anup@brainfault.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Kautuk Consul <kconsul@ventanamicro.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v6 2/3] perf arch events: riscv sbi firmware std event files
+Date:   Mon, 15 Aug 2022 16:22:39 +0300
+Message-Id: <20220815132251.25702-3-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220815132251.25702-1-nikita.shubin@maquefel.me>
+References: <20220815132251.25702-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
-SPI to load .bit formatted uncompressed bitstream image.
+From: Nikita Shubin <n.shubin@yadro.com>
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Firmware events are defined by "RISC-V Supervisor Binary Interface
+Specification", which means they should be always available as long as
+firmware supports >= 0.3.0 SBI.
+
+Expose them to arch std events, so they can be reused by particular
+PMU bindings.
+
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+Tested-by: Kautuk Consul <kconsul@ventanamicro.com>
 ---
- .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  | 74 +++++++++++++++++++
- 1 file changed, 74 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+v5->v6:
+Mayuresh Chitale:
+	- fixed FW_SFENCE_VMA_SENT event code
+---
+ .../arch/riscv/riscv-sbi-firmware.json        | 134 ++++++++++++++++++
+ 1 file changed, 134 insertions(+)
+ create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
 
-diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+diff --git a/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
 new file mode 100644
-index 000000000000..34693a3c2f1e
+index 000000000000..a9939823b14b
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/lattice,ecp5-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Lattice ECP5 Slave SPI FPGA manager
-+
-+maintainers:
-+  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+
-+description:
-+  Lattice ECP5 sysCONFIG port, which is used for device configuration, among
-+  others, have Slave Serial Peripheral Interface. Only full reconfiguration
-+  with uncompressed bitstream image in .bit format is supported.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml
-+
-+properties:
-+  compatible:
-+    enum:
-+      - lattice,ecp5-fpga-mgr
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 60000000
-+
-+  program-gpios:
-+    description:
-+      A GPIO line connected to PROGRAMN (active low) pin of the device.
-+      Initiates configuration sequence.
-+    maxItems: 1
-+
-+  init-gpios:
-+    description:
-+      A GPIO line connected to INITN (active low) pin of the device.
-+      Indicates that the FPGA is ready to be configured.
-+    maxItems: 1
-+
-+  done-gpios:
-+    description:
-+      A GPIO line connected to DONE (active high) pin of the device.
-+      Indicates that the configuration sequence is complete.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - program-gpios
-+  - init-gpios
-+  - done-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        fpga-mgr@0 {
-+            compatible = "lattice,ecp5-fpga-mgr";
-+            reg = <0>;
-+            spi-max-frequency = <20000000>;
-+            program-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
-+            init-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
-+            done-gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
-+        };
-+    };
++++ b/tools/perf/pmu-events/arch/riscv/riscv-sbi-firmware.json
+@@ -0,0 +1,134 @@
++[
++  {
++    "PublicDescription": "Misaligned load trap",
++    "ConfigCode": "0x8000000000000000",
++    "EventName": "FW_MISALIGNED_LOAD",
++    "BriefDescription": "Misaligned load trap event"
++  },
++  {
++    "PublicDescription": "Misaligned store trap",
++    "ConfigCode": "0x8000000000000001",
++    "EventName": "FW_MISALIGNED_STORE",
++    "BriefDescription": "Misaligned store trap event"
++  },
++  {
++    "PublicDescription": "Load access trap",
++    "ConfigCode": "0x8000000000000002",
++    "EventName": "FW_ACCESS_LOAD",
++    "BriefDescription": "Load access trap event"
++  },
++  {
++    "PublicDescription": "Store access trap",
++    "ConfigCode": "0x8000000000000003",
++    "EventName": "FW_ACCESS_STORE",
++    "BriefDescription": "Store access trap event"
++  },
++  {
++    "PublicDescription": "Illegal instruction trap",
++    "ConfigCode": "0x8000000000000004",
++    "EventName": "FW_ILLEGAL_INSN",
++    "BriefDescription": "Illegal instruction trap event"
++  },
++  {
++    "PublicDescription": "Set timer event",
++    "ConfigCode": "0x8000000000000005",
++    "EventName": "FW_SET_TIMER",
++    "BriefDescription": "Set timer event"
++  },
++  {
++    "PublicDescription": "Sent IPI to other HART event",
++    "ConfigCode": "0x8000000000000006",
++    "EventName": "FW_IPI_SENT",
++    "BriefDescription": "Sent IPI to other HART event"
++  },
++  {
++    "PublicDescription": "Received IPI from other HART event",
++    "ConfigCode": "0x8000000000000007",
++    "EventName": "FW_IPI_RECEIVED",
++    "BriefDescription": "Received IPI from other HART event"
++  },
++  {
++    "PublicDescription": "Sent FENCE.I request to other HART event",
++    "ConfigCode": "0x8000000000000008",
++    "EventName": "FW_FENCE_I_SENT",
++    "BriefDescription": "Sent FENCE.I request to other HART event"
++  },
++  {
++    "PublicDescription": "Received FENCE.I request from other HART event",
++    "ConfigCode": "0x8000000000000009",
++    "EventName": "FW_FENCE_I_RECEIVED",
++    "BriefDescription": "Received FENCE.I request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent SFENCE.VMA request to other HART event",
++    "ConfigCode": "0x800000000000000a",
++    "EventName": "FW_SFENCE_VMA_SENT",
++    "BriefDescription": "Sent SFENCE.VMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received SFENCE.VMA request from other HART event",
++    "ConfigCode": "0x800000000000000b",
++    "EventName": "FW_SFENCE_VMA_RECEIVED",
++    "BriefDescription": "Received SFENCE.VMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent SFENCE.VMA with ASID request to other HART event",
++    "ConfigCode": "0x800000000000000c",
++    "EventName": "FW_SFENCE_VMA_RECEIVED",
++    "BriefDescription": "Sent SFENCE.VMA with ASID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received SFENCE.VMA with ASID request from other HART event",
++    "ConfigCode": "0x800000000000000d",
++    "EventName": "FW_SFENCE_VMA_ASID_RECEIVED",
++    "BriefDescription": "Received SFENCE.VMA with ASID request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.GVMA request to other HART event",
++    "ConfigCode": "0x800000000000000e",
++    "EventName": "FW_HFENCE_GVMA_SENT",
++    "BriefDescription": "Sent HFENCE.GVMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.GVMA request from other HART event",
++    "ConfigCode": "0x800000000000000f",
++    "EventName": "FW_HFENCE_GVMA_RECEIVED",
++    "BriefDescription": "Received HFENCE.GVMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.GVMA with VMID request to other HART event",
++    "ConfigCode": "0x8000000000000010",
++    "EventName": "FW_HFENCE_GVMA_VMID_SENT",
++    "BriefDescription": "Sent HFENCE.GVMA with VMID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.GVMA with VMID request from other HART event",
++    "ConfigCode": "0x8000000000000011",
++    "EventName": "FW_HFENCE_GVMA_VMID_RECEIVED",
++    "BriefDescription": "Received HFENCE.GVMA with VMID request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.VVMA request to other HART event",
++    "ConfigCode": "0x8000000000000012",
++    "EventName": "FW_HFENCE_VVMA_SENT",
++    "BriefDescription": "Sent HFENCE.VVMA request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.VVMA request from other HART event",
++    "ConfigCode": "0x8000000000000013",
++    "EventName": "FW_HFENCE_VVMA_RECEIVED",
++    "BriefDescription": "Received HFENCE.VVMA request from other HART event"
++  },
++  {
++    "PublicDescription": "Sent HFENCE.VVMA with ASID request to other HART event",
++    "ConfigCode": "0x8000000000000014",
++    "EventName": "FW_HFENCE_VVMA_ASID_SENT",
++    "BriefDescription": "Sent HFENCE.VVMA with ASID request to other HART event"
++  },
++  {
++    "PublicDescription": "Received HFENCE.VVMA with ASID request from other HART event",
++    "ConfigCode": "0x8000000000000015",
++    "EventName": "FW_HFENCE_VVMA_ASID_RECEIVED",
++    "BriefDescription": "Received HFENCE.VVMA with ASID request from other HART event"
++  }
++]
 -- 
-2.37.1
-
+2.35.1
 
