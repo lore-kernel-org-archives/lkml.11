@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 531A7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E1AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351371AbiHOWnf (ORCPT
+        id S1351386AbiHOWnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        Mon, 15 Aug 2022 18:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351357AbiHOWiD (ORCPT
+        with ESMTP id S1351364AbiHOWiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:38:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C207C13263D;
-        Mon, 15 Aug 2022 12:51:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20D013263E;
+        Mon, 15 Aug 2022 12:51:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F7C161226;
-        Mon, 15 Aug 2022 19:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15834C433D6;
-        Mon, 15 Aug 2022 19:51:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DBFD6122B;
+        Mon, 15 Aug 2022 19:51:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468DCC433D6;
+        Mon, 15 Aug 2022 19:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593068;
-        bh=CYfpdsBOQFEtHaNixnCNJV84+HqfaVHx/0xGYqIT8yo=;
+        s=korg; t=1660593065;
+        bh=Da0gbbdZzQ1GHA0R171QoB/svWQr1XAmx/vQ/xxRN9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kf41yPlfHaA+TCQ/ZPBfqueWsi4dbbqj1XVwkb9ZyQr7TANJBeUzao4MAmACUY7Uq
-         FKgui8+wRg42zLrWuyVgaXvdCNaz6xd23o8AhWOJy3/B0p6O+MHmD4xtM/75WGl4hM
-         MPye+C8K16exHEypJotmU0KOIIta5KunNTT/vN7Q=
+        b=ABT+zv6HQKN2PWzFlc4pmNYzZ//+UPTM8SA4sHgXPis7LyPQNPuhNW5EBNTF2tWiv
+         CEGEzb2vejhF8OHiAmF24xVGVB65OMCVK3WMMnwQrIa+8V9X79ip/i4asAZ+u4bFiv
+         nu/X9ypaf/Mz95eW5ggw+WykCa4rABDhCADMke2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0208/1157] ARM: dts: imx7-colibri-eval-v3: correct can controller comment
-Date:   Mon, 15 Aug 2022 19:52:44 +0200
-Message-Id: <20220815180447.954682277@linuxfoundation.org>
+Subject: [PATCH 5.18 0887/1095] rpmsg: qcom_smd: Fix refcount leak in qcom_smd_parse_edge
+Date:   Mon, 15 Aug 2022 20:04:46 +0200
+Message-Id: <20220815180506.030325207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,33 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 32f054fef145878c5331f9dd343014970a15ebfa ]
+[ Upstream commit 65382585f067d4256ba087934f30f85c9b6984de ]
 
-Correct CAN controller comment. It is a MCP2515 rather than a mpc258x.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-Fixes: 66d59b678a87 ("ARM: dts: imx7-colibri: add MCP2515 CAN controller")
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220511120737.57374-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/rpmsg/qcom_smd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index 4cf4107fb642..b5f632921df2 100644
---- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -4,7 +4,7 @@
-  */
+diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
+index 1957b27c4cf3..f7af53891ef9 100644
+--- a/drivers/rpmsg/qcom_smd.c
++++ b/drivers/rpmsg/qcom_smd.c
+@@ -1383,6 +1383,7 @@ static int qcom_smd_parse_edge(struct device *dev,
+ 		}
  
- / {
--	/* fixed crystal dedicated to mpc258x */
-+	/* Fixed crystal dedicated to MCP2515. */
- 	clk16m: clk16m {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
+ 		edge->ipc_regmap = syscon_node_to_regmap(syscon_np);
++		of_node_put(syscon_np);
+ 		if (IS_ERR(edge->ipc_regmap)) {
+ 			ret = PTR_ERR(edge->ipc_regmap);
+ 			goto put_node;
 -- 
 2.35.1
 
