@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07ADC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB39C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245261AbiHOV5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S1347597AbiHOV6B (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350423AbiHOV4N (ORCPT
+        with ESMTP id S1350466AbiHOV4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:56:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458E510A759;
-        Mon, 15 Aug 2022 12:34:02 -0700 (PDT)
+        Mon, 15 Aug 2022 17:56:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12CC10A774;
+        Mon, 15 Aug 2022 12:34:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24C9DB80EA7;
-        Mon, 15 Aug 2022 19:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50092C433D6;
-        Mon, 15 Aug 2022 19:33:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D60561184;
+        Mon, 15 Aug 2022 19:34:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B213C433D6;
+        Mon, 15 Aug 2022 19:34:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592039;
-        bh=XNjU9JHzS2g+kvNOHxA8SQJqMMWDyM/oMGSQ56oyzAo=;
+        s=korg; t=1660592043;
+        bh=ecmKP+DYRKqfBr6/umZkZvg2tAeCCDhHa8GE40xc3nA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cqyOX/2SPB8cCXUPCZto9rx3660Q+yt1z9C4E9Rcjpdcvql7bI+BPMOGtkR2LgVzx
-         8ECDQGcGRCKwl3dm3YcgnsJ8XFYsn74hmpRIdf9MFk2ellTv+p6+x85fN/B+mmL34T
-         Ih/89y33x+ehiQtVF56g33W4HiCfAjOjpnL6/EkI=
+        b=XNUgoq+ctHR0uBsIKxvuM+wPtvRx4gjPEWvkR4LjEESeSTrW1pFJ/70h2P5su5hu+
+         mThEorXNFS+e07xN6vvLn7XZ+xMEDR8M1uJvPF7pj32iFmyUFymvwkdxLBzL1vrzit
+         wFRDJzhRZvuHnzYX8JGXfYKBviHE6T5g6Xb02aT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 0048/1157] ALSA: hda/realtek: Add quirk for another Asus K42JZ model
-Date:   Mon, 15 Aug 2022 19:50:04 +0200
-Message-Id: <20220815180441.376686683@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0722/1095] PCI: dwc: Add unroll iATU space support to dw_pcie_disable_atu()
+Date:   Mon, 15 Aug 2022 20:02:01 +0200
+Message-Id: <20220815180459.262093671@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,56 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-commit f882c4bef9cb914d9f7be171afb10ed26536bfa7 upstream.
+[ Upstream commit d1cf738f2b65a5640234e1da90a68d3523fbed83 ]
 
-There is another Asus K42JZ model with the PCI SSID 1043:1313
-that requires the quirk ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE.
-Add the corresponding entry to the quirk table.
+dw_pcie_disable_atu() was introduced by f8aed6ec624f ("PCI: dwc:
+designware: Add EP mode support") and supported only the viewport version
+of the iATU CSRs.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220805074534.20003-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+DW PCIe IP cores v4.80a and newer also support unrolled iATU/eDMA space.
+Callers of dw_pcie_disable_atu(), including pci_epc_ops.clear_bar(),
+pci_epc_ops.unmap_addr(), and dw_pcie_setup_rc(), don't work correctly when
+it is enabled.
+
+Add dw_pcie_disable_atu() support for controllers with unrolled iATU CSRs
+enabled.
+
+[bhelgaas: commit log]
+Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
+Link: https://lore.kernel.org/r/20220624143428.8334-3-Sergey.Semin@baikalelectronics.ru
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/pci/controller/dwc/pcie-designware.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6879,6 +6879,7 @@ enum {
- 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST,
- 	ALC269VB_FIXUP_ASUS_ZENBOOK,
- 	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
-+	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
- 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
- 	ALC269VB_FIXUP_ORDISSIMO_EVE2,
- 	ALC283_FIXUP_CHROME_BOOK,
-@@ -7466,6 +7467,15 @@ static const struct hda_fixup alc269_fix
- 		.chained = true,
- 		.chain_id = ALC269VB_FIXUP_ASUS_ZENBOOK,
- 	},
-+	[ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x18, 0x01a110f0 },  /* use as headset mic */
-+			{ }
-+		},
-+		.chained = true,
-+		.chain_id = ALC269_FIXUP_HEADSET_MIC
-+	},
- 	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -9237,6 +9247,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
- 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index d92c8a25094f..84fef21efdbc 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -491,7 +491,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 			 enum dw_pcie_region_type type)
+ {
+-	int region;
++	u32 region;
+ 
+ 	switch (type) {
+ 	case DW_PCIE_REGION_INBOUND:
+@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 		return;
+ 	}
+ 
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	if (pci->iatu_unroll_enabled) {
++		if (region == PCIE_ATU_REGION_INBOUND) {
++			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		} else {
++			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		}
++	} else {
++		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
++		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	}
+ }
+ 
+ int dw_pcie_wait_for_link(struct dw_pcie *pci)
+-- 
+2.35.1
+
 
 
