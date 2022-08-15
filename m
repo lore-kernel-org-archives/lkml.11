@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24961C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04118C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244261AbiHOTY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
+        id S245229AbiHOTYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243891AbiHOTVm (ORCPT
+        with ESMTP id S245060AbiHOTWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:21:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13B43D5BD;
-        Mon, 15 Aug 2022 11:40:33 -0700 (PDT)
+        Mon, 15 Aug 2022 15:22:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6633B59270;
+        Mon, 15 Aug 2022 11:40:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02746611B9;
-        Mon, 15 Aug 2022 18:40:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A554C433D7;
-        Mon, 15 Aug 2022 18:40:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2AA2BCE1268;
+        Mon, 15 Aug 2022 18:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12EC6C433C1;
+        Mon, 15 Aug 2022 18:40:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588832;
-        bh=QZTpeShZqGomUhO9hz65Uhh5sjEr5H4rDMz0+UZAq88=;
+        s=korg; t=1660588835;
+        bh=+xyQPqQ4x+0wzOxEiX4hNX96Q1C0zM0bt8z0jZmfowU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5/6W4AttMb90ruu57Ar4Ot0LtrpWM0q5RuI76rS2izJ3ffoRbRUrRUXWfWaSxHmN
-         HdPytH5C+BwNZ2C9O5NcuVvktwWvXR4RSG7gAx8Skpd/ZuSmYrLEuRp/vFLwyapuRe
-         oTCoBp+0JxRBkOc7423zuwpCQiVwc125phb0rUuw=
+        b=nFlCN/iCs2uPBGH1OWBJ6YDKyCfbxQHxKYTmzgSOtoPpyeck72cldVaoKwILAObyf
+         ls4nzzVUsTum6F3ryevDrfqpha9s8e5o3sl0CLlZuV+0OucHecdeSKKhTGr4NNWmcf
+         O2XLbZsQEzcV87WLmrl14VHD3YIt4CIXSsa4M/i0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Peng Fan <peng.fan@nxp.com>, Georgi Djakov <djakov@kernel.org>,
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 497/779] interconnect: imx: fix max_node_id
-Date:   Mon, 15 Aug 2022 20:02:21 +0200
-Message-Id: <20220815180358.518025334@linuxfoundation.org>
+Subject: [PATCH 5.15 488/779] xtensa: iss/network: provide release() callback
+Date:   Mon, 15 Aug 2022 20:02:12 +0200
+Message-Id: <20220815180358.122109382@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,49 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit bd734481e172b4827af09c9ab06c51d2ab7201e6 ]
+[ Upstream commit 8864fb8359682912ee99235db7db916733a1fd7b ]
 
-max_node_id not equal to the ARRAY_SIZE of node array, need increase 1,
-otherwise xlate will fail for the last entry. And rename max_node_id
-to num_nodes to reflect the reality.
+Provide release() callback for the platform device embedded into struct
+iss_net_private and registered in the iss_net_configure so that
+platform_device_unregister could be called for it.
 
-Fixes: f0d8048525d7d ("interconnect: Add imx core driver")
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220703091132.1412063-5-peng.fan@oss.nxp.com
-Signed-off-by: Georgi Djakov <djakov@kernel.org>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/interconnect/imx/imx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/xtensa/platforms/iss/network.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/interconnect/imx/imx.c b/drivers/interconnect/imx/imx.c
-index c770951a909c..aabd9edf2ef7 100644
---- a/drivers/interconnect/imx/imx.c
-+++ b/drivers/interconnect/imx/imx.c
-@@ -226,16 +226,16 @@ int imx_icc_register(struct platform_device *pdev,
- 	struct device *dev = &pdev->dev;
- 	struct icc_onecell_data *data;
- 	struct icc_provider *provider;
--	int max_node_id;
-+	int num_nodes;
- 	int ret;
+diff --git a/arch/xtensa/platforms/iss/network.c b/arch/xtensa/platforms/iss/network.c
+index 4986226a5ab2..4801df4e73e1 100644
+--- a/arch/xtensa/platforms/iss/network.c
++++ b/arch/xtensa/platforms/iss/network.c
+@@ -502,6 +502,15 @@ static const struct net_device_ops iss_netdev_ops = {
+ 	.ndo_set_rx_mode	= iss_net_set_multicast_list,
+ };
  
- 	/* icc_onecell_data is indexed by node_id, unlike nodes param */
--	max_node_id = get_max_node_id(nodes, nodes_count);
--	data = devm_kzalloc(dev, struct_size(data, nodes, max_node_id),
-+	num_nodes = get_max_node_id(nodes, nodes_count) + 1;
-+	data = devm_kzalloc(dev, struct_size(data, nodes, num_nodes),
- 			    GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
--	data->num_nodes = max_node_id;
-+	data->num_nodes = num_nodes;
++static void iss_net_pdev_release(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct iss_net_private *lp =
++		container_of(pdev, struct iss_net_private, pdev);
++
++	free_netdev(lp->dev);
++}
++
+ static int iss_net_configure(int index, char *init)
+ {
+ 	struct net_device *dev;
+@@ -558,6 +567,7 @@ static int iss_net_configure(int index, char *init)
  
- 	provider = devm_kzalloc(dev, sizeof(*provider), GFP_KERNEL);
- 	if (!provider)
+ 	lp->pdev.id = index;
+ 	lp->pdev.name = DRIVER_NAME;
++	lp->pdev.dev.release = iss_net_pdev_release;
+ 	platform_device_register(&lp->pdev);
+ 	SET_NETDEV_DEV(dev, &lp->pdev.dev);
+ 
 -- 
 2.35.1
 
