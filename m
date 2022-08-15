@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BF4C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0C9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343732AbiHOTTX (ORCPT
+        id S1343592AbiHOTT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        Mon, 15 Aug 2022 15:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344436AbiHOTQn (ORCPT
+        with ESMTP id S1344497AbiHOTQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:16:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7373B948;
-        Mon, 15 Aug 2022 11:38:13 -0700 (PDT)
+        Mon, 15 Aug 2022 15:16:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABD954643;
+        Mon, 15 Aug 2022 11:38:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 495876113C;
-        Mon, 15 Aug 2022 18:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CA2C433D6;
-        Mon, 15 Aug 2022 18:38:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C0FACE1269;
+        Mon, 15 Aug 2022 18:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D33C433C1;
+        Mon, 15 Aug 2022 18:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588691;
-        bh=Ga/6TRQVXydterssJTD+D053cn3SGBoDDM0IrgKoMtE=;
+        s=korg; t=1660588700;
+        bh=lSXbZ6qrGUKW9VxbcJdngjcM0H6A8XryCFumpFITXWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OFNnCEYGSsG0mlMu330pIrDa5w7TLer4Tg6DUvJnAb4Ki/lo5UwaY3BWb1tOx+W6g
-         x7xeqiQv/ET2IiFgM5DrS30grsxcWm9ZqvD6jEgJJayg7I52AhZf/+7Bm1NQGuA9cL
-         prkwztBQHbb1cq7k5Ty5HIp9Ub3a3QtRoLSRNPUk=
+        b=WtdN5FzKHMba66ojOEFT6/HnALk357adhWFIPcyoJYCFVk4uuM0YtLmQz/U9wmKn7
+         vY/xknEEUu6ByBQ36dESKIbGCNzqCGnAksKWQQvTd8Nxp5Oce/580zPDW81m1JtIhM
+         LKI9NZjcxPhsxlncjpgDBVHJn+RTOX7KrNyU3tK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
+        stable@vger.kernel.org, Christian Marangi <ansuelsmth@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 484/779] KVM: s390: pv: leak the topmost page table when destroy fails
-Date:   Mon, 15 Aug 2022 20:02:08 +0200
-Message-Id: <20220815180357.953709589@linuxfoundation.org>
+Subject: [PATCH 5.15 486/779] PCI: qcom: Set up rev 2.1.0 PARF_PHY before enabling clocks
+Date:   Mon, 15 Aug 2022 20:02:10 +0200
+Message-Id: <20220815180358.032735981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,171 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudio Imbrenda <imbrenda@linux.ibm.com>
+From: Christian Marangi <ansuelsmth@gmail.com>
 
-[ Upstream commit faa2f72cb3569256480c5540d242c84e99965160 ]
+[ Upstream commit 38f897ae3d44900f627cad708a15db498ce2ca31 ]
 
-Each secure guest must have a unique ASCE (address space control
-element); we must avoid that new guests use the same page for their
-ASCE, to avoid errors.
+We currently enable clocks BEFORE we write to PARF_PHY_CTRL reg to enable
+clocks and resets. This causes the driver to never set to a ready state
+with the error 'Phy link never came up'.
 
-Since the ASCE mostly consists of the address of the topmost page table
-(plus some flags), we must not return that memory to the pool unless
-the ASCE is no longer in use.
+This is caused by the PHY clock getting enabled before setting the required
+bits in the PARF regs.
 
-Only a successful Destroy Secure Configuration UVC will make the ASCE
-reusable again.
+A workaround for this was set but with this new discovery we can drop
+the workaround and use a proper solution to the problem by just enabling
+the clock only AFTER the PARF_PHY_CTRL bit is set.
 
-If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
-secure guest (either for the ASCE or for other memory areas). To avoid
-a collision, it must not be used again. This is a permanent error and
-the page becomes in practice unusable, so we set it aside and leak it.
-On failure we already leak other memory that belongs to the ultravisor
-(i.e. the variable and base storage for a guest) and not leaking the
-topmost page table was an oversight.
+This correctly sets up the PCIe link and makes it usable even when a
+bootloader leaves the PCIe link in an undefined state.
 
-This error (and thus the leakage) should not happen unless the hardware
-is broken or KVM has some unknown serious bug.
-
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220628135619.32410-2-imbrenda@linux.ibm.com
-Message-Id: <20220628135619.32410-2-imbrenda@linux.ibm.com>
-Signed-off-by: Janosch Frank <frankja@linux.ibm.com>
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Link: https://lore.kernel.org/r/20220708222743.27019-1-ansuelsmth@gmail.com
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/gmap.h |  2 +
- arch/s390/kvm/pv.c           |  9 ++--
- arch/s390/mm/gmap.c          | 86 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 94 insertions(+), 3 deletions(-)
+ drivers/pci/controller/dwc/pcie-qcom.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
-index 40264f60b0da..f4073106e1f3 100644
---- a/arch/s390/include/asm/gmap.h
-+++ b/arch/s390/include/asm/gmap.h
-@@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
- 			     unsigned long gaddr, unsigned long vmaddr);
- int gmap_mark_unmergeable(void);
- void s390_reset_acc(struct mm_struct *mm);
-+void s390_unlist_old_asce(struct gmap *gmap);
-+int s390_replace_asce(struct gmap *gmap);
- #endif /* _ASM_S390_GMAP_H */
-diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index 00d272d134c2..b906658ffc2e 100644
---- a/arch/s390/kvm/pv.c
-+++ b/arch/s390/kvm/pv.c
-@@ -168,10 +168,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
- 	atomic_set(&kvm->mm->context.is_protected, 0);
- 	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
- 	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
--	/* Inteded memory leak on "impossible" error */
--	if (!cc)
-+	/* Intended memory leak on "impossible" error */
-+	if (!cc) {
- 		kvm_s390_pv_dealloc_vm(kvm);
--	return cc ? -EIO : 0;
-+		return 0;
-+	}
-+	s390_replace_asce(kvm->arch.gmap);
-+	return -EIO;
- }
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index b139a2e4af12..45210c6380b1 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -325,8 +325,6 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
+ 	reset_control_assert(res->ext_reset);
+ 	reset_control_assert(res->phy_reset);
  
- int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-index 4ce3a2f01c91..ff40bf92db43 100644
---- a/arch/s390/mm/gmap.c
-+++ b/arch/s390/mm/gmap.c
-@@ -2726,3 +2726,89 @@ void s390_reset_acc(struct mm_struct *mm)
- 	mmput(mm);
- }
- EXPORT_SYMBOL_GPL(s390_reset_acc);
+-	writel(1, pcie->parf + PCIE20_PARF_PHY_CTRL);
+-
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(res->supplies), res->supplies);
+ 	if (ret < 0) {
+ 		dev_err(dev, "cannot enable regulators\n");
+@@ -369,15 +367,15 @@ static int qcom_pcie_init_2_1_0(struct qcom_pcie *pcie)
+ 		goto err_deassert_axi;
+ 	}
+ 
+-	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
+-	if (ret)
+-		goto err_clks;
+-
+ 	/* enable PCIe clocks and resets */
+ 	val = readl(pcie->parf + PCIE20_PARF_PHY_CTRL);
+ 	val &= ~BIT(0);
+ 	writel(val, pcie->parf + PCIE20_PARF_PHY_CTRL);
+ 
++	ret = clk_bulk_prepare_enable(ARRAY_SIZE(res->clks), res->clks);
++	if (ret)
++		goto err_clks;
 +
-+/**
-+ * s390_unlist_old_asce - Remove the topmost level of page tables from the
-+ * list of page tables of the gmap.
-+ * @gmap: the gmap whose table is to be removed
-+ *
-+ * On s390x, KVM keeps a list of all pages containing the page tables of the
-+ * gmap (the CRST list). This list is used at tear down time to free all
-+ * pages that are now not needed anymore.
-+ *
-+ * This function removes the topmost page of the tree (the one pointed to by
-+ * the ASCE) from the CRST list.
-+ *
-+ * This means that it will not be freed when the VM is torn down, and needs
-+ * to be handled separately by the caller, unless a leak is actually
-+ * intended. Notice that this function will only remove the page from the
-+ * list, the page will still be used as a top level page table (and ASCE).
-+ */
-+void s390_unlist_old_asce(struct gmap *gmap)
-+{
-+	struct page *old;
-+
-+	old = virt_to_page(gmap->table);
-+	spin_lock(&gmap->guest_table_lock);
-+	list_del(&old->lru);
-+	/*
-+	 * Sometimes the topmost page might need to be "removed" multiple
-+	 * times, for example if the VM is rebooted into secure mode several
-+	 * times concurrently, or if s390_replace_asce fails after calling
-+	 * s390_remove_old_asce and is attempted again later. In that case
-+	 * the old asce has been removed from the list, and therefore it
-+	 * will not be freed when the VM terminates, but the ASCE is still
-+	 * in use and still pointed to.
-+	 * A subsequent call to replace_asce will follow the pointer and try
-+	 * to remove the same page from the list again.
-+	 * Therefore it's necessary that the page of the ASCE has valid
-+	 * pointers, so list_del can work (and do nothing) without
-+	 * dereferencing stale or invalid pointers.
-+	 */
-+	INIT_LIST_HEAD(&old->lru);
-+	spin_unlock(&gmap->guest_table_lock);
-+}
-+EXPORT_SYMBOL_GPL(s390_unlist_old_asce);
-+
-+/**
-+ * s390_replace_asce - Try to replace the current ASCE of a gmap with a copy
-+ * @gmap: the gmap whose ASCE needs to be replaced
-+ *
-+ * If the allocation of the new top level page table fails, the ASCE is not
-+ * replaced.
-+ * In any case, the old ASCE is always removed from the gmap CRST list.
-+ * Therefore the caller has to make sure to save a pointer to it
-+ * beforehand, unless a leak is actually intended.
-+ */
-+int s390_replace_asce(struct gmap *gmap)
-+{
-+	unsigned long asce;
-+	struct page *page;
-+	void *table;
-+
-+	s390_unlist_old_asce(gmap);
-+
-+	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
-+	if (!page)
-+		return -ENOMEM;
-+	table = page_to_virt(page);
-+	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
-+
-+	/*
-+	 * The caller has to deal with the old ASCE, but here we make sure
-+	 * the new one is properly added to the CRST list, so that
-+	 * it will be freed when the VM is torn down.
-+	 */
-+	spin_lock(&gmap->guest_table_lock);
-+	list_add(&page->lru, &gmap->crst_list);
-+	spin_unlock(&gmap->guest_table_lock);
-+
-+	/* Set new table origin while preserving existing ASCE control bits */
-+	asce = (gmap->asce & ~_ASCE_ORIGIN) | __pa(table);
-+	WRITE_ONCE(gmap->asce, asce);
-+	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
-+	WRITE_ONCE(gmap->table, table);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(s390_replace_asce);
+ 	if (of_device_is_compatible(node, "qcom,pcie-ipq8064") ||
+ 	    of_device_is_compatible(node, "qcom,pcie-ipq8064-v2")) {
+ 		writel(PCS_DEEMPH_TX_DEEMPH_GEN1(24) |
 -- 
 2.35.1
 
