@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BA5C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F355BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243698AbiHOSo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S243712AbiHOSpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243967AbiHOSlw (ORCPT
+        with ESMTP id S243984AbiHOSly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:41:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC8A11A16;
-        Mon, 15 Aug 2022 11:25:28 -0700 (PDT)
+        Mon, 15 Aug 2022 14:41:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F0214034;
+        Mon, 15 Aug 2022 11:25:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C225B60FD0;
-        Mon, 15 Aug 2022 18:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FCDC433D6;
-        Mon, 15 Aug 2022 18:25:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38516B80F99;
+        Mon, 15 Aug 2022 18:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCCFC433D6;
+        Mon, 15 Aug 2022 18:25:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587927;
-        bh=60CuFHXWJNw/gjcsxiSLg5Tv8sOVH9XOecH9WAGiZ/Q=;
+        s=korg; t=1660587930;
+        bh=s6CJ4TFZhq4FG5YuAUbFukvtI+B1pVtjjTT/cJDupI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pkjFPqsKNG53mHQNzjO3gzfS7cZ/QHCzo/eJ5lpCvlvuHzG6CC/EMjfEl+0fRL/KO
-         XvW30CAtwqbWfMW7TViYJaSE3Q2Sd4NznpP5pWIndqfdHIc3KdFcVZ/XtKanSO3Yj/
-         TmoS5UBe1gv05eNz82He4YAwEeimyraLmXiPZk68=
+        b=imnqTEgseG+oyWmBc6RjpH//e/MBWimR/xAIUVRo6O+GgOpYwd+5YEu0fcI7WcX3c
+         zGwYHaYvhujfIFoLW2VxByyP+U8bWtr6nO1JXb5rvLrFOWA5XTokvu6paBMShBwc0o
+         ybxg4A9hltY4U5zX219RsGFhZsbw5ikGLz/IjFOk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 240/779] ath11k: fix netdev open race
-Date:   Mon, 15 Aug 2022 19:58:04 +0200
-Message-Id: <20220815180347.545103980@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Phil Auld <pauld@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 223/779] nohz/full, sched/rt: Fix missed tick-reenabling bug in dequeue_task_rt()
+Date:   Mon, 15 Aug 2022 19:57:47 +0200
+Message-Id: <20220815180346.813633877@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,107 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
-[ Upstream commit d4ba1ff87b17e81686ada8f429300876f55f95ad ]
+[ Upstream commit 5c66d1b9b30f737fcef85a0b75bfe0590e16b62a ]
 
-Make sure to allocate resources needed before registering the device.
+dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
+called sched_update_tick_dependency() preventing it from re-enabling the
+tick on systems that no longer have pending SCHED_RT tasks but have
+multiple runnable SCHED_OTHER tasks:
 
-This specifically avoids having a racing open() trigger a BUG_ON() in
-mod_timer() when ath11k_mac_op_start() is called before the
-mon_reap_timer as been set up.
+  dequeue_task_rt()
+    dequeue_rt_entity()
+      dequeue_rt_stack()
+        dequeue_top_rt_rq()
+	  sub_nr_running()	// decrements rq->nr_running
+	    sched_update_tick_dependency()
+	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
+	      ...
+        __dequeue_rt_entity()
+          dec_rt_tasks()	// decrements rq->rt.rt_nr_running
+	  ...
 
-I did not see this issue with next-20220310, but I hit it on every probe
-with next-20220511. Perhaps some timing changed in between.
+Every other scheduler class performs the operation in the opposite
+order, and sched_update_tick_dependency() expects the values to be
+updated as such. So avoid the misbehaviour by inverting the order in
+which the above operations are performed in the RT scheduler.
 
-Here's the backtrace:
-
-[   51.346947] kernel BUG at kernel/time/timer.c:990!
-[   51.346958] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-...
-[   51.578225] Call trace:
-[   51.583293]  __mod_timer+0x298/0x390
-[   51.589518]  mod_timer+0x14/0x20
-[   51.595368]  ath11k_mac_op_start+0x41c/0x4a0 [ath11k]
-[   51.603165]  drv_start+0x38/0x60 [mac80211]
-[   51.610110]  ieee80211_do_open+0x29c/0x7d0 [mac80211]
-[   51.617945]  ieee80211_open+0x60/0xb0 [mac80211]
-[   51.625311]  __dev_open+0x100/0x1c0
-[   51.631420]  __dev_change_flags+0x194/0x210
-[   51.638214]  dev_change_flags+0x24/0x70
-[   51.644646]  do_setlink+0x228/0xdb0
-[   51.650723]  __rtnl_newlink+0x460/0x830
-[   51.657162]  rtnl_newlink+0x4c/0x80
-[   51.663229]  rtnetlink_rcv_msg+0x124/0x390
-[   51.669917]  netlink_rcv_skb+0x58/0x130
-[   51.676314]  rtnetlink_rcv+0x18/0x30
-[   51.682460]  netlink_unicast+0x250/0x310
-[   51.688960]  netlink_sendmsg+0x19c/0x3e0
-[   51.695458]  ____sys_sendmsg+0x220/0x290
-[   51.701938]  ___sys_sendmsg+0x7c/0xc0
-[   51.708148]  __sys_sendmsg+0x68/0xd0
-[   51.714254]  __arm64_sys_sendmsg+0x28/0x40
-[   51.720900]  invoke_syscall+0x48/0x120
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
-
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Fixes: 840c36fa727a ("ath11k: dp: stop rx pktlog before suspend")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
+Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Link: https://lore.kernel.org/r/20220628092259.330171-1-nsaenzju@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ kernel/sched/rt.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 48b4151e13a3..48a449fbd2bc 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -699,23 +699,23 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
- 		return ret;
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 8007d087a57f..f75dcd3537b8 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -444,7 +444,7 @@ static inline void rt_queue_push_tasks(struct rq *rq)
+ #endif /* CONFIG_SMP */
+ 
+ static void enqueue_top_rt_rq(struct rt_rq *rt_rq);
+-static void dequeue_top_rt_rq(struct rt_rq *rt_rq);
++static void dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count);
+ 
+ static inline int on_rt_rq(struct sched_rt_entity *rt_se)
+ {
+@@ -565,7 +565,7 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
+ 	rt_se = rt_rq->tg->rt_se[cpu];
+ 
+ 	if (!rt_se) {
+-		dequeue_top_rt_rq(rt_rq);
++		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
+ 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
+ 		cpufreq_update_util(rq_of_rt_rq(rt_rq), 0);
+ 	}
+@@ -651,7 +651,7 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
+ 
+ static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
+ {
+-	dequeue_top_rt_rq(rt_rq);
++	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
+ }
+ 
+ static inline int rt_rq_throttled(struct rt_rq *rt_rq)
+@@ -1051,7 +1051,7 @@ static void update_curr_rt(struct rq *rq)
+ }
+ 
+ static void
+-dequeue_top_rt_rq(struct rt_rq *rt_rq)
++dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
+ {
+ 	struct rq *rq = rq_of_rt_rq(rt_rq);
+ 
+@@ -1062,7 +1062,7 @@ dequeue_top_rt_rq(struct rt_rq *rt_rq)
+ 
+ 	BUG_ON(!rq->nr_running);
+ 
+-	sub_nr_running(rq, rt_rq->rt_nr_running);
++	sub_nr_running(rq, count);
+ 	rt_rq->rt_queued = 0;
+ 
+ }
+@@ -1342,18 +1342,21 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
+ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
+ {
+ 	struct sched_rt_entity *back = NULL;
++	unsigned int rt_nr_running;
+ 
+ 	for_each_sched_rt_entity(rt_se) {
+ 		rt_se->back = back;
+ 		back = rt_se;
  	}
  
--	ret = ath11k_mac_register(ab);
-+	ret = ath11k_dp_pdev_alloc(ab);
- 	if (ret) {
--		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
-+		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
- 		goto err_pdev_debug;
+-	dequeue_top_rt_rq(rt_rq_of_se(back));
++	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
+ 
+ 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
+ 		if (on_rt_rq(rt_se))
+ 			__dequeue_rt_entity(rt_se, flags);
  	}
++
++	dequeue_top_rt_rq(rt_rq_of_se(back), rt_nr_running);
+ }
  
--	ret = ath11k_dp_pdev_alloc(ab);
-+	ret = ath11k_mac_register(ab);
- 	if (ret) {
--		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
--		goto err_mac_unregister;
-+		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
-+		goto err_dp_pdev_free;
- 	}
- 
- 	ret = ath11k_thermal_register(ab);
- 	if (ret) {
- 		ath11k_err(ab, "could not register thermal device: %d\n",
- 			   ret);
--		goto err_dp_pdev_free;
-+		goto err_mac_unregister;
- 	}
- 
- 	ret = ath11k_spectral_init(ab);
-@@ -728,10 +728,10 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
- 
- err_thermal_unregister:
- 	ath11k_thermal_unregister(ab);
--err_dp_pdev_free:
--	ath11k_dp_pdev_free(ab);
- err_mac_unregister:
- 	ath11k_mac_unregister(ab);
-+err_dp_pdev_free:
-+	ath11k_dp_pdev_free(ab);
- err_pdev_debug:
- 	ath11k_debugfs_pdev_destroy(ab);
- 
+ static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 -- 
 2.35.1
 
