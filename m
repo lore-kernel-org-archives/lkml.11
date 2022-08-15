@@ -2,289 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 048B6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DC5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbiHOP7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48680 "EHLO
+        id S231849AbiHOP7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229905AbiHOP7m (ORCPT
+        with ESMTP id S229445AbiHOP7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:59:42 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BF21A3BA
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 08:59:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Cug2e1kpKPJRoQMxYylLTyJm7Hi4N0mRrvny2xwRap8JDq39ewgvyq43G8CXoqPH0UQHHkqNeITHydqkxh4KxaP7FN3MPUMBwMwpQZC7T6D6kmbuL7kSpTtvX5rz/4FZjmUpBf0+GgTcbLHlIGB1IWL1KPHykLsgWvHCnkmDCPYzpPfJ4nrYK8uZbWuyE0d7A6tQY8mJv2yt/+ye8BCOh5I5TBQnoO40t9DwNZ1U4eCGdIcqpfbmA8cRfqTxu9Tt+rCyjBmT9k/Z+O0kmap0PVDLU1XEfW2pcCP9aZTlv22nhqIHaQje2tgOVFvKxavNYZq3kjwgai6tefT6126m0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x3xZh/cPCE8DRlTOvlj8h922QDtkfoufbsjZD102+EM=;
- b=bRUSUxlOERNn5/Whw/akK6ob3m2AUnl8DLQSVy1rVxWuQDcrQyV/GOz4ZNYXNB21ROi74vQivCEm746ukJbWp0ST86MnkBak0W/PZLctvAwak8ve0W03CQG2MLFdu4g1QQuAvz4qIrvGMOWcilEHAjWVlJkNb7rQ5Hh+5EfPhdaZAWXWAIidljg4YxVVIgNqRDfxsbHu2D8V0ZgYp2nOm8ijILeDvs4aA1cRuhB/vtyENANZnAjr4e7EwZ5sEfl9Lj1JSzZWBcNLcdaYzcNY16pSGE0gqprdRt52wh9Qp2x9JahmoNRC/D6viBWBnsCiVzhP1n5ApVK+W4HoJYc3dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x3xZh/cPCE8DRlTOvlj8h922QDtkfoufbsjZD102+EM=;
- b=MxQRyIZ3l8JkcVnWXVMKFR0QHMJpCVN6uNkGmd4CErTdgDpZIcigHZ5HTlXpMXbIM58oxUirTZdIdExsn9u4dv9QMT/f4uVQVRExu6dl+n7ctMCdaFtDyEsMwAgWmTnmECbmDv1NcyO7b7tdguBZFjIdhISKSCj4KutaKnmNwTA=
-Received: from DM6PR06CA0040.namprd06.prod.outlook.com (2603:10b6:5:54::17) by
- DS0PR12MB6534.namprd12.prod.outlook.com (2603:10b6:8:c1::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.15; Mon, 15 Aug 2022 15:59:39 +0000
-Received: from DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:54:cafe::a) by DM6PR06CA0040.outlook.office365.com
- (2603:10b6:5:54::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.19 via Frontend
- Transport; Mon, 15 Aug 2022 15:59:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT041.mail.protection.outlook.com (10.13.172.98) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 15:59:39 +0000
-Received: from tlendack-t1.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 15 Aug
- 2022 10:59:31 -0500
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <x86@kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v3 2/2] x86/sev: Add SNP-specific unaccepted memory support
-Date:   Mon, 15 Aug 2022 10:57:43 -0500
-Message-ID: <202f4e1ed9fc585f503da57cb8a8dd35e83758d1.1660579062.git.thomas.lendacky@amd.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1660579062.git.thomas.lendacky@amd.com>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com> <cover.1660579062.git.thomas.lendacky@amd.com>
+        Mon, 15 Aug 2022 11:59:45 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE2A1A39F;
+        Mon, 15 Aug 2022 08:59:43 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FExwN5006258;
+        Mon, 15 Aug 2022 15:59:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Uk+/hR1l9FLRGb6J30rv7NrYfz78+UqXwSfkQUduI8w=;
+ b=kYv7eGCCkkxTCzzZuj8ngAGlR00ihzYAKPEgRVe6lL/ZYT/pQiQhv2KPKZyGO1vMWF2/
+ bIuOsB9cM930R+9Egb4p+wMjVs1bqw+cGBY+JCC0BzsMJ/sI+GcysqONpb2vuGjfL6x5
+ PSy9muXoGjLQL7CIMe0YKLF0DGSsW786O21rTk60AOjHRjvQWa7EM8A/VOzuMfa41481
+ VlyvmgdltongrUmowFHRos7cEGEYpiM/o1URhBICzDJbXKNYByEBqFUYiEZ67F/BlGw8
+ p7WMqRL3wLV0PRRFSDuZ/MEoFBEAZugYrVtic2gUIU5nYo1S5qZH+StwoggYOkJDANJY GA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyrda1r2n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 15:59:37 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FF08jK007542;
+        Mon, 15 Aug 2022 15:59:37 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyrda1r1p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 15:59:37 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FFb2kq001314;
+        Mon, 15 Aug 2022 15:59:35 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3hx3k8ske1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 15:59:34 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FFxW1e23200004
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 15:59:32 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 553C711C04C;
+        Mon, 15 Aug 2022 15:59:32 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EF23411C04A;
+        Mon, 15 Aug 2022 15:59:31 +0000 (GMT)
+Received: from thinkpad (unknown [9.171.38.199])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Mon, 15 Aug 2022 15:59:31 +0000 (GMT)
+Date:   Mon, 15 Aug 2022 17:59:29 +0200
+From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>, stable <stable@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] mm/hugetlb: support write-faults in shared
+ mappings
+Message-ID: <20220815175929.303774fd@thinkpad>
+In-Reply-To: <CADFyXm7-0zXDG+ZHjft95aAAiSZh_RyAqgJw1nGsALwEL1XKiw@mail.gmail.com>
+References: <20220811103435.188481-1-david@redhat.com>
+        <20220811103435.188481-3-david@redhat.com>
+        <YvVRfSYsPOraTo6o@monkey>
+        <20220815153549.0288a9c6@thinkpad>
+        <CADFyXm7-0zXDG+ZHjft95aAAiSZh_RyAqgJw1nGsALwEL1XKiw@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1750bc32-ff7e-4ef5-205d-08da7ed728de
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6534:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3tjuFjfIbWZ4Qhcs+B8Ddffc4RwJX16TBm9+s2jR/mO+47OcpYrjpwq4I0++vZTA5qTD2yczxmMOvORKURe/o+DjQFdGlUdzkgrZQEVoR14zw6zQSwtL8WId0IDMk+q1LAa3W8xSXpHplXsQA+xu5GNo8LsdRoTzPnqMiXfsuHWDfNcBtO2GcFeGnujhpd72CBDyHqj7+8D8s6VI4TOPjnNXerzoQ+RL0Dw2d6U6ngD1MHuisHcFgTF2nBtF0iPbJc/88gsqkJVBzbhUR8itIXGpcVSJCRCOQMNmkQQBS9Wk0lL/aES63rTCajcpdQKpr9p7vYqJzIyHLeNY4T6ysWXwvEQ1EJZjvzauI4mnCXOa+oHvQOW7OKpOmN1gah1jUB6tD0AtYeUsdO25yjbHQANxTlAVADPgxf/dknlhbkgfjYkOjjfCKemwtcUrzCQmHA8HRLKOF6QABiGdFbDjgXatl2CFLdpqWiQwPSFYJKsKWMCAR7TSqmSJet4VCKmAOMfzjtFMROM/armkJXIsfGs/j4POJrzwT+TiEQTRp4ae7tl/3I/5DeFMivi+j6/06SLhpjpIEtzJcb7Z6Gi0ZUDawswFOE7TEmlTzOqbvsKhy5kgqIy1gs5vfFh+n9dacFe5BxV1ZYJnkwMzDnv5vJ2FjWHXzveonAOGRbRE8QTQIX4uIWpU18Tm6P6hZXTDecFSwMo3SwQRaFAcWaXA2buS36vYcOR9bCsHHio3xwpNha+DgZGpzj3qbW4sEViUI/g3huY4PfLQpTJ5MHAHr/mM+QUGLX3g72a8MbpWPXFZ8GejRpNzzao78N1SETpXU0fWV8EPu87pq0XFxBneFA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(396003)(136003)(36840700001)(40470700004)(46966006)(82740400003)(8936002)(47076005)(36756003)(2616005)(426003)(336012)(186003)(16526019)(81166007)(26005)(7416002)(6666004)(36860700001)(82310400005)(40480700001)(356005)(7696005)(54906003)(110136005)(86362001)(316002)(2906002)(70206006)(4326008)(8676002)(41300700001)(70586007)(83380400001)(5660300002)(478600001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 15:59:39.3967
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1750bc32-ff7e-4ef5-205d-08da7ed728de
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6534
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 92lfqtDCy-NlXVKGqYQKeQDPUInfcehI
+X-Proofpoint-ORIG-GUID: 28un4E5Indu3RqEfFZKQCuwDMCpKeHDK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 adultscore=0
+ spamscore=0 clxscore=1015 malwarescore=0 impostorscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208150062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add SNP-specific hooks to the unaccepted memory support in the boot
-path (__accept_memory()) and the core kernel (accept_memory()) in order
-to support booting SNP guests when unaccepted memory is present. Without
-this support, SNP guests will fail to boot and/or panic() when unaccepted
-memory is present in the EFI memory map.
+On Mon, 15 Aug 2022 17:07:32 +0200
+David Hildenbrand <david@redhat.com> wrote:
 
-The process of accepting memory under SNP involves invoking the hypervisor
-to perform a page state change for the page to private memory and then
-issuing a PVALIDATE instruction to accept the page.
+> On Mon, Aug 15, 2022 at 3:36 PM Gerald Schaefer
+> <gerald.schaefer@linux.ibm.com> wrote:
+> >
+> > On Thu, 11 Aug 2022 11:59:09 -0700
+> > Mike Kravetz <mike.kravetz@oracle.com> wrote:
+> >
+> > > On 08/11/22 12:34, David Hildenbrand wrote:
+> > > > If we ever get a write-fault on a write-protected page in a shared mapping,
+> > > > we'd be in trouble (again). Instead, we can simply map the page writable.
+> > > >
+> > > <snip>
+> > > >
+> > > > Reason is that uffd-wp doesn't clear the uffd-wp PTE bit when
+> > > > unregistering and consequently keeps the PTE writeprotected. Reason for
+> > > > this is to avoid the additional overhead when unregistering. Note
+> > > > that this is the case also for !hugetlb and that we will end up with
+> > > > writable PTEs that still have the uffd-wp PTE bit set once we return
+> > > > from hugetlb_wp(). I'm not touching the uffd-wp PTE bit for now, because it
+> > > > seems to be a generic thing -- wp_page_reuse() also doesn't clear it.
+> > > >
+> > > > VM_MAYSHARE handling in hugetlb_fault() for FAULT_FLAG_WRITE
+> > > > indicates that MAP_SHARED handling was at least envisioned, but could never
+> > > > have worked as expected.
+> > > >
+> > > > While at it, make sure that we never end up in hugetlb_wp() on write
+> > > > faults without VM_WRITE, because we don't support maybe_mkwrite()
+> > > > semantics as commonly used in the !hugetlb case -- for example, in
+> > > > wp_page_reuse().
+> > >
+> > > Nit,
+> > > to me 'make sure that we never end up in hugetlb_wp()' implies that
+> > > we would check for condition in callers as opposed to first thing in
+> > > hugetlb_wp().  However, I am OK with description as it.
+> >
+> 
+> Hi Gerald,
+> 
+> > Is that new WARN_ON_ONCE() in hugetlb_wp() meant to indicate a real bug?
+> 
+> Most probably, unless I am missing something important.
+> 
+> Something triggers FAULT_FLAG_WRITE on a VMA without VM_WRITE and
+> hugetlb_wp() would map the pte writable.
+> Consequently, we'd have a writable pte inside a VMA that does not have
+> write permissions, which is dubious. My check prevents that and bails
+> out.
+> 
+> Ordinary (!hugetlb) faults have maybe_mkwrite() (e.g., for FOLL_FORCE
+> or breaking COW) semantics such that we won't be mapping PTEs writable
+> if the VMA does not have write permissions.
+> 
+> I suspect that either
+> 
+> a) Some write fault misses a protection check and ends up triggering a
+> FAULT_FLAG_WRITE where we should actually fail early.
+> 
+> b) The write fault is valid and some VMA misses proper flags (VM_WRITE).
+> 
+> c) The write fault is valid (e.g., for breaking COW or FOLL_FORCE) and
+> we'd actually want maybe_mkwrite semantics.
+> 
+> > It is triggered by libhugetlbfs testcase "HUGETLB_ELFMAP=R linkhuge_rw"
+> > (at least on s390), and crashes our CI, because it runs with panic_on_warn
+> > enabled.
+> >
+> > Not sure if this means that we have bug elsewhere, allowing us to
+> > get to the WARN in hugetlb_wp().
+> 
+> That's what I suspect. Do you have a backtrace?
 
-Create the new header file arch/x86/boot/compressed/sev.h because adding
-the function declaration to any of the existing SEV related header files
-pulls in too many other header files, causing the build to fail.
+Sure, forgot to send it with initial reply...
 
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
----
- arch/x86/Kconfig                |  1 +
- arch/x86/boot/compressed/mem.c  |  3 +++
- arch/x86/boot/compressed/sev.c  | 10 +++++++++-
- arch/x86/boot/compressed/sev.h  | 23 +++++++++++++++++++++++
- arch/x86/include/asm/sev.h      |  3 +++
- arch/x86/kernel/sev.c           | 16 ++++++++++++++++
- arch/x86/mm/unaccepted_memory.c |  4 ++++
- 7 files changed, 59 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/boot/compressed/sev.h
+[   82.574749] ------------[ cut here ]------------
+[   82.574751] WARNING: CPU: 9 PID: 1674 at mm/hugetlb.c:5264 hugetlb_wp+0x3be/0x818
+[   82.574759] Modules linked in: nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink sunrpc uvdevice s390_trng vfio_ccw mdev vfio_iommu_type1 eadm_sch vfio zcrypt_cex4 sch_fq_codel configfs ghash_s390 prng chacha_s390 libchacha aes_s390 des_s390 libdes sha3_512_s390 sha3_256_s390 sha512_s390 sha256_s390 sha1_s390 sha_common pkey zcrypt rng_core autofs4
+[   82.574785] CPU: 9 PID: 1674 Comm: linkhuge_rw Kdump: loaded Not tainted 5.19.0-next-20220815 #36
+[   82.574787] Hardware name: IBM 3931 A01 704 (LPAR)
+[   82.574788] Krnl PSW : 0704c00180000000 00000006c9d4bc6a (hugetlb_wp+0x3c2/0x818)
+[   82.574791]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
+[   82.574794] Krnl GPRS: 000000000227c000 0000000008640071 0000000000000000 0000000001200000
+[   82.574796]            0000000001200000 00000000b5a98090 0000000000000255 00000000adb2c898
+[   82.574797]            0000000000000000 00000000adb2c898 0000000001200000 00000000b5a98090
+[   82.574799]            000000008c408000 0000000092fd7300 000003800339bc10 000003800339baf8
+[   82.574803] Krnl Code: 00000006c9d4bc5c: f160000407fe        mvo     4(7,%r0),2046(1,%r0)
+           00000006c9d4bc62: 47000700           bc      0,1792
+          #00000006c9d4bc66: af000000           mc      0,0
+          >00000006c9d4bc6a: a7a80040           lhi     %r10,64
+           00000006c9d4bc6e: b916002a           llgfr   %r2,%r10
+           00000006c9d4bc72: eb6ff1600004       lmg     %r6,%r15,352(%r15)
+           00000006c9d4bc78: 07fe               bcr     15,%r14
+           00000006c9d4bc7a: 47000700           bc      0,1792
+[   82.574814] Call Trace:
+[   82.574842]  [<00000006c9d4bc6a>] hugetlb_wp+0x3c2/0x818 
+[   82.574846]  [<00000006c9d4c62e>] hugetlb_no_page+0x56e/0x5a8 
+[   82.574848]  [<00000006c9d4cac2>] hugetlb_fault+0x45a/0x590 
+[   82.574850]  [<00000006c9d06d4a>] handle_mm_fault+0x182/0x220 
+[   82.574855]  [<00000006c9a9d70e>] do_exception+0x19e/0x470 
+[   82.574858]  [<00000006c9a9dff2>] do_dat_exception+0x2a/0x50 
+[   82.574861]  [<00000006ca668a18>] __do_pgm_check+0xf0/0x1b0 
+[   82.574866]  [<00000006ca677b3c>] pgm_check_handler+0x11c/0x170 
+[   82.574870] Last Breaking-Event-Address:
+[   82.574871]  [<00000006c9d4b926>] hugetlb_wp+0x7e/0x818
+[   82.574873] Kernel panic - not syncing: panic_on_warn set ...
+[   82.574875] CPU: 9 PID: 1674 Comm: linkhuge_rw Kdump: loaded Not tainted 5.19.0-next-20220815 #36
+[   82.574877] Hardware name: IBM 3931 A01 704 (LPAR)
+[   82.574878] Call Trace:
+[   82.574879]  [<00000006ca664f22>] dump_stack_lvl+0x62/0x80 
+[   82.574881]  [<00000006ca657af8>] panic+0x118/0x300 
+[   82.574884]  [<00000006c9ac3da6>] __warn+0xb6/0x160 
+[   82.574887]  [<00000006ca29b1ea>] report_bug+0xba/0x140 
+[   82.574890]  [<00000006c9a75194>] monitor_event_exception+0x44/0x80 
+[   82.574892]  [<00000006ca668a18>] __do_pgm_check+0xf0/0x1b0 
+[   82.574894]  [<00000006ca677b3c>] pgm_check_handler+0x11c/0x170 
+[   82.574897]  [<00000006c9d4bc6a>] hugetlb_wp+0x3c2/0x818 
+[   82.574899]  [<00000006c9d4c62e>] hugetlb_no_page+0x56e/0x5a8 
+[   82.574901]  [<00000006c9d4cac2>] hugetlb_fault+0x45a/0x590 
+[   82.574903]  [<00000006c9d06d4a>] handle_mm_fault+0x182/0x220 
+[   82.574906]  [<00000006c9a9d70e>] do_exception+0x19e/0x470 
+[   82.574907]  [<00000006c9a9dff2>] do_dat_exception+0x2a/0x50 
+[   82.574909]  [<00000006ca668a18>] __do_pgm_check+0xf0/0x1b0 
+[   82.574912]  [<00000006ca677b3c>] pgm_check_handler+0x11c/0x170 
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 34146ecc5bdd..0ad53c3533c2 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1553,6 +1553,7 @@ config AMD_MEM_ENCRYPT
- 	select INSTRUCTION_DECODER
- 	select ARCH_HAS_CC_PLATFORM
- 	select X86_MEM_ENCRYPT
-+	select UNACCEPTED_MEMORY
- 	help
- 	  Say yes to enable support for the encryption of system memory.
- 	  This requires an AMD processor that supports Secure Memory
-diff --git a/arch/x86/boot/compressed/mem.c b/arch/x86/boot/compressed/mem.c
-index 48e36e640da1..3e19dc0da0d7 100644
---- a/arch/x86/boot/compressed/mem.c
-+++ b/arch/x86/boot/compressed/mem.c
-@@ -6,6 +6,7 @@
- #include "find.h"
- #include "math.h"
- #include "tdx.h"
-+#include "sev.h"
- #include <asm/shared/tdx.h>
- 
- #define PMD_SHIFT	21
-@@ -39,6 +40,8 @@ static inline void __accept_memory(phys_addr_t start, phys_addr_t end)
- 	/* Platform-specific memory-acceptance call goes here */
- 	if (is_tdx_guest())
- 		tdx_accept_memory(start, end);
-+	else if (sev_snp_enabled())
-+		snp_accept_memory(start, end);
- 	else
- 		error("Cannot accept memory: unknown platform\n");
- }
-diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
-index 730c4677e9db..d4b06c862094 100644
---- a/arch/x86/boot/compressed/sev.c
-+++ b/arch/x86/boot/compressed/sev.c
-@@ -115,7 +115,7 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
- /* Include code for early handlers */
- #include "../../kernel/sev-shared.c"
- 
--static inline bool sev_snp_enabled(void)
-+bool sev_snp_enabled(void)
- {
- 	return sev_status & MSR_AMD64_SEV_SNP_ENABLED;
- }
-@@ -161,6 +161,14 @@ void snp_set_page_shared(unsigned long paddr)
- 	__page_state_change(paddr, SNP_PAGE_STATE_SHARED);
- }
- 
-+void snp_accept_memory(phys_addr_t start, phys_addr_t end)
-+{
-+	while (end > start) {
-+		snp_set_page_private(start);
-+		start += PAGE_SIZE;
-+	}
-+}
-+
- static bool early_setup_ghcb(void)
- {
- 	if (set_page_decrypted((unsigned long)&boot_ghcb_page))
-diff --git a/arch/x86/boot/compressed/sev.h b/arch/x86/boot/compressed/sev.h
-new file mode 100644
-index 000000000000..fc725a981b09
---- /dev/null
-+++ b/arch/x86/boot/compressed/sev.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * AMD SEV header for early boot related functions.
-+ *
-+ * Author: Tom Lendacky <thomas.lendacky@amd.com>
-+ */
-+
-+#ifndef BOOT_COMPRESSED_SEV_H
-+#define BOOT_COMPRESSED_SEV_H
-+
-+#ifdef CONFIG_AMD_MEM_ENCRYPT
-+
-+bool sev_snp_enabled(void);
-+void snp_accept_memory(phys_addr_t start, phys_addr_t end);
-+
-+#else
-+
-+static inline bool sev_snp_enabled(void) { return false; }
-+static inline void snp_accept_memory(phys_addr_t start, phys_addr_t end) { }
-+
-+#endif
-+
-+#endif
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 19514524f0f8..21db66bacefe 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -202,6 +202,7 @@ void snp_set_wakeup_secondary_cpu(void);
- bool snp_init(struct boot_params *bp);
- void snp_abort(void);
- int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned long *fw_err);
-+void snp_accept_memory(phys_addr_t start, phys_addr_t end);
- #else
- static inline void sev_es_ist_enter(struct pt_regs *regs) { }
- static inline void sev_es_ist_exit(void) { }
-@@ -226,6 +227,8 @@ static inline int snp_issue_guest_request(u64 exit_code, struct snp_req_data *in
- {
- 	return -ENOTTY;
- }
-+
-+static inline void snp_accept_memory(phys_addr_t start, phys_addr_t end) { }
- #endif
- 
- #endif
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index 40268ce97aad..d71740f54277 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -924,6 +924,22 @@ void snp_set_memory_private(unsigned long vaddr, unsigned int npages)
- 	pvalidate_pages(vaddr, npages, true);
- }
- 
-+void snp_accept_memory(phys_addr_t start, phys_addr_t end)
-+{
-+	unsigned long vaddr;
-+	unsigned int npages;
-+
-+	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
-+		return;
-+
-+	vaddr = (unsigned long)__va(start);
-+	npages = (end - start) >> PAGE_SHIFT;
-+
-+	set_pages_state(vaddr, npages, SNP_PAGE_STATE_PRIVATE);
-+
-+	pvalidate_pages(vaddr, npages, true);
-+}
-+
- static int snp_set_vmsa(void *va, bool vmsa)
- {
- 	u64 attrs;
-diff --git a/arch/x86/mm/unaccepted_memory.c b/arch/x86/mm/unaccepted_memory.c
-index 9ec2304272dc..b86ad6a8ddf5 100644
---- a/arch/x86/mm/unaccepted_memory.c
-+++ b/arch/x86/mm/unaccepted_memory.c
-@@ -9,6 +9,7 @@
- #include <asm/setup.h>
- #include <asm/shared/tdx.h>
- #include <asm/unaccepted_memory.h>
-+#include <asm/sev.h>
- 
- /* Protects unaccepted memory bitmap */
- static DEFINE_SPINLOCK(unaccepted_memory_lock);
-@@ -66,6 +67,9 @@ void accept_memory(phys_addr_t start, phys_addr_t end)
- 		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
- 			tdx_accept_memory(range_start * PMD_SIZE,
- 					  range_end * PMD_SIZE);
-+		} else if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP)) {
-+			snp_accept_memory(range_start * PMD_SIZE,
-+					  range_end * PMD_SIZE);
- 		} else {
- 			panic("Cannot accept memory: unknown platform\n");
- 		}
--- 
-2.36.1
-
+There are also some "User process fault" messages before that, but those
+seem to be expected by the nature of that linhuge_rw tests, i.e. they are
+not new and also showed before. This is why I assumed it could be just
+some weird user space logic, triggering that new WARN_ON_ONCE.
