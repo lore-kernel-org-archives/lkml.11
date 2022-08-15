@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF24C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFB5C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233980AbiHPE5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S234017AbiHPE5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234167AbiHPE40 (ORCPT
+        with ESMTP id S234170AbiHPE41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:56:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A6BB6A8;
+        Tue, 16 Aug 2022 00:56:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBEC9BBA52;
         Mon, 15 Aug 2022 13:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8225861089;
-        Mon, 15 Aug 2022 20:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D06C433D6;
-        Mon, 15 Aug 2022 20:51:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79E396126B;
+        Mon, 15 Aug 2022 20:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72733C433C1;
+        Mon, 15 Aug 2022 20:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596681;
-        bh=eSju7C3yRhZNi5hkK0/J5yLVf4TRaMXFKrFi3jlI5tg=;
+        s=korg; t=1660596662;
+        bh=Gy9GEjewIsc6TeXRPwI50deSb4z9hDbTNSVmmGmL6ws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nbhw+fo/PrWwYh3m9ohE5rU3dmDz5HEbDYYrIL7o6dbUORHDFnkOQHr6aBhSnlsuL
-         fAnL6MFjNaHjgK6fJm9aAN8bBBqnnCJyBB2lShPBfDQj9xmQD+FTIKiK0QMiqZ1djV
-         joah2hZaO3kR/XjPJuszHuFc/6tN/wAtJ2FbrLXI=
+        b=YAuCBp7t1fznDXFT9Xy1MelKk+Z9AUcj4CipVwV4/aLK/4LB5PPHB2/xwpSg+OdlA
+         lpv4T61QUBdvUb4yJeB7eyz0Sqjq864EBGQFhddOSazxPy4yzcR0kwmGNg5EDl7y/F
+         752teZ9k85nygn+61b7UhGPH2s9H0i9dppoNpGwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Wang Jianjian <wangjianjian3@huawei.com>,
-        linux-ext4@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1124/1157] Documentation: ext4: fix cell spacing of table heading on blockmap table
-Date:   Mon, 15 Aug 2022 20:08:00 +0200
-Message-Id: <20220815180525.307454244@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.19 1150/1157] wifi: nl80211: acquire wdev mutex earlier in start_ap
+Date:   Mon, 15 Aug 2022 20:08:26 +0200
+Message-Id: <20220815180526.529002155@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,56 +47,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 442ec1e5bb7c46c72c41898e13a5744c84cadf51 ]
+commit c2653990d5729a445296d6d04395be5dea8e282e upstream.
 
-Commit 3103084afcf234 ("ext4, doc: remove unnecessary escaping") removes
-redundant underscore escaping, however the cell spacing in heading row of
-blockmap table became not aligned anymore, hence triggers malformed table
-warning:
+We need to hold the wdev mutex already in order to call
+nl80211_parse_tx_bitrate_mask(), so acquire it earlier.
 
-Documentation/filesystems/ext4/blockmap.rst:3: WARNING: Malformed table.
-
-+---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| i.i_block Offset   | Where It Points                                                                                                                                                                                                              |
-<snipped>...
-
-The warning caused the table not being loaded.
-
-Realign the heading row cell by adding missing space at the first cell
-to fix the warning.
-
-Fixes: 3103084afcf234 ("ext4, doc: remove unnecessary escaping")
-Cc: stable@kernel.org
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Wang Jianjian <wangjianjian3@huawei.com>
-Cc: linux-ext4@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220619072938.7334-1-bagasdotme@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/filesystems/ext4/blockmap.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/wireless/nl80211.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/filesystems/ext4/blockmap.rst b/Documentation/filesystems/ext4/blockmap.rst
-index 2bd990402a5c..cc596541ce79 100644
---- a/Documentation/filesystems/ext4/blockmap.rst
-+++ b/Documentation/filesystems/ext4/blockmap.rst
-@@ -1,7 +1,7 @@
- .. SPDX-License-Identifier: GPL-2.0
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -5747,18 +5747,20 @@ static int nl80211_start_ap(struct sk_bu
+ 		goto out;
+ 	}
  
- +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
--| i.i_block Offset   | Where It Points                                                                                                                                                                                                              |
-+| i.i_block Offset    | Where It Points                                                                                                                                                                                                              |
- +=====================+==============================================================================================================================================================================================================================+
- | 0 to 11             | Direct map to file blocks 0 to 11.                                                                                                                                                                                           |
- +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
--- 
-2.35.1
-
++	wdev_lock(wdev);
++
+ 	if (info->attrs[NL80211_ATTR_TX_RATES]) {
+ 		err = nl80211_parse_tx_bitrate_mask(info, info->attrs,
+ 						    NL80211_ATTR_TX_RATES,
+ 						    &params->beacon_rate,
+ 						    dev, false, link_id);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 
+ 		err = validate_beacon_tx_rate(rdev, params->chandef.chan->band,
+ 					      &params->beacon_rate);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 	}
+ 
+ 	if (info->attrs[NL80211_ATTR_SMPS_MODE]) {
+@@ -5771,19 +5773,19 @@ static int nl80211_start_ap(struct sk_bu
+ 			if (!(rdev->wiphy.features &
+ 			      NL80211_FEATURE_STATIC_SMPS)) {
+ 				err = -EINVAL;
+-				goto out;
++				goto out_unlock;
+ 			}
+ 			break;
+ 		case NL80211_SMPS_DYNAMIC:
+ 			if (!(rdev->wiphy.features &
+ 			      NL80211_FEATURE_DYNAMIC_SMPS)) {
+ 				err = -EINVAL;
+-				goto out;
++				goto out_unlock;
+ 			}
+ 			break;
+ 		default:
+ 			err = -EINVAL;
+-			goto out;
++			goto out_unlock;
+ 		}
+ 	} else {
+ 		params->smps_mode = NL80211_SMPS_OFF;
+@@ -5792,7 +5794,7 @@ static int nl80211_start_ap(struct sk_bu
+ 	params->pbss = nla_get_flag(info->attrs[NL80211_ATTR_PBSS]);
+ 	if (params->pbss && !rdev->wiphy.bands[NL80211_BAND_60GHZ]) {
+ 		err = -EOPNOTSUPP;
+-		goto out;
++		goto out_unlock;
+ 	}
+ 
+ 	if (info->attrs[NL80211_ATTR_ACL_POLICY]) {
+@@ -5800,7 +5802,7 @@ static int nl80211_start_ap(struct sk_bu
+ 		if (IS_ERR(params->acl)) {
+ 			err = PTR_ERR(params->acl);
+ 			params->acl = NULL;
+-			goto out;
++			goto out_unlock;
+ 		}
+ 	}
+ 
+@@ -5812,7 +5814,7 @@ static int nl80211_start_ap(struct sk_bu
+ 					info->attrs[NL80211_ATTR_HE_OBSS_PD],
+ 					&params->he_obss_pd);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 	}
+ 
+ 	if (info->attrs[NL80211_ATTR_FILS_DISCOVERY]) {
+@@ -5820,7 +5822,7 @@ static int nl80211_start_ap(struct sk_bu
+ 						   info->attrs[NL80211_ATTR_FILS_DISCOVERY],
+ 						   params);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 	}
+ 
+ 	if (info->attrs[NL80211_ATTR_UNSOL_BCAST_PROBE_RESP]) {
+@@ -5828,7 +5830,7 @@ static int nl80211_start_ap(struct sk_bu
+ 			rdev, info->attrs[NL80211_ATTR_UNSOL_BCAST_PROBE_RESP],
+ 			params);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 	}
+ 
+ 	if (info->attrs[NL80211_ATTR_MBSSID_CONFIG]) {
+@@ -5839,7 +5841,7 @@ static int nl80211_start_ap(struct sk_bu
+ 							params->beacon.mbssid_ies->cnt :
+ 							0);
+ 		if (err)
+-			goto out;
++			goto out_unlock;
+ 	}
+ 
+ 	nl80211_calculate_ap_params(params);
+@@ -5850,7 +5852,6 @@ static int nl80211_start_ap(struct sk_bu
+ 	else if (info->attrs[NL80211_ATTR_EXTERNAL_AUTH_SUPPORT])
+ 		params->flags |= NL80211_AP_SETTINGS_EXTERNAL_AUTH_SUPPORT;
+ 
+-	wdev_lock(wdev);
+ 	if (wdev->conn_owner_nlportid &&
+ 	    info->attrs[NL80211_ATTR_SOCKET_OWNER] &&
+ 	    wdev->conn_owner_nlportid != info->snd_portid) {
 
 
