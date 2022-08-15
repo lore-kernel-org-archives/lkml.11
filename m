@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F90C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DBEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344507AbiHOTn0 (ORCPT
+        id S1344523AbiHOTnf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        Mon, 15 Aug 2022 15:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344195AbiHOTip (ORCPT
+        with ESMTP id S1344230AbiHOTjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:38:45 -0400
+        Mon, 15 Aug 2022 15:39:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF6921B9;
-        Mon, 15 Aug 2022 11:46:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83540402C1;
+        Mon, 15 Aug 2022 11:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDA2FB81082;
-        Mon, 15 Aug 2022 18:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F954C433D6;
-        Mon, 15 Aug 2022 18:46:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AD6DB8105C;
+        Mon, 15 Aug 2022 18:46:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5025AC433C1;
+        Mon, 15 Aug 2022 18:46:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589205;
-        bh=9aQn6HVkvYsPal5YbQdM+9fKm2iAIf76v5YHe/43/XA=;
+        s=korg; t=1660589211;
+        bh=aiNS8m4zZFUULNlVvVO20tIZMp6ooCOq2nuoy3iOBus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GzOswDYptWuQuZonavXj/TOgKfHQeuU15DkMhlL3Lv7fV9ZLGPQO4a3yCyjcNZ6GF
-         riwUoOIaDUopefftlXZs4dzAYmM+RH5xtWx08Aj8sHX8xZeWWPOerAhAtHM5nuHXfA
-         N5DF81h2nSN1izEC/EiCeKxGa07dtC2mAuhsM8Bw=
+        b=egTjS53vBpPc3YVhrVV7+0aMZwSps3Vyq0UZvnbInTioCj3E/wekTBpeRE9p6ITk3
+         CzHKcVX6JRNZlZmi6PyN5qiDxsYLNfOnDMJiMCFiD5TOZxozYMwgUicUwMZtAwFAv0
+         tJ1L7NxhgnCWOxDS5MyjxHHdNK5GJ6N8iFhnwjXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Miklos Szeredi <mszeredi@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 628/779] fuse: Remove the control interface for virtio-fs
-Date:   Mon, 15 Aug 2022 20:04:32 +0200
-Message-Id: <20220815180404.220639286@linuxfoundation.org>
+Subject: [PATCH 5.15 647/779] powerpc/xive: Fix refcount leak in xive_get_max_prio
+Date:   Mon, 15 Aug 2022 20:04:51 +0200
+Message-Id: <20220815180405.026057307@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,48 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
+[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
 
-The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
-unmount") tries to remove the control interface for virtio-fs since it does
-not support aborting requests which are being processed. But it doesn't
-work now.
+of_find_node_by_path() returns a node pointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-This patch fixes it by skipping creating the control interface if
-fuse_conn->no_control is set.
-
-Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/control.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/sysdev/xive/spapr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/fuse/control.c b/fs/fuse/control.c
-index 000d2e5627e9..79f01d09c78c 100644
---- a/fs/fuse/control.c
-+++ b/fs/fuse/control.c
-@@ -275,7 +275,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
- 	struct dentry *parent;
- 	char name[32];
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index 583b2c6df390..2bf78a30238b 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -716,6 +716,7 @@ static bool xive_get_max_prio(u8 *max_prio)
+ 	}
  
--	if (!fuse_control_sb)
-+	if (!fuse_control_sb || fc->no_control)
- 		return 0;
- 
- 	parent = fuse_control_sb->s_root;
-@@ -313,7 +313,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
- {
- 	int i;
- 
--	if (!fuse_control_sb)
-+	if (!fuse_control_sb || fc->no_control)
- 		return;
- 
- 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
+ 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
++	of_node_put(rootdn);
+ 	if (!reg) {
+ 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
+ 		return false;
 -- 
 2.35.1
 
