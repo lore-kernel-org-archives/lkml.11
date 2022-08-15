@@ -2,132 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2556BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1225C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241242AbiHOHk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S241045AbiHOHnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241492AbiHOHks (ORCPT
+        with ESMTP id S229816AbiHOHnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:40:48 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A765960C6
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:40:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660549246; x=1692085246;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=yOnnsZdwTjhOV4GiTvcT6QmvdCBeALTyO14/f1k1UWk=;
-  b=m7rCS6xujoFPPosWNdVp7cjS1w0LWwn5tssqATb0oMnMMOepIL/W1WTw
-   Tm96cpPmA2bVfRGNylqwRMYKCkDhrRZTGIU+bW3QFmTWblc2AIlAaCArE
-   IMeTowVXLkOm4xBKzMuAHY/osu+X+CIItovarX/Dqo9o+gne6yE+112HE
-   +iF2Pke2JF3VKx78JNItRGRi5j/eq33ABGzYqMGFbNObK9o6P+P4DWge3
-   Lxw0tQ3BfRNtndXgcMCHjf8v2BsS9eQJdU9TjK5C2hbIxKGzcnr9oUq5X
-   1HW0w4kaOssTKIMNoPSQjMBG7ekO4vHDYCDI+prhJva59F4ZCYwK9de6J
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="293181715"
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="293181715"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 00:40:29 -0700
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="582796154"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 00:40:26 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Haiyue Wang <haiyue.wang@intel.com>
-Cc:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <akpm@linux-foundation.org>, <david@redhat.com>,
-        <apopple@nvidia.com>, <linmiaohe@huawei.com>,
-        <songmuchun@bytedance.com>, <naoya.horiguchi@linux.dev>,
-        <alex.sierra@amd.com>
-Subject: Re: [PATCH v5 1/2] mm: migration: fix the FOLL_GET failure on
- following huge page
-References: <20220812084921.409142-1-haiyue.wang@intel.com>
-        <20220815070240.470469-1-haiyue.wang@intel.com>
-        <20220815070240.470469-2-haiyue.wang@intel.com>
-Date:   Mon, 15 Aug 2022 15:40:17 +0800
-In-Reply-To: <20220815070240.470469-2-haiyue.wang@intel.com> (Haiyue Wang's
-        message of "Mon, 15 Aug 2022 15:02:39 +0800")
-Message-ID: <87k07ac5um.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 15 Aug 2022 03:43:13 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF70175B6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:43:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=xvEuimPI9WdX6SDCYZklFCMp8CvSiZr5wMIfecd10Rk=; b=wQnP/vp5OhvqTdXNVB3uANqKWK
+        sk63ppLqkCrIjjQHp8g3KftE/9lSpdzbDn5PR1NvqkcXnqWbmR94BtZTDbjfqwpCkfpsE+qGPXD05
+        /aflIUbgKa6cYjbQ0JiET2iHr+ICXPs2qmh7Q7WkC5yLIYZmwKK9MwnHoHtOhhepo5M7l4Jrum9A9
+        4huqXccz56iMobwnNnEBfho+nAr9Xy32uoTU5RGOvKt+b3PvVmZavpD0HNfplYeGzwxdNTOR7udN7
+        FsS7OG6PzLD0vUXSi5ntQ3FEeH06pi1fD5G8rNCRfxtQ132xS1bltedabI8dlaN1Bdkhix5uedH7u
+        IrTekRsg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNUkX-005Wm4-IG; Mon, 15 Aug 2022 07:43:01 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B8746980264; Mon, 15 Aug 2022 09:43:00 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 09:43:00 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Ashok Raj <ashok.raj@intel.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        LKML Mailing List <linux-kernel@vger.kernel.org>,
+        X86-kernel <x86@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH 3/5] x86/microcode/intel: Allow a late-load only if a min
+ rev is specified
+Message-ID: <Yvn5BNXfOm3uA7WA@worktop.programming.kicks-ass.net>
+References: <20220813223825.3164861-1-ashok.raj@intel.com>
+ <20220813223825.3164861-4-ashok.raj@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220813223825.3164861-4-ashok.raj@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Haiyue Wang <haiyue.wang@intel.com> writes:
+On Sat, Aug 13, 2022 at 10:38:23PM +0000, Ashok Raj wrote:
 
-> Not all huge page APIs support FOLL_GET option, so move_pages() syscall
-> will fail to get the page node information for some huge pages.
->
-> Like x86 on linux 5.19 with 1GB huge page API follow_huge_pud(), it will
-> return NULL page for FOLL_GET when calling move_pages() syscall with the
-> NULL 'nodes' parameter, the 'status' parameter has '-2' error in array.
->
-> Note: follow_huge_pud() now supports FOLL_GET in linux 6.0.
->       Link: https://lore.kernel.org/all/20220714042420.1847125-3-naoya.horiguchi@linux.dev
->
-> But these huge page APIs don't support FOLL_GET:
->   1. follow_huge_pud() in arch/s390/mm/hugetlbpage.c
->   2. follow_huge_addr() in arch/ia64/mm/hugetlbpage.c
->      It will cause WARN_ON_ONCE for FOLL_GET.
->   3. follow_huge_pgd() in mm/hugetlb.c
->
-> This is an temporary solution to mitigate the side effect of the race
-> condition fix by calling follow_page() with FOLL_GET set for huge pages.
->
-> After supporting follow huge page by FOLL_GET is done, this fix can be
-> reverted safely.
->
-> Fixes: 4cd614841c06 ("mm: migration: fix possible do_pages_stat_array racing with memory offline")
-> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+> The proposal here is an even simpler option. The criteria for a microcode to
+> be a viable late-load candidate is that no CPUID or OS visible MSR features
+> are removed with respect to an earlier version of the microcode.
+> 
+> Pseudocode for late-load is as follows:
+> 
+> if header.min_required_id == 0
+> 	This is old format microcode, block late-load
+> else if current_ucode_version < header.min_required_id
+> 	Current version is too old, block late-load of this microcode.
+> else
+> 	OK to proceed with late-load.
 
-LGTM, Thanks!
+What about ucode that adds CPUID bits? Since the kernel will not re-init
+it will not pick up on those. But userspace might.
 
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-
-> ---
->  mm/migrate.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 6a1597c92261..581dfaad9257 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1848,6 +1848,7 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->  
->  	for (i = 0; i < nr_pages; i++) {
->  		unsigned long addr = (unsigned long)(*pages);
-> +		unsigned int foll_flags = FOLL_DUMP;
->  		struct vm_area_struct *vma;
->  		struct page *page;
->  		int err = -EFAULT;
-> @@ -1856,8 +1857,12 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->  		if (!vma)
->  			goto set_status;
->  
-> +		/* Not all huge page follow APIs support 'FOLL_GET' */
-> +		if (!is_vm_hugetlb_page(vma))
-> +			foll_flags |= FOLL_GET;
-> +
->  		/* FOLL_DUMP to ignore special (like zero) pages */
-> -		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
-> +		page = follow_page(vma, addr, foll_flags);
->  
->  		err = PTR_ERR(page);
->  		if (IS_ERR(page))
-> @@ -1865,7 +1870,8 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->  
->  		if (page && !is_zone_device_page(page)) {
->  			err = page_to_nid(page);
-> -			put_page(page);
-> +			if (foll_flags & FOLL_GET)
-> +				put_page(page);
->  		} else {
->  			err = -ENOENT;
->  		}
+Should we at all time enable CPUID intercept to ensure user visible
+CPUID doesn't change?
