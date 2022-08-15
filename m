@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7990C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB393C282E7
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346479AbiHOUPz (ORCPT
+        id S1346549AbiHOUQJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
+        Mon, 15 Aug 2022 16:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346963AbiHOUMl (ORCPT
+        with ESMTP id S1346247AbiHOULF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8244B89827;
-        Mon, 15 Aug 2022 11:58:40 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F082873A;
+        Mon, 15 Aug 2022 11:57:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3C9DB810A1;
-        Mon, 15 Aug 2022 18:58:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47208C43142;
-        Mon, 15 Aug 2022 18:58:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 884B7B8109E;
+        Mon, 15 Aug 2022 18:57:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE1A3C43470;
+        Mon, 15 Aug 2022 18:57:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589917;
-        bh=36kaqV//Q65MyMm68X4c+Dpwi17dNDifBxO1QrGo2o8=;
+        s=korg; t=1660589845;
+        bh=2CHC3svalq1Gyf9BQX3NmCndAGt4dNGgpMfHUiU2LWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D7kHjiszInBAchIMzJFdati7s7AnQ5L5TY1yGaFUj27YrgQ5HVpC6ScBa++UQa+sj
-         vy1WhvdcB8iVKGkwIU9FO16Nv53NiRgDvVRl7fbqLDvhQboVe6rxC6AHOYHziTLFcF
-         cwqLgMqWx2UdR4DZwSgbyKWb/qEVOKyYYly6qaAM=
+        b=kqRdFrQFyIwV0TVTsVorGSyqsEHMcQN1x7xRewh4LaaPdlatKoYMIMq6MsKiwk/de
+         1HKIyrw8cZel7kBtR3h8+Eh2+MuF1eAXLivzVlr1kmh7F8pjbBEKKKtwi5BTUc1hpn
+         d5bZF1UA9qBhQ/WdfmRyG5OCJZzcacc4XU+81SVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.18 0090/1095] um: Remove straying parenthesis
-Date:   Mon, 15 Aug 2022 19:51:29 +0200
-Message-Id: <20220815180433.237855478@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0035/1095] KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
+Date:   Mon, 15 Aug 2022 19:50:34 +0200
+Message-Id: <20220815180430.838822104@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,35 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+From: Sean Christopherson <seanjc@google.com>
 
-commit c6496e0a4a90d8149203c16323cff3fa46e422e7 upstream.
+commit c7d855c2aff2d511fd60ee2e356134c4fb394799 upstream.
 
-Commit e3a33af812c6 ("um: fix and optimize xor select template for CONFIG64 and timetravel mode")
-caused a build regression when CONFIG_XOR_BLOCKS and CONFIG_UML_TIME_TRAVEL_SUPPORT
-are selected.
-Fix it by removing the straying parenthesis.
+Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
+per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
+on hardware to perform the checks, even for the few checks that have
+higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
+hardware while running the guest, (b) there may incompatible CR0/CR4 bits
+that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
+have further restricted the allowed CR0/CR4 values by manipulating the
+guest's nested VMX MSRs.
 
+Note, despite a very strong desire to throw shade at Jim, commit
+70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
+is not to blame for the buggy behavior (though the comment...).  That
+commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
+(though it did erroneously drop the CPL check, but that has already been
+remedied).  KVM may force CR0.PE=1, but will do so only when also
+forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
+Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
+Reported-by: Eric Li <ercli@ucdavis.edu>
 Cc: stable@vger.kernel.org
-Fixes: e3a33af812c6 ("um: fix and optimize xor select template for CONFIG64 and timetravel mode")
-Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
-[rw: Added commit message]
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/xor.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/nested.c |   23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
---- a/arch/um/include/asm/xor.h
-+++ b/arch/um/include/asm/xor.h
-@@ -18,7 +18,7 @@
- #undef XOR_SELECT_TEMPLATE
- /* pick an arbitrary one - measuring isn't possible with inf-cpu */
- #define XOR_SELECT_TEMPLATE(x)	\
--	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
-+	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x)
- #endif
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4973,20 +4973,25 @@ static int handle_vmon(struct kvm_vcpu *
+ 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
  
- #endif
+ 	/*
+-	 * The Intel VMX Instruction Reference lists a bunch of bits that are
+-	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
+-	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
+-	 * Otherwise, we should fail with #UD.  But most faulting conditions
+-	 * have already been checked by hardware, prior to the VM-exit for
+-	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
+-	 * that bit set to 1 in non-root mode.
++	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
++	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
++	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
++	 * running the guest, i.e. KVM needs to check the _guest_ values.
++	 *
++	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
++	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
++	 * Mode, but KVM will never take the guest out of those modes.
+ 	 */
+-	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
++	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
++	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
+ 		kvm_queue_exception(vcpu, UD_VECTOR);
+ 		return 1;
+ 	}
+ 
+-	/* CPL=0 must be checked manually. */
++	/*
++	 * CPL=0 and all other checks that are lower priority than VM-Exit must
++	 * be checked manually.
++	 */
+ 	if (vmx_get_cpl(vcpu)) {
+ 		kvm_inject_gp(vcpu, 0);
+ 		return 1;
 
 
