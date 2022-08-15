@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0DBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B0EC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244845AbiHOV6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
+        id S1343990AbiHOV6P (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350570AbiHOV4e (ORCPT
+        with ESMTP id S1350591AbiHOV4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:56:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D67610AE21;
-        Mon, 15 Aug 2022 12:34:09 -0700 (PDT)
+        Mon, 15 Aug 2022 17:56:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710DB10AE2D;
+        Mon, 15 Aug 2022 12:34:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6868EB80EA8;
-        Mon, 15 Aug 2022 19:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5202C433D6;
-        Mon, 15 Aug 2022 19:34:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA3DC610A5;
+        Mon, 15 Aug 2022 19:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABF2C433D7;
+        Mon, 15 Aug 2022 19:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592046;
-        bh=qRMw4Z/Z0VGv9wZhXzljXtFElEfvcInrNKvviqV8PLU=;
+        s=korg; t=1660592049;
+        bh=viaFuZBfoGpqRxPtLy9x71upvo+m2Mrt9nmJ52GbDR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ufg6Tp7qDUL44QPDgBilw3sfCb5Vu0VriLbVnJC56bbzBjFoNkzFgRTzON5KjJ878
-         DWXaMyoAkl/UtnQh8dz3+ltqnsJruKTRlZuRCgjyvGShxrohxWlkrHh1mQJAIw7Aq0
-         fE+xg3s1J32+gR+5IeIcW0koqGUeOJcjdsoOsEvE=
+        b=aF+xciMtkB9N47iR5q+jbChHIRh2donOFpEMpQ+2Ppw6LA3eP9FHmZ9bEz+GmfP5m
+         IP/d22bXYOQC7SQxB6LPd4l5JNQWUha5rGL9hMkGEXQspZN1ZBtE76SSf2kX5+zqQE
+         ikQllyHNoXzC9SOKYyzAdFsdSax1e1m2CN/OiUIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 0049/1157] ALSA: hda/realtek: Add a quirk for HP OMEN 15 (8786) mute LED
-Date:   Mon, 15 Aug 2022 19:50:05 +0200
-Message-Id: <20220815180441.421922862@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0723/1095] PCI: dwc: Disable outbound windows only for controllers using iATU
+Date:   Mon, 15 Aug 2022 20:02:02 +0200
+Message-Id: <20220815180459.300158610@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,31 +52,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bedant Patnaik <bedant.patnaik@gmail.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-commit 30267718fe2d4dbea49015b022f6f1fe16ca31ab upstream.
+[ Upstream commit d60a2e281e9de2b2f67343b2e39417ca0f4fd54e ]
 
-Board ID 8786 seems to be another variant of the Omen 15 that needs
-ALC285_FIXUP_HP_MUTE_LED for working mute LED.
+Some DWC-based controllers (e.g., pcie-al.c and pci-keystone.c, identified
+by the fact that they override the default dw_child_pcie_ops) use their own
+address translation approach instead of the DWC internal ATU (iATU).  For
+those controllers, skip disabling the iATU outbound windows.
 
-Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220809142455.6473-1-bedant.patnaik@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[bhelgaas: commit log, update multiple window comment]
+Fixes: 458ad06c4cdd ("PCI: dwc: Ensure all outbound ATU windows are reset")
+Link: https://lore.kernel.org/r/20220624143428.8334-4-Sergey.Semin@baikalelectronics.ru
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/dwc/pcie-designware-host.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9178,6 +9178,7 @@ static const struct snd_pci_quirk alc269
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
- 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
-+	SND_PCI_QUIRK(0x103c, 0x8786, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index bc9a7df130ef..d0d768f22ac3 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -543,7 +543,6 @@ static struct pci_ops dw_pcie_ops = {
+ 
+ void dw_pcie_setup_rc(struct pcie_port *pp)
+ {
+-	int i;
+ 	u32 val, ctrl, num_ctrls;
+ 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+ 
+@@ -594,19 +593,22 @@ void dw_pcie_setup_rc(struct pcie_port *pp)
+ 		PCI_COMMAND_MASTER | PCI_COMMAND_SERR;
+ 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);
+ 
+-	/* Ensure all outbound windows are disabled so there are multiple matches */
+-	for (i = 0; i < pci->num_ob_windows; i++)
+-		dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
+-
+ 	/*
+ 	 * If the platform provides its own child bus config accesses, it means
+ 	 * the platform uses its own address translation component rather than
+ 	 * ATU, so we should not program the ATU here.
+ 	 */
+ 	if (pp->bridge->child_ops == &dw_child_pcie_ops) {
+-		int atu_idx = 0;
++		int i, atu_idx = 0;
+ 		struct resource_entry *entry;
+ 
++		/*
++		 * Disable all outbound windows to make sure a transaction
++		 * can't match multiple windows.
++		 */
++		for (i = 0; i < pci->num_ob_windows; i++)
++			dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
++
+ 		/* Get last memory resource entry */
+ 		resource_list_for_each_entry(entry, &pp->bridge->windows) {
+ 			if (resource_type(entry->res) != IORESOURCE_MEM)
+-- 
+2.35.1
+
 
 
