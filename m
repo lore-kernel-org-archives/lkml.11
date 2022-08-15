@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82851C28B2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B070EC2BB43
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346692AbiHOUQT (ORCPT
+        id S1346900AbiHOUQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        Mon, 15 Aug 2022 16:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347046AbiHOUMt (ORCPT
+        with ESMTP id S1346108AbiHOUKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298328A6F6;
-        Mon, 15 Aug 2022 11:58:53 -0700 (PDT)
+        Mon, 15 Aug 2022 16:10:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD8F64ED;
+        Mon, 15 Aug 2022 11:56:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6655B6126A;
-        Mon, 15 Aug 2022 18:58:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 745F3C433D6;
-        Mon, 15 Aug 2022 18:58:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6D35B8105C;
+        Mon, 15 Aug 2022 18:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1A5C433C1;
+        Mon, 15 Aug 2022 18:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589931;
-        bh=+GXNjbHUTKV1L2+1A30K3LneaVHLN5tQdbVxlRebuCs=;
+        s=korg; t=1660589801;
+        bh=pTtIM64RdILeVy25ARrvbKCjUMJ6DkCoiulUOCyVutE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YFzGYtgJUEbaydHODiXDRUORx151z2ZMoi1Au3+lqTvxAYbYI79OzX5GY48P7778t
-         TUWrm7SM+QeChE5J8CzTbPk2PMVqY8yWNij8pSJmJvu5GrPdtSTQtu61SHV9STAFIW
-         fVuBHxrk9tmrtrFWgMlemADOfr4l3HcgNGOQKjCo=
+        b=o81CxyRpGLO6VdE3NnJ464wgUFLyFobjOzhuyM0mdsbGRNtlZM0ixrKN2gwfcJf/G
+         xrsX9XE4d9xe96AQbBoKogtYGGeEGTGlpPRs7dNmJIPIY3qgjs+IQgl7jWJceKu4oa
+         pORoMxS03lVPAlHN0kTvLIh8xBo1xPf/NPQiJYIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 0065/1095] RISC-V: Declare cpu_ops_spinwait in <asm/cpu_ops.h>
-Date:   Mon, 15 Aug 2022 19:51:04 +0200
-Message-Id: <20220815180432.187936691@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Lukas Wunner <lukas@wunner.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 0052/1095] usbnet: Fix linkwatch use-after-free on disconnect
+Date:   Mon, 15 Aug 2022 19:50:51 +0200
+Message-Id: <20220815180431.625608326@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,57 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@sifive.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit da6d2128e56a50a0d497c8e41ca1d33d88bcc0aa upstream.
+commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
 
-The cpu_ops_spinwait is used in a couple of places in arch/riscv
-and is causing a sparse warning due to no declaration. Add this
-to <asm/cpu_ops.h> with the others to fix the following:
+usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
+sleep.  On disconnect, completion of the work was originally awaited in
+->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
+commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
 
-arch/riscv/kernel/cpu_ops_spinwait.c:16:29: warning: symbol 'cpu_ops_spinwait' was not declared. Should it be static?
+  https://git.kernel.org/tglx/history/c/0f138bbfd83c
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Link: https://lore.kernel.org/r/20220714071811.187491-1-ben.dooks@sifive.com
-[Palmer: Drop the extern from cpu_ops.c]
-Fixes: 2ffc48fc7071 ("RISC-V: Move spinwait booting method to its own config")
+The change was made because back then, the kernel's workqueue
+implementation did not allow waiting for a single work.  One had to wait
+for completion of *all* work by calling flush_scheduled_work(), and that
+could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
+held in ->ndo_stop().
+
+The commit solved one problem but created another:  It causes a
+use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
+ax88179_178a.c, ch9200.c and smsc75xx.c:
+
+* If the drivers receive a link change interrupt immediately before
+  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
+  ->status() callback and schedule usbnet_deferred_kevent().
+* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
+  which calls netif_carrier_{on,off}().
+* That in turn schedules the work linkwatch_event().
+
+Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
+netif_carrier_{on,off}() may operate on an unregistered netdev and
+linkwatch_event() may run after free_netdev(), causing a use-after-free.
+
+In 2010, usbnet was changed to only wait for a single instance of
+usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
+("drivers/net: don't use flush_scheduled_work()").
+
+Unfortunately the commit neglected to move the wait back to
+->ndo_stop().  Rectify that omission at long last.
+
+Reported-by: Jann Horn <jannh@google.com>
+Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
+Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/cpu_ops.h | 1 +
- arch/riscv/kernel/cpu_ops.c      | 4 +---
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/usb/usbnet.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/arch/riscv/include/asm/cpu_ops.h b/arch/riscv/include/asm/cpu_ops.h
-index 134590f1b843..aa128466c4d4 100644
---- a/arch/riscv/include/asm/cpu_ops.h
-+++ b/arch/riscv/include/asm/cpu_ops.h
-@@ -38,6 +38,7 @@ struct cpu_operations {
- #endif
- };
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -849,13 +849,11 @@ int usbnet_stop (struct net_device *net)
  
-+extern const struct cpu_operations cpu_ops_spinwait;
- extern const struct cpu_operations *cpu_ops[NR_CPUS];
- void __init cpu_set_ops(int cpu);
+ 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
  
-diff --git a/arch/riscv/kernel/cpu_ops.c b/arch/riscv/kernel/cpu_ops.c
-index 170d07e57721..f92c0e6eddb1 100644
---- a/arch/riscv/kernel/cpu_ops.c
-+++ b/arch/riscv/kernel/cpu_ops.c
-@@ -15,9 +15,7 @@
- const struct cpu_operations *cpu_ops[NR_CPUS] __ro_after_init;
+-	/* deferred work (task, timer, softirq) must also stop.
+-	 * can't flush_scheduled_work() until we drop rtnl (later),
+-	 * else workers could deadlock; so make workers a NOP.
+-	 */
++	/* deferred work (timer, softirq, task) must also stop */
+ 	dev->flags = 0;
+ 	del_timer_sync (&dev->delay);
+ 	tasklet_kill (&dev->bh);
++	cancel_work_sync(&dev->kevent);
+ 	if (!pm)
+ 		usb_autopm_put_interface(dev->intf);
  
- extern const struct cpu_operations cpu_ops_sbi;
--#ifdef CONFIG_RISCV_BOOT_SPINWAIT
--extern const struct cpu_operations cpu_ops_spinwait;
--#else
-+#ifndef CONFIG_RISCV_BOOT_SPINWAIT
- const struct cpu_operations cpu_ops_spinwait = {
- 	.name		= "",
- 	.cpu_prepare	= NULL,
--- 
-2.37.1
-
+@@ -1619,8 +1617,6 @@ void usbnet_disconnect (struct usb_inter
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+-	cancel_work_sync(&dev->kevent);
+-
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
+ 	if (dev->driver_info->unbind)
 
 
