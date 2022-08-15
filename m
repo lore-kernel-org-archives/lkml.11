@@ -2,144 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63EBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C297C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 05:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240585AbiHOFt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 01:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
+        id S240682AbiHOFxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 01:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbiHOFty (ORCPT
+        with ESMTP id S229709AbiHOFxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 01:49:54 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0DA15A37;
-        Sun, 14 Aug 2022 22:49:53 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p12-20020a7bcc8c000000b003a5360f218fso7355129wma.3;
-        Sun, 14 Aug 2022 22:49:53 -0700 (PDT)
+        Mon, 15 Aug 2022 01:53:43 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403315FC5;
+        Sun, 14 Aug 2022 22:53:40 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id n4so7872072wrp.10;
+        Sun, 14 Aug 2022 22:53:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=uGggk8CyROOE6BuwirZsC/KnSOWSMiLrJqzu6p9PnyA=;
-        b=jrBnoDWrR4s9Auzs0RG+NWUrx/IJNphLyUYno0ZIQbwi8MXIxaJollmppR1xwUYtZ0
-         hADnwZdA7xhbtmgCawgWEuKxmC6R/nCOCf1LI1+Jy4AzDuo+IsHTgoRL5skxLV+hoS2w
-         bIB7mB4aL9fYIbGymtuu/bToVn6r26/W/+38q/5HjC2xIgfzQuHgAgzcqWkt9ahO377v
-         nBuS3dNgz5i0IcxVQhXVnEWlRfdKWR/r8U3n3vj7xxBQruiV9Zbbr2BczaqH/sm7XwNQ
-         y/FzCOoGzIL2dcGtDAJXCNo5Sy/8AFlJLBFVb3RQDoaeYqDHCVrtVyK6RbJJjDmX8UqX
-         gVTA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=4k3XjB+4LYnFTHTQc06HeHgf83PeLYusgDwA++J3410=;
+        b=dfmCVs778K80OWQFcn8EB4/k84u6gHEUIaP4gJ7dLnudhJwfdQo6Obe/7dPL/5RktJ
+         6JM0Thox2k6H9omxHW9YJ0NeevockYiQk5NzaDyH+gxnJhj+nbd9rMMYxCjwchMRhj10
+         vfysOHHWh7YsgcGixO3Vu8qM48HACXe7M4mOfvL2aBLF8zWM6Hb363CBfL9hgOBs0T7w
+         FNGqiy55HaFLr/OvNRDq5n/gI4jDPA2P+rU/1lZkAVFNE80SYlX35zXbbWFRv8ysyGR3
+         AOjB/Yb0F+yfDnL9Ej+uhxz7X29wUhzoVr0IrLO6vsNzb6m6mZF2LzCxLK1P+uwCe7ND
+         PhYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=uGggk8CyROOE6BuwirZsC/KnSOWSMiLrJqzu6p9PnyA=;
-        b=aGwrgUOr2hZKcdjg1FtCQ/6zehuA9fDE9YMwouvHR+BctEaDKs0KAUxBVhIQcfiCj8
-         AlV5y6vJmT6Aa9Dj6WQJj5jOt9ZE9bwOkO0bAmJcrYEWSbgIzNAm/k8a9wZEvSdLJOsj
-         znYciVFIoRItNiba/SwAMY+Wg0Pg5zwdSHshZQc08dYLVk9SVRmGKTXmwmPbz9uh9PPT
-         vkl689sqQwAX2EI0nsvrnpNZZs1oXLbAjq+wGIZn84KnTML5/Y0wizY27qbBZkk3jZb6
-         Qo/edIAaOOKHYwnteg0BvIpx9Zjo4i6uKPNBDzAbzoU0vnwdonxNFXBglYexKi2IyCMO
-         XPyA==
-X-Gm-Message-State: ACgBeo029sn8Ew7oyf/cgBxp+PYOWylTjwEm9CnOugv7yMLTnses81Y5
-        oiEW1xHs28enBy47/vGRkH0=
-X-Google-Smtp-Source: AA6agR4Dby7NMGP6JE7UQ2XN5J0tHI2tE6HcbfxDjRSKwXC2imKvfQBMP5Rg5bmoDnJ66+5qjZNKVA==
-X-Received: by 2002:a7b:c5d6:0:b0:3a5:125c:2dd4 with SMTP id n22-20020a7bc5d6000000b003a5125c2dd4mr8936899wmk.76.1660542592390;
-        Sun, 14 Aug 2022 22:49:52 -0700 (PDT)
-Received: from nz.home (host81-129-83-151.range81-129.btcentralplus.com. [81.129.83.151])
-        by smtp.gmail.com with ESMTPSA id i5-20020adff305000000b0021ef34124ebsm6222984wro.11.2022.08.14.22.49.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 22:49:52 -0700 (PDT)
-Received: by nz.home (Postfix, from userid 1000)
-        id 5296064F6D5EF; Mon, 15 Aug 2022 06:49:51 +0100 (BST)
-From:   Sergei Trofimovich <slyich@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Sergei Trofimovich <slyich@gmail.com>, linux-ia64@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH] ia64: fix clock_getre(CLOCK_MONOTONIC) to report ITC frequency
-Date:   Mon, 15 Aug 2022 06:49:44 +0100
-Message-Id: <20220815054944.4130786-1-slyich@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=4k3XjB+4LYnFTHTQc06HeHgf83PeLYusgDwA++J3410=;
+        b=rOnczuntHIgMgXzAQoJnOVGtckLkK31h1aKz4pMJ1F1/p2OaBBlPsMzJNvAWG9WExE
+         ckxp81s2nyeJ6eZimO4qGzQLNO97wJzEiYSd556z19qZvnMgj5r5CAacquCkFmbiL/SA
+         IMEIkgigDbXMBXLAZybxlGoDSybYSCTv1ZGe0RU36gUKkqgz3Dk31Y2BrXPii1NW63Ea
+         2ruy9T/3iigw0eRygl9M75ixjpSloKLS1wzE7Ny9MudvD9mUtQnWKygIM7asRPPrBzm4
+         LYn73OJ4C/leOcVTS8QCvgjM1atH8spJmQnxXWTg2BfYz3PYfEwfOMEng21RUqShrxdb
+         FOMw==
+X-Gm-Message-State: ACgBeo2O1hDOJlsievaXCaf9k2/7lflQcLoKQSLpB2ceZ/fgfZ2e2g5k
+        mtz8Q/7dTP/Ry4BvqmOMIZv26MfK4jYeNlBeCNg=
+X-Google-Smtp-Source: AA6agR6W8AuZ6BQ/MgIIWbpAGIu6f2OF3gwtK46K3zEnBleB6myTFzgvziQMXVw0wKPFb2023msjXmbODxXNGngOc9g=
+X-Received: by 2002:a5d:64e2:0:b0:220:7dc6:1353 with SMTP id
+ g2-20020a5d64e2000000b002207dc61353mr7902778wri.411.1660542819332; Sun, 14
+ Aug 2022 22:53:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1660225318-4063-1-git-send-email-u0084500@gmail.com> <1660225318-4063-3-git-send-email-u0084500@gmail.com>
+In-Reply-To: <1660225318-4063-3-git-send-email-u0084500@gmail.com>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+Date:   Mon, 15 Aug 2022 08:53:28 +0300
+Message-ID: <CANhJrGMnjSu3MMQ2PgvSWztNgG1r-PdyLBdsT3JVqZZSfqky-w@mail.gmail.com>
+Subject: Re: [PATCH 2/2] power: supply: rt9471: Add Richtek RT9471 charger driver
+To:     cy_huang <u0084500@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Sebastian Reichel <sre@kernel.org>, alina_yu@richtek.com,
+        ChiYuan Huang <cy_huang@richtek.com>, alinayu829@gmail.com,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clock_gettime(CLOCK_MONOTONIC, &tp) is very precise on ia64 as it uses
-ITC (similar to rdtsc on x86). It's not quite a hrtimer as it is a few
-times slower than 1ns. Usually 2-3ns.
+Hi ChiYuan,
 
-clock_getres(CLOCK_MONOTONIC, &res) never reflected that fact and
-reported 0.04s precision (1/HZ value).
+Thanks for the patch :)
 
-In https://bugs.gentoo.org/596382 gstreamer's test suite failed loudly
-when it noticed precision discrepancy.
+to 11. elok. 2022 klo 16.43 cy_huang (u0084500@gmail.com) kirjoitti:
+>
+> From: ChiYuan Huang <cy_huang@richtek.com>
+>
+> Add support for the RT9471 3A 1-Cell Li+ battery charger.
+>
+> The RT9471 is a highly-integrated 3A switch mode battery charger with
+> low impedance power path to better optimize the charging efficiency.
+>
+> Co-developed-by: Alina Yu <alina_yu@richtek.com>
+> Signed-off-by: Alina Yu <alina_yu@richtek.com>
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
 
-Before the change:
+> +
+> +static const struct linear_range rt9471_chg_ranges[RT9471_MAX_RANGES] = {
+> +       [RT9471_RANGE_AICR] = { 50000, 1, 63, 50000 },
+> +       [RT9471_RANGE_MIVR] = { 3900000, 0, 15, 100000 },
+> +       [RT9471_RANGE_IPRE] = { 50000, 0, 15, 50000 },
+> +       [RT9471_RANGE_VCHG] = { 3900000, 0, 80, 10000 },
+> +       [RT9471_RANGE_ICHG] = { 0, 0, 63, 50000 },
+> +       [RT9471_RANGE_IEOC] = { 50000, 0, 15, 50000 },
+> +};
 
-    clock_getres(CLOCK_MONOTONIC, &res) reported 250Hz precision.
+I just jumped in to ask if that could you please use the field names? Eg.
+ { .min = 50000, .min_sel = 1, .max_sel = 63, .step = 50000 },
 
-After the change:
+This would make it less error prone in case someone changes the
+members in struct linear_range.
 
-    clock_getres(CLOCK_MONOTONIC, &res) reports ITC (400Mhz) precision.
+> +
+> +static int rt9471_set_value_by_field_range(struct rt9471_chip *chip,
+> +                                          enum rt9471_fields field,
+> +                                          enum rt9471_ranges range, int val)
+> +{
+> +       unsigned int sel;
+> +
+> +       if (val < 0)
+> +               return -EINVAL;
+> +
+> +       linear_range_get_selector_within(rt9471_chg_ranges + range, val, &sel);
+> +
+> +       return regmap_field_write(chip->rm_fields[field], sel);
+> +}
+> +
+> +
+> +static int rt9471_get_value_by_field_range(struct rt9471_chip *chip,
+> +                                          enum rt9471_fields field,
+> +                                          enum rt9471_ranges range, int *val)
+> +{
+> +       unsigned int sel, rvalue;
+> +       int ret;
+> +
+> +       ret = regmap_field_read(chip->rm_fields[field], &sel);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret = linear_range_get_value(rt9471_chg_ranges + range, sel, &rvalue);
+> +       if (ret)
+> +               return ret;
+> +
+> +       *val = rvalue;
+> +       return 0;
+> +}
+> +
+> +static inline int rt9471_set_hiz(struct rt9471_chip *chip, int enable)
+> +{
+> +       return regmap_field_write(chip->rm_fields[F_HZ], enable);
+> +}
+> +
+> +static inline int rt9471_set_ichg(struct rt9471_chip *chip, int microamp)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_ICHG_REG,
+> +                                              RT9471_RANGE_ICHG, microamp);
+> +}
+> +
+> +static inline int rt9471_get_ichg(struct rt9471_chip *chip, int *microamp)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_ICHG_REG,
+> +                                              RT9471_RANGE_ICHG, microamp);
+> +}
+> +
+> +static inline int rt9471_set_cv(struct rt9471_chip *chip, int microvolt)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_VBAT_REG,
+> +                                              RT9471_RANGE_VCHG, microvolt);
+> +}
+> +
+> +static inline int rt9471_get_cv(struct rt9471_chip *chip, int *microamp)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_VBAT_REG,
+> +                                              RT9471_RANGE_VCHG, microamp);
+> +}
+> +
+> +static inline int rt9471_set_mivr(struct rt9471_chip *chip, int microvolt)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_MIVR,
+> +                                              RT9471_RANGE_MIVR, microvolt);
+> +}
+> +
+> +static inline int rt9471_get_mivr(struct rt9471_chip *chip, int *microvolt)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_MIVR,
+> +                                              RT9471_RANGE_MIVR, microvolt);
+> +}
+> +
+> +static inline int rt9471_set_aicr(struct rt9471_chip *chip, int microamp)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_AICR, RT9471_RANGE_AICR,
+> +                                              microamp);
+> +}
+> +
+> +static inline int rt9471_get_aicr(struct rt9471_chip *chip, int *microamp)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_AICR, RT9471_RANGE_AICR,
+> +                                              microamp);
+> +}
+> +
+> +static inline int rt9471_set_iprechg(struct rt9471_chip *chip, int microamp)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_IPRE_CHG,
+> +                                              RT9471_RANGE_IPRE, microamp);
+> +}
+> +
+> +static inline int rt9471_get_iprechg(struct rt9471_chip *chip, int *microamp)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_IPRE_CHG,
+> +                                              RT9471_RANGE_IPRE, microamp);
+> +}
+> +
+> +static inline int rt9471_set_ieoc(struct rt9471_chip *chip, int microamp)
+> +{
+> +       return rt9471_set_value_by_field_range(chip, F_IEOC_CHG,
+> +                                              RT9471_RANGE_IEOC, microamp);
+> +}
+> +
+> +static inline int rt9471_get_ieoc(struct rt9471_chip *chip, int *microamp)
+> +{
+> +       return rt9471_get_value_by_field_range(chip, F_IEOC_CHG,
+> +                                              RT9471_RANGE_IEOC, microamp);
+> +}
+> +
+> +static inline int rt9471_set_chg_enable(struct rt9471_chip *chip, int enable)
+> +{
+> +       return regmap_field_write(chip->rm_fields[F_CHG_EN], !!enable);
+> +}
+> +
 
-The patch is based on matoro's fix. It adds a bit of explanation why we
-need to special-case arch-specific clock_getres().
+//snip
 
-CC: linux-ia64@vger.kernel.org
-CC: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sergei Trofimovich <slyich@gmail.com>
----
- arch/ia64/kernel/sys_ia64.c           | 26 ++++++++++++++++++++++++++
- arch/ia64/kernel/syscalls/syscall.tbl |  2 +-
- 2 files changed, 27 insertions(+), 1 deletion(-)
+> +
+> +static inline struct rt9471_chip * psy_device_to_chip(struct device *dev)
+> +{
+> +       return power_supply_get_drvdata(to_power_supply(dev));
+> +}
 
-diff --git a/arch/ia64/kernel/sys_ia64.c b/arch/ia64/kernel/sys_ia64.c
-index e14db25146c2..d5d47eb4608e 100644
---- a/arch/ia64/kernel/sys_ia64.c
-+++ b/arch/ia64/kernel/sys_ia64.c
-@@ -166,3 +166,29 @@ ia64_mremap (unsigned long addr, unsigned long old_len, unsigned long new_len, u
- 		force_successful_syscall_return();
- 	return addr;
- }
-+
-+asmlinkage long
-+ia64_clock_getres(const clockid_t which_clock, struct __kernel_timespec __user *tp)
-+{
-+	/*
-+	 * ia64's clock_gettime() syscall is implemented as a vdso call
-+	 * fsys_clock_gettime(). Currently it handles only
-+	 * CLOCK_REALTIME and CLOCK_MONOTONIC. Both are based on
-+	 * 'ar.itc' counter which gets incremented at a constant
-+	 * frequency. It's usually 400MHz, ~2.5x times slower than CPU
-+	 * clock frequency. Which is almost a 1ns hrtimer, but not quite.
-+	 *
-+	 * Let's special-case these timers to report correct precision
-+	 * based on ITC frequency and not HZ frequency for supported
-+	 * clocks.
-+	 */
-+	switch (which_clock) {
-+		case CLOCK_REALTIME:
-+		case CLOCK_MONOTONIC:
-+			s64 tick_ns = DIV_ROUND_UP(NSEC_PER_SEC, local_cpu_data->itc_freq);
-+			struct timespec64 rtn_tp = ns_to_timespec64(tick_ns);
-+			return put_timespec64(&rtn_tp, tp);
-+	}
-+
-+	return sys_clock_getres(which_clock, tp);
-+}
-diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
-index 78b1d03e86e1..72c929d9902b 100644
---- a/arch/ia64/kernel/syscalls/syscall.tbl
-+++ b/arch/ia64/kernel/syscalls/syscall.tbl
-@@ -240,7 +240,7 @@
- 228	common	timer_delete			sys_timer_delete
- 229	common	clock_settime			sys_clock_settime
- 230	common	clock_gettime			sys_clock_gettime
--231	common	clock_getres			sys_clock_getres
-+231	common	clock_getres			ia64_clock_getres
- 232	common	clock_nanosleep			sys_clock_nanosleep
- 233	common	fstatfs64			sys_fstatfs64
- 234	common	statfs64			sys_statfs64
--- 
-2.37.1
+While skimming through the rest of the patch... This may just be my
+personal preference but wrapper functions with just one line are
+rarely beneficial. In the worst case they just add more lines AND hide
+the details of what actually is done without any clear benefits. Well,
+this is just my view so please ignore this comment if wrappers like
+this are a "subsystem standard"
 
+Other than that the patch looks good to me.
+
+--
+
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
+
+Discuss - Estimate - Plan - Report and finally accomplish this:
+void do_work(int time) __attribute__ ((const));
