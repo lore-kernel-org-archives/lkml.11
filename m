@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DED9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42803C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241430AbiHOXUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
+        id S240507AbiHOXUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353338AbiHOXQT (ORCPT
+        with ESMTP id S1353366AbiHOXQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:16:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B3147428;
-        Mon, 15 Aug 2022 13:03:05 -0700 (PDT)
+        Mon, 15 Aug 2022 19:16:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86B914743C;
+        Mon, 15 Aug 2022 13:03:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF1E16068D;
-        Mon, 15 Aug 2022 20:03:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029D9C433D6;
-        Mon, 15 Aug 2022 20:03:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1255612D8;
+        Mon, 15 Aug 2022 20:03:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4829C433D6;
+        Mon, 15 Aug 2022 20:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593784;
-        bh=ZRVOLgopQgv/+zQaoA40b3/YGFhX9/yyPoY4VbifVdA=;
+        s=korg; t=1660593787;
+        bh=9Pf3I5L9YkcRINMhHJWI5bH6f4UjHn55TDvvn+Jqi+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qGCjWYdd9U3XDF6lNRomUOWB2tSEju1hVc+/Y2DY72JGRRwjj5nT69tihdwwdpOWv
-         3TvLKfXaj5vmcuvPl/46St4zuAQYU1/MTyJJk65vaRsyHZjifJ9+HgrJ5SMdieS49o
-         uW6oV+RC9QCIWmL5VPEHONfdpReKjg0Xnyz9VAP0=
+        b=lWhdNPTKnz1nXMq4w1pOAwymlC6FAxTEJjBrXHFL/fb+ZIFYDeXsu0j2nOooaLMLr
+         2RFiwr6jqi7ZsmUdIhutqDlFf9h3jKEDEieMJ6BrAd1Z/TR4QWCOWTZVftt7viozw4
+         APzSPR7UsGa4Kj3o8aGu94BL4fGsYDjS0wXTQYcs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Luo Meng <luomeng12@huawei.com>,
+        Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0325/1157] ath11k: fix netdev open race
-Date:   Mon, 15 Aug 2022 19:54:41 +0200
-Message-Id: <20220815180452.652767486@linuxfoundation.org>
+Subject: [PATCH 5.18 1006/1095] dm thin: fix use-after-free crash in dm_sm_register_threshold_callback
+Date:   Mon, 15 Aug 2022 20:06:45 +0200
+Message-Id: <20220815180510.712920490@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,107 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Luo Meng <luomeng12@huawei.com>
 
-[ Upstream commit d4ba1ff87b17e81686ada8f429300876f55f95ad ]
+[ Upstream commit 3534e5a5ed2997ca1b00f44a0378a075bd05e8a3 ]
 
-Make sure to allocate resources needed before registering the device.
+Fault inject on pool metadata device reports:
+  BUG: KASAN: use-after-free in dm_pool_register_metadata_threshold+0x40/0x80
+  Read of size 8 at addr ffff8881b9d50068 by task dmsetup/950
 
-This specifically avoids having a racing open() trigger a BUG_ON() in
-mod_timer() when ath11k_mac_op_start() is called before the
-mon_reap_timer as been set up.
+  CPU: 7 PID: 950 Comm: dmsetup Tainted: G        W         5.19.0-rc6 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x34/0x44
+   print_address_description.constprop.0.cold+0xeb/0x3f4
+   kasan_report.cold+0xe6/0x147
+   dm_pool_register_metadata_threshold+0x40/0x80
+   pool_ctr+0xa0a/0x1150
+   dm_table_add_target+0x2c8/0x640
+   table_load+0x1fd/0x430
+   ctl_ioctl+0x2c4/0x5a0
+   dm_ctl_ioctl+0xa/0x10
+   __x64_sys_ioctl+0xb3/0xd0
+   do_syscall_64+0x35/0x80
+   entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-I did not see this issue with next-20220310, but I hit it on every probe
-with next-20220511. Perhaps some timing changed in between.
+This can be easily reproduced using:
+  echo offline > /sys/block/sda/device/state
+  dd if=/dev/zero of=/dev/mapper/thin bs=4k count=10
+  dmsetup load pool --table "0 20971520 thin-pool /dev/sda /dev/sdb 128 0 0"
 
-Here's the backtrace:
+If a metadata commit fails, the transaction will be aborted and the
+metadata space maps will be destroyed. If a DM table reload then
+happens for this failed thin-pool, a use-after-free will occur in
+dm_sm_register_threshold_callback (called from
+dm_pool_register_metadata_threshold).
 
-[   51.346947] kernel BUG at kernel/time/timer.c:990!
-[   51.346958] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-...
-[   51.578225] Call trace:
-[   51.583293]  __mod_timer+0x298/0x390
-[   51.589518]  mod_timer+0x14/0x20
-[   51.595368]  ath11k_mac_op_start+0x41c/0x4a0 [ath11k]
-[   51.603165]  drv_start+0x38/0x60 [mac80211]
-[   51.610110]  ieee80211_do_open+0x29c/0x7d0 [mac80211]
-[   51.617945]  ieee80211_open+0x60/0xb0 [mac80211]
-[   51.625311]  __dev_open+0x100/0x1c0
-[   51.631420]  __dev_change_flags+0x194/0x210
-[   51.638214]  dev_change_flags+0x24/0x70
-[   51.644646]  do_setlink+0x228/0xdb0
-[   51.650723]  __rtnl_newlink+0x460/0x830
-[   51.657162]  rtnl_newlink+0x4c/0x80
-[   51.663229]  rtnetlink_rcv_msg+0x124/0x390
-[   51.669917]  netlink_rcv_skb+0x58/0x130
-[   51.676314]  rtnetlink_rcv+0x18/0x30
-[   51.682460]  netlink_unicast+0x250/0x310
-[   51.688960]  netlink_sendmsg+0x19c/0x3e0
-[   51.695458]  ____sys_sendmsg+0x220/0x290
-[   51.701938]  ___sys_sendmsg+0x7c/0xc0
-[   51.708148]  __sys_sendmsg+0x68/0xd0
-[   51.714254]  __arm64_sys_sendmsg+0x28/0x40
-[   51.720900]  invoke_syscall+0x48/0x120
+Fix this by in dm_pool_register_metadata_threshold() by returning the
+-EINVAL error if the thin-pool is in fail mode. Also fail pool_ctr()
+with a new error message: "Error registering metadata threshold".
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
-
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Fixes: 840c36fa727a ("ath11k: dp: stop rx pktlog before suspend")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
+Fixes: ac8c3f3df65e4 ("dm thin: generate event when metadata threshold passed")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Luo Meng <luomeng12@huawei.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/md/dm-thin-metadata.c | 7 +++++--
+ drivers/md/dm-thin.c          | 4 +++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 1e98ff9ff288..c8e0bc935838 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1225,23 +1225,23 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
- 		return ret;
- 	}
+diff --git a/drivers/md/dm-thin-metadata.c b/drivers/md/dm-thin-metadata.c
+index 2db7030aba00..a27395c8621f 100644
+--- a/drivers/md/dm-thin-metadata.c
++++ b/drivers/md/dm-thin-metadata.c
+@@ -2045,10 +2045,13 @@ int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
+ 					dm_sm_threshold_fn fn,
+ 					void *context)
+ {
+-	int r;
++	int r = -EINVAL;
  
--	ret = ath11k_mac_register(ab);
-+	ret = ath11k_dp_pdev_alloc(ab);
- 	if (ret) {
--		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
-+		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
- 		goto err_pdev_debug;
- 	}
+ 	pmd_write_lock_in_core(pmd);
+-	r = dm_sm_register_threshold_callback(pmd->metadata_sm, threshold, fn, context);
++	if (!pmd->fail_io) {
++		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
++						      threshold, fn, context);
++	}
+ 	pmd_write_unlock(pmd);
  
--	ret = ath11k_dp_pdev_alloc(ab);
-+	ret = ath11k_mac_register(ab);
- 	if (ret) {
--		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
--		goto err_mac_unregister;
-+		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
-+		goto err_dp_pdev_free;
- 	}
+ 	return r;
+diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
+index 4d25d0e27031..53ac6ae870ac 100644
+--- a/drivers/md/dm-thin.c
++++ b/drivers/md/dm-thin.c
+@@ -3382,8 +3382,10 @@ static int pool_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 						calc_metadata_threshold(pt),
+ 						metadata_low_callback,
+ 						pool);
+-	if (r)
++	if (r) {
++		ti->error = "Error registering metadata threshold";
+ 		goto out_flags_changed;
++	}
  
- 	ret = ath11k_thermal_register(ab);
- 	if (ret) {
- 		ath11k_err(ab, "could not register thermal device: %d\n",
- 			   ret);
--		goto err_dp_pdev_free;
-+		goto err_mac_unregister;
- 	}
- 
- 	ret = ath11k_spectral_init(ab);
-@@ -1254,10 +1254,10 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
- 
- err_thermal_unregister:
- 	ath11k_thermal_unregister(ab);
--err_dp_pdev_free:
--	ath11k_dp_pdev_free(ab);
- err_mac_unregister:
- 	ath11k_mac_unregister(ab);
-+err_dp_pdev_free:
-+	ath11k_dp_pdev_free(ab);
- err_pdev_debug:
- 	ath11k_debugfs_pdev_destroy(ab);
- 
+ 	dm_pool_register_pre_commit_callback(pool->pmd,
+ 					     metadata_pre_commit_callback, pool);
 -- 
 2.35.1
 
