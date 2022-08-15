@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B561C2BB9D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0C2C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347958AbiHOV0j (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37624 "EHLO
+        id S243630AbiHOV2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345741AbiHOVRt (ORCPT
+        with ESMTP id S1347668AbiHOVSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7249E192B;
-        Mon, 15 Aug 2022 12:21:10 -0700 (PDT)
+        Mon, 15 Aug 2022 17:18:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F06CE3C19;
+        Mon, 15 Aug 2022 12:22:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88002B81120;
-        Mon, 15 Aug 2022 19:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEABDC433D6;
-        Mon, 15 Aug 2022 19:21:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3716B80FD3;
+        Mon, 15 Aug 2022 19:21:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03F00C43142;
+        Mon, 15 Aug 2022 19:21:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591268;
-        bh=UHis/WH57DlnsBA2REYNiER691/UQwxEL9zORic0t1k=;
+        s=korg; t=1660591318;
+        bh=C003x6BECaOjQ4JdOh/MX9egyER9MLtoCYxgZdpOtUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/zXGW1C1bQz1YgdLHLQ/mIuoSLs0ufsp0HRSmS/t08tlWLv3FfCY575cr7DBdQDM
-         uMW7CAXH+X1Au6gcn6AZeE2OxZFYLgWiK7S1qkhz4A9T+RhGf8KKhD8IMBNVn/RG0N
-         KoOJ1TUWdJ0erOdmGkXGlaMAREMRJpiz9SJDcYec=
+        b=kW6xDWjH8ocsd0HViLXlLKWWFHbTCWwHYy0o5Npwis3+6528wYHr+Yejr6iTlTwVy
+         4nFYkMMfRKuuTyCX+2e3cDViuPioZ81pVhK9DeoZJtO+9PGEdsafld9yx8/R4/ql3m
+         ZwJYUj6p0WJo+uzSNFaYoS2mEimox8TTguEefA94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Zhengping Jiang <jiangzp@google.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0525/1095] ipv6: add READ_ONCE(sk->sk_bound_dev_if) in INET6_MATCH()
-Date:   Mon, 15 Aug 2022 19:58:44 +0200
-Message-Id: <20220815180451.273158866@linuxfoundation.org>
+Subject: [PATCH 5.18 0497/1095] Bluetooth: mgmt: Fix refresh cached connection info
+Date:   Mon, 15 Aug 2022 19:58:16 +0200
+Message-Id: <20220815180450.092211146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,123 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zhengping Jiang <jiangzp@google.com>
 
-[ Upstream commit 5d368f03280d3678433a7f119efe15dfbbb87bc8 ]
+[ Upstream commit d7b2fdfb53ea09382941c0a4950dc9b00d51d1c7 ]
 
-INET6_MATCH() runs without holding a lock on the socket.
+Set the connection data before calling get_conn_info_sync, so it can be
+verified the connection is still connected, before refreshing cached
+values.
 
-We probably need to annotate most reads.
-
-This patch makes INET6_MATCH() an inline function
-to ease our changes.
-
-v2: inline function only defined if IS_ENABLED(CONFIG_IPV6)
-    Change the name to inet6_match(), this is no longer a macro.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 47db6b42991e6 ("Bluetooth: hci_sync: Convert MGMT_OP_GET_CONN_INFO")
+Signed-off-by: Zhengping Jiang <jiangzp@google.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/inet6_hashtables.h | 28 +++++++++++++++++++---------
- net/ipv4/inet_hashtables.c     |  2 +-
- net/ipv6/inet6_hashtables.c    |  6 +++---
- net/ipv6/udp.c                 |  2 +-
- 4 files changed, 24 insertions(+), 14 deletions(-)
+ net/bluetooth/mgmt.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
-index 81b965953036..f259e1ae14ba 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -103,15 +103,25 @@ struct sock *inet6_lookup(struct net *net, struct inet_hashinfo *hashinfo,
- 			  const int dif);
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index ae758ab1b558..12c1ecdba3f3 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -6821,11 +6821,14 @@ static int get_conn_info(struct sock *sk, struct hci_dev *hdev, void *data,
  
- int inet6_hash(struct sock *sk);
--#endif /* IS_ENABLED(CONFIG_IPV6) */
+ 		cmd = mgmt_pending_new(sk, MGMT_OP_GET_CONN_INFO, hdev, data,
+ 				       len);
+-		if (!cmd)
++		if (!cmd) {
+ 			err = -ENOMEM;
+-		else
++		} else {
++			hci_conn_hold(conn);
++			cmd->user_data = hci_conn_get(conn);
+ 			err = hci_cmd_sync_queue(hdev, get_conn_info_sync,
+ 						 cmd, get_conn_info_complete);
++		}
  
--#define INET6_MATCH(__sk, __net, __saddr, __daddr, __ports, __dif, __sdif) \
--	(((__sk)->sk_portpair == (__ports))			&&	\
--	 ((__sk)->sk_family == AF_INET6)			&&	\
--	 ipv6_addr_equal(&(__sk)->sk_v6_daddr, (__saddr))		&&	\
--	 ipv6_addr_equal(&(__sk)->sk_v6_rcv_saddr, (__daddr))	&&	\
--	 (((__sk)->sk_bound_dev_if == (__dif))	||			\
--	  ((__sk)->sk_bound_dev_if == (__sdif)))		&&	\
--	 net_eq(sock_net(__sk), (__net)))
-+static inline bool inet6_match(struct net *net, const struct sock *sk,
-+			       const struct in6_addr *saddr,
-+			       const struct in6_addr *daddr,
-+			       const __portpair ports,
-+			       const int dif, const int sdif)
-+{
-+	int bound_dev_if;
-+
-+	if (!net_eq(sock_net(sk), net) ||
-+	    sk->sk_family != AF_INET6 ||
-+	    sk->sk_portpair != ports ||
-+	    !ipv6_addr_equal(&sk->sk_v6_daddr, saddr) ||
-+	    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
-+		return false;
-+
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	return bound_dev_if == dif || bound_dev_if == sdif;
-+}
-+#endif /* IS_ENABLED(CONFIG_IPV6) */
- 
- #endif /* _INET6_HASHTABLES_H */
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 8dbe0782eafe..d631198e0938 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -536,7 +536,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
+ 		if (err < 0) {
+ 			mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_CONN_INFO,
+@@ -6837,9 +6840,6 @@ static int get_conn_info(struct sock *sk, struct hci_dev *hdev, void *data,
+ 			goto unlock;
  		}
- #if IS_ENABLED(CONFIG_IPV6)
- 		else if (sk->sk_family == AF_INET6) {
--			if (unlikely(INET6_MATCH(esk, net,
-+			if (unlikely(inet6_match(net, esk,
- 						 &sk->sk_v6_daddr,
- 						 &sk->sk_v6_rcv_saddr,
- 						 ports, dif, sdif))) {
-diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index 32ccac10bd62..bb4939e36840 100644
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -71,12 +71,12 @@ struct sock *__inet6_lookup_established(struct net *net,
- 	sk_nulls_for_each_rcu(sk, node, &head->chain) {
- 		if (sk->sk_hash != hash)
- 			continue;
--		if (!INET6_MATCH(sk, net, saddr, daddr, ports, dif, sdif))
-+		if (!inet6_match(net, sk, saddr, daddr, ports, dif, sdif))
- 			continue;
- 		if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
- 			goto out;
  
--		if (unlikely(!INET6_MATCH(sk, net, saddr, daddr, ports, dif, sdif))) {
-+		if (unlikely(!inet6_match(net, sk, saddr, daddr, ports, dif, sdif))) {
- 			sock_gen_put(sk);
- 			goto begin;
- 		}
-@@ -269,7 +269,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
- 		if (sk2->sk_hash != hash)
- 			continue;
- 
--		if (likely(INET6_MATCH(sk2, net, saddr, daddr, ports,
-+		if (likely(inet6_match(net, sk2, saddr, daddr, ports,
- 				       dif, sdif))) {
- 			if (sk2->sk_state == TCP_TIME_WAIT) {
- 				tw = inet_twsk(sk2);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index aea28bf701be..544842fc831e 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1044,7 +1044,7 @@ static struct sock *__udp6_lib_demux_lookup(struct net *net,
- 
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
- 		if (sk->sk_state == TCP_ESTABLISHED &&
--		    INET6_MATCH(sk, net, rmt_addr, loc_addr, ports, dif, sdif))
-+		    inet6_match(net, sk, rmt_addr, loc_addr, ports, dif, sdif))
- 			return sk;
- 		/* Only check first socket in chain */
- 		break;
+-		hci_conn_hold(conn);
+-		cmd->user_data = hci_conn_get(conn);
+-
+ 		conn->conn_info_timestamp = jiffies;
+ 	} else {
+ 		/* Cache is valid, just reply with values cached in hci_conn */
 -- 
 2.35.1
 
