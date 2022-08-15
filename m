@@ -2,122 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D717BC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4075C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243198AbiHOOam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S230100AbiHOObw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243111AbiHOOaN (ORCPT
+        with ESMTP id S242572AbiHOObh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:30:13 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4031D23BF1;
-        Mon, 15 Aug 2022 07:30:12 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id j1so9294677wrw.1;
-        Mon, 15 Aug 2022 07:30:12 -0700 (PDT)
+        Mon, 15 Aug 2022 10:31:37 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC20248E1;
+        Mon, 15 Aug 2022 07:31:36 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id uj29so13890168ejc.0;
+        Mon, 15 Aug 2022 07:31:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=xxHC06/Os8ziAl2SBnJlxSxiEi0i7a6+qXGKYnTl3x4=;
-        b=AsBNtOtBuZg+ucZYXZPWvl+wLsJJeol+G+sKqa92iBhbiXAo8uWBpWtLMhgJEIqmyv
-         3hP+g6k87IaPdrYezqweW4coMvYD/TxcI1fv6pt4JnShAu8Fs2iyo3wq+x5hiBQT2PE5
-         4NT1llsmb6xy5taAdFSPFaJNkldVVHlv/QgMjXQHQ7/cS7S2U7kYdk+cXQCjGmOqSJF/
-         TToE6wxfq5uapQGBYB/2/lkBhy5kqGvirYX9i7xZHS6MpCLXkB5y/O7VW9f/u1/6P/VB
-         tRqFvraFzI1QXQ5HWMR+tQw9axISGQ2fDmrVyht2XRQ4losfQK11ukaznMU3+WNBPpFT
-         am7g==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=+zklOwu9dNLDjN4JxRAhUxyPGrF5B6h2RjVK+l4nYQs=;
+        b=FyTJWpaCXkWxv7eSFwDJfLNfKHrOj62c/zwpcH/GXIMNRmqHP22DNjuu+B7Kk4ZrPm
+         BeX5fYNQ2nxXL4EakDndNPjtbpNNsR4yvCrKoLyJk+EJq3oFYRX76vBwoI6biXiA7kKP
+         UkbCZZDsnVtKOlxLBfbKA7kUdX7gr9N/BeTkn0ebtIEgw6tWxLIMhkR/tdj/K15MXYTf
+         rLG//vqQz7GNBRm4CymBh/wwqPvuAXBuCcEMF67hYLwK3ck3a4ENOMPgplyC/Ni5uIYi
+         R1Z2fcnf57gMKls0+E7f+wzYd00LK8CmWgYZIRXhz3DPC8kGtX02zZd1c0nTVuCadQKb
+         3rNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=xxHC06/Os8ziAl2SBnJlxSxiEi0i7a6+qXGKYnTl3x4=;
-        b=XMA6GZ8dGiJlsxX3hoBKsiAD8q2q63RZedKFLu9lx8flVhHhbYoJC24ALaHXgNHYBM
-         pqeOK96pDvnwLg5KSF3f0oPgSeCor11kzChHr4UUTwIdkf+fIipw5lK35YUAOrZQoyGg
-         KBpekkK86dAReFavwjAxg8ElRIFNUPydh3h4MIhrN5fQsEopath+0CGAWdsk4jt0EmEF
-         JduudcCgd4TvBe2aB+MvbHmpNI3IU1MjEB6QaZZhpIOGvAFALUYXCI0CtAsoU1mAoA7Z
-         zPyOUmJeVkjVLAizvMeqVDi2nE3sBIIdJZv9gvaGnFLrv+D2RKVj0H7vpHFefZWzo3zJ
-         5pZw==
-X-Gm-Message-State: ACgBeo2E7VL57esjJMu5rapbFFK3f34jJ1/dxqPELJhRh3aElX6wbbk5
-        55Zkm3qEk/N+lDCD4zBZr5rWYCgakAUc4Q==
-X-Google-Smtp-Source: AA6agR75zw4cdAZTd7ANv2PbiYz9wZE8aOZo7ES4acPI3bGepibaOMkkhMoX27dfOWFGVAUArhw5Jw==
-X-Received: by 2002:a5d:59a4:0:b0:220:805a:bc65 with SMTP id p4-20020a5d59a4000000b00220805abc65mr8929397wrr.302.1660573810800;
-        Mon, 15 Aug 2022 07:30:10 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.32.249])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00224f895d620sm5456894wrx.48.2022.08.15.07.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 07:30:10 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        j.witteveen@gmail.com, nathan@kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kunit-dev@googlegroups.com,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH v4 8/8] HID: uclogic: Add support for Parblo A610 PRO
-Date:   Mon, 15 Aug 2022 16:29:56 +0200
-Message-Id: <20220815142956.19180-9-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220815142956.19180-1-jose.exposito89@gmail.com>
-References: <20220815142956.19180-1-jose.exposito89@gmail.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=+zklOwu9dNLDjN4JxRAhUxyPGrF5B6h2RjVK+l4nYQs=;
+        b=uISe+HmT+VSAWQqOt93aIO0jpQxPAm/0km1PWjY1J8TRRwGWDVv6qf2nMixA0lbgOj
+         IWl5wXuOSNrCfV16I5/9DgEqBkl7+fyi79zgFNfN6xVlQBfSse7RWc685MD+qD1fCtZ4
+         tSQAXjX2pm//w/cexxGEMf2Fwup2zqo/AMi4w+o6I3A9/bIX3VeD1WBIJHOeP7pB672d
+         42KLTkMQfPGZdeNPE9CGlBdOHPk1bTpi1BC/O6E2H2f/hnj/C629r56At06zSZ7+kVRg
+         L5UB2yJOATVbrNkuQLFVK2F9gh/V0uL6JZgYVi6vWdKqO/wmPZ60MFKNFBNb29wl75Km
+         4/KA==
+X-Gm-Message-State: ACgBeo2UraH829FhMwiDZlkOAeC+mFaij65AkAjaHW+w0RSY3wBGNpoT
+        8iLpzOTA1qT7euapfrE6MQPAk9MYMl/bvV5AKUl/EqluPnw=
+X-Google-Smtp-Source: AA6agR47f0DWm6ExenyWTqVs0udvS8ktm4MzMC3vhBxzdxm50O2zm2EtWf/o3NAq7CwQLJg/qzTSDO5PXrXqfrJjBkQ=
+X-Received: by 2002:a17:906:ef90:b0:730:9cd8:56d7 with SMTP id
+ ze16-20020a170906ef9000b007309cd856d7mr10105021ejb.94.1660573895009; Mon, 15
+ Aug 2022 07:31:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20191211123017.13212-1-bjorn.topel@gmail.com> <20191211123017.13212-3-bjorn.topel@gmail.com>
+ <20220815101303.79ace3f8@gandalf.local.home>
+In-Reply-To: <20220815101303.79ace3f8@gandalf.local.home>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 15 Aug 2022 07:31:23 -0700
+Message-ID: <CAADnVQLhHm-gxJXTbWxJN0fFGW_dyVV+5D-JahVA1Wrj2cGu7g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Parblo A610 PRO is a UGEE v2 device with a frame with 9 buttons
-and a bitmap dial. Its pen has 2 buttons, supports tilt and pressure.
+On Mon, Aug 15, 2022 at 7:13 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Wed, 11 Dec 2019 13:30:13 +0100
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+>
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > The BPF dispatcher is a multi-way branch code generator, mainly
+> > targeted for XDP programs. When an XDP program is executed via the
+> > bpf_prog_run_xdp(), it is invoked via an indirect call. The indirect
+> > call has a substantial performance impact, when retpolines are
+> > enabled. The dispatcher transform indirect calls to direct calls, and
+> > therefore avoids the retpoline. The dispatcher is generated using the
+> > BPF JIT, and relies on text poking provided by bpf_arch_text_poke().
+> >
+> > The dispatcher hijacks a trampoline function it via the __fentry__ nop
+>
+> Why was the ftrace maintainers not Cc'd on this patch?  I would have NACK=
+ED
+> it. Hell, it wasn't even sent to LKML! This was BPF being sneaky in
+> updating major infrastructure of the Linux kernel without letting the
+> stakeholders of this change know about it.
+>
+> For some reason, the BPF folks think they own the entire kernel!
+>
+> When I heard that ftrace was broken by BPF I thought it was something
+> unique they were doing, but unfortunately, I didn't investigate what they
+> were doing at the time.
 
-Add its ID in order to support the device.
+ftrace is still broken and refusing to accept the fact doesn't make it
+non-broken.
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-ids.h            | 1 +
- drivers/hid/hid-uclogic-core.c   | 2 ++
- drivers/hid/hid-uclogic-params.c | 2 ++
- 3 files changed, 5 insertions(+)
+> Then they started sending me patches to hide fentry locations from ftrace=
+.
+> And even telling me that fentry !=3D ftrace
 
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index ecf1468404b3..6b4068eecc6f 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -1276,6 +1276,7 @@
- #define USB_DEVICE_ID_YIYNOVA_TABLET		0x004d
- 
- #define USB_VENDOR_ID_UGEE		0x28bd
-+#define USB_DEVICE_ID_UGEE_PARBLO_A610_PRO	0x1903
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_G540	0x0075
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_G640	0x0094
- #define USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO01	0x0042
-diff --git a/drivers/hid/hid-uclogic-core.c b/drivers/hid/hid-uclogic-core.c
-index 6fcdb141acec..2efcf48f91ba 100644
---- a/drivers/hid/hid-uclogic-core.c
-+++ b/drivers/hid/hid-uclogic-core.c
-@@ -509,6 +509,8 @@ static const struct hid_device_id uclogic_devices[] = {
- 				USB_DEVICE_ID_UGTIZER_TABLET_GP0610) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UGTIZER,
- 				USB_DEVICE_ID_UGTIZER_TABLET_GT5040) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
-+				USB_DEVICE_ID_UGEE_PARBLO_A610_PRO) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
- 				USB_DEVICE_ID_UGEE_TABLET_G5) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE,
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index 60ed94981a55..34fa991e6267 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -1580,6 +1580,8 @@ int uclogic_params_init(struct uclogic_params *params,
- 			uclogic_params_init_invalid(&p);
- 		}
- 		break;
-+	case VID_PID(USB_VENDOR_ID_UGEE,
-+		     USB_DEVICE_ID_UGEE_PARBLO_A610_PRO):
- 	case VID_PID(USB_VENDOR_ID_UGEE,
- 		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_L):
- 	case VID_PID(USB_VENDOR_ID_UGEE,
--- 
-2.25.1
+It sounds that you've invented nop5 and kernel's ability
+to replace nop5 with a jump or call.
+ftrace should really stop trying to own all of the kernel text rewrites.
+It's in the way. Like this case.
 
+>    https://lore.kernel.org/all/CAADnVQJTT7h3MniVqdBEU=3DeLwvJhEKNLSjbUAK4=
+sOrhN=3DzggCQ@mail.gmail.com/
+>
+> Even though fentry was created for ftrace
+>
+>    https://lore.kernel.org/lkml/1258720459.22249.1018.camel@gandalf.stny.=
+rr.com/
+>
+> and all the work with fentry was for the ftrace infrastructure. Ftrace
+> takes a lot of care for security and use cases for other users (like
+> live kernel patching). But BPF has the NIH syndrome, and likes to own
+> everything and recreate the wheel so that they have full control.
+>
+> > of the trampoline. One dispatcher instance currently supports up to 64
+> > dispatch points. A user creates a dispatcher with its corresponding
+> > trampoline with the DEFINE_BPF_DISPATCHER macro.
+>
+> Anyway, this patch just looks like a re-implementation of static_calls:
+
+It was implemented long before static_calls made it to the kernel
+and it's different. Please do your home work.
