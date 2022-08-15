@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF01C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F44C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353987AbiHOXkc (ORCPT
+        id S1353998AbiHOXkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
+        Mon, 15 Aug 2022 19:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346108AbiHOXhT (ORCPT
+        with ESMTP id S1346200AbiHOXhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:37:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D19152436;
-        Mon, 15 Aug 2022 13:09:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94B95FA4;
+        Mon, 15 Aug 2022 13:09:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09739B81135;
-        Mon, 15 Aug 2022 20:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53C3FC433C1;
-        Mon, 15 Aug 2022 20:09:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DCE6069F;
+        Mon, 15 Aug 2022 20:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D812C433C1;
+        Mon, 15 Aug 2022 20:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594185;
-        bh=VcECr1scfMi6H8ackDqfW47OlIEhZMW7KEnHNf/qPdY=;
+        s=korg; t=1660594188;
+        bh=zv4DZZibKAMRI0gVGHC/jrX5f2LnrYxkNA82LOX0cq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rBVtPQj9O6H7UkzU0D15oZE6GayGUI7AfAyHcr9rJzPZ6etXGHnA7orR1xo4U8yei
-         bx8kcah5rqBMFFMuqIMfeeiF5tEMVbjj1JgpIpaaB+udMpF1Wl+gdJdPS/9IF+DRp3
-         gfmVIwV9PfGthbF4mYRcMYPiSAUs9XaHciENHBac=
+        b=UAsAVbapHunNdaTWiMOXWSnP9kuUZ3Mi3nt6PJfHJ5zRKSlEmJUEoTu+LK1u6/S9N
+         3OsjUyLPpa4Y2m5DcCiTNwTzV6hSuGfRtmydMLlMKeT3Sssp14S9ff7dvGhzTlbQ5r
+         +c7NXWYS/LCTYNNSD40m6C60vjcmDrPzEUP+9qL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        =?UTF-8?q?J=C3=B6rn-Thorben=20Hinz?= <jthinz@mailbox.tu-berlin.de>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1069/1095] tpm: Add check for Failure mode for TPM2 modules
-Date:   Mon, 15 Aug 2022 20:07:48 +0200
-Message-Id: <20220815180513.262690780@linuxfoundation.org>
+Subject: [PATCH 5.19 0392/1157] selftests/bpf: Fix rare segfault in sock_fields prog test
+Date:   Mon, 15 Aug 2022 19:55:48 +0200
+Message-Id: <20220815180455.370700379@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mårten Lindahl <marten.lindahl@axis.com>
+From: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
 
-[ Upstream commit 863ed94c589fcd1984f4e3080f069d30508044bb ]
+[ Upstream commit 6dc7a0baf1a70b7d22662d38481824c14ddd80c5 ]
 
-In commit 0aa698787aa2 ("tpm: Add Upgrade/Reduced mode support for
-TPM2 modules") it was said that:
+test_sock_fields__detach() got called with a null pointer here when one
+of the CHECKs or ASSERTs up to the test_sock_fields__open_and_load()
+call resulted in a jump to the "done" label.
 
-"If the TPM is in Failure mode, it will successfully respond to both
-tpm2_do_selftest() and tpm2_startup() calls. Although, will fail to
-answer to tpm2_get_cc_attrs_tbl(). Use this fact to conclude that TPM
-is in Failure mode."
+A skeletons *__detach() is not safe to call with a null pointer, though.
+This led to a segfault.
 
-But a check was never added in the commit when calling
-tpm2_get_cc_attrs_tbl() to conclude that the TPM is in Failure mode.
-This commit corrects this by adding a check.
+Go the easy route and only call test_sock_fields__destroy() which is
+null-pointer safe and includes detaching.
 
-Fixes: 0aa698787aa2 ("tpm: Add Upgrade/Reduced mode support for TPM2 modules")
-Cc: stable@vger.kernel.org # v5.17+
-Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Came across this while looking[1] to introduce the usage of
+bpf_tcp_helpers.h (included in progs/test_sock_fields.c) together with
+vmlinux.h.
+
+[1] https://lore.kernel.org/bpf/629bc069dd807d7ac646f836e9dca28bbc1108e2.camel@mailbox.tu-berlin.de/
+
+Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
+Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Reviewed-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220621070116.307221-1-jthinz@mailbox.tu-berlin.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm2-cmd.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/sock_fields.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
-index 04a3e23a4afc..4419593d9531 100644
---- a/drivers/char/tpm/tpm2-cmd.c
-+++ b/drivers/char/tpm/tpm2-cmd.c
-@@ -752,6 +752,12 @@ int tpm2_auto_startup(struct tpm_chip *chip)
- 	}
+diff --git a/tools/testing/selftests/bpf/prog_tests/sock_fields.c b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
+index 9d211b5c22c4..7d23166c77af 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sock_fields.c
++++ b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
+@@ -394,7 +394,6 @@ void serial_test_sock_fields(void)
+ 	test();
  
- 	rc = tpm2_get_cc_attrs_tbl(chip);
-+	if (rc == TPM2_RC_FAILURE || (rc < 0 && rc != -ENOMEM)) {
-+		dev_info(&chip->dev,
-+			 "TPM in field failure mode, requires firmware upgrade\n");
-+		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
-+		rc = 0;
-+	}
- 
- out:
- 	if (rc == TPM2_RC_UPGRADE) {
+ done:
+-	test_sock_fields__detach(skel);
+ 	test_sock_fields__destroy(skel);
+ 	if (child_cg_fd >= 0)
+ 		close(child_cg_fd);
 -- 
 2.35.1
 
