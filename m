@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8975DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B0BC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345535AbiHPAoX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
+        id S231430AbiHPAob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347426AbiHPAkt (ORCPT
+        with ESMTP id S1350173AbiHPAlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:40:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A43318DC1C;
-        Mon, 15 Aug 2022 13:38:56 -0700 (PDT)
+        Mon, 15 Aug 2022 20:41:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CAA1907E5;
+        Mon, 15 Aug 2022 13:39:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B3FD61185;
-        Mon, 15 Aug 2022 20:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA03C433C1;
-        Mon, 15 Aug 2022 20:38:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF9E5B81197;
+        Mon, 15 Aug 2022 20:39:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC42C433D6;
+        Mon, 15 Aug 2022 20:39:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595935;
-        bh=5e+hyuj66mgvkBpjDbdBWNeP1w9LjavneXVUc/Qsum4=;
+        s=korg; t=1660595992;
+        bh=poDWCIjXQdZOYKDtK4fB+2LprMUP+thyEgOgjHZB9/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3DnOFhffqp3Mj5pCYRW1hSQH7EQwLG2Ue3vMOrhq+n6lc+IvkzVcCxWDb1AvoIZ0
-         Db5XXwjaEe24NVtdICrZa61KAqloh2jdHuxVowiqlkSyLeb9TmNlaq+zwMYhZBO9VW
-         S8UOwrHJkQ1XKoYpH64ZaDk/2UFQWZ/dIvZNeeaY=
+        b=g0sKesqrhzhhozYWzvuLH5k8O00mDQl2ZEdRPWMqfioAyj/5KflHPy++PDdi5uomU
+         df9RejyyTmhs4lPnVtL+vPYCc3Wt/his8vvdBK+jrpaI6HhnaiOmnOdHIWh3CzuTJK
+         qnC2ncsxpzon/Ya8tGTZcBlNJ0qObkIpH3SZ+oNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0921/1157] ASoC: codecs: wsa881x: handle timeouts in resume path
-Date:   Mon, 15 Aug 2022 20:04:37 +0200
-Message-Id: <20220815180516.295036825@linuxfoundation.org>
+Subject: [PATCH 5.19 0906/1157] ASoC: cs35l45: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 15 Aug 2022 20:04:22 +0200
+Message-Id: <20220815180515.695385074@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,51 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit cf6af24b54903f9f70c29b3e5b19cb72cc862d60 ]
+[ Upstream commit d919630fe77904931277e663c902582ea6f4e4cf ]
 
-Currently we do not check if SoundWire slave initialization timeout
-expired before continuing to access its registers.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-Its possible that the registers are not accessible if timeout is
-expired. Handle this by returning timeout in resume path.
-
-Reported-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Fixes: 8dd552458361 ("ASoC: codecs: wsa881x: add runtime pm support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220630130023.9308-1-srinivas.kandagatla@linaro.org
+Fixes: 0d463d016000 ("ASoC: cs35l45: Add driver for Cirrus Logic CS35L45 Smart Amp")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220614131022.778057-1-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wsa881x.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs35l45.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/codecs/wsa881x.c b/sound/soc/codecs/wsa881x.c
-index f3a56f3ce487..02a438c6c4c7 100644
---- a/sound/soc/codecs/wsa881x.c
-+++ b/sound/soc/codecs/wsa881x.c
-@@ -1175,11 +1175,17 @@ static int __maybe_unused wsa881x_runtime_resume(struct device *dev)
- 	struct sdw_slave *slave = dev_to_sdw_dev(dev);
- 	struct regmap *regmap = dev_get_regmap(dev, NULL);
- 	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
-+	unsigned long time;
+diff --git a/sound/soc/codecs/cs35l45.c b/sound/soc/codecs/cs35l45.c
+index 2367c1a4c10e..145051390471 100644
+--- a/sound/soc/codecs/cs35l45.c
++++ b/sound/soc/codecs/cs35l45.c
+@@ -500,6 +500,8 @@ static const struct snd_soc_component_driver cs35l45_component = {
+ 	.num_controls = ARRAY_SIZE(cs35l45_controls),
  
- 	gpiod_direction_output(wsa881x->sd_n, 1);
+ 	.name = "cs35l45",
++
++	.endianness = 1,
+ };
  
--	wait_for_completion_timeout(&slave->initialization_complete,
--				    msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
-+	time = wait_for_completion_timeout(&slave->initialization_complete,
-+					   msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
-+	if (!time) {
-+		dev_err(dev, "Initialization not complete, timed out\n");
-+		gpiod_direction_output(wsa881x->sd_n, 0);
-+		return -ETIMEDOUT;
-+	}
- 
- 	regcache_cache_only(regmap, false);
- 	regcache_sync(regmap);
+ static int __maybe_unused cs35l45_runtime_suspend(struct device *dev)
 -- 
 2.35.1
 
