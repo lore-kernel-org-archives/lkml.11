@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D47C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3339CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231343AbiHPEsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        id S232194AbiHPEss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232617AbiHPEpn (ORCPT
+        with ESMTP id S232611AbiHPEpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:45:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485C9AE9C0;
-        Mon, 15 Aug 2022 13:42:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347A0A063E;
+        Mon, 15 Aug 2022 13:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D794E61238;
-        Mon, 15 Aug 2022 20:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C596BC433C1;
-        Mon, 15 Aug 2022 20:42:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C795E61233;
+        Mon, 15 Aug 2022 20:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981C9C433D6;
+        Mon, 15 Aug 2022 20:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596146;
-        bh=sZQQJBhKBqZz1oQBCZX4pRulQOQ09eGmJoa2eOxyBZQ=;
+        s=korg; t=1660596143;
+        bh=UkexD9rfgmwaolcR9QQUHVrlFEriZt7CFdO7HMCyRRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUUvJEWuOyKgmBWmqZWca63QPFLI+iYQMsWQ5m/P/TBcz4wlqkwiFtPnMZGRase4l
-         v4Q2UVX7WV70/R49vuOJ4rrwGdhycKfQcHnxVP3bGeoH3L2aKrhoQVDsuEZnalLUjZ
-         cmeUWVryDqPG+3ySv32H5zBbqiJGhqkUIS/4fjRM=
+        b=YZeVBCQ3b8u7j7IRbu60eHabLxBad6vNzHm9CYUuqS5/9k5ct6gtzD4940UnIYK2p
+         YI4gH4RWcxWZrbNOdL2fp5q70+MWyAMoIMsdtjOFq7/YwCu7LaRWpqfZGeukLlGoo4
+         SjbR8KKAxwJDI4ScrauWAbmjTo735AlJeujmY7IE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Marek Beh=C3=BAn <kabel@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Jean Delvare <jdelvare@suse.de>,
+        Terry Bowman <terry.bowman@amd.com>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0988/1157] watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
-Date:   Mon, 15 Aug 2022 20:05:44 +0200
-Message-Id: <20220815180519.259905079@linuxfoundation.org>
+Subject: [PATCH 5.19 0987/1157] watchdog: sp5100_tco: Fix a memory leak of EFCH MMIO resource
+Date:   Mon, 15 Aug 2022 20:05:43 +0200
+Message-Id: <20220815180519.221704518@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,39 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Jean Delvare <jdelvare@suse.de>
 
-[ Upstream commit 2d27e52841092e5831dd41f313028c668d816eb0 ]
+[ Upstream commit c6d9c0798ed366a09a9e53d71edcd2266e34a6eb ]
 
-The function devm_ioremap() in armada_37xx_wdt_probe() can fail, so
-its return value should be checked.
+Unlike release_mem_region(), a call to release_resource() does not
+free the resource, so it has to be freed explicitly to avoid a memory
+leak.
 
-Fixes: 54e3d9b518c8a ("watchdog: Add support for Armada 37xx CPU watchdog")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Fixes: 0578fff4aae5 ("Watchdog: sp5100_tco: Add initialization using EFCH MMIO")
+Cc: Terry Bowman <terry.bowman@amd.com>
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
 Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220722030938.2925156-1-williamsukatube@163.com
+Link: https://lore.kernel.org/r/20220621152840.420a0f4c@endymion.delvare
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/armada_37xx_wdt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/watchdog/sp5100_tco.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
-index 1635f421ef2c..854b1cc723cb 100644
---- a/drivers/watchdog/armada_37xx_wdt.c
-+++ b/drivers/watchdog/armada_37xx_wdt.c
-@@ -274,6 +274,8 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
- 	if (!res)
- 		return -ENODEV;
- 	dev->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
-+	if (!dev->reg)
-+		return -ENOMEM;
+diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
+index 86ffb58fbc85..ae54dd33e233 100644
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -402,6 +402,7 @@ static int sp5100_tco_setupdevice_mmio(struct device *dev,
+ 		iounmap(addr);
  
- 	/* init clock */
- 	dev->clk = devm_clk_get(&pdev->dev, NULL);
+ 	release_resource(res);
++	kfree(res);
+ 
+ 	return ret;
+ }
 -- 
 2.35.1
 
