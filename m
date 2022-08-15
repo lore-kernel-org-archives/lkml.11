@@ -2,97 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62338C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0858BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345995AbiHOUsZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S245706AbiHOUsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345597AbiHOUrC (ORCPT
+        with ESMTP id S1345783AbiHOUrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95449B7ED4;
-        Mon, 15 Aug 2022 12:08:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4889960ACE;
-        Mon, 15 Aug 2022 19:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B644DC4314E;
-        Mon, 15 Aug 2022 19:08:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590526;
-        bh=e2sA2q9BXuqDigMphbszovvhi7P2aY88fo3nVbXcMPY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H+foGp0D1BLdMd3Fqy+FFdqUuttC5g1aYliAkoNRWVj67ZLLVHGTh2YDvg86kw8bv
-         byjgAj5jamIu7Tnw6rcLxqYt05x6YEyNjqX4C5Twf/AMY+U2hTPFv0RcOPo0FaTkSq
-         iJgdFrd/yGvopJVjMV1FcVI/ur19VSlGpBcwgXUY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0287/1095] perf: RISC-V: Add of_node_put() when breaking out of for_each_of_cpu_node()
-Date:   Mon, 15 Aug 2022 19:54:46 +0200
-Message-Id: <20220815180441.663955223@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:47:08 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED9B7EC2;
+        Mon, 15 Aug 2022 12:08:45 -0700 (PDT)
+Received: from dslb-188-096-143-237.188.096.pools.vodafone-ip.de ([188.96.143.237] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1oNfRu-0003rX-SM; Mon, 15 Aug 2022 21:08:30 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH v4 0/2] ARM: imx25: print silicon revision at startup
+Date:   Mon, 15 Aug 2022 21:07:46 +0200
+Message-Id: <20220815190748.102664-1-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220602080344.208702-1-martin@kaiser.cx>
+References: <20220602080344.208702-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+Resurrect the unused function to print the imx25 silicon revision at
+startup.
 
-[ Upstream commit 491f10d08fdae10a177edf6af4f43b83b293114b ]
+Now that 6.0-rc1 is out, I hope that the clk maintainers have a moment
+to review this simple patch set ;-)
 
-In pmu_sbi_setup_irqs(), we should call of_node_put() for the 'cpu'
-when breaking out of for_each_of_cput_node() as its refcount will
-be automatically increased and decreased during the iteration.
+changes in v4:
+- rebase against today's linux-next
+- add Fabio's Reviewed-by tags
 
-Fixes: 4905ec2fb7e6 ("RISC-V: Add sscofpmf extension support")
-Signed-off-by: Liang He <windhl@126.com>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
-Link: https://lore.kernel.org/r/20220715130330.443363-1-windhl@126.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/perf/riscv_pmu_sbi.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+changes in v3:
+- rebase against today's linux-next
 
-diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index fab0dd497393..77b826d6c05b 100644
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -682,12 +682,15 @@ static int pmu_sbi_setup_irqs(struct riscv_pmu *pmu, struct platform_device *pde
- 		child = of_get_compatible_child(cpu, "riscv,cpu-intc");
- 		if (!child) {
- 			pr_err("Failed to find INTC node\n");
-+			of_node_put(cpu);
- 			return -ENODEV;
- 		}
- 		domain = irq_find_host(child);
- 		of_node_put(child);
--		if (domain)
-+		if (domain) {
-+			of_node_put(cpu);
- 			break;
-+		}
- 	}
- 	if (!domain) {
- 		pr_err("Failed to find INTC IRQ root domain\n");
+changes in v2:
+- drop the patch about silicon revision 1.2. It has already been merged
+  by Shawn Guo.
+- send the changeset to the clk maintainers
+
+Martin Kaiser (2):
+  clk: imx25: print silicon revision during init
+  clk: imx25: make __mx25_clocks_init return void
+
+ drivers/clk/imx/clk-imx25.c | 5 +++--
+ include/soc/imx/revision.h  | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
 -- 
-2.35.1
-
-
+2.30.2
 
