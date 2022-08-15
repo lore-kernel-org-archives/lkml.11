@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF618C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:04:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19813C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245294AbiHOXEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
+        id S233576AbiHOXE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233102AbiHOXCJ (ORCPT
+        with ESMTP id S1346109AbiHOXCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:02:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F78913F235;
-        Mon, 15 Aug 2022 12:58:11 -0700 (PDT)
+        Mon, 15 Aug 2022 19:02:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA458604C;
+        Mon, 15 Aug 2022 12:58:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D046860FB5;
-        Mon, 15 Aug 2022 19:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D07D6C433C1;
-        Mon, 15 Aug 2022 19:58:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85408B81136;
+        Mon, 15 Aug 2022 19:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF00C433C1;
+        Mon, 15 Aug 2022 19:58:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593490;
-        bh=JakJzBZy+7VcDQGMFxM5A/u02FhPDwbKSsoPFj5Ofi4=;
+        s=korg; t=1660593493;
+        bh=NXZMVp/XCIifham+N8UhWhA8PlWuq+NgCw/dNZwr9+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/2xpWCIolgYp/OwuaTaJuS2mjd9G4pmqLhq9DEcFlSRvtr1+qtRhJlqXK691qEI8
-         yZok0ZVH3vfmisNsd7qikY05FzMGZ0VPK0+Oe9KGhbR6cIMymRA3UrMojVu+IQSEAc
-         k4BWERc1LCpHHck1Lifebqw4j99CeX8gU8+Baq7o=
+        b=Z2zz3RGGajru4+pAVbv3KwxEWpvTq0FkItfRQXVCoc2Pd0kmPfRyY1yPusRgJU4oG
+         3FUewygXNBAhw2dda9TXspoHsHqjzYnV3OIBsEmbKuLLidO8lrIlrcuSpttzwx2f5Z
+         sYGt8kOCppzB2kn7FUJpWlCZTi9RDhqvLG6rH5Qc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Vitor Massaru Iha <vitor@massaru.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Daniel Latypov <dlatypov@google.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0275/1157] PM: domains: Ensure genpd_debugfs_dir exists before remove
-Date:   Mon, 15 Aug 2022 19:53:51 +0200
-Message-Id: <20220815180450.614437794@linuxfoundation.org>
+Subject: [PATCH 5.19 0247/1157] lib: overflow: Do not define 64-bit tests on 32-bit
+Date:   Mon, 15 Aug 2022 19:53:23 +0200
+Message-Id: <20220815180449.465255125@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,55 +54,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 37101d3c719386040ded735a5ec06974f1d94d1f ]
+[ Upstream commit 6a022dd29f2cefbac4895a34e2e1f14b2d12d819 ]
 
-Both genpd_debug_add() and genpd_debug_remove() may be called
-indirectly by other drivers while genpd_debugfs_dir is not yet
-set. For example, drivers can call pm_genpd_init() in probe or
-pm_genpd_init() in probe fail/cleanup path:
+The 64-bit overflow tests will trigger 64-bit division on 32-bit hosts,
+which is not currently used anywhere in the kernel, and tickles bugs
+in at least Clang 13 and earlier:
+https://github.com/ClangBuiltLinux/linux/issues/1636
 
-pm_genpd_init()
- --> genpd_debug_add()
+In reality, there shouldn't be a reason to not build the 64-bit test
+cases on 32-bit systems, so these #ifdefs can be removed once the minimum
+Clang version reaches 13.
 
-pm_genpd_remove()
- --> genpd_remove()
-   --> genpd_debug_remove()
+In the meantime, silence W=1 warnings given by the current code:
 
-At this time, genpd_debug_init() may not yet be called.
+../lib/overflow_kunit.c:191:19: warning: 's64_tests' defined but not used [-Wunused-const-variable=]
+  191 | DEFINE_TEST_ARRAY(s64) = {
+      |                   ^~~
+../lib/overflow_kunit.c:24:11: note: in definition of macro 'DEFINE_TEST_ARRAY'
+   24 |         } t ## _tests[]
+      |           ^
+../lib/overflow_kunit.c:94:19: warning: 'u64_tests' defined but not used [-Wunused-const-variable=]
+   94 | DEFINE_TEST_ARRAY(u64) = {
+      |                   ^~~
+../lib/overflow_kunit.c:24:11: note: in definition of macro 'DEFINE_TEST_ARRAY'
+   24 |         } t ## _tests[]
+      |           ^
 
-genpd_debug_add() checks that if genpd_debugfs_dir is NULL, it
-will return directly. Make sure this is also checked
-in pm_genpd_remove(), otherwise components under debugfs root
-which has the same name as other components under pm_genpd may
-be accidentally removed, since NULL represents debugfs root.
-
-Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202205110324.7GrtxG8u-lkp@intel.com
+Fixes: 455a35a6cdb6 ("lib: add runtime test of check_*_overflow functions")
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Vitor Massaru Iha <vitor@massaru.org>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Tested-by: Daniel Latypov <dlatypov@google.com>
+Link: https://lore.kernel.org/lkml/CAGS_qxokQAjQRip2vPi80toW7hmBnXf=KMTNT51B1wuDqSZuVQ@mail.gmail.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/domain.c | 3 +++
- 1 file changed, 3 insertions(+)
+ lib/overflow_kunit.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 739e52cd4aba..55a10e6d4e2a 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -222,6 +222,9 @@ static void genpd_debug_remove(struct generic_pm_domain *genpd)
- {
- 	struct dentry *d;
+diff --git a/lib/overflow_kunit.c b/lib/overflow_kunit.c
+index 475f0c064bf6..7e3e43679b73 100644
+--- a/lib/overflow_kunit.c
++++ b/lib/overflow_kunit.c
+@@ -91,6 +91,7 @@ DEFINE_TEST_ARRAY(u32) = {
+ 	{-4U, 5U, 1U, -9U, -20U, true, false, true},
+ };
  
-+	if (!genpd_debugfs_dir)
-+		return;
++#if BITS_PER_LONG == 64
+ DEFINE_TEST_ARRAY(u64) = {
+ 	{0, 0, 0, 0, 0, false, false, false},
+ 	{1, 1, 2, 0, 1, false, false, false},
+@@ -114,6 +115,7 @@ DEFINE_TEST_ARRAY(u64) = {
+ 	 false, true, false},
+ 	{-15ULL, 10ULL, -5ULL, -25ULL, -150ULL, false, false, true},
+ };
++#endif
+ 
+ DEFINE_TEST_ARRAY(s8) = {
+ 	{0, 0, 0, 0, 0, false, false, false},
+@@ -188,6 +190,8 @@ DEFINE_TEST_ARRAY(s32) = {
+ 	{S32_MIN, S32_MIN, 0, 0, 0, true, false, true},
+ 	{S32_MAX, S32_MAX, -2, 0, 1, true, false, true},
+ };
 +
- 	d = debugfs_lookup(genpd->name, genpd_debugfs_dir);
- 	debugfs_remove(d);
- }
++#if BITS_PER_LONG == 64
+ DEFINE_TEST_ARRAY(s64) = {
+ 	{0, 0, 0, 0, 0, false, false, false},
+ 
+@@ -216,6 +220,7 @@ DEFINE_TEST_ARRAY(s64) = {
+ 	{-128, -1, -129, -127, 128, false, false, false},
+ 	{0, -S64_MAX, -S64_MAX, S64_MAX, 0, false, false, false},
+ };
++#endif
+ 
+ #define check_one_op(t, fmt, op, sym, a, b, r, of) do {		\
+ 	t _r;							\
+@@ -650,6 +655,7 @@ static struct kunit_case overflow_test_cases[] = {
+ 	KUNIT_CASE(s16_overflow_test),
+ 	KUNIT_CASE(u32_overflow_test),
+ 	KUNIT_CASE(s32_overflow_test),
++/* Clang 13 and earlier generate unwanted libcalls on 32-bit. */
+ #if BITS_PER_LONG == 64
+ 	KUNIT_CASE(u64_overflow_test),
+ 	KUNIT_CASE(s64_overflow_test),
 -- 
 2.35.1
 
