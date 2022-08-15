@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2683C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DB6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241887AbiHOS17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        id S241929AbiHOS2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243113AbiHOS0o (ORCPT
+        with ESMTP id S242318AbiHOS0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241D3122C;
-        Mon, 15 Aug 2022 11:19:40 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8902F67F;
+        Mon, 15 Aug 2022 11:19:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5C360C07;
-        Mon, 15 Aug 2022 18:19:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2792C433C1;
-        Mon, 15 Aug 2022 18:19:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67252B80F99;
+        Mon, 15 Aug 2022 18:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D80DC433C1;
+        Mon, 15 Aug 2022 18:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587553;
-        bh=uwI7jOt3LUj5x/gvUBN4HIO7/wzxiNFPzitTcyPAavQ=;
+        s=korg; t=1660587521;
+        bh=ktZ+YUfLo8CeU345XT9G1M7j/YCZnhlTFnxaB4h9gXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GN9sS4M59OpeLi4zqhL/bdZpB8oPDB7z8yakGjzO3qZdiHafOif7rVfDYNkwG0fjI
-         Tt5Hxz73tt3cJOI35yaCawvLVRQUxwQaUq+yq8ofA9XJSsPSsKkRzVcNjeJWWs9JnH
-         RVRP2HLVyRShfjE4aI1QRylZlloKeVuBEVj5fMTM=
+        b=RAYr4bsoBwILyJNoD/k3wk4EMnxa9EuVw9OKrYXkJkKvAQBJfp+z4YqqHUtbAH1YF
+         yfUvnlm1/gan7Kypa6iqj2B9Qt87F9Z33/F5sKMZIXknh/j4oCyXBI/zZohc4evKpd
+         6Sf8TXcM+v/XzNfc99OtOH4IafBroV6/crJ6fEQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.15 090/779] mbcache: dont reclaim used entries
-Date:   Mon, 15 Aug 2022 19:55:34 +0200
-Message-Id: <20220815180341.138257153@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Segall <bsegall@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Roman Penyaev <rpenyaev@suse.de>,
+        Jason Baron <jbaron@akamai.com>,
+        Khazhismel Kumykov <khazhy@google.com>, Heiher <r@hev.cc>,
+        stable@kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 110/779] epoll: autoremove wakers even more aggressively
+Date:   Mon, 15 Aug 2022 19:55:54 +0200
+Message-Id: <20220815180342.032766610@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,50 +55,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Benjamin Segall <bsegall@google.com>
 
-commit 58318914186c157477b978b1739dfe2f1b9dc0fe upstream.
+commit a16ceb13961068f7209e34d7984f8e42d2c06159 upstream.
 
-Do not reclaim entries that are currently used by somebody from a
-shrinker. Firstly, these entries are likely useful. Secondly, we will
-need to keep such entries to protect pending increment of xattr block
-refcount.
+If a process is killed or otherwise exits while having active network
+connections and many threads waiting on epoll_wait, the threads will all
+be woken immediately, but not removed from ep->wq.  Then when network
+traffic scans ep->wq in wake_up, every wakeup attempt will fail, and will
+not remove the entries from the list.
 
-CC: stable@vger.kernel.org
-Fixes: 82939d7999df ("ext4: convert to mbcache2")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220712105436.32204-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+This means that the cost of the wakeup attempt is far higher than usual,
+does not decrease, and this also competes with the dying threads trying to
+actually make progress and remove themselves from the wq.
+
+Handle this by removing visited epoll wq entries unconditionally, rather
+than only when the wakeup succeeds - the structure of ep_poll means that
+the only potential loss is the timed_out->eavail heuristic, which now can
+race and result in a redundant ep_send_events attempt.  (But only when
+incoming data and a timeout actually race, not on every timeout)
+
+Shakeel added:
+
+: We are seeing this issue in production with real workloads and it has
+: caused hard lockups.  Particularly network heavy workloads with a lot
+: of threads in epoll_wait() can easily trigger this issue if they get
+: killed (oom-killed in our case).
+
+Link: https://lkml.kernel.org/r/xm26fsjotqda.fsf@google.com
+Signed-off-by: Ben Segall <bsegall@google.com>
+Tested-by: Shakeel Butt <shakeelb@google.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Roman Penyaev <rpenyaev@suse.de>
+Cc: Jason Baron <jbaron@akamai.com>
+Cc: Khazhismel Kumykov <khazhy@google.com>
+Cc: Heiher <r@hev.cc>
+Cc: <stable@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/mbcache.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/eventpoll.c |   22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
---- a/fs/mbcache.c
-+++ b/fs/mbcache.c
-@@ -288,7 +288,7 @@ static unsigned long mb_cache_shrink(str
- 	while (nr_to_scan-- && !list_empty(&cache->c_list)) {
- 		entry = list_first_entry(&cache->c_list,
- 					 struct mb_cache_entry, e_list);
--		if (entry->e_referenced) {
-+		if (entry->e_referenced || atomic_read(&entry->e_refcnt) > 2) {
- 			entry->e_referenced = 0;
- 			list_move_tail(&entry->e_list, &cache->c_list);
- 			continue;
-@@ -302,6 +302,14 @@ static unsigned long mb_cache_shrink(str
- 		spin_unlock(&cache->c_list_lock);
- 		head = mb_cache_entry_head(cache, entry->e_key);
- 		hlist_bl_lock(head);
-+		/* Now a reliable check if the entry didn't get used... */
-+		if (atomic_read(&entry->e_refcnt) > 2) {
-+			hlist_bl_unlock(head);
-+			spin_lock(&cache->c_list_lock);
-+			list_add_tail(&entry->e_list, &cache->c_list);
-+			cache->c_entry_count++;
-+			continue;
-+		}
- 		if (!hlist_bl_unhashed(&entry->e_hash_list)) {
- 			hlist_bl_del_init(&entry->e_hash_list);
- 			atomic_dec(&entry->e_refcnt);
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -1740,6 +1740,21 @@ static struct timespec64 *ep_timeout_to_
+ 	return to;
+ }
+ 
++/*
++ * autoremove_wake_function, but remove even on failure to wake up, because we
++ * know that default_wake_function/ttwu will only fail if the thread is already
++ * woken, and in that case the ep_poll loop will remove the entry anyways, not
++ * try to reuse it.
++ */
++static int ep_autoremove_wake_function(struct wait_queue_entry *wq_entry,
++				       unsigned int mode, int sync, void *key)
++{
++	int ret = default_wake_function(wq_entry, mode, sync, key);
++
++	list_del_init(&wq_entry->entry);
++	return ret;
++}
++
+ /**
+  * ep_poll - Retrieves ready events, and delivers them to the caller-supplied
+  *           event buffer.
+@@ -1821,8 +1836,15 @@ static int ep_poll(struct eventpoll *ep,
+ 		 * normal wakeup path no need to call __remove_wait_queue()
+ 		 * explicitly, thus ep->lock is not taken, which halts the
+ 		 * event delivery.
++		 *
++		 * In fact, we now use an even more aggressive function that
++		 * unconditionally removes, because we don't reuse the wait
++		 * entry between loop iterations. This lets us also avoid the
++		 * performance issue if a process is killed, causing all of its
++		 * threads to wake up without being removed normally.
+ 		 */
+ 		init_wait(&wait);
++		wait.func = ep_autoremove_wake_function;
+ 
+ 		write_lock_irq(&ep->lock);
+ 		/*
 
 
