@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524EFC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EBCC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiHPEmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        id S232082AbiHPEm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231802AbiHPEk0 (ORCPT
+        with ESMTP id S231795AbiHPEk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:40:26 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81983D1E07;
-        Mon, 15 Aug 2022 13:33:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57021A50D0;
+        Mon, 15 Aug 2022 13:31:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E1467CE12E8;
-        Mon, 15 Aug 2022 20:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD21C433C1;
-        Mon, 15 Aug 2022 20:33:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A8D6CCE1345;
+        Mon, 15 Aug 2022 20:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96331C433C1;
+        Mon, 15 Aug 2022 20:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595590;
-        bh=V8H25ZulhY1oWUWS8KPaAgWDB8FzsNqGAGC4m5li3/A=;
+        s=korg; t=1660595498;
+        bh=ULVdn1u+eHqJzYIKptQEe/KzAAMdb1EsJ3McvUFHKhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VtCnKOoOfJzVMqh20VZDYnwvuryYL4yFhSzzE0jUf+JaVFdozpbTCqjafuXrcq/tz
-         rdGpZVht6o000hyqnDsxFHvx6khv+zQLXQ1N3+6cTrEht9/V3EdZdIKRTVuVfKwr+7
-         ouGv2ShKSGDlV3IF+ltencmCn5aDXZ2vYJeRXAj8=
+        b=xm8jB3pjjGvX/q25U/ifYlzgQOEyxKGLYwtiYC1iFcz+Pa92CoH5jPMeVjRPtaVG6
+         q/Rl2VPd1uQ1K/e08SPwrqe5swlD0JYnddnLBzFDxCtgn/ZniWO8NBEZbIHhqZ8QV4
+         yTKQkY9S/KwvCYLhScWjzAzpHtpN38mMzzusKOcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Halaney <ahalaney@redhat.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0812/1157] usb: dwc3: qcom: fix missing optional irq warnings
-Date:   Mon, 15 Aug 2022 20:02:48 +0200
-Message-Id: <20220815180511.979476499@linuxfoundation.org>
+Subject: [PATCH 5.19 0783/1157] scsi: qla2xxx: Check correct variable in qla24xx_async_gffid()
+Date:   Mon, 15 Aug 2022 20:02:19 +0200
+Message-Id: <20220815180510.811465162@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,42 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 69bb3520db7cecbccc9e497fc568fa5465c9d43f ]
+[ Upstream commit 7c33e477bd883f79cccec418980cb8f7f2d50347 ]
 
-Not all platforms have all of the four currently supported wakeup
-interrupts so use the optional irq helpers when looking up interrupts to
-avoid printing error messages when an optional interrupt is not found:
+There is a copy and paste bug here.  It should check ".rsp" instead of
+".req".  The error message is copy and pasted as well so update that too.
 
-	dwc3-qcom a6f8800.usb: error -ENXIO: IRQ hs_phy_irq not found
-
-Fixes: a4333c3a6ba9 ("usb: dwc3: Add Qualcomm DWC3 glue driver")
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Link: https://lore.kernel.org/r/20220713131340.29401-4-johan+linaro@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/YrK1A/t3L6HKnswO@kili
+Fixes: 9c40c36e75ff ("scsi: qla2xxx: edif: Reduce Initiator-Initiator thrashing")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-qcom.c | 4 ++--
+ drivers/scsi/qla2xxx/qla_gs.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index 6cba990da32e..3582fd6dfa14 100644
---- a/drivers/usb/dwc3/dwc3-qcom.c
-+++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -443,9 +443,9 @@ static int dwc3_qcom_get_irq(struct platform_device *pdev,
- 	int ret;
- 
- 	if (np)
--		ret = platform_get_irq_byname(pdev_irq, name);
-+		ret = platform_get_irq_byname_optional(pdev_irq, name);
- 	else
--		ret = platform_get_irq(pdev_irq, num);
-+		ret = platform_get_irq_optional(pdev_irq, num);
- 
- 	return ret;
- }
+diff --git a/drivers/scsi/qla2xxx/qla_gs.c b/drivers/scsi/qla2xxx/qla_gs.c
+index 574251b2e0ef..c914b5df9c12 100644
+--- a/drivers/scsi/qla2xxx/qla_gs.c
++++ b/drivers/scsi/qla2xxx/qla_gs.c
+@@ -3386,9 +3386,9 @@ int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport, bool wait)
+ 				sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
+ 				&sp->u.iocb_cmd.u.ctarg.rsp_dma,
+ 	    GFP_KERNEL);
+-	if (!sp->u.iocb_cmd.u.ctarg.req) {
++	if (!sp->u.iocb_cmd.u.ctarg.rsp) {
+ 		ql_log(ql_log_warn, vha, 0xd041,
+-		       "%s: Failed to allocate ct_sns request.\n",
++		       "%s: Failed to allocate ct_sns response.\n",
+ 		       __func__);
+ 		goto done_free_sp;
+ 	}
 -- 
 2.35.1
 
