@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD93C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D39C7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349641AbiHOWdV (ORCPT
+        id S1349685AbiHOWd2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
+        Mon, 15 Aug 2022 18:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350990AbiHOW1Y (ORCPT
+        with ESMTP id S1351005AbiHOW1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA89B6C77F;
-        Mon, 15 Aug 2022 12:46:02 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D091112A579;
+        Mon, 15 Aug 2022 12:46:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67CA66068D;
-        Mon, 15 Aug 2022 19:46:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58305C433D7;
-        Mon, 15 Aug 2022 19:46:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66D1D6122B;
+        Mon, 15 Aug 2022 19:46:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C29FC433D7;
+        Mon, 15 Aug 2022 19:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592761;
-        bh=F2p/WEQeJi8ajn9AXc1MfaTPlgWmnAqr2FACq5qrus4=;
+        s=korg; t=1660592764;
+        bh=y683IYnjz5gSz366uPqUz0S4nqhMMgjNKCG7wfZFxno=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ODAdvEENNjPyShiEzelvdqxz2rkM//KfmQ9FHYCMs/irBPRaBzvL4bQgSQL5qudwl
-         n/8WgRoK8EnqhoUvvJ0RXuRMeGABDMgJAuNeFx/q2Dg9vEIcrgHfjRMRi8JpKESf3P
-         b1Egf3WE0G8zp0EeBBLEVVzXFfYGIEoUJ5MbxBb0=
+        b=gYCLfYFrGjvIrGZiSr8/A6RfA3xQfmhzr7QVNlwGllehzoYheMlzDpAs8JJgxL3dy
+         9SLe5+gk0JfnrBKzMo3dMr8niK3CBofR5z9ABEa52DXxJAHSkKzFq5FAqEykPb9sGb
+         ThS6IL2+Qn6GFp81O15hvAyiCpLMWsZnJthMgsGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0841/1095] rpmsg: mtk_rpmsg: Fix circular locking dependency
-Date:   Mon, 15 Aug 2022 20:04:00 +0200
-Message-Id: <20220815180504.137782970@linuxfoundation.org>
+Subject: [PATCH 5.19 0161/1157] sched/core: Always flush pending blk_plug
+Date:   Mon, 15 Aug 2022 19:51:57 +0200
+Message-Id: <20220815180446.131978981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,124 +51,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: John Keeping <john@metanate.com>
 
-[ Upstream commit 353d9214682e65c55cdffad8c82139a3321c5f13 ]
+[ Upstream commit 401e4963bf45c800e3e9ea0d3a0289d738005fd4 ]
 
-During execution of the worker that's used to register rpmsg devices
-we are safely locking the channels mutex but, when creating a new
-endpoint for such devices, we are registering a IPI on the SCP, which
-then makes the SCP to trigger an interrupt, lock its own mutex and in
-turn register more subdevices.
-This creates a circular locking dependency situation, as the mtk_rpmsg
-channels_lock will then depend on the SCP IPI lock.
+With CONFIG_PREEMPT_RT, it is possible to hit a deadlock between two
+normal priority tasks (SCHED_OTHER, nice level zero):
 
-[   15.447736] ======================================================
-[   15.460158] WARNING: possible circular locking dependency detected
-[   15.460161] 5.17.0-next-20220324+ #399 Not tainted
-[   15.460165] ------------------------------------------------------
-[   15.460166] kworker/0:3/155 is trying to acquire lock:
-[   15.460170] ffff5b4d0eaf1308 (&scp->ipi_desc[i].lock){+.+.}-{4:4}, at: scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
-[   15.504958]
-[]                but task is already holding lock:
-[   15.504960] ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
-[   15.504978]
-[]                which lock already depends on the new lock.
+	INFO: task kworker/u8:0:8 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:kworker/u8:0    state:D stack:    0 pid:    8 ppid:     2 flags:0x00000000
+	Workqueue: writeback wb_workfn (flush-7:0)
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a65a0>] (rt_mutex_slowlock_block.constprop.0+0xb8/0x174)
+	[<c08a65a0>] (rt_mutex_slowlock_block.constprop.0) from [<c08a6708>]
+	+(rt_mutex_slowlock.constprop.0+0xac/0x174)
+	[<c08a6708>] (rt_mutex_slowlock.constprop.0) from [<c0374d60>] (fat_write_inode+0x34/0x54)
+	[<c0374d60>] (fat_write_inode) from [<c0297304>] (__writeback_single_inode+0x354/0x3ec)
+	[<c0297304>] (__writeback_single_inode) from [<c0297998>] (writeback_sb_inodes+0x250/0x45c)
+	[<c0297998>] (writeback_sb_inodes) from [<c0297c20>] (__writeback_inodes_wb+0x7c/0xb8)
+	[<c0297c20>] (__writeback_inodes_wb) from [<c0297f24>] (wb_writeback+0x2c8/0x2e4)
+	[<c0297f24>] (wb_writeback) from [<c0298c40>] (wb_workfn+0x1a4/0x3e4)
+	[<c0298c40>] (wb_workfn) from [<c0138ab8>] (process_one_work+0x1fc/0x32c)
+	[<c0138ab8>] (process_one_work) from [<c0139120>] (worker_thread+0x22c/0x2d8)
+	[<c0139120>] (worker_thread) from [<c013e6e0>] (kthread+0x16c/0x178)
+	[<c013e6e0>] (kthread) from [<c01000fc>] (ret_from_fork+0x14/0x38)
+	Exception stack(0xc10e3fb0 to 0xc10e3ff8)
+	3fa0:                                     00000000 00000000 00000000 00000000
+	3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+	3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
 
-[   15.504980]
-[]                the existing dependency chain (in reverse order) is:
-[   15.504982]
-[]               -> #1 (&mtk_subdev->channels_lock){+.+.}-{4:4}:
-[   15.504990]        lock_acquire+0x68/0x84
-[   15.504999]        __mutex_lock+0xa4/0x3e0
-[   15.505007]        mutex_lock_nested+0x40/0x70
-[   15.505012]        mtk_rpmsg_ns_cb+0xe4/0x134 [mtk_rpmsg]
-[   15.641684]        mtk_rpmsg_ipi_handler+0x38/0x64 [mtk_rpmsg]
-[   15.641693]        scp_ipi_handler+0xbc/0x180 [mtk_scp]
-[   15.663905]        mt8192_scp_irq_handler+0x44/0xa4 [mtk_scp]
-[   15.663915]        scp_irq_handler+0x6c/0xa0 [mtk_scp]
-[   15.685779]        irq_thread_fn+0x34/0xa0
-[   15.685785]        irq_thread+0x18c/0x240
-[   15.685789]        kthread+0x104/0x110
-[   15.709579]        ret_from_fork+0x10/0x20
-[   15.709586]
-[]               -> #0 (&scp->ipi_desc[i].lock){+.+.}-{4:4}:
-[   15.731271]        __lock_acquire+0x11e4/0x1910
-[   15.740367]        lock_acquire.part.0+0xd8/0x220
-[   15.749813]        lock_acquire+0x68/0x84
-[   15.757861]        __mutex_lock+0xa4/0x3e0
-[   15.766084]        mutex_lock_nested+0x40/0x70
-[   15.775006]        scp_ipi_lock+0x34/0x50 [mtk_scp_ipi]
-[   15.785503]        scp_ipi_register+0x40/0xa4 [mtk_scp_ipi]
-[   15.796697]        scp_register_ipi+0x1c/0x30 [mtk_scp]
-[   15.807194]        mtk_rpmsg_create_ept+0xa0/0x108 [mtk_rpmsg]
-[   15.818912]        rpmsg_create_ept+0x44/0x60
-[   15.827660]        cros_ec_rpmsg_probe+0x15c/0x1f0
-[   15.837282]        rpmsg_dev_probe+0x128/0x1d0
-[   15.846203]        really_probe.part.0+0xa4/0x2a0
-[   15.855649]        __driver_probe_device+0xa0/0x150
-[   15.865443]        driver_probe_device+0x48/0x150
-[   15.877157]        __device_attach_driver+0xc0/0x12c
-[   15.889359]        bus_for_each_drv+0x80/0xe0
-[   15.900330]        __device_attach+0xe4/0x190
-[   15.911303]        device_initial_probe+0x1c/0x2c
-[   15.922969]        bus_probe_device+0xa8/0xb0
-[   15.933927]        device_add+0x3a8/0x8a0
-[   15.944193]        device_register+0x28/0x40
-[   15.954970]        rpmsg_register_device+0x5c/0xa0
-[   15.966782]        mtk_register_device_work_function+0x148/0x1cc [mtk_rpmsg]
-[   15.983146]        process_one_work+0x294/0x664
-[   15.994458]        worker_thread+0x7c/0x45c
-[   16.005069]        kthread+0x104/0x110
-[   16.014789]        ret_from_fork+0x10/0x20
-[   16.025201]
-[]               other info that might help us debug this:
+	INFO: task tar:2083 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:tar             state:D stack:    0 pid: 2083 ppid:  2082 flags:0x00000000
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a41b0>] (io_schedule+0x14/0x24)
+	[<c08a41b0>] (io_schedule) from [<c08a455c>] (bit_wait_io+0xc/0x30)
+	[<c08a455c>] (bit_wait_io) from [<c08a441c>] (__wait_on_bit_lock+0x54/0xa8)
+	[<c08a441c>] (__wait_on_bit_lock) from [<c08a44f4>] (out_of_line_wait_on_bit_lock+0x84/0xb0)
+	[<c08a44f4>] (out_of_line_wait_on_bit_lock) from [<c0371fb0>] (fat_mirror_bhs+0xa0/0x144)
+	[<c0371fb0>] (fat_mirror_bhs) from [<c0372a68>] (fat_alloc_clusters+0x138/0x2a4)
+	[<c0372a68>] (fat_alloc_clusters) from [<c0370b14>] (fat_alloc_new_dir+0x34/0x250)
+	[<c0370b14>] (fat_alloc_new_dir) from [<c03787c0>] (vfat_mkdir+0x58/0x148)
+	[<c03787c0>] (vfat_mkdir) from [<c0277b60>] (vfs_mkdir+0x68/0x98)
+	[<c0277b60>] (vfs_mkdir) from [<c027b484>] (do_mkdirat+0xb0/0xec)
+	[<c027b484>] (do_mkdirat) from [<c0100060>] (ret_fast_syscall+0x0/0x1c)
+	Exception stack(0xc2e1bfa8 to 0xc2e1bff0)
+	bfa0:                   01ee42f0 01ee4208 01ee42f0 000041ed 00000000 00004000
+	bfc0: 01ee42f0 01ee4208 00000000 00000027 01ee4302 00000004 000dcb00 01ee4190
+	bfe0: 000dc368 bed11924 0006d4b0 b6ebddfc
 
-[   16.047769]  Possible unsafe locking scenario:
+Here the kworker is waiting on msdos_sb_info::s_lock which is held by
+tar which is in turn waiting for a buffer which is locked waiting to be
+flushed, but this operation is plugged in the kworker.
 
-[   16.063942]        CPU0                    CPU1
-[   16.075166]        ----                    ----
-[   16.086376]   lock(&mtk_subdev->channels_lock);
-[   16.097592]                                lock(&scp->ipi_desc[i].lock);
-[   16.113188]                                lock(&mtk_subdev->channels_lock);
-[   16.129482]   lock(&scp->ipi_desc[i].lock);
-[   16.140020]
-[]                *** DEADLOCK ***
+The lock is a normal struct mutex, so tsk_is_pi_blocked() will always
+return false on !RT and thus the behaviour changes for RT.
 
-[   16.158282] 4 locks held by kworker/0:3/155:
-[   16.168978]  #0: ffff5b4d00008748 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
-[   16.190017]  #1: ffff80000953bdc8 ((work_completion)(&mtk_subdev->register_work)){+.+.}-{0:0}, at: process_one_work+0x1fc/0x664
-[   16.215269]  #2: ffff5b4d0e8f1918 (&mtk_subdev->channels_lock){+.+.}-{4:4}, at: mtk_register_device_work_function+0x50/0x1cc [mtk_rpmsg]
-[   16.242131]  #3: ffff5b4d05964190 (&dev->mutex){....}-{4:4}, at: __device_attach+0x44/0x190
+It seems that the intent here is to skip blk_flush_plug() in the case
+where a non-preemptible lock (such as a spinlock) has been converted to
+a rtmutex on RT, which is the case covered by the SM_RTLOCK_WAIT
+schedule flag.  But sched_submit_work() is only called from schedule()
+which is never called in this scenario, so the check can simply be
+deleted.
 
-To solve this, simply unlock the channels_lock mutex before calling
-mtk_rpmsg_register_device() and relock it right after, as safety is
-still ensured by the locking mechanism that happens right after
-through SCP.
+Looking at the history of the -rt patchset, in fact this change was
+present from v5.9.1-rt20 until being dropped in v5.13-rt1 as it was part
+of a larger patch [1] most of which was replaced by commit b4bfa3fcfe3b
+("sched/core: Rework the __schedule() preempt argument").
 
-Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220525091201.14210-1-angelogioacchino.delregno@collabora.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+As described in [1]:
+
+   The schedule process must distinguish between blocking on a regular
+   sleeping lock (rwsem and mutex) and a RT-only sleeping lock (spinlock
+   and rwlock):
+   - rwsem and mutex must flush block requests (blk_schedule_flush_plug())
+     even if blocked on a lock. This can not deadlock because this also
+     happens for non-RT.
+     There should be a warning if the scheduling point is within a RCU read
+     section.
+
+   - spinlock and rwlock must not flush block requests. This will deadlock
+     if the callback attempts to acquire a lock which is already acquired.
+     Similarly to being preempted, there should be no warning if the
+     scheduling point is within a RCU read section.
+
+and with the tsk_is_pi_blocked() in the scheduler path, we hit the first
+issue.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tree/patches/0022-locking-rtmutex-Use-custom-scheduling-function-for-s.patch?h=linux-5.10.y-rt-patches
+
+Signed-off-by: John Keeping <john@metanate.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lkml.kernel.org/r/20220708162702.1758865-1-john@metanate.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/mtk_rpmsg.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/sched/rt.h | 8 --------
+ kernel/sched/core.c      | 8 ++++++--
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
-index 5b4404b8be4c..d1213c33da20 100644
---- a/drivers/rpmsg/mtk_rpmsg.c
-+++ b/drivers/rpmsg/mtk_rpmsg.c
-@@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
- 		if (info->registered)
- 			continue;
+diff --git a/include/linux/sched/rt.h b/include/linux/sched/rt.h
+index e5af028c08b4..994c25640e15 100644
+--- a/include/linux/sched/rt.h
++++ b/include/linux/sched/rt.h
+@@ -39,20 +39,12 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
+ }
+ extern void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task);
+ extern void rt_mutex_adjust_pi(struct task_struct *p);
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return tsk->pi_blocked_on != NULL;
+-}
+ #else
+ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+ {
+ 	return NULL;
+ }
+ # define rt_mutex_adjust_pi(p)		do { } while (0)
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return false;
+-}
+ #endif
  
-+		mutex_unlock(&subdev->channels_lock);
- 		ret = mtk_rpmsg_register_device(subdev, &info->info);
-+		mutex_lock(&subdev->channels_lock);
- 		if (ret) {
- 			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
- 			continue;
+ extern void normalize_rt_tasks(void);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index da0bf6fe9ecd..410b04decb90 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6500,8 +6500,12 @@ static inline void sched_submit_work(struct task_struct *tsk)
+ 			io_wq_worker_sleeping(tsk);
+ 	}
+ 
+-	if (tsk_is_pi_blocked(tsk))
+-		return;
++	/*
++	 * spinlock and rwlock must not flush block requests.  This will
++	 * deadlock if the callback attempts to acquire a lock which is
++	 * already acquired.
++	 */
++	SCHED_WARN_ON(current->__state & TASK_RTLOCK_WAIT);
+ 
+ 	/*
+ 	 * If we are going to sleep and we have plugged IO queued,
 -- 
 2.35.1
 
