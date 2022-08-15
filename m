@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E21C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1E4C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244441AbiHOVKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        id S245317AbiHOVLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346820AbiHOVGX (ORCPT
+        with ESMTP id S1347476AbiHOVG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:06:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FFE2AEC;
-        Mon, 15 Aug 2022 12:15:26 -0700 (PDT)
+        Mon, 15 Aug 2022 17:06:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900918382;
+        Mon, 15 Aug 2022 12:15:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47075B8107A;
-        Mon, 15 Aug 2022 19:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A772C433D6;
-        Mon, 15 Aug 2022 19:15:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8AAD2CE1087;
+        Mon, 15 Aug 2022 19:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF4FC433D7;
+        Mon, 15 Aug 2022 19:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590924;
-        bh=9Cmphg+rx262SI8Ahg+JADKSt7EMD8oH9zs/LQ7ULPw=;
+        s=korg; t=1660590932;
+        bh=VAXuy6qTweqSeZ0LUKOMiZxh54lrf8iikegCxcOJiFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ci0NVS3ZIqeLCXsuWGKNYIQmJCTSnYkXa6HuzdTBol1G2MnKYIeawzotyAqC+peo9
-         0Hqb7Y64ZVtgAN40XQxeOqxR9hCcO/s9ejFyRzE77oKSnGUA22GV448UpGcfaVkmUV
-         eMsVsxPZTdvxcAGOXwPqSwOXmcolOHYZwV44vB3Q=
+        b=M28j4xp9SPc96pMY7IJJDsA55IuUv0bZDTn1gF0GR3FbigyDcHU+4NdlFx7ENfRH2
+         Vrp+8yYphaAowB34OdaN5nJ8+XHMvr3pufQHYNt0dzrgnCIFbBA1xlI5nVyestEPGh
+         RjcjunVoE9WE+5HptYT7nDIOA70HF4Rl4OqEEmVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0397/1095] drm/vc4: hdmi: Move HDMI reset to pm_resume
-Date:   Mon, 15 Aug 2022 19:56:36 +0200
-Message-Id: <20220815180446.110033761@linuxfoundation.org>
+Subject: [PATCH 5.18 0417/1095] hinic: Use the bitmap API when applicable
+Date:   Mon, 15 Aug 2022 19:56:56 +0200
+Message-Id: <20220815180446.954268316@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,126 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 467e30171b5b483922b1c24c573fa50787207cb6 ]
+[ Upstream commit 7c2c57263af41cfd8b5022274e6801542831bb69 ]
 
-The BCM2835-37 found in the RaspberryPi 0 to 3 have a power domain
-attached to the HDMI block, handled in Linux through runtime_pm.
+'vlan_bitmap' is a bitmap and is used as such. So allocate it with
+devm_bitmap_zalloc() and its explicit bit size (i.e. VLAN_N_VID).
 
-That power domain is shared with the VEC block, so even if we put our
-runtime_pm reference in the HDMI driver it would keep being on. If the
-VEC is disabled though, the power domain would be disabled and we would
-lose any initialization done in our bind implementation.
+This avoids the need of the VLAN_BITMAP_SIZE macro which:
+   - needlessly has a 'nic_dev' parameter
+   - should be "long" (and not byte) aligned, so that the bitmap semantic
+     is respected
 
-That initialization involves calling the reset function and initializing
-the CEC registers.
+This is in fact not an issue because VLAN_N_VID is 4096 at the time
+being, but devm_bitmap_zalloc() is less verbose and easier to understand.
 
-Let's move the initialization to our runtime_resume implementation so
-that we initialize everything properly if we ever need to.
-
-Fixes: c86b41214362 ("drm/vc4: hdmi: Move the HSM clock enable to runtime_pm")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-24-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/6ff7b7d21414240794a77dc2456914412718a145.1656260842.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 41 ++++++++++++++++++----------------
- 1 file changed, 22 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 452b3214fd09..55a965120a77 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2214,8 +2214,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
- 	struct cec_connector_info conn_info;
- 	struct platform_device *pdev = vc4_hdmi->pdev;
- 	struct device *dev = &pdev->dev;
--	unsigned long flags;
--	u32 value;
- 	int ret;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 05329292d940..56a89793f47d 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -62,8 +62,6 @@ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
  
- 	if (!of_find_property(dev->of_node, "interrupts", NULL)) {
-@@ -2234,15 +2232,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
- 	cec_fill_conn_info_from_drm(&conn_info, &vc4_hdmi->connector);
- 	cec_s_conn_info(vc4_hdmi->cec_adap, &conn_info);
+ #define HINIC_LRO_RX_TIMER_DEFAULT	16
  
--	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
--	value = HDMI_READ(HDMI_CEC_CNTRL_1);
--	/* Set the logical address to Unregistered */
--	value |= VC4_HDMI_CEC_ADDR_MASK;
--	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
--	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
+-#define VLAN_BITMAP_SIZE(nic_dev)       (ALIGN(VLAN_N_VID, 8) / 8)
 -
--	vc4_hdmi_cec_update_clk_div(vc4_hdmi);
--
- 	if (vc4_hdmi->variant->external_irq_controller) {
- 		ret = request_threaded_irq(platform_get_irq_byname(pdev, "cec-rx"),
- 					   vc4_cec_irq_handler_rx_bare,
-@@ -2258,10 +2247,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
- 		if (ret)
- 			goto err_remove_cec_rx_handler;
- 	} else {
--		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
--		HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, 0xffffffff);
--		spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
--
- 		ret = request_threaded_irq(platform_get_irq(pdev, 0),
- 					   vc4_cec_irq_handler,
- 					   vc4_cec_irq_handler_thread, 0,
-@@ -2312,7 +2297,6 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
- }
+ #define work_to_rx_mode_work(work)      \
+ 		container_of(work, struct hinic_rx_mode_work, work)
  
- static void vc4_hdmi_cec_exit(struct vc4_hdmi *vc4_hdmi) {};
--
- #endif
+@@ -1242,9 +1240,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	u64_stats_init(&tx_stats->syncp);
+ 	u64_stats_init(&rx_stats->syncp);
  
- static int vc4_hdmi_build_regset(struct vc4_hdmi *vc4_hdmi,
-@@ -2541,12 +2525,34 @@ static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
- static int vc4_hdmi_runtime_resume(struct device *dev)
- {
- 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
-+	unsigned long __maybe_unused flags;
-+	u32 __maybe_unused value;
- 	int ret;
- 
- 	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
- 	if (ret)
- 		return ret;
- 
-+	if (vc4_hdmi->variant->reset)
-+		vc4_hdmi->variant->reset(vc4_hdmi);
-+
-+#ifdef CONFIG_DRM_VC4_HDMI_CEC
-+	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
-+	value = HDMI_READ(HDMI_CEC_CNTRL_1);
-+	/* Set the logical address to Unregistered */
-+	value |= VC4_HDMI_CEC_ADDR_MASK;
-+	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
-+	spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
-+
-+	vc4_hdmi_cec_update_clk_div(vc4_hdmi);
-+
-+	if (!vc4_hdmi->variant->external_irq_controller) {
-+		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
-+		HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, 0xffffffff);
-+		spin_unlock_irqrestore(&vc4_hdmi->hw_lock, flags);
-+	}
-+#endif
-+
- 	return 0;
- }
- 
-@@ -2649,9 +2655,6 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- 	pm_runtime_set_active(dev);
- 	pm_runtime_enable(dev);
- 
--	if (vc4_hdmi->variant->reset)
--		vc4_hdmi->variant->reset(vc4_hdmi);
--
- 	if ((of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi0") ||
- 	     of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi1")) &&
- 	    HDMI_READ(HDMI_VID_CTL) & VC4_HD_VID_CTL_ENABLE) {
+-	nic_dev->vlan_bitmap = devm_kzalloc(&pdev->dev,
+-					    VLAN_BITMAP_SIZE(nic_dev),
+-					    GFP_KERNEL);
++	nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
++						  GFP_KERNEL);
+ 	if (!nic_dev->vlan_bitmap) {
+ 		err = -ENOMEM;
+ 		goto err_vlan_bitmap;
 -- 
 2.35.1
 
