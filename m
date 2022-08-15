@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE01C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E9DC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354209AbiHOXn4 (ORCPT
+        id S1354234AbiHOXoA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32900 "EHLO
+        Mon, 15 Aug 2022 19:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354126AbiHOXl0 (ORCPT
+        with ESMTP id S1354141AbiHOXl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617C0B8A51;
-        Mon, 15 Aug 2022 13:10:42 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D66128EE4;
+        Mon, 15 Aug 2022 13:10:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F33B260025;
-        Mon, 15 Aug 2022 20:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ADE0C433D6;
-        Mon, 15 Aug 2022 20:10:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96026B80EAD;
+        Mon, 15 Aug 2022 20:10:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DD2C433D6;
+        Mon, 15 Aug 2022 20:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594241;
-        bh=wrdV1fXSBKWOJtHJ7kC8djl55hFYUK2qDMkSXC92H5I=;
+        s=korg; t=1660594244;
+        bh=2OjajXMonsA43H6MGn0Yk7kn041C0Uia5PRSs490OSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kra0gckRklY9r7iD3KaeTZKDmLJqQ5njHdp24jb08Ex1v4l8m9YrOB4fNZhFbMfKy
-         fzI4/sszj7I2mci5nFzQCms6BOJ6FB5S6hcHjti7MrZeSCYnSBKOJ0G8d0+HZ466Cy
-         MV4SygCs3XEU4qWg/+tp6JFS90n91CPj9TCyZnTQ=
+        b=T8aT9XYN4ViCtPQZc+KFB6qZS+K9zYtAZ3BoHkI4p648wbvfKl7yKQJ7UchxNm/nh
+         ntVehBpoF8cd0uOjMVYEgMDp2HeeaYbxCLFqIcWrk34e5DwyddNBQDkUme6n5cR4gP
+         QPZYQJlPzyLm9Musas8okk/65gUnKpwlSgE8iUVs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 1077/1095] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Mon, 15 Aug 2022 20:07:56 +0200
-Message-Id: <20220815180513.603052216@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0400/1157] media: sta2x11: remove VIRT_TO_BUS dependency
+Date:   Mon, 15 Aug 2022 19:55:56 +0200
+Message-Id: <20220815180455.676500630@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
+[ Upstream commit a157802359f7451ed8046b2b6dbaca187797e062 ]
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+This driver does not use the virt_to_bus() function, though it
+depends on x86 specific fixups in the swiotlb code, which was
+last rewritten in commit e380a0394c36 ("x86/PCI: sta2x11: use
+default DMA address translation").
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
+It is possible that the driver still fails to build on some
+architectures that are missing CONFIG_VIRT_TO_BUS, but it is
+always set on x86 machines with the STA2X11 platform enabled.
 
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+More likely though is that it was never meant to depend on
+CONFIG_VIRT_TO_BUS, and the Kconfig dependency was kept from
+an out-of-tree version when the driver was originally merged.
+
+Fixes: efeb98b4e2b2 ("[media] STA2X11 VIP: new V4L2 driver")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/media/pci/sta2x11/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3367,11 +3367,12 @@ void tcp_xmit_retransmit_queue(struct so
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
- {
--	int amt;
-+	int delta, amt;
- 
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
- 	sk_memory_allocated_add(sk, amt);
- 
+diff --git a/drivers/media/pci/sta2x11/Kconfig b/drivers/media/pci/sta2x11/Kconfig
+index a96e170ab04e..118b922c08c3 100644
+--- a/drivers/media/pci/sta2x11/Kconfig
++++ b/drivers/media/pci/sta2x11/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config STA2X11_VIP
+ 	tristate "STA2X11 VIP Video For Linux"
+-	depends on PCI && VIDEO_DEV && VIRT_TO_BUS && I2C
++	depends on PCI && VIDEO_DEV && I2C
+ 	depends on STA2X11 || COMPILE_TEST
+ 	select GPIOLIB if MEDIA_SUBDRV_AUTOSELECT
+ 	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
+-- 
+2.35.1
+
 
 
