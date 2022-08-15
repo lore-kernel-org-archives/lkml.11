@@ -2,82 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1174FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C2FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiHORaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
+        id S231268AbiHORea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiHORaH (ORCPT
+        with ESMTP id S229475AbiHORe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:30:07 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D6F10FE0;
-        Mon, 15 Aug 2022 10:30:06 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id 17so6907817plj.10;
-        Mon, 15 Aug 2022 10:30:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=F0hCBcrwh8QkXDe6xrNwIb9T4L2AxzqLMvkfnlDeEVA=;
-        b=WghDQPv2e+/ZQECJxdKOFSv8PuR9eM4UDstNVw2Jss0pSIeC7ULV/S58XTOsbZTd93
-         o0WaxxrLJh53Bfj3GBFf6CEjKuDkRecNlLJoAc36gni8XgpTxfmRhfsnnb2AC1o95Uid
-         h4JNKdf8j9XcrlN2qly/VqxmzsifhMRRShxwpEMTeHe+/m3XSOeXNHhGX1Ud3d+yFZTk
-         YzHniPfiBTICkOmXHWx5fmQGuAS67c75+hlzOtWmjKmCPJbeaHfQdh3Uhw6hCT+ZHS4s
-         QiE1pNUwS7QOzVobAoeMfdtRR+c1RNVZpdsRt+sm9BmRj+QKFCkM8p87eIXDweTMeJ0/
-         EoAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=F0hCBcrwh8QkXDe6xrNwIb9T4L2AxzqLMvkfnlDeEVA=;
-        b=3KEZvlszcQOW8vAFPfILVBw6NmMtwpkRlbjezKIEcWgoQn6kZbdGjZvAgxkY2NoXag
-         e9BdA6rZ9rBQDU8PhjrodbwfFcAnQCoY3N90wbWhm8auMoLdJTsmij8zE6YTChI460ec
-         F+L4t7JwWWPVXB+5GqCAIU0zgXE1A224Pbn8GKfs7iNM5WTVvFRoK4L1WYk7ZOBqwrTF
-         XU5UzLXiXco+iN3CsDZfyy/tHecefQCXRkfCD+2V10Z4ppGzg6qgRv2oWjJ+bIlSYuyG
-         e7ePt2di+CSo6R6BlXbdSue2egQEV/xN2WdaJJ0bmvKjD+2iW+es+//inEgweBTV7a2D
-         96HQ==
-X-Gm-Message-State: ACgBeo0dj5bnknEVmvegjLTvt0YuOa0QKgYJWJCcadqTrmZCvRKY8SYa
-        x3mDyNn8cPeB70HARh5BC/qZhv2wfi8=
-X-Google-Smtp-Source: AA6agR6F0vIW0KBSJjTs3GzGC3tSc5bnsZJBUjG+nATrNDkJpjv7sg7wdeMs1+faN2Y7CtDf3N4Hkg==
-X-Received: by 2002:a17:903:24e:b0:172:6c9d:14e0 with SMTP id j14-20020a170903024e00b001726c9d14e0mr6884114plh.84.1660584606237;
-        Mon, 15 Aug 2022 10:30:06 -0700 (PDT)
-Received: from 9a2d8922b8f1 ([122.161.52.254])
-        by smtp.gmail.com with ESMTPSA id dw3-20020a17090b094300b001f312e7665asm4742099pjb.47.2022.08.15.10.30.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 10:30:05 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 23:00:00 +0530
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] ARM: dts: integratorap: Update spi node properties
-Message-ID: <20220815173000.GA45630@9a2d8922b8f1>
-References: <20220312113853.63446-1-singh.kuldeep87k@gmail.com>
- <20220312113853.63446-2-singh.kuldeep87k@gmail.com>
- <CACRpkdafQ4G=a1E=G6GK3W2zAD4Nh96GiQiYbYkn4ctVu3c04w@mail.gmail.com>
- <CAL_JsqJ2p+4R=-HcKJ=UdXFcATrZgwwpfRnJES+-bHxRohorHA@mail.gmail.com>
+        Mon, 15 Aug 2022 13:34:27 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63EF24098
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:34:26 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 355FB3200978;
+        Mon, 15 Aug 2022 13:34:24 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 15 Aug 2022 13:34:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660584863; x=1660671263; bh=s8
+        F5Li3vLXtiHsgPNRcWkpFl7ut43BURsDBMgZOTsU8=; b=DHsHchmeMXQCRyU3aM
+        jlgJK7s49Lft57hqXe0uWIZHN/kg1Ax2mynbSaBkHuCzuZ4xEYU0flcw3CpQblID
+        0jaqwrjiTD5mhBczkgm00mg9sLvqAkYalWHtYfOnU3JalKNldaYzMjiJ/JgH1jy1
+        npa9ANx3eL37kYoY/29vdqecJ1eUA4562ZNAGeLCkFjfe5wRJXW6++eG6Hz+Rooi
+        J4zRs/tOOoFEcX1nZlyprspioJMVf5wSYnS/7ud56zYegS61KINMBoV239zGQxMu
+        eHWvgU0pifa41kNe8XFnHKdswe9zLRqM80R+HRP4iKKiFhXtcvFF0hLVvgyytQRM
+        P1GQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660584863; x=1660671263; bh=s8F5Li3vLXtiHsgPNRcWkpFl7ut4
+        3BURsDBMgZOTsU8=; b=bp4pJT2YbiY6d4r7eCyBP33QhuR3vchYjmgT1pFZI5/G
+        t0PuyUkiSpSroZQNlN516Sh8RdI29lBLDAQ+Go4Yz5MI1YLoUK0xyvapX2aQofHJ
+        RVAyPsWRq1z6E8O18hstgsV9k1mWwq1d4XjtzHZX9RTijjqGzpSHLfwoHkHqo6Sy
+        wskaCoWTxDnO5iTunxMEKxCiem17W42rkPUfUox11vIdy7aiXfbjhdNQSH07tzZU
+        +O0OOVnFXjuY6Cc9bL6H2DpC78vNSGRGX5h57oA9RkUdiYOn/3TsC7eQ7Fuc59zv
+        uMBF0WPAreIXTqNBg4kEWx9mxhpcAgyGUSWHMowVBg==
+X-ME-Sender: <xms:n4P6YhPyL_8xwu5wRGTzrwWZRXpA5wziWtc4u-1UzQQoCzM8uwVrAg>
+    <xme:n4P6Yj9AYaZ0FeJmgGrItKHM78wn3pRzJ9Hp5Gv9tCwbdjO1duhPYINTMv2HEOYbe
+    SUecB1DPjTxo9zJGyg>
+X-ME-Received: <xmr:n4P6YgRNlQpjWqmIRziFRjQ-lgwUNi0rzNmyUHNMx6_hT8ITjv5kyqDAYlLv31Flbz72xw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudduhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttddttddttddvnecuhfhrohhmpedfmfhi
+    rhhilhhlucetrdcuufhhuhhtvghmohhvfdcuoehkihhrihhllhesshhhuhhtvghmohhvrd
+    hnrghmvgeqnecuggftrfgrthhtvghrnhephfeigefhtdefhedtfedthefghedutddvueeh
+    tedttdehjeeukeejgeeuiedvkedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgv
+X-ME-Proxy: <xmx:n4P6YtvOVmHz46Casle9b3B6OpQUux3mrg0y7SRGk1A2o15lUvXnBw>
+    <xmx:n4P6YpeZ9kdvBoKAnJPVRTgkYX6kqY3EkAXYZnB-HOdrlcqYjL-46Q>
+    <xmx:n4P6Yp2rFzyW_Jdje4JUPbcgYq20eagXHpsYw_51gBmLAd2yQzsetg>
+    <xmx:n4P6Yk2Ye5ipPffW6UIIV1B8CRiQ-ZlTaHWLBbYGaeyd5ePzrgpveQ>
+Feedback-ID: ie3994620:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 13:34:22 -0400 (EDT)
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 0F94E104A4B; Mon, 15 Aug 2022 20:37:25 +0300 (+03)
+Date:   Mon, 15 Aug 2022 20:37:25 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv6 04/11] x86/mm: Handle LAM on context switch
+Message-ID: <20220815173725.ph6ogtqneiqwqek7@box.shutemov.name>
+References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+ <20220815041803.17954-5-kirill.shutemov@linux.intel.com>
+ <YvpNQSEtu+Tbqrpd@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqJ2p+4R=-HcKJ=UdXFcATrZgwwpfRnJES+-bHxRohorHA@mail.gmail.com>
+In-Reply-To: <YvpNQSEtu+Tbqrpd@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > This and patches 2, 3/4 applied to the versatile DTS branch.
+On Mon, Aug 15, 2022 at 03:42:25PM +0200, Peter Zijlstra wrote:
+> On Mon, Aug 15, 2022 at 07:17:56AM +0300, Kirill A. Shutemov wrote:
+> > diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+> > index c1e31e9a85d7..fdc0b69b5da7 100644
+> > --- a/arch/x86/mm/tlb.c
+> > +++ b/arch/x86/mm/tlb.c
+> > @@ -154,17 +154,18 @@ static inline u16 user_pcid(u16 asid)
+> >  	return ret;
+> >  }
+> >  
+> > -static inline unsigned long build_cr3(pgd_t *pgd, u16 asid)
+> > +static inline unsigned long build_cr3(pgd_t *pgd, u16 asid, unsigned long lam)
+> >  {
+> >  	if (static_cpu_has(X86_FEATURE_PCID)) {
+> > -		return __sme_pa(pgd) | kern_pcid(asid);
+> > +		return __sme_pa(pgd) | kern_pcid(asid) | lam;
+> >  	} else {
+> >  		VM_WARN_ON_ONCE(asid != 0);
+> > -		return __sme_pa(pgd);
+> > +		return __sme_pa(pgd) | lam;
+> >  	}
+> >  }
+> >  
+> > -static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid)
+> > +static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid,
+> > +					      unsigned long lam)
+> >  {
+> >  	VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
+> >  	/*
+> > @@ -173,7 +174,7 @@ static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid)
+> >  	 * boot because all CPU's the have same capabilities:
+> >  	 */
+> >  	VM_WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_PCID));
+> > -	return __sme_pa(pgd) | kern_pcid(asid) | CR3_NOFLUSH;
+> > +	return __sme_pa(pgd) | kern_pcid(asid) | lam | CR3_NOFLUSH;
+> >  }
 > 
-> What happened to this?
+> Looking at this; I wonder if we want something like this:
+> 
+> --- a/arch/x86/mm/tlb.c
+> +++ b/arch/x86/mm/tlb.c
+> @@ -157,6 +157,7 @@ static inline u16 user_pcid(u16 asid)
+>  static inline unsigned long build_cr3(pgd_t *pgd, u16 asid, unsigned long lam)
+>  {
+>  	if (static_cpu_has(X86_FEATURE_PCID)) {
+> +		VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
+>  		return __sme_pa(pgd) | kern_pcid(asid) | lam;
+>  	} else {
+>  		VM_WARN_ON_ONCE(asid != 0);
+> @@ -167,14 +168,13 @@ static inline unsigned long build_cr3(pg
+>  static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid,
+>  					      unsigned long lam)
+>  {
+> -	VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
+>  	/*
+>  	 * Use boot_cpu_has() instead of this_cpu_has() as this function
+>  	 * might be called during early boot. This should work even after
+>  	 * boot because all CPU's the have same capabilities:
+>  	 */
+>  	VM_WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_PCID));
+> -	return __sme_pa(pgd) | kern_pcid(asid) | lam | CR3_NOFLUSH;
+> +	return build_cr3(pgd, asid, lam) | CR3_NOFLUSH;
+>  }
 
-Thanks Rob for pointing this out, I lost track for these changes.
-I just noticed Linus applied ste-dbx change only and skipped others(integrator,
-realview, versatile).
+Looks sane, but seems unrelated to the patch. Is it okay to fold it
+anyway?
 
-These patches fix clock-name as per pl022 binding which causes no harm.
-Linus, Any reason to skip others?
-
-Regards
-Kuldeep
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
