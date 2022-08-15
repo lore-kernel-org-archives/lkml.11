@@ -2,104 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8A6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8479C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbiHOHcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        id S240586AbiHOHdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiHOHcS (ORCPT
+        with ESMTP id S229775AbiHOHdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:32:18 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D334618B0A
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:32:16 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id tl27so12198634ejc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:32:16 -0700 (PDT)
+        Mon, 15 Aug 2022 03:33:21 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BAA183AD
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:33:20 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id gj1so6315778pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:33:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=WJLEPHsAZp8U37aoOrddvhy4zTgTsBLms1gLLOoidx8=;
-        b=Apiwg8lXWfx0PuHphZbC+0CSw/jecCBMO4b4h6hmcINbjWREv2rl1SeXAn7r5NEZN6
-         BCxZfoOq0tp+FSVLcgR3MYKwJIEi/l9BfvdCuAib3La4b5VBblthG2Lj2q3O8wMlbvBI
-         oJANIx421UuLYpOSwIMHsynvxi9Cm2EJNUDIIG5JnvF1HjGUJ9keBoofJgEeNWmS1SDy
-         VZxC3zCdqrMwgVM/U4J1vf8M3KFgNGdrJCVK94XY/tdLJcrBE+rkLhdn1PY8XSJ31ukI
-         vw4pcSW7DYwX7PNmhDvQvlMUSrscDHBTibnECxoWwdk7RbsserN0v8OXSXVX2UmcEkjm
-         Bt0w==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=cKbaTTFL2IC8He8O8jud48JZ4f+oP72hz9bddVAZhgk=;
+        b=kTytc0xv5Fr3mYRJ2r1UtrYF8SSwlNsxLirYL1oPuslZgJULKU4nXNp3v4peq5MNZR
+         dU1wmbW/g2jE4TMIdO9tK9LecaSJ5/H/a/UhdPi45kHihLmepbwz0LWm3DZgbPWqZntT
+         YaYNjPFeZ6TEANS1v4Eb7/ujfw6oRBfOuFlHvpZO1FDav9BsZxaCgw5cM17TyQstSVWk
+         1NtVq2SPMiiRD3+iVYyt/2UmfsHslPrvXbnwYvbRRqiVWvCRbcibcV35ATUcnHBM/fgb
+         QQCdxjzRFoWIliaFHSaEOqzbm3JrA4hZHDhQAwRkfe2ncSms70ePlbLWvrXDaLhJnaVi
+         S/jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=WJLEPHsAZp8U37aoOrddvhy4zTgTsBLms1gLLOoidx8=;
-        b=cI8sEPnZrhELl7wxiPg/L0N3xQO8IImT6yiGYzzPMgIdj1PfwU9u4dxIoK5RwXXHGF
-         CEqWK9viIk3PyF5LiWDXqtfWkeu690UtOaXkrV9HUyhrbrc66DCbMe7dvjuPEdo8Mmdi
-         ohIgU0tfGEJJW1K5G0xIkV5NqBLD3gAKbw0qnyMbfq9D20qypvsVKWRgVuVh0YydOlW3
-         GT2jJT2Xpr0iB+wZBHrGjBFL8dEtHyzYmb8w3xmfa6Mb98+sq1ZqjZf/rgGxYwrLaxBI
-         PHbfRohJR908nx8VSy6oxdQIpM2zMNPmZFGkL3noH1Q5XHuDrJAtodbJC8sHkWPDBeFs
-         oY7Q==
-X-Gm-Message-State: ACgBeo03fkpxRg9jxY34W5E3cKCcBDl9lHsGEhlmZmR3cbi2Ig43hkpd
-        Njg9YECjhcysaqqyrpQDwpx6Nw==
-X-Google-Smtp-Source: AA6agR5aKYPCzgLDNmCoxSU0zm6D7mFfVrKEn7+YQ7XB5w7ebixaOlegmzsNAq3fiAoaNyIoRR2CNA==
-X-Received: by 2002:a17:907:1ca8:b0:730:871e:498c with SMTP id nb40-20020a1709071ca800b00730871e498cmr9570990ejc.651.1660548735151;
-        Mon, 15 Aug 2022 00:32:15 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id bt2-20020a0564020a4200b0043d1eff72b3sm6206029edb.74.2022.08.15.00.32.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 00:32:14 -0700 (PDT)
-Message-ID: <94ab0304-a674-3504-c1bd-3492e2ded0b1@blackwall.org>
-Date:   Mon, 15 Aug 2022 10:32:13 +0300
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=cKbaTTFL2IC8He8O8jud48JZ4f+oP72hz9bddVAZhgk=;
+        b=c/CxFiFj5z4By7XLIevt4PZ5l0cvZCP2ny7s7j+EWtvNcz5Sj33TZz0vfScMeKKtd5
+         B/esC9+1v27xMi0nc2XcGymz0BR3CLnSqJuwzZ/AoJOf5ZbrsQdAkG0NZX1clVGJpZu8
+         5zhHuSMj+n9VjMdONecLrG0w5tWrkT/YaEQbo/jIf0Q8sCAATQV92lqItZ2df7kqqwLc
+         valtStnClIIeAebIVce1L2lvqxIFPR2xiAsGfy7Z5NLMMdsjOW9BNiAsZ2GQ4TZCREjY
+         zg/WWGZClMk0zaJp3NuvQ8rX6GWFXqbH7gpzGSLwLYmIm9NypeVGlox607RjLJCWDBZ3
+         W1vw==
+X-Gm-Message-State: ACgBeo33ZLq22zxK3nWeXvtq8e6LHlPmIT5GokvuQzUZp9wEytLbRpvG
+        d47DomEqDxr2xwGuLnaG42U=
+X-Google-Smtp-Source: AA6agR6Qq9TPjqwFTh+pRvFKiRSSih2opS5+KjoOgU9ST1XfxSIASlvyd5EyhD6z/SoxgenWWJhFeQ==
+X-Received: by 2002:a17:90a:fb4b:b0:1f3:1cbb:8912 with SMTP id iq11-20020a17090afb4b00b001f31cbb8912mr26605895pjb.239.1660548799830;
+        Mon, 15 Aug 2022 00:33:19 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id w6-20020a1709029a8600b0016a33177d3csm6396537plp.160.2022.08.15.00.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 00:33:19 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yang.yang29@zte.com.cn
+To:     akpm@linux-foundation.org, iamjoonsoo.kim@lge.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        CGEL ZTE <cgel.zte@gmail.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        wangyong <wang.yong12@zte.com.cn>
+Subject: [PATCH v2 2/2] mm/page_io: count submission time as thrashing delay for delayacct
+Date:   Mon, 15 Aug 2022 07:28:37 +0000
+Message-Id: <20220815072835.74876-1-yang.yang29@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next] net: rtnetlink: fix module reference count leak
- issue in rtnetlink_rcv_msg
-Content-Language: en-US
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     idosch@nvidia.com, petrm@nvidia.com, florent.fourcot@wifirst.fr,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
-References: <20220815024629.240367-1-shaozhengchao@huawei.com>
- <feff23c6-529c-3421-c48c-463846e59630@blackwall.org>
-In-Reply-To: <feff23c6-529c-3421-c48c-463846e59630@blackwall.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/08/2022 08:44, Nikolay Aleksandrov wrote:
-> On 15/08/2022 05:46, Zhengchao Shao wrote:
->> When bulk delete command is received in the rtnetlink_rcv_msg function,
->> if bulk delete is not supported, module_put is not called to release
->> the reference counting. As a result, module reference count is leaked.
->>
->> Fixes: a6cec0bcd342("net: rtnetlink: add bulk delete support flag")
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->>  net/core/rtnetlink.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->> index ac45328607f7..4b5b15c684ed 100644
->> --- a/net/core/rtnetlink.c
->> +++ b/net/core/rtnetlink.c
->> @@ -6070,6 +6070,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
->>  	if (kind == RTNL_KIND_DEL && (nlh->nlmsg_flags & NLM_F_BULK) &&
->>  	    !(flags & RTNL_FLAG_BULK_DEL_SUPPORTED)) {
->>  		NL_SET_ERR_MSG(extack, "Bulk delete is not supported");
->> +		module_put(owner);
->>  		goto err_unlock;
->>  	}
->>  
-> 
-> Oops, thanks.
-> Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+From: Yang Yang <yang.yang29@zte.com.cn>
 
-By the way I think this should be targeted at -net,
-I didn't notice the net-next tag earlier.
+Once upon a time, we only support accounting thrashing of page cache.
+Then Joonsoo introduced workingset detection for anonymous pages and
+we gained the ability to account thrashing of them[1].
+
+Likes PSI, we count submission time as thrashing delay because when
+the device is congested, or the submitting cgroup IO-throttled,
+submission can be a significant part of overall IO time.
+
+This patch is based on "delayacct: support re-entrance detection of
+thrashing accounting".
+
+[1] commit aae466b0052e ("mm/swap: implement workingset detection for anonymous LRU")
+
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
+Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Reviewed-by: wangyong <wang.yong12@zte.com.cn>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+---
+Change for v2:
+ - use bool in_thrashing instead of unsigned long dflags
+---
+ mm/page_io.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/mm/page_io.c b/mm/page_io.c
+index 68318134dc92..653a2adcfdd9 100644
+--- a/mm/page_io.c
++++ b/mm/page_io.c
+@@ -453,18 +453,21 @@ int swap_readpage(struct page *page, bool synchronous,
+ 	struct swap_info_struct *sis = page_swap_info(page);
+ 	bool workingset = PageWorkingset(page);
+ 	unsigned long pflags;
++	bool in_thrashing;
+ 
+ 	VM_BUG_ON_PAGE(!PageSwapCache(page) && !synchronous, page);
+ 	VM_BUG_ON_PAGE(!PageLocked(page), page);
+ 	VM_BUG_ON_PAGE(PageUptodate(page), page);
+ 
+ 	/*
+-	 * Count submission time as memory stall. When the device is congested,
+-	 * or the submitting cgroup IO-throttled, submission can be a
+-	 * significant part of overall IO time.
++	 * Count submission time as memory stall and delay. When the device
++	 * is congested, or the submitting cgroup IO-throttled, submission
++	 * can be a significant part of overall IO time.
+ 	 */
+-	if (workingset)
++	if (workingset) {
++		delayacct_thrashing_start(&in_thrashing);
+ 		psi_memstall_enter(&pflags);
++	}
+ 	delayacct_swapin_start();
+ 
+ 	if (frontswap_load(page) == 0) {
+@@ -513,8 +516,10 @@ int swap_readpage(struct page *page, bool synchronous,
+ 	bio_put(bio);
+ 
+ out:
+-	if (workingset)
++	if (workingset) {
++		delayacct_thrashing_end(&in_thrashing);
+ 		psi_memstall_leave(&pflags);
++	}
+ 	delayacct_swapin_end();
+ 	return ret;
+ }
+-- 
+2.25.1
+
