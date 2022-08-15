@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA21BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7F2C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244659AbiHPBFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S1345326AbiHPBFe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349582AbiHPA6d (ORCPT
+        with ESMTP id S1349635AbiHPA6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:58:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE411A2E81;
-        Mon, 15 Aug 2022 13:49:52 -0700 (PDT)
+        Mon, 15 Aug 2022 20:58:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616481A3917;
+        Mon, 15 Aug 2022 13:50:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35CF9B811B1;
-        Mon, 15 Aug 2022 20:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775C7C433C1;
-        Mon, 15 Aug 2022 20:49:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2BA8B811AE;
+        Mon, 15 Aug 2022 20:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B9CBC433C1;
+        Mon, 15 Aug 2022 20:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596587;
-        bh=FMs/sWj9WFMQUIEfGyLx6NRo6/tJlhfm8nDKhrM5/EY=;
+        s=korg; t=1660596597;
+        bh=dg9/iLNoP90yeUEWFEyZvSjml0J6j+qZ3W5XqIRkfYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WxH0GBtYKkbr60INSNGiWq1DIUjcO2ANO4Lq+3ImhlVPlIva0AksPxIxVBufGl818
-         JXI+5mDNHj6YycO9l+ZjZqJ8dFtLwaS0F1ZeOjGRj9fW6paexuSMOzq6SOeI9Bix3a
-         mUKOW4JfmdyH11ZOXYPVILPwU/YryeWNR3c46l50=
+        b=MEVq3MxpbSOO9FLygwO4rD7no4JOWeF/Za1zSw4t7Cbw82LSWuqVrMEki5Am66/ng
+         /L9sveX7IufrrowBiqER64PJThjL3jFR8OlhSvVvHdFBJom/n84c1xmGogE704tPtf
+         w8PLKHB4XePICWlFf2naB2zBpig0AFhf2v9PAHbk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1128/1157] ext4: unindent codeblock in ext4_xattr_block_set()
-Date:   Mon, 15 Aug 2022 20:08:04 +0200
-Message-Id: <20220815180525.497337396@linuxfoundation.org>
+        stable@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1131/1157] tpm: eventlog: Fix section mismatch for DEBUG_SECTION_MISMATCH
+Date:   Mon, 15 Aug 2022 20:08:07 +0200
+Message-Id: <20220815180525.638574282@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,123 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-[ Upstream commit fd48e9acdf26d0cbd80051de07d4a735d05d29b2 ]
+[ Upstream commit bed4593645366ad7362a3aa7bc0d100d8d8236a8 ]
 
-Remove unnecessary else (and thus indentation level) from a code block
-in ext4_xattr_block_set(). It will also make following code changes
-easier. No functional changes.
+If DEBUG_SECTION_MISMATCH enabled, __calc_tpm2_event_size() will not be
+inlined, this cause section mismatch like this:
 
-CC: stable@vger.kernel.org
-Fixes: 82939d7999df ("ext4: convert to mbcache2")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220712105436.32204-4-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+WARNING: modpost: vmlinux.o(.text.unlikely+0xe30c): Section mismatch in reference from the variable L0 to the function .init.text:early_ioremap()
+The function L0() references
+the function __init early_memremap().
+This is often because L0 lacks a __init
+annotation or the annotation of early_ioremap is wrong.
+
+Fix it by using __always_inline instead of inline for the called-once
+function __calc_tpm2_event_size().
+
+Fixes: 44038bc514a2 ("tpm: Abstract crypto agile event size calculations")
+Cc: stable@vger.kernel.org # v5.3
+Reported-by: WANG Xuerui <git@xen0n.name>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/xattr.c | 77 ++++++++++++++++++++++++-------------------------
- 1 file changed, 38 insertions(+), 39 deletions(-)
+ include/linux/tpm_eventlog.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
-index d92d50de5a01..a25942a74929 100644
---- a/fs/ext4/xattr.c
-+++ b/fs/ext4/xattr.c
-@@ -1850,6 +1850,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- #define header(x) ((struct ext4_xattr_header *)(x))
+diff --git a/include/linux/tpm_eventlog.h b/include/linux/tpm_eventlog.h
+index 739ba9a03ec1..20c0ff54b7a0 100644
+--- a/include/linux/tpm_eventlog.h
++++ b/include/linux/tpm_eventlog.h
+@@ -157,7 +157,7 @@ struct tcg_algorithm_info {
+  * Return: size of the event on success, 0 on failure
+  */
  
- 	if (s->base) {
-+		int offset = (char *)s->here - bs->bh->b_data;
-+
- 		BUFFER_TRACE(bs->bh, "get_write_access");
- 		error = ext4_journal_get_write_access(handle, sb, bs->bh,
- 						      EXT4_JTR_NONE);
-@@ -1882,49 +1884,46 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 			if (error)
- 				goto cleanup;
- 			goto inserted;
--		} else {
--			int offset = (char *)s->here - bs->bh->b_data;
-+		}
-+		unlock_buffer(bs->bh);
-+		ea_bdebug(bs->bh, "cloning");
-+		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
-+		error = -ENOMEM;
-+		if (s->base == NULL)
-+			goto cleanup;
-+		s->first = ENTRY(header(s->base)+1);
-+		header(s->base)->h_refcount = cpu_to_le32(1);
-+		s->here = ENTRY(s->base + offset);
-+		s->end = s->base + bs->bh->b_size;
- 
--			unlock_buffer(bs->bh);
--			ea_bdebug(bs->bh, "cloning");
--			s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
--			error = -ENOMEM;
--			if (s->base == NULL)
-+		/*
-+		 * If existing entry points to an xattr inode, we need
-+		 * to prevent ext4_xattr_set_entry() from decrementing
-+		 * ref count on it because the reference belongs to the
-+		 * original block. In this case, make the entry look
-+		 * like it has an empty value.
-+		 */
-+		if (!s->not_found && s->here->e_value_inum) {
-+			ea_ino = le32_to_cpu(s->here->e_value_inum);
-+			error = ext4_xattr_inode_iget(inode, ea_ino,
-+				      le32_to_cpu(s->here->e_hash),
-+				      &tmp_inode);
-+			if (error)
- 				goto cleanup;
--			s->first = ENTRY(header(s->base)+1);
--			header(s->base)->h_refcount = cpu_to_le32(1);
--			s->here = ENTRY(s->base + offset);
--			s->end = s->base + bs->bh->b_size;
- 
--			/*
--			 * If existing entry points to an xattr inode, we need
--			 * to prevent ext4_xattr_set_entry() from decrementing
--			 * ref count on it because the reference belongs to the
--			 * original block. In this case, make the entry look
--			 * like it has an empty value.
--			 */
--			if (!s->not_found && s->here->e_value_inum) {
--				ea_ino = le32_to_cpu(s->here->e_value_inum);
--				error = ext4_xattr_inode_iget(inode, ea_ino,
--					      le32_to_cpu(s->here->e_hash),
--					      &tmp_inode);
--				if (error)
--					goto cleanup;
--
--				if (!ext4_test_inode_state(tmp_inode,
--						EXT4_STATE_LUSTRE_EA_INODE)) {
--					/*
--					 * Defer quota free call for previous
--					 * inode until success is guaranteed.
--					 */
--					old_ea_inode_quota = le32_to_cpu(
--							s->here->e_value_size);
--				}
--				iput(tmp_inode);
--
--				s->here->e_value_inum = 0;
--				s->here->e_value_size = 0;
-+			if (!ext4_test_inode_state(tmp_inode,
-+					EXT4_STATE_LUSTRE_EA_INODE)) {
-+				/*
-+				 * Defer quota free call for previous
-+				 * inode until success is guaranteed.
-+				 */
-+				old_ea_inode_quota = le32_to_cpu(
-+						s->here->e_value_size);
- 			}
-+			iput(tmp_inode);
-+
-+			s->here->e_value_inum = 0;
-+			s->here->e_value_size = 0;
- 		}
- 	} else {
- 		/* Allocate a buffer where we construct the new block. */
+-static inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
++static __always_inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
+ 					 struct tcg_pcr_event *event_header,
+ 					 bool do_mapping)
+ {
 -- 
 2.35.1
 
