@@ -2,110 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B034BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89963C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244773AbiHPAgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        id S233673AbiHPAgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348778AbiHPAcY (ORCPT
+        with ESMTP id S244187AbiHPAcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:32:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C0E186EAC;
-        Mon, 15 Aug 2022 13:36:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1A34611D2;
-        Mon, 15 Aug 2022 20:36:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDE1C433D7;
-        Mon, 15 Aug 2022 20:36:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595817;
-        bh=ODX781OjagjZqRdZMPht02M+391MRlrl9iZmqo9YD4U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1bhdNSAJkF0WWVAVcVka9ci/VRIhD/bY/MCPW6J9CkRy/sZwPSw1K26h0LXlTM+DP
-         JGWWZzf7B0o2nvzB/6ZjJlxrJFeXC9dL27uzvMwOQYyJFBkJuhQG/O2sbSZCBZp27Y
-         fhIibtjLDYU6i8v7GtxN+k2d/PSNY0VsI6wvPXxI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0884/1157] block: ensure iov_iter advances for added pages
-Date:   Mon, 15 Aug 2022 20:04:00 +0200
-Message-Id: <20220815180514.793517975@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 20:32:52 -0400
+X-Greylist: delayed 432 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 13:37:00 PDT
+Received: from out.bound.email (out.bound.email [141.193.244.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374F9186EB4;
+        Mon, 15 Aug 2022 13:37:00 -0700 (PDT)
+Received: from mail.sventech.com (localhost [127.0.0.1])
+        by out.bound.email (Postfix) with ESMTP id 1F2328A03AB;
+        Mon, 15 Aug 2022 13:29:47 -0700 (PDT)
+Received: by mail.sventech.com (Postfix, from userid 1000)
+        id 059F816006D1; Mon, 15 Aug 2022 13:29:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=erdfelt.com;
+        s=default; t=1660595387;
+        bh=a9t+6RNGLlnq/PvQKr+rFvGqP5Pb1q0DuTGheD0/zTY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dYkfrHqepJQerEQIuDq4P7SEZV1DMCF+s+4mksMat5gFAN6UQimvgkVfBAuSiBBu0
+         u6mfqSMhuSCfVskrsMzd1XYGAbR870sR4R0FL/q80uFnXAhtkeNF59EqdFqYhg11iD
+         vqectqARZvf5DdIn1v6tyA0PApviOBu05QkbYJzU=
+Date:   Mon, 15 Aug 2022 13:29:46 -0700
+From:   Johannes Erdfelt <johannes@erdfelt.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, live-patching@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: ftrace regression with CONFIG_UNWINDER_FRAME_POINTER
+Message-ID: <20220815202946.GF3948@sventech.com>
+References: <20220815195828.GE3948@sventech.com>
+ <20220815160646.0dca7227@gandalf.local.home>
+ <YvqpnfM9ZdRO6oXa@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvqpnfM9ZdRO6oXa@zn.tnic>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+On Mon, Aug 15, 2022, Borislav Petkov <bp@alien8.de> wrote:
+> On Mon, Aug 15, 2022 at 04:06:46PM -0400, Steven Rostedt wrote:
+> > On Mon, 15 Aug 2022 12:58:28 -0700
+> > Johannes Erdfelt <johannes@erdfelt.com> wrote:
+> > 
+> > > I recently ran across an oops with ftrace when using the frame pointer
+> > > unwinder. It does not affect Linus' tree (tested 6.0-rc1), but it does
+> > > affect 5.15.60 and 5.10.136 (at least, have not tested other kernels).
+> > > 
+> > > It appears to be related to the recently merged retbleed mitigations,
+> > 
+> > If you believe this, then Cc those that are involved with those
+> > mitigations, which I did.
+> 
+> Sounds like this one:
+> 
+> https://lore.kernel.org/all/Yu2H%2FRdg%2FU4bHWaY@quatroqueijos/
 
-[ Upstream commit 325347d965e7ccf5424a05398807a6d801846612 ]
+Ahh, I missed this in my search to see if this was posted already.
 
-There are cases where a bio may not accept additional pages, and the iov
-needs to advance to the last data length that was accepted. The zone
-append used to handle this correctly, but was inadvertently broken when
-the setup was made common with the normal r/w case.
+The patch in that post appears to solve the oops I'm seeing (at least
+on top of 5.15.60).
 
-Fixes: 576ed9135489c ("block: use bio_add_page in bio_iov_iter_get_pages")
-Fixes: c58c0074c54c2 ("block/bio: remove duplicate append pages code")
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Link: https://lore.kernel.org/r/20220712153256.2202024-1-kbusch@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- block/bio.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/block/bio.c b/block/bio.c
-index ee5fe1bb015e..eb7cc591ee93 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1211,6 +1211,7 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
- 	ssize_t size, left;
- 	unsigned len, i;
- 	size_t offset;
-+	int ret = 0;
- 
- 	/*
- 	 * Move page array up in the allocated memory for the bio vecs as far as
-@@ -1226,7 +1227,6 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
- 
- 	for (left = size, i = 0; left > 0; left -= len, i++) {
- 		struct page *page = pages[i];
--		int ret;
- 
- 		len = min_t(size_t, PAGE_SIZE - offset, left);
- 		if (bio_op(bio) == REQ_OP_ZONE_APPEND)
-@@ -1237,13 +1237,13 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
- 
- 		if (ret) {
- 			bio_put_pages(pages + i, left, offset);
--			return ret;
-+			break;
- 		}
- 		offset = 0;
- 	}
- 
--	iov_iter_advance(iter, size);
--	return 0;
-+	iov_iter_advance(iter, size - left);
-+	return ret;
- }
- 
- /**
--- 
-2.35.1
-
-
+JE
 
