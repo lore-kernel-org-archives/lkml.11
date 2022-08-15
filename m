@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E39C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E87C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242208AbiHOS2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        id S242284AbiHOS23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242010AbiHOSZs (ORCPT
+        with ESMTP id S242854AbiHOS0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:25:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391672BEA;
-        Mon, 15 Aug 2022 11:18:55 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B697729CB8;
+        Mon, 15 Aug 2022 11:19:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74A76B81063;
-        Mon, 15 Aug 2022 18:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B3AC433C1;
-        Mon, 15 Aug 2022 18:18:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA6D060ED3;
+        Mon, 15 Aug 2022 18:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCEBCC433C1;
+        Mon, 15 Aug 2022 18:18:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587511;
-        bh=SSdxrt6SaLn3uYwefwPyPC+2wEBxa+Rwk3ncl4tY+FE=;
+        s=korg; t=1660587537;
+        bh=ZxWz0hJH7CGyQ5XHjdFME7AxasqVLcjVOdfkOBfdryI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IiK1fLZLKr6cL8FE8zKDHx2NMSJIrQiY/mxQnb3ffRbLvwW8IFFomWfEmVN8g0hSQ
-         ZIfsh9bx5GweVXBybcll8o8xAloUANgBKu5bD+DkjS8FJh4DKIT1+U0ATweVA4jD19
-         YWSZI5Su0CJHw9jzOesXAE4Y8+ksAwDg5zqDF2Uw=
+        b=UXpIh+U57DFlflcS/nwmKp5DRLmNxxd+PZjiqeOjMCHxNDArLHMqRkWfV4p1aO6No
+         DPrIaabi8I92v+S48d68k7dkAYbLATUPsq1+ACu0ESJBnCm+pj6j1dfPsd4IkXWsVW
+         goL9G/nWuAM1A/6QbxXwHW/iuW5ytikzYTO+6WrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 107/779] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
-Date:   Mon, 15 Aug 2022 19:55:51 +0200
-Message-Id: <20220815180341.897318476@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 115/779] arm64: kasan: Revert "arm64: mte: reset the page tag in page->flags"
+Date:   Mon, 15 Aug 2022 19:55:59 +0200
+Message-Id: <20220815180342.246608756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,66 +52,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
 
-commit 95f466d22364a33d183509629d0879885b4f547e upstream.
+[ Upstream commit 20794545c14692094a882d2221c251c4573e6adf ]
 
-When doing lookups for chains on the same batch by using its ID, a chain
-from a different table can be used. If a rule is added to a table but
-refers to a chain in a different table, it will be linked to the chain in
-table2, but would have expressions referring to objects in table1.
+This reverts commit e5b8d9218951e59df986f627ec93569a0d22149b.
 
-Then, when table1 is removed, the rule will not be removed as its linked to
-a chain in table2. When expressions in the rule are processed or removed,
-that will lead to a use-after-free.
+Pages mapped in user-space with PROT_MTE have the allocation tags either
+zeroed or copied/restored to some user values. In order for the kernel
+to access such pages via page_address(), resetting the tag in
+page->flags was necessary. This tag resetting was deferred to
+set_pte_at() -> mte_sync_page_tags() but it can race with another CPU
+reading the flags (via page_to_virt()):
 
-When looking for chains by ID, use the table that was used for the lookup
-by name, and only return chains belonging to that same table.
+P0 (mte_sync_page_tags):	P1 (memcpy from virt_to_page):
+				  Rflags!=0xff
+  Wflags=0xff
+  DMB (doesn't help)
+  Wtags=0
+				  Rtags=0   // fault
 
-Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Since now the post_alloc_hook() function resets the page->flags tag when
+unpoisoning is skipped for user pages (including the __GFP_ZEROTAGS
+case), revert the arm64 commit calling page_kasan_tag_reset().
+
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Peter Collingbourne <pcc@google.com>
+Reviewed-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Acked-by: Andrey Konovalov <andreyknvl@gmail.com>
+Link: https://lore.kernel.org/r/20220610152141.2148929-5-catalin.marinas@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/hibernate.c | 5 -----
+ arch/arm64/kernel/mte.c       | 9 ---------
+ arch/arm64/mm/copypage.c      | 9 ---------
+ arch/arm64/mm/mteswap.c       | 9 ---------
+ 4 files changed, 32 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2377,6 +2377,7 @@ err:
+diff --git a/arch/arm64/kernel/hibernate.c b/arch/arm64/kernel/hibernate.c
+index 46a0b4d6e251..db93ce2b0113 100644
+--- a/arch/arm64/kernel/hibernate.c
++++ b/arch/arm64/kernel/hibernate.c
+@@ -326,11 +326,6 @@ static void swsusp_mte_restore_tags(void)
+ 		unsigned long pfn = xa_state.xa_index;
+ 		struct page *page = pfn_to_online_page(pfn);
+ 
+-		/*
+-		 * It is not required to invoke page_kasan_tag_reset(page)
+-		 * at this point since the tags stored in page->flags are
+-		 * already restored.
+-		 */
+ 		mte_restore_page_tags(page_address(page), tags);
+ 
+ 		mte_free_tag_storage(tags);
+diff --git a/arch/arm64/kernel/mte.c b/arch/arm64/kernel/mte.c
+index 7c1c82c8115c..10207e3e5ae2 100644
+--- a/arch/arm64/kernel/mte.c
++++ b/arch/arm64/kernel/mte.c
+@@ -44,15 +44,6 @@ static void mte_sync_page_tags(struct page *page, pte_t old_pte,
+ 	if (!pte_is_tagged)
+ 		return;
+ 
+-	page_kasan_tag_reset(page);
+-	/*
+-	 * We need smp_wmb() in between setting the flags and clearing the
+-	 * tags because if another thread reads page->flags and builds a
+-	 * tagged address out of it, there is an actual dependency to the
+-	 * memory access, but on the current thread we do not guarantee that
+-	 * the new page->flags are visible before the tags were updated.
+-	 */
+-	smp_wmb();
+ 	mte_clear_page_tags(page_address(page));
  }
  
- static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
-+					       const struct nft_table *table,
- 					       const struct nlattr *nla)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -2387,6 +2388,7 @@ static struct nft_chain *nft_chain_looku
- 		struct nft_chain *chain = trans->ctx.chain;
+diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+index 0dea80bf6de4..24913271e898 100644
+--- a/arch/arm64/mm/copypage.c
++++ b/arch/arm64/mm/copypage.c
+@@ -23,15 +23,6 @@ void copy_highpage(struct page *to, struct page *from)
  
- 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
-+		    chain->table == table &&
- 		    id == nft_trans_chain_id(trans))
- 			return chain;
+ 	if (system_supports_mte() && test_bit(PG_mte_tagged, &from->flags)) {
+ 		set_bit(PG_mte_tagged, &to->flags);
+-		page_kasan_tag_reset(to);
+-		/*
+-		 * We need smp_wmb() in between setting the flags and clearing the
+-		 * tags because if another thread reads page->flags and builds a
+-		 * tagged address out of it, there is an actual dependency to the
+-		 * memory access, but on the current thread we do not guarantee that
+-		 * the new page->flags are visible before the tags were updated.
+-		 */
+-		smp_wmb();
+ 		mte_copy_page_tags(kto, kfrom);
  	}
-@@ -3320,7 +3322,7 @@ static int nf_tables_newrule(struct sk_b
- 			return -EOPNOTSUPP;
+ }
+diff --git a/arch/arm64/mm/mteswap.c b/arch/arm64/mm/mteswap.c
+index 7c4ef56265ee..c52c1847079c 100644
+--- a/arch/arm64/mm/mteswap.c
++++ b/arch/arm64/mm/mteswap.c
+@@ -53,15 +53,6 @@ bool mte_restore_tags(swp_entry_t entry, struct page *page)
+ 	if (!tags)
+ 		return false;
  
- 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
--		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
-+		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
- 		if (IS_ERR(chain)) {
- 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
- 			return PTR_ERR(chain);
-@@ -9451,7 +9453,7 @@ static int nft_verdict_init(const struct
- 						 tb[NFTA_VERDICT_CHAIN],
- 						 genmask);
- 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
--			chain = nft_chain_lookup_byid(ctx->net,
-+			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
- 						      tb[NFTA_VERDICT_CHAIN_ID]);
- 			if (IS_ERR(chain))
- 				return PTR_ERR(chain);
+-	page_kasan_tag_reset(page);
+-	/*
+-	 * We need smp_wmb() in between setting the flags and clearing the
+-	 * tags because if another thread reads page->flags and builds a
+-	 * tagged address out of it, there is an actual dependency to the
+-	 * memory access, but on the current thread we do not guarantee that
+-	 * the new page->flags are visible before the tags were updated.
+-	 */
+-	smp_wmb();
+ 	mte_restore_page_tags(page_address(page), tags);
+ 
+ 	return true;
+-- 
+2.35.1
+
 
 
