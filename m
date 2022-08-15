@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D486DC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81955C282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbiHPEhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        id S231296AbiHPEhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiHPEgW (ORCPT
+        with ESMTP id S231180AbiHPEgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:36:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC279C8CF;
-        Mon, 15 Aug 2022 13:26:33 -0700 (PDT)
+        Tue, 16 Aug 2022 00:36:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3211C6170B;
+        Mon, 15 Aug 2022 13:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4DE561089;
-        Mon, 15 Aug 2022 20:26:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB9FC433C1;
-        Mon, 15 Aug 2022 20:26:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4B94B80EB1;
+        Mon, 15 Aug 2022 20:27:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AE4C433D7;
+        Mon, 15 Aug 2022 20:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595192;
-        bh=LGftA0U8NBZTIfcn4KRWoipw2faNgjkzfJIOn+gHiqU=;
+        s=korg; t=1660595254;
+        bh=dYtzRbPPdLqJorc5v/DVHVdbr2kS8jGXbCpIM27gDQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X/DTN9i4HqpkNq99YGjzl2KzHNtg+TRZecFm53lGOCXCq+mt1uvY1FLN1/zWXMjZ5
-         nd2l1n7MBjhK3IpUCi2jozWZrPXjGSFkmbNGQTb44eORKRKnnEGFc74BkWvB2CWIeK
-         /aHJSlrHqBbw5aKUW0UVo3X8XgFTtEdvsIb6VfDs=
+        b=G6fU3hE4GFQCa1KcuuGRmC5LzwgmUH9bHaU8zvWlWgliG73EL4GiNOr2wrisWcqIa
+         dZgL2F4t8g98JghN7vPWbHy5Z8wHFugetTaA2nbiGcAJwHIXJwdZre2WAgbtDwtigj
+         dr24fxVDr+veJGGBjQFBVs5KOww1d0k1fKDFaptw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0685/1157] iio: dac: ad7293: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:41 +0200
-Message-Id: <20220815180507.041859030@linuxfoundation.org>
+Subject: [PATCH 5.19 0706/1157] iio: imu: inv_icm42600: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:02 +0200
+Message-Id: <20220815180507.820895837@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,35 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 8482468b30bdb16d4a764f995d7a63d94fa0cf40 ]
+[ Upstream commit 848847702bd10bf0bf547e38adc44c14e9742784 ]
+
+Partial fix for this driver as a second instance was introduced in
+a later patch.
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 0bb12606c05f ("iio:dac:ad7293: add support for AD7293")
+Fixes: a095fadb443b ("iio: imu: inv_icm42600: add gyroscope IIO device")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-57-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-78-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad7293.c | 2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad7293.c b/drivers/iio/dac/ad7293.c
-index 59a38ca4c3c7..06f05750d921 100644
---- a/drivers/iio/dac/ad7293.c
-+++ b/drivers/iio/dac/ad7293.c
-@@ -144,7 +144,7 @@ struct ad7293_state {
- 	struct regulator *reg_avdd;
- 	struct regulator *reg_vdrive;
- 	u8 page_select;
--	u8 data[3] ____cacheline_aligned;
-+	u8 data[3] __aligned(IIO_DMA_MINALIGN);
- };
- 
- static int ad7293_page_select(struct ad7293_state *st, unsigned int reg)
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index 995a9dc06521..3d91469beccb 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -141,7 +141,7 @@ struct inv_icm42600_state {
+ 	struct inv_icm42600_suspended suspended;
+ 	struct iio_dev *indio_gyro;
+ 	struct iio_dev *indio_accel;
+-	uint8_t buffer[2] ____cacheline_aligned;
++	uint8_t buffer[2] __aligned(IIO_DMA_MINALIGN);
+ 	struct inv_icm42600_fifo fifo;
+ 	struct {
+ 		int64_t gyro;
 -- 
 2.35.1
 
