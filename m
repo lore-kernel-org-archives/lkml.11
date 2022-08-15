@@ -2,106 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB78CC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 931D7C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244701AbiHOS6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
+        id S244727AbiHOS6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244798AbiHOSzw (ORCPT
+        with ESMTP id S244801AbiHOSzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:55:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6942B2DF2;
-        Mon, 15 Aug 2022 11:30:23 -0700 (PDT)
+        Mon, 15 Aug 2022 14:55:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123CB60F6;
+        Mon, 15 Aug 2022 11:30:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED9E1B8106C;
-        Mon, 15 Aug 2022 18:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDF0C433C1;
-        Mon, 15 Aug 2022 18:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588219;
-        bh=9gl4kRdQ+WLKKQ5khPH9o29OL7Te4TCVWT384FGVGKk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YFvrVIyHedvj8BPGtTk2kG0HtAiSii/3i8n+6P0lX3t7dNoGUVqdCCNttjNMJu14X
-         FgLTXNZkZ4x9Cdyv2oGMloxSmiljjhNp2w2c2BwmGwpdAQekpAzBLHjYhoyrtuPjBn
-         7cHC9q1zhqZ0ooJZQ3VPrNXz5CMpqzJJXMnVuA20=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 333/779] skmsg: Fix invalid last sg check in sk_msg_recvmsg()
-Date:   Mon, 15 Aug 2022 19:59:37 +0200
-Message-Id: <20220815180351.507977711@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A407761024;
+        Mon, 15 Aug 2022 18:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7D1C433D7;
+        Mon, 15 Aug 2022 18:30:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660588224;
+        bh=kvxPs2uAlf3oehVQeRXkeCBLBgQus6xf7LuuT3QozyU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BNEBFPOIWsn58eYsBdCMcN0UYHXF3n9C59gmYjiSJyTgQWGAiaJVehUORHR1aXWwW
+         Lc5UjZ7+M2ks4EIQKDrFSrR8AdNpO/kT78Db/XIW5Ost4pUK8OKt0YBMW+FiAEjK9f
+         8baMVFf8t8Z94wjgWuaP2BGYbBHY4JD2EnNxBdbryUvnYPgsB7pHL7oUC6F5OJ0Kez
+         IC1ENd8n5AhM7KWySQv5eAD8UI0qiAsbj16pLXh8CkjuDUecQrpzTo94zn4VJB6yvE
+         UkTWScJOxohdgXTxbWXEFDM74o1cQkpcT4CrBl4ET4QKxJfy2INtWhPXdwMazsmouz
+         TcrZowa7cgArw==
+Date:   Mon, 15 Aug 2022 11:30:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     syzbot <syzbot+24bcff6e82ce253f23ec@syzkaller.appspotmail.com>,
+        bpf@vger.kernel.org, davem@davemloft.net, ecree.xilinx@gmail.com,
+        edumazet@google.com, habetsm.xilinx@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Subject: Re: [syzbot] WARNING: suspicious RCU usage in
+ bpf_sk_reuseport_detach
+Message-ID: <20220815113022.47f28352@kernel.org>
+In-Reply-To: <7119881e-5a7a-fd90-8d2f-87ce9cd45831@iogearbox.net>
+References: <0000000000007902fc05e6458697@google.com>
+        <7119881e-5a7a-fd90-8d2f-87ce9cd45831@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+On Mon, 15 Aug 2022 14:28:58 +0200 Daniel Borkmann wrote:
+> [ +Hawkins ]
+> 
+> On 8/15/22 12:59 PM, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    94ce3b64c62d net/tls: Use RCU API to access tls_ctx->netdev
+> > git tree:       net
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=14641e15080000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=53da55f2bdeb0d4c
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=24bcff6e82ce253f23ec
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=106c89fd080000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17ead885080000
+> > 
+> > The issue was bisected to:
+> > 
+> > commit f72c38fad234759fe943cb2e40bf3d0f7de1d4d9
+> > Author: Edward Cree <ecree.xilinx@gmail.com>
+> > Date:   Wed Jul 20 18:33:48 2022 +0000
+> > 
+> >      sfc: hook up ef100 representor TX  
+> 
+> Looks rather related to:
+> 
+> commit 2a0133723f9ebeb751cfce19f74ec07e108bef1f
+> Author: Hawkins Jiawei <yin31149@gmail.com>
+> Date:   Fri Aug 5 15:48:34 2022 +0800
+> 
+>      net: fix refcount bug in sk_psock_get (2)
 
-[ Upstream commit 9974d37ea75f01b47d16072b5dad305bd8d23fcc ]
-
-In sk_psock_skb_ingress_enqueue function, if the linear area + nr_frags +
-frag_list of the SKB has NR_MSG_FRAG_IDS blocks in total, skb_to_sgvec
-will return NR_MSG_FRAG_IDS, then msg->sg.end will be set to
-NR_MSG_FRAG_IDS, and in addition, (NR_MSG_FRAG_IDS - 1) is set to the last
-SG of msg. Recv the msg in sk_msg_recvmsg, when i is (NR_MSG_FRAG_IDS - 1),
-the sk_msg_iter_var_next(i) will change i to 0 (not NR_MSG_FRAG_IDS), the
-judgment condition "msg_rx->sg.start==msg_rx->sg.end" and
-"i != msg_rx->sg.end" can not work.
-
-As a result, the processed msg cannot be deleted from ingress_msg list.
-But the length of all the sge of the msg has changed to 0. Then the next
-recvmsg syscall will process the msg repeatedly, because the length of sge
-is 0, the -EFAULT error is always returned.
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220628123616.186950-1-liujian56@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/core/skmsg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index ede0af308f40..f50f8d95b628 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -462,7 +462,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 
- 			if (copied == len)
- 				break;
--		} while (i != msg_rx->sg.end);
-+		} while (!sg_is_last(sge));
- 
- 		if (unlikely(peek)) {
- 			msg_rx = sk_psock_next_msg(psock, msg_rx);
-@@ -472,7 +472,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 		}
- 
- 		msg_rx->sg.start = i;
--		if (!sge->length && msg_rx->sg.start == msg_rx->sg.end) {
-+		if (!sge->length && sg_is_last(sge)) {
- 			msg_rx = sk_psock_dequeue_msg(psock);
- 			kfree_sk_msg(msg_rx);
- 		}
--- 
-2.35.1
-
-
-
+Indeed, looks like the reuseport clearing needs to be some
+approximation of rcu_dereference_protected().
