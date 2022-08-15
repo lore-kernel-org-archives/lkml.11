@@ -2,119 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C053FC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02770C2BB45
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347943AbiHOXVr (ORCPT
+        id S1353099AbiHOXVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
+        Mon, 15 Aug 2022 19:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343725AbiHOXO2 (ORCPT
+        with ESMTP id S1344206AbiHOXO3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8591895FD;
-        Mon, 15 Aug 2022 13:01:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BA47B80EAD;
-        Mon, 15 Aug 2022 20:01:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1393C433D7;
-        Mon, 15 Aug 2022 20:01:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593704;
-        bh=8JZ/Ppu8+/LJWNS3QNboIv0bypIL+9qabo0OOgziros=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uj+pWQZkhcqtVSxZiltBW9ExxMXH/3CRmisrtcfQs+k4FDhM54WVfHEO0MLeVeIWb
-         bOBm3D3ML7cZWe1UKXA3x7ggwOGcESuh1GxKAow3sG57sYlSoaoj57RCy+7TpthHB2
-         ZohQJzBXJpVeqcOSgFDDN8O7XthXSfvZl3ylM/Ko=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lev Kujawski <lkujaw@member.fsf.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0993/1095] KVM: set_msr_mce: Permit guests to ignore single-bit ECC errors
-Date:   Mon, 15 Aug 2022 20:06:32 +0200
-Message-Id: <20220815180510.188201325@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 19:14:29 -0400
+Received: from omta002.cacentral1.a.cloudfilter.net (omta002.cacentral1.a.cloudfilter.net [3.97.99.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823D3C36
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:01:49 -0700 (PDT)
+Received: from shw-obgw-4001a.ext.cloudfilter.net ([10.228.9.142])
+        by cmsmtp with ESMTP
+        id NafDohA5SSp39NgHUoo5D8; Mon, 15 Aug 2022 20:01:48 +0000
+Received: from fanir.tuyoix.net ([68.150.218.192])
+        by cmsmtp with ESMTP
+        id NgHTohIc5uJwwNgHTo2TQk; Mon, 15 Aug 2022 20:01:48 +0000
+X-Authority-Analysis: v=2.4 cv=F+BEy4tN c=1 sm=1 tr=0 ts=62faa62c
+ a=LfNn7serMq+1bQZBlMsSfQ==:117 a=LfNn7serMq+1bQZBlMsSfQ==:17
+ a=biHskzXt2R4A:10 a=M51BFTxLslgA:10 a=nlC_4_pT8q9DhB4Ho9EA:9 a=cm27Pg_UAAAA:8
+ a=rTkU1oqxSLEUetzfa08A:9 a=QEXdDO2ut3YA:10 a=xmb-EsYY8bH0VWELuYED:22
+Received: from CLUIJ (cluij.tuyoix.net [192.168.144.15])
+        (authenticated bits=0)
+        by fanir.tuyoix.net (8.17.1/8.17.1) with ESMTPSA id 27FK1jhk021792
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NO);
+        Mon, 15 Aug 2022 14:01:45 -0600
+Date:   Mon, 15 Aug 2022 14:01:35 -0600 (Mountain Daylight Time)
+From:   =?UTF-8?Q?Marc_Aur=C3=A8le_La_France?= <tsi@tuyoix.net>
+To:     John Ogness <john.ogness@linutronix.de>
+cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] printk: Export log_buf_len to userland
+In-Reply-To: <87wnb9pk8k.fsf@jogness.linutronix.de>
+Message-ID: <alpine.WNT.2.20.2208151359540.1956@CLUIJ>
+References: <a41b5ad3-d052-49b8-e038-b020c1dc6788@tuyoix.net> <YvmsNEYPtdOUsaxy@google.com> <87wnb9pk8k.fsf@jogness.linutronix.de>
+User-Agent: Alpine 2.20 (WNT 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="115511-10179-1660593697=:1956"
+X-CMAE-Envelope: MS4xfK4qv7+gra4/No48+I6OHOAAcujcXRS/PfnQikgxcDSrrZP8L+TerLeHy145s/KAceVypRDil5xRxeB1/vzUSby/f7rIDkgSck1YqkCDCzkaIarhqx9/
+ K83x6mgacZAZD6UJ1bRwJrj81dGWHJUI0IkmTVOcDAWJaAdwa4IovLzKJ8pIkAKC+CcRdXZhJBSqQ/pR5IENNVwCjTpvCD7WHgtTG7GXVpBjMk6vO0XSBbZm
+ HajaaQ/TvJX2ofptE1UlCCyI/givaCNAV38SrV12FEYyq1557j6shxIus4dIuXaCCpPjVDVE/AheK9Dmk0GT5zDEYEFyLvppEAweRIE04oo=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lev Kujawski <lkujaw@member.fsf.org>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-[ Upstream commit 0471a7bd1bca2a47a5f378f2222c5cf39ce94152 ]
+--115511-10179-1660593697=:1956
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8BIT
 
-Certain guest operating systems (e.g., UNIXWARE) clear bit 0 of
-MC1_CTL to ignore single-bit ECC data errors.  Single-bit ECC data
-errors are always correctable and thus are safe to ignore because they
-are informational in nature rather than signaling a loss of data
-integrity.
+On Mon, 15 Aug 2022, John Ogness wrote:
+> On 2022-08-15, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
+>> On (22/08/10 14:25), Marc Aurèle La France wrote:
 
-Prior to this patch, these guests would crash upon writing MC1_CTL,
-with resultant error messages like the following:
+>>> Make the kernel log's buffer size available to userland so it can be
+>>> used with `dmesg -s`.
 
-error: kvm run failed Operation not permitted
-EAX=fffffffe EBX=fffffffe ECX=00000404 EDX=ffffffff
-ESI=ffffffff EDI=00000001 EBP=fffdaba4 ESP=fffdab20
-EIP=c01333a5 EFL=00000246 [---Z-P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
-ES =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-CS =0100 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]
-SS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-DS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-FS =0000 00000000 ffffffff 00c00000
-GS =0000 00000000 ffffffff 00c00000
-LDT=0118 c1026390 00000047 00008200 DPL=0 LDT
-TR =0110 ffff5af0 00000067 00008b00 DPL=0 TSS32-busy
-GDT=     ffff5020 000002cf
-IDT=     ffff52f0 000007ff
-CR0=8001003b CR2=00000000 CR3=0100a000 CR4=00000230
-DR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000
-DR6=ffff0ff0 DR7=00000400
-EFER=0000000000000000
-Code=08 89 01 89 51 04 c3 8b 4c 24 08 8b 01 8b 51 04 8b 4c 24 04 <0f>
-30 c3 f7 05 a4 6d ff ff 10 00 00 00 74 03 0f 31 c3 33 c0 33 d2 c3 8d
-74 26 00 0f 31 c3
+> This information is already available via:
 
-Signed-off-by: Lev Kujawski <lkujaw@member.fsf.org>
-Message-Id: <20220521081511.187388-1-lkujaw@member.fsf.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/x86.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+>    klogctl(SYSLOG_ACTION_SIZE_BUFFER, NULL, 0)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 767a61e29f51..2316c978b598 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3226,10 +3226,13 @@ static int set_msr_mce(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			/* only 0 or all 1s can be written to IA32_MCi_CTL
- 			 * some Linux kernels though clear bit 10 in bank 4 to
- 			 * workaround a BIOS/GART TBL issue on AMD K8s, ignore
--			 * this to avoid an uncatched #GP in the guest
-+			 * this to avoid an uncatched #GP in the guest.
-+			 *
-+			 * UNIXWARE clears bit 0 of MC1_CTL to ignore
-+			 * correctable, single-bit ECC data errors.
- 			 */
- 			if ((offset & 0x3) == 0 &&
--			    data != 0 && (data | (1 << 10)) != ~(u64)0)
-+			    data != 0 && (data | (1 << 10) | 1) != ~(u64)0)
- 				return -1;
- 
- 			/* MCi_STATUS */
--- 
-2.35.1
+> And dmesg already uses this with "dmesg -S".
 
+Thanks for the much more helpful reply.
 
+Have a great day.
 
+Marc.
+--115511-10179-1660593697=:1956--
