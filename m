@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F381C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B57A6C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354144AbiHOXni (ORCPT
+        id S1345444AbiHOXns (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        Mon, 15 Aug 2022 19:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354103AbiHOXlO (ORCPT
+        with ESMTP id S1354111AbiHOXlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6240D4B0D4;
-        Mon, 15 Aug 2022 13:10:37 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788097695A;
+        Mon, 15 Aug 2022 13:10:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D77BB80EA8;
-        Mon, 15 Aug 2022 20:10:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70987C433C1;
-        Mon, 15 Aug 2022 20:10:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFED460025;
+        Mon, 15 Aug 2022 20:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA62C433D6;
+        Mon, 15 Aug 2022 20:10:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594234;
-        bh=ScgBIY3HQMCcOzB+zPgCsLe9LaGbzeQNrwHYt+biqjc=;
+        s=korg; t=1660594238;
+        bh=9l5a7uxFD4tC0+inbuqt5PluP2aZ1z05eFhVaLGUPFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tw2FWiykrK1bkhIv8qkcZitUaQUIHdNeTchXoUhE2C6TauVC28CVTbuxS03LzI6GN
-         ErWqSjA+uEor2/GncMkfG/B4DQyeBfv+PHY2ZMoMfu66IYlKYo1SRFGYVBOY8b4Jqp
-         5aNQ6X7kpSglz+pcvbVYCkLNJ2tt5RnaE/Av7+1o=
+        b=RVRkhWpS3+WeUdCq2PQFIVhnwTmpohAriwjhNiDHdTy2rJpyQNLqsoSbDiRIezGL7
+         YYqomH6snkImuW8Kl2WA8R3rvVfgMgUruxAOxQeAYTtJEjkTfWv02cbRQRQHDgJ8W5
+         WdyCjwECgX1/o5qdd5eGCdAf6K9WLK0LuRrXNuMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Kamal Mostafa <kamal@canonical.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 1076/1095] net_sched: cls_route: remove from list when handle is 0
-Date:   Mon, 15 Aug 2022 20:07:55 +0200
-Message-Id: <20220815180513.560350758@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0399/1157] media: v4l2-mem2mem: prevent pollerr when last_buffer_dequeued is set
+Date:   Mon, 15 Aug 2022 19:55:55 +0200
+Message-Id: <20220815180455.630760694@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Ming Qian <ming.qian@nxp.com>
 
-commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
+[ Upstream commit d4de27a9b1eadd33a2e40de87a646d1bf5fef756 ]
 
-When a route filter is replaced and the old filter has a 0 handle, the old
-one won't be removed from the hashtable, while it will still be freed.
+If the last buffer was dequeued from the capture queue,
+signal userspace. DQBUF(CAPTURE) will return -EPIPE.
 
-The test was there since before commit 1109c00547fc ("net: sched: RCU
-cls_route"), when a new filter was not allocated when there was an old one.
-The old filter was reused and the reinserting would only be necessary if an
-old filter was replaced. That was still wrong for the same case where the
-old handle was 0.
+But if output queue is empty and capture queue is empty,
+v4l2_m2m_poll_for_data will return EPOLLERR,
+This is very easy to happen in drain.
 
-Remove the old filter from the list independently from its handle value.
+When last_buffer_dequeued is set, we shouldn't return EPOLLERR,
+but return EPOLLIN | EPOLLRDNORM.
 
-This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
-
-Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Reviewed-by: Kamal Mostafa <kamal@canonical.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1698a7f151126 ("media: v4l2-mem2mem: simplify poll logic")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_route.c |    2 +-
+ drivers/media/v4l2-core/v4l2-mem2mem.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -526,7 +526,7 @@ static int route4_change(struct net *net
- 	rcu_assign_pointer(f->next, f1);
- 	rcu_assign_pointer(*fp, f);
+diff --git a/drivers/media/v4l2-core/v4l2-mem2mem.c b/drivers/media/v4l2-core/v4l2-mem2mem.c
+index 6469f9a25a4e..837e1855f94b 100644
+--- a/drivers/media/v4l2-core/v4l2-mem2mem.c
++++ b/drivers/media/v4l2-core/v4l2-mem2mem.c
+@@ -925,7 +925,7 @@ static __poll_t v4l2_m2m_poll_for_data(struct file *file,
+ 	if ((!src_q->streaming || src_q->error ||
+ 	     list_empty(&src_q->queued_list)) &&
+ 	    (!dst_q->streaming || dst_q->error ||
+-	     list_empty(&dst_q->queued_list)))
++	     (list_empty(&dst_q->queued_list) && !dst_q->last_buffer_dequeued)))
+ 		return EPOLLERR;
  
--	if (fold && fold->handle && f->handle != fold->handle) {
-+	if (fold) {
- 		th = to_hash(fold->handle);
- 		h = from_hash(fold->handle >> 16);
- 		b = rtnl_dereference(head->table[th]);
+ 	spin_lock_irqsave(&src_q->done_lock, flags);
+-- 
+2.35.1
+
 
 
