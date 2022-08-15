@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01942C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE1CC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232349AbiHPEtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        id S232455AbiHPEtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbiHPEpn (ORCPT
+        with ESMTP id S232626AbiHPEpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:45:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D374AB5E43;
-        Mon, 15 Aug 2022 13:44:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9669EAEDAC;
+        Mon, 15 Aug 2022 13:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B555B80EAD;
-        Mon, 15 Aug 2022 20:44:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3D82C433C1;
-        Mon, 15 Aug 2022 20:44:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 324626122B;
+        Mon, 15 Aug 2022 20:42:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266B3C433D6;
+        Mon, 15 Aug 2022 20:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596265;
-        bh=cAuQmdP8eqYQ3pb+Q6BsdvaIZxGrfLolEG77N1flqqo=;
+        s=korg; t=1660596152;
+        bh=vo0TAGeRPJNhuCFG7rNuv/V9pYpe7Wt0kisbfUGzm10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViGuAeJMpTOkE+/44PnVw/QvFIzCTZniEg942T4/9uMIy0xKiFPj6gn0s7UH7WITo
-         QWXdftuAqDUyoNBCZY15tMHlQs8wUsOS2IczhK3BVyHuevmH1IQlRk/OUHNvztqw4l
-         jPUrIpbOO2/doOJM+afaac+fS5f2SU55NDN5Y3VQ=
+        b=HUDO7eswnmuQQt8NGRcqJfaA3ODJw3o47JXDZFW1Rbx+mUz6/TJpGX3KVgBSzhqtT
+         ySYinR7J6pCzLDUYV0EV+dkUwqKQ5dLfgNfdBTZbt/HF/GfspBLitXGAhmNYq9S1ik
+         8FFwyrme9XHO2vTXvmhA9TBCHHbvcqQh7onKADsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Valentin Schneider <vschneid@redhat.com>,
-        Tianchen Ding <dtcccc@linux.alibaba.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1025/1157] sched: Fix the check of nr_running at queue wakelist
-Date:   Mon, 15 Aug 2022 20:06:21 +0200
-Message-Id: <20220815180520.932083503@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0990/1157] video: fbdev: amba-clcd: Fix refcount leak bugs
+Date:   Mon, 15 Aug 2022 20:05:46 +0200
+Message-Id: <20220815180519.322641360@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,52 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianchen Ding <dtcccc@linux.alibaba.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 28156108fecb1f808b21d216e8ea8f0d205a530c ]
+[ Upstream commit 26c2b7d9fac42eb8317f3ceefa4c1a9a9170ca69 ]
 
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
+In clcdfb_of_init_display(), we should call of_node_put() for the
+references returned by of_graph_get_next_endpoint() and
+of_graph_get_remote_port_parent() which have increased the refcount.
 
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
+Besides, we should call of_node_put() both in fail path or when
+the references are not used anymore.
 
-The benchmark result is in [1].
-
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
-
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220608233412.327341-2-dtcccc@linux.alibaba.com
+Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/amba-clcd.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index b4620354767b..6f1e3eef9346 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
+diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
+index 8080116aea84..f65c96d1394d 100644
+--- a/drivers/video/fbdev/amba-clcd.c
++++ b/drivers/video/fbdev/amba-clcd.c
+@@ -698,16 +698,18 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 		return -ENODEV;
  
- 	return false;
+ 	panel = of_graph_get_remote_port_parent(endpoint);
+-	if (!panel)
+-		return -ENODEV;
++	if (!panel) {
++		err = -ENODEV;
++		goto out_endpoint_put;
++	}
+ 
+ 	err = clcdfb_of_get_backlight(&fb->dev->dev, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
+ 
+ 	err = clcdfb_of_get_mode(&fb->dev->dev, panel, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
+ 
+ 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
+ 			&max_bandwidth);
+@@ -736,11 +738,21 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 
+ 	if (of_property_read_u32_array(endpoint,
+ 			"arm,pl11x,tft-r0g0b0-pads",
+-			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0)
+-		return -ENOENT;
++			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0) {
++		err = -ENOENT;
++		goto out_panel_put;
++	}
++
++	of_node_put(panel);
++	of_node_put(endpoint);
+ 
+ 	return clcdfb_of_init_tft_panel(fb, tft_r0b0g0[0],
+ 					tft_r0b0g0[1],  tft_r0b0g0[2]);
++out_panel_put:
++	of_node_put(panel);
++out_endpoint_put:
++	of_node_put(endpoint);
++	return err;
+ }
+ 
+ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
 -- 
 2.35.1
 
