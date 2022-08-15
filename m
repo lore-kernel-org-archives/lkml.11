@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B688C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5952CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347605AbiHOWIe (ORCPT
+        id S1344302AbiHOWIi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        Mon, 15 Aug 2022 18:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347480AbiHOWDl (ORCPT
+        with ESMTP id S1346880AbiHOWEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:03:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE03F1156C9;
-        Mon, 15 Aug 2022 12:37:15 -0700 (PDT)
+        Mon, 15 Aug 2022 18:04:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC041156E9;
+        Mon, 15 Aug 2022 12:37:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7087610A5;
-        Mon, 15 Aug 2022 19:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E254FC433C1;
-        Mon, 15 Aug 2022 19:37:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1DEC611E4;
+        Mon, 15 Aug 2022 19:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB52DC433D6;
+        Mon, 15 Aug 2022 19:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592234;
-        bh=ym45XOUbfUhjuPKdowugKqXwVFv3rbZiB+V2T/TItmc=;
+        s=korg; t=1660592237;
+        bh=TAuUMR7MhN059r8wH39ZJ2WwqdyBclsgrNGwmEPdtag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f3+yhsaVkRmyelhkKM4vkqV6LjoBZ27rPx4O/1gUnxfskPgn1HoTjwV4ZlnVKVxNS
-         k8TnqMDQdM8ZBFSoc1znz0ta+lR+iMfUqhq8JsNVOsu3YLltXpPsWEDOuOauAlXqrF
-         TGzDBMLbROQyq09YcIrfiOwhewlAVKBTRXrxB9hI=
+        b=YzivLhGlUZhN+Sn6ztgxULTvC9i7vqjltNLis1xXBxy5qc6NXl/CNUfmO+yqH/lpH
+         zlw6nDelCBmKnbFJDnOn6Fo+LKjDfQXiaYe0xbatAMJrshvwd6GypGI50vyRK/ErCK
+         jYq8zGaoptloOr8Sw4qqbyHKXFp0BDLIjciPiALU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0078/1157] RISC-V: Fix SBI PMU calls for RV32
-Date:   Mon, 15 Aug 2022 19:50:34 +0200
-Message-Id: <20220815180442.646510945@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Raviteja Garimella <raviteja.garimella@broadcom.com>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0754/1095] usb: gadget: udc: amd5536 depends on HAS_DMA
+Date:   Mon, 15 Aug 2022 20:02:33 +0200
+Message-Id: <20220815180500.522087556@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,57 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 0209b5830bea42dd3ce33ab0397231e67ec3b751 upstream.
+[ Upstream commit 8097cf2fb3b2205257f1c76f4808e3398d66b6d9 ]
 
-Some of the SBI PMU calls does not pass 64bit arguments
-correctly and not under RV32 compile time flags. Currently,
-this doesn't create any incorrect results as RV64 ignores
-any value in the additional register and qemu doesn't support
-raw events.
+USB_AMD5536UDC should depend on HAS_DMA since it selects USB_SNP_CORE,
+which depends on HAS_DMA and since 'select' does not follow any
+dependency chains.
 
-Fix those SBI calls in order to set correct values for RV32.
+Fixes this kconfig warning:
 
-Fixes: e9991434596f ("RISC-V: Add perf platform driver based on SBI PMU extension")
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220711174632.4186047-4-atishp@rivosinc.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+WARNING: unmet direct dependencies detected for USB_SNP_CORE
+  Depends on [n]: USB_SUPPORT [=y] && USB_GADGET [=y] && (USB_AMD5536UDC [=y] || USB_SNP_UDC_PLAT [=n]) && HAS_DMA [=n]
+  Selected by [y]:
+  - USB_AMD5536UDC [=y] && USB_SUPPORT [=y] && USB_GADGET [=y] && USB_PCI [=y]
+
+Fixes: 97b3ffa233b9 ("usb: gadget: udc: amd5536: split core and PCI layer")
+Cc: Raviteja Garimella <raviteja.garimella@broadcom.com>
+Cc: Felipe Balbi <balbi@kernel.org>
+Cc: linux-usb@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220709013601.7536-1-rdunlap@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/riscv_pmu_sbi.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/usb/gadget/udc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -274,8 +274,13 @@ static int pmu_sbi_ctr_get_idx(struct pe
- 		cflags |= SBI_PMU_CFG_FLAG_SET_UINH;
+diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
+index 69394dc1cdfb..2cdd37be165a 100644
+--- a/drivers/usb/gadget/udc/Kconfig
++++ b/drivers/usb/gadget/udc/Kconfig
+@@ -311,7 +311,7 @@ source "drivers/usb/gadget/udc/bdc/Kconfig"
  
- 	/* retrieve the available counter index */
-+#if defined(CONFIG_32BIT)
-+	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
-+			cflags, hwc->event_base, hwc->config, hwc->config >> 32);
-+#else
- 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
- 			cflags, hwc->event_base, hwc->config, 0);
-+#endif
- 	if (ret.error) {
- 		pr_debug("Not able to find a counter for event %lx config %llx\n",
- 			hwc->event_base, hwc->config);
-@@ -417,8 +422,13 @@ static void pmu_sbi_ctr_start(struct per
- 	struct hw_perf_event *hwc = &event->hw;
- 	unsigned long flag = SBI_PMU_START_FLAG_SET_INIT_VALUE;
- 
-+#if defined(CONFIG_32BIT)
- 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
- 			1, flag, ival, ival >> 32, 0);
-+#else
-+	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, hwc->idx,
-+			1, flag, ival, 0, 0);
-+#endif
- 	if (ret.error && (ret.error != SBI_ERR_ALREADY_STARTED))
- 		pr_err("Starting counter idx %d failed with error %d\n",
- 			hwc->idx, sbi_err_map_linux_errno(ret.error));
+ config USB_AMD5536UDC
+ 	tristate "AMD5536 UDC"
+-	depends on USB_PCI
++	depends on USB_PCI && HAS_DMA
+ 	select USB_SNP_CORE
+ 	help
+ 	   The AMD5536 UDC is part of the AMD Geode CS5536, an x86 southbridge.
+-- 
+2.35.1
+
 
 
