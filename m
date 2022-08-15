@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D479C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DED6C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348620AbiHOWaP (ORCPT
+        id S1348814AbiHOWaU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        Mon, 15 Aug 2022 18:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347966AbiHOWZG (ORCPT
+        with ESMTP id S1348382AbiHOWZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:25:06 -0400
+        Mon, 15 Aug 2022 18:25:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B95126946;
-        Mon, 15 Aug 2022 12:44:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D9D126952;
+        Mon, 15 Aug 2022 12:44:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA3B5B80EA9;
-        Mon, 15 Aug 2022 19:44:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B4C2C433C1;
-        Mon, 15 Aug 2022 19:44:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9DA9B80EAD;
+        Mon, 15 Aug 2022 19:44:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12615C433C1;
+        Mon, 15 Aug 2022 19:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592661;
-        bh=XxpeVCfO3+MxzdRH2WGmrs76DgLei8x/GzgiJQYmjQU=;
+        s=korg; t=1660592664;
+        bh=CIV5OVk+czLEgtOy8HbR0wRahzxtme8/N3oniTZI5ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C10aj8u4JhRUr9S9IvkuJxGT8NGQzbW6TgotJdgfxXbzD7H5jSOC+sFHFc1i8OxoQ
-         t1JRStwI07GrP/IcG72u6ZvAbyVldQzq5nkn7wNpLiCAyaBNiRwQI3agx8TBrx8H+e
-         WoluwP2ozhD4c31S/k6PMsYk+pMT5IpG5njEK73g=
+        b=aPRt1Yqu/cNa4XF1pqiAfEHrF79B+H1kTPuA+5sOPev95UMe/bRKrXaoaDaWG73JH
+         1ZiU2oTYUdV7UJgL+C4f7u8tGctx3kQURWg7F6ibi1zSvfH5KNHMynonlN8jKC/vuS
+         coescsu8AQ/jYVByHfGUEfLxWpSKB0eolrO1Da2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Peter Suti <peter.suti@streamunlimited.com>,
+        stable@vger.kernel.org, Li Lingfeng <lilingfeng3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0796/1095] staging: fbtft: core: set smem_len before fb_deferred_io_init call
-Date:   Mon, 15 Aug 2022 20:03:15 +0200
-Message-Id: <20220815180502.179602518@linuxfoundation.org>
+Subject: [PATCH 5.18 0823/1095] ext4: recover csum seed of tmp_inode after migrating to extents
+Date:   Mon, 15 Aug 2022 20:03:42 +0200
+Message-Id: <20220815180503.350168933@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,44 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Suti <peter.suti@streamunlimited.com>
+From: Li Lingfeng <lilingfeng3@huawei.com>
 
-[ Upstream commit 81e878887ff82a7dd42f22951391069a5d520627 ]
+[ Upstream commit 07ea7a617d6b278fb7acedb5cbe1a81ce2de7d0c ]
 
-The fbtft_framebuffer_alloc() calls fb_deferred_io_init() before
-initializing info->fix.smem_len.  It is set to zero by the
-framebuffer_alloc() function.  It will trigger a WARN_ON() at the
-start of fb_deferred_io_init() and the function will not do anything.
+When migrating to extents, the checksum seed of temporary inode
+need to be replaced by inode's, otherwise the inode checksums
+will be incorrect when swapping the inodes data.
 
-Fixes: 856082f021a2 ("fbdev: defio: fix the pagelist corruption")
-Signed-off-by: Peter Suti <peter.suti@streamunlimited.com>
-Link: https://lore.kernel.org/r/20220727073550.1491126-1-peter.suti@streamunlimited.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+However, the temporary inode can not match it's checksum to
+itself since it has lost it's own checksum seed.
+
+mkfs.ext4 -F /dev/sdc
+mount /dev/sdc /mnt/sdc
+xfs_io -fc "pwrite 4k 4k" -c "fsync" /mnt/sdc/testfile
+chattr -e /mnt/sdc/testfile
+chattr +e /mnt/sdc/testfile
+umount /dev/sdc
+fsck -fn /dev/sdc
+
+========
+...
+Pass 1: Checking inodes, blocks, and sizes
+Inode 13 passes checks, but checksum does not match inode.  Fix? no
+...
+========
+
+The fix is simple, save the checksum seed of temporary inode, and
+recover it after migrating to extents.
+
+Fixes: e81c9302a6c3 ("ext4: set csum seed in tmp inode while migrating to extents")
+Signed-off-by: Li Lingfeng <lilingfeng3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220617062515.2113438-1-lilingfeng3@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fbtft/fbtft-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/migrate.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
-index 9c4d797e7ae4..4137c1a51e1b 100644
---- a/drivers/staging/fbtft/fbtft-core.c
-+++ b/drivers/staging/fbtft/fbtft-core.c
-@@ -656,7 +656,6 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
- 	fbdefio->delay =           HZ / fps;
- 	fbdefio->sort_pagelist =   true;
- 	fbdefio->deferred_io =     fbtft_deferred_io;
--	fb_deferred_io_init(info);
+diff --git a/fs/ext4/migrate.c b/fs/ext4/migrate.c
+index 7a5353a8cfd7..f2c4d9eee475 100644
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -417,7 +417,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	struct inode *tmp_inode = NULL;
+ 	struct migrate_struct lb;
+ 	unsigned long max_entries;
+-	__u32 goal;
++	__u32 goal, tmp_csum_seed;
+ 	uid_t owner[2];
  
- 	snprintf(info->fix.id, sizeof(info->fix.id), "%s", dev->driver->name);
- 	info->fix.type =           FB_TYPE_PACKED_PIXELS;
-@@ -667,6 +666,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
- 	info->fix.line_length =    width * bpp / 8;
- 	info->fix.accel =          FB_ACCEL_NONE;
- 	info->fix.smem_len =       vmem_size;
-+	fb_deferred_io_init(info);
+ 	/*
+@@ -465,6 +465,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the migration.
+ 	 */
+ 	ei = EXT4_I(inode);
++	tmp_csum_seed = EXT4_I(tmp_inode)->i_csum_seed;
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+@@ -575,6 +576,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the inode is not visible to user space.
+ 	 */
+ 	tmp_inode->i_blocks = 0;
++	EXT4_I(tmp_inode)->i_csum_seed = tmp_csum_seed;
  
- 	info->var.rotate =         pdata->rotate;
- 	info->var.xres =           width;
+ 	/* Reset the extent details */
+ 	ext4_ext_tree_init(handle, tmp_inode);
 -- 
 2.35.1
 
