@@ -2,196 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBEFC2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685F1C28B2B
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355059AbiHPALY (ORCPT
+        id S1354828AbiHPALR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
+        Mon, 15 Aug 2022 20:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356303AbiHPACO (ORCPT
+        with ESMTP id S1356286AbiHPACN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:02:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9576B169441
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660595025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JE0Q6qMpxU/bQzzBknDStkFAFzBJZfD5zR8g9OCHMSI=;
-        b=NzxOWTjgZVqJNFlC6E1hEnC9LmEG9vi9FAwu/8rPY+ctTyySyME23EqpAWieAXuspHL+f0
-        Sr7ffbaJKAerl3rLAtmlh8lxI03NmfuUZ4l5oS+aaIaJ7ZxOTil/D/kMT3OMtlNgjPRwEe
-        tTCerh9g581OyeEHU8c7RrZvFqc+5Ng=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-557-DHeQQtEjMaWXHuOTMxnNMg-1; Mon, 15 Aug 2022 16:23:44 -0400
-X-MC-Unique: DHeQQtEjMaWXHuOTMxnNMg-1
-Received: by mail-wm1-f70.google.com with SMTP id v64-20020a1cac43000000b003a4bea31b4dso9138764wme.3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:23:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=JE0Q6qMpxU/bQzzBknDStkFAFzBJZfD5zR8g9OCHMSI=;
-        b=LT0pzS0X2q1soXy7GKG/i3gwfkzUsCBMrmeXol33bzDMuC6qfhebawCZhz/6LyAQaH
-         hap1kZh00KLOVditcKKW/5fOlx1JUJN0HNFj/XWSIMVTwzC6zsHPDcew6JzlBklQ8FJx
-         yxdGVx/Zb36T2I7G/CaMZ+Xq0KXt/ddIHkQ8GwsW0SE33ivbvogB8f+ZyxisRgIsyc4u
-         0OafkijnD5mZsm5gMN7tBmLXNYoVo0AzzlMVaFCmMmV56ekBYjIYffjEInXBAjF0/HeC
-         QYD1aydmlfNtV+yHE7q/Ra1jivEX19tT3vBS8X/wU++r/fLUTKxhMbGUmswnEuD+P8U4
-         NMYw==
-X-Gm-Message-State: ACgBeo1Ysb87E0puL4CAUOL9QAk3zZNYdZY83XFJ2qVpb5Oe2LaY1EPb
-        Gz3Py9GMX7np24tyEiJn3sVKZHX6bZIsLfksPrm9NTz/jf+ANwddeh/1pUsXXd0dv3yjVj5yc2V
-        jgSObUOWx8WEZPLXPuDEszBdM
-X-Received: by 2002:a5d:4e8a:0:b0:21f:610:6866 with SMTP id e10-20020a5d4e8a000000b0021f06106866mr9096415wru.606.1660595023126;
-        Mon, 15 Aug 2022 13:23:43 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7IfUg8VlT0QelieqjpdY/1IqFRJvHRfVUrvuXEvsvjfab5OMeU50JMDQtT5vAViip/7RKHpQ==
-X-Received: by 2002:a5d:4e8a:0:b0:21f:610:6866 with SMTP id e10-20020a5d4e8a000000b0021f06106866mr9096407wru.606.1660595022832;
-        Mon, 15 Aug 2022 13:23:42 -0700 (PDT)
-Received: from redhat.com ([2.55.43.215])
-        by smtp.gmail.com with ESMTPSA id t125-20020a1c4683000000b003a5e3015a96sm9238127wma.15.2022.08.15.13.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:23:41 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 16:23:37 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>
-Subject: Re: [PATCH v3] Bluetooth: virtio_bt: fix device removal
-Message-ID: <20220815162219-mutt-send-email-mst@kernel.org>
-References: <20220811094542.268519-1-mst@redhat.com>
- <CABBYNZLeszHHi2TVcQsOtPWs1u=s8gjOVAhL+Q=O-ThgpxvpOw@mail.gmail.com>
+        Mon, 15 Aug 2022 20:02:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799CE168A4E;
+        Mon, 15 Aug 2022 13:23:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D962260F71;
+        Mon, 15 Aug 2022 20:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44CEC433D6;
+        Mon, 15 Aug 2022 20:23:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660595013;
+        bh=u7UG57GrgwKuwLPZmCNQNLaPEDo8dXBIxu1WInSy79k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lfG9jQl1rSCAbxq5HsQiE6cHy12/5qp/vNyfFSnxIbuk9Q8gZf841YrGm4vzXV8aw
+         T4llJR4RjB8t66QPpZjcfRqzpFCOjTXBLccMzL/mo9R3AYyhqTYXjqD0bVdbYe29oK
+         /4QDwz0QMkRtSQye1tG2cgWSdmfiVjegfPOVu3OI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jagath Jog J <jagathjog1996@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0630/1157] iio: accel: bma400: Add triggered buffer support
+Date:   Mon, 15 Aug 2022 19:59:46 +0200
+Message-Id: <20220815180504.883946062@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABBYNZLeszHHi2TVcQsOtPWs1u=s8gjOVAhL+Q=O-ThgpxvpOw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:07:05AM -0700, Luiz Augusto von Dentz wrote:
-> Hi Michael,
-> 
-> On Thu, Aug 11, 2022 at 2:46 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > Device removal is clearly out of virtio spec: it attempts to remove
-> > unused buffers from a VQ before invoking device reset. To fix, make
-> > open/close NOPs and do all cleanup/setup in probe/remove.
-> >
-> > NB: This is a hacky way to handle this - virtbt_{open,close} as NOP is
-> > not really what a driver is supposed to be doing. These are transport
-> > enable/disable callbacks from the BT core towards the driver. It maps to
-> > a device being enabled/disabled by something like bluetoothd for
-> > example. So if disabled, users expect that no resources/queues are in
-> > use.  It does work with all other transports like USB, SDIO, UART etc.
-> > There should be no buffer used if the device is powered off. We also
-> > don’t have any USB URBs in-flight if the transport is not active.
-> >
-> > The way to implement a proper fix would be using vq reset if supported,
-> > or even using a full device reset.
-> >
-> > The cost of the hack is a single skb wasted on an unused bt device.
-> >
-> > NB2: with this fix in place driver still suffers from a race condition
-> > if an interrupt triggers while device is being reset.  To fix, in the
-> > virtbt_close() callback we should deactivate all interrupts.  To be
-> > fixed.
-> >
-> > squashed fixup: bluetooth: virtio_bt: fix an error code in probe()
-> 
-> Shouldn't the line above be a Fixes tag with the commit hash you are
-> attempting to fix, other than that I'd be fine to apply these changes.
+From: Jagath Jog J <jagathjog1996@gmail.com>
 
-No - what I tried to say here is that I posted the original patch
-and then Dan and Yang posted fixups, I squashed them in but
-wanted to keep contribution.
+[ Upstream commit ffe0ab6a96988daa8b316290c15e1c7bbb9d4211 ]
+
+Added trigger buffer support to read continuous acceleration
+and temperature data from device with data ready interrupt which
+is mapped to INT1 pin.
+
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220505133021.22362-5-jagathjog1996@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iio/accel/Kconfig       |   2 +
+ drivers/iio/accel/bma400.h      |  10 +-
+ drivers/iio/accel/bma400_core.c | 177 +++++++++++++++++++++++++++++++-
+ drivers/iio/accel/bma400_i2c.c  |   2 +-
+ drivers/iio/accel/bma400_spi.c  |   2 +-
+ 5 files changed, 185 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index b53f010f3e40..35798712f811 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -204,6 +204,8 @@ config BMA220
+ config BMA400
+ 	tristate "Bosch BMA400 3-Axis Accelerometer Driver"
+ 	select REGMAP
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	select BMA400_I2C if I2C
+ 	select BMA400_SPI if SPI
+ 	help
+diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+index 1c8c47a9a317..907e1a6c0a38 100644
+--- a/drivers/iio/accel/bma400.h
++++ b/drivers/iio/accel/bma400.h
+@@ -62,6 +62,13 @@
+ #define BMA400_ACC_CONFIG2_REG      0x1b
+ #define BMA400_CMD_REG              0x7e
+ 
++/* Interrupt registers */
++#define BMA400_INT_CONFIG0_REG	    0x1f
++#define BMA400_INT_CONFIG1_REG	    0x20
++#define BMA400_INT1_MAP_REG	    0x21
++#define BMA400_INT_IO_CTRL_REG	    0x24
++#define BMA400_INT_DRDY_MSK	    BIT(7)
++
+ /* Chip ID of BMA 400 devices found in the chip ID register. */
+ #define BMA400_ID_REG_VAL           0x90
+ 
+@@ -111,6 +118,7 @@
+ 
+ extern const struct regmap_config bma400_regmap_config;
+ 
+-int bma400_probe(struct device *dev, struct regmap *regmap, const char *name);
++int bma400_probe(struct device *dev, struct regmap *regmap, int irq,
++		 const char *name);
+ 
+ #endif
+diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+index 07674d89d978..67e102c097bc 100644
+--- a/drivers/iio/accel/bma400_core.c
++++ b/drivers/iio/accel/bma400_core.c
+@@ -11,6 +11,7 @@
+  *  - Create channel for sensor time
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+@@ -20,6 +21,10 @@
+ #include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #include "bma400.h"
+ 
+@@ -46,6 +51,13 @@ enum bma400_power_mode {
+ 	POWER_MODE_INVALID = 0x03,
+ };
+ 
++enum bma400_scan {
++	BMA400_ACCL_X,
++	BMA400_ACCL_Y,
++	BMA400_ACCL_Z,
++	BMA400_TEMP,
++};
++
+ struct bma400_sample_freq {
+ 	int hz;
+ 	int uhz;
+@@ -61,6 +73,14 @@ struct bma400_data {
+ 	struct bma400_sample_freq sample_freq;
+ 	int oversampling_ratio;
+ 	int scale;
++	struct iio_trigger *trig;
++	/* Correct time stamp alignment */
++	struct {
++		__le16 buff[3];
++		u8 temperature;
++		s64 ts __aligned(8);
++	} buffer __aligned(IIO_ALIGN);
++	__le16 status;
+ };
+ 
+ static bool bma400_is_writable_reg(struct device *dev, unsigned int reg)
+@@ -152,7 +172,7 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
+ 	{ }
+ };
+ 
+-#define BMA400_ACC_CHANNEL(_axis) { \
++#define BMA400_ACC_CHANNEL(_index, _axis) { \
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_##_axis, \
+@@ -164,17 +184,32 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
+ 		BIT(IIO_CHAN_INFO_SCALE) | \
+ 		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+ 	.ext_info = bma400_ext_info, \
++	.scan_index = _index,	\
++	.scan_type = {		\
++		.sign = 's',	\
++		.realbits = 12,		\
++		.storagebits = 16,	\
++		.endianness = IIO_LE,	\
++	},				\
+ }
+ 
+ static const struct iio_chan_spec bma400_channels[] = {
+-	BMA400_ACC_CHANNEL(X),
+-	BMA400_ACC_CHANNEL(Y),
+-	BMA400_ACC_CHANNEL(Z),
++	BMA400_ACC_CHANNEL(0, X),
++	BMA400_ACC_CHANNEL(1, Y),
++	BMA400_ACC_CHANNEL(2, Z),
+ 	{
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.scan_index = 3,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 8,
++			.storagebits = 8,
++			.endianness = IIO_LE,
++		},
+ 	},
++	IIO_CHAN_SOFT_TIMESTAMP(4),
+ };
+ 
+ static int bma400_get_temp_reg(struct bma400_data *data, int *val, int *val2)
+@@ -659,6 +694,10 @@ static int bma400_init(struct bma400_data *data)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Configure INT1 pin to open drain */
++	ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG, 0x06);
++	if (ret)
++		return ret;
+ 	/*
+ 	 * Once the interrupt engine is supported we might use the
+ 	 * data_src_reg, but for now ensure this is set to the
+@@ -807,6 +846,31 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
++					     bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct bma400_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG0_REG,
++				 BMA400_INT_DRDY_MSK,
++				 FIELD_PREP(BMA400_INT_DRDY_MSK, state));
++	if (ret)
++		return ret;
++
++	return regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG,
++				  BMA400_INT_DRDY_MSK,
++				  FIELD_PREP(BMA400_INT_DRDY_MSK, state));
++}
++
++static const unsigned long bma400_avail_scan_masks[] = {
++	BIT(BMA400_ACCL_X) | BIT(BMA400_ACCL_Y) | BIT(BMA400_ACCL_Z),
++	BIT(BMA400_ACCL_X) | BIT(BMA400_ACCL_Y) | BIT(BMA400_ACCL_Z)
++	| BIT(BMA400_TEMP),
++	0
++};
++
+ static const struct iio_info bma400_info = {
+ 	.read_raw          = bma400_read_raw,
+ 	.read_avail        = bma400_read_avail,
+@@ -814,7 +878,78 @@ static const struct iio_info bma400_info = {
+ 	.write_raw_get_fmt = bma400_write_raw_get_fmt,
+ };
+ 
+-int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
++static const struct iio_trigger_ops bma400_trigger_ops = {
++	.set_trigger_state = &bma400_data_rdy_trigger_set_state,
++	.validate_device = &iio_trigger_validate_own_device,
++};
++
++static irqreturn_t bma400_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct bma400_data *data = iio_priv(indio_dev);
++	int ret, temp;
++
++	/* Lock to protect the data->buffer */
++	mutex_lock(&data->mutex);
++
++	/* bulk read six registers, with the base being the LSB register */
++	ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
++			       &data->buffer.buff, sizeof(data->buffer.buff));
++	if (ret)
++		goto unlock_err;
++
++	if (test_bit(BMA400_TEMP, indio_dev->active_scan_mask)) {
++		ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);
++		if (ret)
++			goto unlock_err;
++
++		data->buffer.temperature = temp;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
++					   iio_get_time_ns(indio_dev));
++
++	mutex_unlock(&data->mutex);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++
++unlock_err:
++	mutex_unlock(&data->mutex);
++	return IRQ_NONE;
++}
++
++static irqreturn_t bma400_interrupt(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct bma400_data *data = iio_priv(indio_dev);
++	int ret;
++
++	/* Lock to protect the data->status */
++	mutex_lock(&data->mutex);
++	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG,
++			       &data->status,
++			       sizeof(data->status));
++	/*
++	 * if none of the bit is set in the status register then it is
++	 * spurious interrupt.
++	 */
++	if (ret || !data->status)
++		goto unlock_err;
++
++	if (FIELD_GET(BMA400_INT_DRDY_MSK, le16_to_cpu(data->status))) {
++		mutex_unlock(&data->mutex);
++		iio_trigger_poll_chained(data->trig);
++		return IRQ_HANDLED;
++	}
++
++unlock_err:
++	mutex_unlock(&data->mutex);
++	return IRQ_NONE;
++}
++
++int bma400_probe(struct device *dev, struct regmap *regmap, int irq,
++		 const char *name)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct bma400_data *data;
+@@ -841,8 +976,40 @@ int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
+ 	indio_dev->info = &bma400_info;
+ 	indio_dev->channels = bma400_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(bma400_channels);
++	indio_dev->available_scan_masks = bma400_avail_scan_masks;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	if (irq > 0) {
++		data->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
++						    indio_dev->name,
++						    iio_device_id(indio_dev));
++		if (!data->trig)
++			return -ENOMEM;
++
++		data->trig->ops = &bma400_trigger_ops;
++		iio_trigger_set_drvdata(data->trig, indio_dev);
++
++		ret = devm_iio_trigger_register(data->dev, data->trig);
++		if (ret)
++			return dev_err_probe(data->dev, ret,
++					     "iio trigger register fail\n");
++
++		indio_dev->trig = iio_trigger_get(data->trig);
++		ret = devm_request_threaded_irq(dev, irq, NULL,
++						&bma400_interrupt,
++						IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++						indio_dev->name, indio_dev);
++		if (ret)
++			return dev_err_probe(data->dev, ret,
++					     "request irq %d failed\n", irq);
++	}
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++					      &bma400_trigger_handler, NULL);
++	if (ret)
++		return dev_err_probe(data->dev, ret,
++				     "iio triggered buffer setup failed\n");
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS(bma400_probe, IIO_BMA400);
+diff --git a/drivers/iio/accel/bma400_i2c.c b/drivers/iio/accel/bma400_i2c.c
+index 4f6e01a3b3a1..1ba2a982ea73 100644
+--- a/drivers/iio/accel/bma400_i2c.c
++++ b/drivers/iio/accel/bma400_i2c.c
+@@ -24,7 +24,7 @@ static int bma400_i2c_probe(struct i2c_client *client,
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	return bma400_probe(&client->dev, regmap, id->name);
++	return bma400_probe(&client->dev, regmap, client->irq, id->name);
+ }
+ 
+ static const struct i2c_device_id bma400_i2c_ids[] = {
+diff --git a/drivers/iio/accel/bma400_spi.c b/drivers/iio/accel/bma400_spi.c
+index 28e240400a3f..ec13c044b304 100644
+--- a/drivers/iio/accel/bma400_spi.c
++++ b/drivers/iio/accel/bma400_spi.c
+@@ -84,7 +84,7 @@ static int bma400_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		dev_err(&spi->dev, "Failed to read chip id register\n");
+ 
+-	return bma400_probe(&spi->dev, regmap, id->name);
++	return bma400_probe(&spi->dev, regmap, spi->irq, id->name);
+ }
+ 
+ static const struct spi_device_id bma400_spi_ids[] = {
+-- 
+2.35.1
 
 
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > Message-Id: <20220811080943.198245-1-mst@redhat.com>
-> > ---
-> >
-> > changes from v2:
-> >         tkeaked commit log to make lines shorter
-> > changes from v1:
-> >         fixed error handling
-> >
-> >  drivers/bluetooth/virtio_bt.c | 19 +++++++++++++++++--
-> >  1 file changed, 17 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
-> > index 67c21263f9e0..f6d699fed139 100644
-> > --- a/drivers/bluetooth/virtio_bt.c
-> > +++ b/drivers/bluetooth/virtio_bt.c
-> > @@ -50,8 +50,11 @@ static int virtbt_add_inbuf(struct virtio_bluetooth *vbt)
-> >
-> >  static int virtbt_open(struct hci_dev *hdev)
-> >  {
-> > -       struct virtio_bluetooth *vbt = hci_get_drvdata(hdev);
-> > +       return 0;
-> > +}
-> >
-> > +static int virtbt_open_vdev(struct virtio_bluetooth *vbt)
-> > +{
-> >         if (virtbt_add_inbuf(vbt) < 0)
-> >                 return -EIO;
-> >
-> > @@ -61,7 +64,11 @@ static int virtbt_open(struct hci_dev *hdev)
-> >
-> >  static int virtbt_close(struct hci_dev *hdev)
-> >  {
-> > -       struct virtio_bluetooth *vbt = hci_get_drvdata(hdev);
-> > +       return 0;
-> > +}
-> > +
-> > +static int virtbt_close_vdev(struct virtio_bluetooth *vbt)
-> > +{
-> >         int i;
-> >
-> >         cancel_work_sync(&vbt->rx);
-> > @@ -354,8 +361,15 @@ static int virtbt_probe(struct virtio_device *vdev)
-> >                 goto failed;
-> >         }
-> >
-> > +       virtio_device_ready(vdev);
-> > +       err = virtbt_open_vdev(vbt);
-> > +       if (err)
-> > +               goto open_failed;
-> > +
-> >         return 0;
-> >
-> > +open_failed:
-> > +       hci_free_dev(hdev);
-> >  failed:
-> >         vdev->config->del_vqs(vdev);
-> >         return err;
-> > @@ -368,6 +382,7 @@ static void virtbt_remove(struct virtio_device *vdev)
-> >
-> >         hci_unregister_dev(hdev);
-> >         virtio_reset_device(vdev);
-> > +       virtbt_close_vdev(vbt);
-> >
-> >         hci_free_dev(hdev);
-> >         vbt->hdev = NULL;
-> > --
-> > MST
-> >
-> 
-> 
-> -- 
-> Luiz Augusto von Dentz
 
