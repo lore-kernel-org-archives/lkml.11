@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB83C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B63DFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354427AbiHOXpd (ORCPT
+        id S1354435AbiHOXpj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
+        Mon, 15 Aug 2022 19:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354293AbiHOXls (ORCPT
+        with ESMTP id S1354288AbiHOXls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73152873A;
-        Mon, 15 Aug 2022 13:11:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E2DF5B1;
+        Mon, 15 Aug 2022 13:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B5B60DEB;
-        Mon, 15 Aug 2022 20:11:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574D8C433D6;
-        Mon, 15 Aug 2022 20:11:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6C5960B9B;
+        Mon, 15 Aug 2022 20:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D41B6C433D6;
+        Mon, 15 Aug 2022 20:11:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594302;
-        bh=QaRXUr3r4AsmHygVeKEdOsmgYRPBs1WjnhmGFYW8NS8=;
+        s=korg; t=1660594299;
+        bh=umu5Qdb7zS/cnY4uOR10gFUBOzmjDd7cXOrW7/1kgDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZK2R9Ku46qiSafV1RMVbrO/vtsIznVi16QIGMXUpbzHXPeovvFykCQO9kk9vP8Co
-         co71s3J2S100kQWopYH8IvsfqfiSIlR0xpNI7UPD00gIkXomKzY2cVGTVptbm0GPpG
-         Kjvqe0yniJ4urwR0Upq/HBL44VZKXJsTSZcRa3n0=
+        b=mQosnbe/+YJLiaoC4wq6go5MGrK7+uxXsUV6uYAzAJxpXJpYaRe5bAglI8p78viDG
+         8jLs1/RERKnOEseqdFxXFJz8ZbEGnsctXlJLlJMK6dGQDwkj9tvY2cTPiX/Wbpvn91
+         ml6WvvptAY7TurzYRqYy6YHt56ykGNIz5EPTq/fg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0411/1157] drm/vc4: dsi: Correct pixel order for DSI0
-Date:   Mon, 15 Aug 2022 19:56:07 +0200
-Message-Id: <20220815180456.087530143@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH 5.18 1089/1095] bpf: Suppress passing zero to PTR_ERR warning
+Date:   Mon, 15 Aug 2022 20:08:08 +0200
+Message-Id: <20220815180514.073914895@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-[ Upstream commit edfe84ae0df16be1251b5a8e840d95f1f3827500 ]
+commit 1ec5ee8c8a5a65ea377f8bea64bf4d5b743f6f79 upstream.
 
-For slightly unknown reasons, dsi0 takes a different pixel format
-to dsi1, and that has to be set in the pixel valve.
+Kernel Test Robot complains about passing zero to PTR_ERR for the said
+line, suppress it by using PTR_ERR_OR_ZERO.
 
-Amend the setup accordingly.
-
-Fixes: a86773d120d7 ("drm/vc4: Add support for feeding DSI encoders from the pixel valve.")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-14-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c0a5a21c25f3 ("bpf: Allow storing referenced kptr in map")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220521132620.1976921-1-memxor@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/bpf/verifier.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 9355213dc883..12a5944ee980 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -319,7 +319,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
- 	u32 pixel_rep = (mode->flags & DRM_MODE_FLAG_DBLCLK) ? 2 : 1;
- 	bool is_dsi = (vc4_encoder->type == VC4_ENCODER_TYPE_DSI0 ||
- 		       vc4_encoder->type == VC4_ENCODER_TYPE_DSI1);
--	u32 format = is_dsi ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
-+	bool is_dsi1 = vc4_encoder->type == VC4_ENCODER_TYPE_DSI1;
-+	u32 format = is_dsi1 ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
- 	u8 ppc = pv_data->pixels_per_clock;
- 	bool debug_dump_regs = false;
- 
--- 
-2.35.1
-
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5327,7 +5327,7 @@ static int process_kptr_func(struct bpf_
+ 		return -EINVAL;
+ 	}
+ 	if (!map_value_has_kptrs(map_ptr)) {
+-		ret = PTR_ERR(map_ptr->kptr_off_tab);
++		ret = PTR_ERR_OR_ZERO(map_ptr->kptr_off_tab);
+ 		if (ret == -E2BIG)
+ 			verbose(env, "map '%s' has more than %d kptr\n", map_ptr->name,
+ 				BPF_MAP_VALUE_OFF_MAX);
 
 
