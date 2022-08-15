@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 799C6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1FE4C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346331AbiHOWJm (ORCPT
+        id S1343660AbiHOWJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44190 "EHLO
+        Mon, 15 Aug 2022 18:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347139AbiHOWHS (ORCPT
+        with ESMTP id S1346748AbiHOWH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:07:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985C5118444;
-        Mon, 15 Aug 2022 12:37:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1EF9B80EAD;
-        Mon, 15 Aug 2022 19:37:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FB1C433C1;
-        Mon, 15 Aug 2022 19:37:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592274;
-        bh=sT5pL6cUl6cZxcolgG5Lty5iulljWSDOK+DQZab1v8I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ujC2tnn4EFftDYUZ/kbyBXcb5z8SSPOlHDbdCn2ahJQCmgAt12Z31zg3Osu+itXIK
-         UEgDwdYmGiO4EsuESkSfVgqSKO0BuF52kSSAAZEN6d0+R+oy8Dpmb3D+eon5yfautK
-         5UjjDaBT7g3qPg+45grm1GSNI2yG42L6FZIZSqvo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shunsuke Mie <mie@igel.co.jp>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0731/1095] PCI: endpoint: Dont stop controller when unbinding endpoint function
-Date:   Mon, 15 Aug 2022 20:02:10 +0200
-Message-Id: <20220815180459.630969270@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:07:59 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118D3118471;
+        Mon, 15 Aug 2022 12:38:01 -0700 (PDT)
+Received: from dslb-188-096-143-237.188.096.pools.vodafone-ip.de ([188.96.143.237] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1oNfuP-000485-S1; Mon, 15 Aug 2022 21:37:57 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Olivia Mackall <olivia@selenic.com>
+Cc:     linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 2/2] hwrng: imx-rngc - use devres for hwrng registration
+Date:   Mon, 15 Aug 2022 21:37:43 +0200
+Message-Id: <20220815193743.105926-3-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220815193743.105926-1-martin@kaiser.cx>
+References: <20220815193743.105926-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shunsuke Mie <mie@igel.co.jp>
+Replace hwrng_register with devm_hwrng_register and let devres unregister
+our hwrng when the device is removed.
 
-[ Upstream commit 1bc2b7bfba6e2f64edf5e246f3af2967261f6c3d ]
+It's possible to do this now that devres also handles clock
+disable+uprepare. When we had to disable+unprepare the clock ourselves,
+we had to unregister the hwrng before this and couldn't use devres.
 
-Unbinding an endpoint function from the endpoint controller shouldn't stop
-the controller.  This is especially a problem for multi-function endpoints
-where other endpoints may still be active.
+There's nothing left to do for imx_rngc_remove, this function can go.
 
-Don't stop the controller when unbinding one of its endpoints.  Normally
-the controller is stopped via configfs.
-
-Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
-Link: https://lore.kernel.org/r/20220622040924.113279-1-mie@igel.co.jp
-Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/char/hw_random/imx-rngc.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 5b833f00e980..a5ed779b0a51 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -627,7 +627,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
+diff --git a/drivers/char/hw_random/imx-rngc.c b/drivers/char/hw_random/imx-rngc.c
+index 23f490204341..97d8dc931ca6 100644
+--- a/drivers/char/hw_random/imx-rngc.c
++++ b/drivers/char/hw_random/imx-rngc.c
+@@ -292,7 +292,7 @@ static int imx_rngc_probe(struct platform_device *pdev)
+ 		}
+ 	}
  
- 	cancel_delayed_work(&epf_test->cmd_handler);
- 	pci_epf_test_clean_dma_chan(epf_test);
--	pci_epc_stop(epc);
- 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
- 		epf_bar = &epf->bar[bar];
+-	ret = hwrng_register(&rngc->rng);
++	ret = devm_hwrng_register(&pdev->dev, &rngc->rng);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "hwrng registration failed\n");
+ 		return ret;
+@@ -305,15 +305,6 @@ static int imx_rngc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
  
+-static int __exit imx_rngc_remove(struct platform_device *pdev)
+-{
+-	struct imx_rngc *rngc = platform_get_drvdata(pdev);
+-
+-	hwrng_unregister(&rngc->rng);
+-
+-	return 0;
+-}
+-
+ static int __maybe_unused imx_rngc_suspend(struct device *dev)
+ {
+ 	struct imx_rngc *rngc = dev_get_drvdata(dev);
+@@ -346,7 +337,6 @@ static struct platform_driver imx_rngc_driver = {
+ 		.pm = &imx_rngc_pm_ops,
+ 		.of_match_table = imx_rngc_dt_ids,
+ 	},
+-	.remove = __exit_p(imx_rngc_remove),
+ };
+ 
+ module_platform_driver_probe(imx_rngc_driver, imx_rngc_probe);
 -- 
-2.35.1
-
-
+2.30.2
 
