@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F70CC2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877D4C28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350411AbiHOWgd (ORCPT
+        id S1350363AbiHOWg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        Mon, 15 Aug 2022 18:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351237AbiHOW14 (ORCPT
+        with ESMTP id S1351225AbiHOW1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965066F56F;
-        Mon, 15 Aug 2022 12:47:45 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C586F559;
+        Mon, 15 Aug 2022 12:47:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2E856122C;
-        Mon, 15 Aug 2022 19:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AA6C433C1;
-        Mon, 15 Aug 2022 19:47:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4287CB81148;
+        Mon, 15 Aug 2022 19:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75765C433D6;
+        Mon, 15 Aug 2022 19:47:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592864;
-        bh=yhuN0DL0yv2xRFCMow4wX3R8JWRCMkUfnbUAKDjrUfk=;
+        s=korg; t=1660592860;
+        bh=uY13mo9qtASTnrLurEscpXAMDs4UVUh1xoWThPdMtxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Exun67G81V2XPHJxiKtDxFxVMaCfuGybNbpfecSPZgzZOMVCV79ONBS6+AuX4I0ZA
-         j0fQ6k64B/eRGQB8mcij+/ox5I16U+pf3qrbIeKrbkxvssl/CqeXSJPwikyRaBwHfg
-         oGgVCc3m4FnJgdzVsrzGvbz5+IBAk8yQZORFIHXI=
+        b=S8DABog2vUMBLH3wIgjsgKJsHe09eaqVdvMiwnK9CNOcEiMjVqkMFNpiBlf4ggf+5
+         c2kbsGf5Lh3ANWrCGSZZPIy9QYocymxp2x99FQa1A8B4K9c6QXCTAiKd3hPoY9Kzmh
+         x5evWHXBX2esCw39RIgqx7LyRnxAE8BSiBpDlTV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0829/1095] ASoC: imx-audmux: Silence a clang warning
-Date:   Mon, 15 Aug 2022 20:03:48 +0200
-Message-Id: <20220815180503.608132466@linuxfoundation.org>
+Subject: [PATCH 5.19 0175/1157] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 19:52:11 +0200
+Message-Id: <20220815180446.729429046@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 2f4a8171da06609bb6a063630ed546ee3d93dad7 ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-Change the of_device_get_match_data() cast to (uintptr_t)
-to silence the following clang warning:
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-sound/soc/fsl/imx-audmux.c:301:16: warning: cast to smaller integer type 'enum imx_audmux_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 6a8b8b582db1 ("ASoC: imx-audmux: Remove unused .id_table")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/20220526010543.1164793-1-festevam@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-audmux.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/fsl/imx-audmux.c b/sound/soc/fsl/imx-audmux.c
-index dfa05d40b276..a8e5e0f57faf 100644
---- a/sound/soc/fsl/imx-audmux.c
-+++ b/sound/soc/fsl/imx-audmux.c
-@@ -298,7 +298,7 @@ static int imx_audmux_probe(struct platform_device *pdev)
- 		audmux_clk = NULL;
- 	}
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 21413a9b7b6c..eb09a25e3b45 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
--	audmux_type = (enum imx_audmux_type)of_device_get_match_data(&pdev->dev);
-+	audmux_type = (uintptr_t)of_device_get_match_data(&pdev->dev);
- 
- 	switch (audmux_type) {
- 	case IMX31_AUDMUX:
+ 	return 0;
+ }
 -- 
 2.35.1
 
