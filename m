@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BB2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A21DDC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343651AbiHOVzC (ORCPT
+        id S1344981AbiHOVzH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        Mon, 15 Aug 2022 17:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350608AbiHOVvq (ORCPT
+        with ESMTP id S1349970AbiHOVwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:46 -0400
+        Mon, 15 Aug 2022 17:52:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C5E10777C;
-        Mon, 15 Aug 2022 12:33:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47107107F1B;
+        Mon, 15 Aug 2022 12:33:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F11AE60EF0;
-        Mon, 15 Aug 2022 19:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003C6C433D6;
-        Mon, 15 Aug 2022 19:33:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0416114B;
+        Mon, 15 Aug 2022 19:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C7EC433C1;
+        Mon, 15 Aug 2022 19:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591992;
-        bh=UDIfRdCg/9MJ7PfRFF1L942/9m5Ku730mwHGprEd1s8=;
+        s=korg; t=1660591995;
+        bh=g1Bx1HzdKI7GlDoXKpbcU4VMK32z9g/6QCn0thKghpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yF7ps9dAScO/QVqkTWHp4NauZV3vwtgogWPK+FjzBwUM4Ez3jpCXcY3OSu5S+Abdl
-         4Oj0/jcYS5NjeFB1v5PfHr0OZHKPk2AERQupMi/bf81T6+GrV547yk1F0KKqAMMjnh
-         UhiFdnbluCpvD5ZpgD6WzKubhV3xZtUxAyDhLxW8=
+        b=F2smWI5GT0vrNB+BuDYCh5iWsiVHLbmdhYXJjM3tYZ+CUdJEN7eIY3+H7TwODzI8U
+         RouW+0KC+teKeCuC26iMmULeIxQMzDBW4lD62irqmtM/a4PCEelZq1pClv4Kk7Ytaw
+         NTcjp4W6oo9Tb/uNl3Hh6RvwL+/GW0r8uUEjQBYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kai Huang <kai.huang@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0041/1157] KVM: x86/mmu: Fully re-evaluate MMIO caching when SPTE masks change
-Date:   Mon, 15 Aug 2022 19:49:57 +0200
-Message-Id: <20220815180441.084124063@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Shi <shy828301@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0715/1095] mm: rmap: use the correct parameter name for DEFINE_PAGE_VMA_WALK
+Date:   Mon, 15 Aug 2022 20:01:54 +0200
+Message-Id: <20220815180458.976610783@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,105 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Yang Shi <shy828301@gmail.com>
 
-commit c3e0c8c2e8b17bae30d5978bc2decdd4098f0f99 upstream.
+[ Upstream commit 507db7927cd181d409dd495c8384b8e14c21c600 ]
 
-Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
-masks change; simply clearing enable_mmio_caching when a configuration
-isn't compatible with caching fails to handle the scenario where the
-masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
-location, and toggle compatibility from false=>true.
+The parameter used by DEFINE_PAGE_VMA_WALK is _page not page, fix the
+parameter name.  It didn't cause any build error, it is probably because
+the only caller is write_protect_page() from ksm.c, which pass in page.
 
-Snapshot the original module param so that re-evaluating MMIO caching
-preserves userspace's desire to allow caching.  Use a snapshot approach
-so that enable_mmio_caching still reflects KVM's actual behavior.
-
-Fixes: 8b9e74bfbf8c ("KVM: x86/mmu: Use enable_mmio_caching to track if MMIO caching is enabled")
-Reported-by: Michael Roth <michael.roth@amd.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: stable@vger.kernel.org
-Tested-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Kai Huang <kai.huang@intel.com>
-Message-Id: <20220803224957.1285926-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20220512174551.81279-1-shy828301@gmail.com
+Fixes: 2aff7a4755be ("mm: Convert page_vma_mapped_walk to work on PFNs")
+Signed-off-by: Yang Shi <shy828301@gmail.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/mmu.c  |    4 ++++
- arch/x86/kvm/mmu/spte.c |   19 +++++++++++++++++++
- arch/x86/kvm/mmu/spte.h |    1 +
- 3 files changed, 24 insertions(+)
+ include/linux/rmap.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6274,11 +6274,15 @@ static int set_nx_huge_pages(const char
- /*
-  * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
-  * its default value of -1 is technically undefined behavior for a boolean.
-+ * Forward the module init call to SPTE code so that it too can handle module
-+ * params that need to be resolved/snapshot.
-  */
- void __init kvm_mmu_x86_module_init(void)
- {
- 	if (nx_huge_pages == -1)
- 		__set_nx_huge_pages(get_nx_auto_mode());
-+
-+	kvm_mmu_spte_module_init();
- }
- 
- /*
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -20,6 +20,7 @@
- #include <asm/vmx.h>
- 
- bool __read_mostly enable_mmio_caching = true;
-+static bool __ro_after_init allow_mmio_caching;
- module_param_named(mmio_caching, enable_mmio_caching, bool, 0444);
- EXPORT_SYMBOL_GPL(enable_mmio_caching);
- 
-@@ -43,6 +44,18 @@ u64 __read_mostly shadow_nonpresent_or_r
- 
- u8 __read_mostly shadow_phys_bits;
- 
-+void __init kvm_mmu_spte_module_init(void)
-+{
-+	/*
-+	 * Snapshot userspace's desire to allow MMIO caching.  Whether or not
-+	 * KVM can actually enable MMIO caching depends on vendor-specific
-+	 * hardware capabilities and other module params that can't be resolved
-+	 * until the vendor module is loaded, i.e. enable_mmio_caching can and
-+	 * will change when the vendor module is (re)loaded.
-+	 */
-+	allow_mmio_caching = enable_mmio_caching;
-+}
-+
- static u64 generation_mmio_spte_mask(u64 gen)
- {
- 	u64 mask;
-@@ -338,6 +351,12 @@ void kvm_mmu_set_mmio_spte_mask(u64 mmio
- 	BUG_ON((u64)(unsigned)access_mask != access_mask);
- 	WARN_ON(mmio_value & shadow_nonpresent_or_rsvd_lower_gfn_mask);
- 
-+	/*
-+	 * Reset to the original module param value to honor userspace's desire
-+	 * to (dis)allow MMIO caching.  Update the param itself so that
-+	 * userspace can see whether or not KVM is actually using MMIO caching.
-+	 */
-+	enable_mmio_caching = allow_mmio_caching;
- 	if (!enable_mmio_caching)
- 		mmio_value = 0;
- 
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -444,6 +444,7 @@ static inline u64 restore_acc_track_spte
- 
- u64 kvm_mmu_changed_pte_notifier_make_spte(u64 old_spte, kvm_pfn_t new_pfn);
- 
-+void __init kvm_mmu_spte_module_init(void);
- void kvm_mmu_reset_all_pte_masks(void);
- 
- #endif
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index 17230c458341..a0c4a870bb48 100644
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -220,8 +220,8 @@ struct page_vma_mapped_walk {
+ #define DEFINE_PAGE_VMA_WALK(name, _page, _vma, _address, _flags)	\
+ 	struct page_vma_mapped_walk name = {				\
+ 		.pfn = page_to_pfn(_page),				\
+-		.nr_pages = compound_nr(page),				\
+-		.pgoff = page_to_pgoff(page),				\
++		.nr_pages = compound_nr(_page),				\
++		.pgoff = page_to_pgoff(_page),				\
+ 		.vma = _vma,						\
+ 		.address = _address,					\
+ 		.flags = _flags,					\
+-- 
+2.35.1
+
 
 
