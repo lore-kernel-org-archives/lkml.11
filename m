@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F79C32757
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE565C32763
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355156AbiHOXvf (ORCPT
+        id S1355300AbiHOXvv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
+        Mon, 15 Aug 2022 19:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355045AbiHOXrA (ORCPT
+        with ESMTP id S1354346AbiHOXoR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:47:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607DB1117;
-        Mon, 15 Aug 2022 13:15:15 -0700 (PDT)
+        Mon, 15 Aug 2022 19:44:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2929986C19;
+        Mon, 15 Aug 2022 13:14:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50784B80EB1;
-        Mon, 15 Aug 2022 20:15:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A70ECC433C1;
-        Mon, 15 Aug 2022 20:15:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 972D560B6E;
+        Mon, 15 Aug 2022 20:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C51C433C1;
+        Mon, 15 Aug 2022 20:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594513;
-        bh=ipv9dfXXVqAtoVR/NxjiBYzy9by7wrxc6uBHn0fl/lw=;
+        s=korg; t=1660594447;
+        bh=Q8Hc5xyH/xwarte89q54kVHnwt5Jx0tft9JuJvXgEEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9noWkexd5sBS3/3/I0yST62q9v6hPTF4+Xii8ImtlwAH8EAF0N4hRK54hOHJoy/1
-         Id7Kn+V61cBm5LpTvstAkdrt7Dj6tRS/QLRxkLcU7oonGPpwT5kFT7FEjaKBgtjMW1
-         uJCHfYsjNGAeDgnqgnVOq0Q7QFYI9zYu9Owb0iXQ=
+        b=uEn6+iCZXbQqlQYln1QJuQXXaG1JW9H03U2asc82dlwsmSZzMkz60mPUAY2cdCALJ
+         ZGNCJLDRndDGjLi3OE21jIYyIHAAGb8derSj1Y9dl9gJypg06WPq14JTbX2UC543Qu
+         Bqeb+tSnlzuwEBS4oyjRUX/EbsgKtAtv0H6bAs4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0470/1157] mt76: mt7915: fix endian bug in mt7915_rf_regval_set()
-Date:   Mon, 15 Aug 2022 19:57:06 +0200
-Message-Id: <20220815180458.411176288@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Jonathan Gray <jsg@jsg.id.au>,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0451/1157] drm/radeon: avoid bogus "vram limit (0) must be a power of 2" warning
+Date:   Mon, 15 Aug 2022 19:56:47 +0200
+Message-Id: <20220815180457.638063331@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,36 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-[ Upstream commit f572dc969a59a80baa22bf2f7c9af0064402652f ]
+[ Upstream commit 9da2902609f7519c48eda84f953f72fee53f2b71 ]
 
-This code is supposed to set a u32 value, but casting will not work on
-big endian systems.
+I was getting the following message on boot on Linux 5.19-rc5:
+        radeon 0000:01:05.0: vram limit (0) must be a power of 2
+(I didn't use any radeon.vramlimit commandline parameter).
 
-Fixes: 0a17329ae9c1 ("mt76: mt7915: add debugfs knob for RF registers read/write")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+This is caused by
+commit 8c2d34eb53b9 ("drm/radeon: use kernel is_power_of_2 rather than local version")
+which removed radeon_check_pot_argument() and converted its users to
+is_power_of_2(). The two functions differ in its handling of 0, which is
+the default value of radeon_vram_limit: radeon_check_pot_argument()
+"incorrectly" considered it a power of 2, while is_power_of_2() does not.
+
+An appropriate conditional silences the warning message.
+
+It is not necessary to add a similar test to other callers of
+is_power_of_2() in radeon_device.c. The matching commit in amdgpu:
+commit 761175078466 ("drm/amdgpu: use kernel is_power_of_2 rather than local version")
+is unaffected by this bug.
+
+Tested on Radeon HD 3200.
+
+Not ccing stable, this is not serious enough.
+
+Fixes: 8c2d34eb53b9 ("drm/radeon: use kernel is_power_of_2 rather than local version")
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Jonathan Gray <jsg@jsg.id.au>
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/radeon_device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-index d0c719ecacd0..fd76db8f5269 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-@@ -985,8 +985,9 @@ static int
- mt7915_rf_regval_set(void *data, u64 val)
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 15692cb241fc..429644d5ddc6 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -1113,7 +1113,7 @@ static int radeon_gart_size_auto(enum radeon_family family)
+ static void radeon_check_arguments(struct radeon_device *rdev)
  {
- 	struct mt7915_dev *dev = data;
-+	u32 val32 = val;
- 
--	return mt7915_mcu_rf_regval(dev, dev->mt76.debugfs_reg, (u32 *)&val, true);
-+	return mt7915_mcu_rf_regval(dev, dev->mt76.debugfs_reg, &val32, true);
- }
- 
- DEFINE_DEBUGFS_ATTRIBUTE(fops_rf_regval, mt7915_rf_regval_get,
+ 	/* vramlimit must be a power of two */
+-	if (!is_power_of_2(radeon_vram_limit)) {
++	if (radeon_vram_limit != 0 && !is_power_of_2(radeon_vram_limit)) {
+ 		dev_warn(rdev->dev, "vram limit (%d) must be a power of 2\n",
+ 				radeon_vram_limit);
+ 		radeon_vram_limit = 0;
 -- 
 2.35.1
 
