@@ -2,280 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C489AC2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B281AC00140
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347505AbiHPAvu (ORCPT
+        id S1347315AbiHPAvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
+        Mon, 15 Aug 2022 20:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349034AbiHPAq3 (ORCPT
+        with ESMTP id S1348905AbiHPAq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF318D87D2;
-        Mon, 15 Aug 2022 13:44:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE6161255;
-        Mon, 15 Aug 2022 20:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08840C433D6;
-        Mon, 15 Aug 2022 20:44:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596296;
-        bh=RiMHovBZYHCGWtaHr4fLln1x+ZrPOtYFkzQIgJvlNg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZNXF0LyB4fM/cLUhVF08wkwawRWQYAsbRvMHlkxY4IhDPSykq8Apg2CeiZIjktEQa
-         36k9RBtgdn1zVTaPUh3WBfsmLHy2FkpVc22TDR0tsoCsIO12g/kRIRWLU/sGXkSp5V
-         aiaQfZjm+DBlFEc0ce9XKtu17q1fd7KjbBETOd9U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Block <bblock@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1034/1157] scsi: zfcp: Fix missing auto port scan and thus missing target ports
-Date:   Mon, 15 Aug 2022 20:06:30 +0200
-Message-Id: <20220815180521.324351393@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 20:46:28 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290C719580E
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:44:45 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-116c7286aaaso9423558fac.11
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=tYUBnH/MsVRH8/bfqF/s2biQgFrJkgqn5c8u0QHLws4=;
+        b=J1dcXg+0hcTPJW/ZFLCExzXkIuscsbapWoMN+oGZ2ujZl4NZ16nqo3WNgPZnti6lTd
+         i7o+MTQUVCOUB6pvodzFhmHDJhSxaAY++pPvcG5fEEQXa0a3m0EXlT4/T2pxmF122VKl
+         a1618VIaaciGn2grpGWNCl/z9cqvZVtcTaGaMnu3wxNxfYfO+me+b5iLcA05XURxNft6
+         t167aLOTrk3vPSXG1PPU6honySFp+qSkiQ8KHU+FFjGQaHUnVnyx0ZpPoOWNJrIeii5C
+         Hju9gpxGbCEJnXhSlU+fwOB2AxLmhZ2+xeXcuzRHZ1FGvYOqvUp6LBRnrLjCjMywvrx6
+         4w0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=tYUBnH/MsVRH8/bfqF/s2biQgFrJkgqn5c8u0QHLws4=;
+        b=QN75AEVdMai9DnL9bBb/alEgvLBOFD1th2nwCBH9HYOcA4yV/PGaNWndbB9Bwd0eFm
+         Rz07LH4FmRP6L3qxKeaY4uY1Q7RrgUrPRAl2zcLjUE9YrYv4LLO5ECxd+4P9k9CBy5UB
+         e9juWSPakUwkvrasLqW2rN32EYAs5ALnFhkgitmpNXaWgrCc8NH+Ue4sYSFp1i8nN1v6
+         Pgay2YpolUJk36QGxxxT6C8FPpyK/wwkjDqHtklNSlyPdERqINVaCn6QeEfz6dmI61tE
+         8FsZVXYxWAhTc4O4DoUVJwSdHFbf4UkgNgwb8CJkc/FVatgaRyb4o0PIDhAk1UzLFY3e
+         jGkw==
+X-Gm-Message-State: ACgBeo3qapqMaYdZXO6eci49/3uBzBRb25YaX3B4uDfgvYXZpUYrSZbb
+        ZJMkF9ch1xe73ogHWyUIOWLNlNQh3dXH3Ql+wp8=
+X-Google-Smtp-Source: AA6agR4lTNg/R9bH8fCViZfGEvc6dMFDdsFFr0Vis26Tmv/uGc+ltdRMU8B4hhcEYejU4tKiurv9Q3FDzVnrTQSIoRM=
+X-Received: by 2002:a05:6870:e98b:b0:10d:fe5c:f818 with SMTP id
+ r11-20020a056870e98b00b0010dfe5cf818mr7668019oao.106.1660596284103; Mon, 15
+ Aug 2022 13:44:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810232858.11844-1-andrealmeid@igalia.com> <20220810232858.11844-5-andrealmeid@igalia.com>
+In-Reply-To: <20220810232858.11844-5-andrealmeid@igalia.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 15 Aug 2022 16:44:33 -0400
+Message-ID: <CADnq5_N2EToKQG7xS6NOTvgLrVuzWTtqZgHbF6LEOH3gZdHhgQ@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] drm/amdgpu: Document gfx_off members of struct amdgpu_gfx
+To:     =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Pan Xinhui <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Tao Zhou <tao.zhou1@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jack Xiao <Jack.Xiao@amd.com>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Tom St Denis <tom.stdenis@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        kernel-dev@igalia.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steffen Maier <maier@linux.ibm.com>
+Applied the series.  Thanks!
 
-commit 4da8c5f76825269f28d6a89fa752934a4bcb6dfa upstream.
+Alex
 
-Case (1):
-  The only waiter on wka_port->completion_wq is zfcp_fc_wka_port_get()
-  trying to open a WKA port. As such it should only be woken up by WKA port
-  *open* responses, not by WKA port close responses.
-
-Case (2):
-  A close WKA port response coming in just after having sent a new open WKA
-  port request and before blocking for the open response with wait_event()
-  in zfcp_fc_wka_port_get() erroneously renders the wait_event a NOP
-  because the close handler overwrites wka_port->status. Hence the
-  wait_event condition is erroneously true and it does not enter blocking
-  state.
-
-With non-negligible probability, the following time space sequence happens
-depending on timing without this fix:
-
-user process        ERP thread zfcp work queue tasklet system work queue
-============        ========== =============== ======= =================
-$ echo 1 > online
-zfcp_ccw_set_online
-zfcp_ccw_activate
-zfcp_erp_adapter_reopen
-msleep scan backoff zfcp_erp_strategy
-|                   ...
-|                   zfcp_erp_action_cleanup
-|                   ...
-|                   queue delayed scan_work
-|                   queue ns_up_work
-|                              ns_up_work:
-|                              zfcp_fc_wka_port_get
-|                               open wka request
-|                                              open response
-|                              GSPN FC-GS
-|                              RSPN FC-GS [NPIV-only]
-|                              zfcp_fc_wka_port_put
-|                               (--wka->refcount==0)
-|                               sched delayed wka->work
-|
-~~~Case (1)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-zfcp_erp_wait
-flush scan_work
-|                                                      wka->work:
-|                                                      wka->status=CLOSING
-|                                                      close wka request
-|                              scan_work:
-|                              zfcp_fc_wka_port_get
-|                               (wka->status==CLOSING)
-|                               wka->status=OPENING
-|                               open wka request
-|                               wait_event
-|                               |              close response
-|                               |              wka->status=OFFLINE
-|                               |              wake_up /*WRONG*/
-~~~Case (2)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-|                                                      wka->work:
-|                                                      wka->status=CLOSING
-|                                                      close wka request
-zfcp_erp_wait
-flush scan_work
-|                              scan_work:
-|                              zfcp_fc_wka_port_get
-|                               (wka->status==CLOSING)
-|                               wka->status=OPENING
-|                               open wka request
-|                                              close response
-|                                              wka->status=OFFLINE
-|                                              wake_up /*WRONG&NOP*/
-|                               wait_event /*NOP*/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-|                               (wka->status!=ONLINE)
-|                               return -EIO
-|                              return early
-                                               open response
-                                               wka->status=ONLINE
-                                               wake_up /*NOP*/
-
-So we erroneously end up with no automatic port scan. This is a big problem
-when it happens during boot. The timing is influenced by v3.19 commit
-18f87a67e6d6 ("zfcp: auto port scan resiliency").
-
-Fix it by fully mutually excluding zfcp_fc_wka_port_get() and
-zfcp_fc_wka_port_offline(). For that to work, we make the latter block
-until we got the response for a close WKA port. In order not to penalize
-the system workqueue, we move wka_port->work to our own adapter workqueue.
-Note that before v2.6.30 commit 828bc1212a68 ("[SCSI] zfcp: Set WKA-port to
-offline on adapter deactivation"), zfcp did block in
-zfcp_fc_wka_port_offline() as well, but with a different condition.
-
-While at it, make non-functional cleanups to improve code reading in
-zfcp_fc_wka_port_get(). If we cannot send the WKA port open request, don't
-rely on the subsequent wait_event condition to immediately let this case
-pass without blocking. Also don't want to rely on the additional condition
-handling the refcount to be skipped just to finally return with -EIO.
-
-Link: https://lore.kernel.org/r/20220729162529.1620730-1-maier@linux.ibm.com
-Fixes: 5ab944f97e09 ("[SCSI] zfcp: attach and release SAN nameserver port on demand")
-Cc: <stable@vger.kernel.org> #v2.6.28+
-Reviewed-by: Benjamin Block <bblock@linux.ibm.com>
-Signed-off-by: Steffen Maier <maier@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/s390/scsi/zfcp_fc.c  |   29 ++++++++++++++++++++---------
- drivers/s390/scsi/zfcp_fc.h  |    6 ++++--
- drivers/s390/scsi/zfcp_fsf.c |    4 ++--
- 3 files changed, 26 insertions(+), 13 deletions(-)
-
---- a/drivers/s390/scsi/zfcp_fc.c
-+++ b/drivers/s390/scsi/zfcp_fc.c
-@@ -145,27 +145,33 @@ void zfcp_fc_enqueue_event(struct zfcp_a
- 
- static int zfcp_fc_wka_port_get(struct zfcp_fc_wka_port *wka_port)
- {
-+	int ret = -EIO;
-+
- 	if (mutex_lock_interruptible(&wka_port->mutex))
- 		return -ERESTARTSYS;
- 
- 	if (wka_port->status == ZFCP_FC_WKA_PORT_OFFLINE ||
- 	    wka_port->status == ZFCP_FC_WKA_PORT_CLOSING) {
- 		wka_port->status = ZFCP_FC_WKA_PORT_OPENING;
--		if (zfcp_fsf_open_wka_port(wka_port))
-+		if (zfcp_fsf_open_wka_port(wka_port)) {
-+			/* could not even send request, nothing to wait for */
- 			wka_port->status = ZFCP_FC_WKA_PORT_OFFLINE;
-+			goto out;
-+		}
- 	}
- 
--	mutex_unlock(&wka_port->mutex);
--
--	wait_event(wka_port->completion_wq,
-+	wait_event(wka_port->opened,
- 		   wka_port->status == ZFCP_FC_WKA_PORT_ONLINE ||
- 		   wka_port->status == ZFCP_FC_WKA_PORT_OFFLINE);
- 
- 	if (wka_port->status == ZFCP_FC_WKA_PORT_ONLINE) {
- 		atomic_inc(&wka_port->refcount);
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
--	return -EIO;
-+out:
-+	mutex_unlock(&wka_port->mutex);
-+	return ret;
- }
- 
- static void zfcp_fc_wka_port_offline(struct work_struct *work)
-@@ -181,9 +187,12 @@ static void zfcp_fc_wka_port_offline(str
- 
- 	wka_port->status = ZFCP_FC_WKA_PORT_CLOSING;
- 	if (zfcp_fsf_close_wka_port(wka_port)) {
-+		/* could not even send request, nothing to wait for */
- 		wka_port->status = ZFCP_FC_WKA_PORT_OFFLINE;
--		wake_up(&wka_port->completion_wq);
-+		goto out;
- 	}
-+	wait_event(wka_port->closed,
-+		   wka_port->status == ZFCP_FC_WKA_PORT_OFFLINE);
- out:
- 	mutex_unlock(&wka_port->mutex);
- }
-@@ -193,13 +202,15 @@ static void zfcp_fc_wka_port_put(struct
- 	if (atomic_dec_return(&wka_port->refcount) != 0)
- 		return;
- 	/* wait 10 milliseconds, other reqs might pop in */
--	schedule_delayed_work(&wka_port->work, HZ / 100);
-+	queue_delayed_work(wka_port->adapter->work_queue, &wka_port->work,
-+			   msecs_to_jiffies(10));
- }
- 
- static void zfcp_fc_wka_port_init(struct zfcp_fc_wka_port *wka_port, u32 d_id,
- 				  struct zfcp_adapter *adapter)
- {
--	init_waitqueue_head(&wka_port->completion_wq);
-+	init_waitqueue_head(&wka_port->opened);
-+	init_waitqueue_head(&wka_port->closed);
- 
- 	wka_port->adapter = adapter;
- 	wka_port->d_id = d_id;
---- a/drivers/s390/scsi/zfcp_fc.h
-+++ b/drivers/s390/scsi/zfcp_fc.h
-@@ -185,7 +185,8 @@ enum zfcp_fc_wka_status {
- /**
-  * struct zfcp_fc_wka_port - representation of well-known-address (WKA) FC port
-  * @adapter: Pointer to adapter structure this WKA port belongs to
-- * @completion_wq: Wait for completion of open/close command
-+ * @opened: Wait for completion of open command
-+ * @closed: Wait for completion of close command
-  * @status: Current status of WKA port
-  * @refcount: Reference count to keep port open as long as it is in use
-  * @d_id: FC destination id or well-known-address
-@@ -195,7 +196,8 @@ enum zfcp_fc_wka_status {
-  */
- struct zfcp_fc_wka_port {
- 	struct zfcp_adapter	*adapter;
--	wait_queue_head_t	completion_wq;
-+	wait_queue_head_t	opened;
-+	wait_queue_head_t	closed;
- 	enum zfcp_fc_wka_status	status;
- 	atomic_t		refcount;
- 	u32			d_id;
---- a/drivers/s390/scsi/zfcp_fsf.c
-+++ b/drivers/s390/scsi/zfcp_fsf.c
-@@ -1907,7 +1907,7 @@ static void zfcp_fsf_open_wka_port_handl
- 		wka_port->status = ZFCP_FC_WKA_PORT_ONLINE;
- 	}
- out:
--	wake_up(&wka_port->completion_wq);
-+	wake_up(&wka_port->opened);
- }
- 
- /**
-@@ -1966,7 +1966,7 @@ static void zfcp_fsf_close_wka_port_hand
- 	}
- 
- 	wka_port->status = ZFCP_FC_WKA_PORT_OFFLINE;
--	wake_up(&wka_port->completion_wq);
-+	wake_up(&wka_port->closed);
- }
- 
- /**
-
-
+On Wed, Aug 10, 2022 at 7:30 PM Andr=C3=A9 Almeida <andrealmeid@igalia.com>=
+ wrote:
+>
+> Add comments to document gfx_off related members of struct amdgpu_gfx.
+>
+> Signed-off-by: Andr=C3=A9 Almeida <andrealmeid@igalia.com>
+> ---
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.h | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.h b/drivers/gpu/drm/am=
+d/amdgpu/amdgpu_gfx.h
+> index 1b8b4a5270c9..8abdf41d0f83 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.h
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.h
+> @@ -332,12 +332,12 @@ struct amdgpu_gfx {
+>         uint32_t                        srbm_soft_reset;
+>
+>         /* gfx off */
+> -       bool                            gfx_off_state; /* true: enabled, =
+false: disabled */
+> -       struct mutex                    gfx_off_mutex;
+> -       uint32_t                        gfx_off_req_count; /* default 1, =
+enable gfx off: dec 1, disable gfx off: add 1 */
+> -       struct delayed_work             gfx_off_delay_work;
+> -       uint32_t                        gfx_off_residency;
+> -       uint64_t                        gfx_off_entrycount;
+> +       bool                            gfx_off_state;      /* true: enab=
+led, false: disabled */
+> +       struct mutex                    gfx_off_mutex;      /* mutex to c=
+hange gfxoff state */
+> +       uint32_t                        gfx_off_req_count;  /* default 1,=
+ enable gfx off: dec 1, disable gfx off: add 1 */
+> +       struct delayed_work             gfx_off_delay_work; /* async work=
+ to set gfx block off */
+> +       uint32_t                        gfx_off_residency;  /* last logge=
+d residency */
+> +       uint64_t                        gfx_off_entrycount; /* count of t=
+imes GPU has get into GFXOFF state */
+>
+>         /* pipe reservation */
+>         struct mutex                    pipe_reserve_mutex;
+> --
+> 2.37.1
+>
