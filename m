@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB26C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8F5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343536AbiHOWNz (ORCPT
+        id S1344060AbiHOWOC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        Mon, 15 Aug 2022 18:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349541AbiHOWLb (ORCPT
+        with ESMTP id S1349764AbiHOWLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:11:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D34011B4F3;
-        Mon, 15 Aug 2022 12:38:44 -0700 (PDT)
+        Mon, 15 Aug 2022 18:11:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049C611CF36;
+        Mon, 15 Aug 2022 12:38:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1CFD60FB9;
-        Mon, 15 Aug 2022 19:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFA23C433C1;
-        Mon, 15 Aug 2022 19:38:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60675B80EAD;
+        Mon, 15 Aug 2022 19:38:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D07C433D6;
+        Mon, 15 Aug 2022 19:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592322;
-        bh=lVE6si0vEtraGgGv0n6yqWBROaRF84v5MFZZ0BLmqaA=;
+        s=korg; t=1660592319;
+        bh=gv7Mbo3OMSEasmic/edVRxjNlyIQWK0+lDd+YsMwBz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QBBvZXY18a7RN8p3AdGYto241JUo21aZ89m6SwCH+P1blzWte/Kp1zU/dANYBEX4a
-         Ww3mKDiD6xxgBxB7EsZur/R3j/TOUvFl9fPr2xj1vckqt2Cdya6a6TqycDlj7batWG
-         TXNiY6t3sYZLaznaFK5DAP2w/bv+DzRjV4usc9Ko=
+        b=U4ZcMeccfghZNYMqoFObAvDYcP2f9IKTJdYBRxJFEAhEKZvYosl6FMMdeRoWtBZsL
+         M5fP82px8MhoPMS8AoCxtgNxWhOF1YtWWLQBXQNwq2HR9uP1MFzqtgN9nK5p+qz45k
+         TJGAwkaz2FmFDAI/Pbt9ekx9+sw5DNOy+b8TSeho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.19 0093/1157] drm/tegra: Fix vmapping of prime buffers
-Date:   Mon, 15 Aug 2022 19:50:49 +0200
-Message-Id: <20220815180443.314575317@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.19 0084/1157] drm/vc4: hdmi: Disable audio if dmas property is present but empty
+Date:   Mon, 15 Aug 2022 19:50:40 +0200
+Message-Id: <20220815180442.899448403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,51 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Phil Elwell <phil@raspberrypi.org>
 
-commit c7860cbee9989882d2908682526a5ef617523cfe upstream.
+commit db2b927f8668adf3ac765e0921cd2720f5c04172 upstream.
 
-The code assumes that Tegra GEM is permanently vmapped, which is not
-true for the scattered buffers. After converting Tegra video decoder
-driver to V4L API, we're now getting a BUG_ON from dma-buf core on playing
-video using libvdpau-tegra on T30+ because tegra_gem_prime_vmap() sets
-vaddr to NULL. Older pre-V4L video decoder driver wasn't vmapping dma-bufs.
-Fix it by actually vmapping the exported GEMs.
+The dmas property is used to hold the dmaengine channel used for audio
+output.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Older device trees were missing that property, so if it's not there we
+disable the audio output entirely.
+
+However, some overlays have set an empty value to that property, mostly
+to workaround the fact that overlays cannot remove a property. Let's add
+a test for that case and if it's empty, let's disable it as well.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Link: https://lore.kernel.org/r/20220613144800.326124-18-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/tegra/gem.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/tegra/gem.c
-+++ b/drivers/gpu/drm/tegra/gem.c
-@@ -704,14 +704,23 @@ static int tegra_gem_prime_vmap(struct d
- {
- 	struct drm_gem_object *gem = buf->priv;
- 	struct tegra_bo *bo = to_tegra_bo(gem);
-+	void *vaddr;
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2035,12 +2035,12 @@ static int vc4_hdmi_audio_init(struct vc
+ 	struct device *dev = &vc4_hdmi->pdev->dev;
+ 	struct platform_device *codec_pdev;
+ 	const __be32 *addr;
+-	int index;
++	int index, len;
+ 	int ret;
  
--	iosys_map_set_vaddr(map, bo->vaddr);
-+	vaddr = tegra_bo_mmap(&bo->base);
-+	if (IS_ERR(vaddr))
-+		return PTR_ERR(vaddr);
-+
-+	iosys_map_set_vaddr(map, vaddr);
+-	if (!of_find_property(dev->of_node, "dmas", NULL)) {
++	if (!of_find_property(dev->of_node, "dmas", &len) || !len) {
+ 		dev_warn(dev,
+-			 "'dmas' DT property is missing, no HDMI audio\n");
++			 "'dmas' DT property is missing or empty, no HDMI audio\n");
+ 		return 0;
+ 	}
  
- 	return 0;
- }
- 
- static void tegra_gem_prime_vunmap(struct dma_buf *buf, struct iosys_map *map)
- {
-+	struct drm_gem_object *gem = buf->priv;
-+	struct tegra_bo *bo = to_tegra_bo(gem);
-+
-+	tegra_bo_munmap(&bo->base, map->vaddr);
- }
- 
- static const struct dma_buf_ops tegra_gem_prime_dmabuf_ops = {
 
 
