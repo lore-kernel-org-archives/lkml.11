@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E46BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C773C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346586AbiHOUxF (ORCPT
+        id S1346603AbiHOUxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        Mon, 15 Aug 2022 16:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346896AbiHOUvN (ORCPT
+        with ESMTP id S1347024AbiHOUvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:51:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6720CBBA7B;
-        Mon, 15 Aug 2022 12:09:57 -0700 (PDT)
+        Mon, 15 Aug 2022 16:51:25 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F842BCC1A;
+        Mon, 15 Aug 2022 12:10:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD83360BB5;
-        Mon, 15 Aug 2022 19:09:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D235FC433C1;
-        Mon, 15 Aug 2022 19:09:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93EFBCE10E7;
+        Mon, 15 Aug 2022 19:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A908DC433C1;
+        Mon, 15 Aug 2022 19:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590595;
-        bh=LMkp6NyyuV2Ez/uJw716SkPh5MsLtM2lf94sqx8wvtc=;
+        s=korg; t=1660590605;
+        bh=RQSpplCUBZl1qVgA2uUkWWTBCxAn4COWpO14K6KXJUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NPkYTJG/JnE0pMXmKDQSv/+1qAaOMKijsIiICyo1/BFnUVAgOBJD7o3ISqd45Y89O
-         1Q6jxcD7tr+noNx5Q0EL3iCOAsGVXvg5lWtGTFY5SrZDCsA2Ip2sAScokmNyP7PXo4
-         i+hcq1gYTWt7+2DvyIhWWGW6gZzKK1XP+rheSM9I=
+        b=cEOinR+bvDtNbpw+BZHqY5M4/7F7raUxAgtlLtDI4ObfxSMIRH+Bm00oeRecy4o3y
+         rHS4O0LvrpLaM14l4ZhIrLGeWteNWPqgb96zqKcDRADIlkheOvEhK4Ri7J2JwZmPGn
+         apwGStsds6jqjDxgsYxmzI3q5gnBMpeANcLg4+VY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0310/1095] wifi: rtlwifi: fix error codes in rtl_debugfs_set_write_h2c()
-Date:   Mon, 15 Aug 2022 19:55:09 +0200
-Message-Id: <20220815180442.629180620@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0313/1095] ath11k: fix IRQ affinity warning on shutdown
+Date:   Mon, 15 Aug 2022 19:55:12 +0200
+Message-Id: <20220815180442.750719081@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,55 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit b88d28146c30a8e14f0f012d56ebf19b68a348f4 ]
+[ Upstream commit 3bd0c69653ac636eae8872aacdcd4156f772f928 ]
 
-If the copy_from_user() fails or the user gives invalid date then the
-correct thing to do is to return a negative error code.  (Currently it
-returns success).
+Make sure to clear the IRQ affinity hint also on shutdown to avoid
+triggering a WARN_ON_ONCE() in __free_irq() when stopping MHI while
+using a single MSI vector.
 
-I made a copy additional related cleanups:
-1) There is no need to check "buffer" for NULL.  That's handled by
-copy_from_user().
-2) The "h2c_len" variable cannot be negative because it is unsigned
-and because sscanf() does not return negative error codes.
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
 
-Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/YoOLnDkHgVltyXK7@kili
+Fixes: e94b07493da3 ("ath11k: Set IRQ affinity to CPU0 in case of one MSI vector")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220523143258.24818-1-johan+linaro@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/debug.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
-index 901cdfe3723c..0b1bc04cb6ad 100644
---- a/drivers/net/wireless/realtek/rtlwifi/debug.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
-@@ -329,8 +329,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 8a3ff12057e8..e2382c8595b6 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -1566,7 +1566,9 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
+ static void ath11k_pci_shutdown(struct pci_dev *pdev)
+ {
+ 	struct ath11k_base *ab = pci_get_drvdata(pdev);
++	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
  
- 	tmp_len = (count > sizeof(tmp) - 1 ? sizeof(tmp) - 1 : count);
++	ath11k_pci_set_irq_affinity_hint(ab_pci, NULL);
+ 	ath11k_pci_power_down(ab);
+ }
  
--	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
--		return count;
-+	if (copy_from_user(tmp, buffer, tmp_len))
-+		return -EFAULT;
- 
- 	tmp[tmp_len] = '\0';
- 
-@@ -340,8 +340,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
- 			 &h2c_data[4], &h2c_data[5],
- 			 &h2c_data[6], &h2c_data[7]);
- 
--	if (h2c_len <= 0)
--		return count;
-+	if (h2c_len == 0)
-+		return -EINVAL;
- 
- 	for (i = 0; i < h2c_len; i++)
- 		h2c_data_packed[i] = (u8)h2c_data[i];
 -- 
 2.35.1
 
