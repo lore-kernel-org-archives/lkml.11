@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36EBC32765
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ECBC32768
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344441AbiHOVVe (ORCPT
+        id S1344617AbiHOVVi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
+        Mon, 15 Aug 2022 17:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243392AbiHOVP0 (ORCPT
+        with ESMTP id S243822AbiHOVQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:15:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB2CDD751;
-        Mon, 15 Aug 2022 12:20:03 -0700 (PDT)
+        Mon, 15 Aug 2022 17:16:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148B6DD773;
+        Mon, 15 Aug 2022 12:20:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7A8461029;
-        Mon, 15 Aug 2022 19:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2FAFC4314B;
-        Mon, 15 Aug 2022 19:20:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6949AB81109;
+        Mon, 15 Aug 2022 19:20:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA570C433C1;
+        Mon, 15 Aug 2022 19:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591202;
-        bh=o4hOL74n7dGYA/eSRE1bc2Cbf2Nn5U/BWYjK5vaLMuw=;
+        s=korg; t=1660591205;
+        bh=YSQI2zPVfo1ine7m5O/rAnLOw30xNef/7p43YRVoBwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CaIHGDwl5B9n4iXGf2KZz3+wNBx0/SqIvSBQwOuMfhUuToqsTZ+VuqSFdseDLfaqv
-         aohbOmS2IlosvOmkTwEyCUJMfdGQl/QXsyFQppKgLaqd5wSFPyn8+gXH1VILBpIi2+
-         2wWLMPOuN75nLcuCuEn1gk834F4+I0fUYpEgeA68=
+        b=Su6yXtTL1WAJHe/eX8QUQYJMBR2XPFDC7vOcq1W9XDLQwhoPtoUtFltvhemNdrV+W
+         a48xTtOZBhxgY7Ao7xgbh+k3Ag2ok3ooeu/wAQw2tmhN9Vg3IaOzVUDbUNv4Ieh8XW
+         McnjChL+zeQQbCnMNxF9TBsl4FYIUbu4vEDjNeIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        stable@vger.kernel.org, Zhengping Jiang <jiangzp@google.com>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0462/1095] bpf: Fix subprog names in stack traces.
-Date:   Mon, 15 Aug 2022 19:57:41 +0200
-Message-Id: <20220815180448.720612194@linuxfoundation.org>
+Subject: [PATCH 5.18 0498/1095] Bluetooth: hci_sync: Fix resuming scan after suspend resume
+Date:   Mon, 15 Aug 2022 19:58:17 +0200
+Message-Id: <20220815180450.130852699@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,48 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: Zhengping Jiang <jiangzp@google.com>
 
-[ Upstream commit 9c7c48d6a1e2eb5192ad5294c1c4dbd42a88e88b ]
+[ Upstream commit 68253f3cd715e819bc4bff2b0e6b21234e259d56 ]
 
-The commit 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
-accidently made bpf_prog_ksym_set_name() conservative for bpf subprograms.
-Fixed it so instead of "bpf_prog_tag_F" the stack traces print "bpf_prog_tag_full_subprog_name".
+After resuming, remove setting scanning_paused to false, because it is
+checked and set to false in hci_resume_scan_sync. Also move setting
+the value to false before updating passive scan, because the value is
+used when resuming passive scan.
 
-Fixes: 7337224fc150 ("bpf: Improve the info.func_info and info.func_info_rec_size behavior")
-Reported-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220714211637.17150-1-alexei.starovoitov@gmail.com
+Fixes: 3b42055388c30 (Bluetooth: hci_sync: Fix attempting to suspend with
+unfiltered passive scan)
+
+Signed-off-by: Zhengping Jiang <jiangzp@google.com>
+Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/bluetooth/hci_sync.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index a6d3a8972355..f29aa357826c 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -13016,6 +13016,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 		/* Below members will be freed only at prog->aux */
- 		func[i]->aux->btf = prog->aux->btf;
- 		func[i]->aux->func_info = prog->aux->func_info;
-+		func[i]->aux->func_info_cnt = prog->aux->func_info_cnt;
- 		func[i]->aux->poke_tab = prog->aux->poke_tab;
- 		func[i]->aux->size_poke_tab = prog->aux->size_poke_tab;
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 9e2a42299fc0..99ef15167a81 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -5008,13 +5008,13 @@ static int hci_resume_scan_sync(struct hci_dev *hdev)
+ 	if (!hdev->scanning_paused)
+ 		return 0;
  
-@@ -13028,9 +13029,6 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 				poke->aux = func[i]->aux;
- 		}
++	hdev->scanning_paused = false;
++
+ 	hci_update_scan_sync(hdev);
  
--		/* Use bpf_prog_F_tag to indicate functions in stack traces.
--		 * Long term would need debug info to populate names
--		 */
- 		func[i]->aux->name[0] = 'F';
- 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
- 		func[i]->jit_requested = 1;
+ 	/* Reset passive scanning to normal */
+ 	hci_update_passive_scan_sync(hdev);
+ 
+-	hdev->scanning_paused = false;
+-
+ 	return 0;
+ }
+ 
+@@ -5033,7 +5033,6 @@ int hci_resume_sync(struct hci_dev *hdev)
+ 		return 0;
+ 
+ 	hdev->suspended = false;
+-	hdev->scanning_paused = false;
+ 
+ 	/* Restore event mask */
+ 	hci_set_event_mask_sync(hdev);
 -- 
 2.35.1
 
