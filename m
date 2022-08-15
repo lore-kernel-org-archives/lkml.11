@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42803C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F1CC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240507AbiHOXUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
+        id S245731AbiHOXUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353366AbiHOXQV (ORCPT
+        with ESMTP id S1353416AbiHOXQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:16:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86B914743C;
-        Mon, 15 Aug 2022 13:03:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:16:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774E81481E9;
+        Mon, 15 Aug 2022 13:03:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1255612D8;
-        Mon, 15 Aug 2022 20:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4829C433D6;
-        Mon, 15 Aug 2022 20:03:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 544A3B81145;
+        Mon, 15 Aug 2022 20:03:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C24C433D6;
+        Mon, 15 Aug 2022 20:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593787;
-        bh=9Pf3I5L9YkcRINMhHJWI5bH6f4UjHn55TDvvn+Jqi+k=;
+        s=korg; t=1660593790;
+        bh=IlsTSu6kQK1W/fpZxKV4UfY/eYMvYpK9w43YyHcTS5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lWhdNPTKnz1nXMq4w1pOAwymlC6FAxTEJjBrXHFL/fb+ZIFYDeXsu0j2nOooaLMLr
-         2RFiwr6jqi7ZsmUdIhutqDlFf9h3jKEDEieMJ6BrAd1Z/TR4QWCOWTZVftt7viozw4
-         APzSPR7UsGa4Kj3o8aGu94BL4fGsYDjS0wXTQYcs=
+        b=t6Q8uDjzEJ1qy8TFVnewFKhaYMu0HHQAMJjHwzfGoiRq1tZuoVxcbEoB80yv8Eaav
+         DDyMxDyXWfuXPCbU5PgjIBjhAUDyZkkajYJCsEWYRgD3lyDrBXE1fixkxdN0Dk+tgG
+         cHaMd+PY3TaQeFXl4iU7gLDuI5ozABrtvSyEvliQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Luo Meng <luomeng12@huawei.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1006/1095] dm thin: fix use-after-free crash in dm_sm_register_threshold_callback
-Date:   Mon, 15 Aug 2022 20:06:45 +0200
-Message-Id: <20220815180510.712920490@linuxfoundation.org>
+Subject: [PATCH 5.19 0326/1157] ath11k: fix IRQ affinity warning on shutdown
+Date:   Mon, 15 Aug 2022 19:54:42 +0200
+Message-Id: <20220815180452.690231330@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,93 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luo Meng <luomeng12@huawei.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit 3534e5a5ed2997ca1b00f44a0378a075bd05e8a3 ]
+[ Upstream commit 3bd0c69653ac636eae8872aacdcd4156f772f928 ]
 
-Fault inject on pool metadata device reports:
-  BUG: KASAN: use-after-free in dm_pool_register_metadata_threshold+0x40/0x80
-  Read of size 8 at addr ffff8881b9d50068 by task dmsetup/950
+Make sure to clear the IRQ affinity hint also on shutdown to avoid
+triggering a WARN_ON_ONCE() in __free_irq() when stopping MHI while
+using a single MSI vector.
 
-  CPU: 7 PID: 950 Comm: dmsetup Tainted: G        W         5.19.0-rc6 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x34/0x44
-   print_address_description.constprop.0.cold+0xeb/0x3f4
-   kasan_report.cold+0xe6/0x147
-   dm_pool_register_metadata_threshold+0x40/0x80
-   pool_ctr+0xa0a/0x1150
-   dm_table_add_target+0x2c8/0x640
-   table_load+0x1fd/0x430
-   ctl_ioctl+0x2c4/0x5a0
-   dm_ctl_ioctl+0xa/0x10
-   __x64_sys_ioctl+0xb3/0xd0
-   do_syscall_64+0x35/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
 
-This can be easily reproduced using:
-  echo offline > /sys/block/sda/device/state
-  dd if=/dev/zero of=/dev/mapper/thin bs=4k count=10
-  dmsetup load pool --table "0 20971520 thin-pool /dev/sda /dev/sdb 128 0 0"
-
-If a metadata commit fails, the transaction will be aborted and the
-metadata space maps will be destroyed. If a DM table reload then
-happens for this failed thin-pool, a use-after-free will occur in
-dm_sm_register_threshold_callback (called from
-dm_pool_register_metadata_threshold).
-
-Fix this by in dm_pool_register_metadata_threshold() by returning the
--EINVAL error if the thin-pool is in fail mode. Also fail pool_ctr()
-with a new error message: "Error registering metadata threshold".
-
-Fixes: ac8c3f3df65e4 ("dm thin: generate event when metadata threshold passed")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Luo Meng <luomeng12@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: e94b07493da3 ("ath11k: Set IRQ affinity to CPU0 in case of one MSI vector")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220523143258.24818-1-johan+linaro@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-thin-metadata.c | 7 +++++--
- drivers/md/dm-thin.c          | 4 +++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/md/dm-thin-metadata.c b/drivers/md/dm-thin-metadata.c
-index 2db7030aba00..a27395c8621f 100644
---- a/drivers/md/dm-thin-metadata.c
-+++ b/drivers/md/dm-thin-metadata.c
-@@ -2045,10 +2045,13 @@ int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
- 					dm_sm_threshold_fn fn,
- 					void *context)
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index dedf1b88ddf6..487a303b3077 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -920,7 +920,9 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
+ static void ath11k_pci_shutdown(struct pci_dev *pdev)
  {
--	int r;
-+	int r = -EINVAL;
+ 	struct ath11k_base *ab = pci_get_drvdata(pdev);
++	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
  
- 	pmd_write_lock_in_core(pmd);
--	r = dm_sm_register_threshold_callback(pmd->metadata_sm, threshold, fn, context);
-+	if (!pmd->fail_io) {
-+		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
-+						      threshold, fn, context);
-+	}
- 	pmd_write_unlock(pmd);
++	ath11k_pci_set_irq_affinity_hint(ab_pci, NULL);
+ 	ath11k_pci_power_down(ab);
+ }
  
- 	return r;
-diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
-index 4d25d0e27031..53ac6ae870ac 100644
---- a/drivers/md/dm-thin.c
-+++ b/drivers/md/dm-thin.c
-@@ -3382,8 +3382,10 @@ static int pool_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 						calc_metadata_threshold(pt),
- 						metadata_low_callback,
- 						pool);
--	if (r)
-+	if (r) {
-+		ti->error = "Error registering metadata threshold";
- 		goto out_flags_changed;
-+	}
- 
- 	dm_pool_register_pre_commit_callback(pool->pmd,
- 					     metadata_pre_commit_callback, pool);
 -- 
 2.35.1
 
