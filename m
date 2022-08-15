@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16F3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE716C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351525AbiHOWow (ORCPT
+        id S1351104AbiHOWo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
+        Mon, 15 Aug 2022 18:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350628AbiHOWkE (ORCPT
+        with ESMTP id S1350625AbiHOWkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:40:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2CED92;
-        Mon, 15 Aug 2022 12:51:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F51438B8;
+        Mon, 15 Aug 2022 12:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8810A6122B;
-        Mon, 15 Aug 2022 19:51:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 752E1C433D6;
-        Mon, 15 Aug 2022 19:51:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E95A6B8106C;
+        Mon, 15 Aug 2022 19:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CA6C433D6;
+        Mon, 15 Aug 2022 19:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593103;
-        bh=1nxUEJqdGrmDbqMzj+vb/mQeqj5KZSqrH9pIU4WSL2s=;
+        s=korg; t=1660593100;
+        bh=LoJSHb0qrQT8UqNWxvAx8oeRvfZkHYrRPDuDsS5KUgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=op7xY8D1OoI7mSRj9cJhgPMy8CY4Ss9vDeKTNFe3ngP/lGcQ8V2/iAmPDZ3CpSU0y
-         D5dscJFFbTihqR6Ucqccti1RTrhpzL68FHVXz0ZlL4+U6V0F+3loPI6H+a08gSb+PM
-         ojNWWRc+wnUMSSRI6sdC042qyCrm1uKZcA0Cj8WI=
+        b=RX5YVGWXbTbmGI9olyTuCRACteaVrY14bH5lF5dY4l5WpuutSEtpV9VTTpKUKTgSY
+         deCOleJTjZzK6RQC0HBuSJhzhwwtwMTg4qAL0Mkp6NmdHuk1zgQesKQeBzdIe/ZW9D
+         JMpK4G0d6fIib0wycPBpRo5/dH7iCReg/d7Qm24c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        kvm@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Siddharth Gupta <sidgup@codeaurora.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0896/1095] perf tools: Fix dso_id inode generation comparison
-Date:   Mon, 15 Aug 2022 20:04:55 +0200
-Message-Id: <20220815180506.372132821@linuxfoundation.org>
+Subject: [PATCH 5.18 0891/1095] remoteproc: qcom: pas: Check if coredump is enabled
+Date:   Mon, 15 Aug 2022 20:04:50 +0200
+Message-Id: <20220815180506.184300424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,55 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Siddharth Gupta <sidgup@codeaurora.org>
 
-[ Upstream commit 68566a7cf56bf3148797c218ed45a9de078ef47c ]
+[ Upstream commit 7b6ece968fca4ec9e42d34caff7e06dc84c45717 ]
 
-Synthesized MMAP events have zero ino_generation, so do not compare
-them to DSOs with a real ino_generation otherwise we end up with a DSO
-without a build id.
+Client drivers need to check if coredump is enabled for the rproc before
+continuing with coredump generation. This change adds a check in the PAS
+driver.
 
-Fixes: 0e3149f86b99ddab ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: kvm@vger.kernel.org
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220711093218.10967-2-adrian.hunter@intel.com
-[ Added clarification to the comment from Ian + more detailed explanation from Adrian ]
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 8ed8485c4f05 ("remoteproc: qcom: Add capability to collect minidumps")
+Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1657022900-2049-5-git-send-email-quic_sibis@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/dsos.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/remoteproc/qcom_q6v5_pas.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
-index b97366f77bbf..2bd23e4cf19e 100644
---- a/tools/perf/util/dsos.c
-+++ b/tools/perf/util/dsos.c
-@@ -23,8 +23,19 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
- 	if (a->ino > b->ino) return -1;
- 	if (a->ino < b->ino) return 1;
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 1ae47cc153e5..e7765bbe17a0 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -87,6 +87,9 @@ static void adsp_minidump(struct rproc *rproc)
+ {
+ 	struct qcom_adsp *adsp = rproc->priv;
  
--	if (a->ino_generation > b->ino_generation) return -1;
--	if (a->ino_generation < b->ino_generation) return 1;
-+	/*
-+	 * Synthesized MMAP events have zero ino_generation, avoid comparing
-+	 * them with MMAP events with actual ino_generation.
-+	 *
-+	 * I found it harmful because the mismatch resulted in a new
-+	 * dso that did not have a build ID whereas the original dso did have a
-+	 * build ID. The build ID was essential because the object was not found
-+	 * otherwise. - Adrian
-+	 */
-+	if (a->ino_generation && b->ino_generation) {
-+		if (a->ino_generation > b->ino_generation) return -1;
-+		if (a->ino_generation < b->ino_generation) return 1;
-+	}
- 
- 	return 0;
++	if (rproc->dump_conf == RPROC_COREDUMP_DISABLED)
++		return;
++
+ 	qcom_minidump(rproc, adsp->minidump_id);
  }
+ 
 -- 
 2.35.1
 
