@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D489C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC95C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346544AbiHOXOz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S243440AbiHOXPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233050AbiHOXNh (ORCPT
+        with ESMTP id S245556AbiHOXNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:13:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA17979ECB;
-        Mon, 15 Aug 2022 13:01:03 -0700 (PDT)
+        Mon, 15 Aug 2022 19:13:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3359779EF8;
+        Mon, 15 Aug 2022 13:01:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39A0F6068D;
-        Mon, 15 Aug 2022 20:01:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42929C433C1;
-        Mon, 15 Aug 2022 20:01:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC9B3B80EB1;
+        Mon, 15 Aug 2022 20:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34A66C433D6;
+        Mon, 15 Aug 2022 20:01:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593662;
-        bh=WT2HE1e9r+uBilfQpDAj/tBduX2W9ohkaAAS7aNFYyQ=;
+        s=korg; t=1660593665;
+        bh=DpIsB85cAaX72M1feI13jcsxfwUbFB17TZwzeEvMRtA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Son1gWWKIxbX7JOCUVBIhIkw3dMdulzbTOmcW6ZWrIipWNbTE3UQD4vv584OBSSzI
-         6Mh9EPc28+vLA96gQuSa1eXgr75AgT7Cw06aSdpUpCMeBhBZ6KFPgVsOpvLLDD4vSm
-         pycYM/YKYCOMzMHVuNKM6HOFeWok1o1bdKP6BLiU=
+        b=LmSoWZPbP6Fp7TN4Y5OfdZieLZhiPhqdS0h/CMZhOOk5BAO9i3PR8lst4fC09rK1S
+         nVO9hRHLht3eb5Xv7MiyPuffwf9zYIWiajJIXvAKqi5ICufMszUlUN4vV3t5tSmzhR
+         fEr+t4upj+RllfagoA7dG51kcL46DYIgqABr+hQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongnan Li <hongnan.li@linux.alibaba.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Chao Yu <chao@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0304/1157] erofs: update ctx->pos for every emitted dirent
-Date:   Mon, 15 Aug 2022 19:54:20 +0200
-Message-Id: <20220815180451.814972870@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0984/1095] drm/vc4: drv: Adopt the dma configuration from the HVS or V3D component
+Date:   Mon, 15 Aug 2022 20:06:23 +0200
+Message-Id: <20220815180509.832340319@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongnan Li <hongnan.li@linux.alibaba.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit ecce9212d0fd7a2d4a4998f0c4623a66887e14c8 ]
+[ Upstream commit da8e393e23efb60eba8959856c7df88f9859f6eb ]
 
-erofs_readdir update ctx->pos after filling a batch of dentries
-and it may cause dir/files duplication for NFS readdirplus which
-depends on ctx->pos to fill dir correctly. So update ctx->pos for
-every emitted dirent in erofs_fill_dentries to fix it.
+vc4_drv isn't necessarily under the /soc node in DT as it is a
+virtual device, but it is the one that does the allocations.
+The DMA addresses are consumed by primarily the HVS or V3D, and
+those require VideoCore cache alias address mapping, and so will be
+under /soc.
 
-Also fix the update of ctx->pos when the initial file position has
-exceeded nameoff.
+During probe find the a suitable device node for HVS or V3D,
+and adopt the DMA configuration of that node.
 
-Fixes: 3e917cc305c6 ("erofs: make filesystem exportable")
-Signed-off-by: Hongnan Li <hongnan.li@linux.alibaba.com>
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Link: https://lore.kernel.org/r/20220722082732.30935-1-jefflexu@linux.alibaba.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-2-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/dir.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/vc4/vc4_drv.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/fs/erofs/dir.c b/fs/erofs/dir.c
-index 18e59821c597..47c85f1b80d8 100644
---- a/fs/erofs/dir.c
-+++ b/fs/erofs/dir.c
-@@ -22,10 +22,9 @@ static void debug_one_dentry(unsigned char d_type, const char *de_name,
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index 162bc18e7497..14a7d529144d 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -209,6 +209,15 @@ static void vc4_match_add_drivers(struct device *dev,
+ 	}
  }
  
- static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
--			       void *dentry_blk, unsigned int *ofs,
-+			       void *dentry_blk, struct erofs_dirent *de,
- 			       unsigned int nameoff, unsigned int maxsize)
++const struct of_device_id vc4_dma_range_matches[] = {
++	{ .compatible = "brcm,bcm2711-hvs" },
++	{ .compatible = "brcm,bcm2835-hvs" },
++	{ .compatible = "brcm,bcm2835-v3d" },
++	{ .compatible = "brcm,cygnus-v3d" },
++	{ .compatible = "brcm,vc4-v3d" },
++	{}
++};
++
+ static int vc4_drm_bind(struct device *dev)
  {
--	struct erofs_dirent *de = dentry_blk + *ofs;
- 	const struct erofs_dirent *end = dentry_blk + nameoff;
+ 	struct platform_device *pdev = to_platform_device(dev);
+@@ -227,6 +236,16 @@ static int vc4_drm_bind(struct device *dev)
+ 		vc4_drm_driver.driver_features &= ~DRIVER_RENDER;
+ 	of_node_put(node);
  
- 	while (de < end) {
-@@ -59,9 +58,8 @@ static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
- 			/* stopped by some reason */
- 			return 1;
- 		++de;
--		*ofs += sizeof(struct erofs_dirent);
-+		ctx->pos += sizeof(struct erofs_dirent);
- 	}
--	*ofs = maxsize;
- 	return 0;
- }
- 
-@@ -95,7 +93,7 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
- 				  "invalid de[0].nameoff %u @ nid %llu",
- 				  nameoff, EROFS_I(dir)->nid);
- 			err = -EFSCORRUPTED;
--			goto skip_this;
-+			break;
- 		}
- 
- 		maxsize = min_t(unsigned int,
-@@ -106,17 +104,17 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
- 			initial = false;
- 
- 			ofs = roundup(ofs, sizeof(struct erofs_dirent));
-+			ctx->pos = blknr_to_addr(i) + ofs;
- 			if (ofs >= nameoff)
- 				goto skip_this;
- 		}
- 
--		err = erofs_fill_dentries(dir, ctx, de, &ofs,
-+		err = erofs_fill_dentries(dir, ctx, de, (void *)de + ofs,
- 					  nameoff, maxsize);
--skip_this:
--		ctx->pos = blknr_to_addr(i) + ofs;
--
- 		if (err)
- 			break;
-+skip_this:
-+		ctx->pos = blknr_to_addr(i) + maxsize;
- 		++i;
- 		ofs = 0;
- 	}
++	node = of_find_matching_node_and_match(NULL, vc4_dma_range_matches,
++					       NULL);
++	if (node) {
++		ret = of_dma_configure(dev, node, true);
++		of_node_put(node);
++
++		if (ret)
++			return ret;
++	}
++
+ 	vc4 = devm_drm_dev_alloc(dev, &vc4_drm_driver, struct vc4_dev, base);
+ 	if (IS_ERR(vc4))
+ 		return PTR_ERR(vc4);
 -- 
 2.35.1
 
