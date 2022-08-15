@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EB9C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:32:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C672AC25B0F
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbiHPEcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
+        id S229531AbiHPEcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiHPEbn (ORCPT
+        with ESMTP id S230034AbiHPEbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:31:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071C3160789;
-        Mon, 15 Aug 2022 13:22:43 -0700 (PDT)
+        Tue, 16 Aug 2022 00:31:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AF7C6B5F;
+        Mon, 15 Aug 2022 13:22:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C472060F60;
-        Mon, 15 Aug 2022 20:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6133C433C1;
-        Mon, 15 Aug 2022 20:22:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10E15B8119B;
+        Mon, 15 Aug 2022 20:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6894FC433C1;
+        Mon, 15 Aug 2022 20:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594962;
-        bh=lmgTM1jgIW+D13I6ebHyYB9coqQ/W7q1LTfXY/l42nQ=;
+        s=korg; t=1660594952;
+        bh=bzFVUVkb0hL4tUDIprYYW0i2vps8384MfZ5C8L4/c+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=02C1r3ObhuO/M4nM7PPo8x+zRoX0qlWd3aD3JdWgtUw4ynlw26SJ4Iz+pReVdM+Wb
-         B71J+l3FFP6I4CbhyVU3Ucb+PPu1TB7p3Z0wgdCrn8x0hOyY0S+/dDs4o8+i+cue14
-         jF4LF1bxqMzQWLImKtn4r7XVa8EfektISmK3wGbQ=
+        b=hu+lJKwkGncSz16I0BLe/HI6iKI0XsSVb0+KUgfA9hH95umY61zAdFrzQFjq7R2IM
+         V+sfz4nhrv1NSdY1tSN9nP5TbH1JOcEIJDJKrBO/F8RURGK4sDcFpWOx1goiHgYUBR
+         KOokkS8VsV3x9D/iuncZB7hYaVGpy5/qYRmAqKb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0612/1157] usbip: vudc: Dont enable IRQs prematurely
-Date:   Mon, 15 Aug 2022 19:59:28 +0200
-Message-Id: <20220815180504.135785499@linuxfoundation.org>
+Subject: [PATCH 5.19 0610/1157] usb: ohci-nxp: Fix refcount leak in ohci_hcd_nxp_probe
+Date:   Mon, 15 Aug 2022 19:59:26 +0200
+Message-Id: <20220815180504.046698561@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,94 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 62e4efe3375eb30292dabaec4481dc04550d3644 ]
+[ Upstream commit 302970b4cad3ebfda2c05ce06c322ccdc447d17e ]
 
-This code does:
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-	spin_unlock_irq(&udc->ud.lock);
-	spin_unlock_irqrestore(&udc->lock, flags);
-
-which does not make sense.  In theory, the first unlock could enable
-IRQs and then the second _irqrestore could disable them again.  There
-would be a brief momemt where IRQs were enabled improperly.
-
-In real life, however, this function is always called with IRQs enabled
-and the bug does not affect runtime.
-
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/Yo4hVWcZNYzKEkIQ@kili
+Fixes: 73108aa90cbf ("USB: ohci-nxp: Use isp1301 driver")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220603141231.979-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/vudc_sysfs.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/usb/host/ohci-nxp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/usbip/vudc_sysfs.c b/drivers/usb/usbip/vudc_sysfs.c
-index d1cf6b51bf85..c95e6b2bfd32 100644
---- a/drivers/usb/usbip/vudc_sysfs.c
-+++ b/drivers/usb/usbip/vudc_sysfs.c
-@@ -128,7 +128,7 @@ static ssize_t usbip_sockfd_store(struct device *dev,
- 			goto unlock;
- 		}
- 
--		spin_lock_irq(&udc->ud.lock);
-+		spin_lock(&udc->ud.lock);
- 
- 		if (udc->ud.status != SDEV_ST_AVAILABLE) {
- 			ret = -EINVAL;
-@@ -150,7 +150,7 @@ static ssize_t usbip_sockfd_store(struct device *dev,
- 		}
- 
- 		/* unlock and create threads and get tasks */
--		spin_unlock_irq(&udc->ud.lock);
-+		spin_unlock(&udc->ud.lock);
- 		spin_unlock_irqrestore(&udc->lock, flags);
- 
- 		tcp_rx = kthread_create(&v_rx_loop, &udc->ud, "vudc_rx");
-@@ -173,14 +173,14 @@ static ssize_t usbip_sockfd_store(struct device *dev,
- 
- 		/* lock and update udc->ud state */
- 		spin_lock_irqsave(&udc->lock, flags);
--		spin_lock_irq(&udc->ud.lock);
-+		spin_lock(&udc->ud.lock);
- 
- 		udc->ud.tcp_socket = socket;
- 		udc->ud.tcp_rx = tcp_rx;
- 		udc->ud.tcp_tx = tcp_tx;
- 		udc->ud.status = SDEV_ST_USED;
- 
--		spin_unlock_irq(&udc->ud.lock);
-+		spin_unlock(&udc->ud.lock);
- 
- 		ktime_get_ts64(&udc->start_time);
- 		v_start_timer(udc);
-@@ -201,12 +201,12 @@ static ssize_t usbip_sockfd_store(struct device *dev,
- 			goto unlock;
- 		}
- 
--		spin_lock_irq(&udc->ud.lock);
-+		spin_lock(&udc->ud.lock);
- 		if (udc->ud.status != SDEV_ST_USED) {
- 			ret = -EINVAL;
- 			goto unlock_ud;
- 		}
--		spin_unlock_irq(&udc->ud.lock);
-+		spin_unlock(&udc->ud.lock);
- 
- 		usbip_event_add(&udc->ud, VUDC_EVENT_DOWN);
+diff --git a/drivers/usb/host/ohci-nxp.c b/drivers/usb/host/ohci-nxp.c
+index 85878e8ad331..106a6bcefb08 100644
+--- a/drivers/usb/host/ohci-nxp.c
++++ b/drivers/usb/host/ohci-nxp.c
+@@ -164,6 +164,7 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
  	}
-@@ -219,7 +219,7 @@ static ssize_t usbip_sockfd_store(struct device *dev,
- sock_err:
- 	sockfd_put(socket);
- unlock_ud:
--	spin_unlock_irq(&udc->ud.lock);
-+	spin_unlock(&udc->ud.lock);
- unlock:
- 	spin_unlock_irqrestore(&udc->lock, flags);
- 	mutex_unlock(&udc->ud.sysfs_lock);
+ 
+ 	isp1301_i2c_client = isp1301_get_client(isp1301_node);
++	of_node_put(isp1301_node);
+ 	if (!isp1301_i2c_client)
+ 		return -EPROBE_DEFER;
+ 
 -- 
 2.35.1
 
