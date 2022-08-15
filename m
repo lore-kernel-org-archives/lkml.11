@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DD6C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2079AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350428AbiHPAXi (ORCPT
+        id S1352570AbiHPAXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        Mon, 15 Aug 2022 20:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345410AbiHPARa (ORCPT
+        with ESMTP id S1348941AbiHPARq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:17:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF62179E18;
-        Mon, 15 Aug 2022 13:30:55 -0700 (PDT)
+        Mon, 15 Aug 2022 20:17:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA223A3D44;
+        Mon, 15 Aug 2022 13:31:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D124861089;
-        Mon, 15 Aug 2022 20:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4E4C433C1;
-        Mon, 15 Aug 2022 20:30:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF2FCB80EB1;
+        Mon, 15 Aug 2022 20:31:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A4FC433C1;
+        Mon, 15 Aug 2022 20:31:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595454;
-        bh=VectoRnel6ZxlxWCEKAW8w1l70sUcU5royMSTDmQfLo=;
+        s=korg; t=1660595463;
+        bh=viaFuZBfoGpqRxPtLy9x71upvo+m2Mrt9nmJ52GbDR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAFEqObxRHamco8jEcYDsDnHJ+IVaP3EABVSyqCHxBdremKXZgPGkDajXFoKhu453
-         HNzWSCWLKtQ3VZkekZ2R8UCLPaG59VXmlpYRNr+5XMB/K2O7+BY6r92rQExIF0Oh35
-         IWRLW0D+N0bCwQqVKFluZjVsd5I+rn3Q9KYuqICI=
+        b=CT7tiIVFHd6b3AZxEfuu0r3iPWUTFy3wqyRZLk144e6S1mYz0dWLbmVbNCsDLXe3G
+         EXahO0ah1xynv5p5SLyJpk9hkL491TuvqF8iS6ajPTQXgnUmck8VVr3XdVh1uLqU4x
+         9UIYk1ssqKpCPS/KSmchOilDiDHo1AuZXc8Qszpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0770/1157] phy: rockchip-inno-usb2: Sync initial otg state
-Date:   Mon, 15 Aug 2022 20:02:06 +0200
-Message-Id: <20220815180510.296325766@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0773/1157] PCI: dwc: Disable outbound windows only for controllers using iATU
+Date:   Mon, 15 Aug 2022 20:02:09 +0200
+Message-Id: <20220815180510.408689397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,41 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Geis <pgwipeout@gmail.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 8dc60f8da22fdbaa1fafcfb5ff6d24bc9eff56aa ]
+[ Upstream commit d60a2e281e9de2b2f67343b2e39417ca0f4fd54e ]
 
-The initial otg state for the phy defaults to device mode. The actual
-state isn't detected until an ID IRQ fires. Fix this by syncing the ID
-state during initialization.
+Some DWC-based controllers (e.g., pcie-al.c and pci-keystone.c, identified
+by the fact that they override the default dw_child_pcie_ops) use their own
+address translation approach instead of the DWC internal ATU (iATU).  For
+those controllers, skip disabling the iATU outbound windows.
 
-Fixes: 51a9b2c03dd3 ("phy: rockchip-inno-usb2: Handle ID IRQ")
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Link: https://lore.kernel.org/r/20220622003140.30365-1-pgwipeout@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[bhelgaas: commit log, update multiple window comment]
+Fixes: 458ad06c4cdd ("PCI: dwc: Ensure all outbound ATU windows are reset")
+Link: https://lore.kernel.org/r/20220624143428.8334-4-Sergey.Semin@baikalelectronics.ru
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/pci/controller/dwc/pcie-designware-host.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index 6711659f727c..6e44069617df 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -1162,6 +1162,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
- 					EXTCON_USB_HOST, &rport->event_nb);
- 		if (ret)
- 			dev_err(rphy->dev, "register USB HOST notifier failed\n");
-+
-+		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
-+			/* do initial sync of usb state */
-+			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
-+			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-+		}
- 	}
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index bc9a7df130ef..d0d768f22ac3 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -543,7 +543,6 @@ static struct pci_ops dw_pcie_ops = {
  
- out:
+ void dw_pcie_setup_rc(struct pcie_port *pp)
+ {
+-	int i;
+ 	u32 val, ctrl, num_ctrls;
+ 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+ 
+@@ -594,19 +593,22 @@ void dw_pcie_setup_rc(struct pcie_port *pp)
+ 		PCI_COMMAND_MASTER | PCI_COMMAND_SERR;
+ 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);
+ 
+-	/* Ensure all outbound windows are disabled so there are multiple matches */
+-	for (i = 0; i < pci->num_ob_windows; i++)
+-		dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
+-
+ 	/*
+ 	 * If the platform provides its own child bus config accesses, it means
+ 	 * the platform uses its own address translation component rather than
+ 	 * ATU, so we should not program the ATU here.
+ 	 */
+ 	if (pp->bridge->child_ops == &dw_child_pcie_ops) {
+-		int atu_idx = 0;
++		int i, atu_idx = 0;
+ 		struct resource_entry *entry;
+ 
++		/*
++		 * Disable all outbound windows to make sure a transaction
++		 * can't match multiple windows.
++		 */
++		for (i = 0; i < pci->num_ob_windows; i++)
++			dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
++
+ 		/* Get last memory resource entry */
+ 		resource_list_for_each_entry(entry, &pp->bridge->windows) {
+ 			if (resource_type(entry->res) != IORESOURCE_MEM)
 -- 
 2.35.1
 
