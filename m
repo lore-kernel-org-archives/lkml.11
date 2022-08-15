@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F35DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0105C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352691AbiHPAFM (ORCPT
+        id S1352002AbiHPAFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
+        Mon, 15 Aug 2022 20:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355598AbiHOX4y (ORCPT
+        with ESMTP id S1355618AbiHOX5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:56:54 -0400
+        Mon, 15 Aug 2022 19:57:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C89163AF7;
-        Mon, 15 Aug 2022 13:20:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C41163ACA;
+        Mon, 15 Aug 2022 13:20:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5441C61070;
-        Mon, 15 Aug 2022 20:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CFA1C433C1;
-        Mon, 15 Aug 2022 20:20:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CD5A60FB8;
+        Mon, 15 Aug 2022 20:20:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3931AC433D6;
+        Mon, 15 Aug 2022 20:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594805;
-        bh=rCJ5IZlcujA+VBDei++2b8s3UWpJOoJg5ymsyUzwOQ8=;
+        s=korg; t=1660594799;
+        bh=f4SZ4mcsekZdIZR9EDgaIVdoZev4KSJk5zIiug8otjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I7IpwptFHRfDnvAQZW/KNEG1RxaV/jMRPCxrzyrv8FFg7YmNjnmnODzYQKib/XnvV
-         sumPGP6zMYeyCBPj/xOsHiZgJDJSl+TsGl9lqLEKs/6j3DMgcdr2GAyspFwLEkzIYw
-         FvsnlDSYAJWrX08ntd0+0wBmMma3QFWdULdncTkE=
+        b=vxii4nroFKPkfqNdlbpr/OtJ0/NFw2Oraf6I73ENlA04xPDJ6572BuUKsvMScAMDW
+         TNMplAWpKt/wKS1HLMdssT/ehICbqA6SROHZ1dE3LKJZmVo6qYOsNLGAT72vPm5jlR
+         fby7hLJGnz8IYL+YO8QPSvU068CyBIdFsWd7uXFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Jun Zhang <xuejun.zhang@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0565/1157] netdevsim: Avoid allocation warnings triggered from user space
-Date:   Mon, 15 Aug 2022 19:58:41 +0200
-Message-Id: <20220815180502.203755170@linuxfoundation.org>
+Subject: [PATCH 5.19 0563/1157] iavf: Fix max_rate limiting
+Date:   Mon, 15 Aug 2022 19:58:39 +0200
+Message-Id: <20220815180502.126907857@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,52 +53,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-[ Upstream commit d0b80a9edb1a029ff913e81b47540e57ad034329 ]
+[ Upstream commit ec60d54cb9a3d43a02c5612a03093c18233e6601 ]
 
-We need to suppress warnings from sily map sizes. Also switch
-from GFP_USER to GFP_KERNEL_ACCOUNT, I'm pretty sure I misunderstood
-the flags when writing this code.
+Fix max_rate option in TC, check for proper quanta boundaries.
+Check for minimum value provided and if it fits expected 50Mbps
+quanta.
 
-Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
-Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220726213605.154204-1-kuba@kernel.org
+Without this patch, iavf could send settings for max_rate limiting
+that would be accepted from by PF even the max_rate option is less
+than expected 50Mbps quanta. It results in no rate limiting
+on traffic as rate limiting will be floored to 0.
+
+Example:
+tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
+2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
+max_rate 50Mbps 500Mbps 500Mbps
+
+Should limit TC0 to circa 50 Mbps
+
+tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
+2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
+max_rate 0Mbps 100Kbit 500Mbps
+
+Should return error
+
+Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Jun Zhang <xuejun.zhang@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/netdevsim/bpf.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h      |  1 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 25 +++++++++++++++++++--
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
-index a43820212932..50854265864d 100644
---- a/drivers/net/netdevsim/bpf.c
-+++ b/drivers/net/netdevsim/bpf.c
-@@ -351,10 +351,12 @@ nsim_map_alloc_elem(struct bpf_offloaded_map *offmap, unsigned int idx)
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 0ea0361cd86b..c241fbc30f93 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -92,6 +92,7 @@ struct iavf_vsi {
+ #define IAVF_HKEY_ARRAY_SIZE ((IAVF_VFQF_HKEY_MAX_INDEX + 1) * 4)
+ #define IAVF_HLUT_ARRAY_SIZE ((IAVF_VFQF_HLUT_MAX_INDEX + 1) * 4)
+ #define IAVF_MBPS_DIVISOR	125000 /* divisor to convert to Mbps */
++#define IAVF_MBPS_QUANTA	50
+ 
+ #define IAVF_VIRTCHNL_VF_RESOURCE_SIZE (sizeof(struct virtchnl_vf_resource) + \
+ 					(IAVF_MAX_VF_VSI * \
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 2e2c153ce46a..51ae10eb348c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3322,6 +3322,7 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
+ 				   struct tc_mqprio_qopt_offload *mqprio_qopt)
  {
- 	struct nsim_bpf_bound_map *nmap = offmap->dev_priv;
- 
--	nmap->entry[idx].key = kmalloc(offmap->map.key_size, GFP_USER);
-+	nmap->entry[idx].key = kmalloc(offmap->map.key_size,
-+				       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].key)
- 		return -ENOMEM;
--	nmap->entry[idx].value = kmalloc(offmap->map.value_size, GFP_USER);
-+	nmap->entry[idx].value = kmalloc(offmap->map.value_size,
-+					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].value) {
- 		kfree(nmap->entry[idx].key);
- 		nmap->entry[idx].key = NULL;
-@@ -496,7 +498,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
- 	if (offmap->map.map_flags)
- 		return -EINVAL;
- 
--	nmap = kzalloc(sizeof(*nmap), GFP_USER);
-+	nmap = kzalloc(sizeof(*nmap), GFP_KERNEL_ACCOUNT);
- 	if (!nmap)
- 		return -ENOMEM;
- 
+ 	u64 total_max_rate = 0;
++	u32 tx_rate_rem = 0;
+ 	int i, num_qps = 0;
+ 	u64 tx_rate = 0;
+ 	int ret = 0;
+@@ -3336,12 +3337,32 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
+ 			return -EINVAL;
+ 		if (mqprio_qopt->min_rate[i]) {
+ 			dev_err(&adapter->pdev->dev,
+-				"Invalid min tx rate (greater than 0) specified\n");
++				"Invalid min tx rate (greater than 0) specified for TC%d\n",
++				i);
+ 			return -EINVAL;
+ 		}
+-		/*convert to Mbps */
++
++		/* convert to Mbps */
+ 		tx_rate = div_u64(mqprio_qopt->max_rate[i],
+ 				  IAVF_MBPS_DIVISOR);
++
++		if (mqprio_qopt->max_rate[i] &&
++		    tx_rate < IAVF_MBPS_QUANTA) {
++			dev_err(&adapter->pdev->dev,
++				"Invalid max tx rate for TC%d, minimum %dMbps\n",
++				i, IAVF_MBPS_QUANTA);
++			return -EINVAL;
++		}
++
++		(void)div_u64_rem(tx_rate, IAVF_MBPS_QUANTA, &tx_rate_rem);
++
++		if (tx_rate_rem != 0) {
++			dev_err(&adapter->pdev->dev,
++				"Invalid max tx rate for TC%d, not divisible by %d\n",
++				i, IAVF_MBPS_QUANTA);
++			return -EINVAL;
++		}
++
+ 		total_max_rate += tx_rate;
+ 		num_qps += mqprio_qopt->qopt.count[i];
+ 	}
 -- 
 2.35.1
 
