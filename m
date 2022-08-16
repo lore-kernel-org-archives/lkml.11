@@ -2,87 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2418C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FA8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235482AbiHPOBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 10:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        id S235682AbiHPOCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 10:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235349AbiHPOBn (ORCPT
+        with ESMTP id S235843AbiHPOCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 10:01:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEB26EF11
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:01:41 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so9705428pjk.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:01:41 -0700 (PDT)
+        Tue, 16 Aug 2022 10:02:39 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613BD90192
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:02:35 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id s11so13588262edd.13
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:02:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=erk4QjfKLI1wqXEF6e5iSvx1UiCDlKAdjqB4/lN4Erk=;
-        b=Y0g/2vtkm1HDsEQno8ZsLNKBwZANZXHmx08W3wcN28MC03rqN8MuI64iRs+rHEj/xM
-         Mhgh3CWWqwIHvp1zbpwHD9c7qXg8eE0IRMI8lE/Bs7Oc8V/33m9VXiuhskmTBfgxD9NZ
-         Mq62JekBPMAcUxs3Ilcqg2rqG1qAlFVad2zD270PHvYGPCENWlJsVUgAAgaml9ycj8+R
-         a3jNEi3vDV1kpIpykK09HTqW8zI8WIjy7FGbgBfUo8YJAns9J0U7Fg6u4PI2mpVSLveW
-         3onWPrEs8plVxEpuEm8C8LSAqbQuxfh0aI9mUsW5fx9yeIMqQ/EHbVhAWxDUX3eJSAq/
-         eMZg==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=fzP2NQgZqJYKRDX1t6xLZ4tBPZDpSneow1UcjWoKMPQ=;
+        b=n2K8ihSCpPw+4a4A8ph+BqFPQ3fqVunte+rj+d8r1nZsvumLrZp5gSlVUM09a4+csu
+         eJALVsbeR6mQENUEWohsfqNrrgmtuiLG41ucEzA5iDPquNVmyvy5AicINVsztZJTHGN0
+         HSM2duWWn6m2RqnisXlHnTJqhM+vTzDcumDD1umOgurUJdbsn4I0XBQnBcj7sHFQ5bV9
+         tzO0hjKvHDYBDfhF/M1g+I/sBSrKDGNXm8tuwWT33TdwhJwSnOwwVS0+IX32vMSHbneY
+         i2L+z65AQ52Mi9XjSv0VD0DSwztm+OwYEkgreIBN+iTeOePHQlMwdzHmd2uG/6cEFxZq
+         T6mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=erk4QjfKLI1wqXEF6e5iSvx1UiCDlKAdjqB4/lN4Erk=;
-        b=xNqR4JZrNv+uy3Bi8huh1nepNf0DQbHi/8rh/opkVeex9gsZCK7/l1CDsEs+qZBaiM
-         284n867IALYUsVNBUJOoCS90E/aKtioDbjnh1h3s4HvrwBACCIFWHyj15yvRjEXfdXXp
-         ftoh7mcTGKhP8MeyLuIG2AyahP6sSmgm1oHwTV9yWIxKUVK0/gpTDpmhdX7q/U4SV58b
-         hnS6/xK5hSW7e9i4QfNRYADcYAxo/mkZK2LEZmaUzzFvONCFJCjHS/TsBO3xiN61AJ8n
-         UURaVZBKm3iKiMoI8B6Cdevh0Sih7i4dvPoesF+nn17iybhk1Tt4zsty82vlUbWoMYyi
-         325w==
-X-Gm-Message-State: ACgBeo1h8S+Yb1bkbHQjV3E0/FB9U0xHPTg2bOxt6pcEki8b9fLu+Ei7
-        PxSex4dPiHmqWPtgBwOqkjUxyrk8BQNtsA==
-X-Google-Smtp-Source: AA6agR5Vh5FoZEV/vDsCM3Tgms3lMElLgMMSYRP2EDYbKRNWdE3cxEILRzOEG90g4VS6xpelMOT0Tw==
-X-Received: by 2002:a17:903:2291:b0:16e:cf55:5c72 with SMTP id b17-20020a170903229100b0016ecf555c72mr22182498plh.121.1660658501401;
-        Tue, 16 Aug 2022 07:01:41 -0700 (PDT)
-Received: from [10.4.196.37] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id r35-20020a17090a43a600b001f522180d46sm6396363pjg.8.2022.08.16.07.01.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 07:01:41 -0700 (PDT)
-Message-ID: <08ec9c4f-80b2-f731-aa8b-fb4e852ece25@bytedance.com>
-Date:   Tue, 16 Aug 2022 22:01:30 +0800
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=fzP2NQgZqJYKRDX1t6xLZ4tBPZDpSneow1UcjWoKMPQ=;
+        b=iSgmrG11zd+lcj2FOCN6QVyw00Dt4amTPmylTffgIdGcbD/K1k/FZoAVnIUqPknvNk
+         c+d++ATNqpEWcWgm1Kk4/iXx5ReL6XRN0rQAiQVbcDlbaLxyyeEBYRMRACpY2CHyAdke
+         1t0Sfo0AtzTsPae7JbhfSdDuxGULBv782vcbPeZ50o7vaIfvWq/4+znOx9EWmAikKBSn
+         db6+V3X1w/HmKFKXwfGBDpbZOLtikbYUTqkU4+QD//0pgTO7U33qLCLMZxq9VfcfUJi7
+         CpaQyDNJNmEQhdOGXQcn2enZIw/ST0qZCkZSHrNUu24OCi5owc7qeWPasuKh+oVQju2w
+         MeUQ==
+X-Gm-Message-State: ACgBeo0InM7j+17kbPyY0aBCzW0aoLJOVUZ7kenFjvxkR3lN3YSU6S/r
+        V/PFhYTIGwiLUMRUPl8YzAT+yrr7KjUc8AEKySrTFV+XDo0=
+X-Google-Smtp-Source: AA6agR4Vabpt+DN6t/1Exw3ucKd1y7AVm2YfLygo9JJoNkxXDVddXKfSiG4auaQhK8+Uq4IFK+vmy3lrEBqvbkX+DXg=
+X-Received: by 2002:a05:6402:4517:b0:443:7fe1:2d60 with SMTP id
+ ez23-20020a056402451700b004437fe12d60mr12983777edb.133.1660658553774; Tue, 16
+ Aug 2022 07:02:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCH v2 00/10] sched/psi: some optimization and extension
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     hannes@cmpxchg.org, tj@kernel.org, corbet@lwn.net,
-        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com
-References: <20220808110341.15799-1-zhouchengming@bytedance.com>
- <20220815132514.GB22640@blackbody.suse.cz>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220815132514.GB22640@blackbody.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220816130823.97903-1-linus.walleij@linaro.org>
+ <20220816130823.97903-2-linus.walleij@linaro.org> <YvuYCO4uuw+O0PN9@sirena.org.uk>
+In-Reply-To: <YvuYCO4uuw+O0PN9@sirena.org.uk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 16 Aug 2022 16:02:22 +0200
+Message-ID: <CACRpkda-Mcg+6-h+QQ8YOPceSWmBeBJSpD9T1J1d8SHxhQnogg@mail.gmail.com>
+Subject: Re: [PATCH 2/2 v3] regmap: mmio: Support accelerared noinc operations
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/15 21:25, Michal Koutný wrote:
-> On Mon, Aug 08, 2022 at 07:03:31PM +0800, Chengming Zhou <zhouchengming@bytedance.com> wrote:
->> This patch series are some optimization and extension for PSI,
-> 
-> BTW do you have some numbers/example how much these modifications save
-> when aggregated together?
-> 
+On Tue, Aug 16, 2022 at 3:13 PM Mark Brown <broonie@kernel.org> wrote:
+> On Tue, Aug 16, 2022 at 03:08:23PM +0200, Linus Walleij wrote:
+>
+> > ChangeLog v2->v3:
+> > - Rebase on kernel v6.0-rc1
+>
+> This doesn't apply against current code, please check and resend - I
+> already applied some other patches.
 
-I lost my test data last time, I will use mmtests/config-scheduler-perfpipe
-to get some performance numbers right now.
+Oopsie I just assumed v6.0-rc1 was clean :D
 
-Thanks.
+I'll rebase on your regmap tree, just a sec.
+
+Yours,
+Linus Walleij
