@@ -2,68 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643DDC32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7B7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237061AbiHPSPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
+        id S236387AbiHPSRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236658AbiHPSPR (ORCPT
+        with ESMTP id S229887AbiHPSQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:15:17 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A715E81B3B;
-        Tue, 16 Aug 2022 11:15:13 -0700 (PDT)
-X-QQ-mid: bizesmtp70t1660673453tihgsg97
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 17 Aug 2022 02:10:41 +0800 (CST)
-X-QQ-SSF: 0100000000000060D000B00A0000020
-X-QQ-FEAT: uUYRqJkYwO4LXC4etf4sAwy1jbvjPR2mWSdsI42K9XsGqZ7rQjgiYligQVWQz
-        pTS2YMVG8hWrSoPWTnkhiPqAnxFsFkon+oB6IR2OcpcZXoPPLqmm98lJUJsh8YocT1LYtnw
-        KHHrk5ZcXdvqbLzyrF+oPJiNMopI57NtXeTT3687LeVmpwfLD6OyvHfNpt6I/gk3yvdc2ue
-        7xEMNW4blxoX5u78ORd+ZSpo+wsVJKNYgZz4qljjmINN1m//8rLUULIF3p+cAVVug8b0Yig
-        oi+Tk7qhGcaK6zmK+xVa4DU14l+nvD9bJQ1W5bEr/VcC1qQKp9OF5EbiT2W+we2HZvabSd9
-        XTW8V4PRpS2EG2bAbFIa23k5Vy6qbEbD0Lb8uVU+j0aFZCpOq84VzTHpD/XZw==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] mac80211: Variable type completion
-Date:   Wed, 17 Aug 2022 02:10:40 +0800
-Message-Id: <20220816181040.9044-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 16 Aug 2022 14:16:59 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26B586049
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:16:58 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id fy5so20448578ejc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=7PdK+76CgeP/Gc9KmgEuj475nMl0LQ3s7k+RPWfVvDo=;
+        b=TJY8PR+LQVJUgFtLgN7mTp09jD5JJVUyvYLk14WrtdVZUrNPOj1nHSqrJS179Kn50D
+         80rn/1lHDi1XMbdudx8EnTtTvxf+cpTL7fVgGD8x6UGpPzv3QJh07AQuKv22PoZoApmm
+         G+P2MDVze1HYqY6DSgN7RkM1KaCCZptS6fIIp87H85FmdmVRD5ZFNWF3FBFsTTxhOD7q
+         Kvs1YgFHKPhRAubO+tezp2NSzo6DbxeU8iQ01AFN/nKb+WcjvDc/WHbdIkzIeJUYqsrS
+         TEXvHsUenMihV7H5IU7L5Zpif7HGs2v3ViknrLJOqkl7flgyPQlASVN9gd59ig44h7Pz
+         grbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=7PdK+76CgeP/Gc9KmgEuj475nMl0LQ3s7k+RPWfVvDo=;
+        b=8EXHhnaga2gglQMtF5gekU59QsmUHj8hyQGYu+DERaQJ41fZm8119fFYDSt8cqKE4y
+         zFtD4UleCi1hL2l3Sps3Uj+wFehuzYzGGS+AVfYxFtFXBOX2PrV97HhSppwg0WlBkTsi
+         8zY9F3f5HAnJsEQ6Cb4h/34Z2WN3nkuK6dPenTVSfI9wSGFLJb+z1eMShAhh7M1NzKO/
+         7R3Bn3YGf+P+VlwYOBxBztu7Kdqw+h+R5TFIbFX3tYbI2RU+IwFD/pucdhJ1R2db7P7R
+         lOF5PpS/GrAWRqcdYMw7M2L2xw0ixfn1JmFlLkGHTWaiSWXiQrPx5+D62goOuFHfttI7
+         SIZg==
+X-Gm-Message-State: ACgBeo13NOs1NVJzpfwmNGF+k9MhiwiVYSvzb2UFkPgg3QOR3qeVn2qu
+        GiwrSsfipN/ZdWYSvqdqu8k=
+X-Google-Smtp-Source: AA6agR5n3HhHLtvuM7ETFfNMWqolUi1sy8SDZzikP91LI+r/gmPvtO/0/s7h9YUIIcVEkeagzEiP6A==
+X-Received: by 2002:a17:906:cc15:b0:731:6cc2:7a85 with SMTP id ml21-20020a170906cc1500b007316cc27a85mr13994397ejb.512.1660673817331;
+        Tue, 16 Aug 2022 11:16:57 -0700 (PDT)
+Received: from opensuse.localnet (host-87-17-106-94.retail.telecomitalia.it. [87.17.106.94])
+        by smtp.gmail.com with ESMTPSA id h14-20020a1709063c0e00b007313a2575d2sm5529543ejg.104.2022.08.16.11.16.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 11:16:55 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc:     "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
+Date:   Tue, 16 Aug 2022 20:16:54 +0200
+Message-ID: <8992226.CDJkKcVGEf@opensuse>
+In-Reply-To: <3e8a0bb1-4c69-93d2-71f9-81bb8466cb14@nvidia.com>
+References: <20220816091808.23236-1-fmdefrancesco@gmail.com> <3e8a0bb1-4c69-93d2-71f9-81bb8466cb14@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'unsigned int' is better than 'unsigned'.
+On marted=C3=AC 16 agosto 2022 15:12:08 CEST Chaitanya Kulkarni wrote:
+> Fabio,
+>=20
+> On 8/16/22 02:18, Fabio M. De Francesco wrote:
+>=20
+> > kmap() is being deprecated in favor of kmap_local_page().
+> >=20
+> > There are two main problems with kmap(): (1) It comes with an overhead =
+as
+> > mapping space is restricted and protected by a global lock for
+> > synchronization and (2) it also requires global TLB invalidation when t=
+he
+> > kmap=E2=80=99s pool wraps and it might block when the mapping space is =
+fully
+> > utilized until a slot becomes available.
+> > =20
+>=20
+> so I believe this should give us better performance under heavy
+> workload ?
+>
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- net/mac80211/ibss.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, correct. Can you please take a look at the highmem official documentat=
+ion=20
+(highmem.rst)? I reworked and extended it with two series of patches.=20
+Everything about the deprecation of kmap() is explained there and in a patc=
+h=20
+from Ira: "checkpatch: Add kmap and kmap_atomic to the deprecated list" whi=
+ch=20
+you reviewed at https://lore.kernel.org/all/91f708ed-f456-dc83-281e-fc18a0b=
+4b981@nvidia.com/
+=20
+> > With kmap_local_page() the mappings are per thread, CPU local, can take
+> > page faults, and can be called from any context (including interrupts).
+> > It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+> > the tasks can be preempted and, when they are scheduled to run again, t=
+he
+> > kernel virtual addresses are restored and are still valid.
+> >=20
+> > However, there is a huge constraint which might block some conversions
+> > to kmap_local_page(): the kernel virtual address cannot be handed across
+> > different threads. Ira made me notice that the kmap() and kunmap() in t=
+his
+> > driver happen in two different workqueues. Therefore, kunmap_local() wi=
+ll
+> > try to unmap an invalid address.
+> >=20
+> > Let me explain why I'm sending an RFC. When I hit the above mentioned
+> > issues I tried to refactor the code in ways where mapping and unmapping
+> > happen in a single thread (to not break the rules of threads locality).
+> >=20
+> > However, while reading this code again I think I noticed an important
+> > prerequisite which may lead to a simpler solution... If I'm not wrong, =
+it
+> > looks like the pages are allocated in nvmet_tcp_map_data(), using the
+> > GFP_KERNEL flag.
+> >=20
+> > This would assure that those pages _cannot_ come from HIGHMEM. If I'm n=
+ot
+> > missing something (again!), a plain page_address() could replace the=20
+kmap()
+> > of sg_page(sg); furthermore, we shouldn't need the un-mappings any long=
+er.
+> >=20
+> > Unfortunately, I don't know this protocol and I'm not so experienced wi=
+th
+> > kernel development to be able to understand this code properly.
+> >=20
+> > Therefore, I have two questions: am I right about thinking that the pag=
+es
+> > mapped in nvmet_tcp_map_pdu_iovec() are allocated with GFP_KERNEL? If s=
+o,
+> > can anyone with more knowledge than mine please say if my changes make =
+any
+> > sense?
+> >=20
+> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+>=20
+>=20
+> Thanks a lot for detailed explanation.
 
-diff --git a/net/mac80211/ibss.c b/net/mac80211/ibss.c
-index 14c04fd48b7a..16fe69deb40b 100644
---- a/net/mac80211/ibss.c
-+++ b/net/mac80211/ibss.c
-@@ -1349,7 +1349,7 @@ static void ieee80211_sta_create_ibss(struct ieee80211_sub_if_data *sdata)
- 				  capability, 0, true);
- }
- 
--static unsigned ibss_setup_channels(struct wiphy *wiphy,
-+static unsigned int ibss_setup_channels(struct wiphy *wiphy,
- 				    struct ieee80211_channel **channels,
- 				    unsigned int channels_max,
- 				    u32 center_freq, u32 width)
--- 
-2.30.2
+You are welcome!
+
+> Quick question what kind of performance benefits you have seen with
+> this change ? we need to document the performance numbers since commit
+> log mentions here that kmap_local_page() is faster than kmap().
+
+OK, but kmap_local_page() was discarded because not applicable here without=
+=20
+heavy refactoring.=20
+
+> In case you are not aware please have a look at the blktests to create
+> a simple loopback setup with nvme-loop transport.
+
+I have nothing against learning how blktests works and running this tool.
+I'll do as you requested.
+
+However, please read the implementation of kmap():
+
+#ifdef CONFIG_HIGHMEM
+
+static inline void *kmap(struct page *page)
+{
+	void *addr;
+
+	might_sleep();
+	if (!PageHighMem(page))
+		addr =3D page_address(page);
+	else
+		addr =3D kmap_high(page);
+	kmap_flush_tlb((unsigned long)addr);
+	return addr;
+}
+
+If page is not from HIGHMEM it is a simple page_address(), like it is in my=
+=20
+RFC patch.
+
+#else /* CONFIG_HIGHMEM */
+
+static inline void *kmap(struct page *page)
+{
+	might_sleep();
+	return page_address(page);
+}
+
+Again, a plain page_address().
+=46urthermore, with a simple page_address() we avoid the calls to kunmap().
+
+I think it implicitly say all we need to know about why we should prefer=20
+page_address() whenever we are _sure_ that pages cannot come from HIGHMEM.
+
+Thanks for your comments and questions,
+
+=46abio
+
+> -ck
+>
+
 
