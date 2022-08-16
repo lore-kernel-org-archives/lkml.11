@@ -2,101 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B64C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF250C32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234797AbiHPKfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
+        id S234682AbiHPKgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234421AbiHPKen (ORCPT
+        with ESMTP id S234849AbiHPKf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:34:43 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF43B580B3;
-        Tue, 16 Aug 2022 02:02:56 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oNsTH-0002ls-7s; Tue, 16 Aug 2022 11:02:47 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 04/12] dt-bindings: riscv: Add Allwinner D1 board compatibles
-Date:   Tue, 16 Aug 2022 11:02:46 +0200
-Message-ID: <5849253.UjTJXf6HLC@diego>
-In-Reply-To: <1f84e925-1a0f-6100-c444-a8157e14ab5a@linaro.org>
-References: <20220815050815.22340-1-samuel@sholland.org> <20220815050815.22340-5-samuel@sholland.org> <1f84e925-1a0f-6100-c444-a8157e14ab5a@linaro.org>
+        Tue, 16 Aug 2022 06:35:29 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B81BBA69;
+        Tue, 16 Aug 2022 02:06:41 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G1cRYr013154;
+        Tue, 16 Aug 2022 04:05:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=V7+EmkrSuZ84Bb1gS/wxH1FOr6TUaRrdnHDtztrgSTo=;
+ b=hDeJAig6BJnBTD5z4jiBt1IdQiSF3hjYucAxgdiRHbbX9J7cMmMBxy78RMBBQFj4J1O+
+ rToQ/FZui015D/7EUuAA/s83U3/Ci89croC9zkjR6NzuvELgsRAluF5vkg+ofgMikp0h
+ CI9vVF4KiolPUQqymIcCtNJhyelnl+DOOjhxRIn6Qt8ESg7FGxee9UR5w9nc6Jq7GK9Y
+ JyQe6K3vwTCiRBTViHq0/pt8n1GzXaChw/SvNx+Fuft8zbRw4J0JGUPKsZyp5XWnqwhp
+ QcwFDv62Q3rlE4Bsp6CEWKALJTuoBaK7NSn8gdNzVUxa1yLdtghmiFB75X8Dez3aif0Y zA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hx8cpbav1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 04:05:55 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Tue, 16 Aug
+ 2022 04:05:54 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Tue, 16 Aug 2022 04:05:54 -0500
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5A7F57C;
+        Tue, 16 Aug 2022 09:05:54 +0000 (UTC)
+Date:   Tue, 16 Aug 2022 09:05:54 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+CC:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH] ASoC: Fix the include guard used for
+ include/sound/wm8904.h
+Message-ID: <20220816090554.GJ92394@ediswmail.ad.cirrus.com>
+References: <eff524b78d1f851e3dc42999e68c286492f92b21.1659800938.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <eff524b78d1f851e3dc42999e68c286492f92b21.1659800938.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: Cv0SVka0lPbtKA-6rDUgNcbQ73hqUg6g
+X-Proofpoint-GUID: Cv0SVka0lPbtKA-6rDUgNcbQ73hqUg6g
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 16. August 2022, 09:39:38 CEST schrieb Krzysztof Kozlowski:
-> On 15/08/2022 08:08, Samuel Holland wrote:
-> > Several SoMs and boards are available that feature the Allwinner D1 SoC.
-> > Document their compatible strings.
-> > 
-> > Signed-off-by: Samuel Holland <samuel@sholland.org>
-> > ---
-> > 
-> >  .../devicetree/bindings/riscv/sunxi.yaml      | 64 +++++++++++++++++++
-> >  1 file changed, 64 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/riscv/sunxi.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/riscv/sunxi.yaml b/Documentation/devicetree/bindings/riscv/sunxi.yaml
-> > new file mode 100644
-> > index 000000000000..564a89499894
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/riscv/sunxi.yaml
-> > @@ -0,0 +1,64 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/riscv/sunxi.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Allwinner RISC-V SoC-based boards
-> > +
-> > +maintainers:
-> > +  - Chen-Yu Tsai <wens@csie.org>
-> > +  - Jernej Skrabec <jernej.skrabec@gmail.com>
-> > +  - Samuel Holland <samuel@sholland.org>
-> > +
-> > +description:
-> > +  Allwinner RISC-V SoC-based boards
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    const: '/'
-> > +  compatible:
-> > +    oneOf:
-> > +      - description: Dongshan Nezha STU SoM
-> > +        items:
-> > +          - const: 100ask,dongshan-nezha-stu
-> > +          - const: allwinner,sun20i-d1
-> > +
-> > +      - description: D1 Nezha board
-> > +        items:
-> > +          - const: allwinner,d1-nezha
+On Sat, Aug 06, 2022 at 05:49:14PM +0200, Christophe JAILLET wrote:
+> __MFD_WM8994_PDATA_H__ is already used for:
+>   include/linux/mfd/wm8994/pdata.h
 > 
-> You grow the list unnecessary. Several entries should be an enum, unless
-> platform maintainer insists on such approach for all Allwinner Riscv
-> platforms. Just be aware it will grow...
+> Based on file names, use __MFD_WM8904_PDATA_H__ instead here.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
 
-Having the binding document provide value to mere mortals and not only
-the automated tools is plus for me :-) . So obviously personally I like
-the current style more. But yeah, it's mainly a matter of preference :-) .
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-
+Thanks,
+Charles
