@@ -2,122 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C86C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9677C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbiHPK1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S234112AbiHPK16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234533AbiHPK1G (ORCPT
+        with ESMTP id S234480AbiHPK1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:27:06 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BEB118DD9;
-        Tue, 16 Aug 2022 01:24:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZEDn+MMpPPuhHnbRNaM0Ny661NrO9XDFJYoHpOWNYTJo5Po0vcj/xzc2Dewg5vjYrYTnx8sqYDBek3fbplegsUtenQhrAcLsZEWlmNWVVSfDuLJod8fMQqmmEiwcpH+8IfyHDW0SOfgyqvAOZ0xXDCoUJK8x5lkZXyk9LQ+c1pM+23ygYJlbT2i0DAjquIMvL+gP5Dkxx1GLZHtWPNh5v3e2VCZHZGmgk9F6qqWOn5U80h7KMOEYXKHqRZFO+tXtnxg21ROuGoe6j8RrQHZOa30SBrIQ16Od6A279AAJjrPxRixqJfqcacYxc4z3K9K7zXwhD0SZMU9HW5Psri6uBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QbSqgDbRO1qrFuSattDjN/6k3i4SwBMrEUT990l7bxQ=;
- b=D6t1HNcuVRyc1uVpzY7kV29agXWSf6Hth1new4BqBxa8EJTEepy6CHHIVzg15PYcXKhTcsUtfgLdUF7MCVvFYNOwmyAe0cVJdN4w3ncIZkM5eIOtjgGk+Rz40i9toKRoKDO6A0QylVQuBZfO/Ba49BQf2U4UOpUbyMNDQTvXhUihu3lpbQVrp1MDiLMK93MRF18OlZ4jPFjXxaI9lvo1/svcy8c8IQO6fXU/iH75BvJ4RvnxJdAWqlYIK2zlRXuXOMwg+oPAB5SXpzZLnFCL6mLitTZ3S7dwCFupkGNGV+hS0n7qJ/TtLqYUaWmRWDy5MVl6zUdsqEmmGjIYKkg0yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QbSqgDbRO1qrFuSattDjN/6k3i4SwBMrEUT990l7bxQ=;
- b=f3H8VH2ctYE24fl2vJ5vopwvrJGVeN8K7BCJmdkZMSQGmTxQrTheSB5O2yBG1wJOris0J4BWsIe4nH1L0/aIMI4FCFRouuyDtx9WhQmotyDqh0p4n9Sxsc8u8F16FYw5ODZZJ+XokfPjsxPrO0Bw58/Iuiw3x0PJ2Z1MI6NoRSp1K4vj6V51JI14dx9Dg4tOZdtoRtcUzZZXcamjaNuLnpLHIq2EVXrdHFL4iwA+nJrr/kUCodhVLulP4qquKn84ivtM8dGLHrjAx8zTbv8TY9NwM1Ody+cLDRMDPuR/zErwAte3nTT+ejr2YQcwdMbWaeFKOCFN5kWMuV/nGCi/uQ==
-Received: from DS7PR07CA0004.namprd07.prod.outlook.com (2603:10b6:5:3af::13)
- by BN6PR1201MB0004.namprd12.prod.outlook.com (2603:10b6:404:ac::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
- 2022 08:24:01 +0000
-Received: from DM6NAM11FT030.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::f5) by DS7PR07CA0004.outlook.office365.com
- (2603:10b6:5:3af::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10 via Frontend
- Transport; Tue, 16 Aug 2022 08:24:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT030.mail.protection.outlook.com (10.13.172.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5525.11 via Frontend Transport; Tue, 16 Aug 2022 08:24:01 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Tue, 16 Aug
- 2022 08:23:59 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 16 Aug
- 2022 01:23:58 -0700
-Received: from jilin-desktop.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Tue, 16 Aug 2022 01:23:56 -0700
-From:   Jim Lin <jilin@nvidia.com>
-To:     <jckuo@nvidia.com>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>
-CC:     <vkoul@kernel.org>, <balbi@kernel.org>,
-        <gregkh@linuxfoundation.org>, <jilin@nvidia.com>,
-        <bhsieh@nvidia.com>, <linux-phy@lists.infradead.org>,
-        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>
-Subject: [PATCH v2 0/2] usb: tegra: power down UTMI pad
-Date:   Tue, 16 Aug 2022 16:23:51 +0800
-Message-ID: <20220816082353.13390-1-jilin@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+        Tue, 16 Aug 2022 06:27:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A1140399
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:27:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 365CC61029
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:27:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F213C433D7;
+        Tue, 16 Aug 2022 08:27:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660638436;
+        bh=nd7XrfWW5VTyg8CmThVCU5gCXi7zDbey5kxwNLdc4iY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v2CzO7q9yAZpDeAAYd+SubkFwrskEPUWhivezYekuhFXWRFLZ/LP/qsydSsdYeSj/
+         FDra6jnB9tXexpEd2rue2hm3mBQvJoV3VwzOLVgeFO28G+12S0bsaaSFfo7UJ+jo0e
+         SFhERawMb8Vb3E5wSnBJpl8zI6jax1Bfv0yJ3vCE=
+Date:   Tue, 16 Aug 2022 09:15:18 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     mawupeng <mawupeng1@huawei.com>
+Cc:     rppt@linux.vnet.ibm.com, hughd@google.com, aarcange@redhat.com,
+        hannes@cmpxchg.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, wangkefeng.wang@huawei.com,
+        willy@infradead.org
+Subject: Re: [PATCH stable 4.14,4.19 1/1] mm: Fix page counter mismatch in
+ shmem_mfill_atomic_pte
+Message-ID: <YvtEBv35OUEtDsAj@kroah.com>
+References: <20220802013251.3022141-1-mawupeng1@huawei.com>
+ <09129cd3-7363-3079-bd57-dde9c73684f1@huawei.com>
+ <YvsruBZBP+KpEBdb@kroah.com>
+ <b7468bcc-4b75-1190-5eae-9796d35b048c@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3407395d-378a-464b-fa0e-08da7f60ac6f
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0004:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zTAgtGPQocCTpqOaQ2n+4XJBRDPL5HXBJ4FXNytfIQhgSyGwB+aIYaUjdsEr+ahRze8u0kJTU87Jm8KzUDiZ83W4UUOMG6iv0yhXjycvFXLX32rSgbANtJ8MTVQLMlW+GPNL3HTigzVButfCj2NzADEUsFT8aUWMNrOFVXsoEIUpCbyKjRH6bZlyAYNkWt+NiSB7RjWWParDsKeCjBEJvcAy3cnQJ+V79IJYChy/FXXNstnMM5CetTGk14TdFwKZ72KiVKsreha7+czJsehSNba1Nht8PSpub+lpfFHTWIjFP3l8E0qMnSpbtvBrCt/zUesecD7zSLHmgW4Ozh9qN9hhzPHE/Z0OHaiTol20m+LBXSlBLWqOKhbnMcw8xTdVSleuaamC3ZilonoMq+rJSknloNqlXD6d1WEiIsp8Uc2OaFwftwg7S+YaN/IEBhSJ+OvlqezrSKuyywsW9cXlFQr6MjvCzjGSpqmYYO+8PPBVl6ouJYcBJO/Tyqo2riGQXRWGbO0dNItr/1mylz18oBdKaAB1VEAvKYYyHNm6BVSIzKTxzp9SOzvjbeuPfkURNRFpWapMrad4shqmNb0WzfEhsKSeGa+5cJ8tckAYawaHhdBKnCzZolWYjaIho/aYmzrW5MaOD4BqexaLAeXkXOpPtckEpdoKFnc97K4Bo1srN4lqFGYlVDih6DKMleKKPRXca+5NLAvlLz5Scefl6QXu80AUx36/fXVvUz3UkYTDLcI0Y8E8KRmyC+V7ejwIIM7eqxoJo6UO5VWipz8yqBmUIYoNyLt3QRLcRFzJseaf2U0/YJROjN4KohoPMGtw9rptfKCVwoLyzpJpMcw+dg==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(39860400002)(136003)(346002)(36840700001)(40470700004)(46966006)(336012)(7696005)(6666004)(36756003)(86362001)(41300700001)(186003)(47076005)(83380400001)(1076003)(110136005)(426003)(478600001)(2616005)(26005)(40460700003)(36860700001)(316002)(6636002)(82740400003)(2906002)(8676002)(70206006)(40480700001)(54906003)(70586007)(4744005)(4326008)(5660300002)(356005)(81166007)(8936002)(82310400005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 08:24:01.1704
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3407395d-378a-464b-fa0e-08da7f60ac6f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT030.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0004
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b7468bcc-4b75-1190-5eae-9796d35b048c@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1. Make functions to be generic and public for tegra host/gadget driver 
- to power on/down UTMI pad
-2. For tegra gadget driver to power down pad after disconnected
---
-v2: update copyright year
-    drivers/usb/gadget/udc/tegra-xudc.c
-    include/linux/phy/tegra/xusb.h
+On Tue, Aug 16, 2022 at 03:04:08PM +0800, mawupeng wrote:
+> 
+> 
+> On 2022/8/16 13:31, Greg KH wrote:
+> > On Tue, Aug 16, 2022 at 11:27:08AM +0800, mawupeng wrote:
+> >> Cc Greg
+> > 
+> > Cc Greg for what?  I have no context here at all as to what you want me
+> > to do..
+> 
+> We found a bug related to memory cgroup counter in stable 4.14/4.19.
+> shmem_mfill_atomic_pte() wrongly called mem_cgroup_cancel_charge() in "success"
+> path, it should mem_cgroup_uncharge() to dec memory counter instead.
+> mem_cgroup_cancel_charge() should only be used if this transaction is
+> unsuccessful and mem_cgroup_uncharge() is used to do this if this transaction
+> succeed.
+> 
+> Commit 3fea5a499d57 ("mm: memcontrol: convert page cache to a new mem_cgroup_charge() API")
+> in v5.8-rc1 change is charge/uncharge/cancel logic so don't have this
+> problem.
+> 
+> This counter will underflow to negative maximum value and trigger oom to kill all
+> process include sshd and leave system unaccessible.
+> 
+> The reason cc you is that we want to merge this bugfix into stable 4.14/4.19.
 
-Jim Lin (2):
-  phy: tegra: xusb: add utmi pad power on/down ops
-  usb: gadget: tegra: Reduce pad power
+<formletter>
 
- drivers/phy/tegra/xusb-tegra186.c   | 19 ++++++++++++-------
- drivers/phy/tegra/xusb.c            | 22 +++++++++++++++++++++-
- drivers/phy/tegra/xusb.h            |  4 +++-
- drivers/usb/gadget/udc/tegra-xudc.c |  6 +++++-
- include/linux/phy/tegra/xusb.h      |  4 +++-
- 5 files changed, 44 insertions(+), 11 deletions(-)
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
--- 
-2.17.1
-
+</formletter>
