@@ -2,111 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A13C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA84C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237966AbiHPWSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
+        id S237955AbiHPWSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237998AbiHPWRx (ORCPT
+        with ESMTP id S237937AbiHPWSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:17:53 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A987901A9;
-        Tue, 16 Aug 2022 15:17:50 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d16so10428868pll.11;
-        Tue, 16 Aug 2022 15:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc;
-        bh=OB8RDF87cTmELNf7aw7q4YYpUSHmX8OtlvjYs3kFhr0=;
-        b=cLdY1RNjmC1OlOQ58Aj1kl0m1QGT70JSthx1sOxB6PLSZLnXytfnW7KVUyJrw4ILU6
-         n7N6DPzadmTiMz5IL6S4fdu0FVkq+/FJ2HdYvMLYEC4zRwa67JbF6Sny9B40YcBLn4fg
-         ohnYCLh5WtAvF0bc9dFPHItMkPxb4pdO5J++g2APvYqVgvfENoNCY4RB7pbrrF1BVIT3
-         anw7II4R90l1B63xdm3wVCCeULjT7spaLcd0hocWNQiWzNqZzoMwzIGMKJzrFDWYFbhR
-         8R8zZxwu8MzQFDVdNetpC4RnPL6bFFcmoP3td/QP09ra2EXEQbwt1mSk2feHRb/+qz0y
-         h4+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc;
-        bh=OB8RDF87cTmELNf7aw7q4YYpUSHmX8OtlvjYs3kFhr0=;
-        b=SBoXTAh11+kwBOAJlPUbvXrycTb9IVbWcRckf73AimqJOFPbxnRu8vdZlGrIR/0QPs
-         SQkFVCBcXzrepXOZqzi24yocLtnkxd7wkRAzVqt1iNRQaVVkS+GbbKq6G8yDU3D1qtA9
-         QAPqUXa40P3/8uxFCyoDcqWUowu/K6rdU/DBV5YywdVG/4NH//MrhJ/LXg72alf+On37
-         AYjvtfXCZqo/2wXopnwZqU2DkWaoRPKX1Jq3H1YbJi265kkvfTAzOFMx21Z7swI53mKg
-         Y+n1wKsyJh7A2EfkTpImt8eT/OJpPWMmKoAfhdZKt5MEfcEDwrfrTMNib3M7JJm0Jjfs
-         SAPw==
-X-Gm-Message-State: ACgBeo3lpCnUeEJvu32jvrnZXhRmSaBHu3XRsvYA0d7bxT7OkZTfmqUc
-        GXqrjPh7mGPyZM8mIb0ftPPWyN1aEzI=
-X-Google-Smtp-Source: AA6agR7/vFKp5+pTpC3YdQO45AeYq4bPMXwFZsqW8mnAS7I6tSnHUwmI/rSTcyZmN9GCFgnup+dUDg==
-X-Received: by 2002:a17:90b:17c9:b0:1f3:3a7c:a3a7 with SMTP id me9-20020a17090b17c900b001f33a7ca3a7mr734547pjb.76.1660688269758;
-        Tue, 16 Aug 2022 15:17:49 -0700 (PDT)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:d539:e967:9fd8:5c81])
-        by smtp.gmail.com with ESMTPSA id 3-20020a620603000000b0052b7f0ff197sm8965943pfg.49.2022.08.16.15.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 15:17:49 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH 0/4] perf tools: Support reading PERF_FORMAT_LOST (v2)
-Date:   Tue, 16 Aug 2022 15:17:43 -0700
-Message-Id: <20220816221747.275828-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+        Tue, 16 Aug 2022 18:18:06 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183E29019C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:18:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660688285; x=1692224285;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5pHNRsmO3TscJoYhtn5ldO7gjZHTEK8owm0e2rym4/s=;
+  b=hXfkwJgwMhCvgUm2WxgNjFktD8XFYlz6+U3rUJ9rs6YM9K41Wyezvcuj
+   nFyx9oysx8zCYndfD5VLNpM1je0J+tIoLWvxB8WidEVFzeyhfy320qAg3
+   /AhO47MMu3Ad67Se8IgW+KR1LlvcmIz96W/9/N/6CjyrQG/GLQ0u95tKZ
+   A7OGKUyQX7M0pSe8l2sWQS21RAEZkZS/wIMs4KTz0os573IAHB02vIr7m
+   giY51f/BSUU3+dvYAkt01AT/b2tBSRrcn/HGpDIfv7QJc56r8TkHEVArZ
+   9ccuw4rNQecivgaK6mcklhU5ZqALSj+B4OxVofmty+LnvtnruqNLpf7hN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272734389"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="272734389"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 15:18:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="675395953"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2022 15:18:02 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oO4ss-0000H2-12;
+        Tue, 16 Aug 2022 22:18:02 +0000
+Date:   Wed, 17 Aug 2022 06:17:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kbuild-all@lists.01.org, kernel@openvz.org,
+        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] drivers: virtio: balloon - update inflated memory
+Message-ID: <202208170648.gcM3nXqB-lkp@intel.com>
+References: <20220816094117.3144881-5-alexander.atanasov@virtuozzo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816094117.3144881-5-alexander.atanasov@virtuozzo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Alexander,
 
-The kernel v6.0 added PERF_FORMAT_LOST which can read a number of lost
-samples for the given event.  As it can change the output format of
-read(2) and perf sample data, it needs to access them carefully.
+Thank you for the patch! Yet something to improve:
 
-Changes in v2)
- * add a comment in perf_evsel__read_group()  (Jiri)
- * simplify perf_evsel__adjust_values()  (Jiri)
+[auto build test ERROR on powerpc/next]
+[also build test ERROR on char-misc/char-misc-testing linus/master v6.0-rc1 next-20220816]
+[cannot apply to soc/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Alexander-Atanasov/Make-place-for-common-balloon-code/20220816-184943
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
+config: i386-buildonly-randconfig-r004-20220815 (https://download.01.org/0day-ci/archive/20220817/202208170648.gcM3nXqB-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/d37f8ca37c57eb9e68b55ef33ecfce719f98bfe7
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Alexander-Atanasov/Make-place-for-common-balloon-code/20220816-184943
+        git checkout d37f8ca37c57eb9e68b55ef33ecfce719f98bfe7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-You can get the code from 'perf/read-lost-v2' brach on
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Thanks,
-Namhyung
+>> ERROR: modpost: "balloon_set_inflated_free" [drivers/virtio/virtio_balloon.ko] undefined!
+>> ERROR: modpost: "balloon_set_inflated_total" [drivers/virtio/virtio_balloon.ko] undefined!
 
-
-Namhyung Kim (4):
-  tools headers UAPI: Sync linux/perf_event.h with the kernel sources
-  tools lib perf: Handle read format in perf_evsel__read()
-  tools lib perf: Add a test case for read formats
-  perf tools: Support reading PERF_FORMAT_LOST
-
- tools/include/uapi/linux/perf_event.h         |   5 +-
- tools/lib/perf/evsel.c                        |  79 ++++++++-
- tools/lib/perf/include/perf/event.h           |   3 +-
- tools/lib/perf/include/perf/evsel.h           |   4 +-
- tools/lib/perf/tests/test-evsel.c             | 161 ++++++++++++++++++
- tools/perf/tests/sample-parsing.c             |  14 +-
- tools/perf/util/event.h                       |  18 +-
- tools/perf/util/evsel.c                       |  33 +++-
- .../scripting-engines/trace-event-python.c    |  16 +-
- tools/perf/util/session.c                     |  32 ++--
- tools/perf/util/synthetic-events.c            |  34 +++-
- 11 files changed, 360 insertions(+), 39 deletions(-)
-
-
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-2.37.1.595.g718a3a8f04-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
