@@ -2,159 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6A3C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44853C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbiHPUwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 16:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
+        id S237377AbiHPUxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 16:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237243AbiHPUwc (ORCPT
+        with ESMTP id S237135AbiHPUxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 16:52:32 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB61489CE3;
-        Tue, 16 Aug 2022 13:52:31 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id w8so2717511ilj.5;
-        Tue, 16 Aug 2022 13:52:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=EzR+Z4kxn7o2P/WW6PzrWm03607DFyihBAzL1aumsm4=;
-        b=GjShtAUEc0BZSPQ9pNFMz/GraxfeASnqn1kuCqNwxLjoztR7FgLf3yeeR7ghBJyfrp
-         5XT2kjcRTnWaDMektSjx1DrmqfRVXXTO/jRPV1EKMEDXq4Z1XEqEXMGCqfd92kR1p/4/
-         xurHAUmPl40+FuZoT8XzL+Nt+YKhQFir05g+7XbiNkDq1PguKqh8WFWYQy1RtLl1h9rr
-         hmF0JrKKFUQNnjfTYmq7YkyfU40l/KZ+/ZjfTf0RTKqi6KYD+LL+gFPNApGBfB13TO2p
-         eCSKdgazRkKnSbu+1ewhj6OZCk3EcXj9CfU9OWojGItGQgNEXjDSTT4E+iDp5i8KkZLD
-         koxg==
-X-Gm-Message-State: ACgBeo0wirYwWXsJoahyphfgZmAvcOIC3DtYwX5EmeyyVGWfkmBiW1dA
-        aQRHsyuRxbK7nmbqpJD+tg==
-X-Google-Smtp-Source: AA6agR4sGyiJKaOIlOFFnF0gqYNlu2XfR46u2ykdYGuFEEDs2T7qsaoxAPvnZ50uBGOOW7Z0yR8c2A==
-X-Received: by 2002:a05:6e02:18cd:b0:2de:73e8:3f0 with SMTP id s13-20020a056e0218cd00b002de73e803f0mr10622659ilu.69.1660683151102;
-        Tue, 16 Aug 2022 13:52:31 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v30-20020a02b09e000000b00339dbd4c8d7sm4780229jah.45.2022.08.16.13.52.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 13:52:30 -0700 (PDT)
-Received: (nullmailer pid 2713686 invoked by uid 1000);
-        Tue, 16 Aug 2022 20:52:28 -0000
-Date:   Tue, 16 Aug 2022 14:52:28 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset
- lines
-Message-ID: <20220816205228.GA2709277-robh@kernel.org>
-References: <20220813154415.349091-1-arinc.unal@arinc9.com>
- <20220813154415.349091-3-arinc.unal@arinc9.com>
+        Tue, 16 Aug 2022 16:53:01 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5082F8A1C3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:53:00 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|kjlx@templeofstupid.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 6EB972281E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 20:52:59 +0000 (UTC)
+Received: from pdx1-sub0-mail-a305.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 17E0C2228A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 20:52:59 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1660683179; a=rsa-sha256;
+        cv=none;
+        b=CZUOIOhqwd+JRiUT1fvrvftKZYFxAuIKzl7KhWIgxqXSVz/GWJvrsg890NwgsnEgJxQ40x
+        lm4ccgSeD3jhjhA/Vxr/rpb2aN0Z9MhPMkqvX1votpQCJzWgtTio3paRjH3vna9Z8Dre2k
+        aYXCRh1/MibNEn/HXgOso4jccsGMHjhAYREGk2jv/1Ee3bkg+qJKQrtKMxRhcbZEPqtiCd
+        ebXyI/i79IfZraihSRoPwPSHAS8+fnkLLGsQWO2QRC8btOf7yXfnszX89NS2DgMKOd4/hc
+        7pYTwGepIn29tLbNirZb4x4N7usWfvGmAJUSm8QuIwIPAaHlI9CM6Z8pHKPWJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1660683179;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=ArGYP1NggPCb8Uo+jTV64iG9x+WcB+Ng0C17pccaPQI=;
+        b=hJIqloH/225lKqWkq+LuOK5LxGDEPDQ07w7fObBDS9T5E9qTF4piB2ezntmcBpazM4yZst
+        Exrj1CyBAl2JUCA/3Yidni892F9m1sBvTEGHgoBMRwLUlt3lZQgyxz+pcYhGH4OIkU8Lc4
+        P6SaCbVqqU63AhvURg+9IL4C6gpQXSFEi8XTJ99qFvF6V1GCpgMW3Otl8lEbCyiC2ZQmO+
+        HOO3p7R3RxncGosR+crCoIJ+3Rvvl4wtbg338WWllUr9M+/7E8mcf/DppwkSEP40+9RC4x
+        D8hViM4SCOxP8skpW/ULA/1x7rt4n/9RtKP1Gue0WgbY6k18SXLujGDno2ug8Q==
+ARC-Authentication-Results: i=1;
+        rspamd-7697cc766f-5lpgz;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=kjlx@templeofstupid.com
+X-Sender-Id: dreamhost|x-authsender|kjlx@templeofstupid.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|kjlx@templeofstupid.com
+X-MailChannels-Auth-Id: dreamhost
+X-Troubled-Coil: 23c0df9a59af2efe_1660683179323_3317257040
+X-MC-Loop-Signature: 1660683179323:2040146718
+X-MC-Ingress-Time: 1660683179323
+Received: from pdx1-sub0-mail-a305.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.120.38.158 (trex/6.7.1);
+        Tue, 16 Aug 2022 20:52:59 +0000
+Received: from kmjvbox (unknown [98.42.138.125])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kjlx@templeofstupid.com)
+        by pdx1-sub0-mail-a305.dreamhost.com (Postfix) with ESMTPSA id 4M6jyy420QzLt
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:52:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=templeofstupid.com;
+        s=dreamhost; t=1660683178;
+        bh=ArGYP1NggPCb8Uo+jTV64iG9x+WcB+Ng0C17pccaPQI=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=P/4OTaW5cm5SH5Tdq5da9MBXsPXXwMKjs3CXFbsySac/tLJFNODGmoO2BV+r8/Vsv
+         DUtjW1kCnr/3BCqGiHR2yR61a+4ijRav+V5xEjdbsMZ3uye0qQdmlbBhOFml8Iw++y
+         5LVx+uZ5HjJ0U091ucbXErapEXv6c4rhBEVPDHEw=
+Received: from johansen (uid 1000)
+        (envelope-from kjlx@templeofstupid.com)
+        id e0118
+        by kmjvbox (DragonFly Mail Agent v0.12);
+        Tue, 16 Aug 2022 13:48:43 -0700
+Date:   Tue, 16 Aug 2022 13:48:43 -0700
+From:   Krister Johansen <kjlx@templeofstupid.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        David Reaver <me@davidreaver.com>,
+        linux-kernel@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>
+Subject: Re: [PATCH 1/1] tracing: fix a WARN from trace_event_dyn_put_ref
+Message-ID: <20220816204843.GB2004@templeofstupid.com>
+References: <cover.1660347763.git.kjlx@templeofstupid.com>
+ <4e43a4eece5f382d1636397fb3c0208f2afe81fc.1660347763.git.kjlx@templeofstupid.com>
+ <20220816122559.17869abc@gandalf.local.home>
+ <20220816185418.GA2004@templeofstupid.com>
+ <20220816152411.086ce631@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220813154415.349091-3-arinc.unal@arinc9.com>
+In-Reply-To: <20220816152411.086ce631@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 06:44:10PM +0300, Arınç ÜNAL wrote:
-> - Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
-> - Add description for reset-gpios.
-> - Invalidate reset-gpios if mediatek,mcm is used.
-> - Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
-> - Require mediatek,mcm for the described MT7621 SoCs as the compatible
-> string is only used for MT7530 which is a part of the multi-chip module.
+On Tue, Aug 16, 2022 at 03:24:11PM -0400, Steven Rostedt wrote:
+> Actually, I think the issue is that the unreg() calls trace_event_put_ref()
+> but the reg() does not do the try_get_ref(), but the perf_trace_init()
+> does. Which is the broken symmetry.
+> 
+> I think if we pull out the trace_event_put_ref() from the unreg() function,
+> we fix the bug and also put back the symmetry.
+> 
+> Does this patch work?
 
-The commit message should answer 'why is this change needed/wanted?' not 
-'what changed'. I can read the diff to see what changed.
+Yes, thanks, this change looks correct.  It also does build and pass the
+tests that I included in the original e-mail.
 
-d> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
->  1 file changed, 28 insertions(+), 3 deletions(-)
+> diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
+> index a114549720d6..61e3a2620fa3 100644
+> --- a/kernel/trace/trace_event_perf.c
+> +++ b/kernel/trace/trace_event_perf.c
+> @@ -157,7 +157,7 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
+>  	int i;
+>  
+>  	if (--tp_event->perf_refcount > 0)
+> -		goto out;
+> +		return;
+>  
+>  	tp_event->class->reg(tp_event, TRACE_REG_PERF_UNREGISTER, NULL);
+>  
+> @@ -176,8 +176,6 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
+>  			perf_trace_buf[i] = NULL;
+>  		}
+>  	}
+> -out:
+> -	trace_event_put_ref(tp_event);
+>  }
+>  
+>  static int perf_trace_event_open(struct perf_event *p_event)
+> @@ -241,6 +239,7 @@ void perf_trace_destroy(struct perf_event *p_event)
+>  	mutex_lock(&event_mutex);
+>  	perf_trace_event_close(p_event);
+>  	perf_trace_event_unreg(p_event);
+> +	trace_event_put_ref(p_event->tp_event);
+>  	mutex_unlock(&event_mutex);
+>  }
+>  
+> @@ -292,6 +291,7 @@ void perf_kprobe_destroy(struct perf_event *p_event)
+>  	mutex_lock(&event_mutex);
+>  	perf_trace_event_close(p_event);
+>  	perf_trace_event_unreg(p_event);
+> +	trace_event_put_ref(p_event->tp_event);
+>  	mutex_unlock(&event_mutex);
+>  
+>  	destroy_local_trace_kprobe(p_event->tp_event);
+> @@ -347,6 +347,7 @@ void perf_uprobe_destroy(struct perf_event *p_event)
+>  	mutex_lock(&event_mutex);
+>  	perf_trace_event_close(p_event);
+>  	perf_trace_event_unreg(p_event);
+> +	trace_event_put_ref(p_event->tp_event);
+>  	mutex_unlock(&event_mutex);
+>  	destroy_local_trace_uprobe(p_event->tp_event);
+>  }
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index edf48e917173..4c99266ce82a 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -110,11 +110,15 @@ properties:
->    mediatek,mcm:
->      type: boolean
->      description:
-> -      if defined, indicates that either MT7530 is the part on multi-chip
-> -      module belong to MT7623A has or the remotely standalone chip as the
-> -      function MT7623N reference board provided for.
-> +      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
-> +      switch is a part of the multi-chip module.
->  
->    reset-gpios:
-> +    description:
-> +      GPIO to reset the switch. Use this if mediatek,mcm is not used.
-> +      This property is optional because some boards share the reset line with
-> +      other components which makes it impossible to probe the switch if the
-> +      reset line is used.
->      maxItems: 1
->  
->    reset-names:
-> @@ -165,6 +169,9 @@ allOf:
->        required:
->          - mediatek,mcm
->      then:
-> +      properties:
-> +        reset-gpios: false
-> +
->        required:
->          - resets
->          - reset-names
-> @@ -182,6 +189,24 @@ allOf:
->          - core-supply
->          - io-supply
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - const: mediatek,mt7531
-> +    then:
-> +      properties:
-> +        mediatek,mcm: false
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - const: mediatek,mt7621
-> +    then:
-> +      required:
-> +        - mediatek,mcm
-> +
->  unevaluatedProperties: false
->  
->  examples:
-> -- 
-> 2.34.1
-> 
-> 
+
+If it matters:
+
+Reviewed-by: Krister Johansen <kjlx@templeofstupid.com>
+Tested-by: Krister Johansen <kjlx@templeofstupid.com>
+
+Thanks again,
+
+-K
