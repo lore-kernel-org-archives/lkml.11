@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68712C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CFEC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230263AbiHPKPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S234144AbiHPKPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiHPKOT (ORCPT
+        with ESMTP id S234365AbiHPKO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:14:19 -0400
+        Tue, 16 Aug 2022 06:14:28 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17346D6318
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE53D6B86
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660642658; x=1692178658;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=I+l1Yy0Jsg/6z3gHEU6yDZymdLIl3LFJwl5JDwIrv3I=;
-  b=criNiMvr4Fkj2YQEqigrO3iuFlq3f8e6oKWKZwEIti7l0XdymUTO0ADF
-   1/zigUu/cfKb86MFP+u/R3LQ6WG6xNT/KEruinCaDjJyKzK6ihlzJCs/d
-   DVMDqrLx31/MBLdItTpSOVnNxbHGSom8Sel35BoMfL45GoJMaT/pYo6fs
-   NTPxx/THNaibPv+6QVkj8wXq1Gp60eg224DarbQRa3+qHbAZR4tMprxdI
-   D09lQzdVlGDj1vtNXjI+au6Wn5CI4SUrbKa96ROO4HXYqJUtEOuh4/Biy
-   Uy6a0A5dmEE69AmkOiTBfH1K26YhRlRYma7vEhvDXEjpasgzpxYfqm/RZ
+  t=1660642666; x=1692178666;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YbTZ5iIy9piEvqt+t49zjJcJD4S60yZwdImbMwTaINQ=;
+  b=LzBVBZ1i9ynbky0ifrIIeD2XlLNxy7Q9eNNAgAGbyQP+qkZHSzCB8la6
+   GBMGFK/GFdYNNVuiGXKFgltEXrE4x++K336BFoUQg1Jeu1lpXc8rYZNRG
+   9L84Bk+pdK1CiVkcinnyMCGAcPS3zFfbvS4vPfvsgC1tUw5GN0mNdKE+I
+   P54pjZYEpVkyCK24+b5YXlABNts6NdR0UdYz2u9YjxCaDdT97uYyDgLU0
+   rjGjPn2orrAXUjbkJjigeOMuD82BIz47MccJsmFVj5v7B7SSNv3CVixEI
+   +BsfbFwzs/Af9S9VoIxm1GxKuM3nA+iUeXcC5IOffIynBPNjcE9bi16v2
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293446786"
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293446823"
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293446786"
+   d="scan'208";a="293446823"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:43 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:58 -0700
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="733231012"
+   d="scan'208";a="733231051"
 Received: from clbarnes-mobl.amr.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.7.166])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:40 -0700
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:55 -0700
 From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
 To:     intel-gfx@lists.freedesktop.org
 Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -45,10 +45,12 @@ Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
         daniel@ffwll.ch, andi.shyti@linux.intel.com,
         andrzej.hajda@intel.com
-Subject: [PATCH v7 0/8] Fixes integer overflow or integer truncation issues in page lookups, ttm place configuration and scatterlist creation
-Date:   Tue, 16 Aug 2022 18:35:17 +0900
-Message-Id: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+Subject: [PATCH v7 5/8] drm/i915: Check for integer truncation on the configuration of ttm place
+Date:   Tue, 16 Aug 2022 18:35:22 +0900
+Message-Id: <20220816093525.184940-6-gwan-gyeong.mun@intel.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,82 +58,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series fixes integer overflow or integer truncation issues in
-page lookups, ttm place configuration and scatterlist creation, etc.
-We need to check that we avoid integer overflows when looking up a page,
-and so fix all the instances where we have mistakenly used a plain integer
-instead of a more suitable long.
-And there is an impedance mismatch between the scatterlist API using
-unsigned int and our memory/page accounting in unsigned long. That is we
-may try to create a scatterlist for a large object that overflows returning
-a small table into which we try to fit very many pages. As the object size
-is under the control of userspace, we have to be prudent and catch the
-conversion errors. To catch the implicit truncation as we switch from
-unsigned long into the scatterlist's unsigned int, we use our overflows_type
-check and report E2BIG prior to the operation. This is already used in
-our create ioctls to indicate if the uABI request is simply too large for
-the backing store. 
-And ttm place also has the same problem with scatterlist creation,
-and we fix the integer truncation problem with the way approached by
-scatterlist creation.
-And It corrects the error code to return -E2BIG when creating gem objects
-using ttm or shmem, if the size is too large in each case.
-In order to provide a common macro, it moves and adds a few utility macros
-into overflow/util_macros header
+There is an impedance mismatch between the first/last valid page
+frame number of ttm place in unsigned and our memory/page accounting in
+unsigned long.
+As the object size is under the control of userspace, we have to be prudent
+and catch the conversion errors.
+To catch the implicit truncation as we switch from unsigned long to
+unsigned, we use overflows_type check and report E2BIG or overflow_type
+prior to the operation.
 
+v3: Not to change execution inside a macro. (Mauro)
+    Add safe_conversion_gem_bug_on() macro and remove temporal
+    SAFE_CONVERSION() macro.
+v4: Fix unhandled GEM_BUG_ON() macro call from safe_conversion_gem_bug_on()
+v6: Fix to follow general use case for GEM_BUG_ON(). (Jani)
 v7: Fix to use WARN_ON() macro where GEM_BUG_ON() macro was used. (Jani)
-v6: Move macro addition location so that it can be used by other than drm subsystem (Jani, Mauro, Andi)
-    Fix to follow general use case for GEM_BUG_ON(). (Jani)
-v5: Fix an alignment to match open parenthesis
-    Fix macros to be enclosed in parentheses for complex values
-    Fix too long line warning
-v4: Fix build warnins that reported by kernel test robot. (kernel test robot <lkp@intel.com>)
-    Add kernel-doc markups to the kAPI functions and macros (Mauoro)
-v3: Modify overflows_type() macro to consider signed data types and
-	add is_type_unsigned() macro (Mauro)
-    Make not use the same macro name on a function. (Mauro)
-    For kernel-doc, macros and functions are handled in the same namespace,
-    the same macro name on a function prevents ever adding documentation for it.
-    Not to change execution inside a macro. (Mauro)
-    Fix the problem that safe_conversion() macro always returns true (G.G)
-    Add safe_conversion_gem_bug_on() macro and remove temporal SAFE_CONVERSION() macro. (G.G.)
 
-Chris Wilson (3):
-  drm/i915/gem: Typecheck page lookups
-  drm/i915: Check for integer truncation on scatterlist creation
-  drm/i915: Remove truncation warning for large objects
+Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Nirmoy Das <nirmoy.das@intel.com> (v2)
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org> (v3)
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com> (v5)
+---
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c |  6 +++---
+ drivers/gpu/drm/i915/intel_region_ttm.c | 17 ++++++++++++++---
+ 2 files changed, 17 insertions(+), 6 deletions(-)
 
-Gwan-gyeong Mun (5):
-  overflow: Move and add few utility macros into overflow
-  util_macros: Add exact_type macro to catch type mis-match while
-    compiling
-  drm/i915: Check for integer truncation on the configuration of ttm
-    place
-  drm/i915: Check if the size is too big while creating shmem file
-  drm/i915: Use error code as -E2BIG when the size of gem ttm object is
-    too large
-
- drivers/gpu/drm/i915/gem/i915_gem_internal.c  |   6 +-
- drivers/gpu/drm/i915/gem/i915_gem_object.c    |   7 +-
- drivers/gpu/drm/i915/gem/i915_gem_object.h    | 303 +++++++++++++++---
- drivers/gpu/drm/i915/gem/i915_gem_pages.c     |  27 +-
- drivers/gpu/drm/i915/gem/i915_gem_phys.c      |   4 +
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c     |  19 +-
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c       |  23 +-
- drivers/gpu/drm/i915/gem/i915_gem_userptr.c   |   5 +-
- .../drm/i915/gem/selftests/i915_gem_context.c |  12 +-
- .../drm/i915/gem/selftests/i915_gem_mman.c    |   8 +-
- .../drm/i915/gem/selftests/i915_gem_object.c  |   8 +-
- drivers/gpu/drm/i915/gvt/dmabuf.c             |   9 +-
- drivers/gpu/drm/i915/i915_gem.c               |  18 +-
- drivers/gpu/drm/i915/i915_scatterlist.h       |  11 +
- drivers/gpu/drm/i915/i915_utils.h             |   6 +-
- drivers/gpu/drm/i915/i915_vma.c               |   8 +-
- drivers/gpu/drm/i915/intel_region_ttm.c       |  17 +-
- include/linux/overflow.h                      |  54 ++++
- include/linux/util_macros.h                   |  25 ++
- 19 files changed, 477 insertions(+), 93 deletions(-)
-
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 9f2be1892b6c..69805cbe850c 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -140,14 +140,14 @@ i915_ttm_place_from_region(const struct intel_memory_region *mr,
+ 	if (flags & I915_BO_ALLOC_CONTIGUOUS)
+ 		place->flags |= TTM_PL_FLAG_CONTIGUOUS;
+ 	if (offset != I915_BO_INVALID_OFFSET) {
+-		place->fpfn = offset >> PAGE_SHIFT;
+-		place->lpfn = place->fpfn + (size >> PAGE_SHIFT);
++		WARN_ON(!safe_conversion(&place->fpfn, offset >> PAGE_SHIFT));
++		WARN_ON(!safe_conversion(&place->lpfn, place->fpfn + (size >> PAGE_SHIFT)));
+ 	} else if (mr->io_size && mr->io_size < mr->total) {
+ 		if (flags & I915_BO_ALLOC_GPU_ONLY) {
+ 			place->flags |= TTM_PL_FLAG_TOPDOWN;
+ 		} else {
+ 			place->fpfn = 0;
+-			place->lpfn = mr->io_size >> PAGE_SHIFT;
++			WARN_ON(!safe_conversion(&place->lpfn, mr->io_size >> PAGE_SHIFT));
+ 		}
+ 	}
+ }
+diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
+index 575d67bc6ffe..c8c6c2e22e01 100644
+--- a/drivers/gpu/drm/i915/intel_region_ttm.c
++++ b/drivers/gpu/drm/i915/intel_region_ttm.c
+@@ -209,14 +209,23 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
+ 	if (flags & I915_BO_ALLOC_CONTIGUOUS)
+ 		place.flags |= TTM_PL_FLAG_CONTIGUOUS;
+ 	if (offset != I915_BO_INVALID_OFFSET) {
+-		place.fpfn = offset >> PAGE_SHIFT;
+-		place.lpfn = place.fpfn + (size >> PAGE_SHIFT);
++		if (WARN_ON(!safe_conversion(&place.fpfn, offset >> PAGE_SHIFT))) {
++			ret = -E2BIG;
++			goto out;
++		}
++		if (WARN_ON(!safe_conversion(&place.lpfn, place.fpfn + (size >> PAGE_SHIFT)))) {
++			ret = -E2BIG;
++			goto out;
++		}
+ 	} else if (mem->io_size && mem->io_size < mem->total) {
+ 		if (flags & I915_BO_ALLOC_GPU_ONLY) {
+ 			place.flags |= TTM_PL_FLAG_TOPDOWN;
+ 		} else {
+ 			place.fpfn = 0;
+-			place.lpfn = mem->io_size >> PAGE_SHIFT;
++			if (WARN_ON(!safe_conversion(&place.lpfn, mem->io_size >> PAGE_SHIFT))) {
++				ret = -E2BIG;
++				goto out;
++			}
+ 		}
+ 	}
+ 
+@@ -224,6 +233,8 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
+ 	mock_bo.bdev = &mem->i915->bdev;
+ 
+ 	ret = man->func->alloc(man, &mock_bo, &place, &res);
++
++out:
+ 	if (ret == -ENOSPC)
+ 		ret = -ENXIO;
+ 	if (!ret)
 -- 
 2.37.1
 
