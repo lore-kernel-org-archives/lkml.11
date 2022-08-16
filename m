@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B21CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF5AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235022AbiHPKrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
+        id S235099AbiHPKrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235005AbiHPKrd (ORCPT
+        with ESMTP id S235027AbiHPKrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:47:33 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA610DF70;
-        Tue, 16 Aug 2022 03:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=6BlpTwVx92rbeofMgr6BndByubfCRJy+MP8PnqkqRTU=; b=eYxw3R0fddjtO4kCgfEOWZVfd4
-        Bx85zGpyU007xVdxqdsTrh3JXX3JK1cgrmg70Wz6sGC8i/d9q8gJEfp1DtTeuTQ9Il3lUQ/XvwjA1
-        /3HU+UcdQmp3GBF3rJLD8fc2D4qWckYf2mQtu32UL8r38MUc6hg3s71RoWogX/UCHIkPOlAL185ja
-        3L3DLjB0hft7JKww/ZZOeRagnXyMIleVsy6kLAshN4mNw8YeC76FOnWM7p3vOaNwteQrFjGa9zLdI
-        +9VaJJO7z8eh9BEzwJJWNS/20DaMCC/pOgnadM0yFkCgw1fdU8+KWMFyhhrrfRqCymOCdtwpHXwqb
-        LldqktVQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNtVJ-006oGs-Sn; Tue, 16 Aug 2022 10:08:58 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D3109980083; Tue, 16 Aug 2022 12:08:55 +0200 (CEST)
-Date:   Tue, 16 Aug 2022 12:08:55 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Zhang Rui <rui.zhang@intel.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        corbet@lwn.net, fenghua.yu@intel.com, jdelvare@suse.com,
-        linux@roeck-us.net, len.brown@intel.com
-Subject: Re: [PATCH V2 1/8] perf/x86/intel/P4: Fix smp_num_siblings usage
-Message-ID: <Yvtst7ga6TaMsHeb@worktop.programming.kicks-ass.net>
-References: <20220816051633.17775-1-rui.zhang@intel.com>
- <20220816051633.17775-2-rui.zhang@intel.com>
- <YvtU2VKtpGCIOes4@worktop.programming.kicks-ass.net>
- <8496afee057d63b83a7ff02ec7f1de8c2d0e97ae.camel@intel.com>
+        Tue, 16 Aug 2022 06:47:35 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D0EAE22B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:47 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id by6so10002777ljb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=3P+rHXFq/Ju0+klAigNeKQlci4oKet9YOA0bldjm0Zs=;
+        b=csHnIcOwUWQxrQCh4kMZCM3lIHd/7QbLGLsWO0pdvwAF9+9GQoRb6Ia4FcgmceJfvP
+         BHynpZrRt5dGjq8BpcXQdRwEpJ3bDbr2mCaeslxUxw7Ntkl7yZoH4hBtF0JpE6iZxVR/
+         JVkMN5M4IiY1ptjbQ0o8GYQOS2H0Rg/WpGUqykfDw6RBj5ij3Jcv19c6YOcFHxtpF7bW
+         aTXpX13HCqPzWz93p0tLATReG5w33k29t/MixKOTAxXLsvM2gDJqwsJ1C18dA0y5dq7W
+         fAD/WrvRjt0eYtE1RaLUO/0yvAOaHSNRMYrw4AeByRv4h4LsVD17ZnuLgvwA7BMPkSzu
+         T5gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=3P+rHXFq/Ju0+klAigNeKQlci4oKet9YOA0bldjm0Zs=;
+        b=DMS0eqOQ8jl+HOw0Shey3S4pahDjMRoWkp4IvvljC0cR8JANh32W33CTvjD6kV3yIy
+         h2HRg87eHrJSrGiRZ6swPWI+al5vuBWc6U1n/M0FzKMT1O9mPun+xQ6v0xrYu6raAso4
+         Nq3Mkuk4NciZpWbbUgHqrDYysCMvHaZk4Af6jotEkNmoW1As+7kFYMT3bpMZNv27JyCU
+         8Rgb8wmBTzpwgOTqWYQUamLeCdrYIv7YpzGYZQvKWppfUEruSTwo9QTiUQDfUIDKLPNF
+         fqwyKPvCZotAFoWra5wSgeVOLk/tpqs4/b8wgooGp44JAt1F2V8oc9uhLOJ5SN6t3UFC
+         8prw==
+X-Gm-Message-State: ACgBeo3AHp2fFyjvZZ1nZylUDrw8c8/XqeP+vZVpW3VVkky/gWh2aa/0
+        +LlzqVy4/o87fa3DTog/PYOR9A==
+X-Google-Smtp-Source: AA6agR4BH5PwcsY3gEJ8rvtE71DqoG3p/u7jTfoGw6gfPC++4bLqy79XHhPj7FU2rIJuhiD66NqjJQ==
+X-Received: by 2002:a2e:8881:0:b0:255:7790:25e6 with SMTP id k1-20020a2e8881000000b00255779025e6mr6184568lji.525.1660644405978;
+        Tue, 16 Aug 2022 03:06:45 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id a20-20020a056512201400b0048aeff37812sm1328349lfb.308.2022.08.16.03.06.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 03:06:45 -0700 (PDT)
+Message-ID: <7532753c-60d6-a8cd-b462-bcbf01035d89@linaro.org>
+Date:   Tue, 16 Aug 2022 13:06:44 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8496afee057d63b83a7ff02ec7f1de8c2d0e97ae.camel@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 2/3] arm64: dts: qcom: sa8295p: move common nodes to
+ dtsi
+Content-Language: en-US
+To:     Parikshit Pareek <quic_ppareek@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Halaney <ahalaney@redhat.com>
+References: <20220812165453.11608-1-quic_ppareek@quicinc.com>
+ <20220812165453.11608-3-quic_ppareek@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220812165453.11608-3-quic_ppareek@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 05:47:14PM +0800, Zhang Rui wrote:
-> On Tue, 2022-08-16 at 10:27 +0200, Peter Zijlstra wrote:
-> > On Tue, Aug 16, 2022 at 01:16:26PM +0800, Zhang Rui wrote:
-> > > smp_num_siblings can be larger than 2.
-> > > 
-> > > Any value larger than 1 suggests HT is supported.
-> > 
-> > Subject and Changelog are still utterly insane.
+On 12/08/2022 19:54, Parikshit Pareek wrote:
+> There are many ADP boards with lot of common features. Move common
+> nodes to sa8540p-adp.dtsi file. This will be base for many ADP boards
+> to be introduced in near future.
 > 
-> what about this one, do I need to resend the full series?
-> 
-> thanks,
-> rui
-> 
-> From 2e368e6afa83cb73e44ac8c3cf8339207097d9e1 Mon Sep 17 00:00:00 2001
-> From: Zhang Rui <rui.zhang@intel.com>
-> Date: Tue, 28 Jun 2022 11:02:12 +0800
-> Subject: [PATCH V3 1/8] perf/x86/intel/P4: unify logic for detecting HT
-> 
-> Any value larger than 1 suggests HT is supported.
-> 
-> Although smp_num_siblings cannot be larger than 2 on P4 platform, it is
-> better to keep this logic consistent across the kernel.
-> 
-> Reviewed-by: Len Brown <len.brown@intel.com>
-> Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sa8295p-adp.dts  | 377 +--------------------
+>  arch/arm64/boot/dts/qcom/sa8540p-adp.dtsi | 384 ++++++++++++++++++++++
 
-Yes that works for me; thanks!
+Please send patch with tweaking -B/-M/-C parameters, so the copy is
+properly detected.
+
+Best regards,
+Krzysztof
