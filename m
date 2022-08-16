@@ -2,115 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215BCC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDCBC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbiHPIWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        id S232711AbiHPIWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232117AbiHPIVN (ORCPT
+        with ESMTP id S232572AbiHPIVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:21:13 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9F265828
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:04:03 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w3so12175606edc.2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:04:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=jdACKcZQnW2rz+ym/pyFpE18JDDBRDsTGyRhdRj6JS8=;
-        b=gqP6eFnkxg6m9YfSUzZ+10ZckWcrXTsAkZH0q+/zWP6PQQ1qM9nrnOZTfPWOPIIAHt
-         Ni0Y6J1PD0BbYmGLR37J/IVpCDgWZB9D4z9b5oRZmqVQjPUK+0A1N0rS84547ExO55I/
-         wnXf8etONDtUtGvrJys1HFW6iEOEr9i6fsIEM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=jdACKcZQnW2rz+ym/pyFpE18JDDBRDsTGyRhdRj6JS8=;
-        b=gSanKhLIcgG5H/JTHZDg+mjaq5w9AiE04U0BjvgkMD3i7AFBgmZlYj66BdGse5sRWW
-         7xh/nOKCrTOcKWIDWSl6/DPu6Ix2+8kSFKh8LWOs/qfFJLjA5If1agk73GfG1aGuU1bM
-         QBuLQ7PTYOUaYCmCS4CuSUGgu5gi6voDnmyx5NVKG9S8Afzv3+W463wsovDnsOVlKkZ4
-         lD1DBTOct4i9Guy1nlPGuoWFBTOaQGP0i7Vni2JXHnJMjrdCnUu0cKmu98dFcSYok/ou
-         jVLHPvZ72qI1EDz4dxfYB1GeRqiQl6uA43ZyAeZHgFkYslpfghxET4xKEKtXCZ02xoNC
-         lG1w==
-X-Gm-Message-State: ACgBeo1z/viWLEjieH6D/pwl29BRPHqbTOSDoveuyO0/D1/yVNp0JOcG
-        TI16xlsQpB4O89VXB/w0Nkj+r7gFxB6wpjNhWH8=
-X-Google-Smtp-Source: AA6agR7nJ/v2PerzlfYhyvFSIktyRb2SBlaP3khKjSXQyNTfm/P8qfk+GgNxrt7E4mh4HxzXZCbbeQ==
-X-Received: by 2002:a05:6402:11c8:b0:440:6513:be2c with SMTP id j8-20020a05640211c800b004406513be2cmr16980831edw.45.1660629842541;
-        Mon, 15 Aug 2022 23:04:02 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id r2-20020a17090609c200b0073156e6cd59sm4899837eje.4.2022.08.15.23.04.02
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 23:04:02 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id e27so6635296wra.11
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:04:02 -0700 (PDT)
-X-Received: by 2002:a05:6000:2a4:b0:225:162f:4cc7 with SMTP id
- l4-20020a05600002a400b00225162f4cc7mr1024841wry.274.1660629841690; Mon, 15
- Aug 2022 23:04:01 -0700 (PDT)
+        Tue, 16 Aug 2022 04:21:37 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8326C138;
+        Mon, 15 Aug 2022 23:02:19 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27G61n9J027011;
+        Tue, 16 Aug 2022 01:01:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660629709;
+        bh=dvNYDcirb5mwprL63fZk2VUKbuQ8Kt+3VgxaO2mNxJc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=qQh6o5MOFgK/0/PcJRP1ebW1BeD4sYwFCv8Y+RdWjXpaTtPo8teRbqe5brK+mBt1U
+         u8RoG+s84eLTEei+J20LaMVUUgptcy60ZCjoFAkIoPQLFwgz3fmvwKChC5PJQWoQA7
+         P7/xk3uzGupwgOPeVL1UTB+g+k3/FJqvd3GQCMdg=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27G61ni9016685
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Aug 2022 01:01:49 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 16
+ Aug 2022 01:01:49 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 16 Aug 2022 01:01:49 -0500
+Received: from uda0492258.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27G61dq3114915;
+        Tue, 16 Aug 2022 01:01:45 -0500
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
+        <vigneshr@ti.com>, <nsekhar@ti.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kishon@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH v4 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J7200 CPSW5G
+Date:   Tue, 16 Aug 2022 11:31:37 +0530
+Message-ID: <20220816060139.111934-2-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220816060139.111934-1-s-vadapalli@ti.com>
+References: <20220816060139.111934-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
-References: <YvqaK3hxix9AaQBO@slm.duckdns.org> <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
- <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com> <YvsvwCUVtNA5N5+U@gondor.apana.org.au>
-In-Reply-To: <YvsvwCUVtNA5N5+U@gondor.apana.org.au>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 15 Aug 2022 23:03:45 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi8FOpkDUdy48s0_3DVP2emB++_u02Pgus1EBpNv1dtig@mail.gmail.com>
-Message-ID: <CAHk-=wi8FOpkDUdy48s0_3DVP2emB++_u02Pgus1EBpNv1dtig@mail.gmail.com>
-Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Will Deacon <will@kernel.org>, Tejun Heo <tj@kernel.org>,
-        marcan@marcan.st, peterz@infradead.org, jirislaby@kernel.org,
-        maz@kernel.org, mark.rutland@arm.com, boqun.feng@gmail.com,
-        catalin.marinas@arm.com, oneukum@suse.com,
-        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:49 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> I think this is the source of all this: [ commit 61e02392d3c7 ]
+Update bindings for TI K3 J7200 SoC which contains 5 ports (4 external
+ports) CPSW5G module and add compatible for it.
 
-Yes, that doc update seems to actually predate the broken code.
+Changes made:
+    - Add new compatible ti,j7200-cpswxg-nuss for CPSW5G.
+    - Extend pattern properties for new compatible.
+    - Change maximum number of CPSW ports to 4 for new compatible.
 
-But you can actually see how that commit clearly was only meant to
-change the "test_and_set_bit_lock()" case. IOW, in that commit, the
-test_and_set_bit() comments clearly say
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml     | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
- * test_and_set_bit - Set a bit and return its old value
- * This operation is atomic and cannot be reordered.
- * It may be reordered on other architectures than x86.
- * It also implies a memory barrier.
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+index b8281d8be940..5366a367c387 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+@@ -57,6 +57,7 @@ properties:
+       - ti,am654-cpsw-nuss
+       - ti,j721e-cpsw-nuss
+       - ti,am642-cpsw-nuss
++      - ti,j7200-cpswxg-nuss
+ 
+   reg:
+     maxItems: 1
+@@ -110,7 +111,7 @@ properties:
+         const: 0
+ 
+     patternProperties:
+-      port@[1-2]:
++      "^port@[1-4]$":
+         type: object
+         description: CPSWxG NUSS external ports
+ 
+@@ -119,7 +120,7 @@ properties:
+         properties:
+           reg:
+             minimum: 1
+-            maximum: 2
++            maximum: 4
+             description: CPSW port number
+ 
+           phys:
+@@ -151,6 +152,18 @@ properties:
+ 
+     additionalProperties: false
+ 
++if:
++  not:
++    properties:
++      compatible:
++        contains:
++          const: ti,j7200-cpswxg-nuss
++then:
++  properties:
++    ethernet-ports:
++      patternProperties:
++        "^port@[3-4]$": false
++
+ patternProperties:
+   "^mdio@[0-9a-f]+$":
+     type: object
+-- 
+2.25.1
 
-(that "It may be reordered on other architectures than x86" does show
-clear confusion, since it also says "It also implies a memory
-barrier")
-
-And the very commit that adds that
-
-  - RMW operations that are conditional are unordered on FAILURE,
-
-language then updates the comment only above test_and_set_bit_lock().
-
-And yes, on failure to lock, ordering doesn't matter. You didn't get
-the bit lock, there is no ordering for you.
-
-But then I think that mistake in the documentation (the relaxed
-semantics was only for the "lock" version of the bitops, not for the
-rest ot it) then later led to the mistake in the code.
-
-End result: test_and_set_bit_lock() does indeed only imply an ordering
-if it got the lock (ie it was successful).
-
-But test_and_set_bit() itself is always "succesful". If the bit was
-already set, that's not any indication of any "failure". It's just an
-indication that it was set. Nothing more, nothing less, and the memory
-barrier is still required regardless.
-
-             Linus
