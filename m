@@ -2,81 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C57C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EADEC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235508AbiHPMSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S235389AbiHPMTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235020AbiHPMSI (ORCPT
+        with ESMTP id S235291AbiHPMSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:18:08 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25832DDF;
-        Tue, 16 Aug 2022 05:15:45 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1660652127tpwbmw4y
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 20:15:26 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: 7jw2iSiCazqtwYDcJ+Li+DJ0HCwyu976NBVI15SXSx7Z0guy6XmDoekTOuxkJ
-        TAvnZJfUWdaNsE4TtrzsAZD2/ixAPKRrlj4c0FqCxfo6nzb+KsF6gvGU0ych4MUPw4zJ1Qy
-        aDuJZ/dNfO3SpoFTpCFM1LZEcELB6fsJGC+TzC24MguFehtbOsD2Rd9WxpvUKxrOK9aNqBI
-        OtWMuKFAn2ER3vlcjEsypv1eJtT1H4Ah9tDg2IGE/IUIAlOpeKq1jYAHOmpTYVL99l+rXsJ
-        5Qo2crIaycaAB9gHXqiGXh4Ekk6kuqvvnVw+/zLqW42Hw6nBEVlUaxwLWHBBMtWTBDKLmMe
-        tpku9OR35WzGk8g/JeK8YbfH69K+wAcli9fflQowS63Sf3B6lL4puD2YeiCfP2tLeNBF3LC
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] crypto: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 20:15:19 +0800
-Message-Id: <20220816121519.60351-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 16 Aug 2022 08:18:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368F313E84;
+        Tue, 16 Aug 2022 05:17:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCCA3B8188B;
+        Tue, 16 Aug 2022 12:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E990AC433D6;
+        Tue, 16 Aug 2022 12:17:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660652223;
+        bh=nofA9ptQDb1h/gvhqEy4REcEOPebrt4+12qzsya4d+w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zuUHw4EiV3eaffoaD7us/ZQEjSBizwYfczYcy0j7P4JNgmTbsatP/ouEmweY1zP3w
+         rmkdDCEGsrpKSB9glDK7/7/btEu3JYP77uy90qMra1iQTdMIvnrd9HHPY8VIapm+gN
+         zoGJEi4LyKXzP/+KRgkv7UYjh6fnFSqpWfwdEfdg=
+Date:   Tue, 16 Aug 2022 14:17:00 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/779] 5.15.61-rc1 review
+Message-ID: <YvuKvBUIGUXPUUDz@kroah.com>
+References: <20220815180337.130757997@linuxfoundation.org>
+ <20220816113407.GA1809610@roeck-us.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816113407.GA1809610@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'that'.
+On Tue, Aug 16, 2022 at 04:34:07AM -0700, Guenter Roeck wrote:
+> On Mon, Aug 15, 2022 at 07:54:04PM +0200, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.61 release.
+> > There are 779 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> > Anything received after that time might be too late.
+> > 
+> 
+> Building powerpc:ppc32_allmodconfig ... failed
+> Building powerpc:ppc6xx_defconfig ... failed
+> --------------
+> Error log:
+> arch/powerpc/sysdev/fsl_pci.c: In function 'fsl_add_bridge':
+> arch/powerpc/sysdev/fsl_pci.c:601:39: error: 'PCI_CLASS_BRIDGE_PCI_NORMAL' undeclared
+> 
+> This affects v5.15.y and earlier branches. Several patches
+> would be needded to make this work. In mainline:
+> 
+> 0c551abfa004 powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+> 113fe88eed53 powerpc: Don't include asm/setup.h in asm/machdep.h
+> e6f6390ab7b9 powerpc: Add missing headers
+> 904b10fb189c PCI: Add defines for normal and subtractive PCI bridges
+> 
+> There may be others since the patches touch several files, and it seems
+> quite unlikely that they all apply to older kernels. It may be easier
+> to define PCI_CLASS_BRIDGE_PCI_NORMAL locally.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- crypto/api.c            | 2 +-
- crypto/twofish_common.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Yeah, I'll just pick that portion out of 904b10fb189c ("PCI: Add defines
+for normal and subtractive PCI bridges") to fix this build up (and the
+build on older queues.)
 
-diff --git a/crypto/api.c b/crypto/api.c
-index 69508ae9345e..ab4b5e2b0756 100644
---- a/crypto/api.c
-+++ b/crypto/api.c
-@@ -321,7 +321,7 @@ struct crypto_alg *crypto_alg_mod_lookup(const char *name, u32 type, u32 mask)
- 
- 	/*
- 	 * If the internal flag is set for a cipher, require a caller to
--	 * to invoke the cipher with the internal flag to use that cipher.
-+	 * invoke the cipher with the internal flag to use that cipher.
- 	 * Also, if a caller wants to allocate a cipher that may or may
- 	 * not be an internal cipher, use type | CRYPTO_ALG_INTERNAL and
- 	 * !(mask & CRYPTO_ALG_INTERNAL).
-diff --git a/crypto/twofish_common.c b/crypto/twofish_common.c
-index d23fa531b91f..f921f30334f4 100644
---- a/crypto/twofish_common.c
-+++ b/crypto/twofish_common.c
-@@ -298,7 +298,7 @@ static const u32 mds[4][256] = {
-  * multiplication is inefficient without hardware support.  To multiply
-  * faster, I make use of the fact x is a generator for the nonzero elements,
-  * so that every element p of GF(2)[x]/w(x) is either 0 or equal to (x)^n for
-- * some n in 0..254.  Note that that caret is exponentiation in GF(2^8),
-+ * some n in 0..254.  Note that caret is exponentiation in GF(2^8),
-  * *not* polynomial notation.  So if I want to compute pq where p and q are
-  * in GF(2^8), I can just say:
-  *    1. if p=0 or q=0 then pq=0
--- 
-2.36.1
+thanks,
 
+greg k-h
