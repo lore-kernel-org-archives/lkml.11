@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD081C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D459C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiHPJIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        id S232408AbiHPJIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiHPJHf (ORCPT
+        with ESMTP id S231703AbiHPJHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:07:35 -0400
+        Tue, 16 Aug 2022 05:07:44 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DF38BCC3D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:25:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B404C889D
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:25:15 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1FCBA1D34;
-        Tue, 16 Aug 2022 00:25:12 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 20A201D70;
+        Tue, 16 Aug 2022 00:25:16 -0700 (PDT)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 83A1B3F70D;
-        Tue, 16 Aug 2022 00:25:09 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 83B323F70D;
+        Tue, 16 Aug 2022 00:25:13 -0700 (PDT)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
@@ -29,9 +29,9 @@ Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
         souvik.chakravarty@arm.com, wleavitt@marvell.com,
         peter.hilber@opensynergy.com, nicola.mazzucato@arm.com,
         tarek.el-sherbiny@arm.com, cristian.marussi@arm.com
-Subject: [RFC PATCH 2/6] firmware: arm_scmi: Add bus helpers to enter raw mode
-Date:   Tue, 16 Aug 2022 08:24:46 +0100
-Message-Id: <20220816072450.3120959-3-cristian.marussi@arm.com>
+Subject: [RFC PATCH 4/6] firmware: arm_scmi: Move errors defs and code to common.h
+Date:   Tue, 16 Aug 2022 08:24:48 +0100
+Message-Id: <20220816072450.3120959-5-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220816072450.3120959-1-cristian.marussi@arm.com>
 References: <20220816072450.3120959-1-cristian.marussi@arm.com>
@@ -41,145 +41,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a couple of helpers to be able to trigger the un-registration and the
-re-registration of the whole stack of SCMI drivers from/to the SCMI bus.
+Move SCMI error codes definitions and helper to the common.h header
+together with the delayed response timeout define.
 
-Once this mode is enabled any new SCMI driver registration is inhibited
-and delayed till the this new mode is disabled.
+No functional change.
 
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- drivers/firmware/arm_scmi/bus.c    | 69 +++++++++++++++++++++++++++++-
- drivers/firmware/arm_scmi/common.h |  2 +
- include/linux/scmi_protocol.h      |  1 +
- 3 files changed, 71 insertions(+), 1 deletion(-)
+ drivers/firmware/arm_scmi/common.h | 40 ++++++++++++++++++++++++++++++
+ drivers/firmware/arm_scmi/driver.c | 40 ------------------------------
+ 2 files changed, 40 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
-index d4e23101448a..c4b3371dcb1b 100644
---- a/drivers/firmware/arm_scmi/bus.c
-+++ b/drivers/firmware/arm_scmi/bus.c
-@@ -19,6 +19,10 @@ static DEFINE_IDA(scmi_bus_id);
- static DEFINE_IDR(scmi_protocols);
- static DEFINE_SPINLOCK(protocol_lock);
- 
-+static bool scmi_raw_mode_enabled;
-+static LIST_HEAD(scmi_registered_drivers);
-+static DEFINE_MUTEX(scmi_raw_mode_mtx);
-+
- static const struct scmi_device_id *
- scmi_dev_match_id(struct scmi_device *scmi_dev, struct scmi_driver *scmi_drv)
- {
-@@ -144,6 +148,18 @@ int scmi_driver_register(struct scmi_driver *driver, struct module *owner,
- 	driver->driver.owner = owner;
- 	driver->driver.mod_name = mod_name;
- 
-+	mutex_lock(&scmi_raw_mode_mtx);
-+	list_add_tail(&driver->node, &scmi_registered_drivers);
-+	/*
-+	 * If RAW mode is enabled here, the driver will be registered fully
-+	 * only later, when RAW will be (if ever) disabled.
-+	 */
-+	if (scmi_raw_mode_enabled) {
-+		mutex_unlock(&scmi_raw_mode_mtx);
-+		return 0;
-+	}
-+	mutex_unlock(&scmi_raw_mode_mtx);
-+
- 	retval = driver_register(&driver->driver);
- 	if (!retval)
- 		pr_debug("registered new scmi driver %s\n", driver->name);
-@@ -154,7 +170,18 @@ EXPORT_SYMBOL_GPL(scmi_driver_register);
- 
- void scmi_driver_unregister(struct scmi_driver *driver)
- {
--	driver_unregister(&driver->driver);
-+	mutex_lock(&scmi_raw_mode_mtx);
-+	list_del_init(&driver->node);
-+	/*
-+	 * No need to unregister a driver when RAW mode is enabled, it would
-+	 * have been already unregistered when RAW was enabled.
-+	 */
-+	if (!scmi_raw_mode_enabled) {
-+		mutex_unlock(&scmi_raw_mode_mtx);
-+		driver_unregister(&driver->driver);
-+		mutex_lock(&scmi_raw_mode_mtx);
-+	}
-+	mutex_unlock(&scmi_raw_mode_mtx);
- 	scmi_protocol_device_unrequest(driver->id_table);
- }
- EXPORT_SYMBOL_GPL(scmi_driver_unregister);
-@@ -276,6 +303,46 @@ static void scmi_devices_unregister(void)
- 	bus_for_each_dev(&scmi_bus_type, NULL, NULL, __scmi_devices_unregister);
- }
- 
-+void scmi_bus_raw_mode_enable(void)
-+{
-+	struct scmi_driver *driver;
-+
-+	/* On enable any known SCMI driver is unregistered */
-+	mutex_lock(&scmi_raw_mode_mtx);
-+	list_for_each_entry_reverse(driver, &scmi_registered_drivers, node) {
-+		mutex_unlock(&scmi_raw_mode_mtx);
-+
-+		driver_unregister(&driver->driver);
-+
-+		mutex_lock(&scmi_raw_mode_mtx);
-+	}
-+	scmi_raw_mode_enabled = true;
-+	mutex_unlock(&scmi_raw_mode_mtx);
-+}
-+
-+void scmi_bus_raw_mode_disable(void)
-+{
-+	int retval;
-+	struct scmi_driver *driver;
-+
-+	/*
-+	 * On disable any known SCMI driver is registered again unless it was
-+	 * removed already as a module.
-+	 */
-+	mutex_lock(&scmi_raw_mode_mtx);
-+	list_for_each_entry(driver, &scmi_registered_drivers, node) {
-+		mutex_unlock(&scmi_raw_mode_mtx);
-+
-+		retval = driver_register(&driver->driver);
-+		if (retval)
-+			pr_warn("Failed to rebind driver %s\n", driver->name);
-+
-+		mutex_lock(&scmi_raw_mode_mtx);
-+	}
-+	scmi_raw_mode_enabled = false;
-+	mutex_unlock(&scmi_raw_mode_mtx);
-+}
-+
- int __init scmi_bus_init(void)
- {
- 	int retval;
 diff --git a/drivers/firmware/arm_scmi/common.h b/drivers/firmware/arm_scmi/common.h
-index 61aba7447c32..bbaac20544a5 100644
+index 3316bf9eb98a..5ed64bfe9054 100644
 --- a/drivers/firmware/arm_scmi/common.h
 +++ b/drivers/firmware/arm_scmi/common.h
-@@ -171,6 +171,8 @@ int scmi_protocol_device_request(const struct scmi_device_id *id_table);
- void scmi_protocol_device_unrequest(const struct scmi_device_id *id_table);
- struct scmi_device *scmi_child_dev_find(struct device *parent,
- 					int prot_id, const char *name);
-+void scmi_bus_raw_mode_enable(void);
-+void scmi_bus_raw_mode_disable(void);
+@@ -27,6 +27,46 @@
+ #include "protocols.h"
+ #include "notify.h"
  
++#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
++
++enum scmi_error_codes {
++	SCMI_SUCCESS = 0,	/* Success */
++	SCMI_ERR_SUPPORT = -1,	/* Not supported */
++	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
++	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
++	SCMI_ERR_ENTRY = -4,	/* Not found */
++	SCMI_ERR_RANGE = -5,	/* Value out of range */
++	SCMI_ERR_BUSY = -6,	/* Device busy */
++	SCMI_ERR_COMMS = -7,	/* Communication Error */
++	SCMI_ERR_GENERIC = -8,	/* Generic Error */
++	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
++	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
++};
++
++static const int scmi_linux_errmap[] = {
++	/* better than switch case as long as return value is continuous */
++	0,			/* SCMI_SUCCESS */
++	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
++	-EINVAL,		/* SCMI_ERR_PARAM */
++	-EACCES,		/* SCMI_ERR_ACCESS */
++	-ENOENT,		/* SCMI_ERR_ENTRY */
++	-ERANGE,		/* SCMI_ERR_RANGE */
++	-EBUSY,			/* SCMI_ERR_BUSY */
++	-ECOMM,			/* SCMI_ERR_COMMS */
++	-EIO,			/* SCMI_ERR_GENERIC */
++	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
++	-EPROTO,		/* SCMI_ERR_PROTOCOL */
++};
++
++static inline int scmi_to_linux_errno(int errno)
++{
++	int err_idx = -errno;
++
++	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
++		return scmi_linux_errmap[err_idx];
++	return -EIO;
++}
++
+ #define MSG_ID_MASK		GENMASK(7, 0)
+ #define MSG_XTRACT_ID(hdr)	FIELD_GET(MSG_ID_MASK, (hdr))
+ #define MSG_TYPE_MASK		GENMASK(9, 8)
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index 797826237776..141a140792a5 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -37,20 +37,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/scmi.h>
+ 
+-enum scmi_error_codes {
+-	SCMI_SUCCESS = 0,	/* Success */
+-	SCMI_ERR_SUPPORT = -1,	/* Not supported */
+-	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
+-	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
+-	SCMI_ERR_ENTRY = -4,	/* Not found */
+-	SCMI_ERR_RANGE = -5,	/* Value out of range */
+-	SCMI_ERR_BUSY = -6,	/* Device busy */
+-	SCMI_ERR_COMMS = -7,	/* Communication Error */
+-	SCMI_ERR_GENERIC = -8,	/* Generic Error */
+-	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
+-	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
+-};
+-
+ /* List of all SCMI devices active in system */
+ static LIST_HEAD(scmi_list);
+ /* Protection for the entire list */
+@@ -170,30 +156,6 @@ struct scmi_info {
+ 
+ #define handle_to_scmi_info(h)	container_of(h, struct scmi_info, handle)
+ 
+-static const int scmi_linux_errmap[] = {
+-	/* better than switch case as long as return value is continuous */
+-	0,			/* SCMI_SUCCESS */
+-	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
+-	-EINVAL,		/* SCMI_ERR_PARAM */
+-	-EACCES,		/* SCMI_ERR_ACCESS */
+-	-ENOENT,		/* SCMI_ERR_ENTRY */
+-	-ERANGE,		/* SCMI_ERR_RANGE */
+-	-EBUSY,			/* SCMI_ERR_BUSY */
+-	-ECOMM,			/* SCMI_ERR_COMMS */
+-	-EIO,			/* SCMI_ERR_GENERIC */
+-	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
+-	-EPROTO,		/* SCMI_ERR_PROTOCOL */
+-};
+-
+-static inline int scmi_to_linux_errno(int errno)
+-{
+-	int err_idx = -errno;
+-
+-	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
+-		return scmi_linux_errmap[err_idx];
+-	return -EIO;
+-}
+-
+ void scmi_notification_instance_data_set(const struct scmi_handle *handle,
+ 					 void *priv)
+ {
+@@ -1056,8 +1018,6 @@ static void reset_rx_to_maxsz(const struct scmi_protocol_handle *ph,
+ 	xfer->rx.len = info->desc->max_msg_size;
+ }
+ 
+-#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
+-
  /**
-  * struct scmi_desc - Description of SoC integration
-diff --git a/include/linux/scmi_protocol.h b/include/linux/scmi_protocol.h
-index 4f765bc788ff..39e64ec72984 100644
---- a/include/linux/scmi_protocol.h
-+++ b/include/linux/scmi_protocol.h
-@@ -820,6 +820,7 @@ struct scmi_driver {
- 	void (*remove)(struct scmi_device *sdev);
- 	const struct scmi_device_id *id_table;
- 
-+	struct list_head node;
- 	struct device_driver driver;
- };
- 
+  * do_xfer_with_response() - Do one transfer and wait until the delayed
+  *	response is received
 -- 
 2.32.0
 
