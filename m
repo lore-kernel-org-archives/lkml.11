@@ -2,83 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 709A7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643DDC32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236997AbiHPSPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
+        id S237061AbiHPSPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236996AbiHPSPJ (ORCPT
+        with ESMTP id S236658AbiHPSPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:15:09 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3427E82FA8;
-        Tue, 16 Aug 2022 11:15:07 -0700 (PDT)
-Received: from [127.0.0.1] (dynamic-089-204-137-236.89.204.137.pool.telefonica.de [89.204.137.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 730CC1EC01D4;
-        Tue, 16 Aug 2022 20:15:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660673701;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TSjMr0/SAf5Byfzo8LZakevLLdvnLz7vcX1LJaoLVPo=;
-        b=BUJZuj1Fz7MQNDr8nVE3dnHvIefBxAAgD49dPyF+cNm2UMPfi5UAXw05ItAqI+RhcAAana
-        sE33Pygi2lxG833JiFlCn4r847Xu8mRNUFrLrr5MUCUl4f4ciVdnGH5sc34lv2NLMTUk2t
-        o4/32sPRGW57jVk0HPi1UPRg1Tj4mFg=
-Date:   Tue, 16 Aug 2022 18:14:57 +0000
-From:   Boris Petkov <bp@alien8.de>
-To:     Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH] x86/nospec: Unwreck the RSB stuffing
-In-Reply-To: <84f4b1ea-d837-9a53-a21c-4ac602ff8e75@linux.intel.com>
-References: <20220809175513.345597655@linuxfoundation.org> <20220809175513.979067723@linuxfoundation.org> <YvuNdDWoUZSBjYcm@worktop.programming.kicks-ass.net> <839e2877-bb16-dbb5-d4da-bc611733c7e1@linux.intel.com> <84f4b1ea-d837-9a53-a21c-4ac602ff8e75@linux.intel.com>
-Message-ID: <EA9514A1-7DD7-4707-A104-1A891B602B49@alien8.de>
+        Tue, 16 Aug 2022 14:15:17 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A715E81B3B;
+        Tue, 16 Aug 2022 11:15:13 -0700 (PDT)
+X-QQ-mid: bizesmtp70t1660673453tihgsg97
+Received: from harry-jrlc.. ( [182.148.12.144])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 17 Aug 2022 02:10:41 +0800 (CST)
+X-QQ-SSF: 0100000000000060D000B00A0000020
+X-QQ-FEAT: uUYRqJkYwO4LXC4etf4sAwy1jbvjPR2mWSdsI42K9XsGqZ7rQjgiYligQVWQz
+        pTS2YMVG8hWrSoPWTnkhiPqAnxFsFkon+oB6IR2OcpcZXoPPLqmm98lJUJsh8YocT1LYtnw
+        KHHrk5ZcXdvqbLzyrF+oPJiNMopI57NtXeTT3687LeVmpwfLD6OyvHfNpt6I/gk3yvdc2ue
+        7xEMNW4blxoX5u78ORd+ZSpo+wsVJKNYgZz4qljjmINN1m//8rLUULIF3p+cAVVug8b0Yig
+        oi+Tk7qhGcaK6zmK+xVa4DU14l+nvD9bJQ1W5bEr/VcC1qQKp9OF5EbiT2W+we2HZvabSd9
+        XTW8V4PRpS2EG2bAbFIa23k5Vy6qbEbD0Lb8uVU+j0aFZCpOq84VzTHpD/XZw==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] mac80211: Variable type completion
+Date:   Wed, 17 Aug 2022 02:10:40 +0800
+Message-Id: <20220816181040.9044-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On August 16, 2022 6:04:36 PM UTC, Daniel Sneddon <daniel=2Esneddon@linux=
-=2Eintel=2Ecom> wrote:
->diff --git a/arch/x86/kernel/alternative=2Ec b/arch/x86/kernel/alternativ=
-e=2Ec
->index 62f6b8b7c4a5=2E=2E5c476b37b3bc 100644
->--- a/arch/x86/kernel/alternative=2Ec
->+++ b/arch/x86/kernel/alternative=2Ec
->@@ -284,6 +284,9 @@ void __init_or_module noinline apply_alternatives(str=
-uct
->alt_instr *start,
->                /* Mask away "NOT" flag bit for feature to test=2E */
->                u16 feature =3D a->cpuid & ~ALTINSTR_FLAG_INV;
+'unsigned int' is better than 'unsigned'.
 
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+---
+ net/mac80211/ibss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I guess it is time for struct altinstr=2Eflags=2E I never liked this INV m=
-ask bit=2E=2E=2E
+diff --git a/net/mac80211/ibss.c b/net/mac80211/ibss.c
+index 14c04fd48b7a..16fe69deb40b 100644
+--- a/net/mac80211/ibss.c
++++ b/net/mac80211/ibss.c
+@@ -1349,7 +1349,7 @@ static void ieee80211_sta_create_ibss(struct ieee80211_sub_if_data *sdata)
+ 				  capability, 0, true);
+ }
+ 
+-static unsigned ibss_setup_channels(struct wiphy *wiphy,
++static unsigned int ibss_setup_channels(struct wiphy *wiphy,
+ 				    struct ieee80211_channel **channels,
+ 				    unsigned int channels_max,
+ 				    u32 center_freq, u32 width)
+-- 
+2.30.2
 
->
->+               if (feature =3D=3D X86_FEATURE_NEVER)
->+                       goto next;
->+
->                instr =3D (u8 *)&a->instr_offset + a->instr_offset;
->                replacement =3D (u8 *)&a->repl_offset + a->repl_offset;
->                BUG_ON(a->instrlen > sizeof(insn_buff));
->
-
-
---=20
-Sent from a small device: formatting sux and brevity is inevitable=2E 
