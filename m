@@ -2,243 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B45C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F11C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234832AbiHPK5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        id S231785AbiHPK5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233715AbiHPK4o (ORCPT
+        with ESMTP id S233565AbiHPK5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:56:44 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071F053005;
-        Tue, 16 Aug 2022 03:10:37 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G8q6VD027837;
-        Tue, 16 Aug 2022 10:10:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=dx+V1w4lrq5BxOBMqbomNCog0rYvnxOH+lpnHWblaHU=;
- b=cmjjr2Td/WP1t1F17CM0vmDdOIUrjw83gbGjAY6USVlwv+aMBne5K6sZOc84x6AHCHm4
- b23uPi06/8fdgjBzzg0s+IgLcgf8ryaqGIIEQxfqO+t1Gu/yMib6acrDXjJn5aNyNLt9
- 2MZV3rtwLnVroKNmFJj/1AqbLixNIcflvIEdmIJc1dMH7BDvlr38WKP1Tg1vvdwPUgoB
- BuKBf7/u54/64f7gR3iWkJmcz1hQNlbCRcRnMVHHHaa3hIE+i2ol8hJ45xi7hAQjUPlA
- YUCLMz7kWmqsp28vROrl/J+YXoxMgtQ8bl/6vmfIXMcMB+qHt+w1TwTaIJO8iOAhUVMs Iw== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06c0rjgt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:34 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GAAXoU015520
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:33 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 16 Aug 2022 03:10:29 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [RESEND PATCH V7 2/5] clk: qcom: lpass: Handle the regmap overlap of lpasscc and lpass_aon
-Date:   Tue, 16 Aug 2022 15:40:01 +0530
-Message-ID: <1660644604-6592-3-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 16 Aug 2022 06:57:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B302985B1;
+        Tue, 16 Aug 2022 03:27:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3464F601BF;
+        Tue, 16 Aug 2022 10:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05255C433D6;
+        Tue, 16 Aug 2022 10:27:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660645635;
+        bh=Vez2PaWp4k1h9o9aKWJXXm1qC0RzAbHH5x5Do9Gf33w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SEqW73XQ3X47k5+ITNUnPUbL9FlDFnzZVvGYm0GVXqQdQ1TcZCwiOhv+ULLaatJoD
+         YGZ6nEX6Ygwy+k6qaGpdw9Z/qtZvBcfGwSuT9w676ZBNHae8zE+PKVctDrQ1ynICG4
+         puofc8Jl7CsOHPMeYBF8vAelz+yhFumxnJA8wqOM=
+Date:   Tue, 16 Aug 2022 12:27:12 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Shunsuke Mie <mie@igel.co.jp>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] misc: pci_endpoint_test: Fix
+ pci_endpoint_test_{copy,write,read}() panic
+Message-ID: <YvtxAN7E4nmZmL/X@kroah.com>
+References: <20220816100617.90720-1-mie@igel.co.jp>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: Gaa5SFn33VYfqQbFW4BAYeXw4aDByR9o
-X-Proofpoint-GUID: Gaa5SFn33VYfqQbFW4BAYeXw4aDByR9o
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- priorityscore=1501 mlxlogscore=747 impostorscore=0 clxscore=1015
- suspectscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208160039
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816100617.90720-1-mie@igel.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move registration of lpass_q6ss_ahbm_clk and lpass_q6ss_ahbs_clk to
-lpass_aon_cc_sc7280_probe and register them only if "qcom,adsp-pil-mode"
-is enabled in the lpass_aon DT node.
+On Tue, Aug 16, 2022 at 07:06:17PM +0900, Shunsuke Mie wrote:
+> Although dma_map_single() doesn't permit zero length mapping, the each
+> test functions called the function without zero checking.
+> 
+> A panic was reported on arm64:
+> 
+> [   60.137988] ------------[ cut here ]------------
+> [   60.142630] kernel BUG at kernel/dma/swiotlb.c:624!
+> [   60.147508] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> [   60.152992] Modules linked in: dw_hdmi_cec crct10dif_ce simple_bridge rcar_fdp1 vsp1 rcar_vin videobuf2_vmalloc rcar_csi2 v4l
+> 2_mem2mem videobuf2_dma_contig videobuf2_memops pci_endpoint_test videobuf2_v4l2 videobuf2_common rcar_fcp v4l2_fwnode v4l2_asyn
+> c videodev mc gpio_bd9571mwv max9611 pwm_rcar ccree at24 authenc libdes phy_rcar_gen3_usb3 usb_dmac display_connector pwm_bl
+> [   60.186252] CPU: 0 PID: 508 Comm: pcitest Not tainted 6.0.0-rc1rpci-dev+ #237
+> [   60.193387] Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
+> [   60.201302] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   60.208263] pc : swiotlb_tbl_map_single+0x2c0/0x590
+> [   60.213149] lr : swiotlb_map+0x88/0x1f0
+> [   60.216982] sp : ffff80000a883bc0
+> [   60.220292] x29: ffff80000a883bc0 x28: 0000000000000000 x27: 0000000000000000
+> [   60.227430] x26: 0000000000000000 x25: ffff0004c0da20d0 x24: ffff80000a1f77c0
+> [   60.234567] x23: 0000000000000002 x22: 0001000040000010 x21: 000000007a000000
+> [   60.241703] x20: 0000000000200000 x19: 0000000000000000 x18: 0000000000000000
+> [   60.248840] x17: 0000000000000000 x16: 0000000000000000 x15: ffff0006ff7b9180
+> [   60.255977] x14: ffff0006ff7b9180 x13: 0000000000000000 x12: 0000000000000000
+> [   60.263113] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+> [   60.270249] x8 : 0001000000000010 x7 : ffff0004c6754b20 x6 : 0000000000000000
+> [   60.277385] x5 : ffff0004c0da2090 x4 : 0000000000000000 x3 : 0000000000000001
+> [   60.284521] x2 : 0000000040000000 x1 : 0000000000000000 x0 : 0000000040000010
+> [   60.291658] Call trace:
+> [   60.294100]  swiotlb_tbl_map_single+0x2c0/0x590
+> [   60.298629]  swiotlb_map+0x88/0x1f0
+> [   60.302115]  dma_map_page_attrs+0x188/0x230
+> [   60.306299]  pci_endpoint_test_ioctl+0x5e4/0xd90 [pci_endpoint_test]
+> [   60.312660]  __arm64_sys_ioctl+0xa8/0xf0
+> [   60.316583]  invoke_syscall+0x44/0x108
+> [   60.320334]  el0_svc_common.constprop.0+0xcc/0xf0
+> [   60.325038]  do_el0_svc+0x2c/0xb8
+> [   60.328351]  el0_svc+0x2c/0x88
+> [   60.331406]  el0t_64_sync_handler+0xb8/0xc0
+> [   60.335587]  el0t_64_sync+0x18c/0x190
+> [   60.339251] Code: 52800013 d2e00414 35fff45c d503201f (d4210000)
+> [   60.345344] ---[ end trace 0000000000000000 ]---
+> 
+> To fix it, this patch adds checkings the payload length if it is zero.
+> 
+> Fixes: 343dc693f7b7 ("misc: pci_endpoint_test: Prevent some integer overflows")
+> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
+> ---
+>  drivers/misc/pci_endpoint_test.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+> index 8f786a225dcf..d45426a73396 100644
+> --- a/drivers/misc/pci_endpoint_test.c
+> +++ b/drivers/misc/pci_endpoint_test.c
+> @@ -364,7 +364,7 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
+>  	}
+>  
+>  	size = param.size;
+> -	if (size > SIZE_MAX - alignment)
+> +	if (size > SIZE_MAX - alignment || !size)
+>  		goto err;
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
----
- drivers/clk/qcom/lpassaudiocc-sc7280.c | 44 ++++++++++++++++++++++++++++++++++
- drivers/clk/qcom/lpasscc-sc7280.c      | 44 ----------------------------------
- 2 files changed, 44 insertions(+), 44 deletions(-)
+Can we test size first?  And do it in the ioctl handler in one place so
+you don't have to add it everywhere?
 
-diff --git a/drivers/clk/qcom/lpassaudiocc-sc7280.c b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-index 6ab6e5a3..6067328 100644
---- a/drivers/clk/qcom/lpassaudiocc-sc7280.c
-+++ b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-@@ -12,6 +12,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- 
-+#include <dt-bindings/clock/qcom,lpass-sc7280.h>
- #include <dt-bindings/clock/qcom,lpassaudiocc-sc7280.h>
- 
- #include "clk-alpha-pll.h"
-@@ -38,6 +39,32 @@ static const struct pll_vco zonda_vco[] = {
- 	{ 595200000UL, 3600000000UL, 0 },
- };
- 
-+static struct clk_branch lpass_q6ss_ahbm_clk = {
-+	.halt_reg = 0x901c,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x901c,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+				.name = "lpass_q6ss_ahbm_clk",
-+				.ops = &clk_branch2_ops,
-+		},
-+	},
-+};
-+
-+static struct clk_branch lpass_q6ss_ahbs_clk = {
-+	.halt_reg = 0x9020,
-+	.halt_check = BRANCH_HALT_VOTED,
-+	.clkr = {
-+		.enable_reg = 0x9020,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "lpass_q6ss_ahbs_clk",
-+			.ops = &clk_branch2_ops,
-+		},
-+	},
-+};
-+
- /* 1128.96MHz configuration */
- static const struct alpha_pll_config lpass_audio_cc_pll_config = {
- 	.l = 0x3a,
-@@ -614,6 +641,11 @@ static struct gdsc lpass_aon_cc_lpass_audio_hm_gdsc = {
- 	.flags = RETAIN_FF_ENABLE,
- };
- 
-+static struct clk_regmap *lpass_cc_sc7280_clocks[] = {
-+	[LPASS_Q6SS_AHBM_CLK] = &lpass_q6ss_ahbm_clk.clkr,
-+	[LPASS_Q6SS_AHBS_CLK] = &lpass_q6ss_ahbs_clk.clkr,
-+};
-+
- static struct clk_regmap *lpass_aon_cc_sc7280_clocks[] = {
- 	[LPASS_AON_CC_AUDIO_HM_H_CLK] = &lpass_aon_cc_audio_hm_h_clk.clkr,
- 	[LPASS_AON_CC_VA_MEM0_CLK] = &lpass_aon_cc_va_mem0_clk.clkr,
-@@ -659,6 +691,12 @@ static struct regmap_config lpass_audio_cc_sc7280_regmap_config = {
- 	.fast_io = true,
- };
- 
-+static const struct qcom_cc_desc lpass_cc_sc7280_desc = {
-+	.config = &lpass_audio_cc_sc7280_regmap_config,
-+	.clks = lpass_cc_sc7280_clocks,
-+	.num_clks = ARRAY_SIZE(lpass_cc_sc7280_clocks),
-+};
-+
- static const struct qcom_cc_desc lpass_audio_cc_sc7280_desc = {
- 	.config = &lpass_audio_cc_sc7280_regmap_config,
- 	.clks = lpass_audio_cc_sc7280_clocks,
-@@ -785,6 +823,12 @@ static int lpass_aon_cc_sc7280_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	if (of_property_read_bool(pdev->dev.of_node, "qcom,adsp-pil-mode")) {
-+		lpass_audio_cc_sc7280_regmap_config.name = "cc";
-+		desc = &lpass_cc_sc7280_desc;
-+		return qcom_cc_probe(pdev, desc);
-+	}
-+
- 	lpass_audio_cc_sc7280_regmap_config.name = "lpasscc_aon";
- 	lpass_audio_cc_sc7280_regmap_config.max_register = 0xa0008;
- 	desc = &lpass_aon_cc_sc7280_desc;
-diff --git a/drivers/clk/qcom/lpasscc-sc7280.c b/drivers/clk/qcom/lpasscc-sc7280.c
-index b39ee1c..5c1e17b 100644
---- a/drivers/clk/qcom/lpasscc-sc7280.c
-+++ b/drivers/clk/qcom/lpasscc-sc7280.c
-@@ -17,32 +17,6 @@
- #include "clk-branch.h"
- #include "common.h"
- 
--static struct clk_branch lpass_q6ss_ahbm_clk = {
--	.halt_reg = 0x1c,
--	.halt_check = BRANCH_HALT,
--	.clkr = {
--		.enable_reg = 0x1c,
--		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
--			.name = "lpass_q6ss_ahbm_clk",
--			.ops = &clk_branch2_ops,
--		},
--	},
--};
--
--static struct clk_branch lpass_q6ss_ahbs_clk = {
--	.halt_reg = 0x20,
--	.halt_check = BRANCH_HALT_VOTED,
--	.clkr = {
--		.enable_reg = 0x20,
--		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
--			.name = "lpass_q6ss_ahbs_clk",
--			.ops = &clk_branch2_ops,
--		},
--	},
--};
--
- static struct clk_branch lpass_top_cc_lpi_q6_axim_hs_clk = {
- 	.halt_reg = 0x0,
- 	.halt_check = BRANCH_HALT,
-@@ -105,17 +79,6 @@ static struct regmap_config lpass_regmap_config = {
- 	.fast_io	= true,
- };
- 
--static struct clk_regmap *lpass_cc_sc7280_clocks[] = {
--	[LPASS_Q6SS_AHBM_CLK] = &lpass_q6ss_ahbm_clk.clkr,
--	[LPASS_Q6SS_AHBS_CLK] = &lpass_q6ss_ahbs_clk.clkr,
--};
--
--static const struct qcom_cc_desc lpass_cc_sc7280_desc = {
--	.config = &lpass_regmap_config,
--	.clks = lpass_cc_sc7280_clocks,
--	.num_clks = ARRAY_SIZE(lpass_cc_sc7280_clocks),
--};
--
- static struct clk_regmap *lpass_cc_top_sc7280_clocks[] = {
- 	[LPASS_TOP_CC_LPI_Q6_AXIM_HS_CLK] =
- 				&lpass_top_cc_lpi_q6_axim_hs_clk.clkr,
-@@ -169,13 +132,6 @@ static int lpass_cc_sc7280_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto destroy_pm_clk;
- 
--	lpass_regmap_config.name = "cc";
--	desc = &lpass_cc_sc7280_desc;
--
--	ret = qcom_cc_probe_by_index(pdev, 2, desc);
--	if (ret)
--		goto destroy_pm_clk;
--
- 	return 0;
- 
- destroy_pm_clk:
--- 
-2.7.4
+Or have a "validate all parameters" function that you do it in one
+place?
 
+Also, all of these ioctl handlers are wrong, they are returning "0" to
+userspace if they fail, which is not correct at all.
+
+thanks,
+
+greg k-h
