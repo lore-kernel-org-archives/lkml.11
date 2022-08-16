@@ -2,67 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45ABCC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B42C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235477AbiHPNIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
+        id S235537AbiHPNKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235399AbiHPNIP (ORCPT
+        with ESMTP id S235399AbiHPNJ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:08:15 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBD1AF4BD;
-        Tue, 16 Aug 2022 06:07:39 -0700 (PDT)
-X-QQ-mid: bizesmtp71t1660655241t7fl0map
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 21:07:20 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: l4gSQpGTOtI0BKbfVAZxeeRY2o4rsA1a0pvReYuYto+AzVQKRo71QCbcqjKpx
-        I/PcN2w109n/+rRkOZxFZq7em4kCCiJ5gnzwspaNRYubmGh3zLV79/IEI2m0f3ulCpGTsmU
-        GnHsOgeem3jkwLsy51wqyhBXzADEv/sbOhFes8uZXwJKRl8wso7wH4hUwbI015g2lwEf6Ip
-        HAApvn45wEUOGgIOH95BHmFCcaNKVnraxQUBlEo0S2gfBfxAxUmDrnzkM6+BAHzJRMYhzuY
-        H3r3YQPLGyz+aeH9bwTg6DnbXAgls3a7Eg6qqKYHcGcmfP7j45GwfwspQaCpcYSF43ri6X8
-        R6jjvuStlv9OBlYdF03PNxr4WBz+pNeYAnqlKs9P51oQxYnkLfYb11YtSQdpA==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     deller@gmx.de
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] video/fbdev: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 21:07:13 +0800
-Message-Id: <20220816130713.28597-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 16 Aug 2022 09:09:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C79B274F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:09:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660655396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8awJny9/ykLwiE6dZBhJI/2SwPImayCQ0hkEt7cHi1w=;
+        b=gBseYpV7MhL48gp60qum0qMeBqkls399KmMRRxsm94IidlbKD+CYJC2W5UvwgAEkJ4SJKB
+        C9OezqDmzr1hyvfSeTd3A50GMiL+31QVAH8XBYCi+v3YIYW1QlGpACXImkaIDU89tipHKx
+        PD3vf5Td6XkOkPr8i38nSQtxTrnXa78=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-645-CUgRfkWnO82eztXDflM4gA-1; Tue, 16 Aug 2022 09:09:50 -0400
+X-MC-Unique: CUgRfkWnO82eztXDflM4gA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 949E13C1014B;
+        Tue, 16 Aug 2022 13:09:49 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F7B0C15BA6;
+        Tue, 16 Aug 2022 13:09:47 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220816103452.479281-1-yin31149@gmail.com>
+References: <20220816103452.479281-1-yin31149@gmail.com> <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     dhowells@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3961604.1660655386.1@warthog.procyon.org.uk>
+Date:   Tue, 16 Aug 2022 14:09:46 +0100
+Message-ID: <3961607.1660655386@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'set'.
+Hawkins Jiawei <yin31149@gmail.com> wrote:
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/video/fbdev/ssd1307fb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  	if (socks) {
+>  		WRITE_ONCE(sk->sk_user_data, NULL);
 
-diff --git a/drivers/video/fbdev/ssd1307fb.c b/drivers/video/fbdev/ssd1307fb.c
-index 5c765655d000..52e4ed9da78c 100644
---- a/drivers/video/fbdev/ssd1307fb.c
-+++ b/drivers/video/fbdev/ssd1307fb.c
-@@ -450,7 +450,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
- 	if (ret < 0)
- 		return ret;
- 
--	/* Set Set Area Color Mode ON/OFF & Low Power Display Mode */
-+	/* Set Area Color Mode ON/OFF & Low Power Display Mode */
- 	if (par->area_color_enable || par->low_power) {
- 		u32 mode;
- 
--- 
-2.36.1
+Btw, shouldn't this be rcu_assign_pointer() or RCU_INIT_POINTER(), not
+WRITE_ONCE()?
+
+David
 
