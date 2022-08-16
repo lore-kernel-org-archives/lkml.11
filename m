@@ -2,172 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 821BDC32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A411BC32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiHPJm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57694 "EHLO
+        id S233673AbiHPJnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiHPJlx (ORCPT
+        with ESMTP id S233882AbiHPJm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:41:53 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10059.outbound.protection.outlook.com [40.107.1.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2D1792D5;
-        Tue, 16 Aug 2022 01:43:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fwQ0oiRMI2vlUDco2VIppJERtLzt9FAqNv0x6BuSgeFyaRolt1HKCZWLZmZyhyRTGkWLece3GAcdn3wSyvloT3khctclL9mbrDPm2XVzyZwv6cqA5Rq9wGG5qsYE8n6r8i0MLhOb3Gz9v//ezYzFLaIB8NNhq84vWJz9pauK/HaJSXuybA1DTHpDUBLDZsO2mElX4owepiNJndgMukdJGQjEv3DJVk9kyBQkc06fwD0+zosPGZyLi5yfFShnqWikC2PhXHgyMq4YyqPfGdsG5bUq/2+fHoZmptnfc4WQEmDggUWxhLdlztRCcmCRCTAvj8a7LVdIcsyItawE0IB+Hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ViUpip4UF7c/K52mOThVdnGqyovJjHlReaIov+3QmHA=;
- b=naZnOrjK9gBIoGmH1MqQX2Z1DgWaXebaD6HkjhJUTGLHcK3VQGgk54HXC93fkqVpwggmI5NPGt1YgbCymYbuW8dv5aGhU/69xsWpsDrAN5phmHTjH5GRywc6wsum8DjFpXZLXM9pukGJPehFQ0k4PYA09CknDPalIYEFKpHVkVNpsJU6E2q+KG/5O51Z3yvcqsVLRTv5efJGU5pHan2lIZost2a6/K5sHLfRQA3idP6/M5CIH9sdmQTgFWigHlTrxdLLkHsYstkjUWqoVtwN4Mpv4swoF9d+3UMzAH+CipxrXPTU2mWet2mOoQYhZUrQOuZ/9z+Q8KDuHvjOcGR86A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ViUpip4UF7c/K52mOThVdnGqyovJjHlReaIov+3QmHA=;
- b=S/f7KyXrrvfUvnumtMaW6mCEN5n7somiQg4WYxgJkP6wwBOlZHOps36ZOV12msZVeW8/GxkzLgRTkagYfaQXFbf47/ZcW2meV7kDmws/bhpKAHlxyuEvrst8SX/U9usHaBg3bj190gZSqOO4176dbiDh4lGzh8zlgVtNZgJ9igU=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB9PR04MB8170.eurprd04.prod.outlook.com (2603:10a6:10:24b::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Tue, 16 Aug
- 2022 08:43:54 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
- 08:43:54 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-CC:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Clark Wang <xiaoning.wang@nxp.com>
-Subject: RE: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
-Thread-Topic: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
-Thread-Index: AQHYrgSSA2Yxdic4lUaQqa4Ze2PTqa2rDHsAgAQXC0CAAeuegIAAK22w
-Date:   Tue, 16 Aug 2022 08:43:54 +0000
-Message-ID: <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220812043424.4078034-1-peng.fan@oss.nxp.com>
- <f1add9c7-fc2e-a600-49a6-a6579f17db1b@linaro.org>
- <DU0PR04MB9417D62230578AC8CA4234F288689@DU0PR04MB9417.eurprd04.prod.outlook.com>
- <039566a7-5c65-b2d8-7b45-c616863cb292@linaro.org>
-In-Reply-To: <039566a7-5c65-b2d8-7b45-c616863cb292@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 60e4499d-0c63-40cc-4a8c-08da7f63738c
-x-ms-traffictypediagnostic: DB9PR04MB8170:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dC8gyvkxMzQxvuXQtpJmSybYnvC4eH5BMqbfV3dj0m3jCW/9o2wzoY/VtNITPNa/MekXjezs7ZMQ0RBApp5RDAj1j55X5qErEpGYkafEKh7jGEdtAVKW9XhrwgsLXxCEmoN3eDwrl8bu9SNsVwiELo3Xtzg96yD+wXHsH7HjICJ/v6eZikqlwWLE4XqsOTZk0q3/Ydhq7HePSKSFdqC8KptIi+ryIcatfa8XUoroLyfRNRHzQCjwHYHtSnHW4J9RIYM+8sZYKzVBiHlLswRV9PwxJF1uwHOdL14Y3MIWnb73j6n+vBGwV57blZbvq04IUcajm5Ng9Dr08bwt7RF1ooKq2MYVVIgCcRaRTlDiRTeNGPuWHMGXkP2D/JeJ+PgNp+j3SGaRrvnGiJtRShA4RDARU9RXfqmOtmee+CObhcZV651jBMaj/LsbQiV/Cfw1tODgxqPzCeglRItza5gzAyugln2dEQXf4R95fZEvoPBg9IUMarWsi8mRVnf6luvq1oqvpy0ugbwmlYqzsqhY1TX7Nf7/hix5A4bucXYGj/vE7Ha0kSzkTXXDkNvjlbfMCiT5LuQWeF093YcQTbJdLRG3bicpWlSFvzvekyqnlFp7rB2zbUwQboy7oHBMoBFbJOmEERt8vLKyyDZQIBlJz+xHLOFh4vBh0H6/q0F3D6a9gv0W7Q5OidJmZn1LY/CqegrZj28EO/c5HupyKZ9TOOQL8u69b3UZVmv4Df/YdEw+F5hbYdEvPQplAgwEjCbIfQk8MeB6pFO4JgSidf0IenExMu6U37Ypw0wOzIoHwwOT1NQpuujYvWdmL5hS9ELq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(346002)(376002)(136003)(41300700001)(7696005)(7416002)(316002)(71200400001)(4326008)(66556008)(8676002)(6506007)(54906003)(64756008)(66446008)(76116006)(66476007)(66946007)(110136005)(26005)(8936002)(52536014)(2906002)(44832011)(53546011)(9686003)(186003)(33656002)(86362001)(83380400001)(5660300002)(478600001)(38070700005)(55016003)(38100700002)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eGdlUW94Z3JYTmZMTGVsNHRmZ3VDYkpqRU5LbFA3RCsxNHVRNE1zMXRTTHQv?=
- =?utf-8?B?MGdkNjFsK1VSaWdpQ01WR1VFQjE1Qk9ORERFQkczUXFkd3hma2x0ZmFsOVdt?=
- =?utf-8?B?MS9TQlFtOWdNdHRxVmtncXFvaXB6OUNIY3M1QjF0MUc1eVdXNFE2dmFPSGdI?=
- =?utf-8?B?T043L2hVcmNMOE5YdTd1Y09zUSsvRVNMei9FbFMvdmhpM1JaeXFEZkRMdTBL?=
- =?utf-8?B?RVZ2cllsTi8wVGs0WWQxVk55WXRCcXFQS1pFME9icTA1TWo4WHhMVExQc2Zl?=
- =?utf-8?B?QjFWcElGL0hkQmxPYnhmUEIrRE5XclFLWi9wMG92QklSVTFBY1NadDNpVDZO?=
- =?utf-8?B?WUtzUGJlNU5pOUMzdlpDdS84WmlxbkFyVnpHQlFTN0NxTGQvRTVxRjltMlo1?=
- =?utf-8?B?SDlhNzNUNUZTVDl1WEZKdmdMelNMMWFibHUwaFFjK09HUjVzbytzS0Jzb3NR?=
- =?utf-8?B?eEFKdG5SOXJpVWh0YXNwYXlzUDNyRkZBQlZNUXN0Q2k0Q0p0MkNyT0hiWlBj?=
- =?utf-8?B?UlMzUlMyN0xlUmZZT2NFTnRuaDVnS2x2R3hqc3VRNnc4UEIzem11UGczb05U?=
- =?utf-8?B?SkFJRGFKSjBtOS9TL292b2lsNnBFMkp6TDdTYTNONlFSNG9pVFA2TWFEMlFC?=
- =?utf-8?B?V1pBZXpTRXQ5d0hHNUd5ZXpLUDVtRFgvZXZOVFFSRWhldXhKS1ROaG9acVI2?=
- =?utf-8?B?akkxKzU4SUFxeUFTeUJQK3BhVVpUUENqNzNZY1F0MGJwcXg3bW43TmpmUXlh?=
- =?utf-8?B?STZzaUZCTDh2d0hRd3FzVE8xd3JOK1p4N1pTaUxTc3I0N2JoRVNIVnMzc3Ju?=
- =?utf-8?B?d3lXdDhPR3ZCUFp3Z2xOaDlENXg0OTJkcWhGR2J6NTZoYkhPTjdYYzNZVll2?=
- =?utf-8?B?TVd4RHl6eXVwY29aSG9yZTJrY3JGMWRGemZJWVUvbWx0dW1ZclNhZ1pycGVu?=
- =?utf-8?B?L1RCTGljaW03M3dFdnVWVFdOSXVUbG5aK0krZklpemJNY29WWm5IdjZXNmxP?=
- =?utf-8?B?UFZtTXNEU3lCaGZPNWFZeitUVGRsOUJ6WlRjeEtlUFZETGVwT0hvQW5IaUY1?=
- =?utf-8?B?K1dmWUpCc2F5UFNsUHVucFVrMForNi9LMm9MbEtVYzI4VVN4YU94UmRkaVFB?=
- =?utf-8?B?VFZIaG1VdGkwZkZhcnptd2p2d2NXNTVvNVVIOWdmdkwwY1RjVHhoNTZQaEZO?=
- =?utf-8?B?SGR5cXBjeU1GUXR1RWxzekd3TDc5YVRMQnF2YnpSR0dqdTlCcjZWcnl1NHlZ?=
- =?utf-8?B?SGYxbkQyRmN1QUl1NHNUZUsxRENkb0NacjlKVzRVTlNkUVBlaHBHYnJWYi9x?=
- =?utf-8?B?R3RHVGliOGdXaENHVWoxMVprQVdtQ0JteXl3MitMUmcwOGd6YnVBRkY2Qy8x?=
- =?utf-8?B?cG9OaXozWk9FeEpLZmxUUERqUjdmdEU5TE1DdmpoYTYxSkZLSm9Nc2V4Zmtm?=
- =?utf-8?B?dC9nR0l1Wkp4MzhLSnYwRTZYTkVYQ0NuYTdQRUtwazhZQ0lNbks3NGswaHI3?=
- =?utf-8?B?M0lRWmlTa2JYdkFDZUw2Z3VJbDNzdWxQMkpic0dCaTV3bnU0aUxrY2hXUGQv?=
- =?utf-8?B?MXVOek8rV0Q4bUg1NXRGR2FrQ0FxZExocWRqbWV0SUNkUUFpQVJ1RkxwanRJ?=
- =?utf-8?B?Kzdpc25xcHFlZTRkRC8xSjAzNC9xaVdCQVZMa0pNT0FLSk12bWRCT0xMa1Nz?=
- =?utf-8?B?cXZXVFVPQlptcmY2bHFFaURORVRQZ21zeG1nS1pxSlYyNWdlNUkwdzRTaitR?=
- =?utf-8?B?Q1JSeGphTFJoV2RGWGpMTUM1TW5vL2lZdXlTcW12UTdQQUtITGIyU3hGc1dl?=
- =?utf-8?B?Y2w5RDBKZHd4ektlN2NQS1QzOGNZRWJXdE5CdU1JK0VaVE42M1ZvRXJMUUp0?=
- =?utf-8?B?bDJxYWw5TW1mQmtaTEpsbTNUVTB4a3BmTEp3eFVXOWtHSWpOY1BrazFhYTlM?=
- =?utf-8?B?ak1lMEhHTmZCM2pUcVp6c05DV1NiekdHZVF0OE8yeVhOZ3Y3R1V4NHIyNmxB?=
- =?utf-8?B?TUxqeGNCQis2czZReGdSaDZidEtsVFNpWTdKcUxHcGRLYSt3ZE8yOU5NNi95?=
- =?utf-8?B?aU9tVnFFSmlsdkx1R2FDWmpubnorL3BUU0dDMWVKWHdjb1pVREhlMjVTT3RE?=
- =?utf-8?Q?IC14=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 16 Aug 2022 05:42:28 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FE912AD7;
+        Tue, 16 Aug 2022 01:10:43 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id jl18so727923plb.1;
+        Tue, 16 Aug 2022 01:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=npv9I4bKA8ZgPtTOpLA+17ug9RBYn0uNyctxT/S2BXk=;
+        b=Gk7z9Pyooee/z7neyc5X3qWBvOiS7QqIZqEuR0pcH01M3Jh5/T8r344Avch+ETYrjn
+         d5twJgTyXpSMgFIiugl6+uz4rJzalG70JsjUdavzPbPEMO6nm7lGSyovYppJpsyzvyH7
+         tjJK5MQUXiXiNUw1ObEfWGtcMFSx7x4uFiEOACiUJ/dhwNTtNAekVYSZWxbrxIm0X87r
+         wQoQgE3J2rPISgJ8kRwZmo36ybCeQIqoE6AwFKJW6mC5I3ZeQUGrDSLwrv2iJ6e5Jkq3
+         qMuVnOQwgjC0mR6Y1/kr2RjV1r1FZ3IO8hg1iWmIJMbPwcfV3LY62647LEzIa2rL3wtz
+         GFjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=npv9I4bKA8ZgPtTOpLA+17ug9RBYn0uNyctxT/S2BXk=;
+        b=OslLoWrBc84z1bSs95uqIvTlZD9PfNSQsBAKfH08LiHeRE40zZ4JW+l9TY6pXeeZQN
+         cJi399n9dj5ozrm/+Ba+qTq6SoJZT5AAQlXHu/cV5ESnrFmE40DYgzaZh71SIAtWkMGu
+         8BYRrxxX9nsKAh2neYU8jAWZE/FkcelMuFPnc09Db0LutGyw/O+5F/Rtg8TJLSFNe7rf
+         WLuOQ88CN4HtRf7c4/XDQewiWYjElf04A6m3swGjuLScrgsSHS+eBZ0t/NrctgqJsSoT
+         2WV4Olq/1d70AkFs0woEY1YmkSlm90AGz4zwqtGWWybaWBZvfehZd5cMJmQEqe1j4h2b
+         hx0g==
+X-Gm-Message-State: ACgBeo25kF0Vm/XN2arhJaQ4J6xH6J7cvgdwNMR1Qv7fYJWa1S36yRjl
+        Fkk6s86hmnlMiIPSSdLRUfRi8ppTXuSV4J60jfo=
+X-Google-Smtp-Source: AA6agR4Mn4n64eyX8+OYcOJtDGTGKX2uMWMH1ncKXJXQwJuHWqMtGHGxuO2sGHP21TECYnZ4sssysqqJZ1+o3D8RbUE=
+X-Received: by 2002:a17:90b:3147:b0:1f5:2cbb:9c5 with SMTP id
+ ip7-20020a17090b314700b001f52cbb09c5mr32868353pjb.96.1660637442515; Tue, 16
+ Aug 2022 01:10:42 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60e4499d-0c63-40cc-4a8c-08da7f63738c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2022 08:43:54.3254
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: l/aQdpnntXr5BPLNoA8niQyetm8prqDj4duhgixCSnY6h36gPpXNZX2/fz6oEoO60IdT63EZObhv2U3uWO1Gng==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8170
+References: <6e77914685ede036c419fa65b6adc27f25a6c3e9.1660635033.git-series.apopple@nvidia.com>
+In-Reply-To: <6e77914685ede036c419fa65b6adc27f25a6c3e9.1660635033.git-series.apopple@nvidia.com>
+From:   huang ying <huang.ying.caritas@gmail.com>
+Date:   Tue, 16 Aug 2022 16:10:29 +0800
+Message-ID: <CAC=cRTPGiXWjk=CYnCrhJnLx3mdkGDXZpvApo6yTbeW7+ZGajA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] mm/migrate_device.c: Copy pte dirty bit to page
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
+        Peter Xu <peterx@redhat.com>, linuxppc-dev@lists.ozlabs.org,
+        Huang Ying <ying.huang@intel.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgS3J6eXN6dG9mLA0KDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMC82XSBpMmMtaW14LWxwaTJj
-OiBhZGQgSVBHIGNsb2NrDQo+IA0KPiBPbiAxNS8wOC8yMDIyIDAzOjUyLCBQZW5nIEZhbiB3cm90
-ZToNCj4gPiBIaSBLcnp5c3p0b2YsDQo+ID4NCj4gPj4gU3ViamVjdDogUmU6IFtQQVRDSCAwLzZd
-IGkyYy1pbXgtbHBpMmM6IGFkZCBJUEcgY2xvY2sNCj4gPj4NCj4gPj4gT24gMTIvMDgvMjAyMiAw
-NzozNCwgUGVuZyBGYW4gKE9TUykgd3JvdGU6DQo+ID4+PiBGcm9tOiBQZW5nIEZhbiA8cGVuZy5m
-YW5AbnhwLmNvbT4NCj4gPj4+DQo+ID4+PiBUaGUgaS5NWCBMUEkyQyBuZWVkcyBQRVIgYW5kIElQ
-RyBjbG9jaywgbm90IGp1c3QgUEVSIG9yIElQRyBjbG9jay4NCj4gPj4+IFRoaXMgcGF0Y2ggaXMg
-dG8gZW5hYmxlIGJvdGggUEVSIGFuZCBJUEcgY2xvY2sgZm9yIGlteC1pMmMtbHBpMmMuDQo+ID4+
-DQo+ID4+IFRoaXMgcGF0Y2hzZXQgYnJlYWtzIHRoZSBBQkkgYW5kIGlzIG5vdCBiaXNlY3RhYmxl
-LiBUaGUganVzdGlmaWNhdGlvbg0KPiA+PiBpcyB2ZXJ5IGxpbWl0ZWQgKG9uZSBzZW50ZW5jZSks
-IHNvIG5vdCByZWFsbHkgZW5vdWdoLg0KPiA+DQo+ID4gQVJNMzIgaS5NWDdVTFAgYW5kIEFSTTY0
-IGkuTVg4UVhQL2kuTVg4VUxQIGFsbCBuZWVkIHRvIHVzZSB0d28NCj4gY2xvY2tzLA0KPiA+IFBF
-UiBhbmQgSVBHLiBCdXQgY3VycmVudCBkdC1iaW5kaW5ncyBhbmQgZHRzLCB1c2Ugb25lIGNsb2Nr
-Lg0KPiA+DQo+ID4gVGhpcyBwYXRjaHNldCBpbmNsdWRlcyBkdHMgY2hhbmdlcyBwYXRjaCA0IGFu
-ZCBwYXRjaCA1Lg0KPiA+IFBhdGNoIDYgaXMgdG8gdXBkYXRlIGRyaXZlciB1c2UgdHdvIGNsb2Nr
-cy4NCj4gPg0KPiA+IEkgdGhpbmsgdGhlIHBhdGNoIG9yZGVyIGluIHRoaXMgcGF0Y2hzZXQgd291
-bGQgbm90IGJyZWFrIGdpdCBiaXNlY3QsDQo+ID4gaXQganVzdCBicmVhayBBQkkuIEJ1dCBJIG5v
-dCBmaW5kIGdvb2Qgd2F5IGhvdyBjb3VsZCBub3QgYnJlYWsgQUJJLA0KPiA+IGJlY2F1c2Ugb25s
-eSB1c2Ugb25lIGNsb2NrIGlzIHdyb25nIHdoZXRoZXIgaW4gZHQtYmluZGluZ3Mgb3IgZHRicy4N
-Cj4gDQo+IERyaXZlciBjaGFuZ2VzIGFsd2F5cyBnbyB2aWEgc2VwYXJhdGUgYnJhbmNoIHRoYW4g
-RFRTLCBzbyB5b3VyIHBhdGNoDQo+IGJyZWFrcyBnaXQgYmlzZWN0LiBJIGFscmVhZHkgcG9pbnRl
-ZCBpdCBvdXQgaW4gb3RoZXIgcGF0Y2guIFRoaXMgaXMgbm90IHJlYWxseQ0KPiBhY2NlcHRhYmxl
-LiBCcmVha2luZyBBQkkgaXMgYW5vdGhlciBwcm9ibGVtIHdoaWNoIGNvdWxkIGJlIGp1c3RpZmll
-ZCB3aXRoDQo+IHlvdXIgZXhwbGFuYXRpb24gaW4gb3RoZXIgY2FzZXMuLi4gYnV0IG5vdCBpbiB0
-aGlzIG9uZSwgc2luY2UgaXQgaXMgZWFzeSB0byBtYWtlDQo+IGl0IGJhY2t3YXJkcyBjb21wYXRp
-YmxlLA0KPiANCj4gPiBTaG91bGQgSSB1c2UgYSBmaXhlcyB0YWcgdG8gZHQtYmluZGluZ3MsIHRo
-ZW4gYnJlYWsgQUJJIGlzIGFsbG93ZWQ/DQo+IA0KPiBOby4gRm9yIHN1Y2ggcGF0Y2ggQUJJIGJy
-ZWFrIGlzIGFsc28gbm90IGFsbG93ZWQgaW4gdGhhdCBjYXNlLiBKdXN0IG1ha2UgdGhlDQo+IGRy
-aXZlciBiYWNrd2FyZHMgY29tcGF0aWJsZSBhbmQgYm90aCBwcm9ibGVtcyAtIG5vbiBiaXNlY3Rh
-YmlsaXR5IGFuZCBBQkkNCj4gYnJlYWsgLSBnbyBhd2F5Lg0KDQpPbmUgbW9yZSBwb2ludCB0aGF0
-IEkgYW0gbm90IHZlcnkgY2xlYXIgYWJvdXQgIA0KIm5vbiBiaXNlY3RhYmlsaXR5IGFuZCBBQkkg
-YnJlYWsgIg0KDQpBQkksIEkgc3VwcG9zZSB5b3UgbWVhbiBkdC1iaW5kaW5nLCByaWdodD8NClRo
-ZSBJMkMgYmluZGluZ3MgYW5kIGR0cyB1cGRhdGUgd2lsbCBnbyB0aHJvdWdoIGRpZmZlcmVudCB0
-cmVlLCBJIHRoaW5rLiBTbw0KZHRic19jaGVjayBtYXkgZmFpbCBjb25zaWRlcmluZyB0aGUgUFIg
-bWVyZ2Ugb3JkZXIuDQoNClRoYW5rcywNClBlbmcuDQoNCj4gDQo+IEJlc3QgcmVnYXJkcywNCj4g
-S3J6eXN6dG9mDQo=
+On Tue, Aug 16, 2022 at 3:39 PM Alistair Popple <apopple@nvidia.com> wrote:
+>
+> migrate_vma_setup() has a fast path in migrate_vma_collect_pmd() that
+> installs migration entries directly if it can lock the migrating page.
+> When removing a dirty pte the dirty bit is supposed to be carried over
+> to the underlying page to prevent it being lost.
+>
+> Currently migrate_vma_*() can only be used for private anonymous
+> mappings. That means loss of the dirty bit usually doesn't result in
+> data loss because these pages are typically not file-backed. However
+> pages may be backed by swap storage which can result in data loss if an
+> attempt is made to migrate a dirty page that doesn't yet have the
+> PageDirty flag set.
+>
+> In this case migration will fail due to unexpected references but the
+> dirty pte bit will be lost. If the page is subsequently reclaimed data
+> won't be written back to swap storage as it is considered uptodate,
+> resulting in data loss if the page is subsequently accessed.
+>
+> Prevent this by copying the dirty bit to the page when removing the pte
+> to match what try_to_migrate_one() does.
+>
+> Signed-off-by: Alistair Popple <apopple@nvidia.com>
+> Acked-by: Peter Xu <peterx@redhat.com>
+> Reported-by: Huang Ying <ying.huang@intel.com>
+> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
+> Cc: stable@vger.kernel.org
+>
+> ---
+>
+> Changes for v2:
+>
+>  - Fixed up Reported-by tag.
+>  - Added Peter's Acked-by.
+>  - Atomically read and clear the pte to prevent the dirty bit getting
+>    set after reading it.
+>  - Added fixes tag
+> ---
+>  mm/migrate_device.c | 21 ++++++++-------------
+>  1 file changed, 8 insertions(+), 13 deletions(-)
+>
+> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+> index 27fb37d..e2d09e5 100644
+> --- a/mm/migrate_device.c
+> +++ b/mm/migrate_device.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/export.h>
+>  #include <linux/memremap.h>
+>  #include <linux/migrate.h>
+> +#include <linux/mm.h>
+>  #include <linux/mm_inline.h>
+>  #include <linux/mmu_notifier.h>
+>  #include <linux/oom.h>
+> @@ -61,7 +62,7 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>         struct migrate_vma *migrate = walk->private;
+>         struct vm_area_struct *vma = walk->vma;
+>         struct mm_struct *mm = vma->vm_mm;
+> -       unsigned long addr = start, unmapped = 0;
+> +       unsigned long addr = start;
+>         spinlock_t *ptl;
+>         pte_t *ptep;
+>
+> @@ -193,11 +194,10 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>                         bool anon_exclusive;
+>                         pte_t swp_pte;
+>
+> +                       flush_cache_page(vma, addr, pte_pfn(*ptep));
+> +                       pte = ptep_clear_flush(vma, addr, ptep);
+
+Although I think it's possible to batch the TLB flushing just before
+unlocking PTL.  The current code looks correct.
+
+Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+
+Best Regards,
+Huang, Ying
+
+>                         anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
+>                         if (anon_exclusive) {
+> -                               flush_cache_page(vma, addr, pte_pfn(*ptep));
+> -                               ptep_clear_flush(vma, addr, ptep);
+> -
+>                                 if (page_try_share_anon_rmap(page)) {
+>                                         set_pte_at(mm, addr, ptep, pte);
+>                                         unlock_page(page);
+> @@ -205,12 +205,14 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>                                         mpfn = 0;
+>                                         goto next;
+>                                 }
+> -                       } else {
+> -                               ptep_get_and_clear(mm, addr, ptep);
+>                         }
+>
+>                         migrate->cpages++;
+>
+> +                       /* Set the dirty flag on the folio now the pte is gone. */
+> +                       if (pte_dirty(pte))
+> +                               folio_mark_dirty(page_folio(page));
+> +
+>                         /* Setup special migration page table entry */
+>                         if (mpfn & MIGRATE_PFN_WRITE)
+>                                 entry = make_writable_migration_entry(
+> @@ -242,9 +244,6 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>                          */
+>                         page_remove_rmap(page, vma, false);
+>                         put_page(page);
+> -
+> -                       if (pte_present(pte))
+> -                               unmapped++;
+>                 } else {
+>                         put_page(page);
+>                         mpfn = 0;
+> @@ -257,10 +256,6 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>         arch_leave_lazy_mmu_mode();
+>         pte_unmap_unlock(ptep - 1, ptl);
+>
+> -       /* Only flush the TLB if we actually modified any entries */
+> -       if (unmapped)
+> -               flush_tlb_range(walk->vma, start, end);
+> -
+>         return 0;
+>  }
+>
+>
+> base-commit: ffcf9c5700e49c0aee42dcba9a12ba21338e8136
+> --
+> git-series 0.9.1
+>
