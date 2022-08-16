@@ -2,165 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A272DC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9027C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234284AbiHPKIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        id S234343AbiHPKIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234325AbiHPKH1 (ORCPT
+        with ESMTP id S234194AbiHPKHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:07:27 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9CD7D1C1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:24:10 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6Qdd3HtRzhYT9;
-        Tue, 16 Aug 2022 17:21:57 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 17:24:08 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 17:24:07 +0800
-Message-ID: <578084e8-bdc3-6e4e-f390-4202a8bc7c1d@huawei.com>
-Date:   Tue, 16 Aug 2022 17:24:07 +0800
+        Tue, 16 Aug 2022 06:07:54 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF23DCE5;
+        Tue, 16 Aug 2022 02:09:57 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: bbrezillon)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9CDC96600363;
+        Tue, 16 Aug 2022 10:09:55 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660640996;
+        bh=UwVGjoVej6+DPEt5C/pkEjitJeLt0M/cBydSA/bfdQQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AosFn7pt+1QLjDkVNSdhDB41d34g7CimXuprljhvI4FPZzI/laLs4D7OYOoDW36HS
+         dOu6VsOLip5jf3+BQYcKxmFeS00kV++m/EStvYtkOpLTaM7BYTaVP5WknUdN6m9VAs
+         65C0t5G+EYsLoqJhAHp38iC5F/L5ypYw4cFpL4NMifsE8ffzL+P+xNE9AU85EI2Fyu
+         th6t3OcJIFVpGOyBfjYDss2KPSrGNjB7gqMERN7M8eqTqd9QIdRuL7VXjVwnkX2XNd
+         chHsM/k9URQXyEceZkksJXFEm4wbSUA5eG7TGAlnSe6/gKFI54MqHzQcrhBkU94HU/
+         IB/mHt905bmsA==
+Date:   Tue, 16 Aug 2022 11:09:52 +0200
+From:   Boris Brezillon <boris.brezillon@collabora.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <peda@axentia.se>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <bbrezillon@kernel.org>, <linux-mtd@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+Subject: Re: [PATCH] mtd: rawnand: atmel: Unmap streaming DMA mappings
+Message-ID: <20220816110952.31cf212b@collabora.com>
+In-Reply-To: <20220728074014.145406-1-tudor.ambarus@microchip.com>
+References: <20220728074014.145406-1-tudor.ambarus@microchip.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
-Content-Language: en-US
-To:     huang ying <huang.ying.caritas@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Liu Shixin <liushixin2@huawei.com>,
-        "Huang Ying" <ying.huang@intel.com>
-References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
- <CAC=cRTN=vbrgOsH7PNNMV+Coyabp=H_XF99MUL00kfET=K-32w@mail.gmail.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <CAC=cRTN=vbrgOsH7PNNMV+Coyabp=H_XF99MUL00kfET=K-32w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 28 Jul 2022 10:40:14 +0300
+Tudor Ambarus <tudor.ambarus@microchip.com> wrote:
 
-On 2022/8/16 16:48, huang ying wrote:
-> On Tue, Aug 16, 2022 at 4:38 PM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
->> From: Liu Shixin <liushixin2@huawei.com>
->>
->> The page on pcplist could be used, but not counted into memory free or
->> avaliable, and pcp_free is only showed by show_mem(). Since commit
->> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
->> significant decrease in the display of free memory, with a large number
->> of cpus and nodes, the number of pages in the percpu list can be very
->> large, so it is better to let user to know the pcp count.
-> Can you show some data?
+> Every dma_map_single() call should have its dma_unmap_single() counterpart,
+> because the DMA address space is a shared resource and one could render the
+> machine unusable by consuming all DMA addresses.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-80M+ with 72cpus/2node
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
 
->
-> Another choice is to count PCP free pages in MemFree.  Is that OK for
-> your use case too?
+> ---
+>  drivers/mtd/nand/raw/atmel/nand-controller.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
+> index 6ef14442c71a..330d2dafdd2d 100644
+> --- a/drivers/mtd/nand/raw/atmel/nand-controller.c
+> +++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
+> @@ -405,6 +405,7 @@ static int atmel_nand_dma_transfer(struct atmel_nand_controller *nc,
+>  
+>  	dma_async_issue_pending(nc->dmac);
+>  	wait_for_completion(&finished);
+> +	dma_unmap_single(nc->dev, buf_dma, len, dir);
+>  
+>  	return 0;
+>  
 
-Yes, the user will make policy according to MemFree, we think count PCP 
-free pages
-
-in MemFree is better, but don't know whether it is right way.
-
->
-> Best Regards,
-> Huang, Ying
->
->> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
->> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->> ---
->>   drivers/base/node.c | 14 +++++++++++++-
->>   fs/proc/meminfo.c   |  9 +++++++++
->>   2 files changed, 22 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/base/node.c b/drivers/base/node.c
->> index eb0f43784c2b..846864e45db6 100644
->> --- a/drivers/base/node.c
->> +++ b/drivers/base/node.c
->> @@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
->>          struct sysinfo i;
->>          unsigned long sreclaimable, sunreclaimable;
->>          unsigned long swapcached = 0;
->> +       unsigned long free_pcp = 0;
->> +       struct zone *zone;
->> +       int cpu;
->>
->>          si_meminfo_node(&i, nid);
->>          sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
->> @@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
->>   #ifdef CONFIG_SWAP
->>          swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
->>   #endif
->> +       for_each_populated_zone(zone) {
->> +               if (zone_to_nid(zone) != nid)
->> +                       continue;
->> +               for_each_online_cpu(cpu)
->> +                       free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
->> +       }
->> +
->>          len = sysfs_emit_at(buf, len,
->>                              "Node %d MemTotal:       %8lu kB\n"
->>                              "Node %d MemFree:        %8lu kB\n"
->> +                           "Node %d PcpFree:        %8lu kB\n"
->>                              "Node %d MemUsed:        %8lu kB\n"
->>                              "Node %d SwapCached:     %8lu kB\n"
->>                              "Node %d Active:         %8lu kB\n"
->> @@ -397,7 +408,8 @@ static ssize_t node_read_meminfo(struct device *dev,
->>                              "Node %d Mlocked:        %8lu kB\n",
->>                              nid, K(i.totalram),
->>                              nid, K(i.freeram),
->> -                           nid, K(i.totalram - i.freeram),
->> +                           nid, K(free_pcp),
->> +                           nid, K(i.totalram - i.freeram - free_pcp),
->>                              nid, K(swapcached),
->>                              nid, K(node_page_state(pgdat, NR_ACTIVE_ANON) +
->>                                     node_page_state(pgdat, NR_ACTIVE_FILE)),
->> diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
->> index 6e89f0e2fd20..672c784dfc8a 100644
->> --- a/fs/proc/meminfo.c
->> +++ b/fs/proc/meminfo.c
->> @@ -38,6 +38,9 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->>          unsigned long pages[NR_LRU_LISTS];
->>          unsigned long sreclaimable, sunreclaim;
->>          int lru;
->> +       unsigned long free_pcp = 0;
->> +       struct zone *zone;
->> +       int cpu;
->>
->>          si_meminfo(&i);
->>          si_swapinfo(&i);
->> @@ -55,8 +58,14 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->>          sreclaimable = global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B);
->>          sunreclaim = global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B);
->>
->> +       for_each_populated_zone(zone) {
->> +               for_each_online_cpu(cpu)
->> +                       free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
->> +       }
->> +
->>          show_val_kb(m, "MemTotal:       ", i.totalram);
->>          show_val_kb(m, "MemFree:        ", i.freeram);
->> +       show_val_kb(m, "PcpFree:        ", free_pcp);
->>          show_val_kb(m, "MemAvailable:   ", available);
->>          show_val_kb(m, "Buffers:        ", i.bufferram);
->>          show_val_kb(m, "Cached:         ", cached);
->> --
->> 2.35.3
->>
->>
-> .
