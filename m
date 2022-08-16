@@ -2,111 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E69C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB1DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233061AbiHPLT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        id S234358AbiHPLUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbiHPLTi (ORCPT
+        with ESMTP id S233858AbiHPLTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:19:38 -0400
-Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C728FD804E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:50:12 -0700 (PDT)
-Received: from cmgw15.mail.unifiedlayer.com (unknown [10.0.90.130])
-        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id ADD0E1004831E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:49:57 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id NtCuoD4HbsbE6NtCvoFkJu; Tue, 16 Aug 2022 09:49:57 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=EegN/NqC c=1 sm=1 tr=0 ts=62fb6845
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=biHskzXt2R4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WL1xAwhUekvDaJAQgGU/uTWwJi4vjB3BzJxU5Ig6nLA=; b=bQUE55hQKeSDtQTmmJP0NJkwjK
-        NsOrIC+koxLAVIZ9xJwncmznzhzXoMlp0uqGYHFUdfgKXJPuZAltxhfsDA1pzGmKZiMuG21J9fZaw
-        p0KffsU1aF3pU1DyKBFihf5ey8lvCOtZ/9ur9TbMGPI1j/dkqyynCChjnDpQJh27eQfIKFUKbOF0f
-        /qEciyRrTcptZmhgwLcTXpliU29Kjm33dM/+CtNg37/z1LEuAXTJ5Y9Qf7HSq8izWRSFmZh5IYbRR
-        qPsdqAyhpsMwyR7MKssYr7aTmxHQqXnC8zaVyMSEtwx+UJKWUId2o/iMtS3NJoG7viqhbJzNNOy+H
-        ds9j6y3g==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:40150 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oNtCt-004AMm-9f;
-        Tue, 16 Aug 2022 03:49:55 -0600
-Subject: Re: [PATCH 5.19 0000/1157] 5.19.2-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220815180439.416659447@linuxfoundation.org>
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <9f255516-7971-8ed4-5dc2-6c7ff6dbb010@w6rz.net>
-Date:   Tue, 16 Aug 2022 02:49:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oNtCt-004AMm-9f
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:40150
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+        Tue, 16 Aug 2022 07:19:47 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC82274CDB;
+        Tue, 16 Aug 2022 02:46:58 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id ch17-20020a17090af41100b001fa74771f61so1192664pjb.0;
+        Tue, 16 Aug 2022 02:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=pHRc3XNJRVdOlhGjXylbNoDow3CdvGIRDLCNfCwr39A=;
+        b=Dp4lZy24fLiDRTYbfL/btDWe4UT2Mo6FngI8Ahi75hGbrSe27KKncW1seWJooFwbLJ
+         0uBC+i730zsIwpaAsU4yLw7h92LkIXYX1aKtDy9vbOrPEt7vO3F7BNN4idj0EYfjvXQH
+         ryBZWhKGJBJgqp2ZlTqzIsuLeik2oWjgyr/7Ch0tGITiYbn+7h9y4bmi9HK3WIjvXVsQ
+         lQtm14c2utZhR0wKNDiSVrzDe5GMUP1D8FAtEcuNATnwiEQOKrY/bbHVm6W0kb4tIdD2
+         Ul0rAkNIVycp6cuPgCp37eWPGfGVIX49WsFq6dvqCmBZvVk8jNBAS9PqudgsoEntOStt
+         WlYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=pHRc3XNJRVdOlhGjXylbNoDow3CdvGIRDLCNfCwr39A=;
+        b=zOJTiTTygKMA8Pz7B4KdmzFE6t3IUy8fHSY1lCRcECFrV2Qa8icLFcQJiG1bneFfsn
+         yi38pccHxdqBDnbCcZ5VHUfuSxGjjLRz94oYUjZ/qUAcD6Qi5KGxU3ph9vjrvJj/dRnD
+         ouYT1MFZq34pHXWAYwqvTKO6feT4nMht/BN/MFrlNeZ2nW56EqkwHU8hZYSg/hMD8gmS
+         AWRwI4D2l6KDFj+JiNXUTG1hZPyLPOI6JgkTCJMPwWlTTNG1DkyA9DtsI+cecOkO9h3H
+         Fk4lrLDQC9fkxpfg/I+2MkzSl/TaMjGSSieu0JY9G90nfMQ2zFiRM9T8uLNfV/XY+VKZ
+         Wg0A==
+X-Gm-Message-State: ACgBeo1DVyZSgSDH/1Qq+/2Czl+P/ppS//XLVys3HcbQzZImO+WFmmUU
+        s/zDPRZyy9xdTkPTFgmSC/PUTvMFy2Rhig==
+X-Google-Smtp-Source: AA6agR7c2QGtIrRRRVg2sQ3CWbprJCmOgPTeTKk7l5ouPudQj59Nh8ZSBuwCXdv+2WInsIlFSElPNA==
+X-Received: by 2002:a17:902:d546:b0:16e:c70c:fdf5 with SMTP id z6-20020a170902d54600b0016ec70cfdf5mr21500871plf.100.1660643217711;
+        Tue, 16 Aug 2022 02:46:57 -0700 (PDT)
+Received: from localhost.localdomain (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902e98c00b0016bee668a5asm8578767plb.161.2022.08.16.02.46.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 02:46:56 -0700 (PDT)
+From:   Marvin Lin <milkfafa@gmail.com>
+To:     linux-edac@vger.kernel.org, rric@kernel.org, james.morse@arm.com,
+        tony.luck@intel.com, mchehab@kernel.org, bp@alien8.de,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com, kflin@nuvoton.com,
+        Marvin Lin <milkfafa@gmail.com>
+Subject: [PATCH v13 0/3] EDAC/nuvoton: Add NPCM memory controller driver
+Date:   Tue, 16 Aug 2022 17:46:38 +0800
+Message-Id: <20220816094641.8484-1-milkfafa@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 10:49 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.19.2 release.
-> There are 1157 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.2-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+This patch series add DTS node, dt-bindings document and driver for memory
+controller present on Nuvoton NPCM SoCs.
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+The memory controller supports single bit error correction and double bit
+error detection (in-line ECC in which a section 1/8th of the memory device
+used to store data is used for ECC storage).
 
-Tested-by: Ron Economos <re@w6rz.net>
+Marvin Lin (3):
+  arm: dts: nuvoton: Add node for NPCM memory controller
+  dt-bindings: edac: nuvoton: Add document for NPCM memory controller
+  EDAC/nuvoton: Add NPCM memory controller driver
+
+ .../edac/nuvoton,npcm-memory-controller.yaml  |  54 ++
+ MAINTAINERS                                   |   7 +
+ arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   7 +
+ drivers/edac/Kconfig                          |  11 +
+ drivers/edac/Makefile                         |   1 +
+ drivers/edac/npcm_edac.c                      | 512 ++++++++++++++++++
+ 6 files changed, 592 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+ create mode 100644 drivers/edac/npcm_edac.c
+
+-- 
+2.17.1
 
