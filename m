@@ -2,102 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7851FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEE1C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240633AbiHQSYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
+        id S240758AbiHQS0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232824AbiHQSYt (ORCPT
+        with ESMTP id S238247AbiHQS0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:24:49 -0400
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9EE9A99C
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:24:48 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id s23so7043499wmj.4
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:24:48 -0700 (PDT)
+        Wed, 17 Aug 2022 14:26:46 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925829A99E;
+        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so2728075pjk.1;
+        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=I3Pf9OIc8DGk9E58AEq8EGcTaeKj6hHjSLnNzQDAIvY=;
+        b=kS0yawzf1I+kUu55z3yGa7UPahuYejKLOOwqu6RtPwZfrKieepYLPWvrsSuUAEm1MC
+         pq/Sk2LQEGYKJBW1g3eEmBJlkozfRJv+7JAv1fG/avwFLrzvnO17rs3ywJC4DLC8b5B1
+         A8X49MWFQCmYVYL9hEKrHlrAeYOXTuoCM/2AZ5ICrIMtiTPNGe8g71zYWURkJRLqauVR
+         vaLHGkPHFoVMBStTMT6HexyG2jx1t6aJiPvEXhqQp0OIipEfmFxh690OT9PJ2RcwBQrx
+         biK5KCk/H0UopTmUGXm/eVMx+rU9i0XfmspEJMi8LscRIcHcdPhBenb/KMMwTE4yKRgL
+         TIYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=6XoCRWTpHFxKAXiFtoAE096KFo+xlJ75DyKMVWp9KjE=;
-        b=IisT/QisJMV03o7p/no2GE0XQ9vWYK9VVnRXWW72lQAG7jSorJtsgafcOY7mPkpv85
-         lNQUCmkd+KwU1snCAFCmHgTJEV6W5ml4A2rs/AK2J6vb5yrTbuZkAIlX/nCPBfvzjDtx
-         moe2G6vbzH9khfPxSVZuMRYlamoxFZS6j0DrT118zwPgeLByPL5fvwZ+NPk4e8ibcCPK
-         bw0d+1yA9YXwapRSKhA6zeQBEufVZB3484Koozg+bFDx01Fk5LcDj8Xcr7NJhGe4tubd
-         sjmzE2/cblJTZ0vFYSS5CbINqH+kiD5n80O9tzqBAL03uBjS94VJyC45JXYdiUzA8+Yg
-         gPIg==
-X-Gm-Message-State: ACgBeo2sI/Gg8KZ9y0D3Had7QUx1kOn0q2kNKFRu/7y5lW1zG+Uz2SPG
-        26qTZzrSBNUSKnOad1BYXWI=
-X-Google-Smtp-Source: AA6agR6LAY7RcTFsAxJ/3LYoG+1PdOZtBozR/j5W5+DEosWciHEvkrT+THm9dB3Vn7RsIHRg4rtWNw==
-X-Received: by 2002:a05:600c:1906:b0:3a5:f9e0:fcb6 with SMTP id j6-20020a05600c190600b003a5f9e0fcb6mr3044330wmq.157.1660760686884;
-        Wed, 17 Aug 2022 11:24:46 -0700 (PDT)
-Received: from [10.100.102.14] (85-250-24-41.bb.netvision.net.il. [85.250.24.41])
-        by smtp.gmail.com with ESMTPSA id j17-20020adfe511000000b00225239d9265sm2840786wrm.74.2022.08.17.11.24.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 11:24:46 -0700 (PDT)
-Message-ID: <581ecec9-8f2b-32a2-6ce1-63551496e332@grimberg.me>
-Date:   Wed, 17 Aug 2022 21:24:44 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=I3Pf9OIc8DGk9E58AEq8EGcTaeKj6hHjSLnNzQDAIvY=;
+        b=S6/kwjRXnAQqZDTc0VEw2dOSwf/43yAGNc/reJ0T9SpNVUQOXXVJ8zKpA9e8lYCyyd
+         mUaaW2absM10QU39OmGiBrvv3plEa4YyhqwHfKDygMJcG8HeHN0kKqFSnrQhApJJyNbK
+         A6wzENrfVeXznIi9WtE9eNkg9fRiRvnASNlBgvPEI5jBH8QBpzsDso3o4OAFOcEPgQTw
+         u0fWbEPkARGyplQrEFn6arsml9tQWkUccTJIuWaJXTYbmhAKgZQeoTkeHYfARcjT25vm
+         OAiOz3XJcqqWKidxG58lDGtU6K6mPW61Mihn5LjYOgYmzKtXWn6a7Xa44crf0ggEvHVX
+         bvEg==
+X-Gm-Message-State: ACgBeo2CHahVZyI5SF2a4oP+y+AKxbu22h0PzaeFgM6OWCpEmTbIjTTg
+        23s64/cgOHpnG++lXvKOIcY=
+X-Google-Smtp-Source: AA6agR43iEdqfdHIoOSbjahQdXE7/joUWXo6Xi/riiIPDrHY+FAs3Crt6ENsOaOMai5oVvlO63eDqA==
+X-Received: by 2002:a17:902:d890:b0:16c:abb4:94d0 with SMTP id b16-20020a170902d89000b0016cabb494d0mr28016185plz.50.1660760805029;
+        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id g11-20020aa796ab000000b0052da654301esm11115800pfk.170.2022.08.17.11.26.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 11:26:44 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 12:10:25 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <YvuJJTVV8+r7MXNc@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <20220817025250-mutt-send-email-mst@kernel.org>
+ <YvtmYpMieMFb80qR@bullseye>
+ <20220817130044-mutt-send-email-mst@kernel.org>
+ <Yvt6nxUYMfDrLd/A@bullseye>
+ <20220817135311-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] nvmet-tcp: Don't kmap() pages which can't come from
- HIGHMEM
-Content-Language: en-US
-To:     Keith Busch <kbusch@kernel.org>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-        Ira Weiny <ira.weiny@intel.com>
-References: <20220817170427.15682-1-fmdefrancesco@gmail.com>
- <Yv0o9MlqCjXUcDKc@kbusch-mbp.dhcp.thefacebook.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <Yv0o9MlqCjXUcDKc@kbusch-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817135311-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
->> @@ -329,7 +312,6 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
->>   	u32 length, offset, sg_offset;
->>   
->>   	length = cmd->pdu_len;
->> -	cmd->nr_mapped = DIV_ROUND_UP(length, PAGE_SIZE);
->>   	offset = cmd->rbytes_done;
->>   	cmd->sg_idx = offset / PAGE_SIZE;
->>   	sg_offset = offset % PAGE_SIZE;
->> @@ -338,7 +320,7 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
->>   	while (length) {
->>   		u32 iov_len = min_t(u32, length, sg->length - sg_offset);
->>   
->> -		iov->iov_base = kmap(sg_page(sg)) + sg->offset + sg_offset;
->> +		iov->iov_base = page_address(sg_page(sg)) + sg->offset + sg_offset;
->>   		iov->iov_len = iov_len;
->>   
->>   		length -= iov_len;
->> @@ -347,8 +329,7 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
->>   		sg_offset = 0;
->>   	}
->>   
->> -	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov,
->> -		cmd->nr_mapped, cmd->pdu_len);
->> +	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov, 0, cmd->pdu_len);
->>   }
+On Wed, Aug 17, 2022 at 01:53:32PM -0400, Michael S. Tsirkin wrote:
+> On Tue, Aug 16, 2022 at 11:08:26AM +0000, Bobby Eshleman wrote:
+> > On Wed, Aug 17, 2022 at 01:02:52PM -0400, Michael S. Tsirkin wrote:
+> > > On Tue, Aug 16, 2022 at 09:42:51AM +0000, Bobby Eshleman wrote:
+> > > > > The basic question to answer then is this: with a net device qdisc
+> > > > > etc in the picture, how is this different from virtio net then?
+> > > > > Why do you still want to use vsock?
+> > > > > 
+> > > > 
+> > > > When using virtio-net, users looking for inter-VM communication are
+> > > > required to setup bridges, TAPs, allocate IP addresses or setup DNS,
+> > > > etc... and then finally when you have a network, you can open a socket
+> > > > on an IP address and port. This is the configuration that vsock avoids.
+> > > > For vsock, we just need a CID and a port, but no network configuration.
+> > > 
+> > > Surely when you mention DNS you are going overboard? vsock doesn't
+> > > remove the need for DNS as much as it does not support it.
+> > > 
+> > 
+> > Oops, s/DNS/dhcp.
 > 
-> I earlier meant just use a local variable for 'nr_mapped' rather than replace
-> it with '0'. I don't think that 0 segments would result in usable kvec.
-
-yes, that is wrong. Need a local int nr_mapped variable.
-
+> That too.
 > 
-> I'm not even sure the existing code is correct, though. The sg->length can be
-> higher order than a PAGE_SIZE, so it may be over-reporting nr_segs. It's just
-> supposed to be the number of initialized iov's.
 
-The sg is allocated with sgl_alloc so it is for sure 0-order.
+Sure, setting up dhcp would be overboard for just inter-VM comms.
+
+It is fair to mention that vsock CIDs also need to be managed /
+allocated somehow.
