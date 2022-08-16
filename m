@@ -2,149 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52881C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B532C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237576AbiHPVVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
+        id S237591AbiHPVVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbiHPVVD (ORCPT
+        with ESMTP id S237275AbiHPVVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 17:21:03 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD54A8A1FE;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id f30so10419494pfq.4;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=rZz8bTF2NcPtmVJ0WP5KDpOKcOl43ZBJ+1AR/XSbYLg=;
-        b=bV+k5Bi7aHC7OQ5MMSqyosvgyjzXZiK+iNX2RNdes6NMjMk7SbtPl5oivBva1PkcL8
-         rKwBzUVoOLc4QHdIN2suICc/baLJjosEkTBtp3cm11v+mqIyGwtNAiDUK0Su9i9YaSxi
-         SzTHPlzRpkPnDozzpDpTwXi0pZaxr+B2ne8tM3A6KrOkKJnYgF94ocw14WYt1gZYmJvg
-         S3i9JiB0F78nLKgq/HDabD7tBcDNDHeDrN2YllPbw/JIgJMEVYDojsAGALR1S9QtrUza
-         EfAtaXRi/oI90POA/6DJM94mGMJiqLkfqiaePIGR0tLCQI9DZFNfObPZGG4kYolPgXsa
-         Bk1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=rZz8bTF2NcPtmVJ0WP5KDpOKcOl43ZBJ+1AR/XSbYLg=;
-        b=nCfNsV8vzNEUZv1KbXePRDu1u6eMpDo1SeiPiDu5u22FXxvqykDI7moLNigAUVLFbI
-         /XPdHBJOtNBvvbiWG60w1pZF9v5+GPjc489ok2POoJNL3ti899D/5OFzDQePUKh6HB+S
-         F6PFmC8q/RgQ1zuFOBb9n2Zaa13A80TtvO6QnqqOQEIrfGXaTl9t5wpDBok77j1pV40u
-         DC9YEW3s1yativIapq1Zrm5sdqHwR9tzMQOSGnLTdd3xzYroIZRqcch3jDr347z5p0sA
-         UvO4YAaqootraofL9g5YB3sooo3iv3IlkbqBr3fdGjWux3Xrxvi8x4QCnQ1go4ZWT3mw
-         D80w==
-X-Gm-Message-State: ACgBeo1NZ4KlvpuO0BJzZZlDrw2+VqTStvfU1wqcy95JsG57FIGpKsil
-        sm3sEpend1hZGxjsrUl2820=
-X-Google-Smtp-Source: AA6agR4YLR5lA1zKDCby2mqX+HJq2T8wb9mbU/S5aW4j2gvI5lNQI5i6E+T0F3z/J2jFYlIAzGfMOw==
-X-Received: by 2002:a63:284:0:b0:41d:9b60:497c with SMTP id 126-20020a630284000000b0041d9b60497cmr18960653pgc.29.1660684862179;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902680a00b00172913c0e44sm951851plk.28.2022.08.16.14.21.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:21:01 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 06:18:54 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Message-ID: <Yvs2qqx/sG0C3zvz@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
- <20220816123701-mutt-send-email-mst@kernel.org>
+        Tue, 16 Aug 2022 17:21:10 -0400
+Received: from qproxy2-pub.mail.unifiedlayer.com (qproxy2-pub.mail.unifiedlayer.com [69.89.16.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53608A7F2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:21:07 -0700 (PDT)
+Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
+        by qproxy2.mail.unifiedlayer.com (Postfix) with ESMTP id C93B58029D61
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 21:20:57 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id 1E5881004BD9D
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 21:20:33 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id O3zEosB9QCokGO3zEot57R; Tue, 16 Aug 2022 21:20:33 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=c8Nu/Txl c=1 sm=1 tr=0 ts=62fc0a21
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=biHskzXt2R4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=bDdBU3oEAAAA:8
+ a=HaFmDPmJAAAA:8 a=T7ODj6HJyk-ComGlyZUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=DN7SgORnOiO7RqxRx1GC:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jeclmRAL0j6fGiaGY2XnGlRAGRDJKW/HlIMVUeS3rEE=; b=HhVw7W/i4xFKumZCdDvb90P6Q0
+        3DEFpXvaxfEtjAD+VecstX9GmTv5VKwkJnvmqLwjDUnbXWXl5Uv1QDv15JjcL0ZgWbX3WGHcNXX4e
+        Jq9WqN8xMJSCuI7djdqw7Z5dngUlpPfhoTwbzq1tpqvGB4kYBpwpp0osF2oWFqpJ4tXZxjB7+feJ0
+        Crus627FKk+yr+hCfjs04Ow/pmAj28GeAXg7OSNFhPgUU4sx9kalCSVgPQnRb/Dp5lrcGZlqAbV0J
+        rgU1UksWccuB1g1USlDxZYbC2gogG2ZFoEW0Z9NRNpxzdGCXHU1iAWTmvXoisA408z7M4Iou6bf5E
+        xfi2pyfw==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:40324 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1oO3zE-004Id9-5c;
+        Tue, 16 Aug 2022 15:20:32 -0600
+Subject: Re: [PATCH] riscv: Ensure isa-ext static keys are writable
+To:     Andrew Jones <ajones@ventanamicro.com>,
+        linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, daolu@rivosinc.com,
+        jszhang@kernel.org, palmer@dabbelt.com, Conor.Dooley@microchip.com,
+        Anup Patel <apatel@ventanamicro.com>
+References: <20220816163058.3004536-1-ajones@ventanamicro.com>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220816163058.3004536-1-ajones@ventanamicro.com>
+Message-ID: <0edc2f30-5662-392f-77a0-bd93379df724@w6rz.net>
+Date:   Tue, 16 Aug 2022 14:20:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816123701-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1oO3zE-004Id9-5c
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:40324
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 4
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:38:52PM -0400, Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
-> > In order to support usage of qdisc on vsock traffic, this commit
-> > introduces a struct net_device to vhost and virtio vsock.
-> > 
-> > Two new devices are created, vhost-vsock for vhost and virtio-vsock
-> > for virtio. The devices are attached to the respective transports.
-> > 
-> > To bypass the usage of the device, the user may "down" the associated
-> > network interface using common tools. For example, "ip link set dev
-> > virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
-> > simply using the FIFO logic of the prior implementation.
-> 
-> Ugh. That's quite a hack. Mark my words, at some point we will decide to
-> have down mean "down".  Besides, multiple net devices with link up tend
-> to confuse userspace. So might want to keep it down at all times
-> even short term.
-> 
+On 8/16/22 9:30 AM, Andrew Jones wrote:
+> riscv_isa_ext_keys[] is an array of static keys used in the unified
+> ISA extension framework. The keys added to this array may be used
+> anywhere, including in modules. Ensure the keys remain writable by
+> placing them in the data section.
+>
+> The need to change riscv_isa_ext_keys[]'s section was found when the
+> kvm module started failing to load. Commit 8eb060e10185 ("arch/riscv:
+> add Zihintpause support") adds a static branch check for a newly
+> added isa-ext key to cpu_relax(), which kvm uses.
+>
+> Fixes: c360cbec3511 ("riscv: introduce unified static key mechanism for ISA extensions")
+> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> ---
+>   arch/riscv/kernel/cpufeature.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index 553d755483ed..3b5583db9d80 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -28,7 +28,7 @@ unsigned long elf_hwcap __read_mostly;
+>   /* Host ISA bitmap */
+>   static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+>   
+> -__ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+> +DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+>   EXPORT_SYMBOL(riscv_isa_ext_keys);
+>   
+>   /**
 
-I have to admit, this choice was born more of perceived necessity than
-of a love for the design... but I can explain the pain points that led
-to the current state, which I hope sparks some discussion.
+Works good on HiFive Unmatched.
 
-When the state is down, dev_queue_xmit() will fail. To avoid this and
-preserve the "zero-configuration" guarantee of vsock, I chose to make
-transmission work regardless of device state by implementing this
-"ignore up/down state" hack.
+Tested-by: Ron Economos <re@w6rz.net>
 
-This is unfortunate because what we are really after here is just packet
-scheduling, i.e., qdisc. We don't really need the rest of the
-net_device, and I don't think up/down buys us anything of value. The
-relationship between qdisc and net_device is so tightly knit together
-though, that using qdisc without a net_device doesn't look very
-practical (and maybe impossible).
-
-Some alternative routes might be:
-
-1) Default the state to up, and let users disable vsock by downing the
-   device if they'd like. It still works out-of-the-box, but if users
-   really want to disable vsock they may.
-
-2) vsock may simply turn the device to state up when a socket is first
-   used. For instance, the HCI device in net/bluetooth/hci_* uses a
-   technique where the net_device is turned to up when bind() is called on
-   any HCI socket (BTPROTO_HCI). It can also be turned up/down via
-   ioctl().
-
-3) Modify net_device registration to allow us to have an invisible
-   device that is only known by the kernel. It may default to up and remain
-   unchanged. The qdisc controls alone may be exposed to userspace,
-   hopefully via netlink to still work with tc. This is not
-   currently supported by register_netdevice(), but a series from 2007 was
-   sent to the ML, tentatively approved in concept, but was never merged[1].
-
-4) Currently NETDEV_UP/NETDEV_DOWN commands can't be vetoed.
-   NETDEV_PRE_UP, however, is used to effectively veto NETDEV_UP
-   commands[2]. We could introduce NETDEV_PRE_DOWN to support vetoing of
-   NETDEV_DOWN. This would allow us to install a hook to determine if
-   we actually want to allow the device to be downed.
-
-In an ideal world, we could simply pass a set of netdev queues, a
-packet, and maybe a blob of state to qdisc and let it work its
-scheduling magic...
-
-Any thoughts?
-
-[1]: https://lore.kernel.org/netdev/20070129140958.0cf6880f@freekitty/
-[2]: https://lore.kernel.org/all/20090529.220906.243061042.davem@davemloft.net/
-
-Thanks,
-Bobby
