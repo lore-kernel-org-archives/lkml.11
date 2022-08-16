@@ -2,91 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB90EC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 018E4C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiHPGhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
+        id S230112AbiHPGiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiHPGhH (ORCPT
+        with ESMTP id S230009AbiHPGhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:37:07 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9554A1AB883;
-        Mon, 15 Aug 2022 18:13:31 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M6Cny4fhGz4xV4;
-        Tue, 16 Aug 2022 11:13:26 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1660612406;
-        bh=snNpycHxM/XQfHLoQriesMPQxXB226j+ksKeX43PHSo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZGvCq3/YwHAtG2mgItxXvv1hOqdoQ/x5cK6sefPTJgi1kh1MG7IGPp+53tBaYEnBx
-         8/jM8sa+EIitvNDyTpT+d4ZpDlMBQGSyg2sKNb/XHsXswS9A7Z1Mtag4vqWnn3VlxD
-         6I/tBDsEAI8s2xk2R1YQ4QrEJQJ3/rrNZU/Y3AxpcGw1OcFBSxsDSuPipouE3kA1yC
-         vg5UHZaooVm72Ccxvo+St9fjNP+oy/eksutb9ATqOF40kqrvul2EfYwHLFX+XRnfOu
-         r0zP62nHYE3ySR1Nt1/q7aDWq2Xs8UHFiwEE05IOee1igf5Dwe/6v3bQkWJ5DE1ZSI
-         09kIOlvVRtkDw==
-Date:   Tue, 16 Aug 2022 11:13:23 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the vhost tree
-Message-ID: <20220816111323.05b3c314@canb.auug.org.au>
+        Tue, 16 Aug 2022 02:37:51 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EBC2AA0B9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 20:27:11 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6Gjk5B9kzmVqk;
+        Tue, 16 Aug 2022 11:24:58 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 11:27:09 +0800
+Received: from [10.174.178.120] (10.174.178.120) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 11:27:08 +0800
+Message-ID: <09129cd3-7363-3079-bd57-dde9c73684f1@huawei.com>
+Date:   Tue, 16 Aug 2022 11:27:08 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/mHlB/mK8Z7Pj/FFx6gwWY99";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+CC:     <mawupeng1@huawei.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <wangkefeng.wang@huawei.com>,
+        <willy@infradead.org>, <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH stable 4.14,4.19 1/1] mm: Fix page counter mismatch in
+ shmem_mfill_atomic_pte
+Content-Language: en-US
+To:     <rppt@linux.vnet.ibm.com>, <hughd@google.com>,
+        <aarcange@redhat.com>, <hannes@cmpxchg.org>
+References: <20220802013251.3022141-1-mawupeng1@huawei.com>
+From:   mawupeng <mawupeng1@huawei.com>
+In-Reply-To: <20220802013251.3022141-1-mawupeng1@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.120]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/mHlB/mK8Z7Pj/FFx6gwWY99
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Cc Greg
 
-Hi all,
-
-After merging the vhost tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
-
-drivers/virtio/virtio_vdpa.c: In function 'virtio_vdpa_find_vqs':
-drivers/virtio/virtio_vdpa.c:291:61: error: 'sizes' undeclared (first use i=
-n this function)
-  291 |                                                   names[i], sizes ?=
- sizes[i] : 0,
-      |                                                             ^~~~~
-drivers/virtio/virtio_vdpa.c:291:61: note: each undeclared identifier is re=
-ported only once for each function it appears in
-
-Caused by commit
-
-  71545b3c933a ("virtio: Revert "virtio: find_vqs() add arg sizes"")
-
-I have used the vhost tree from next-20220815 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/mHlB/mK8Z7Pj/FFx6gwWY99
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL67zMACgkQAVBC80lX
-0GzZewf/cit26uB9DjYtXsiZ5fyyM1b+GdHipoLVZiHJyE9BHSuJAjWbI5FN109k
-I/jCcfUS2vaBH2aRHOnNTfEKTjOOSg1o15SjNMIXMTWaYnPoRFCubLY/MsbmUo+9
-91J1y3pqlCAfGafxL9Z94dWZeTABtH+CexLS9zn1ImsVEqLNRIoQjubUvW/n3DK7
-E31RcqEJgaBbBMvnFKjvnw1BXq7ix6zWslJov7/VobtrwBZl676U89PbIBDJjdod
-4/qwTrh6JVG41ArFb0OyuWEcdKLK5fPvG0Lmv95/O7z62RnYlsgltHxQWui4s0zp
-kcp61wSirNx8XbpNHGXtOvJrykPhKA==
-=lOQF
------END PGP SIGNATURE-----
-
---Sig_/mHlB/mK8Z7Pj/FFx6gwWY99--
+On 2022/8/2 9:32, Wupeng Ma wrote:
+> From: Ma Wupeng <mawupeng1@huawei.com>
+> 
+> shmem_mfill_atomic_pte() wrongly called mem_cgroup_cancel_charge() in "success"
+> path, it should mem_cgroup_uncharge() to dec memory counter instead.
+> mem_cgroup_cancel_charge() should only be used if this transaction is
+> unsuccessful and mem_cgroup_uncharge() is used to do this if this transaction
+> succeed.
+> 
+> This will lead to page->memcg not null and will uncharge one more in put_page().
+> The page counter will underflow to maximum value and trigger oom to kill all
+> process include sshd and leave system unaccessible.
+> 
+> page->memcg is set in the following path:
+> mem_cgroup_commit_charge
+> 	commit_charge
+> 		page->mem_cgroup = memcg;
+> 
+> extra uncharge will be done in the following path:
+> put_page
+> 	__put_page
+> 		__put_single_page
+> 			mem_cgroup_uncharge
+> 				if (!page->mem_cgroup) <-- should return here
+> 					return
+> 				uncharge_page
+> 				uncharge_batch
+> 
+> To fix this, call mem_cgroup_commit_charge() at the end of this transaction to
+> make sure this transaction is really finished.
+> 
+> Fixes: 4c27fe4c4c84 ("userfaultfd: shmem: add shmem_mcopy_atomic_pte for userfaultfd support")
+> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
+> ---
+>  mm/shmem.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 0788616696dc..0b06724c189e 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -2339,8 +2339,6 @@ static int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
+>  	if (ret)
+>  		goto out_release_uncharge;
+>  
+> -	mem_cgroup_commit_charge(page, memcg, false, false);
+> -
+>  	_dst_pte = mk_pte(page, dst_vma->vm_page_prot);
+>  	if (dst_vma->vm_flags & VM_WRITE)
+>  		_dst_pte = pte_mkwrite(pte_mkdirty(_dst_pte));
+> @@ -2366,6 +2364,8 @@ static int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
+>  	if (!pte_none(*dst_pte))
+>  		goto out_release_uncharge_unlock;
+>  
+> +	mem_cgroup_commit_charge(page, memcg, false, false);
+> +
+>  	lru_cache_add_anon(page);
+>  
+>  	spin_lock_irq(&info->lock);
