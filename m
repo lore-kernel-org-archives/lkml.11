@@ -2,134 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAABAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDC4C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236462AbiHPQfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
+        id S236500AbiHPQhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiHPQfI (ORCPT
+        with ESMTP id S229541AbiHPQhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:35:08 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDE57539C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:35:02 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id r83-20020a1c4456000000b003a5cb389944so5776713wma.4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:35:02 -0700 (PDT)
+        Tue, 16 Aug 2022 12:37:05 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBC08050C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:37:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660667822; x=1692203822;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=AjywHmQttnW4Icgnxk6aRnicPMKgwI1pwefk4i2byQs=;
+  b=DW4YP9K4dWmkpaCDhuFkak4LgF+Mztd9IctRFgC0rHCE1GycwwKDjxFa
+   Z9BsxZIIR0QJIdF0X9dXq3CjiXSpvkiPlwtTVzUgMc3yhEWgUDWSFIDAp
+   S0moWBHxRbDdzan9RS1sgvJ1pJtP1bES506GeFr1If3b3VzniaSexZldJ
+   Ar4E+KSIyy+lc9+VS2wNVPv0l8RiPW5/Z4n3dVatOeakWkIZuPVsFBPby
+   JcYehqeVHiroyRVR77EKTmqMwgujXwUuumyANEnrzLkqosz0X6TutN8Xy
+   doiLWEgYDC1pLTtyI27Xzn6OysEBaHYnzNgudEMqfslfLwC+yZ+XQBZvU
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
+   d="scan'208";a="176480184"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Aug 2022 09:37:01 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 16 Aug 2022 09:37:00 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Tue, 16 Aug 2022 09:36:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RepKIrNKAmNtRFVaYFWuaA05gr5Senyp0KsAL/56sS9DublCnPq6kSbQunXOxZOzLyso25LplZMjn2f7C3fqWZ5ZJf/2COabcoynnAgA5UQLdlN4bGh6S+ruEtzwMbJSlwmgSiTBD63L28nqt/k+fPC+eDO37STukQrAvrYYWAfg/eTxyukKbib6cTHZ24PB+yfayB1MWx6Ux6zwTfxf+RxJyEBx9IAsULEFwVKix984UsqMc4rDCOu0oiqhrcXR/j8tFjjk/Pze8hUfsjsleYqTfu+JVQ6XMAwcRAc3k30EEZVDBrVGeT+zTmY9qWDDB5IJ55n7qwfO/lT4X+M+Tg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AjywHmQttnW4Icgnxk6aRnicPMKgwI1pwefk4i2byQs=;
+ b=W2W4OD3oS+v97pSP5Nn+7etIjdCqhmIfS6kAMfmFS6oXWE+VbLKAlJ3D/AcVs/kTaCa1qZkWNS+/fvy6WOXPB4bkiWlDviVRJT+iGBdaokIbhQ9nJLe0QPz0eLA978tXIyRFMCzPtz8V/2WaySP0RvihRD6ZsNBF8r/p3PgsFt15M1N9PqvE/m1zJQItE15Ck9YGuynMUcPPLh0U5JXLy2SH8QJxby4Sx4dvO0j/h2lS5TnCiW+7fxHsD02AActKs2pBuIK0Mjx9WYw3hlMmiIJFu1/uFrxFC6r2FF+4yFbCu95nsj8+5XrW1kENhrdWy4UuYlPFmwqygzv3uWH0dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc;
-        bh=aSgfhg0ra4QeeNOPUK4Fe3iHQwl6otADoE+WTu25cUQ=;
-        b=oO75P0zgzZSelgKq8X5/8n7pR64lNzguHHIZv6Qigk0vcqor6yyx+UvwgJVjHHDTmr
-         JpOFXa1sAk8IS2Ge9QGldAcDHK1vjwBpmmgDBOPmEaKMPM37BBml+Vasa6ceMaXfy8ys
-         vA5YlGf9GJpp9kCTlm59YWlDxjGi0qUF2njrrvH0jvyRtfU1uSXfVgQBdjRN+nQiTrIa
-         K1tx2KUJ9Qf6yuH4X2xvmavbOcD6thNdXp36tW7K0Q7lR4dm6E/Kgvxeyn1nvbAUUm55
-         oCW8uPSTKuvZjjteUVAZG+fJ6XL4Y+bL3tbiCzlmzexpifuTzdMGSCPUxJ+atCFRYW4f
-         BIXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=aSgfhg0ra4QeeNOPUK4Fe3iHQwl6otADoE+WTu25cUQ=;
-        b=MNhzJem4HkmrRhGNYQ4Or1uvCXJWy4YCOwaPkS3EJauesg0WzhFtbx2c067gtrEhb3
-         ftzKFwzmG8uGSC3s1IBrFMy4QLGzqdie0QNQTVsEoCy4ynyOrGdMh7g8YwHWGspBuxjB
-         HY1HdYuqji86mGMr8n+4PvEtakV71Qq8tMHU+QUrKWS5YocfjBGxzNkOD8g1N0JXZEZy
-         hSRfUQb2gru1H/vERypuE1RuYMDtmUkgD6tPnc/CEHHilmmgtSYODpQB3RBKRZuj07E+
-         od9iS5yWXLulf2ojpfGIyuwfFnCtUhGHf6JHqmdTDEGfli1lVNawJFgmcLlc7FM72Dxr
-         zJZw==
-X-Gm-Message-State: ACgBeo0SqxXcYU/4JmabyeaxyuuOU/Pmxu+2N1uu5/rT2YYia25qvohV
-        L+x40+hkEHipWrrrpLm3TLg=
-X-Google-Smtp-Source: AA6agR7ZXmAf9LGFTKUCiRhx2DtRo35VpbC8Ein623TDCJlD2TEoSklMR8Cn7TN7XqMHn5kp2f0KhA==
-X-Received: by 2002:a05:600c:3492:b0:3a5:e1a0:24c9 with SMTP id a18-20020a05600c349200b003a5e1a024c9mr9372869wmq.177.1660667701050;
-        Tue, 16 Aug 2022 09:35:01 -0700 (PDT)
-Received: from debian ([2405:201:8005:80f3:49ef:62cd:4783:3947])
-        by smtp.gmail.com with ESMTPSA id co26-20020a0560000a1a00b0021e2fccea97sm10756131wrb.64.2022.08.16.09.34.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 09:35:00 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 17:34:51 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>
-Cc:     Emma Anholt <emma@anholt.net>, Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        torvalds@linux-foundation.org
-Subject: drm warning with mainline due to 467e30171b5b ("drm/vc4: hdmi: Move
- HDMI reset to pm_resume")
-Message-ID: <YvvHK2zb1lbm2baU@debian>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AjywHmQttnW4Icgnxk6aRnicPMKgwI1pwefk4i2byQs=;
+ b=chlbjntdC9a1bRqt/wKvTVhkxYPCJMBmU92yegnMGsD9QXdbk7T8cYovlF1ueLMvlTaQDjN74IGauKCSzFWB4E5TgBjZbh67V1+0tTGv9fXpbLqQuNBC82tUqCGrTPeTywC6ZlyPlE4MNeToHwmSpDZgVbGA77dHzKyIDrJg5Sg=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by SA2PR11MB5195.namprd11.prod.outlook.com (2603:10b6:806:11a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 16 Aug
+ 2022 16:36:55 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3%8]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
+ 16:36:55 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <ajones@ventanamicro.com>, <linux-riscv@lists.infradead.org>,
+        <kvm-riscv@lists.infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <daolu@rivosinc.com>,
+        <jszhang@kernel.org>, <palmer@dabbelt.com>,
+        <Conor.Dooley@microchip.com>, <re@w6rz.net>,
+        <apatel@ventanamicro.com>
+Subject: Re: [PATCH] riscv: Ensure isa-ext static keys are writable
+Thread-Topic: [PATCH] riscv: Ensure isa-ext static keys are writable
+Thread-Index: AQHYsY2eGYLw8iAi7E2kcFjuy+7hb62xua4A
+Date:   Tue, 16 Aug 2022 16:36:55 +0000
+Message-ID: <bef1a711-506a-d07b-dbd6-3a0c5f90aef2@microchip.com>
+References: <20220816163058.3004536-1-ajones@ventanamicro.com>
+In-Reply-To: <20220816163058.3004536-1-ajones@ventanamicro.com>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ad2352db-5e62-42f2-470e-08da7fa587fa
+x-ms-traffictypediagnostic: SA2PR11MB5195:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0el7w4ga0l4iOlp4iQJtSqHDKxYlRrCHQ/JhcoU2igBnr2X2mtyB1KycMWhrNRGx3sERbBKFo5XFCn0RyReI010wj2LBV24TBwSAVyKY/EPKP58orQWPbhWu1TLoqFE1thxvZLvDtNP44G8vJBXNsh3zCM388VoyJfPCVh/4X+zxgd387g4cfRUxmCtOj9XAuF9JIdQQBRTUNwyC7M3WL2YGWcRy4p8iieeFrQNdel1084Y+vFdig98SBKdSnhOjBpGJEH6Or8JNnjOqEs1Vr/yDvJngfr7XSQIFHAEusSh//KGmd+LHmIml9A1IbCXTFWyqA5HhN7rFlIBiW9h9w0zGUlpNSrvJipinwg7O60nVW3chmEd2y5W4WIx0jTGwmC+gQJV9ZbcorCeADHjqcUQNaQ+lzX/aJbOU8c8ktgDU71z2G6P86seKdt1QfW7Fa3np8DrYjax696QOwnf3oWXnmko9jcmMTqSW0UiP6DHKnuRdq1DP1vS41YX5/gd+yWZQhQzSbFn3TkbixR3B7n96JZcD6a+Cyt30IQMnLl0w9TthC4Lr18XCKCHl1/Lfyfh6HfC2Bc/O0sMd8L2frhJxnAuLJ89y2C19dUnnHr/rcy870Iwuaam1rQ10ptpV46Vt3VUdG0dK58Saf0FymAg99tTla8xWDD8QbJP2Ox02ZsTX5jmD6rOUE6BzLH0zhUbpUuPVygYP+9C7HL+vW3IDyDJ/+39kGZ146d0WutV+JJ2vuri/NVa2f/5TcSG74b1M7uHRypqHBMcAAr12ZXWvU16oH+E9J2vCE5TBZC9b9va4a7XVmO0n3I4kyNNhZszm4oklHnV8xF1f+n1qoe6c6vTW2pkZiK8LZ9V9xDo53CL1kmwpNhs5EMnSw50d
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(376002)(39860400002)(136003)(366004)(346002)(6512007)(186003)(26005)(5660300002)(8936002)(53546011)(6506007)(41300700001)(31686004)(6486002)(478600001)(2616005)(71200400001)(36756003)(83380400001)(31696002)(86362001)(38100700002)(38070700005)(122000001)(110136005)(2906002)(91956017)(66556008)(4326008)(54906003)(66446008)(8676002)(66946007)(66476007)(76116006)(316002)(64756008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?U2J2VmROVTlSL1ljRW9vSXNpbmRtODZTTTNKNVp3cmRkRGlwZEdvQy9kUFNJ?=
+ =?utf-8?B?OEhzWEtQcVdjTFl4Q1h5clFWYzhUOERYMmdxV2RadGhoc21taEVvV29GSm5p?=
+ =?utf-8?B?aDNJUGhuazJGQTZjMVdHaEdNdzJXdENyNnhCa09XUUdhMHg3dzdCYVlseDB0?=
+ =?utf-8?B?SFFmUVhkNlA5WEpjSVBudHR5Q041MFYyZEhsaDM3L2FsYzhyc0tvQmdoYmNZ?=
+ =?utf-8?B?K0xsUkpmWDhWbmNvY1AzdUZ4d1dwN2ZTSmlpbEs2TG9TdnRPYVk3dkxoQThh?=
+ =?utf-8?B?bG1RdVJER3Q4T1lJVi9ick1WN3dUazViSEJCQ2gzdi92QWVRRVA0c0dTVzlF?=
+ =?utf-8?B?MzJzWThEempFeG1uaXF2UG4xOFhPbWpjQTVVMXFWSnYxZzlmQ1RmcDhjWUZr?=
+ =?utf-8?B?aUh6bDhvK2hXMHBJR2E0Wk5jZWpTUEl1S1RzV3IwZmR3a3lHcjlUSmNxS1Bv?=
+ =?utf-8?B?VVdiZVg2TUdlcUpMZDQ2SVlmWDZVODhEbXJSV2crOXRwK0pHUlF5R2k4SHFT?=
+ =?utf-8?B?MWlCTGoyeEpKQnhUclkrYldzUXNqeGM0b0xlYWNpSmNPKzlRdVl3VDhoRzhS?=
+ =?utf-8?B?c1ZRcU1tcHgvaE5zVUpoMDlkUG11eGdBdm9HZ0d1OVJFaEdXK0tyMEFSc3R2?=
+ =?utf-8?B?OWpha3JvQVduUEpZVTk5aEF4UnY3WHNEYWdHaDNpeW1HN2loRUNWS3VtMSts?=
+ =?utf-8?B?emtzYlUxUElYMFhGZFpOSVRpU1VQdGFtMFR1ai9VY1Npdys1SVpKSHBmeXE2?=
+ =?utf-8?B?czJvNmIrelY0eFlBdGxzYlBvYUZPV2hCTWdLQmZTbVF6RURlck1CcGhrSFlL?=
+ =?utf-8?B?bExtSWxSVDI0RGpnVnNDbGRkY2JYa3RlZUJwUi90S2tMMFlsK0NzT3htbkFa?=
+ =?utf-8?B?M3JUR2FjWVBkWFlOeDNnS1BiU2s0L1ZvS3p6di9Rcjg4ZjgwUnZUMVB4M25s?=
+ =?utf-8?B?MEdlUFF0ODVFUE5obkRqN2xjbkkyalkvYkhZaDB4c0EzWXEwVDNRQ1gxbzVT?=
+ =?utf-8?B?NFdkM1lwQjltZHZBa3BLN0x0UDVySWJPL3ZrSlp5aHR0V1FpRTMvejNPNDZa?=
+ =?utf-8?B?MXFIWWQ1SDVCUW9LaEVCcVlodVdia2xMbWpZOU94SDhSNUx6cFVUZXNSeDdR?=
+ =?utf-8?B?TGlsTmVXZEs2Qk0rbzBnajNDekdjUjQ0NGo3V3RiNFlsWlB4c2FNd3VLbzJK?=
+ =?utf-8?B?aE9BRDFCVFJ6NUlOSUhpMk1lVTNFTUNLd1VtUjd0VURpL0pMN1BDT1lwaUlB?=
+ =?utf-8?B?dTFSS0xKL2NQdVVEc2RyU0hreHR3a1NaY1BtTU1iN1pia0l1bVZ3V1JYQnJN?=
+ =?utf-8?B?Mk5BZkNYMmNWcGRWa3FCSDZTc3R6Vi9sL0ZYNWRGZEcyY2JsVG5NTjJ1cXBy?=
+ =?utf-8?B?OVdpUHY1bjFZWWQ5Um90MFl3c1hOck4ySWdpb0R5ZjhIc3JGbjRKWVYzYmpO?=
+ =?utf-8?B?MkVOT3VXbkpxYWQ0aVdBWFVZT0pDTkdKaTJ5bWh3elBRRGxQZVlGVmJyelY5?=
+ =?utf-8?B?NHFDUFdYcExRYjNtYTBudE1ORzM0dDlNejdDWmE0a1VXOVJscGZvTjhOdm5j?=
+ =?utf-8?B?TWxvbU8wRkI5ZUQ2VkplM1NwaGhGNlhKalBjeW8wSG9JR1UyQlM0TlVLcWFQ?=
+ =?utf-8?B?cStOOU8wd2Y2ejFmaEZlTlVhL2VYVFRBR1lvZTR3UzhQWC9GdHAwVXA3eFZ4?=
+ =?utf-8?B?MkRmKzViZ0ZSMFJ6ZW1SbW5nRVdINmlHV3dqOWR5ZmVCUlZ1RGdteXBJaTRm?=
+ =?utf-8?B?K3hGZ2VoZlNuRE1GcTluOHlYaERlZnhQSy9Qa0N0TTEydmlYbldPSUVrUUg4?=
+ =?utf-8?B?ZlZyaU1oU2hjTkZjZnVrUGZNVisycWZUVjZJK0M1blZGbER6SlRJNXFQUms0?=
+ =?utf-8?B?UjZndGVOZFVJY2orK2gwbkJkQzQ3OXNROEI2MkI3SHcrb1lSUDBiQUtPcTlW?=
+ =?utf-8?B?aEI0d2FGajR1bWt1MStXZWUxQUhGQTR6RVB3bVN3b2RVNEJHS2oyQjNEbDEy?=
+ =?utf-8?B?blNmd2xjWDdOcWdMLzd6VXhMbHZFRDBiMmUvcVdGbU1Jb25tWm53d1k4eUpG?=
+ =?utf-8?B?NWtocjhOMElDUTR1eWRLeHhmR0xLSmpOMnExeFlpczNuL25iTXdOL2g0YWhM?=
+ =?utf-8?Q?FBC2rCK5DUMKCqrhRbGW9uVY/?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8A50C426CB1ACC4598609A661654BB22@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad2352db-5e62-42f2-470e-08da7fa587fa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2022 16:36:55.3691
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tN2GDFO32OOSPaBkjZgcgAW0mMnnNMysCCkKH5JaNpYAxaH0IhJyVMbphP20EFQJ+jIE4rgxXp0HH4yA91P7tpqSqJibw93DdQdYFtVhRSg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5195
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
-
-Not sure if it has been reported but the mainline kernel shows a drm warning
-on RPI4B.
-
-[   14.821276] WARNING: CPU: 3 PID: 187 at drivers/gpu/drm/vc4/vc4_hdmi_regs.h:487 vc5_hdmi_reset+0x1f8/0x240 [vc4]
-[   14.837288] Modules linked in: hci_uart btqca btrtl btbcm btintel btsdio(+) bluetooth bcm2835_v4l2(C) bcm2835_mmal_vchiq(C) videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 videobuf2_common brcmfmac videodev brcmutil vc4(+) ecdh_generic ecc drm_display_helper mc raspberrypi_hwmon cec crct10dif_ce drm_cma_helper cfg80211 dwc2 udc_core i2c_brcmstb roles snd_bcm2835(C) drm_kms_helper pwm_bcm2835 drm xhci_pci xhci_pci_renesas snd_soc_core phy_generic ac97_bus snd_pcm_dmaengine snd_pcm snd_timer snd fb_sys_fops syscopyarea sysfillrect sysimgblt uio_pdrv_genirq uio aes_neon_bs aes_neon_blk
-[   14.889917] CPU: 3 PID: 187 Comm: systemd-udevd Tainted: G         C         6.0.0-rc1-568035b01cfb #1
-[   14.899355] Hardware name: Raspberry Pi 4 Model B (DT)
-[   14.904561] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   14.911620] pc : vc5_hdmi_reset+0x1f8/0x240 [vc4]
-[   14.916433] lr : vc5_hdmi_reset+0x38/0x240 [vc4]
-[   14.921151] sp : ffff80000a85b640
-[   14.923079] uart-pl011 fe201000.serial: no DMA platform data
-[   14.924504] x29: ffff80000a85b640 x28: 0000000000000000 x27: ffff000056626080
-[   14.937472] x26: ffff80000128e2d8 x25: ffff80000128e988 x24: 0000000000000000
-[   14.944708] x23: ffff000040a58000 x22: ffff0000fb832978 x21: ffff000056626c90
-[   14.951944] x20: 0000000000000000 x19: ffff000056626080 x18: 0000000000000014
-[   14.959180] x17: 00000000e6b317d8 x16: 00000000c03e2fab x15: 00000000002ffc4a
-[   14.966416] x14: 0000000000000000 x13: 0000000000000010 x12: 0101010101010101
-[   14.973650] x11: ff7f7f7f7f7f7f7f x10: ffff840003584d5b x9 : ffff800001276518
-[   14.980886] x8 : 0101010101010101 x7 : 0000000000000000 x6 : ffff000040e5d140
-[   14.988120] x5 : 0000000000000000 x4 : ffff80000a85b580 x3 : 0000000000000000
-[   14.995355] x2 : 0000000000000001 x1 : 0000000000000002 x0 : ffff8000012901c0
-[   15.002591] Call trace:
-[   15.005063]  vc5_hdmi_reset+0x1f8/0x240 [vc4]
-[   15.009514]  vc4_hdmi_runtime_resume+0x74/0x2dc [vc4]
-[   15.014671]  vc4_hdmi_bind+0x22c/0xa40 [vc4]
-[   15.019038]  component_bind_all+0x114/0x264
-[   15.023293]  vc4_drm_bind+0x160/0x2a4 [vc4]
-[   15.027565]  try_to_bring_up_aggregate_device+0x1e4/0x2d0
-[   15.033044]  component_master_add_with_match+0xcc/0x110
-[   15.038340]  vc4_platform_drm_probe+0xc4/0xfc [vc4]
-[   15.043327]  platform_probe+0x74/0xd0
-[   15.047037]  really_probe+0xc8/0x3ec
-[   15.050662]  __driver_probe_device+0x84/0x190
-[   15.055079]  driver_probe_device+0x44/0x100
-[   15.059318]  __driver_attach+0xd8/0x1d0
-[   15.063206]  bus_for_each_dev+0x7c/0xe0
-[   15.067090]  driver_attach+0x30/0x3c
-[   15.070711]  bus_add_driver+0x188/0x244
-[   15.074595]  driver_register+0x84/0x140
-[   15.078482]  __platform_driver_register+0x34/0x40
-[   15.083247]  vc4_drm_register+0x5c/0x1000 [vc4]
-[   15.087881]  do_one_initcall+0x50/0x2bc
-[   15.091770]  do_init_module+0x50/0x1f0
-[   15.095569]  load_module+0x1a28/0x1fa0
-[   15.099366]  __do_sys_finit_module+0xac/0x12c
-[   15.103779]  __arm64_sys_finit_module+0x2c/0x40
-[   15.108368]  invoke_syscall+0x50/0x120
-[   15.112166]  el0_svc_common.constprop.0+0x6c/0x1b4
-[   15.117021]  do_el0_svc+0x38/0xcc
-[   15.120378]  el0_svc+0x30/0xd0
-[   15.123472]  el0t_64_sync_handler+0x11c/0x150
-[   15.127886]  el0t_64_sync+0x1a0/0x1a4
-[   15.131595] ---[ end trace 0000000000000000 ]---
-
-git bisect pointed to 467e30171b5b ("drm/vc4: hdmi: Move HDMI reset to pm_resume")
-and reverting this commit has fixed the warning.
-
-I will be happy to test any patch or provide any extra log if needed.
-
---
-Regards
-Sudip
+T24gMTYvMDgvMjAyMiAxNzozMCwgQW5kcmV3IEpvbmVzIHdyb3RlOg0KPiByaXNjdl9pc2FfZXh0
+X2tleXNbXSBpcyBhbiBhcnJheSBvZiBzdGF0aWMga2V5cyB1c2VkIGluIHRoZSB1bmlmaWVkDQo+
+IElTQSBleHRlbnNpb24gZnJhbWV3b3JrLiBUaGUga2V5cyBhZGRlZCB0byB0aGlzIGFycmF5IG1h
+eSBiZSB1c2VkDQo+IGFueXdoZXJlLCBpbmNsdWRpbmcgaW4gbW9kdWxlcy4gRW5zdXJlIHRoZSBr
+ZXlzIHJlbWFpbiB3cml0YWJsZSBieQ0KPiBwbGFjaW5nIHRoZW0gaW4gdGhlIGRhdGEgc2VjdGlv
+bi4NCj4gDQo+IFRoZSBuZWVkIHRvIGNoYW5nZSByaXNjdl9pc2FfZXh0X2tleXNbXSdzIHNlY3Rp
+b24gd2FzIGZvdW5kIHdoZW4gdGhlDQo+IGt2bSBtb2R1bGUgc3RhcnRlZCBmYWlsaW5nIHRvIGxv
+YWQuIENvbW1pdCA4ZWIwNjBlMTAxODUgKCJhcmNoL3Jpc2N2Og0KPiBhZGQgWmloaW50cGF1c2Ug
+c3VwcG9ydCIpIGFkZHMgYSBzdGF0aWMgYnJhbmNoIGNoZWNrIGZvciBhIG5ld2x5DQo+IGFkZGVk
+IGlzYS1leHQga2V5IHRvIGNwdV9yZWxheCgpLCB3aGljaCBrdm0gdXNlcy4NCj4gDQo+IEZpeGVz
+OiBjMzYwY2JlYzM1MTEgKCJyaXNjdjogaW50cm9kdWNlIHVuaWZpZWQgc3RhdGljIGtleSBtZWNo
+YW5pc20gZm9yIElTQSBleHRlbnNpb25zIikNCg0KSGV5IERyZXcsDQpIb3cgYWJvdXQgYWRkaW5n
+Og0KDQpSZXBvcnRlZC1ieTogUm9uIEVjb25vbW9zIDxyZUB3NnJ6Lm5ldD4NClJlcG9ydGVkLWJ5
+OiBBbnVwIFBhdGVsIDxhcGF0ZWxAdmVudGFuYW1pY3JvLmNvbT4NClJlcG9ydGVkLWJ5OiBDb25v
+ciBEb29sZXkgPGNvbm9yLmRvb2xleUBtaWNyb2NoaXAuY29tPg0KDQpUaGFua3MsDQpDb25vci4N
+Cg0KPiBTaWduZWQtb2ZmLWJ5OiBBbmRyZXcgSm9uZXMgPGFqb25lc0B2ZW50YW5hbWljcm8uY29t
+Pg0KPiAtLS0NCj4gIGFyY2gvcmlzY3Yva2VybmVsL2NwdWZlYXR1cmUuYyB8IDIgKy0NCj4gIDEg
+ZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAt
+LWdpdCBhL2FyY2gvcmlzY3Yva2VybmVsL2NwdWZlYXR1cmUuYyBiL2FyY2gvcmlzY3Yva2VybmVs
+L2NwdWZlYXR1cmUuYw0KPiBpbmRleCA1NTNkNzU1NDgzZWQuLjNiNTU4M2RiOWQ4MCAxMDA2NDQN
+Cj4gLS0tIGEvYXJjaC9yaXNjdi9rZXJuZWwvY3B1ZmVhdHVyZS5jDQo+ICsrKyBiL2FyY2gvcmlz
+Y3Yva2VybmVsL2NwdWZlYXR1cmUuYw0KPiBAQCAtMjgsNyArMjgsNyBAQCB1bnNpZ25lZCBsb25n
+IGVsZl9od2NhcCBfX3JlYWRfbW9zdGx5Ow0KPiAgLyogSG9zdCBJU0EgYml0bWFwICovDQo+ICBz
+dGF0aWMgREVDTEFSRV9CSVRNQVAocmlzY3ZfaXNhLCBSSVNDVl9JU0FfRVhUX01BWCkgX19yZWFk
+X21vc3RseTsNCj4gIA0KPiAtX19yb19hZnRlcl9pbml0IERFRklORV9TVEFUSUNfS0VZX0FSUkFZ
+X0ZBTFNFKHJpc2N2X2lzYV9leHRfa2V5cywgUklTQ1ZfSVNBX0VYVF9LRVlfTUFYKTsNCj4gK0RF
+RklORV9TVEFUSUNfS0VZX0FSUkFZX0ZBTFNFKHJpc2N2X2lzYV9leHRfa2V5cywgUklTQ1ZfSVNB
+X0VYVF9LRVlfTUFYKTsNCj4gIEVYUE9SVF9TWU1CT0wocmlzY3ZfaXNhX2V4dF9rZXlzKTsNCj4g
+IA0KPiAgLyoqDQo=
