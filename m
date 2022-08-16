@@ -2,134 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F6EC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1891C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbiHPGtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54594 "EHLO
+        id S230148AbiHPGtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbiHPGtN (ORCPT
+        with ESMTP id S230132AbiHPGtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:49:13 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828AE4AD48
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 18:56:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660615005; x=1692151005;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IQGWVtZVGNHTSSRPBnh+eqzTn1r9EIxOkjywjWhv9IA=;
-  b=ShSUgjYQEZV+ess+pobMR6ytvE9iL2HGizUSAPrLV54Yv/80ToFB7HHJ
-   L5E5NaWsm9QJUUNXmEwBKquOUteNKzAkMRYifV1WyJ16zHu2+VB9DEbBe
-   r4n5MnwIrR1zguvCZRM4UNmtJtJMyQHGjPdYUKM2mrVo7l8HMn9cpVGy8
-   C8jf+p8BZUESaEEZDiED3jMn+nNKmO3i+Pt9vZZVlvr7dkkoD5VnHXq0H
-   JkbYQ3mTPLP1+MKHV4It44xblxB68qQ0ljxIS+8oJLsL8Uoq+A+zzcu0S
-   HLF2ASMO+t94MNCLA2Bg1FFd0vYOaS7J2X5gzPrtHyxbWB+DP3rjFM+Wd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="271872228"
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="271872228"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 18:56:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="557514555"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 15 Aug 2022 18:56:43 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNlow-0001M4-1a;
-        Tue, 16 Aug 2022 01:56:42 +0000
-Date:   Tue, 16 Aug 2022 09:56:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuogee Hsieh <khsieh@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:linux-5.10.y 6780/7990]
- drivers/gpu/drm/msm/dp/dp_display.c:523:26: warning: variable 'hpd' set but
- not used
-Message-ID: <202208160913.aFS2WTCD-lkp@intel.com>
+        Tue, 16 Aug 2022 02:49:14 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCC5222883;
+        Mon, 15 Aug 2022 20:13:09 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id u1so13095812lfq.4;
+        Mon, 15 Aug 2022 20:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Zh9L3GMyN0bAgm1VZ5joh7GoecxvY4X4P34K9smg9ao=;
+        b=DCJaZHlRDaLYCQnt5L/NE3PWbEAGjyuvd10TuFktBd16TZV17FdCS9hgDC0ppYunaP
+         q9E5NpecMnY4E4AFkxNe/0Fg5Rpb0+9bBEr/d/CBE7bGj2b9z9Pn1ehRMS2UkLwThYTg
+         p0lh1UNazF8H2Kjpui8hPnrP6QPIPbwE03vMS4l8Rwi9ShypZKI5ROv6WBckPQQrSZhR
+         maWp0FjTDz61asqVWcvIDUXlWmZOLTQwSbeJVZNDaSR3V3nC/6imXUiNaemBXyYUV+Xo
+         TpKZnIQgdPV+bx3JAuU5MZ3brQ40b6mDdnyBbCSpGVb8oMAbtD8Uta1aQ6cBRtlM5Okf
+         /YbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Zh9L3GMyN0bAgm1VZ5joh7GoecxvY4X4P34K9smg9ao=;
+        b=4TU/LqPfqveV7cWpV1nx/qJHS+RGfQBQkrtSx1H0z9n6EHS0jrN1l6qBqiqttUQM+b
+         iRTZqs1Z1ABDyISpOii12r6Qigkg3yevS4HdC3KHfTOeIgJcLMzKF7lO2pnDznHv0d5c
+         BaS9MyJiC9Kc1gcy4ewPllWDHAIfnrwbW+ax3rQDXlA/jApSrGewpXVxSvTIGWw0bSoC
+         NM/Q4QLzxOkGzSObi8xpHG7cMVVFX5WCnxhix7mk0W8VtxlXmhkZMroMuHqDWQuT32UR
+         7WH3tnVu3znZ4W+owhH2U/RSMTtNy7ALwvp44plhEq08F1Vbf/yN/QLLt4LjKvF8eySf
+         59Ug==
+X-Gm-Message-State: ACgBeo3QGXPCFrqjDiK/EJuclTuR2KoMZbpHfxqpXF+y3feZ2zMNHHPG
+        LzwVoAccmj/RUSOjLnEHm42nosoibrQFO+MOZhk=
+X-Google-Smtp-Source: AA6agR7w9kHMvJPn3RTwXOaTy5l2S6jr1zt04RQSK+VEW6psSbCcgrh8HwLIcO+KxlrpQRLFBT9Th59sTSKMT+dd004=
+X-Received: by 2002:ac2:52a5:0:b0:48b:2905:21ed with SMTP id
+ r5-20020ac252a5000000b0048b290521edmr6041789lfm.120.1660619512328; Mon, 15
+ Aug 2022 20:11:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
+ <YvqP/f2P2YgIIO9U@ZenIV> <CAKFNMomyjXpsz-=BtG+G3q1J7CFUBMEfP13FfxwhWB==9qb++w@mail.gmail.com>
+ <YvrQ8xO9Lx7rdKq8@ZenIV>
+In-Reply-To: <YvrQ8xO9Lx7rdKq8@ZenIV>
+From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Date:   Tue, 16 Aug 2022 12:11:35 +0900
+Message-ID: <CAKFNMoniwM5x0w03cezGTFDWt=apNmGWpur83+vjghg3zcawpQ@mail.gmail.com>
+Subject: Re: [PATCH] nilfs2: fix use-after-free bug in nilfs_mdt_destroy()
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Mudong Liang <mudongliangabcd@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiacheng Xu <stitch@zju.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-head:   71f2154ac93f2d6cf536292c7c72b410e05c8041
-commit: acf76125bb2b247d27cb4ca57fda772c8a691fe9 [6780/7990] drm/msm/dp: fix connect/disconnect handled at irq_hpd
-config: arm64-buildonly-randconfig-r006-20220815 (https://download.01.org/0day-ci/archive/20220816/202208160913.aFS2WTCD-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=acf76125bb2b247d27cb4ca57fda772c8a691fe9
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.10.y
-        git checkout acf76125bb2b247d27cb4ca57fda772c8a691fe9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/msm/
+On Tue, Aug 16, 2022 at 8:04 AM Al Viro wrote:
+>
+> On Tue, Aug 16, 2022 at 05:34:12AM +0900, Ryusuke Konishi wrote:
+>
+> > Yes, I agree it's better if security_inode_alloc() is moved to the end as
+> > possible in the sense of avoiding similar issues.
+> > But, would that vfs change be safe to backport to stable trees?
+>
+> Yes.
+>
+> > It looks like the error handling for security_inode_alloc()  is in the
+> > middle of inode_init_always() for a very long time..
+>
+> Look at the initializations done after it.  The only thing with effects
+> outside of inode itself is (since 2010) an increment of nr_inodes.
+>
+> > If you want to see the impact of the vfs change, I think it's one way
+> > to apply this one in advance.  Or if you want to fix it in one step,
+> > I think it's good too.  How do you feel about this ?
+>
+> IMO that should go into inode_init_always(), with Cc:stable.  If you
+> (or Dongliang Mu, or anybody else) would post such variant with
+> reasonable commit message, I'll pick it into vfs.git and feed to Linus
+> in the next window.  E.g. into #work.inode, with that branch being
+> made never-rebased, so that you could pull it into your development
+> branch as soon as it's there...
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I agree with your thoughts on the course of action.
+Andrew, I withdraw this patch.
 
-All warnings (new ones prefixed by >>):
+Dongliang (or Jiacheng?), would it be possible for you to post a revised patch
+against inode_init_always() that moves the call of security_inode_alloc()
+instead of i_private initialization (as Al Viro said in a nearby thread [1]) ?
+If you have time, I would like to leave it to you since you wrote the
+original patch for inode_init_always().
 
-   drivers/gpu/drm/msm/dp/dp_display.c: In function 'dp_display_usbpd_attention_cb':
->> drivers/gpu/drm/msm/dp/dp_display.c:523:26: warning: variable 'hpd' set but not used [-Wunused-but-set-variable]
-     523 |         struct dp_usbpd *hpd;
-         |                          ^~~
+[1] https://lkml.kernel.org/r/CAO4S-mficMz1mQW06EuCF+o11+mRDiCpufqVfoHkcRbQbs8kVw@mail.gmail.com
 
-
-vim +/hpd +523 drivers/gpu/drm/msm/dp/dp_display.c
-
-c943b4948b5848 Chandan Uddaraju 2020-08-27  517  
-c943b4948b5848 Chandan Uddaraju 2020-08-27  518  static int dp_display_usbpd_attention_cb(struct device *dev)
-c943b4948b5848 Chandan Uddaraju 2020-08-27  519  {
-c943b4948b5848 Chandan Uddaraju 2020-08-27  520  	int rc = 0;
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  521  	u32 sink_request;
-c943b4948b5848 Chandan Uddaraju 2020-08-27  522  	struct dp_display_private *dp;
-61f8f4034c0423 Kuogee Hsieh     2020-11-03 @523  	struct dp_usbpd *hpd;
-c943b4948b5848 Chandan Uddaraju 2020-08-27  524  
-c943b4948b5848 Chandan Uddaraju 2020-08-27  525  	if (!dev) {
-c943b4948b5848 Chandan Uddaraju 2020-08-27  526  		DRM_ERROR("invalid dev\n");
-c943b4948b5848 Chandan Uddaraju 2020-08-27  527  		return -EINVAL;
-c943b4948b5848 Chandan Uddaraju 2020-08-27  528  	}
-c943b4948b5848 Chandan Uddaraju 2020-08-27  529  
-061eb621fc2780 Abhinav Kumar    2020-09-12  530  	dp = container_of(g_dp_display,
-061eb621fc2780 Abhinav Kumar    2020-09-12  531  			struct dp_display_private, dp_display);
-c943b4948b5848 Chandan Uddaraju 2020-08-27  532  	if (!dp) {
-c943b4948b5848 Chandan Uddaraju 2020-08-27  533  		DRM_ERROR("no driver data found\n");
-c943b4948b5848 Chandan Uddaraju 2020-08-27  534  		return -ENODEV;
-c943b4948b5848 Chandan Uddaraju 2020-08-27  535  	}
-c943b4948b5848 Chandan Uddaraju 2020-08-27  536  
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  537  	hpd = dp->usbpd;
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  538  
-c943b4948b5848 Chandan Uddaraju 2020-08-27  539  	/* check for any test request issued by sink */
-8ede2ecc3e5ee3 Kuogee Hsieh     2020-09-11  540  	rc = dp_link_process_request(dp->link);
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  541  	if (!rc) {
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  542  		sink_request = dp->link->sink_request;
-acf76125bb2b24 Kuogee Hsieh     2020-11-18  543  		if (sink_request & DS_PORT_STATUS_CHANGED)
-acf76125bb2b24 Kuogee Hsieh     2020-11-18  544  			rc = dp_display_handle_port_ststus_changed(dp);
-acf76125bb2b24 Kuogee Hsieh     2020-11-18  545  		else
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  546  			rc = dp_display_handle_irq_hpd(dp);
-61f8f4034c0423 Kuogee Hsieh     2020-11-03  547  	}
-c943b4948b5848 Chandan Uddaraju 2020-08-27  548  
-8ede2ecc3e5ee3 Kuogee Hsieh     2020-09-11  549  	return rc;
-c943b4948b5848 Chandan Uddaraju 2020-08-27  550  }
-c943b4948b5848 Chandan Uddaraju 2020-08-27  551  
-
-:::::: The code at line 523 was first introduced by commit
-:::::: 61f8f4034c04231148e7580ae51a2a74171c04a0 drm/msm/dp: promote irq_hpd handle to handle link training correctly
-
-:::::: TO: Kuogee Hsieh <khsieh@codeaurora.org>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Ryusuke Konishi
