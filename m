@@ -2,76 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB34C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B66FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234596AbiHPLet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
+        id S234432AbiHPLgV convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234181AbiHPLd6 (ORCPT
+        with ESMTP id S234345AbiHPLfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:33:58 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BD21BB
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:55:54 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id r14-20020a17090a4dce00b001faa76931beso361225pjl.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:cc:date:message-id:subject:mime-version
-         :content-transfer-encoding:from:from:to:cc;
-        bh=zHDUV1ArSvmmbVuVL5plmHvTewEjp3mhOS9xvo6KGJ0=;
-        b=B9s59uwh02/hoPr0mMZGQo5SzK3tyFdn1Zj4KGx5AQh5wvQ4T1xJtPVbPlXvjZpex5
-         zrem/4itWV8CsJhbz243aD+rhMCH8xjWvgwneOv66dOew2ljH6LBsU2ZX9wxTnSPEUq4
-         9QHb+zhcDPh1YqBGudp5/vJuxQdRPycPL7LCB3iVhwss8wjx/H3xpx7iybH3r3jVkuq2
-         eBb2qAUZ+mxhbGfMWFpy5pKtgtIoEnBCtOYq0mKwbTZE0d0wPmsSkYJaWBqxFEFq9hAq
-         npCziNfawJD+FIFAV6DXM7W9CnF+Sh96gjvaE0smf5ExZalNLy4LmEFA6etSe53rSlPe
-         x7rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:cc:date:message-id:subject:mime-version
-         :content-transfer-encoding:from:x-gm-message-state:from:to:cc;
-        bh=zHDUV1ArSvmmbVuVL5plmHvTewEjp3mhOS9xvo6KGJ0=;
-        b=Hl7x3XfTfx+2k4Cg3952i5xP4F2S8eadW75GVfdHtSWyAitN1w59cxJGxJNKvB3P9w
-         H8lMHEdmwzT/czQkDQ3TluxEFLbpTyuT5iuk66jaTvIH6R/m1WnitrwEY3sB7f9DBnRq
-         SCjnxwxtGdDPhESCqTJyq/oM/jiiOr9Z2t3Yp3TZ6eFqzysGETkqMnrae/xpusTIdOTg
-         PimaVABpDsBQcc8z9fEhsZDdq6C/Ffp5cbDPkus5N0d1DkrBfydo+06Sj0dlUBs3xOs4
-         CjrWFhoEyH3Fqm2AzUDmnf1elW+J+cSrUmSNgMxxBxb8rxKEH17KDWDSSHIg7itG5/Ef
-         q83g==
-X-Gm-Message-State: ACgBeo2C7rsBvNd/TYlVnBVeFX6yu959hdQiEqXstHGEOsQS+DRQcjxS
-        UFt40EtpdsPLEuRoy54i+ZCS32IC5DLVow==
-X-Google-Smtp-Source: AA6agR5/6rIfJw4mjBqGkD7eRhHrpSTf+4kpQ2h6LwKIUwSRmkTDZyrKvhbgt4YWCXVk7h2H8ENqCA==
-X-Received: by 2002:a17:902:b948:b0:172:800a:cda8 with SMTP id h8-20020a170902b94800b00172800acda8mr1987223pls.90.1660647353638;
-        Tue, 16 Aug 2022 03:55:53 -0700 (PDT)
-Received: from smtpclient.apple ([211.221.84.79])
-        by smtp.gmail.com with ESMTPSA id s23-20020a170902a51700b0016bf4428586sm8694250plq.208.2022.08.16.03.55.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Aug 2022 03:55:53 -0700 (PDT)
-From:   Chang-Ho Cho <changho.cho11@gmail.com>
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
-Subject: Re: [PATCH v3 3/4] kernel/smp: add more data to CSD lock debugging
-Message-Id: <AEF6AAF1-0529-4661-AA6D-F9E41CE9DA44@gmail.com>
-Date:   Tue, 16 Aug 2022 19:53:49 +0900
-Cc:     jgross@suse.com, linux-kernel@vger.kernel.org, mhocko@suse.com,
-        peterz@infradead.org
-To:     paulmck@kernel.org
-X-Mailer: Apple Mail (2.3693.40.0.1.81)
+        Tue, 16 Aug 2022 07:35:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 881029E2C0;
+        Tue, 16 Aug 2022 04:01:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0A2E113E;
+        Tue, 16 Aug 2022 04:01:01 -0700 (PDT)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2960F3F70D;
+        Tue, 16 Aug 2022 04:00:59 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 12:00:50 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org,
+        Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH 06/12] riscv: dts: allwinner: Add the D1 SoC base
+ devicetree
+Message-ID: <20220816120050.07dc2416@donnerap.cambridge.arm.com>
+In-Reply-To: <b5401052-e803-9788-64d6-82b2737533ce@linaro.org>
+References: <20220815050815.22340-1-samuel@sholland.org>
+        <5593349.DvuYhMxLoT@jernej-laptop>
+        <3881930.ZaRXLXkqSa@diego>
+        <2249129.ElGaqSPkdT@jernej-laptop>
+        <b5401052-e803-9788-64d6-82b2737533ce@linaro.org>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,=20
+On Tue, 16 Aug 2022 12:42:39 +0300
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Google search brought me into this thread.  May I have update on the =
-progress of this issue? Has anyone find root cause, solution or =
-workaround?
-How can I get more about the problem?
-Windows 2008 R2 VM experiencing hang on QEMU-kvm with IPI handling =
-issue.=20
+Hi,
 
-Regards,
-Changho=
+> On 16/08/2022 12:25, Jernej Škrabec wrote:
+> > Dne torek, 16. avgust 2022 ob 11:12:05 CEST je Heiko Stübner napisal(a):  
+> >> Am Dienstag, 16. August 2022, 09:49:58 CEST schrieb Jernej Škrabec:  
+> >>> Dne torek, 16. avgust 2022 ob 09:41:45 CEST je Krzysztof Kozlowski   
+> > napisal(a):  
+> >>>> On 15/08/2022 08:08, Samuel Holland wrote:  
+> >>>>> +
+> >>>>> +	de: display-engine {
+> >>>>> +		compatible = "allwinner,sun20i-d1-display-engine";
+> >>>>> +		allwinner,pipelines = <&mixer0>, <&mixer1>;
+> >>>>> +		status = "disabled";
+> >>>>> +	};
+> >>>>> +
+> >>>>> +	osc24M: osc24M-clk {  
+> >>>>
+> >>>> lowercase
+> >>>>  
+> >>>>> +		compatible = "fixed-clock";
+> >>>>> +		clock-frequency = <24000000>;  
+> >>>>
+> >>>> This is a property of the board, not SoC.  
+> >>>
+> >>> SoC needs 24 MHz oscillator for correct operation, so each and every board
+> >>> has it. Having it here simplifies board DT files.  
+> >>
+> >> I guess the oscillator is a separate component on each board, right?  
+> > 
+> > Correct.
+> >   
+> >> And DT obvious is meant to describe the hardware - independently from
+> >> implementation-specific choices.  
+> > 
+> > There is no choice in this case. 24 MHz crystal has to be present.
+> > 
+> > FWIW, including crystal node in SoC specific DTSI is already common pattern in 
+> > Allwinner ARM SoC DTSI files.
+> >   
+> >>
+> >> Starting to discuss which exceptions to allow then might lead to even more
+> >> exceptions.
+> >>
+> >> Also having to look for a board-component in the soc dtsi also is surprising
+> >> if one gets to the party later on :-) .  
+> > 
+> > As I said, if one is accustomed to Allwinner ARM DT development, it would be 
+> > more surprising to include 24 MHz crystal node in each and every board DT.  
+> 
+> It's same everywhere. Allwinner, Exynos, iMX, Qualcomm. Everywhere this
+> is a part of the board, so even if oscillator frequency is fixed (as in
+> 99% of cases although some SoCs I think might just allow to implement
+> one of few), still this is a property of the board. Because:
+> 1. DTSI describes the SoC part, not board.
+> 2. So the DTS developer is a bit more conscious about his design.
+
+1) is certainly true, but indeed most platforms put the base
+crystal oscillator in the SoC .dtsi: I just sampled Rockchip (rk3399.dtsi,
+rk356x.dtsi, rk3328.dtsi), Amlogic (meson-g12-common.dtsi), ActionSemi (s[79]00.dtsi),
+Qualcomm (msm8916.dtsi, sm8450.dtsi, sc7180.dtsi), Freescale (imx8mm.dtsi,
+imx8qxp.dtsi), Realtek (rtd129x.dtsi), Broadcom (bcm283x.dtsi), Mediatek
+(mt8183.dtsi, mt8516.dtsi). The list probably goes on (I just stopped
+here).
+
+I think one reason might be that this is so central to the whole SoC
+operation, that it's already referenced multiple times in the base .dtsi.
+And having a yet unresolved reference in the .dtsi looks dodgy.
+
+NVidia seems to omit a base oscillator (maybe it's implicit in their
+binding design), Marvell doesn't use a fixed-clock (but still puts their
+base clock in armada-37xx.dtsi).
+
+Exynos and Renesas put a *stub* fixed-clock in the .dtsi, and set the
+frequency in the board .dts files. Would this be a compromise?
+
+Cheers,
+Andre
+
+> Keeping things in SoC DTSI just because it simplifies DTS is not correct
+> IMHO. So again - like in several other cases - minimum the frequency is
+> property of the board, not the SoC DTSI.
+> 
+> Everywhere. Allwinner is not special to receive exceptions.
+> 
+> Best regards,
+> Krzysztof
+> 
+
