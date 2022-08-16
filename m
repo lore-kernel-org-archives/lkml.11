@@ -2,110 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896E0C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2170AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236064AbiHPPtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 11:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46602 "EHLO
+        id S235638AbiHPPu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 11:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbiHPPsp (ORCPT
+        with ESMTP id S229812AbiHPPuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 11:48:45 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6461478584
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:45:07 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-375-ha1Jl9NgO0yPMXlwnnXOSA-1; Tue, 16 Aug 2022 11:43:58 -0400
-X-MC-Unique: ha1Jl9NgO0yPMXlwnnXOSA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16BCD29ABA0C;
-        Tue, 16 Aug 2022 15:43:57 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.40.208.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 61A412166B26;
-        Tue, 16 Aug 2022 15:43:55 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux.dev>,
-        linux-doc@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v1 3/3] docs: Add information about ipc sysctls limitations
-Date:   Tue, 16 Aug 2022 17:42:45 +0200
-Message-Id: <9b566b9b7313300d60b7dfd785ab041bed757ae0.1660664258.git.legion@kernel.org>
-In-Reply-To: <cover.1660664258.git.legion@kernel.org>
-References: <87wnc1i2wo.fsf@email.froward.int.ebiederm.org> <cover.1660664258.git.legion@kernel.org>
+        Tue, 16 Aug 2022 11:50:39 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED5E80B4E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:46:43 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id h22so8411983qtu.2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=POhayPKlQA9tcwGuPczeKWnXvo1Czxt3hU8vSTwzwSU=;
+        b=k0J1Hhq3INPQMG4hforKE812V6L71+dgLVdEODPkknTXvMZrytQ5yRLwrmUGsCso5D
+         CKFnPw5N7e4TnVksKOu+Dmrzi2QDCKmYwc+eFqzJJkG1+MwMwzD9MEo9Kfy0uBy2G/ak
+         74V7Bz36q/RZ88arYH1EDEkEyFwIPdje7WH9Uy16clFrozrJOVVABHVYXyrAHomnCL8v
+         R5LvXRlaAeVz9mKuffsOVRgOqrnU1Q5TvDZQfIIlfCfTyPKt7Y3c3ZLn9zdNKyNybjyl
+         NOyntPzLRxKs1gNTt7XoHm0EGTGQdQ3oyEkoTmUgRrIxWauzg3WHnMnkUYnFg7K4gk8f
+         VO0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=POhayPKlQA9tcwGuPczeKWnXvo1Czxt3hU8vSTwzwSU=;
+        b=E0w8B5wBjR7wtgGlxvMVXk6y4fZGAn3467cWfJ3X56x6o/q62vHX32XDHl3thniQMk
+         Ji0uVUDNMDinHp4sg4MX6M4Agc9R6ElPWjCmvSnZ/aSKOnJgueI9KW0DnhJwWBz/wBO1
+         2KqLVmv5FKe6KeOipqNdjpB8iwpS5FT+l2bWQyJtwOLRDlvtWIwxii2ED/t5AfPIyDdI
+         2ktZY2a5wBkxw1S4bl1O1CGSvc0f7a5BiBAsSkCuScuxeM1DFGYL4iAZxgQ0dsPJXV/S
+         qCvxikbt77OVn+hJqTR071b5YV2aWFxJ5aueLgCmqoQ9NvifFwYdw9d6+L9g+zsGTDXh
+         UgVg==
+X-Gm-Message-State: ACgBeo2bE102fZMwwTrLUoR2iLfIT+BwKAcgobQvPNdChTR1o6SpPYEm
+        cO/0lmzVpMLea7EwIDrJAa4PPw==
+X-Google-Smtp-Source: AA6agR5vZ7rQsyzJxFoWb8T1mCPALz84GEoH2NP8WNeHcyKi7aflsGiHrbaTJTCnyisxMZromE/mWw==
+X-Received: by 2002:a05:622a:38e:b0:343:677a:abd7 with SMTP id j14-20020a05622a038e00b00343677aabd7mr18309870qtx.268.1660664802956;
+        Tue, 16 Aug 2022 08:46:42 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id dm14-20020a05620a1d4e00b006bad20a6cfesm10890585qkb.102.2022.08.16.08.46.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 08:46:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oNym6-002p7G-MP;
+        Tue, 16 Aug 2022 12:46:38 -0300
+Date:   Tue, 16 Aug 2022 12:46:38 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH v2] vfio/fsl-mc: Fix a typo in a message
+Message-ID: <Yvu73uzpxA6K/+rq@ziepe.ca>
+References: <3d2aa8434393ee8d2aa23a620e59ce1059c9d7ad.1660663440.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d2aa8434393ee8d2aa23a620e59ce1059c9d7ad.1660663440.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After 25b21cb2f6d6 ("[PATCH] IPC namespace core") and 4e9823111bdc
-("[PATCH] IPC namespace - shm") the shared memory page count stopped
-being global and started counting per ipc namespace. The documentation
-and shmget(2) still says that shmall is a global option.
+On Tue, Aug 16, 2022 at 05:24:46PM +0200, Christophe JAILLET wrote:
+> L and S are swapped in the message.
+> s/VFIO_FLS_MC/VFIO_FSL_MC/
+> 
+> Also use WARN instead of WARN_ON+dev_warn because WARN can already print
+> the message.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
 
-shmget(2):
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-SHMALL System-wide limit on the total amount of shared memory, measured
-in units of the system page size. On Linux, this limit can be read and
-modified via /proc/sys/kernel/shmall.
-
-I think the changes made in 2006 should be documented.
-
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- Documentation/admin-guide/sysctl/kernel.rst | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
-index ddccd1077462..9ad344b5e7a1 100644
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -541,6 +541,9 @@ default (``MSGMNB``).
- ``msgmni`` is the maximum number of IPC queues. 32000 by default
- (``MSGMNI``).
- 
-+All of these parameters are set per ipc namespace. The maximum number of bytes
-+in POSIX message queues is limited by ``RLIMIT_MSGQUEUE``. This limit is
-+respected hierarchically in the each user namespace.
- 
- msg_next_id, sem_next_id, and shm_next_id (System V IPC)
- ========================================================
-@@ -1169,15 +1172,20 @@ are doing anyway :)
- shmall
- ======
- 
--This parameter sets the total amount of shared memory pages that
--can be used system wide. Hence, ``shmall`` should always be at least
--``ceil(shmmax/PAGE_SIZE)``.
-+This parameter sets the total amount of shared memory pages that can be used
-+inside ipc namespace. The shared memory pages counting occurs for each ipc
-+namespace separately and is not inherited. Hence, ``shmall`` should always be at
-+least ``ceil(shmmax/PAGE_SIZE)``.
- 
- If you are not sure what the default ``PAGE_SIZE`` is on your Linux
- system, you can run the following command::
- 
- 	# getconf PAGE_SIZE
- 
-+To reduce or disable the ability to allocate shared memory, you must create a
-+new ipc namespace, set this parameter to the required value and prohibit the
-+creation of a new ipc namespace in the current user namespace or cgroups can
-+be used.
- 
- shmmax
- ======
--- 
-2.33.4
-
+Jason
