@@ -2,123 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAB1C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD76C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234652AbiHPKbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
+        id S234439AbiHPKcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234628AbiHPKbU (ORCPT
+        with ESMTP id S234431AbiHPKbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:31:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01490EF9DC;
-        Tue, 16 Aug 2022 01:27:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E66611EA;
-        Tue, 16 Aug 2022 08:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62648C433D7;
-        Tue, 16 Aug 2022 08:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660638440;
-        bh=obWd8LHyjUz6HAn1zvUeZVyW4fXbYD54xEC0S6zE2+I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F3a6Lur4sVvnK5fFie94HDOKySHW/PVNBZ913vVTNmSNi1J5Ndl8MC6oViQfkvLxR
-         CC9ncYonSznVX8CiGtrMtm8AUUiL6wmwrSK6XVfIbdf9WbpJNn0UrmY0UuiTmT1DvY
-         6T326dK3KG4bgXqoTaDI+lXhtNuWmX9t01yNuNog=
-Date:   Tue, 16 Aug 2022 09:55:18 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Subject: Re: [PATCH 5.19 0000/1157] 5.19.2-rc1 review
-Message-ID: <YvtNZuap/oCKVv9O@kroah.com>
-References: <20220815180439.416659447@linuxfoundation.org>
- <CA+G9fYtZP_rYnmRyLbMrxKPGtJuoOw4h412dJXBJnzab41CzUw@mail.gmail.com>
+        Tue, 16 Aug 2022 06:31:36 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059C0139DA2;
+        Tue, 16 Aug 2022 01:28:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660638502; x=1692174502;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aakzTg2DzAex8scIdcsOiBD10Miv0IDo0qf7Et9v8nc=;
+  b=viAO5iBpZAFgObz4gaF8wSgR+BsQXQXgSXb/a2xttR1De2R0uOUhNdc3
+   RWx8dG049mcOE1aa+LsFT+Mlkqakui1xjcZjTU3m1Hjzr7RIl9bqQybfN
+   ktfl4KdsW0/sJuw7PKg4Rl165H4cZvT740hawCQmfM7TYxo5Ne1emMCNF
+   M=;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
+   d="scan'208";a="249302483"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:01 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 2036C80EED;
+        Tue, 16 Aug 2022 08:28:00 +0000 (UTC)
+Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:59
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id 634134C62; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
+        <rtanwar@maxlinear.com>
+Subject: [PATCH 07/16] hwmon: (mr75203) add VM active channels property for Moortec PVT controller
+Date:   Tue, 16 Aug 2022 08:27:48 +0000
+Message-ID: <20220816082757.11990-8-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
+References: <20220816082757.11990-1-farbere@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYtZP_rYnmRyLbMrxKPGtJuoOw4h412dJXBJnzab41CzUw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 01:08:26PM +0530, Naresh Kamboju wrote:
-> On Tue, 16 Aug 2022 at 00:58, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.19.2 release.
-> > There are 1157 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.2-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> The arm64 clang-14 allmodconfig failed on stable-rc 5.19.
-> This build failure got fixed on the mainline tree two weeks ago.
-> 
-> * arm64, build
->   - clang-12-allmodconfig
->   - clang-13-allmodconfig
->   - clang-14-allmodconfig
->   - clang-nightly-allmodconfig
-> 
-> 
-> make --silent --keep-going --jobs=8
-> O=/home/tuxbuild/.cache/tuxmake/builds/2/build LLVM=1 LLVM_IAS=1
-> ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- 'HOSTCC=sccache clang'
-> 'CC=sccache clang' allmodconfig
-> make --silent --keep-going --jobs=8
-> O=/home/tuxbuild/.cache/tuxmake/builds/2/build LLVM=1 LLVM_IAS=1
-> ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- 'HOSTCC=sccache clang'
-> 'CC=sccache clang'
-> sound/soc/intel/avs/path.c:815:18: error: stack frame size (2192)
-> exceeds limit (2048) in 'avs_path_create'
-> [-Werror,-Wframe-larger-than]
-> struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
->                  ^
-> 1 error generated.
-> make[5]: *** [/builds/linux/scripts/Makefile.build:249:
-> sound/soc/intel/avs/path.o] Error 1
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> Steps to reproduce:
-> -------------------------
-> # See https://docs.tuxmake.org/ for complete documentation.
-> # Original tuxmake command with fragments listed below.
-> # tuxmake --runtime podman --target-arch arm64 --toolchain clang-14
-> --kconfig allmodconfig LLVM=1 LLVM_IAS=1
-> 
-> tuxmake --runtime podman --target-arch arm64 --toolchain clang-14
-> --kconfig https://builds.tuxbuild.com/2DPEiUmdALSZq7DeNthZFYoPLaN/config
-> LLVM=1 LLVM_IAS=1
+Add optional "vm-active-channels" property to define the number of
+active channels per VM.
 
-What is the commit on mainline that resolved this issue?
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+---
+ .../devicetree/bindings/hwmon/moortec,mr75203.yaml       | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-thanks,
+diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+index da9c3cdcb6f0..6111b5069b3c 100644
+--- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
++++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+@@ -49,6 +49,13 @@ properties:
+       reset-control-skip bool property defines if obtaining a
+       reference to a reset controller should be skipped.
+ 
++  vm-active-channels:
++    description:
++      vm-active-channels defines the number of channels per VM
++      that are actually used and are connected to some source.
++      A value of 0 means that the entire VM sensor is nou used.
++    $ref: /schemas/types.yaml#definitions/uint8-array
++
+ required:
+   - compatible
+   - reg
+@@ -60,6 +67,7 @@ required:
+ additionalProperties:
+   - intel,vm-map
+   - reset-control-skip
++  - vm-active-channels
+ 
+ examples:
+   - |
+@@ -73,5 +81,6 @@ examples:
+         intel,vm-map = [03 01 04 ff ff];
+         clocks = <&osc0>;
+         resets = <&rcu0 0x40 7>;
++        vm-active-channels = [08 10 02];
+         #thermal-sensor-cells = <1>;
+     };
+-- 
+2.37.1
 
-greg k-h
