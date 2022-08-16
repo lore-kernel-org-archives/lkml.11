@@ -2,114 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 018E4C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8482C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiHPGiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        id S230079AbiHPGiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbiHPGhv (ORCPT
+        with ESMTP id S229772AbiHPGh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:37:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EBC2AA0B9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 20:27:11 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6Gjk5B9kzmVqk;
-        Tue, 16 Aug 2022 11:24:58 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 11:27:09 +0800
-Received: from [10.174.178.120] (10.174.178.120) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 11:27:08 +0800
-Message-ID: <09129cd3-7363-3079-bd57-dde9c73684f1@huawei.com>
-Date:   Tue, 16 Aug 2022 11:27:08 +0800
+        Tue, 16 Aug 2022 02:37:58 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1C9C3F6D;
+        Mon, 15 Aug 2022 18:16:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660612605; x=1692148605;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LGPJbg4YSGE8kGvV/+MMwres2qQJGjWYu0L1b7FKRhE=;
+  b=ELRkR2j1k99KuJmwKFAuMd3EZk19xB9XFwD1m3elDOIJ/99+sIdebamR
+   BPlxiwKrSATGt8r0FVnjxTZg2R9AnPplI3rWDKZl93hNRipjow5kb5V3y
+   jZoUzRg5s82gd6CunLWVcSV0iTKD/QIO6FXUx7iYPO4JGCD3q66DZ6I2n
+   dsCBypP0P08a85N7ywODoZLQyacGutLWasCv1Juw7vCsoeTEmlssEY1cp
+   t8d2L6lZzlp/dYoxYTxYNwKE6EcpGn090h7gPqU7pgfMDGt/kPyB8QZzC
+   klr52tGFjSaa8NXxv5oSnV1j9tvcpwIY/mIXXzG9Ne3RrK+YdCwXZngay
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293368083"
+X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
+   d="scan'208";a="293368083"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 18:16:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
+   d="scan'208";a="639838790"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2022 18:16:42 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNlCD-0001KD-2Z;
+        Tue, 16 Aug 2022 01:16:41 +0000
+Date:   Tue, 16 Aug 2022 09:15:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
+Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
+        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
+Message-ID: <202208160931.5FG8tZ8G-lkp@intel.com>
+References: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-CC:     <mawupeng1@huawei.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <wangkefeng.wang@huawei.com>,
-        <willy@infradead.org>, <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH stable 4.14,4.19 1/1] mm: Fix page counter mismatch in
- shmem_mfill_atomic_pte
-Content-Language: en-US
-To:     <rppt@linux.vnet.ibm.com>, <hughd@google.com>,
-        <aarcange@redhat.com>, <hannes@cmpxchg.org>
-References: <20220802013251.3022141-1-mawupeng1@huawei.com>
-From:   mawupeng <mawupeng1@huawei.com>
-In-Reply-To: <20220802013251.3022141-1-mawupeng1@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.120]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cc Greg
+Hi Daniel,
 
-On 2022/8/2 9:32, Wupeng Ma wrote:
-> From: Ma Wupeng <mawupeng1@huawei.com>
-> 
-> shmem_mfill_atomic_pte() wrongly called mem_cgroup_cancel_charge() in "success"
-> path, it should mem_cgroup_uncharge() to dec memory counter instead.
-> mem_cgroup_cancel_charge() should only be used if this transaction is
-> unsuccessful and mem_cgroup_uncharge() is used to do this if this transaction
-> succeed.
-> 
-> This will lead to page->memcg not null and will uncharge one more in put_page().
-> The page counter will underflow to maximum value and trigger oom to kill all
-> process include sshd and leave system unaccessible.
-> 
-> page->memcg is set in the following path:
-> mem_cgroup_commit_charge
-> 	commit_charge
-> 		page->mem_cgroup = memcg;
-> 
-> extra uncharge will be done in the following path:
-> put_page
-> 	__put_page
-> 		__put_single_page
-> 			mem_cgroup_uncharge
-> 				if (!page->mem_cgroup) <-- should return here
-> 					return
-> 				uncharge_page
-> 				uncharge_batch
-> 
-> To fix this, call mem_cgroup_commit_charge() at the end of this transaction to
-> make sure this transaction is really finished.
-> 
-> Fixes: 4c27fe4c4c84 ("userfaultfd: shmem: add shmem_mcopy_atomic_pte for userfaultfd support")
-> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-> ---
->  mm/shmem.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index 0788616696dc..0b06724c189e 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -2339,8 +2339,6 @@ static int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
->  	if (ret)
->  		goto out_release_uncharge;
->  
-> -	mem_cgroup_commit_charge(page, memcg, false, false);
-> -
->  	_dst_pte = mk_pte(page, dst_vma->vm_page_prot);
->  	if (dst_vma->vm_flags & VM_WRITE)
->  		_dst_pte = pte_mkwrite(pte_mkdirty(_dst_pte));
-> @@ -2366,6 +2364,8 @@ static int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
->  	if (!pte_none(*dst_pte))
->  		goto out_release_uncharge_unlock;
->  
-> +	mem_cgroup_commit_charge(page, memcg, false, false);
-> +
->  	lru_cache_add_anon(page);
->  
->  	spin_lock_irq(&info->lock);
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220816/202208160931.5FG8tZ8G-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/c7b21d163eb9c61514dd86baf4281deb4d4387bb
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
+        git checkout c7b21d163eb9c61514dd86baf4281deb4d4387bb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   net/core/filter.c: In function 'tc_cls_act_btf_struct_access':
+>> net/core/filter.c:8723:24: error: implicit declaration of function 'btf_struct_access' [-Werror=implicit-function-declaration]
+    8723 |                 return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+         |                        ^~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/btf_struct_access +8723 net/core/filter.c
+
+  8714	
+  8715	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
+  8716						const struct btf *btf,
+  8717						const struct btf_type *t, int off,
+  8718						int size, enum bpf_access_type atype,
+  8719						u32 *next_btf_id,
+  8720						enum bpf_type_flag *flag)
+  8721	{
+  8722		if (atype == BPF_READ)
+> 8723			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+  8724						 flag);
+  8725	
+  8726		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
+  8727						      next_btf_id, flag);
+  8728	}
+  8729	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
