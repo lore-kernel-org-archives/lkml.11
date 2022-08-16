@@ -2,283 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC092C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DE8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234006AbiHPLSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        id S234816AbiHPLSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234317AbiHPLRk (ORCPT
+        with ESMTP id S234466AbiHPLRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:17:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63BCADCF0
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:42:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660642954; x=1692178954;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=TJjijefVuqGOz5o7uY86UKRdQNNSM6SL6mgVZGtJya8=;
-  b=lYrZadyUiTby53ZPYDaCE4NOahQWRG9PBR8psi5CyJKXz5JWoqbqq2dw
-   vDiDYRMCfBX7vB9pY2qC/rnmCRZxDT3JQZyEQ+h8mrhcr8Vkpv+x7bIBR
-   1U7IpG7G6S9mC9JV00GuJcKci+C1GWkNLJIqoGi81/5i9YpOO9ZP7AHp4
-   FSywJyko5cygJk/A7HC0Hjnzv9HRaHJHs2a/9RMAjXA6PIyMJ4fzj3oqr
-   9MmIRaoSv0Oi4bbB2HN4LbXNfzRq7pRU5xGOfTS2S1qD6FEpazCnaiKfO
-   2wxFWv312sZxmP8iTiq7ATrt1AtxxOEHDsoH/sM0AYD02CkvZ1mMBBZ3c
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293447980"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293447980"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:42:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="696297282"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Aug 2022 02:42:33 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 16 Aug 2022 02:42:33 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Tue, 16 Aug 2022 02:42:33 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Tue, 16 Aug 2022 02:42:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lzD/H+ZK0QqSON6pdD/uphMboFpEmLFICW3HYu3Xt8SSlkAtGhR/iuIIRO1dk/ycoosCTgIWX0yrczEzlvrDmUrUmyNcZe8v3SJNm/8euU+M5I+aaekD0oYCMzPSysHUj7sscoFuiknS5cCnud+eQfeZNhcXotKu13GV6APO0K0ULyEAXoyxM7H3nV8A7MUbT2gsXBhUZd48A072+Gg9qpMjpU2tEhtWjiRcjuvTMPbdwn12I67kwSlkjc+3drpmCB1dQ1NoT36rFmSbRG1YePjZ79rnd0R4krgsLv94W4ct8McbBBiPSI8VcwIBo20FzFUHd9zMyQXTGtTHJu+lAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mG1EfVcH2ntHktNgVkbLMoUjKs4gUqPKPwelFWurkgk=;
- b=GIX7/zpqhxXWEtmM0u02BWNDQAdq3X2vRqRCvPi1RxEQ6yq/icW87/vZU89HD7qdUcq873hEeE3RN/ryrVx9LoEkhl3RkZO5HWjWiIzBZxWM4A/RNRxBU6E2SYOOmh2BcwkLAcQ8BpbmLtXsw2TYSIGs3LJENqnj7hotvhumuD0hYQCDfIWLKT81eyAmKSo0CYyVZO9wARgqAjkQgxGMi3dTx77pMmDEV5vf8MXBtyT60C4YbOrkQwdZdRSFB1BgOF7wgXQdSQEfQaH8ONMOz2N/t9I0OOrOUxTxrZAXM8BgM7Ev2ovh2daE6Cp2u+bJsgPYYxVlfIvPsgvvB5aGNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CH0PR11MB5409.namprd11.prod.outlook.com (2603:10b6:610:d0::7)
- by DM5PR11MB0044.namprd11.prod.outlook.com (2603:10b6:4:64::38) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Tue, 16 Aug
- 2022 09:42:30 +0000
-Received: from CH0PR11MB5409.namprd11.prod.outlook.com
- ([fe80::70e4:76ca:fc65:df73]) by CH0PR11MB5409.namprd11.prod.outlook.com
- ([fe80::70e4:76ca:fc65:df73%3]) with mapi id 15.20.5504.028; Tue, 16 Aug 2022
- 09:42:30 +0000
-Message-ID: <92e5ebbd-9af1-c7e3-6d9e-7ea2958ad9c8@intel.com>
-Date:   Tue, 16 Aug 2022 18:42:12 +0900
+        Tue, 16 Aug 2022 07:17:45 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D446D58DD4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:42:42 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id d14so14143402lfl.13
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Y58LopX3Xau62EqFhAJuU29XSrAjPOJKcpX9ia/1x/U=;
+        b=vtoZdSOhjarg/GSUa+9qG6BMrKkJOe83PvRmhRhyuCerPbGiIrm8pgH0PekReyxXJ6
+         br5da1shUHmmP98ueTSt3G69sK9FhXyVW3WshnsnkN5Zd9pD4/lLqoMERKRF+w7swXkM
+         AeIbHzMZsV28B9ebYLbsaCZ0jduwrq/sNPO2NVsFmvFtUPUZJWcrl8zjdGivtVPbCski
+         3t3C/SRG3X5doYfn+nTF8cJUl3g/YvK7CVLwOZJws/ZpTvhaiUyGafpkHX0KACEFk68A
+         QHr4Aga2v7Ah2M9FdDI0/vgxJtgzrZnGZ7q/NfLu5futbWVzkQ+nzoQuKEwZv1YoRTFV
+         zsjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Y58LopX3Xau62EqFhAJuU29XSrAjPOJKcpX9ia/1x/U=;
+        b=k+wS7pHajNE85Lxzlu53QEpzIkX58DZcYinaXVxRA0SE7hDIYMDNqmPuJvcu5VZZ+6
+         J4JLl/TVl9wMwxgC8uNMJPR9IDgJozOLMMfuUCE705LD9DfMtEhXz23kbuDgF7rXv/vC
+         3+/tW08vkKRL/Hdb3SkOqsBRybxVwuhwYaSlICHPGlAXpZjV9w8zPbU6FVeYZCk/Wq85
+         8H5SqDJxNMfVEtoZLb+2XQdnvXC3CoWuF0yYJdv78ep04B701O+f4Hdt4JdzWhdmofR6
+         KvHqI/Ts7tij71I2XeWUKTNPv+6EDq+JSDpEE+IqBMIezpC8bffGWLA3X/P0BjxxrhfD
+         YFtg==
+X-Gm-Message-State: ACgBeo0udbPbL6US1KiDuv/tdDxZvGklnnR+09Ym11k6NIkkRjcgZ0Ze
+        mpOCiuhUIhjEBL5ccuQ3lUe7sQ==
+X-Google-Smtp-Source: AA6agR5AgFW8i1G8KDg24W4ut+/FzCr3UMJzFdeE8sWqRtObktk+u4BKs7+LO+EgAtH4db4A3D91Jg==
+X-Received: by 2002:a05:6512:1052:b0:491:f371:ad44 with SMTP id c18-20020a056512105200b00491f371ad44mr4099234lfb.416.1660642961195;
+        Tue, 16 Aug 2022 02:42:41 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id k12-20020ac24f0c000000b0048b03b4b018sm1325108lfr.283.2022.08.16.02.42.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 02:42:40 -0700 (PDT)
+Message-ID: <b5401052-e803-9788-64d6-82b2737533ce@linaro.org>
+Date:   Tue, 16 Aug 2022 12:42:39 +0300
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH v6 5/8] drm/i915: Check for integer truncation on the
- configuration of ttm place
+Subject: Re: [PATCH 06/12] riscv: dts: allwinner: Add the D1 SoC base
+ devicetree
 Content-Language: en-US
-To:     Jani Nikula <jani.nikula@intel.com>,
-        <intel-gfx@lists.freedesktop.org>
-CC:     <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <mchehab@kernel.org>, <chris@chris-wilson.co.uk>,
-        <matthew.auld@intel.com>, <thomas.hellstrom@linux.intel.com>,
-        <nirmoy.das@intel.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <andi.shyti@linux.intel.com>, <andrzej.hajda@intel.com>
-References: <20220813010857.4043956-1-gwan-gyeong.mun@intel.com>
- <20220813010857.4043956-6-gwan-gyeong.mun@intel.com>
- <877d3arl0u.fsf@intel.com>
-From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-In-Reply-To: <877d3arl0u.fsf@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org,
+        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220815050815.22340-1-samuel@sholland.org>
+ <5593349.DvuYhMxLoT@jernej-laptop> <3881930.ZaRXLXkqSa@diego>
+ <2249129.ElGaqSPkdT@jernej-laptop>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <2249129.ElGaqSPkdT@jernej-laptop>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR05CA0060.namprd05.prod.outlook.com
- (2603:10b6:a03:33f::35) To CH0PR11MB5409.namprd11.prod.outlook.com
- (2603:10b6:610:d0::7)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69e7c232-b4cd-4647-b628-08da7f6ba2fc
-X-MS-TrafficTypeDiagnostic: DM5PR11MB0044:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3RJsRJH5tb77lNibNabO10yJl16G7BNIHMGSN8nMZBul/LsCFAKlASZiec9mEcD+q9D9CcmZ8ClvsZex+PvCwX/fLTzaUQCmZuCISfFRmxf++j+8rZ7FqZOJoCj870t5uTUjh5Z83FXGtpLaSW1Vap5n8wRhnudwYulN/urpEg46hc3FxytSDHfpXUJ7Um4R6abnvUpp8gHSQ5r7XAzE3b/2UKQDRxSY7tPngDc7qcIA57XAKcLHcdQ4uz4UIF0giMlQStR0RWZIxusnGuuZ/ndGBje5U3pgLMvqs9u0Z50aNPkJ+MxNfW0iAkeQc9RJFCyYuMVO4nY2djW0LIhNm5WBK+e3xat30ZWpeYWCSMvpUfjlAH1d3aJbD6Lhuc54yWsQfd29MkjpbpWAGUZBoJJTK5pgTDC7VyB0lBUEpC3ir1VOwIAL+ZzeQq3HxFTKsspKjdnpYzndG+CJXRhFpr3JZdELsSVCqmWG7gwtUGVW44bS+eMEOtlcIL1j9/bMMts9u7qqIPfxR2LCxS3sdxzXMYgL7Ym7lI5NRjpztVQXvGwf8xMIyrawUv0sO6EP3tnNU4YFklzMEdQt1SbugDSI1gRqT6KlENJsz6dycXY/Nz/j4ZWdgegG77akTXzlHTJ4zCsyehVP9Zrk/3ZY5v8bDDaSCR/tB9NVykRZTb4u/4oOugnNQ4g4sX3ILXfrdyRpXB1vo/4+FzBJxWS+jgEpIdnryePtIhcO+DFCXl+dnz2Q9bPQi+zYmm1ajqBsY6gu9UXnznpSnNJptARotW+YUp+vtR286ZOhBFSWh+SaOk7MO8CZ3HdS1lnwSqaxlCIngm3uPVuh1kaZw5NiBw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5409.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(396003)(136003)(366004)(346002)(376002)(5660300002)(83380400001)(41300700001)(6512007)(82960400001)(31686004)(8936002)(6506007)(478600001)(6666004)(26005)(53546011)(6486002)(8676002)(66556008)(36756003)(2906002)(4326008)(66476007)(66946007)(2616005)(38100700002)(316002)(86362001)(186003)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ek1JMkQ2K25XR1F5MTZVNlp3VFpFY0FVQkIwUlJob2tHSUJxWDNzWGtJRldR?=
- =?utf-8?B?NG15enBqWm82VEF2T1kwZzFmS25XcmFpS01rRWNXQjNuT2JnUEtXekVhKzFp?=
- =?utf-8?B?WEI4Yk1DbEwvajdFdE82THlyN1JEcVQwZFpFSnRUWkp6ZGFZb0RUYk9pNURx?=
- =?utf-8?B?NjJINzFBUDgwU1g2R1d5bGxES3UwRUVPcGtUYWVmdlZwRzBzdjhhMEh6a3hJ?=
- =?utf-8?B?VFhrY1JoTGd1YTRNNXVHR1d6aGZOV09rRCtNb1Z6ZVhZYWNsNmlUUTNzK1cz?=
- =?utf-8?B?RFU4MGEycTN0ZTBYRTJTRnBnZEkyakY5dUtZLzloT09kQnYxK0tMRnZacFpL?=
- =?utf-8?B?ampub1EyWmZpMzRGeW95emsrMnhBQTdUeGpEVkxyMTA2SVl0UU5MeU9aQ1Jt?=
- =?utf-8?B?REIyeDV1dUl4OWhTZVlsN0lQL2NQQjQ0MkppT2ZiV1VqY0s2Z3F4QVpURHV1?=
- =?utf-8?B?dG9COGl6eEpIb1AyV1p1Q0FFM3ZuYWhCbUpVQkVqelYyY1RIVEcyY0x4ekVG?=
- =?utf-8?B?eldoK0k4VGlsSXlMQnRVb1c3VGlyQ0JOOW5IVkZleVNYaTRlRHNYNGNMakZq?=
- =?utf-8?B?czM4b0pDUlRyZWxBelJxNUMxMTZHb1RRdG5hZTlMcnB1dGdBS3BRcy9lZ3d2?=
- =?utf-8?B?NDY4b0lLbjQ1WEhLM2YvK0V3VmlhRjJlSkp0Wnl2VjVsVU82M3JJdmpHNVZz?=
- =?utf-8?B?VitwUUxaSktxN3BDbjFjb3FIMEJqNy9iaVZrOVZ2Yk5hcUpINkpyMXFtT3o0?=
- =?utf-8?B?RitHdkxUSTVibVJEWXVpdXhwNTZtZ0wxNkFmZ0Y2a3BrSnlkU0lxOER2cVBo?=
- =?utf-8?B?bE5CQU9PdnNYWlJzNTBUUWRENEZhaG9aUTFWRXdhakpHYWVxUmVIRDJ2YXFm?=
- =?utf-8?B?d01LMnovZ2p3N04vTFRKKzJORndOdWovb1RVY2dEOGFmWVM1OGs3M1dZc213?=
- =?utf-8?B?WURNRHRWd2R5bzNrM1lVWURadk9FbGpVTnhjUm1IVStVSlI3VEdCWjBXbXZ1?=
- =?utf-8?B?R1R5b2gyRm4xYUhLQUhkb09raGtOYXNHbzV2aGN5NFo3NjdzemVOWGJrdDdU?=
- =?utf-8?B?dSsxa0RNQWxtdW1EOElMQzMvdDZZVmVYd3ZnNTJsTGdKTlFFU2xVQUhuMUpk?=
- =?utf-8?B?ZFlEaFhiVnJlOGR4aGFINW0wTG42TEFqYzFwUnhiU3hseXdSNm5mT2d3TXI0?=
- =?utf-8?B?dzNCWkU4cFZtaE9rVllUZW00VUlhNnZqTUJkeTFoMW5KbFllNVVDVktlZjdm?=
- =?utf-8?B?d2czUm56RXo5eHZMQ0RqTHhXYWI5SFVoTXo5NjZsMVE4NlJXWnVIMGh4djVp?=
- =?utf-8?B?Y3ZUSk9MTFlFM2N3VWZMSEVlemJHcDArZ2NLYjlRdzVYOFJmRFpQR2pVeGwy?=
- =?utf-8?B?Zk9vOHA1Mk1tT2NvTlFSVXF1VW9YcEtQLzc0SytnUm5SSkM5b2VvZUQxMzBY?=
- =?utf-8?B?WE12TDZJVnM0QTV0MTRsRnFkeFFjVmhlSnlBbzk3N1h3MlI1eW11ais0SmtE?=
- =?utf-8?B?enFTeENZb3VRbC9RbElLQTE0ZFg3S1ltZmpYUEwzcjFTbkxJRlVpU2REZWYx?=
- =?utf-8?B?Z2YvTjhYdzl0dTJvWTJiQW9va2p2TWlaTlQzWXF2MFFRZ2w1cVJuYUllN291?=
- =?utf-8?B?cnlkbkdtTlgvNm0zOG9oMndKTGNrNWJ1MlJSL2pIenlDUURMUTVqUUxhZHBC?=
- =?utf-8?B?QTJvK2lhQXpIU05xWXpRNDdaM2NUKzZnRk5PeFQ2NTNiczE4Q1c3aFRMcElw?=
- =?utf-8?B?SU9JL0tWWkV5UHRzUDNGYkhCQjg2QWhxaGxEdUtva0dSdUxLbmdaOUxwSW90?=
- =?utf-8?B?K1VuT1RHNHRlQ2dIajlXTWVhOFFUOFBRRVNrQ2dEa0g2UEZ3TmMzM2g5eGFz?=
- =?utf-8?B?UjN2REpTQmhLaC9OaUZwUmJEU1Z3MmJYdHAyRFhyd0VlbHZUR2lyVWNtUEpI?=
- =?utf-8?B?MGY1akdnbWVObHVTUElWMkpmd0pITGc4cmFZWFcvUVhlS3VOaVlBa25tMHNV?=
- =?utf-8?B?KzRVRENjaVVHMUE2RExMRTVlL1psREtwSWFrbVJ2V1R5MHpueUtxV3ZBcXA2?=
- =?utf-8?B?TzRKWlhiTHFJRW5BV2d5MXJha0dweThhbzc3K0NLbGlnZWtlamh6c1d0SHBW?=
- =?utf-8?B?RERmN0lwME55TlhLa0NLMWtvZEVuTHFWY0VyTk41MnhzZnVISUJDMmJaSWxt?=
- =?utf-8?B?SGc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69e7c232-b4cd-4647-b628-08da7f6ba2fc
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5409.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 09:42:30.2169
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1f1gjzYf9NBhPxV973N+n9p+sDM0s4s7/W+MPWMZATH+5PoD8kVrZ/Uo+y/096fiy9PGR6HAyRtSkST6A6g/by8jBGx8M3CpGp1bKr5cCHE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB0044
-X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/15/22 5:03 PM, Jani Nikula wrote:
-> On Sat, 13 Aug 2022, Gwan-gyeong Mun <gwan-gyeong.mun@intel.com> wrote:
->> There is an impedance mismatch between the first/last valid page
->> frame number of ttm place in unsigned and our memory/page accounting in
->> unsigned long.
->> As the object size is under the control of userspace, we have to be prudent
->> and catch the conversion errors.
->> To catch the implicit truncation as we switch from unsigned long to
->> unsigned, we use overflows_type check and report E2BIG or overflow_type
->> prior to the operation.
+On 16/08/2022 12:25, Jernej Škrabec wrote:
+> Dne torek, 16. avgust 2022 ob 11:12:05 CEST je Heiko Stübner napisal(a):
+>> Am Dienstag, 16. August 2022, 09:49:58 CEST schrieb Jernej Škrabec:
+>>> Dne torek, 16. avgust 2022 ob 09:41:45 CEST je Krzysztof Kozlowski 
+> napisal(a):
+>>>> On 15/08/2022 08:08, Samuel Holland wrote:
+>>>>> +
+>>>>> +	de: display-engine {
+>>>>> +		compatible = "allwinner,sun20i-d1-display-engine";
+>>>>> +		allwinner,pipelines = <&mixer0>, <&mixer1>;
+>>>>> +		status = "disabled";
+>>>>> +	};
+>>>>> +
+>>>>> +	osc24M: osc24M-clk {
+>>>>
+>>>> lowercase
+>>>>
+>>>>> +		compatible = "fixed-clock";
+>>>>> +		clock-frequency = <24000000>;
+>>>>
+>>>> This is a property of the board, not SoC.
+>>>
+>>> SoC needs 24 MHz oscillator for correct operation, so each and every board
+>>> has it. Having it here simplifies board DT files.
 >>
->> v3: Not to change execution inside a macro. (Mauro)
->>      Add safe_conversion_gem_bug_on() macro and remove temporal
->>      SAFE_CONVERSION() macro.
->> v4: Fix unhandled GEM_BUG_ON() macro call from safe_conversion_gem_bug_on()
->> v6: Fix to follow general use case for GEM_BUG_ON(). (Jani)
+>> I guess the oscillator is a separate component on each board, right?
+> 
+> Correct.
+> 
+>> And DT obvious is meant to describe the hardware - independently from
+>> implementation-specific choices.
+> 
+> There is no choice in this case. 24 MHz crystal has to be present.
+> 
+> FWIW, including crystal node in SoC specific DTSI is already common pattern in 
+> Allwinner ARM SoC DTSI files.
+> 
 >>
->> Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
->> Cc: Chris Wilson <chris@chris-wilson.co.uk>
->> Cc: Matthew Auld <matthew.auld@intel.com>
->> Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
->> Cc: Jani Nikula <jani.nikula@intel.com>
->> Reviewed-by: Nirmoy Das <nirmoy.das@intel.com> (v2)
->> Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org> (v3)
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com> (v5)
->> ---
->>   drivers/gpu/drm/i915/gem/i915_gem_ttm.c |  6 +++---
->>   drivers/gpu/drm/i915/intel_region_ttm.c | 22 +++++++++++++++++++---
->>   2 files changed, 22 insertions(+), 6 deletions(-)
+>> Starting to discuss which exceptions to allow then might lead to even more
+>> exceptions.
 >>
->> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> index 9f2be1892b6c..30f488712abe 100644
->> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> @@ -140,14 +140,14 @@ i915_ttm_place_from_region(const struct intel_memory_region *mr,
->>   	if (flags & I915_BO_ALLOC_CONTIGUOUS)
->>   		place->flags |= TTM_PL_FLAG_CONTIGUOUS;
->>   	if (offset != I915_BO_INVALID_OFFSET) {
->> -		place->fpfn = offset >> PAGE_SHIFT;
->> -		place->lpfn = place->fpfn + (size >> PAGE_SHIFT);
->> +		GEM_BUG_ON(!safe_conversion(&place->fpfn, offset >> PAGE_SHIFT));
->> +		GEM_BUG_ON(!safe_conversion(&place->lpfn, place->fpfn + (size >> PAGE_SHIFT)));
+>> Also having to look for a board-component in the soc dtsi also is surprising
+>> if one gets to the party later on :-) .
 > 
-> This would be the natural thing to do with BUG_ON/WARN_ON. And I'd like
-> it if we could use it like this. But, as I tried to say, GEM_BUG_ON is
-> nothing like BUG_ON/WARN_ON, and no code is generated for
-> CONFIG_DRM_I915_DEBUG_GEM=n. And our CI will never catch it because it
-> always has CONFIG_DRM_I915_DEBUG_GEM=y.
-> 
-Hi Jani,
+> As I said, if one is accustomed to Allwinner ARM DT development, it would be 
+> more surprising to include 24 MHz crystal node in each and every board DT.
 
-Thanks for the detailed explanation of what the build option 
-CONFIG_DRM_I915_DEBUG_GEM doesn't cover.
+It's same everywhere. Allwinner, Exynos, iMX, Qualcomm. Everywhere this
+is a part of the board, so even if oscillator frequency is fixed (as in
+99% of cases although some SoCs I think might just allow to implement
+one of few), still this is a property of the board. Because:
+1. DTSI describes the SoC part, not board.
+2. So the DTS developer is a bit more conscious about his design.
 
-Using the WARN_ON() macro, I modified with the way in your comments on 
-v5 version and sent the v7 patch again.
+Keeping things in SoC DTSI just because it simplifies DTS is not correct
+IMHO. So again - like in several other cases - minimum the frequency is
+property of the board, not the SoC DTSI.
 
-Many thanks,
+Everywhere. Allwinner is not special to receive exceptions.
 
-G.G
-
-> BR,
-> Jani.
-> 
-> 
->>   	} else if (mr->io_size && mr->io_size < mr->total) {
->>   		if (flags & I915_BO_ALLOC_GPU_ONLY) {
->>   			place->flags |= TTM_PL_FLAG_TOPDOWN;
->>   		} else {
->>   			place->fpfn = 0;
->> -			place->lpfn = mr->io_size >> PAGE_SHIFT;
->> +			GEM_BUG_ON(!safe_conversion(&place->lpfn, mr->io_size >> PAGE_SHIFT));
->>   		}
->>   	}
->>   }
->> diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
->> index 575d67bc6ffe..c480b0b50bcc 100644
->> --- a/drivers/gpu/drm/i915/intel_region_ttm.c
->> +++ b/drivers/gpu/drm/i915/intel_region_ttm.c
->> @@ -209,14 +209,28 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
->>   	if (flags & I915_BO_ALLOC_CONTIGUOUS)
->>   		place.flags |= TTM_PL_FLAG_CONTIGUOUS;
->>   	if (offset != I915_BO_INVALID_OFFSET) {
->> -		place.fpfn = offset >> PAGE_SHIFT;
->> -		place.lpfn = place.fpfn + (size >> PAGE_SHIFT);
->> +		if (!safe_conversion(&place.fpfn, offset >> PAGE_SHIFT)) {
->> +			GEM_BUG_ON(!safe_conversion(&place.fpfn,offset >> PAGE_SHIFT));
->> +			ret = -E2BIG;
->> +			goto out;
->> +		}
->> +		if (!safe_conversion(&place.lpfn, place.fpfn + (size >> PAGE_SHIFT))) {
->> +			GEM_BUG_ON(!safe_conversion(&place.lpfn,
->> +						    place.fpfn + (size >> PAGE_SHIFT)));
->> +			ret = -E2BIG;
->> +			goto out;
->> +		}
->>   	} else if (mem->io_size && mem->io_size < mem->total) {
->>   		if (flags & I915_BO_ALLOC_GPU_ONLY) {
->>   			place.flags |= TTM_PL_FLAG_TOPDOWN;
->>   		} else {
->>   			place.fpfn = 0;
->> -			place.lpfn = mem->io_size >> PAGE_SHIFT;
->> +			if (!safe_conversion(&place.lpfn, mem->io_size >> PAGE_SHIFT)) {
->> +				GEM_BUG_ON(!safe_conversion(&place.lpfn,
->> +							    mem->io_size >> PAGE_SHIFT));
->> +				ret = -E2BIG;
->> +				goto out;
->> +			}
->>   		}
->>   	}
->>   
->> @@ -224,6 +238,8 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
->>   	mock_bo.bdev = &mem->i915->bdev;
->>   
->>   	ret = man->func->alloc(man, &mock_bo, &place, &res);
->> +
->> +out:
->>   	if (ret == -ENOSPC)
->>   		ret = -ENXIO;
->>   	if (!ret)
-> 
+Best regards,
+Krzysztof
