@@ -2,141 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08836C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE6BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234502AbiHPK3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S234651AbiHPK3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234614AbiHPK26 (ORCPT
+        with ESMTP id S234402AbiHPK3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:28:58 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BACBD9E8B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:37:22 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id l18-20020a6bd112000000b0067cb64ad9b2so5657953iob.20
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:37:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=tboL+2t//XefaCLnDTGrPfl5RupstyNFWcrS7xB6m6M=;
-        b=SEwKk2YXNTt67v9JmkWPh5d/va+VoXU7ztotPnhAeWmXqeZ0L8UgiIXQPwpxjHRp6Y
-         AEf9XvFJoNybiT7Q3YvqB3foWtVYhn/IzFMyW6On6dZOvnuIAwlweRRacEHUMrVFA/1b
-         +QD81c5pxVFqF2Uj0Lt53wUeCDlt/3Zs87OOAIKnm+MA2I3qYNRi5vbmlVIvZQ6BkrsC
-         G/QAlZj4g288fCJHnFlsmku7AghepQWHZ7TH7Mh79wkzaTIgu2eFqmz5JN53wdL77O0j
-         7C7SUvskRjncdUMuXcdxFpZCFMJoJnjPqlvlVGEC9hpVbEU3oJoPLIKOChhcQugRRQIN
-         mNEQ==
-X-Gm-Message-State: ACgBeo1HGAi+UObJQaa4ZE/qAZQNAIEZxn1aW/XhjyZiaeNeIVYlmAtD
-        KSoHpLW89CJKkuTMnmyinqlXXVGV1EzwEiOMfGbP02s6YeIy
-X-Google-Smtp-Source: AA6agR6ZKNJFQX5tQWG1kAZNBBCRHLeIaljZ1MoFMwN6D+pe7+ukZAfhecPoUbOlta0Q3Ne1cPTDg8+nzd/eIyCp7cUGF3JT2c+6
+        Tue, 16 Aug 2022 06:29:00 -0400
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D01D65E309;
+        Tue, 16 Aug 2022 02:03:14 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-52-176.pa.nsw.optusnet.com.au [49.181.52.176])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 7B45B62D403;
+        Tue, 16 Aug 2022 19:03:13 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1oNsTg-00Dk22-Ca; Tue, 16 Aug 2022 19:03:12 +1000
+Date:   Tue, 16 Aug 2022 19:03:12 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v4 6/9] f2fs: don't allow DIO reads but not DIO writes
+Message-ID: <20220816090312.GU3600936@dread.disaster.area>
+References: <20220722071228.146690-1-ebiggers@kernel.org>
+ <20220722071228.146690-7-ebiggers@kernel.org>
+ <YtyoF89iOg8gs7hj@google.com>
+ <Yt7dCcG0ns85QqJe@sol.localdomain>
+ <YuXyKh8Zvr56rR4R@google.com>
+ <YvrrEcw4E+rpDLwM@sol.localdomain>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:22c8:b0:343:34af:32ff with SMTP id
- j8-20020a05663822c800b0034334af32ffmr9225175jat.238.1660639042238; Tue, 16
- Aug 2022 01:37:22 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:37:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000367cfb05e657a8ac@google.com>
-Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
- request in kernel_execve
-From:   syzbot <syzbot+c50cf81fb2c17ffb6e6b@syzkaller.appspotmail.com>
-To:     ebiederm@xmission.com, keescook@chromium.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvrrEcw4E+rpDLwM@sol.localdomain>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62fb5d51
+        a=O3n/kZ8kT9QBBO3sWHYIyw==:117 a=O3n/kZ8kT9QBBO3sWHYIyw==:17
+        a=kj9zAlcOel0A:10 a=biHskzXt2R4A:10 a=1XWaLZrsAAAA:8 a=7-415B0cAAAA:8
+        a=0f_GdJSvYQN_4D2ffm4A:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, Aug 15, 2022 at 05:55:45PM -0700, Eric Biggers wrote:
+> On Sat, Jul 30, 2022 at 08:08:26PM -0700, Jaegeuk Kim wrote:
+> > On 07/25, Eric Biggers wrote:
+> > > On Sat, Jul 23, 2022 at 07:01:59PM -0700, Jaegeuk Kim wrote:
+> > > > On 07/22, Eric Biggers wrote:
+> > > > > From: Eric Biggers <ebiggers@google.com>
+> > > > > 
+> > > > > Currently, if an f2fs filesystem is mounted with the mode=lfs and
+> > > > > io_bits mount options, DIO reads are allowed but DIO writes are not.
+> > > > > Allowing DIO reads but not DIO writes is an unusual restriction, which
+> > > > > is likely to be surprising to applications, namely any application that
+> > > > > both reads and writes from a file (using O_DIRECT).  This behavior is
+> > > > > also incompatible with the proposed STATX_DIOALIGN extension to statx.
+> > > > > Given this, let's drop the support for DIO reads in this configuration.
+> > > > 
+> > > > IIRC, we allowed DIO reads since applications complained a lower performance.
+> > > > So, I'm afraid this change will make another confusion to users. Could
+> > > > you please apply the new bahavior only for STATX_DIOALIGN?
+> > > > 
+> > > 
+> > > Well, the issue is that the proposed STATX_DIOALIGN fields cannot represent this
+> > > weird case where DIO reads are allowed but not DIO writes.  So the question is
+> > > whether this case actually matters, in which case we should make STATX_DIOALIGN
+> > > distinguish between DIO reads and DIO writes, or whether it's some odd edge case
+> > > that doesn't really matter, in which case we could just fix it or make
+> > > STATX_DIOALIGN report that DIO is unsupported.  I was hoping that you had some
+> > > insight here.  What sort of applications want DIO reads but not DIO writes?
+> > > Is this common at all?
+> > 
+> > I think there's no specific application to use the LFS mode at this
+> > moment, but I'd like to allow DIO read for zoned device which will be
+> > used for Android devices.
+> > 
+> 
+> So if the zoned device feature becomes widely adopted, then STATX_DIOALIGN will
+> be useless on all Android devices?  That sounds undesirable.  Are you sure that
+> supporting DIO reads but not DIO writes actually works?  Does it not cause
+> problems for existing applications?
 
-syzbot found the following issue on:
+What purpose does DIO in only one direction actually serve? All it
+means is that we're forcibly mixing buffered and direct IO to the
+same file and that simply never ends well from a data coherency POV.
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1131e5e3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=c50cf81fb2c17ffb6e6b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Hence I'd suggest that mixing DIO reads and buffered writes like
+this ends up exposing uses to the worst of both worlds - all of the
+problems with none of the benefits...
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c50cf81fb2c17ffb6e6b@syzkaller.appspotmail.com
+> What we need to do is make a decision about whether this means we should build
+> in a stx_dio_direction field (indicating no support / readonly support /
+> writeonly support / readwrite support) into the API from the beginning.  If we
+> don't do that, then I don't think we could simply add such a field later, as the
+> statx_dio_*_align fields will have already been assigned their meaning.  I think
+> we'd instead have to "duplicate" the API, with STATX_DIOROALIGN and
+> statx_dio_ro_*_align fields.  That seems uglier than building a directional
+> indicator into the API from the beginning.  On the other hand, requiring all
+> programs to check stx_dio_direction would add complexity to using the API.
+> 
+> Any thoughts on this?
 
-BUG: unable to handle page fault for address: ffffdc0000000000
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 11826067 P4D 11826067 PUD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 1105 Comm: kworker/u4:4 Not tainted 6.0.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:strnlen+0x3b/0x70 lib/string.c:504
-Code: 74 3c 48 bb 00 00 00 00 00 fc ff df 49 89 fc 48 89 f8 eb 09 48 83 c0 01 48 39 e8 74 1e 48 89 c2 48 89 c1 48 c1 ea 03 83 e1 07 <0f> b6 14 1a 38 ca 7f 04 84 d2 75 11 80 38 00 75 d9 4c 29 e0 48 83
-RSP: 0018:ffffc90004cc7e10 EFLAGS: 00010246
-RAX: ffff000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-RDX: 1fffe00000000000 RSI: 0000000000020000 RDI: ffff000000000000
-RBP: ffff000000020000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000006 R11: 0000000000000000 R12: ffff000000000000
-R13: ffff88801f859c00 R14: ffff000000000000 R15: ffff88801f859c00
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- strnlen include/linux/fortify-string.h:119 [inline]
- copy_string_kernel+0x26/0x250 fs/exec.c:616
- copy_strings_kernel+0xb3/0x190 fs/exec.c:655
- kernel_execve+0x377/0x500 fs/exec.c:2001
- call_usermodehelper_exec_async+0x2e3/0x580 kernel/umh.c:112
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
-CR2: ffffdc0000000000
----[ end trace 0000000000000000 ]---
-RIP: 0010:strnlen+0x3b/0x70 lib/string.c:504
-Code: 74 3c 48 bb 00 00 00 00 00 fc ff df 49 89 fc 48 89 f8 eb 09 48 83 c0 01 48 39 e8 74 1e 48 89 c2 48 89 c1 48 c1 ea 03 83 e1 07 <0f> b6 14 1a 38 ca 7f 04 84 d2 75 11 80 38 00 75 d9 4c 29 e0 48 83
-RSP: 0018:ffffc90004cc7e10 EFLAGS: 00010246
-RAX: ffff000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-RDX: 1fffe00000000000 RSI: 0000000000020000 RDI: ffff000000000000
-RBP: ffff000000020000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000006 R11: 0000000000000000 R12: ffff000000000000
-R13: ffff88801f859c00 R14: ffff000000000000 R15: ffff88801f859c00
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
-----------------
-Code disassembly (best guess):
-   0:	74 3c                	je     0x3e
-   2:	48 bb 00 00 00 00 00 	movabs $0xdffffc0000000000,%rbx
-   9:	fc ff df
-   c:	49 89 fc             	mov    %rdi,%r12
-   f:	48 89 f8             	mov    %rdi,%rax
-  12:	eb 09                	jmp    0x1d
-  14:	48 83 c0 01          	add    $0x1,%rax
-  18:	48 39 e8             	cmp    %rbp,%rax
-  1b:	74 1e                	je     0x3b
-  1d:	48 89 c2             	mov    %rax,%rdx
-  20:	48 89 c1             	mov    %rax,%rcx
-  23:	48 c1 ea 03          	shr    $0x3,%rdx
-  27:	83 e1 07             	and    $0x7,%ecx
-* 2a:	0f b6 14 1a          	movzbl (%rdx,%rbx,1),%edx <-- trapping instruction
-  2e:	38 ca                	cmp    %cl,%dl
-  30:	7f 04                	jg     0x36
-  32:	84 d2                	test   %dl,%dl
-  34:	75 11                	jne    0x47
-  36:	80 38 00             	cmpb   $0x0,(%rax)
-  39:	75 d9                	jne    0x14
-  3b:	4c 29 e0             	sub    %r12,%rax
-  3e:	48                   	rex.W
-  3f:	83                   	.byte 0x83
+Decide whether partial, single direction DIO serves a useful purpose
+before trying to work out what is needed in the API to indicate that
+this sort of crazy will be supported....
 
+Cheers,
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
