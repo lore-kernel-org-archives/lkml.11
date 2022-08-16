@@ -2,212 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D48C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8A4C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234544AbiHPK2J convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S234562AbiHPK2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234451AbiHPK11 (ORCPT
+        with ESMTP id S234416AbiHPK1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:27:27 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F5A4C605;
-        Tue, 16 Aug 2022 02:15:47 -0700 (PDT)
-Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M6QQd51zkz1M8yg;
-        Tue, 16 Aug 2022 17:12:25 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 17:15:44 +0800
-Received: from dggpemm500006.china.huawei.com ([7.185.36.236]) by
- dggpemm500006.china.huawei.com ([7.185.36.236]) with mapi id 15.01.2375.024;
- Tue, 16 Aug 2022 17:15:44 +0800
-From:   "Gonglei (Arei)" <arei.gonglei@huawei.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Lei He <helei.sig11@bytedance.com>
-CC:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "pizhenwei@bytedance.com" <pizhenwei@bytedance.com>
-Subject: RE: [PATCH] crypto-virtio: fix memory-leak
-Thread-Topic: [PATCH] crypto-virtio: fix memory-leak
-Thread-Index: AQHYsUY0nKlBM3YWoEWBnWo9iL/j1q2wr84AgACNxNA=
-Date:   Tue, 16 Aug 2022 09:15:44 +0000
-Message-ID: <0a675c21c1dc4e699d542c2f4f92f729@huawei.com>
-References: <20220816075916.23651-1-helei.sig11@bytedance.com>
- <20220816044118-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220816044118-mutt-send-email-mst@kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.149.11]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Tue, 16 Aug 2022 06:27:49 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE35B3ECF7;
+        Tue, 16 Aug 2022 01:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1660637313;
+  x=1692173313;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=f15M4ROfi3aBFowmtyD/gpauYdh/AIN2C9cnaYaVUwA=;
+  b=WjllbMNnQd0TGy5XvoMi3n/VRJtu6mMWPfVlwdzXItwExmof7uGFlum5
+   j8GqXngWnKQ2XD6E+0WugoKJJl9NpS72gJFt3IuSYxTkNEdxVfIzM0uI0
+   dOgaMkTEKKo2Irif+PBrJygMJK4u4Lv62U4wt457XwGx1An3afd217cAZ
+   kTf5UJaCRsuOoqvKFnzYvWgbq0VJ5oJ2O9BwlMJoobDtYI5Hygu81Yydy
+   430V2Kz2+N/IZNHF7RhPoV7h4E6ko7AHIbyUV0MYIl0bTR8nvFRWaDmv0
+   ZD6G1QkdAtKdNyhepQEWa5ebHw1dN4U/Tdjit2s1FtX5GL0gRuvuhQ+CR
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] iio: buffer: Silence lock nesting splat
+Date:   Tue, 16 Aug 2022 10:08:28 +0200
+Message-ID: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If an IIO driver uses callbacks from another IIO driver and calls
+iio_channel_start_all_cb() from one of its buffer setup ops, then
+lockdep complains due to the lock nesting, as in the below example with
+lmp91000.  Since the locks are being taken on different IIO devices,
+there is no actual deadlock, so add lock nesting annotation to silence
+the spurious warning.
 
+ ============================================
+ WARNING: possible recursive locking detected
+ 6.0.0-rc1+ #10 Not tainted
+ --------------------------------------------
+ python3/23 is trying to acquire lock:
+ 0000000064c944c0 (&indio_dev->mlock){+.+.}-{3:3}, at: iio_update_buffers+0x62/0x180
 
-> -----Original Message-----
-> From: Michael S. Tsirkin [mailto:mst@redhat.com]
-> Sent: Tuesday, August 16, 2022 4:43 PM
-> To: Lei He <helei.sig11@bytedance.com>
-> Cc: Gonglei (Arei) <arei.gonglei@huawei.com>;
-> herbert@gondor.apana.org.au; virtualization@lists.linux-foundation.org;
-> linux-crypto@vger.kernel.org; linux-kernel@vger.kernel.org;
-> pizhenwei@bytedance.com
-> Subject: Re: [PATCH] crypto-virtio: fix memory-leak
-> 
+ but task is already holding lock:
+ 00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
 
-Pls 's/crypto-virtio/virtio-crypto' in order to keep consistency.
+ other info that might help us debug this:
+  Possible unsafe locking scenario:
 
-Reviewed-by: Gonglei <arei.gonglei@huawei.com>
+        CPU0
+        ----
+   lock(&indio_dev->mlock);
+   lock(&indio_dev->mlock);
 
-Regards,
--Gonglei
+  *** DEADLOCK ***
 
-> On Tue, Aug 16, 2022 at 03:59:16PM +0800, Lei He wrote:
-> > From: lei he <helei.sig11@bytedance.com>
-> >
-> > Fix memory-leak for virtio-crypto akcipher request, this problem is
-> > introduced by 59ca6c93387d3(virtio-crypto: implement RSA algorithm).
-> > The leak can be reproduced and tested with the following script inside
-> > virtual machine:
-> >
-> > #!/bin/bash
-> >
-> > LOOP_TIMES=10000
-> >
-> > # required module: pkcs8_key_parser, virtio_crypto modprobe
-> > pkcs8_key_parser # if CONFIG_PKCS8_PRIVATE_KEY_PARSER=m modprobe
-> > virtio_crypto # if CONFIG_CRYPTO_DEV_VIRTIO=m rm -rf /tmp/data dd
-> > if=/dev/random of=/tmp/data count=1 bs=230
-> >
-> > # generate private key and self-signed cert openssl req -nodes -x509
-> > -newkey rsa:2048 -keyout key.pem \
-> > 		-outform der -out cert.der  \
-> > 		-subj
-> "/C=CN/ST=GD/L=SZ/O=vihoo/OU=dev/CN=always.com/emailAddress=yy@
-> always.com"
-> > # convert private key from pem to der
-> > openssl pkcs8 -in key.pem -topk8 -nocrypt -outform DER -out key.der
-> >
-> > # add key
-> > PRIV_KEY_ID=`cat key.der | keyctl padd asymmetric test_priv_key @s`
-> > echo "priv key id = "$PRIV_KEY_ID PUB_KEY_ID=`cat cert.der | keyctl
-> > padd asymmetric test_pub_key @s` echo "pub key id = "$PUB_KEY_ID
-> >
-> > # query key
-> > keyctl pkey_query $PRIV_KEY_ID 0
-> > keyctl pkey_query $PUB_KEY_ID 0
-> >
-> > # here we only run pkey_encrypt becasuse it is the fastest interface
-> > function bench_pub() {
-> > 	keyctl pkey_encrypt $PUB_KEY_ID 0 /tmp/data
-> enc=pkcs1 >/tmp/enc.pub }
-> >
-> > # do bench_pub in loop to obtain the memory leak for (( i = 0; i <
-> > ${LOOP_TIMES}; ++i )); do
-> > 	bench_pub
-> > done
-> >
-> > Signed-off-by: lei he <helei.sig11@bytedance.com>
-> 
-> trash below pls drop.
-> 
-> 
-> > # Please enter the commit message for your changes. Lines starting #
-> > with '#' will be kept; you may remove them yourself if you want to.
-> > # An empty message aborts the commit.
-> > #
-> > # Date:      Tue Aug 16 11:53:30 2022 +0800
-> > #
-> > # On branch master
-> > # Your branch is ahead of 'origin/master' by 1 commit.
-> > #   (use "git push" to publish your local commits)
-> > #
-> > # Changes to be committed:
-> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > #
-> > # Untracked files:
-> > #	cert.der
-> > #	key.der
-> > #	key.pem
-> > #
-> >
-> > # Please enter the commit message for your changes. Lines starting #
-> > with '#' will be kept; you may remove them yourself if you want to.
-> > # An empty message aborts the commit.
-> > #
-> > # Date:      Tue Aug 16 11:53:30 2022 +0800
-> > #
-> > # On branch master
-> > # Your branch is ahead of 'origin/master' by 1 commit.
-> > #   (use "git push" to publish your local commits)
-> > #
-> > # Changes to be committed:
-> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > #
-> > # Untracked files:
-> > #	cert.der
-> > #	key.der
-> > #	key.pem
-> > #
-> >
-> > # Please enter the commit message for your changes. Lines starting #
-> > with '#' will be kept; you may remove them yourself if you want to.
-> > # An empty message aborts the commit.
-> > #
-> > # Date:      Tue Aug 16 11:53:30 2022 +0800
-> > #
-> > # On branch master
-> > # Your branch is ahead of 'origin/master' by 1 commit.
-> > #   (use "git push" to publish your local commits)
-> > #
-> > # Changes to be committed:
-> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > #
-> > # Untracked files:
-> > #	cert.der
-> > #	key.der
-> > #	key.pem
-> > #
-> > ---
-> 
-> with commit log fixed:
-> 
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> >  drivers/crypto/virtio/virtio_crypto_akcipher_algs.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > index 2a60d0525cde..168195672e2e 100644
-> > --- a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > +++ b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-> > @@ -56,6 +56,10 @@ static void virtio_crypto_akcipher_finalize_req(
-> >  	struct virtio_crypto_akcipher_request *vc_akcipher_req,
-> >  	struct akcipher_request *req, int err)  {
-> > +	kfree(vc_akcipher_req->src_buf);
-> > +	kfree(vc_akcipher_req->dst_buf);
-> > +	vc_akcipher_req->src_buf = NULL;
-> > +	vc_akcipher_req->dst_buf = NULL;
-> >  	virtcrypto_clear_request(&vc_akcipher_req->base);
-> >
-> >
-> > crypto_finalize_akcipher_request(vc_akcipher_req->base.dataq->engine,
-> > req, err);
-> > --
-> > 2.20.1
+  May be due to missing lock nesting notation
+
+ 5 locks held by python3/23:
+  #0: 00000000636b5420 (sb_writers#5){.+.+}-{0:0}, at: ksys_write+0x67/0x100
+  #1: 0000000064c19280 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x13a/0x270
+  #2: 0000000064c3d9e0 (kn->active#14){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x149/0x270
+  #3: 00000000636b64c0 (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store+0x4d/0x100
+  #4: 0000000064c945c8 (&iio_dev_opaque->info_exist_lock){+.+.}-{3:3}, at: iio_update_buffers+0x4f/0x180
+
+ stack backtrace:
+ CPU: 0 PID: 23 Comm: python3 Not tainted 6.0.0-rc1+ #10
+ Call Trace:
+  dump_stack+0x1a/0x1c
+  __lock_acquire.cold+0x407/0x42d
+  lock_acquire+0x1ed/0x310
+  __mutex_lock+0x72/0xde0
+  mutex_lock_nested+0x1d/0x20
+  iio_update_buffers+0x62/0x180
+  iio_channel_start_all_cb+0x1c/0x20 [industrialio_buffer_cb]
+  lmp91000_buffer_postenable+0x1b/0x20 [lmp91000]
+  __iio_update_buffers+0x50b/0xd80
+  enable_store+0x81/0x100
+  dev_attr_store+0xf/0x20
+  sysfs_kf_write+0x4c/0x70
+  kernfs_fop_write_iter+0x179/0x270
+  new_sync_write+0x99/0x120
+  vfs_write+0x2c1/0x470
+  ksys_write+0x67/0x100
+  sys_write+0x10/0x20
+
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+ drivers/iio/industrialio-buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index acc2b6c05d57..27868ed092d0 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1255,7 +1255,7 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&iio_dev_opaque->info_exist_lock);
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock_nested(&indio_dev->mlock, SINGLE_DEPTH_NESTING);
+ 
+ 	if (insert_buffer && iio_buffer_is_active(insert_buffer))
+ 		insert_buffer = NULL;
+-- 
+2.34.1
 
