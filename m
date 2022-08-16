@@ -2,136 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7355C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:29:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 489E0C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234538AbiHPK3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S234618AbiHPK3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234601AbiHPK2j (ORCPT
+        with ESMTP id S234529AbiHPK2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:28:39 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4623AB08
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:13 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id o18-20020a17090aac1200b001f3252af009so9460334pjq.7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=bB93z6epEEktgqWPKqCS2yAkD9gaQQnHEzx7X0wo89k=;
-        b=LBUekVZbKwjYB6iREXgnr6/dM7aUHkeeUVgIKavekxJRHMpaR5GmbH36Wo7f35PhMr
-         qFed3KzKfZEhK6wbXZCuUJg0wj88/OsxPnGsu7Mx+2hcwgoKib/YEaqtlEdOJRIXaQ6N
-         ujLmjUERqv4Xqmb0I3ospKzIO6NkBRgvK1ufjI/hB9DWc3yFWOKtGv1lGx7R2QFL7xmT
-         hwx9srMqjWHG4F+T+cXDyL6WffHLHty/vt9nTIa/c7DQuVGJsXphgdSSK5ebrBEIB9Ve
-         FCnGXHkRgYzC8TNkBtKXABrWNZYQE69QH2JUsIBGNuav6Ow3IKnI7JLSCIPZSgmNi9e5
-         FtQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=bB93z6epEEktgqWPKqCS2yAkD9gaQQnHEzx7X0wo89k=;
-        b=tc53xyFDL/92lrRDA8RovYj8KadDzceAf1v06XWfFttuOk8y7namNzsPKXtB4dQbhu
-         WDy1bcmXiDWJ95nKjB2Mx0EHNkxlT5qK+FU5KL+rlefkfkHZxFS3GSjL7lo8iy+y82LZ
-         hkkly5DfMLwGVlyRsZX0Av+KyF164BEJBidDct4JvynRQth+h4HFAlQTA6aSoUtK8JYn
-         c9zNleZrU6pAWkK3F3Zy2TzZfMX6PBRQpGdotpUQa9VUXH9FwFx9/aEtLER9hNBU2uEU
-         3Tc86vn4VzIClmajXW9fvvKvDh9sLEWM1R8LVrvigcfMFmNu4dpZyZX7pTe1i9AMW7+T
-         hKOg==
-X-Gm-Message-State: ACgBeo1oOSOQvxhSZHpZaAU2Ye/tVjrGKmj3k+ZN/KFs80eF+Z6JdgTl
-        sXVgWFHdz+qobYjQ2LtHDMvWoUwl2NY=
-X-Google-Smtp-Source: AA6agR54uF8KKRbV8DX/kPh89GDgFvO2Xmrnjc3ibq1RSfDiZt18v2MUXc+jMD8Q35DJXDMBoxLKFfJ0VuM=
-X-Received: from raychi.tao.corp.google.com ([2401:fa00:fc:202:5bfb:2ce6:1e1b:f496])
- (user=raychi job=sendgmr) by 2002:a05:6a00:10ca:b0:4f7:5af4:47b6 with SMTP id
- d10-20020a056a0010ca00b004f75af447b6mr20152772pfu.6.1660639152696; Tue, 16
- Aug 2022 01:39:12 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 16:38:54 +0800
-In-Reply-To: <20220816083854.1491886-1-raychi@google.com>
-Message-Id: <20220816083854.1491886-3-raychi@google.com>
-Mime-Version: 1.0
-References: <20220816083854.1491886-1-raychi@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH 2/2] usb: xhci: add check_init_status hook support
-From:   Ray Chi <raychi@google.com>
-To:     gregkh@linuxfoundation.org, mathias.nyman@intel.com,
-        stern@rowland.harvard.edu
-Cc:     badhri@google.com, albertccwang@google.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ray Chi <raychi@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 16 Aug 2022 06:28:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4CD05D5EBD
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660642485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+KFOMoWGAyHxHdtORsjFxcSg87BzWtJ/0Drcua3zx9E=;
+        b=deoiUnnlo25A5EVr0HOvRU7zyXa/WZztrE/KUKPxq+IAw1ndC3nn6HsdUigNs+c/B50MYY
+        08vEhn6gPeVEt2fZ+VgL1xRMq9Xo1ucE/tLJmFdVGfl+uuc6IctivVo3/Y/zI/bL1m9OWm
+        CDa+5HiBaCqd2zn7L5aTK7D6hbau8Zc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-168-VWv000_QN42ZqFWb0ChMoQ-1; Tue, 16 Aug 2022 05:34:42 -0400
+X-MC-Unique: VWv000_QN42ZqFWb0ChMoQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1A6C13C0D195;
+        Tue, 16 Aug 2022 09:34:42 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A4CE492C3B;
+        Tue, 16 Aug 2022 09:34:41 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
+From:   David Howells <dhowells@redhat.com>
+To:     yin31149@gmail.com
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        dhowells@redhat.com, linux-kernel@vger.kernel.org
+Date:   Tue, 16 Aug 2022 10:34:40 +0100
+Message-ID: <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In general, xHCI didn't do anything for port initialization. However,
-there are some requirement or limitation on various platforms, so
-vendors need to do some error handlings if the device connected to a
-broken USB accessory.
+bpf_sk_reuseport_detach() calls __rcu_dereference_sk_user_data_with_flags()
+to obtain the value of sk->sk_user_data, but that function is only usable
+if the RCU read lock is held, and neither that function nor any of its
+callers hold it.
 
-This patch also add the hook to xhci_driver_overrides so that vendors
-can add their specific protection easily if needed.
+Fix this by adding a new helper, __locked_read_sk_user_data_with_flags()
+that checks to see if sk->sk_callback_lock() is held and use that here
+instead.
 
-Signed-off-by: Ray Chi <raychi@google.com>
+Alternatively, making __rcu_dereference_sk_user_data_with_flags() use
+rcu_dereference_checked() might suffice.
+
+Without this, the following warning can be occasionally observed:
+
+=============================
+WARNING: suspicious RCU usage
+6.0.0-rc1-build2+ #563 Not tainted
+-----------------------------
+include/net/sock.h:592 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+rcu_scheduler_active = 2, debug_locks = 1
+5 locks held by locktest/29873:
+ #0: ffff88812734b550 (&sb->s_type->i_mutex_key#9){+.+.}-{3:3}, at: __sock_release+0x77/0x121
+ #1: ffff88812f5621b0 (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_close+0x1c/0x70
+ #2: ffff88810312f5c8 (&h->lhash2[i].lock){+.+.}-{2:2}, at: inet_unhash+0x76/0x1c0
+ #3: ffffffff83768bb8 (reuseport_lock){+...}-{2:2}, at: reuseport_detach_sock+0x18/0xdd
+ #4: ffff88812f562438 (clock-AF_INET){++..}-{2:2}, at: bpf_sk_reuseport_detach+0x24/0xa4
+
+stack backtrace:
+CPU: 1 PID: 29873 Comm: locktest Not tainted 6.0.0-rc1-build2+ #563
+Hardware name: ASUS All Series/H97-PLUS, BIOS 2306 10/09/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x4c/0x5f
+ bpf_sk_reuseport_detach+0x6d/0xa4
+ reuseport_detach_sock+0x75/0xdd
+ inet_unhash+0xa5/0x1c0
+ tcp_set_state+0x169/0x20f
+ ? lockdep_sock_is_held+0x3a/0x3a
+ ? __lock_release.isra.0+0x13e/0x220
+ ? reacquire_held_locks+0x1bb/0x1bb
+ ? hlock_class+0x31/0x96
+ ? mark_lock+0x9e/0x1af
+ __tcp_close+0x50/0x4b6
+ tcp_close+0x28/0x70
+ inet_release+0x8e/0xa7
+ __sock_release+0x95/0x121
+ sock_close+0x14/0x17
+ __fput+0x20f/0x36a
+ task_work_run+0xa3/0xcc
+ exit_to_user_mode_prepare+0x9c/0x14d
+ syscall_exit_to_user_mode+0x18/0x44
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Fixes: cf8c1e967224 ("net: refactor bpf_sk_reuseport_detach()")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Hawkins Jiawei <yin31149@gmail.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: netdev@vger.kernel.org
 ---
- drivers/usb/host/xhci.c | 17 +++++++++++++++++
- drivers/usb/host/xhci.h |  1 +
- 2 files changed, 18 insertions(+)
 
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index 65858f607437..f237af9d6e2e 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -4358,6 +4358,20 @@ static int xhci_enable_device(struct usb_hcd *hcd, struct usb_device *udev)
- 	return xhci_setup_device(hcd, udev, SETUP_CONTEXT_ONLY);
- }
+ include/net/sock.h           |   25 +++++++++++++++++++++++++
+ kernel/bpf/reuseport_array.c |    2 +-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 05a1bbdf5805..d08cfe190a78 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -577,6 +577,31 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
  
-+/*
-+ * The function could get the status of port initialization.
+ #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
+ 
++/**
++ * __locked_read_sk_user_data_with_flags - return the pointer
++ * only if argument flags all has been set in sk_user_data. Otherwise
++ * return NULL
++ *
++ * @sk: socket
++ * @flags: flag bits
++ *
++ * The caller must be holding sk->sk_callback_lock.
 + */
-+static int xhci_check_init_status(struct usb_hcd *hcd, struct usb_device *udev, int r)
++static inline void *
++__locked_read_sk_user_data_with_flags(const struct sock *sk,
++				      uintptr_t flags)
 +{
-+	/*
-+	 * In general, this function is not necessory. Some platforms may
-+	 * need doing error handling when the port initialization takes a
-+	 * long time to do. The device can use the override callback to
-+	 * do specific handlings.
-+	 */
-+	return 0;
++	uintptr_t sk_user_data =
++		(uintptr_t)rcu_dereference_check(__sk_user_data(sk),
++						 lockdep_is_held(&sk->sk_callback_lock));
++
++	WARN_ON_ONCE(flags & SK_USER_DATA_PTRMASK);
++
++	if ((sk_user_data & flags) == flags)
++		return (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
++	return NULL;
 +}
 +
- /*
-  * Transfer the port index into real index in the HW port status
-  * registers. Caculate offset between the port's PORTSC register
-@@ -5455,6 +5469,7 @@ static const struct hc_driver xhci_hc_driver = {
- 	.enable_device =	xhci_enable_device,
- 	.update_hub_device =	xhci_update_hub_device,
- 	.reset_device =		xhci_discover_or_reset_device,
-+	.check_init_status =	xhci_check_init_status,
+ /**
+  * __rcu_dereference_sk_user_data_with_flags - return the pointer
+  * only if argument flags all has been set in sk_user_data. Otherwise
+diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
+index 85fa9dbfa8bf..82c61612f382 100644
+--- a/kernel/bpf/reuseport_array.c
++++ b/kernel/bpf/reuseport_array.c
+@@ -24,7 +24,7 @@ void bpf_sk_reuseport_detach(struct sock *sk)
+ 	struct sock __rcu **socks;
  
- 	/*
- 	 * scheduling support
-@@ -5503,6 +5518,8 @@ void xhci_init_driver(struct hc_driver *drv,
- 			drv->check_bandwidth = over->check_bandwidth;
- 		if (over->reset_bandwidth)
- 			drv->reset_bandwidth = over->reset_bandwidth;
-+		if (over->check_init_status)
-+			drv->check_init_status = over->check_init_status;
- 	}
- }
- EXPORT_SYMBOL_GPL(xhci_init_driver);
-diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
-index 1960b47acfb2..33ce873236e9 100644
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -1944,6 +1944,7 @@ struct xhci_driver_overrides {
- 			     struct usb_host_endpoint *ep);
- 	int (*check_bandwidth)(struct usb_hcd *, struct usb_device *);
- 	void (*reset_bandwidth)(struct usb_hcd *, struct usb_device *);
-+	int (*check_init_status)(struct usb_hcd *hcd, struct usb_device *udev, int r);
- };
- 
- #define	XHCI_CFC_DELAY		10
--- 
-2.37.1.595.g718a3a8f04-goog
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	socks = __rcu_dereference_sk_user_data_with_flags(sk, SK_USER_DATA_BPF);
++	socks = __locked_read_sk_user_data_with_flags(sk, SK_USER_DATA_BPF);
+ 	if (socks) {
+ 		WRITE_ONCE(sk->sk_user_data, NULL);
+ 		/*
+
 
