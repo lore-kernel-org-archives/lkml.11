@@ -2,118 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60121C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDF3C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236319AbiHPTSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 15:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        id S236961AbiHPTTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 15:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233171AbiHPTSA (ORCPT
+        with ESMTP id S236644AbiHPTTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 15:18:00 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033B6A48C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 12:17:59 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id a22so9572655pfg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 12:17:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=oNbwpYSBAVXngDHJ9WU6jqksTI5pKTDQGRptAeuQIq8=;
-        b=No14jYa3wQejzTCeZ95bQjdyIdQiUGIyhtZHsVgirj8sDKJnuHBc4flHzXPSytMNI4
-         895fdy54xx9LUnZkU+TT2thwkQB4yUDmAsAXAT+5FSCrY1cjfK7qoJ4p7D9PiCamj2Cx
-         XWrSuMiDbBbVDoXEtCeKXv1i8BzmWnoxidHsk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=oNbwpYSBAVXngDHJ9WU6jqksTI5pKTDQGRptAeuQIq8=;
-        b=pDgYVHX8KZ6K/dqTSs7hFfKW39zr5tRWWP6x1hZWbsnpA9b6KMz6ZR8MzpmHT+9LAX
-         KPQlMdUWThua+WatZyqdgj4vilwpZtlTmCm01CR2uQE1hZRGIOHJ8GNNX+BTCTCmhEMX
-         79YWlweDPwPq83LmRPt9UWS7I7sCsl3OXpI/f5mMbXe0uyV+Bkz2rznuKCOtGTbUM9Wq
-         MTCZ8iWY3rOHzSODsIeBZ5X5A+fgzvg01QSc4zeE1fO1uaCRauWEdVQCa6LLMHKO3Jk7
-         GBuE7bcZCoHi3RxJmVYudKWFVJ9DvOcE3BYkQspfF62qRV8WO9P3lgYKl9NiqJk26r/q
-         DiSg==
-X-Gm-Message-State: ACgBeo283vbL0yt9Xkd9nb0VkO6hUrXLxg2e57bMM48TnSS2Z/puVrPv
-        Pf7EN47XzFRyu4nVmG8u+VlGvA==
-X-Google-Smtp-Source: AA6agR7HHHOs3dOu0s1p8JpIoe6a0Zac/B2wBZr2vEaZV2WUU07yc/W5DOtCxxnONtSnoQ0m0Pfc3g==
-X-Received: by 2002:a05:6a00:2485:b0:52e:ca57:5018 with SMTP id c5-20020a056a00248500b0052eca575018mr22356534pfv.43.1660677479171;
-        Tue, 16 Aug 2022 12:17:59 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k15-20020a170902ce0f00b0016d95380e8esm9431192plg.140.2022.08.16.12.17.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 12:17:58 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 12:17:57 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, Matthias Kaehlcke <mka@chromium.org>,
-        lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: security/loadpin/loadpin.c:365 dm_verity_ioctl() warn: maybe
- return -EFAULT instead of the bytes remaining?
-Message-ID: <202208161217.2DFCE2D532@keescook>
-References: <202208141119.RKGSGoZ7-lkp@intel.com>
+        Tue, 16 Aug 2022 15:19:04 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B35A3CC;
+        Tue, 16 Aug 2022 12:18:59 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id D2B455FD0A;
+        Tue, 16 Aug 2022 22:18:56 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660677536;
+        bh=kNxXhkdr74OhUzWIPaRNsxTjWoPYvj2BCzIs18HaIVo=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=oOhLhAzpunZrgl0lSBeQWQlBFqtLT3ErhWptxDa8qGYuYxFwb7GdxjhK+44j+ZFDN
+         v5Al9MmMzo/1zntXe8TMPnXOFaEo4RfMPmLWfvGguqiQjF90VArZ5rJpKWI0bz/+0x
+         s0VtOow1USamuflKjsUew5ZdrKlUcZ4kWaCccg1GcvRt+NRtYVpS5bMYZJca+Nx5cC
+         WFQzP+8kn22h9rY94phIvdmQhrt1iiJpA70De0PjU8ytaUIxir5KGB18trzsfwDi1l
+         yXUH8DCRRHYky3qq8KODm6O7MA/S3tU1OPQoSJtaoDO240SEfZzIUQowPh7Oyj/L6y
+         fEGRRa3gjI4vg==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue, 16 Aug 2022 22:18:56 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "wsa@kernel.org" <wsa@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "jbhayana@google.com" <jbhayana@google.com>,
+        "lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
+        "jani.nikula@intel.com" <jani.nikula@intel.com>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Subject: [PATCH v6 1/4] lib/string_helpers: Add str_read_write() helper
+Thread-Topic: [PATCH v6 1/4] lib/string_helpers: Add str_read_write() helper
+Thread-Index: AQHYsaUAdZHJnw656k6pbt0EDuDqsQ==
+Date:   Tue, 16 Aug 2022 19:18:43 +0000
+Message-ID: <20220816191842.14020-2-ddrokosov@sberdevices.ru>
+References: <20220816191842.14020-1-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220816191842.14020-1-ddrokosov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202208141119.RKGSGoZ7-lkp@intel.com>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/16 16:01:00 #20126973
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:07:12AM +0300, Dan Carpenter wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   aea23e7c464bfdec04b52cf61edb62030e9e0d0a
-> commit: 3f805f8cc23ba35679dd01446929292911c2b469 LoadPin: Enable loading from trusted dm-verity devices
-> config: s390-randconfig-m031-20220810 (https://download.01.org/0day-ci/archive/20220814/202208141119.RKGSGoZ7-lkp@intel.com/config)
-> compiler: s390-linux-gcc (GCC) 12.1.0
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> smatch warnings:
-> security/loadpin/loadpin.c:365 dm_verity_ioctl() warn: maybe return -EFAULT instead of the bytes remaining?
-> 
-> vim +365 security/loadpin/loadpin.c
-> 
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  355  static long dm_verity_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  356  {
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  357  	void __user *uarg = (void __user *)arg;
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  358  	unsigned int fd;
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  359  	int rc;
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  360  
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  361  	switch (cmd) {
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  362  	case LOADPIN_IOC_SET_TRUSTED_VERITY_DIGESTS:
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  363  		rc = copy_from_user(&fd, uarg, sizeof(fd));
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  364  		if (rc)
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27 @365  			return rc;
-> 
-> The copy_from_user() function returns the number of bytes remaining to
-> be copied.  It should be:
-> 
-> 	if (copy_from_user(&fd, uarg, sizeof(fd)))
-> 		return -EFAULT;
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Oops, yes. I'll get this fixed.
+Add str_read_write() helper to return 'read' or 'write' string literal.
 
--Kees
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+---
+ include/linux/string_helpers.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> 
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  366  
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  367  		return read_trusted_verity_root_digests(fd);
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  368  
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  369  	default:
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  370  		return -EINVAL;
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  371  	}
-> 3f805f8cc23ba3 Matthias Kaehlcke 2022-06-27  372  }
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
-> 
-
--- 
-Kees Cook
+diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.=
+h
+index 4d72258d42fd..9e22cd78f3b8 100644
+--- a/include/linux/string_helpers.h
++++ b/include/linux/string_helpers.h
+@@ -126,4 +126,9 @@ static inline const char *str_enabled_disabled(bool v)
+ 	return v ? "enabled" : "disabled";
+ }
+=20
++static inline const char *str_read_write(bool v)
++{
++	return v ? "read" : "write";
++}
++
+ #endif
+--=20
+2.36.0
