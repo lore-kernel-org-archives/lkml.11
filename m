@@ -2,120 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE6BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57463C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234651AbiHPK3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S234655AbiHPKaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234402AbiHPK3A (ORCPT
+        with ESMTP id S234592AbiHPK3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:29:00 -0400
-Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D01D65E309;
-        Tue, 16 Aug 2022 02:03:14 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-52-176.pa.nsw.optusnet.com.au [49.181.52.176])
-        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 7B45B62D403;
-        Tue, 16 Aug 2022 19:03:13 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1oNsTg-00Dk22-Ca; Tue, 16 Aug 2022 19:03:12 +1000
-Date:   Tue, 16 Aug 2022 19:03:12 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-fsdevel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-Subject: Re: [PATCH v4 6/9] f2fs: don't allow DIO reads but not DIO writes
-Message-ID: <20220816090312.GU3600936@dread.disaster.area>
-References: <20220722071228.146690-1-ebiggers@kernel.org>
- <20220722071228.146690-7-ebiggers@kernel.org>
- <YtyoF89iOg8gs7hj@google.com>
- <Yt7dCcG0ns85QqJe@sol.localdomain>
- <YuXyKh8Zvr56rR4R@google.com>
- <YvrrEcw4E+rpDLwM@sol.localdomain>
+        Tue, 16 Aug 2022 06:29:36 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896CB37FBA
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:40:25 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id f16-20020a6b6210000000b006889725d748so1614895iog.8
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=PMYTHRbtvAEUd3T6QKRglcE0B3kW1AGCdIwCegasyhg=;
+        b=fH5AW9IZFUTSpTqZI+MS3nDpNfdLfv4iz9HC+5EYn8eMSFUGBjtwkCsa14wSSZ+jJA
+         4dSXmDuxfPzhxNR/elcDJlcfw3YtyAF3iDmFMa+rTB036bYTN2RKvZ+tonQEdCzf6hyV
+         zMuBeJybk67IGPJAdjix81aKKkOu/zcyKJIC7h/QRbVASv3LWS45yOZn28QuyoZGy3Hf
+         PCwsh4gPc1VAz9dZftg+OC3GV5RX8HDuTgYB3ui5yoiK/fHMt68A8mNRSqTqQSDKTGkd
+         1OcGWD28DAFQ+mdsp/ubFtzma/jhsnJLwN6JdrW1vJRx4dsgzu5IkYV+rFsm09Xkc2L/
+         u6jA==
+X-Gm-Message-State: ACgBeo0hD/gbojXTbf9bTiHLOAtcb1K+EvS+meKlXcGdZlWHAgUr0SBt
+        VLlrKBu+Pdu5k2TGkvKjaa7HxTp9Q2/9JSm2ltFakX96cAkY
+X-Google-Smtp-Source: AA6agR71RC3xdK2zD3XAyNJHr2X6cD84VRTqsloHMKcLgPMTSDCckmbvDkPI+pZClgxu+Oh2TASiveXvxq3Vb4ETCKzVjJ/KPuuA
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvrrEcw4E+rpDLwM@sol.localdomain>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62fb5d51
-        a=O3n/kZ8kT9QBBO3sWHYIyw==:117 a=O3n/kZ8kT9QBBO3sWHYIyw==:17
-        a=kj9zAlcOel0A:10 a=biHskzXt2R4A:10 a=1XWaLZrsAAAA:8 a=7-415B0cAAAA:8
-        a=0f_GdJSvYQN_4D2ffm4A:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+X-Received: by 2002:a05:6e02:1a84:b0:2e5:c2aa:5c65 with SMTP id
+ k4-20020a056e021a8400b002e5c2aa5c65mr3639144ilv.152.1660639224537; Tue, 16
+ Aug 2022 01:40:24 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:40:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000142b0b05e657b3d8@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
+ request in kernfs_create_dir_ns
+From:   syzbot <syzbot+4742b8091a2010ffd765@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 05:55:45PM -0700, Eric Biggers wrote:
-> On Sat, Jul 30, 2022 at 08:08:26PM -0700, Jaegeuk Kim wrote:
-> > On 07/25, Eric Biggers wrote:
-> > > On Sat, Jul 23, 2022 at 07:01:59PM -0700, Jaegeuk Kim wrote:
-> > > > On 07/22, Eric Biggers wrote:
-> > > > > From: Eric Biggers <ebiggers@google.com>
-> > > > > 
-> > > > > Currently, if an f2fs filesystem is mounted with the mode=lfs and
-> > > > > io_bits mount options, DIO reads are allowed but DIO writes are not.
-> > > > > Allowing DIO reads but not DIO writes is an unusual restriction, which
-> > > > > is likely to be surprising to applications, namely any application that
-> > > > > both reads and writes from a file (using O_DIRECT).  This behavior is
-> > > > > also incompatible with the proposed STATX_DIOALIGN extension to statx.
-> > > > > Given this, let's drop the support for DIO reads in this configuration.
-> > > > 
-> > > > IIRC, we allowed DIO reads since applications complained a lower performance.
-> > > > So, I'm afraid this change will make another confusion to users. Could
-> > > > you please apply the new bahavior only for STATX_DIOALIGN?
-> > > > 
-> > > 
-> > > Well, the issue is that the proposed STATX_DIOALIGN fields cannot represent this
-> > > weird case where DIO reads are allowed but not DIO writes.  So the question is
-> > > whether this case actually matters, in which case we should make STATX_DIOALIGN
-> > > distinguish between DIO reads and DIO writes, or whether it's some odd edge case
-> > > that doesn't really matter, in which case we could just fix it or make
-> > > STATX_DIOALIGN report that DIO is unsupported.  I was hoping that you had some
-> > > insight here.  What sort of applications want DIO reads but not DIO writes?
-> > > Is this common at all?
-> > 
-> > I think there's no specific application to use the LFS mode at this
-> > moment, but I'd like to allow DIO read for zoned device which will be
-> > used for Android devices.
-> > 
-> 
-> So if the zoned device feature becomes widely adopted, then STATX_DIOALIGN will
-> be useless on all Android devices?  That sounds undesirable.  Are you sure that
-> supporting DIO reads but not DIO writes actually works?  Does it not cause
-> problems for existing applications?
+Hello,
 
-What purpose does DIO in only one direction actually serve? All it
-means is that we're forcibly mixing buffered and direct IO to the
-same file and that simply never ends well from a data coherency POV.
+syzbot found the following issue on:
 
-Hence I'd suggest that mixing DIO reads and buffered writes like
-this ends up exposing uses to the worst of both worlds - all of the
-problems with none of the benefits...
+HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1056a56b080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d647c9572405910
+dashboard link: https://syzkaller.appspot.com/bug?extid=4742b8091a2010ffd765
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-> What we need to do is make a decision about whether this means we should build
-> in a stx_dio_direction field (indicating no support / readonly support /
-> writeonly support / readwrite support) into the API from the beginning.  If we
-> don't do that, then I don't think we could simply add such a field later, as the
-> statx_dio_*_align fields will have already been assigned their meaning.  I think
-> we'd instead have to "duplicate" the API, with STATX_DIOROALIGN and
-> statx_dio_ro_*_align fields.  That seems uglier than building a directional
-> indicator into the API from the beginning.  On the other hand, requiring all
-> programs to check stx_dio_direction would add complexity to using the API.
-> 
-> Any thoughts on this?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4742b8091a2010ffd765@syzkaller.appspotmail.com
 
-Decide whether partial, single direction DIO serves a useful purpose
-before trying to work out what is needed in the API to indicate that
-this sort of crazy will be supported....
+usbcore: registered new interface driver ath9k_htc
+usbcore: registered new interface driver carl9170
+usbcore: registered new interface driver ath6kl_usb
+usbcore: registered new interface driver ar5523
+usbcore: registered new interface driver ath10k_usb
+usbcore: registered new interface driver rndis_wlan
+mac80211_hwsim: initializing netlink
+usbcore: registered new interface driver atusb
+mac802154_hwsim mac802154_hwsim: Added 2 mac802154 hwsim hardware radios
+VMware vmxnet3 virtual NIC driver - version 1.7.0.0-k-NAPI
+usbcore: registered new interface driver catc
+usbcore: registered new interface driver kaweth
+pegasus: Pegasus/Pegasus II USB Ethernet driver
+usbcore: registered new interface driver pegasus
+usbcore: registered new interface driver rtl8150
+usbcore: registered new interface driver r8152
+hso: drivers/net/usb/hso.c: Option Wireless
+usbcore: registered new interface driver hso
+usbcore: registered new interface driver lan78xx
+usbcore: registered new interface driver asix
+usbcore: registered new interface driver ax88179_178a
+usbcore: registered new interface driver cdc_ether
+usbcore: registered new interface driver cdc_eem
+usbcore: registered new interface driver dm9601
+usbcore: registered new interface driver sr9700
+usbcore: registered new interface driver CoreChips
+usbcore: registered new interface driver smsc75xx
+usbcore: registered new interface driver smsc95xx
+usbcore: registered new interface driver gl620a
+usbcore: registered new interface driver net1080
+usbcore: registered new interface driver plusb
+usbcore: registered new interface driver rndis_host
+usbcore: registered new interface driver cdc_subset
+usbcore: registered new interface driver zaurus
+usbcore: registered new interface driver MOSCHIP usb-ethernet driver
+usbcore: registered new interface driver int51x1
+usbcore: registered new interface driver cdc_phonet
+usbcore: registered new interface driver kalmia
+usbcore: registered new interface driver ipheth
+usbcore: registered new interface driver sierra_net
+usbcore: registered new interface driver cx82310_eth
+usbcore: registered new interface driver cdc_ncm
+usbcore: registered new interface driver huawei_cdc_ncm
+usbcore: registered new interface driver lg-vl600
+usbcore: registered new interface driver qmi_wwan
+usbcore: registered new interface driver cdc_mbim
+usbcore: registered new interface driver ch9200
+usbcore: registered new interface driver r8153_ecm
+VFIO - User Level meta-driver version: 0.3
+aoe: AoE v85 initialised.
+BUG: unable to handle page fault for address: ffffdc000000000f
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:kernfs_root fs/kernfs/kernfs-internal.h:68 [inline]
+RIP: 0010:kernfs_new_node fs/kernfs/dir.c:655 [inline]
+RIP: 0010:kernfs_create_dir_ns+0x7a/0x220 fs/kernfs/dir.c:1010
+Code: 89 4c 24 04 4d 85 e4 4c 0f 44 e3 e8 80 25 7f ff 8b 4c 24 04 48 b8 00 00 00 00 00 fc ff df 49 8d 7c 24 78 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 4d 01 00 00 49 8b 7c 24 78 45 89 f9 6a 01 41 89
+RSP: 0000:ffffc9000027fb38 EFLAGS: 00010a06
+RAX: dffffc0000000000 RBX: ffff888016ffb0e8 RCX: 00000000000041ed
+RDX: 1fffe0000000000f RSI: ffffffff81fc1040 RDI: ffff000000000078
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffff888147771400
+R10: ffffed10281e6c62 R11: 0000000000000000 R12: ffff000000000000
+R13: ffffffff8a90b800 R14: ffff888147771400 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc000000000f CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ sysfs_create_dir_ns+0x127/0x290 fs/sysfs/dir.c:59
+ create_dir lib/kobject.c:63 [inline]
+ kobject_add_internal+0x2c9/0x8f0 lib/kobject.c:223
+ kobject_add_varg lib/kobject.c:358 [inline]
+ kobject_init_and_add+0x101/0x160 lib/kobject.c:441
+ bus_add_driver+0x1e8/0x640 drivers/base/bus.c:611
+ driver_register+0x220/0x3a0 drivers/base/driver.c:240
+ i2c_register_driver+0xe1/0x1d0 drivers/i2c/i2c-core-base.c:1861
+ do_one_initcall+0xfe/0x650 init/main.c:1296
+ do_initcall_level init/main.c:1369 [inline]
+ do_initcalls init/main.c:1385 [inline]
+ do_basic_setup init/main.c:1404 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1611
+ kernel_init+0x1a/0x1d0 init/main.c:1500
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+CR2: ffffdc000000000f
+---[ end trace 0000000000000000 ]---
+RIP: 0010:kernfs_root fs/kernfs/kernfs-internal.h:68 [inline]
+RIP: 0010:kernfs_new_node fs/kernfs/dir.c:655 [inline]
+RIP: 0010:kernfs_create_dir_ns+0x7a/0x220 fs/kernfs/dir.c:1010
+Code: 89 4c 24 04 4d 85 e4 4c 0f 44 e3 e8 80 25 7f ff 8b 4c 24 04 48 b8 00 00 00 00 00 fc ff df 49 8d 7c 24 78 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 4d 01 00 00 49 8b 7c 24 78 45 89 f9 6a 01 41 89
+RSP: 0000:ffffc9000027fb38 EFLAGS: 00010a06
+RAX: dffffc0000000000 RBX: ffff888016ffb0e8 RCX: 00000000000041ed
+RDX: 1fffe0000000000f RSI: ffffffff81fc1040 RDI: ffff000000000078
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffff888147771400
+R10: ffffed10281e6c62 R11: 0000000000000000 R12: ffff000000000000
+R13: ffffffff8a90b800 R14: ffff888147771400 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc000000000f CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	89 4c 24 04          	mov    %ecx,0x4(%rsp)
+   4:	4d 85 e4             	test   %r12,%r12
+   7:	4c 0f 44 e3          	cmove  %rbx,%r12
+   b:	e8 80 25 7f ff       	callq  0xff7f2590
+  10:	8b 4c 24 04          	mov    0x4(%rsp),%ecx
+  14:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1b:	fc ff df
+  1e:	49 8d 7c 24 78       	lea    0x78(%r12),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 4d 01 00 00    	jne    0x181
+  34:	49 8b 7c 24 78       	mov    0x78(%r12),%rdi
+  39:	45 89 f9             	mov    %r15d,%r9d
+  3c:	6a 01                	pushq  $0x1
+  3e:	41                   	rex.B
+  3f:	89                   	.byte 0x89
 
-Cheers,
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
