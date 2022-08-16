@@ -2,192 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B82C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5C3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235811AbiHPNaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
+        id S235826AbiHPNbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235828AbiHPNad (ORCPT
+        with ESMTP id S231520AbiHPNaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:30:33 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086B0B8F0B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:32 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id s11-20020a1cf20b000000b003a52a0945e8so5381300wmc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:31 -0700 (PDT)
+        Tue, 16 Aug 2022 09:30:25 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFABAB8A7C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:22 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id j3so10567806ljo.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc;
-        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
-        b=p1uIS7iPRm5FqeZyBT0Rono6HWbv5ulB/bs5oZgYh6d9a1ptIjWxTqIf5fdui0UI7P
-         UiKMVSr+4RtXLv4oOr9y9VG9zkJ7wYmACViu7FoZAAHh0fx2AK3IeW287cwTA94pjy7W
-         58dOOYI3IkZoR37TVr4OI4CDMlz7EA6HMoFO3Ex0IHnawCAeW+LTa/T3QasiPuhhYTYG
-         mUk4SHi+5Q/GbXbDglXaTas5nW1FpgGGNDDHSmOKsKRkDWE1GvW1FLM0ls2tIh887+7e
-         gGI8c1mDEYenpo65eLgr7mEvWZmy3MQSEE91lN0cZg0rhMVt+ckyO47lwF8zoDEr71bJ
-         5C6A==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc;
+        bh=5Maa5mHCDvID2XEbeA3TvbZciKfZbejdkqWh3jCTW2w=;
+        b=WBByk97cZs3CogZGSwc4iXNJ+Pjg63T3GFhsuU/mdkJvXfscSR4OMJdBNNP2eyRAqe
+         cPko9V6kv7gwBdG5ksCTrM+P+isaIeMzepjszn+q7YYVmBNftGz0M3F5JlKP8ubhPVJY
+         GYujjeKW/pJjNhyhd4V+ApiN0Am69HJWyJKK6+sBJr1b9HcSZjbctPsfpDog4Kc8+WiJ
+         gdYsmVgD3JqCCE1lSM8m4P277ehknAHp8beR11tD82aF3wpIEg4nn/3au0XhAda/g6HW
+         Ib4WdGdO3XqU+CITfIN3NxnvoXUUPgIevepPrCtfaQDX9D5MZY97TZigqt9VvDNT6wEL
+         IodA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc;
-        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
-        b=sWNDwfGE7y3Ug75uNiDNRKVMByzRKxKLbqN+jRM35rHv4UlavfrCrrEPm9EKdAZMCV
-         W301pbmuz+Rfs0ex1cChZ9qD3QZuiDt2BlQYS7ONA581oqToGZC/w6Syu5XuDtpjr6GN
-         g6bffDdqnkhU7LsC92pcSJCqFZRPWyq9S2Mn3A+UTb0dbUyCVVHzKbQ2WaSLT39ffClp
-         aSxTYDr8l0PAyi0ftCoDgsv6WEgqk76NGtC8FATngHWtGSB5Jx04mzTmHunNaWQIKF7V
-         83cF4OpjcKORuSxBV0+gX5a5JSpwBU1AVpEp+S3fUKKNpl1CxGs8pvmvuise9EfnRdx5
-         erig==
-X-Gm-Message-State: ACgBeo1eJtSAhtjp0zoDpp32qEHxt/MansMcbyS4/eoOffh/WzLwL1N1
-        cytb1qNQtx4jqxGrW2kGNbQa2g==
-X-Google-Smtp-Source: AA6agR5brmQT0VGVlB3KYey11S8HsfHLRIqrWymjHMuDRQM1mXOpHIasTetNNd2nw2J4QFqsRY8/MA==
-X-Received: by 2002:a1c:f217:0:b0:3a4:bfd4:21b4 with SMTP id s23-20020a1cf217000000b003a4bfd421b4mr12934932wmc.96.1660656630403;
-        Tue, 16 Aug 2022 06:30:30 -0700 (PDT)
-Received: from localhost (2a02-8388-6582-fe80-0000-0000-0000-0002.cable.dynamic.v6.surfer.at. [2a02:8388:6582:fe80::2])
-        by smtp.gmail.com with ESMTPSA id n6-20020a05600c3b8600b003a608d69a64sm1870148wms.21.2022.08.16.06.30.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:30:29 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 16 Aug 2022 15:30:26 +0200
-Message-Id: <CM7HN6H9EAN4.2008QGJVIO14X@otso>
-Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state()
- for now
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-To:     "Saravana Kannan" <saravanak@google.com>
-Cc:     "Tony Lindgren" <tony@atomide.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Kevin Hilman" <khilman@kernel.org>,
-        "Ulf Hansson" <ulf.hansson@linaro.org>,
-        "Pavel Machek" <pavel@ucw.cz>, "Len Brown" <len.brown@intel.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, <naresh.kamboju@linaro.org>,
-        <kernel-team@android.com>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
-X-Mailer: aerc 0.11.0
-References: <20220727185012.3255200-1-saravanak@google.com>
- <Yvonn9C/AFcRUefV@atomide.com> <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
- <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
-In-Reply-To: <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc;
+        bh=5Maa5mHCDvID2XEbeA3TvbZciKfZbejdkqWh3jCTW2w=;
+        b=Auh5qK6jN0rsuILhp/+9zxeNAylysFtCES+E9Fx/3pcUZYP5XA4H8b+BJX3li31/D9
+         gRLkvG7EKuF+4rrxkOodMEFgXENV6vMUQE0oH/w9Lq7FLL2597tDhATbrnVwqN/NlJnq
+         KM8rwWl3dxP2anM4TCSRnm1Max9OjftovRCqmojOsneR+9ALiUqzy9aWizR+rbu9s9+f
+         1h2/39MXgrfE32RfQ4hwK0Nxnq9aV2OGKYDNZ4ptWPqk/Hr4pg9QWmmT8aOGZQ624LBm
+         IP1z7qFglu1EjCLRPMLShD9YGSdy9d9s58X4bxbj5eYF8ZVljS7wXEaqTNi3kZlhWxcv
+         4Jaw==
+X-Gm-Message-State: ACgBeo0dnMLNFCqqvN+Cl+Efb+c4vmOMG6sizLyr4cFdS9gw/BuWHkE4
+        8AQdljz7std+lnhNDWt1+A5gvA==
+X-Google-Smtp-Source: AA6agR5KkdbueNzav6IGro95WRos+dXgFJPzwKDgHnq+77Qu54W5MBRJc0paIAniQQ8p8D0SCY52+Q==
+X-Received: by 2002:a2e:8e71:0:b0:261:74ad:ab5f with SMTP id t17-20020a2e8e71000000b0026174adab5fmr5785039ljk.387.1660656620931;
+        Tue, 16 Aug 2022 06:30:20 -0700 (PDT)
+Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id k19-20020a2eb753000000b0025e42f8e771sm1816301ljo.34.2022.08.16.06.30.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 06:30:20 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Tomasz Figa <tomasz.figa@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 1/2] dt-bindings: pinctrl: samsung: stop using bindings header with constants
+Date:   Tue, 16 Aug 2022 16:30:15 +0300
+Message-Id: <20220816133016.77553-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220816133016.77553-1-krzysztof.kozlowski@linaro.org>
+References: <20220816133016.77553-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saravana,
+The bindings header with pin controller register values is being
+deprecated and DTS already switched to a DTS-local header.
 
-On Tue Aug 16, 2022 at 1:36 AM CEST, Saravana Kannan wrote:
-> On Mon, Aug 15, 2022 at 9:57 AM Luca Weiss <luca.weiss@fairphone.com> wro=
-te:
-> >
-> > On Mon Aug 15, 2022 at 1:01 PM CEST, Tony Lindgren wrote:
-> > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > More fixes/changes are needed before driver_deferred_probe_check_st=
-ate()
-> > > > can be deleted. So, bring it back for now.
-> > > >
-> > > > Greg,
-> > > >
-> > > > Can we get this into 5.19? If not, it might not be worth picking up=
- this
-> > > > series. I could just do the other/more fixes in time for 5.20.
-> > >
-> > > Yes please pick this as fixes for v6.0-rc series, it fixes booting fo=
-r
-> > > me. I've replied with fixes tags for the two patches that were causin=
-g
-> > > regressions for me.
-> > >
-> >
-> > Hi,
-> >
-> > for me Patch 1+3 fix display probe on Qualcomm SM6350 (although display
-> > for this SoC isn't upstream yet, there are lots of other SoCs with very
-> > similar setup).
-> >
-> > Probe for DPU silently fails, with CONFIG_DEBUG_DRIVER=3Dy we get this:
-> >
-> > msm-mdss ae00000.mdss: __genpd_dev_pm_attach() failed to find PM domain=
-: -2
-> >
-> > While I'm not familiar with the specifics of fw_devlink, the dtsi has
-> > power-domains =3D <&dispcc MDSS_GDSC> for this node but it doesn't pick
-> > that up for some reason.
-> >
-> > We can also see that a bit later dispcc finally probes.
->
-> Luca,
->
-> Can you test with this series instead and see if it fixes this issue?
-> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com=
-/
->
+Do not reference the bindings header in schema and replace the defines
+with raw values.
 
-Unfortunately it doesn't seem to work with the 9 patches, and the
-attached diff also doesn't seem to make a difference. I do see this in
-dmesg which I haven't seen in the past:
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../pinctrl/samsung,pinctrl-pins-cfg.yaml     |  1 -
+ .../bindings/pinctrl/samsung,pinctrl.yaml     | 63 ++++++++-----------
+ 2 files changed, 27 insertions(+), 37 deletions(-)
 
-[    0.056554] platform 1d87000.phy: Fixed dependency cycle(s) with /soc@0/=
-ufs@1d84000
-[    0.060070] platform ae00000.mdss: Fixed dependency cycle(s) with /soc@0=
-/clock-controller@af00000
-[    0.060150] platform ae00000.mdss: Failed to create device link with ae0=
-0000.mdss
-[    0.060188] platform ae00000.mdss: Failed to create device link with ae0=
-0000.mdss
-[    0.061135] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061157] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061180] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061198] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061215] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061231] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061252] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-
-Also I'm going to be on holiday from today for about 2 weeks so I won't
-be able to test anything in that time.
-
-And in case it's interesting, here's the full dmesg to initramfs:
-https://pastebin.com/raw/Fc8W4MVi
-
-Regards
-Luca
-
-> You might also need to add this delta on top of the series if the
-> series itself isn't sufficient.
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 2f012e826986..866755d8ad95 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device=
- *con,
->                 device_links_write_unlock();
->         }
->
-> -       sup_dev =3D get_dev_from_fwnode(sup_handle);
-> +       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
-> +               sup_dev =3D fwnode_get_next_parent_dev(sup_handle);
-> +       else
-> +               sup_dev =3D get_dev_from_fwnode(sup_handle);
-> +
->         if (sup_dev) {
->                 /*
->                  * If it's one of those drivers that don't actually bind =
-to
->
-> -Saravana
+diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml
+index 9869d4dceddb..f796f27bf0e6 100644
+--- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml
+@@ -20,7 +20,6 @@ description: |
+   The values used for config properties should be derived from the hardware
+   manual and these values are programmed as-is into the pin pull up/down and
+   driver strength register of the pin-controller.
+-  See also include/dt-bindings/pinctrl/samsung.h with useful constants.
+ 
+   See also Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml for
+   additional information and example.
+diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+index 3a65c66ca71d..dafa51c69c06 100644
+--- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+@@ -15,9 +15,6 @@ description: |
+   This is a part of device tree bindings for Samsung S3C/S5P/Exynos SoC pin
+   controller.
+ 
+-  Pin group settings (like drive strength, pull up/down) are available as
+-  macros in include/dt-bindings/pinctrl/samsung.h.
+-
+   All the pin controller nodes should be represented in the aliases node using
+   the following format 'pinctrl{n}' where n is a unique number for the alias.
+ 
+@@ -138,8 +135,6 @@ additionalProperties: false
+ 
+ examples:
+   - |
+-    #include <dt-bindings/pinctrl/samsung.h>
+-
+     pinctrl@7f008000 {
+         compatible = "samsung,s3c64xx-pinctrl";
+         reg = <0x7f008000 0x1000>;
+@@ -166,8 +161,8 @@ examples:
+ 
+         uart0-data-pins {
+             samsung,pins = "gpa-0", "gpa-1";
+-            samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+-            samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
++            samsung,pin-function = <2>;
++            samsung,pin-pud = <0>;
+         };
+ 
+         // ...
+@@ -175,7 +170,6 @@ examples:
+ 
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+-    #include <dt-bindings/pinctrl/samsung.h>
+ 
+     pinctrl@11400000 {
+         compatible = "samsung,exynos4210-pinctrl";
+@@ -197,9 +191,9 @@ examples:
+ 
+         uart0-data-pins {
+             samsung,pins = "gpa0-0", "gpa0-1";
+-            samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+-            samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+-            samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
++            samsung,pin-function = <2>;
++            samsung,pin-pud = <0>;
++            samsung,pin-drv = <0>;
+         };
+ 
+         // ...
+@@ -207,14 +201,14 @@ examples:
+         sleep0: sleep-state {
+             gpa0-0-pin {
+                 samsung,pins = "gpa0-0";
+-                samsung,pin-con-pdn = <EXYNOS_PIN_PDN_INPUT>;
+-                samsung,pin-pud-pdn = <EXYNOS_PIN_PULL_NONE>;
++                samsung,pin-con-pdn = <2>;
++                samsung,pin-pud-pdn = <0>;
+             };
+ 
+             gpa0-1-pin {
+                 samsung,pins = "gpa0-1";
+-                samsung,pin-con-pdn = <EXYNOS_PIN_PDN_OUT0>;
+-                samsung,pin-pud-pdn = <EXYNOS_PIN_PULL_NONE>;
++                samsung,pin-con-pdn = <0>;
++                samsung,pin-pud-pdn = <0>;
+             };
+ 
+             // ...
+@@ -223,7 +217,6 @@ examples:
+ 
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+-    #include <dt-bindings/pinctrl/samsung.h>
+ 
+     pinctrl@11000000 {
+         compatible = "samsung,exynos4210-pinctrl";
+@@ -272,26 +265,26 @@ examples:
+ 
+         sd0-clk-pins {
+             samsung,pins = "gpk0-0";
+-            samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+-            samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+-            samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
++            samsung,pin-function = <2>;
++            samsung,pin-pud = <0>;
++            samsung,pin-drv = <3>;
+         };
+ 
+         sd4-bus-width8-pins {
+             part-1-pins {
+                 samsung,pins = "gpk0-3", "gpk0-4",
+                                "gpk0-5", "gpk0-6";
+-                samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
+-                samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
+-                samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
++                samsung,pin-function = <3>;
++                samsung,pin-pud = <3>;
++                samsung,pin-drv = <3>;
+             };
+ 
+             part-2-pins {
+                 samsung,pins = "gpk1-3", "gpk1-4",
+                                "gpk1-5", "gpk1-6";
+-                samsung,pin-function = <EXYNOS_PIN_FUNC_4>;
+-                samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
+-                samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
++                samsung,pin-function = <4>;
++                samsung,pin-pud = <3>;
++                samsung,pin-drv = <3>;
+             };
+         };
+ 
+@@ -299,16 +292,15 @@ examples:
+ 
+         otg-gp-pins {
+             samsung,pins = "gpx3-3";
+-            samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+-            samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+-            samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
++            samsung,pin-function = <1>;
++            samsung,pin-pud = <0>;
++            samsung,pin-drv = <0>;
+             samsung,pin-val = <0>;
+         };
+     };
+ 
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+-    #include <dt-bindings/pinctrl/samsung.h>
+ 
+     pinctrl@10580000 {
+         compatible = "samsung,exynos5433-pinctrl";
+@@ -352,9 +344,9 @@ examples:
+         initial_alive: initial-state {
+             gpa0-0-pin {
+                 samsung,pins = "gpa0-0";
+-                samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+-                samsung,pin-pud = <EXYNOS_PIN_PULL_DOWN>;
+-                samsung,pin-drv = <EXYNOS5433_PIN_DRV_FAST_SR1>;
++                samsung,pin-function = <0>;
++                samsung,pin-pud = <1>;
++                samsung,pin-drv = <0>;
+             };
+ 
+             // ...
+@@ -363,7 +355,6 @@ examples:
+ 
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+-    #include <dt-bindings/pinctrl/samsung.h>
+ 
+     pinctrl@114b0000 {
+         compatible = "samsung,exynos5433-pinctrl";
+@@ -384,9 +375,9 @@ examples:
+         i2s0-bus-pins {
+             samsung,pins = "gpz0-0", "gpz0-1", "gpz0-2", "gpz0-3",
+                            "gpz0-4", "gpz0-5", "gpz0-6";
+-            samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
+-            samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+-            samsung,pin-drv = <EXYNOS5433_PIN_DRV_FAST_SR1>;
++            samsung,pin-function = <2>;
++            samsung,pin-pud = <0>;
++            samsung,pin-drv = <0>;
+         };
+ 
+         // ...
+-- 
+2.34.1
 
