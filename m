@@ -2,140 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D68FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956DBC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiHPLK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        id S235374AbiHPLLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbiHPLKj (ORCPT
+        with ESMTP id S235558AbiHPLKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:10:39 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0218E1F60C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660639192; x=1692175192;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=haZJJ6qIsp18u5JMSxLBwZ3xo8DIn7m1qKopIr+1Xfg=;
-  b=OK1hXaQncULTuYAnDR9zKW5Q4r5ylVMlZC6PCFy+l0VptTqLDdeo5xuT
-   TAPlh76221rPFoDZl8si7DJLjYxkKQxq0LP+IUNs9QHF+6mkf8EjnKCDZ
-   EW2ru12vddDJFzRF2z2IXxTTkO55J2nXXLhPU6G8RegMxQnvy0/m/Rzqr
-   O0wv2fV15qgycSKSJkURu1AhyBqUgaDX3IO7eUeHzQfKrLB44ucWXdB41
-   3WN0YeAJqezHIX5kUaeVF2KlS7vMlwkEHoVsVvYGhOxgAYgWhj5psEV+/
-   KEl9uCwy2OWXyAl4ps/iYneIzMLJjTx12cGWpEhGdy5XSftDbbJslGFWp
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="289733824"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="289733824"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:39:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="610189582"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 16 Aug 2022 01:39:51 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNs74-0001e1-2d;
-        Tue, 16 Aug 2022 08:39:50 +0000
-Date:   Tue, 16 Aug 2022 16:39:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/070-audio 4/16] sound/soc/codecs/tas2764.c:681:20:
- warning: cast to smaller integer type 'enum tas2764_devid' from 'const void
- *'
-Message-ID: <202208161624.BKESkCXj-lkp@intel.com>
+        Tue, 16 Aug 2022 07:10:46 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336AC33E05
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:09 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id LID00002;
+        Tue, 16 Aug 2022 16:38:02 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201610.home.langchao.com (10.100.2.10) with Microsoft SMTP Server id
+ 15.1.2507.9; Tue, 16 Aug 2022 16:38:03 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
+        <rodrigo.vivi@intel.com>, <tvrtko.ursulin@linux.intel.com>,
+        <linus.walleij@linaro.org>, <thierry.reding@gmail.com>,
+        <sam@ravnborg.org>
+CC:     <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <intel-gfx@lists.freedesktop.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] drm: Fix all occurences of the "the the" typo
+Date:   Tue, 16 Aug 2022 04:37:59 -0400
+Message-ID: <20220816083759.4382-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   202281616380295695b11e04783094c024371e917475a
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/070-audio
-head:   51024ef467ff6c288e679bc72d0e3fcdd54d9b39
-commit: e8c4eabb2252a8ee21269737e90c57973ab36269 [4/16] ASoC: tas2764: Extend driver to SN012776
-config: arm64-randconfig-r022-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161624.BKESkCXj-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/AsahiLinux/linux/commit/e8c4eabb2252a8ee21269737e90c57973ab36269
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/070-audio
-        git checkout e8c4eabb2252a8ee21269737e90c57973ab36269
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash sound/soc/codecs/
+There are double "the" in messages in file drm_dp_helper.c,
+i915_irq.c and panel-novatek-nt35510.c, fix it.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/gpu/drm/display/drm_dp_helper.c       | 2 +-
+ drivers/gpu/drm/i915/i915_irq.c               | 2 +-
+ drivers/gpu/drm/panel/panel-novatek-nt35510.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
->> sound/soc/codecs/tas2764.c:681:20: warning: cast to smaller integer type 'enum tas2764_devid' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-                   tas2764->devid = (enum tas2764_devid) of_id->data;
-                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +681 sound/soc/codecs/tas2764.c
-
-   665	
-   666	static int tas2764_i2c_probe(struct i2c_client *client)
-   667	{
-   668		struct tas2764_priv *tas2764;
-   669		const struct of_device_id *of_id = NULL;
-   670		int result;
-   671	
-   672		tas2764 = devm_kzalloc(&client->dev, sizeof(struct tas2764_priv),
-   673				       GFP_KERNEL);
-   674		if (!tas2764)
-   675			return -ENOMEM;
-   676	
-   677		if (client->dev.of_node)
-   678			of_id = of_match_device(tas2764_of_match, &client->dev);	
-   679	
-   680		if (of_id)
- > 681			tas2764->devid = (enum tas2764_devid) of_id->data;
-   682		else
-   683			tas2764->devid = DEVID_TAS2764;
-   684	
-   685		tas2764->dev = &client->dev;
-   686		i2c_set_clientdata(client, tas2764);
-   687		dev_set_drvdata(&client->dev, tas2764);
-   688	
-   689		tas2764->regmap = devm_regmap_init_i2c(client, &tas2764_i2c_regmap);
-   690		if (IS_ERR(tas2764->regmap)) {
-   691			result = PTR_ERR(tas2764->regmap);
-   692			dev_err(&client->dev, "Failed to allocate register map: %d\n",
-   693						result);
-   694			return result;
-   695		}
-   696	
-   697		if (client->dev.of_node) {
-   698			result = tas2764_parse_dt(&client->dev, tas2764);
-   699			if (result) {
-   700				dev_err(tas2764->dev, "%s: Failed to parse devicetree\n",
-   701					__func__);
-   702				return result;
-   703			}
-   704		}
-   705	
-   706		return devm_snd_soc_register_component(tas2764->dev,
-   707						       &soc_component_driver_tas2764,
-   708						       tas2764_dai_driver,
-   709						       ARRAY_SIZE(tas2764_dai_driver));
-   710	}
-   711	
-
+diff --git a/drivers/gpu/drm/display/drm_dp_helper.c b/drivers/gpu/drm/display/drm_dp_helper.c
+index e5bab236b3ae..32b295003f49 100644
+--- a/drivers/gpu/drm/display/drm_dp_helper.c
++++ b/drivers/gpu/drm/display/drm_dp_helper.c
+@@ -1597,7 +1597,7 @@ static int drm_dp_aux_reply_duration(const struct drm_dp_aux_msg *msg)
+ 
+ /*
+  * Calculate the length of the i2c transfer in usec, assuming
+- * the i2c bus speed is as specified. Gives the the "worst"
++ * the i2c bus speed is as specified. Gives the "worst"
+  * case estimate, ie. successful while as long as possible.
+  * Doesn't account the "MOT" bit, and instead assumes each
+  * message includes a START, ADDRESS and STOP. Neither does it
+diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
+index 73cebc6aa650..783a6ca41a61 100644
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -65,7 +65,7 @@
+ 
+ /*
+  * Interrupt statistic for PMU. Increments the counter only if the
+- * interrupt originated from the the GPU so interrupts from a device which
++ * interrupt originated from the GPU so interrupts from a device which
+  * shares the interrupt line are not accounted.
+  */
+ static inline void pmu_irq_stats(struct drm_i915_private *i915,
+diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35510.c b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
+index 40ea41b0a5dd..4085822f619a 100644
+--- a/drivers/gpu/drm/panel/panel-novatek-nt35510.c
++++ b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
+@@ -231,7 +231,7 @@ struct nt35510_config {
+ 	 * bits 0..2 in the lower nibble controls HCK, the booster clock
+ 	 * frequency, the values are the same as for PCK in @bt1ctr.
+ 	 * bits 4..5 in the upper nibble controls BTH, the boosting
+-	 * amplification for the the step-up circuit.
++	 * amplification for the step-up circuit.
+ 	 * 0 = AVDD + VDDB
+ 	 * 1 = AVDD - AVEE
+ 	 * 2 = AVDD - AVEE + VDDB
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
