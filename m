@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D131AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1AAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233985AbiHPJ5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
+        id S232310AbiHPJ57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234113AbiHPJ4Q (ORCPT
+        with ESMTP id S233984AbiHPJ5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:56:16 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A71E30556;
-        Tue, 16 Aug 2022 02:02:30 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id o14so5055579ilt.2;
-        Tue, 16 Aug 2022 02:02:30 -0700 (PDT)
+        Tue, 16 Aug 2022 05:57:19 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD20194;
+        Tue, 16 Aug 2022 02:18:37 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id v2so14042036lfi.6;
+        Tue, 16 Aug 2022 02:18:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=9HxXIhlJ8egb+tUhCrrqxA/twApe2EwzTrM2sMlQQzE=;
-        b=GhjmGk3SkLWdGC6hiDpPT7eKuLZO8Lx9BJgpNsKi16+G1De2HNSVvNTleAnQpbWgFe
-         /lpzlSCy7JYg+wjvpiuoqUYNhkq4hVMsnK/1DA16tZkfO77VUgjGispkBUAx+1xiDnCz
-         aec0AKrdXZDsRMoLNmfeNwkK0R6sy7GeARPAUll6nYxFpopNLG+CNNLOqyF7msEnseCY
-         rV9vuvtQCzrI0EID1KS9KvSJ3wgmIGBNmRk1fDUSFbwQNu3bPFzrwN78uQO2yMZBm+mi
-         NpOKtL3CvkD6oeF5xR6Fj6Ld1ahlv1jZgAf9qs8LwRuwHzD/ke9fSg0h4MbUwyGUSslb
-         VyLw==
+        bh=Kk2g2IEl/Ua+BBCBiaozArRy7OGG11VduF5q3BhTDG0=;
+        b=KcBiWrctfetchJMsY/eFWVoCsx3SblR9qr6NI6BPQ60NgilShdjZlJUj4AiV5t0Yz1
+         QLi+cwFAww1Sh0xZjHgdFm2wXeNc1qu+yYPcoCpbHeauU5+BHlq8vB3ETrA+3wNlMNAq
+         YfbF3VYWZjWcHbXYEqnmKbHbidsO/eQQGJjM3gLluTqbtBegGjkkFls9VZZOLZYpzsB/
+         kt2bO+DyeinL1VidVfznhy9aVsAasdL03No67OrGbIRpxJ9O733KT4e2UUBk18Sg6RIE
+         BvRr9ja784eIHZZDWo5KueuM0LZCwwgjFh7PRZkYjhHV500L74V1q7n0lwlIANYOoPvV
+         fvBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=9HxXIhlJ8egb+tUhCrrqxA/twApe2EwzTrM2sMlQQzE=;
-        b=vVG2nUVDVcP9vbeusOC1dODXytBMmtbt6TyfP68MVU+1LFzcFb/veF7n2akE7mm2Ee
-         VILicmJYsoBf5LlZCxn+MiMsyhlNBsFWS+AhgU5yZYu1Pp9LYJe/hAm61P1ikbjONYDm
-         dL5Ft33gqHBg+Zg3Dt6bPLedcgeD0EyhK+eSjF1EPQiKAoFg4fheGTL0dhqmwp0oSfxK
-         zzExiBJxz5KzB4bNuAX+W0AXCdLUWN2Eul4oLML/ItzDcR//DI5+UMkjsqxJnLSyO6gq
-         4FEYO3TVEOFUxAJZFOuWEzIT9002FnFjGdY/I65VpKAC24Zrz8zV+ky6fzDLJTd98JEv
-         YLvg==
-X-Gm-Message-State: ACgBeo1F8VBL8q5GHNwcZuzRlZC4qlkVQ+WWXFFhFj/KZk7rlIjivoin
-        swHCif8sBKZvVn4W4WWZCgXhkK/DvDGJ2Uybqo8=
-X-Google-Smtp-Source: AA6agR6vrFP8ihEQ/t5hzL2CGHbBK/VDTFu94MFdeRo6ma61vC0x8/MWQTOphRW6mllMw8pv8V8062edXmTR4HqUVqs=
-X-Received: by 2002:a05:6e02:1c26:b0:2e0:d8eb:22d6 with SMTP id
- m6-20020a056e021c2600b002e0d8eb22d6mr9161577ilh.151.1660640550007; Tue, 16
- Aug 2022 02:02:30 -0700 (PDT)
+        bh=Kk2g2IEl/Ua+BBCBiaozArRy7OGG11VduF5q3BhTDG0=;
+        b=GZVhmcHyprqs3B5Z9jKNl0dcyq41VPIwmEkZZLmFWh+YgL+xFCjZTBrpOfxPUezfO+
+         Inrwlb/5IywmbNkERF2mxrffqbXFhKdhS2ggb4GoTASsUm6akD/+TTeBbPo8zDHjIWhO
+         ict1jbDHwMf/FAOCuwTX7Qxy+/11uUu9ly3nAMYuGqf38ZoJhmYP3OasmTbTyjN2Hlxf
+         lQt98I+VEIyiXSmPUQvp+ygsET4D1unYSdKR4omOdHik7lsITT7bRljriQQ7FAd2wkVw
+         9of+w/u/Ya01ni7oxnNUsScYDdHMPcxmhI4bRfF7kecWWgOYxincSnfLYCI17K3DmHP9
+         51xA==
+X-Gm-Message-State: ACgBeo1D+F8lS/ln7U8nwO0jNVpk0EVrSZnO1KCfx0oOMy2LCO+HOX/m
+        T5nxWXKFWZ4B01CHzfyeAU3WLe6vKxm1WNcIN/Sdb3RF7EcEOg==
+X-Google-Smtp-Source: AA6agR7PDcg9fUP4aVag2k2cXXyHGw1wbNV0WesqmcGnmlmXEndYbcZ7+VdLCCjesog4PO6/2bAL/31vc+5aUkDs4mU=
+X-Received: by 2002:a2e:b88c:0:b0:25f:eae4:74ff with SMTP id
+ r12-20020a2eb88c000000b0025feae474ffmr6545964ljp.48.1660641515791; Tue, 16
+ Aug 2022 02:18:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220816032846.2579217-1-imagedong@tencent.com>
-In-Reply-To: <20220816032846.2579217-1-imagedong@tencent.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Tue, 16 Aug 2022 11:02:19 +0200
-Message-ID: <CANiq72mQpZ-z1vVeOwdaOB3b=jjQHtPwz3-jaPRV330-yL_FqQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: skb: prevent the split of
- kfree_skb_reason() by gcc
-To:     menglong8.dong@gmail.com
-Cc:     kuba@kernel.org, ojeda@kernel.org, ndesaulniers@google.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        asml.silence@gmail.com, imagedong@tencent.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>
+References: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
+ <YvqP/f2P2YgIIO9U@ZenIV> <CAKFNMomyjXpsz-=BtG+G3q1J7CFUBMEfP13FfxwhWB==9qb++w@mail.gmail.com>
+ <YvrQ8xO9Lx7rdKq8@ZenIV> <CAKFNMoniwM5x0w03cezGTFDWt=apNmGWpur83+vjghg3zcawpQ@mail.gmail.com>
+ <CAD-N9QW5-kVR85t1canTqrF9RMkOjC1Z2q8BSQKxLwaay97Mgg@mail.gmail.com>
+In-Reply-To: <CAD-N9QW5-kVR85t1canTqrF9RMkOjC1Z2q8BSQKxLwaay97Mgg@mail.gmail.com>
+From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Date:   Tue, 16 Aug 2022 18:18:18 +0900
+Message-ID: <CAKFNMonVb6s3Cey5riXFwd+C3wy87fHbMUtnq3SXooXgsSD5yA@mail.gmail.com>
+Subject: Re: [PATCH] nilfs2: fix use-after-free bug in nilfs_mdt_destroy()
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiacheng Xu <stitch@zju.edu.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 5:29 AM <menglong8.dong@gmail.com> wrote:
+On Tue, Aug 16, 2022 at 12:25 PM Dongliang Mu wrote:
+> > Dongliang (or Jiacheng?), would it be possible for you to post a revised patch
+> > against inode_init_always() that moves the call of security_inode_alloc()
+> > instead of i_private initialization (as Al Viro said in a nearby thread [1]) ?
+> > If you have time, I would like to leave it to you since you wrote the
+> > original patch for inode_init_always().
 >
-> Reported-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> Sure, I will post a v2 patch that moves security_inode_alloc to the
+> location just prior to
+>         this_cpu_inc(nr_inodes);
+> with proper commit message.
+>
 
-Hmm... Why did you add me as a reporter?
+I saw you already sent the v2 patch on linux-fsdevel, etc.
+Just thank you for your quick follow.
 
-> + * Optional: not supported by clang.
-> + * Optional: not supported by icc.
+Regards,
+Ryusuke Konishi
 
-Much better, thank you! Please add the links to GCC's docs, like in
-most attributes (some newer attributes may have been added without
-them -- I will fix that).
-
-In any case, no need to send a new version just for this for the
-moment, I would recommend waiting until others comment on whether they
-want `__optimize__` used here as the workaround.
-
-Cheers,
-Miguel
+> >
+> > [1] https://lkml.kernel.org/r/CAO4S-mficMz1mQW06EuCF+o11+mRDiCpufqVfoHkcRbQbs8kVw@mail.gmail.com
+> >
+> > Thanks,
+> > Ryusuke Konishi
