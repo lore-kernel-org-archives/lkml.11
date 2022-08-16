@@ -2,128 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE474C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0A7C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbiHPKPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
+        id S232225AbiHPKQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiHPKPP (ORCPT
+        with ESMTP id S233916AbiHPKO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:15:15 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7292FD599B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:19 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id a22so8296786pfg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=EGNQJRIPLumZf7DqKjclfQvb9o3UYOp5ZwZhQHSQQ/I=;
-        b=Ak9otAjwzHCu40bRgga78Z1a/w5XmFv4rBlwJlUtFg21GblJ0oBlpOoIa+9J4T7eFR
-         kC6Isx7q0xBXJ5Nm4ZOWpzGeTFEdUYaRPDGZJow7Dv69qW8L4r/kgxKCw2DRLjz1no0/
-         AU68paDW/UbjTlkOTEy/PxeF32eDVKqjUFUB0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=EGNQJRIPLumZf7DqKjclfQvb9o3UYOp5ZwZhQHSQQ/I=;
-        b=HC1s0gpqc8qYijOsTKPkZRZo05jcMp43VWWMJ3AW1x9dw7xRPUYyN1pyRUT3rZWuxc
-         Bz4hmGoB3lMcPda9JDu8p+P7IFcuHo62Kfjjf/Q1WZXdZFSdyuYAsfioEXOQm7ugMTHd
-         w7ua3XBkWDpD4wrERZi71CoHxWoebeSRuvHQCv3dyfuRLVheBySi7bjB2copIq8Yg8KY
-         z3zumpcCFprcy55Xb7zLuqHybydvXl6y413AskvQWWKDvdDiBLklhLNtGFP66LwJsdsT
-         5e4AnvKNs5wvxFPTgdUhJVhyebu8JiLss8Vqdayjy9SOtFKNoVgq6pRgw2k7Kv2womZT
-         KvJA==
-X-Gm-Message-State: ACgBeo3vXTQ+eA/pmeWnFeR1cmNKF3VX2GB3ej6MsqRsB5Nv4goYTWUR
-        m5ak3Bvrp+Tje32X8YFPrjJFFw==
-X-Google-Smtp-Source: AA6agR5RMR7nwdxfCdO/lQPIYn1JC1RLaj1gHqEjp0p04k8mcgVG7ekoDRkJ8cxSAYn85WAIO+AcgA==
-X-Received: by 2002:a05:6a00:1588:b0:52f:a5bb:b992 with SMTP id u8-20020a056a00158800b0052fa5bbb992mr19821980pfk.38.1660642612935;
-        Tue, 16 Aug 2022 02:36:52 -0700 (PDT)
-Received: from judyhsiao0523.c.googlers.com.com (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
-        by smtp.gmail.com with ESMTPSA id i3-20020aa796e3000000b0052e26b8f610sm7924788pfq.89.2022.08.16.02.36.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 02:36:52 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
-        judyhsiao@google.com, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v2] arm64: dts: qcom: sc7280: Use "PP1800_L2C" as the DMIC power source.
-Date:   Tue, 16 Aug 2022 09:36:44 +0000
-Message-Id: <20220816093644.764259-1-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+        Tue, 16 Aug 2022 06:14:59 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181FF5A2C4;
+        Tue, 16 Aug 2022 01:01:49 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 8E23941A42;
+        Tue, 16 Aug 2022 08:01:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1660636907; bh=hdO0VK1BgxthiOSTlr+e1eaO5dfWp+h7FMXRza4Hsq4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=DaLeUy6iahjaMjN9JrVNc57ZozIWEObhc79ETbuWH6F4g2xflaB0R2I9U12Ei7s5z
+         c2ZH7+UHYhXpQJr/ul4lQrS49JpL1YF7DD9LwwdH4J5nC8ZbMlz2YlPqtjkybNBjIs
+         NsSOqPqMrknOup3Ju2HGcGoQYJ2pptLHhZNC0aP439quZj3TRIADaHsix5DBPMXU53
+         ELmGSpq3U830ZMod7U3u/QdZK09aGS4ZGkyip3lnTzJPuVW6UtzLV26E3hyR39MfK1
+         RBnjaozfwBmzm+dzR+FXJ11o1uU1z/E9CG2t1asjvQoCksdVzIj+wetB8Lw79d7aAV
+         eol3iUbS6rPYQ==
+Message-ID: <0c0ba856-a4ba-7133-e751-3a81c82311a9@marcan.st>
+Date:   Tue, 16 Aug 2022 17:01:39 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
+Content-Language: en-US
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Will Deacon <will@kernel.org>, Tejun Heo <tj@kernel.org>,
+        peterz@infradead.org, jirislaby@kernel.org, maz@kernel.org,
+        mark.rutland@arm.com, boqun.feng@gmail.com,
+        catalin.marinas@arm.com, oneukum@suse.com,
+        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <YvqaK3hxix9AaQBO@slm.duckdns.org>
+ <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
+ <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
+ <cd51b422-89f3-1856-5d3b-d6e5b0029085@marcan.st>
+ <CAHk-=wjfLT7nL8pV8RWATpjgm0zDtUwT8UMtroqnGcXRjN8tgw@mail.gmail.com>
+ <24c88c4f-aea5-1fb7-0ead-95c88629d72b@marcan.st>
+ <YvtLsNZEUUytdx+i@gondor.apana.org.au>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <YvtLsNZEUUytdx+i@gondor.apana.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use "PP1800_L2C" as the DMIC power source to match the hardware
-schematic.
-It fixes the DMIC no sound issue of villager-r1.
+On 2022/08/16 16:48, Herbert Xu wrote:
+> On Tue, Aug 16, 2022 at 03:28:50PM +0900, Hector Martin wrote:
+>>
+>> This is the same reason I argued queue_work() itself needs to have a
+>> similar guarantee, even when it doesn't queue work (and I updated the
+>> doc to match). If test_and_set_bit() is used in this kind of context
+>> often in the kernel, clearly the current implementation/doc clashes with
+>> that.
+> 
+> Kernel code all over the place rely on the fact that test_and_set_bit
+> provides a memory barrier.  So this bug that you've discovered is
+> not at all isolated to the workqeueue system.  It'll break the kernel
+> in lots of places in exactly the same way.
 
+Now I'm surprised this isn't failing all over the place, given that...
+these things are annoyingly subtle.
 
-Co-developed-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
----
-Changes since V1:
-    -- Update the commit message.
+Still would want Will & Peter to chime in, of course.
 
+>> As I said, I don't have any particular beef in this fight, but this is
+>> horribly broken on M1/2 right now, so I'll send a patch to change the
+>> bitops instead and you all can fight it out over which way is correct :)
+> 
+> Please do.
 
-This patch depends on:
-arm64: dts: qcom: sc7280: Add herobrine-villager-r1. [1]
+Already did, but I just realized I forgot to Cc you. Sorry about that,
+hope you can pick it up through the MLs:
 
-[1]
-https://patchwork.kernel.org/patch/12926099/
+https://lore.kernel.org/asahi/20220816070311.89186-1-marcan@marcan.st/T/#u
 
-
- .../dts/qcom/sc7280-herobrine-villager-r1.dts | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
-index c03b3ae4de50..983defa7c76d 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
-@@ -12,3 +12,31 @@ / {
- 	model = "Google Villager (rev1+)";
- 	compatible = "google,villager", "qcom,sc7280";
- };
-+
-+&lpass_va_macro {
-+	vdd-micb-supply = <&pp1800_l2c>;
-+};
-+
-+&sound {
-+	audio-routing =
-+			"IN1_HPHL", "HPHL_OUT",
-+			"IN2_HPHR", "HPHR_OUT",
-+			"AMIC1", "MIC BIAS1",
-+			"AMIC2", "MIC BIAS2",
-+			"VA DMIC0", "vdd-micb",
-+			"VA DMIC1", "vdd-micb",
-+			"VA DMIC2", "vdd-micb",
-+			"VA DMIC3", "vdd-micb",
-+			"TX SWR_ADC0", "ADC1_OUTPUT",
-+			"TX SWR_ADC1", "ADC2_OUTPUT",
-+			"TX SWR_ADC2", "ADC3_OUTPUT",
-+			"TX SWR_DMIC0", "DMIC1_OUTPUT",
-+			"TX SWR_DMIC1", "DMIC2_OUTPUT",
-+			"TX SWR_DMIC2", "DMIC3_OUTPUT",
-+			"TX SWR_DMIC3", "DMIC4_OUTPUT",
-+			"TX SWR_DMIC4", "DMIC5_OUTPUT",
-+			"TX SWR_DMIC5", "DMIC6_OUTPUT",
-+			"TX SWR_DMIC6", "DMIC7_OUTPUT",
-+			"TX SWR_DMIC7", "DMIC8_OUTPUT";
-+
-+};
--- 
-2.31.0
-
+- Hector
