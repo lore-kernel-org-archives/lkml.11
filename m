@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EAEC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0889DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234903AbiHPKhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        id S234919AbiHPKh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234768AbiHPKgg (ORCPT
+        with ESMTP id S234833AbiHPKhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:36:36 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF587390C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:46:26 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id v5-20020a5d9405000000b0067c98e0011dso5559973ion.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:46:26 -0700 (PDT)
+        Tue, 16 Aug 2022 06:37:03 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D777DD9E84
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:37:22 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id d4-20020a056e02214400b002df95f624a4so6631513ilv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:37:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=ahmrjH0a3Qkxw5mdXLJa7NXy27rr3wSWL9HtgfgRopE=;
-        b=XOJwFB9l/695RD5d5fQ+6SZPKW2TA/jN1ko9M6KouvMruIHlQr0xbDVM2cfKxAEIlO
-         1F80RtmTgly19e1yoVbjN1fZAjdOoymbKmElvHNV4RkumpH1sHGDaHLS+AXt3yRTz0ii
-         bRtKsIZDMRfUC5iTAIGK7b4kTBwB1HVpdGu0tVvoYs8aPGST1pmP/+UgC1CWM36jcbF0
-         /7o5J1KS50hkjLjklF/+il20YAtR7NhOuZDM0hnTMXy2NVSolrr8mNL4zVBUrD0arN4l
-         PyWOQzEWYDfYCoXvQhd1CwpPZRC7R9kzvmYsWdUo/gXi68JEpxHDad1+MR6gJDoTi9GX
-         ox6g==
-X-Gm-Message-State: ACgBeo3RHSSrvlvPrcn8QFOJgUh+XcqW9dOyoUGgHuFbu8EwTpX4KAL0
-        3O3vkv0FJQI2cx9jcUP9gNh5Y5CBVX42UvFYmGyiRmpVlmLa
-X-Google-Smtp-Source: AA6agR4acJ4apit9JKg5rRK8ILwimd0MgxU3eXNXYOdjDSkUqczW0DbRVp9bfUsRpHitcWwTa31XD7BxUqSoiVigG5luxR99Nn0Q
+        bh=cRiGHi7V0E16Zd9yaFOspAnkEj0IBBJulLv08cYCilo=;
+        b=ge2iDsCJO+j2XhuuE8olF9jGq0jRcUi/mr5FoebtAQap0UmkjNGDSNBBfz2ncGu35G
+         8fMkp3ZvO1vRf+uawN2JmsMUAOUNC9SV2TWKrbBMuudFsRQQhFLFeFDN8Piq4vA3wHtF
+         cNAIoTQnUUVf1mj9UkcB/DJh23EIlLnbOCoy52WDmpLm8FO6rKwIhtiapXej1gPDGfnl
+         q3GmxHszdCIf6d++K6P3mJXUVrhYZOkSFrs9qvQ78WbQkhNCGtPQw/SqFgF2xzTIhM62
+         ApUkieN3xuq6njxGZO0AvPU9oW4w00JBSzdmtMKcFkmrInXLG+Fjk6/3liUf/AjTsuz+
+         ETWw==
+X-Gm-Message-State: ACgBeo245wPdjZYyZpOmDLeujs2ored/yKPTVB2icxaQq6oJWwljHw5t
+        QEz80QD3yP/UR8bsCkDii6acxEozgJpaLaiPAvAW6y6bCZTc
+X-Google-Smtp-Source: AA6agR4jjixZvDXts2iGrdDyrmDIr5NpqGJ4hJbjX7lpRVkElOGgZyfKx5n7fn3TLinYYkjtDVbrx00C8szJFLRbUBlx2JLHyzrj
 MIME-Version: 1.0
-X-Received: by 2002:a02:6023:0:b0:346:ac9c:5ded with SMTP id
- i35-20020a026023000000b00346ac9c5dedmr945099jac.245.1660639585434; Tue, 16
- Aug 2022 01:46:25 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:46:25 -0700
+X-Received: by 2002:a05:6e02:1e09:b0:2de:f22:9cca with SMTP id
+ g9-20020a056e021e0900b002de0f229ccamr9461855ila.36.1660639042014; Tue, 16 Aug
+ 2022 01:37:22 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:37:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009700a805e657c8fa@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in kvm_arch_hardware_enable
-From:   syzbot <syzbot+4f6eb69074ff62a1a33b@syzkaller.appspotmail.com>
-To:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jarkko@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sgx@vger.kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
+Message-ID: <00000000000033169005e657a852@google.com>
+Subject: [syzbot] upstream boot error: general protection fault in nl80211_put_iface_combinations
+From:   syzbot <syzbot+684d4ca200fda0b2141e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -55,110 +55,132 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+HEAD commit:    568035b01cfb Linux 6.0-rc1
 git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=13d10985080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20bc0b329895d963
-dashboard link: https://syzkaller.appspot.com/bug?extid=4f6eb69074ff62a1a33b
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1538e0b5080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=112756f3080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=145d8a47080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=126b81cc3ce4f07e
+dashboard link: https://syzkaller.appspot.com/bug?extid=684d4ca200fda0b2141e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4f6eb69074ff62a1a33b@syzkaller.appspotmail.com
+Reported-by: syzbot+684d4ca200fda0b2141e@syzkaller.appspotmail.com
 
-BUG: unable to handle page fault for address: ffffc900039aa330
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 12000067 
-P4D 12000067 
-PUD 121c9067 
-PMD 1d46a067 
-PTE 0
-
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 3620 Comm: syz-executor254 Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
+usbcore: registered new interface driver nfcmrvl
+Loading iSCSI transport class v2.0-870.
+scsi host0: Virtio SCSI HBA
+st: Version 20160209, fixed bufsize 32768, s/g segs 256
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+slram: not enough parameters.
+ftl_cs: FTL header not found.
+wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
+MACsec IEEE 802.1AE
+tun: Universal TUN/TAP device driver, 1.6
+vcan: Virtual CAN interface driver
+vxcan: Virtual CAN Tunnel driver
+slcan: serial line CAN interface driver
+CAN device driver interface
+usbcore: registered new interface driver usb_8dev
+usbcore: registered new interface driver ems_usb
+usbcore: registered new interface driver gs_usb
+usbcore: registered new interface driver kvaser_usb
+usbcore: registered new interface driver mcba_usb
+usbcore: registered new interface driver peak_usb
+e100: Intel(R) PRO/100 Network Driver
+e100: Copyright(c) 1999-2006 Intel Corporation
+e1000: Intel(R) PRO/1000 Network Driver
+e1000: Copyright (c) 1999-2006 Intel Corporation.
+e1000e: Intel(R) PRO/1000 Network Driver
+e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+mkiss: AX.25 Multikiss, Hans Albas PE1AYX
+AX.25: 6pack driver, Revision: 0.3.0
+AX.25: bpqether driver version 004
+PPP generic driver version 2.4.2
+PPP BSD Compression module registered
+PPP Deflate Compression module registered
+PPP MPPE Compression module registered
+NET: Registered PF_PPPOX protocol family
+PPTP driver version 0.8.5
+SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
+CSLIP: code copyright 1989 Regents of the University of California.
+SLIP linefill/keepalive option.
+hdlc: HDLC support module revision 1.22
+LAPB Ethernet driver version 0.02
+usbcore: registered new interface driver ath9k_htc
+usbcore: registered new interface driver carl9170
+usbcore: registered new interface driver ath6kl_usb
+usbcore: registered new interface driver ar5523
+usbcore: registered new interface driver ath10k_usb
+usbcore: registered new interface driver rndis_wlan
+mac80211_hwsim: initializing netlink
+general protection fault, probably for non-canonical address 0xffff000000000000: 0000 [#1] PREEMPT SMP
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:arch_atomic_read arch/x86/include/asm/atomic.h:29 [inline]
-RIP: 0010:atomic_read include/linux/atomic/atomic-instrumented.h:28 [inline]
-RIP: 0010:kvm_arch_hardware_enable+0x1d1/0x6d0 arch/x86/kvm/x86.c:11847
-Code: 89 5c 24 38 4c 8d 73 f0 4c 89 f7 be 04 00 00 00 e8 a4 44 cc 00 4d 89 f5 49 c1 ed 03 43 0f b6 44 3d 00 84 c0 0f 85 08 02 00 00 <41> 8b 06 ff c8 48 63 d0 4c 89 64 24 10 4c 89 e7 48 8d 74 24 60 b9
-RSP: 0018:ffffc900038dfaa0 EFLAGS: 00010082
-
-RAX: 0000000000000000 RBX: ffffc900039aa340 RCX: ffffffff8110f0c2
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffffc900039aa330
-RBP: ffffc900038dfb80 R08: dffffc0000000000 R09: fffff52000735466
-R10: fffff52000735467 R11: 1ffff92000735466 R12: ffffc900039aa240
-R13: 1ffff92000735466 R14: ffffc900039aa330 R15: dffffc0000000000
-FS:  0000555555610300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+RIP: 0010:nl80211_put_iface_combinations+0x19d/0x4b0 net/wireless/nl80211.c:1632
+Code: 00 00 e8 a6 5b 2d fd 48 85 ed 0f 84 d4 00 00 00 e8 98 5b 2d fd 49 8b 06 ba 04 00 00 00 48 89 df 48 8d 4c 24 2c be 01 00 00 00 <42> 0f b7 04 28 89 44 24 2c e8 d5 81 3d fe 31 ff 41 89 c7 89 c6 e8
+RSP: 0000:ffffc90000273a50 EFLAGS: 00010293
+RAX: ffff000000000000 RBX: ffff888102235800 RCX: ffffc90000273a7c
+RDX: 0000000000000004 RSI: 0000000000000001 RDI: ffff888102235800
+RBP: ffff88810283494c R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 000000000002f8b8 R12: 0000000000000001
+R13: 0000000000000000 R14: ffff888106d14c88 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc900039aa330 CR3: 0000000076051000 CR4: 00000000003526f0
+CR2: ffff88823ffff000 CR3: 0000000005a29000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- hardware_enable_nolock+0xa1/0x140 arch/x86/kvm/../../../virt/kvm/kvm_main.c:5007
- smp_call_function_many_cond+0xebc/0x16f0 kernel/smp.c:979
- on_each_cpu_cond_mask+0x3b/0x80 kernel/smp.c:1154
- on_each_cpu include/linux/smp.h:71 [inline]
- hardware_enable_all+0x77/0x120 arch/x86/kvm/../../../virt/kvm/kvm_main.c:5069
- kvm_create_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1202 [inline]
- kvm_dev_ioctl_create_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:4910 [inline]
- kvm_dev_ioctl+0x1076/0x17e0 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4957
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fd926d9c049
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffce6c2e948 EFLAGS: 00000246
- ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fd926d9c049
-RDX: 0000000000000000 RSI: 000000000000ae01 RDI: 0000000000000003
-RBP: 00007ffce6c2e960 R08: 0000000000000002 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ nl80211_send_wiphy+0x9b4/0x4170 net/wireless/nl80211.c:2648
+ nl80211_notify_wiphy+0x8f/0x140 net/wireless/nl80211.c:17164
+ wiphy_register+0x112f/0x1400 net/wireless/core.c:942
+ ieee80211_register_hw+0x11c9/0x1590 net/mac80211/main.c:1379
+ mac80211_hwsim_new_radio+0xc3f/0x1520 drivers/net/wireless/mac80211_hwsim.c:4129
+ init_mac80211_hwsim+0x43d/0x5ae drivers/net/wireless/mac80211_hwsim.c:5379
+ do_one_initcall+0x5e/0x2e0 init/main.c:1296
+ do_initcall_level init/main.c:1369 [inline]
+ do_initcalls init/main.c:1385 [inline]
+ do_basic_setup init/main.c:1404 [inline]
+ kernel_init_freeable+0x255/0x2cf init/main.c:1611
+ kernel_init+0x1a/0x1c0 init/main.c:1500
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
  </TASK>
 Modules linked in:
-CR2: ffffc900039aa330
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:arch_atomic_read arch/x86/include/asm/atomic.h:29 [inline]
-RIP: 0010:atomic_read include/linux/atomic/atomic-instrumented.h:28 [inline]
-RIP: 0010:kvm_arch_hardware_enable+0x1d1/0x6d0 arch/x86/kvm/x86.c:11847
-Code: 89 5c 24 38 4c 8d 73 f0 4c 89 f7 be 04 00 00 00 e8 a4 44 cc 00 4d 89 f5 49 c1 ed 03 43 0f b6 44 3d 00 84 c0 0f 85 08 02 00 00 <41> 8b 06 ff c8 48 63 d0 4c 89 64 24 10 4c 89 e7 48 8d 74 24 60 b9
-RSP: 0018:ffffc900038dfaa0 EFLAGS: 00010082
-
-RAX: 0000000000000000 RBX: ffffc900039aa340 RCX: ffffffff8110f0c2
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffffc900039aa330
-RBP: ffffc900038dfb80 R08: dffffc0000000000 R09: fffff52000735466
-R10: fffff52000735467 R11: 1ffff92000735466 R12: ffffc900039aa240
-R13: 1ffff92000735466 R14: ffffc900039aa330 R15: dffffc0000000000
-FS:  0000555555610300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+RIP: 0010:nl80211_put_iface_combinations+0x19d/0x4b0 net/wireless/nl80211.c:1632
+Code: 00 00 e8 a6 5b 2d fd 48 85 ed 0f 84 d4 00 00 00 e8 98 5b 2d fd 49 8b 06 ba 04 00 00 00 48 89 df 48 8d 4c 24 2c be 01 00 00 00 <42> 0f b7 04 28 89 44 24 2c e8 d5 81 3d fe 31 ff 41 89 c7 89 c6 e8
+RSP: 0000:ffffc90000273a50 EFLAGS: 00010293
+RAX: ffff000000000000 RBX: ffff888102235800 RCX: ffffc90000273a7c
+RDX: 0000000000000004 RSI: 0000000000000001 RDI: ffff888102235800
+RBP: ffff88810283494c R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 000000000002f8b8 R12: 0000000000000001
+R13: 0000000000000000 R14: ffff888106d14c88 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc900039aa330 CR3: 0000000076051000 CR4: 00000000003526f0
+CR2: ffff88823ffff000 CR3: 0000000005a29000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	89 5c 24 38          	mov    %ebx,0x38(%rsp)
-   4:	4c 8d 73 f0          	lea    -0x10(%rbx),%r14
-   8:	4c 89 f7             	mov    %r14,%rdi
-   b:	be 04 00 00 00       	mov    $0x4,%esi
-  10:	e8 a4 44 cc 00       	callq  0xcc44b9
-  15:	4d 89 f5             	mov    %r14,%r13
-  18:	49 c1 ed 03          	shr    $0x3,%r13
-  1c:	43 0f b6 44 3d 00    	movzbl 0x0(%r13,%r15,1),%eax
-  22:	84 c0                	test   %al,%al
-  24:	0f 85 08 02 00 00    	jne    0x232
-* 2a:	41 8b 06             	mov    (%r14),%eax <-- trapping instruction
-  2d:	ff c8                	dec    %eax
-  2f:	48 63 d0             	movslq %eax,%rdx
-  32:	4c 89 64 24 10       	mov    %r12,0x10(%rsp)
-  37:	4c 89 e7             	mov    %r12,%rdi
-  3a:	48 8d 74 24 60       	lea    0x60(%rsp),%rsi
-  3f:	b9                   	.byte 0xb9
+   0:	00 00                	add    %al,(%rax)
+   2:	e8 a6 5b 2d fd       	callq  0xfd2d5bad
+   7:	48 85 ed             	test   %rbp,%rbp
+   a:	0f 84 d4 00 00 00    	je     0xe4
+  10:	e8 98 5b 2d fd       	callq  0xfd2d5bad
+  15:	49 8b 06             	mov    (%r14),%rax
+  18:	ba 04 00 00 00       	mov    $0x4,%edx
+  1d:	48 89 df             	mov    %rbx,%rdi
+  20:	48 8d 4c 24 2c       	lea    0x2c(%rsp),%rcx
+  25:	be 01 00 00 00       	mov    $0x1,%esi
+* 2a:	42 0f b7 04 28       	movzwl (%rax,%r13,1),%eax <-- trapping instruction
+  2f:	89 44 24 2c          	mov    %eax,0x2c(%rsp)
+  33:	e8 d5 81 3d fe       	callq  0xfe3d820d
+  38:	31 ff                	xor    %edi,%edi
+  3a:	41 89 c7             	mov    %eax,%r15d
+  3d:	89 c6                	mov    %eax,%esi
+  3f:	e8                   	.byte 0xe8
 
 
 ---
@@ -168,5 +190,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
