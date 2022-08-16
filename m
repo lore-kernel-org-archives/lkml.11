@@ -2,180 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 504D0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93DBC38147
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235757AbiHPN31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        id S235767AbiHPNas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235651AbiHPN3Z (ORCPT
+        with ESMTP id S235763AbiHPNa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:29:25 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A686AB6D39
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:29:22 -0700 (PDT)
-Received: by mail-qt1-f180.google.com with SMTP id h4so8061745qtj.11
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:29:22 -0700 (PDT)
+        Tue, 16 Aug 2022 09:30:26 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E23B8F28
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:24 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id v2so14934261lfi.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=rpFTAZjl2pleYfeFAlCfw7Z2JDn36v61i5OIVLO2w5I=;
+        b=uvTyRrDNC6QxEbZyA44Zxl3dL5k8aNXBoKjruHNBXGtk2zV6fnuu5vtZ4/2VwKy1/w
+         1JPKp2UYomYYlmfRq6xgSv65G3QbqSt8okEA9Zal7bs2g+N4DMft9up8OGlH4E6QA0Lt
+         gy6tWDnwimp4O8ZuTVeavEa2wTzOcaqmwRTDXQ+178hWWkkIYdpgmXZzNih2pdvWejUb
+         Y80rYquHbGE7znX/n+mmZRKoTN7NsS4gLtmmP2jqzK9V3KV4Jcm3WPaKdIWpppfwue8f
+         oRQfxNDbbIaNn2yyXcxDSeONpbGTpxdrECS+nJ5Z20pVahG3+E+mbhZS3/1UuAFSWG0r
+         Yr1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=hdhYrvwFVCJ/wIIa+DKIK8qp10gL+xmn48+Cm6GZTzY=;
-        b=jsbjZwxeGQRGwT1SdR+xPeru2lA/mZgpZrAg27ouIi70evum/8Jsg/4csrkDhKDWf2
-         GHanqjAocpVMoSTent7bJ7DDRwHW1xNmuj59Ytru/E9MmljRJk+Yds/r0QDSBloOxYCs
-         Mv9vsip3fOHq57MeyHYYQpZYjw6HZpn5kSY8nvtqhoBhmBJ/DDPtng1ofglpZ3M58xKp
-         gNIT4GvumLza3woC/Chyym14xdHy+YBqXUrq7i0RKc8bN4C3fIV/0Z9hwY9u1044bh1i
-         AW7mC5O+nmOcTK9QUjo7AGEGbj2DvJcX7TfE7cg/0hnJ0lz0AGtbQ/4jr2QbC5RwryTx
-         DAWA==
-X-Gm-Message-State: ACgBeo2q5oM0NCCsx1RwjtrZ0gy4MDplslZ7Qcf3oPuyTa9Jv1jPWjaA
-        G1kZDsNBkgCdP+89FURiia+V1o3KPz4U9Q==
-X-Google-Smtp-Source: AA6agR7/R1EycEKRK8JucE3czcRuN0S3r9RqWj3zDBiHvVYINJ2eFRpflENJYDZ4t8nKrvOiplOC+A==
-X-Received: by 2002:ac8:7e88:0:b0:344:6b01:1146 with SMTP id w8-20020ac87e88000000b003446b011146mr5193161qtj.37.1660656561401;
-        Tue, 16 Aug 2022 06:29:21 -0700 (PDT)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id bb12-20020a05622a1b0c00b0031ef67386a5sm10120297qtb.68.2022.08.16.06.29.20
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:29:20 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-33365a01f29so53082067b3.2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:29:20 -0700 (PDT)
-X-Received: by 2002:a81:502:0:b0:32f:dcc4:146e with SMTP id
- 2-20020a810502000000b0032fdcc4146emr10322596ywf.316.1660656559751; Tue, 16
- Aug 2022 06:29:19 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=rpFTAZjl2pleYfeFAlCfw7Z2JDn36v61i5OIVLO2w5I=;
+        b=kwkNb9awQKbcYuooNUhDEwQNeaxBNwCkXr8B3sfUA0Z37dyy1jbcTNCCIXyrtrJtJL
+         PAq1GLdjYUiGiil4AxN6fxRAIKkiv8fvkJMIm+6jJUjx1ZzVG8xCU23p0F7Xvtvg8PS4
+         VO89vsXq6OPS5LiWC17GO6zFKac90SvvlZ2ZVp7GD10gpL7T17nQbPHlNmOR2dNp33Sj
+         rE+RB1c1rlnYCZKQSiz+VuZLjkLxV/skZKRXDe+ZdJZbLdv8Kw4E3o16Hcn5PsvpddUY
+         nMPeYx4ovvI696iOOze6UiuUBJhWi9qxxaZOhqcwme6DlP4Z5sVpgUHLSDJoQzGZGMXV
+         jbqA==
+X-Gm-Message-State: ACgBeo2FX7hxw7lLIaUiEkGTnJn0Wr14L+LFQVgiH+6cY/ecfxQi1PFD
+        jAwLg2wSSwndbr9KGj6Y2yx4jA==
+X-Google-Smtp-Source: AA6agR4Goe1n8aiYtC29+SCFdUP5bbCFlxfNYNF/MgBrjfL/Ht7JGKQpdw+rOfy5V5n3hRIXo+LcWA==
+X-Received: by 2002:a05:6512:39c3:b0:48b:90c2:da4c with SMTP id k3-20020a05651239c300b0048b90c2da4cmr6806066lfu.282.1660656622369;
+        Tue, 16 Aug 2022 06:30:22 -0700 (PDT)
+Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id k19-20020a2eb753000000b0025e42f8e771sm1816301ljo.34.2022.08.16.06.30.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 06:30:21 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Tomasz Figa <tomasz.figa@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Chanho Park <chanho61.park@samsung.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 2/2] dt-bindings: pinctrl: samsung: deprecate header with register constants
+Date:   Tue, 16 Aug 2022 16:30:16 +0300
+Message-Id: <20220816133016.77553-3-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220816133016.77553-1-krzysztof.kozlowski@linaro.org>
+References: <20220816133016.77553-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
- <CAMuHMdWYo7M44uLNhTmJenGDreGALBZ9E48oyBDEeAuL=0h=dw@mail.gmail.com> <20220816132040.uwirtjm5yr6rdd3q@houat>
-In-Reply-To: <20220816132040.uwirtjm5yr6rdd3q@houat>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 16 Aug 2022 15:29:07 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
-Message-ID: <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
-Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
+For convenience (less code duplication, some meaning added to raw
+number), the pin controller pin configuration register values
+were defined in the bindings header.  These are not some IDs or other
+abstraction layer but raw numbers used in the registers
 
-On Tue, Aug 16, 2022 at 3:20 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> On Fri, Aug 12, 2022 at 03:25:18PM +0200, Geert Uytterhoeven wrote:
-> > > --- a/drivers/gpu/drm/drm_connector.c
-> > > +++ b/drivers/gpu/drm/drm_connector.c
-> > > @@ -1649,11 +1650,40 @@ EXPORT_SYMBOL(drm_mode_create_tv_margin_properties);
-> > >   * 0 on success or a negative error code on failure.
-> > >   */
-> > >  int drm_mode_create_tv_properties(struct drm_device *dev,
-> > > +                                 unsigned int supported_tv_norms,
-> > >                                   unsigned int num_modes,
-> > >                                   const char * const modes[])
-> > >  {
-> > > +       static const struct drm_prop_enum_list tv_norm_values[] = {
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_NTSC_443) - 1, "NTSC-443" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_NTSC_J) - 1, "NTSC-J" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_NTSC_M) - 1, "NTSC-M" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_60) - 1, "PAL-60" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_B) - 1, "PAL-B" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_D) - 1, "PAL-D" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_G) - 1, "PAL-G" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_H) - 1, "PAL-H" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_I) - 1, "PAL-I" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_M) - 1, "PAL-M" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_N) - 1, "PAL-N" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_PAL_NC) - 1, "PAL-Nc" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_60) - 1, "SECAM-60" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_B) - 1, "SECAM-B" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_D) - 1, "SECAM-D" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_G) - 1, "SECAM-G" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K) - 1, "SECAM-K" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K1) - 1, "SECAM-K1" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_SECAM_L) - 1, "SECAM-L" },
-> >
-> > The above are analog standards, with a variable horizontal resolution.
-> >
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD480I) - 1, "hd480i" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD480P) - 1, "hd480p" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD576I) - 1, "hd576i" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD576P) - 1, "hd576p" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD720P) - 1, "hd720p" },
-> > > +               { __builtin_ffs(DRM_MODE_TV_NORM_HD1080I) - 1, "hd1080i" },
-> >
-> > The above are digital standards, with a fixed resolution.
->
-> Are they?
->
-> It's not clear to me from looking at nouveau, but I was under the
-> impression that they were modes for a component output, so CEA 770.3. I
-> don't have the spec though, so I can't check.
+These constants do not fit the purpose of bindings.  They do not provide
+any abstraction, any hardware and driver independent ID.  With minor
+exceptions, the Linux drivers actually do not use the bindings header at
+all.
 
-Oh right, I forgot about analog HD over component, where you can use
-other pixel clocks than in the digital standard.
+All of the constants were moved already to headers local to DTS
+(residing in DTS directory) and to Samsung pinctrl driver (where
+applicable), so remove any references to the bindings header and add a
+warning tha tit is deprecated.
 
-> > You seem to have missed "hd1080p"?
->
-> Nobody is using it. If we ever have a driver that uses it I think we can
-> add it.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Chanho Park <chanho61.park@samsung.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ include/dt-bindings/pinctrl/samsung.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-The PS3 supports 1080p over component
-https://manuals.playstation.net/document/en/ps3/current/settings/videooutput.html
+diff --git a/include/dt-bindings/pinctrl/samsung.h b/include/dt-bindings/pinctrl/samsung.h
+index 950970634dfe..d1da5ff68d0c 100644
+--- a/include/dt-bindings/pinctrl/samsung.h
++++ b/include/dt-bindings/pinctrl/samsung.h
+@@ -10,6 +10,13 @@
+ #ifndef __DT_BINDINGS_PINCTRL_SAMSUNG_H__
+ #define __DT_BINDINGS_PINCTRL_SAMSUNG_H__
+ 
++/*
++ * These bindings are deprecated, because they do not match the actual
++ * concept of bindings but rather contain pure register values.
++ * Instead include the header in the DTS source directory.
++ */
++#warning "These bindings are deprecated. Instead use the header in the DTS source directory."
++
+ #define EXYNOS_PIN_PULL_NONE		0
+ #define EXYNOS_PIN_PULL_DOWN		1
+ #define EXYNOS_PIN_PULL_UP		3
+-- 
+2.34.1
 
-> > In addition, "hd720p", "hd080i", and "hd1080p" are available in both 50
-> > and 60 (actually 59.94) Hz, while "hd1080p" can also use 24 or 25 Hz.
->
-> It looks like nouveau only exposes modes for 480p at 59.94Hz, 576p at
-> 50Hz, 720p at 60Hz, 1080i at 30Hz.
-
-PS3 supports both 50 and 60 Hz (same link above).
-
-> > Either you have to add them here (e.g. "hd720p50" and "hd720p60"), or
-> > handle them through "@<refresh>".  The latter would impact "[PATCH v1
-> > 09/35] drm/modes: Move named modes parsing to a separate function", as
-> > currently a named mode and a refresh rate can't be specified both.
->
-> I think the former would make more sense. It simplifies a bit the
-> parser, and we're going to use a named mode anyway.
->
-> > As "[PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
-> > command-line option" uses a separate "tv_mode" option, and not the main
-> > mode name, I think you want to add them here.
->
-> It's a separate story I think, we could have a named mode hd720p50,
-> which would be equivalent to 1280x720,tv_mode=hd720p
-
-So where's the field rate in "1280x720,tv_mode=hd720p"?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
