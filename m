@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59383C32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295ACC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236264AbiHPPjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 11:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
+        id S236257AbiHPPjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 11:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236140AbiHPPiG (ORCPT
+        with ESMTP id S236139AbiHPPiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 11:38:06 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3966885F80
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:37:05 -0700 (PDT)
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED97D85A9F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:37:04 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CD4F81FEA2;
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8E52234871;
         Tue, 16 Aug 2022 15:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
         t=1660664223; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7Hy2VW6BD3DgqN9i/mj4PIZCUAJudVB4+Gl1qLgYS5U=;
-        b=F4xOkqUJVLYGHPUrWIe+iJKlD0NxY2J2md5Eh+5m4TCnZlJkiPj2wiMj/UqA/yV0r3xZjd
-        bvHzrbrIwahJIdLL9/H6QD7pNVv0aZSmFyWQZAufxQlY0b0YcEBKl9jDj07LRixbwpAhsT
-        rXCxOCXgxZEeboh4PKAKDxrnX+luZBI=
+        bh=9s6v1CY1qexUT4c1xbug4TQo33VinY3YcP39jbAWYwQ=;
+        b=gEzA2P8grsErGJsV4EbD2oDgBDLMYTqr1oZk7gzar/Tf/UISsZ+mQpcnAMPyuhZBuasyaF
+        CKepulZlERJ5z6yPZbPKLrf1LJSuqrcdrHx1yFOeLyi0ShuYgYUh1s+w1dXGHlLTqkj1Xa
+        uaSnB2hw81Qt/SW9I/TERNYfs0iPRec=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
         s=susede2_ed25519; t=1660664223;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7Hy2VW6BD3DgqN9i/mj4PIZCUAJudVB4+Gl1qLgYS5U=;
-        b=m99cEjg/NX+Q6fXevBbBknH/OF1wVrj1u+lkW8dJnfLKaRZDdfEQ6OJ+DyVjN8UAKvVK+c
-        yZ2TkJrdJAMDA/Bw==
+        bh=9s6v1CY1qexUT4c1xbug4TQo33VinY3YcP39jbAWYwQ=;
+        b=/Ei/7ZJfi5ovg5Au2jYmMXv8s6mGBKw5wesen5Yxqv6v8oC7tK7cKuiCNa66FNDzONlTkI
+        Jc4Ooz14QbnDhpDQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B06D6139B7;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 705C8139B7;
         Tue, 16 Aug 2022 15:37:03 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id wHV3Kp+5+2LKJAAAMHmgww
+        id qFDJGp+5+2LKJAAAMHmgww
         (envelope-from <tiwai@suse.de>); Tue, 16 Aug 2022 15:37:03 +0000
 From:   Takashi Iwai <tiwai@suse.de>
 To:     Thomas Zimmermann <tzimmermann@suse.de>
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 11/12] drm/udl: Don't re-initialize stuff at retrying the URB list allocation
-Date:   Tue, 16 Aug 2022 17:36:54 +0200
-Message-Id: <20220816153655.27526-12-tiwai@suse.de>
+Subject: [PATCH 09/12] drm/udl: Fix potential URB leaks
+Date:   Tue, 16 Aug 2022 17:36:52 +0200
+Message-Id: <20220816153655.27526-10-tiwai@suse.de>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220816153655.27526-1-tiwai@suse.de>
 References: <20220816153655.27526-1-tiwai@suse.de>
@@ -64,39 +64,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-udl_alloc_urb_list() retires the allocation if there is no enough room
-left, and it reinitializes the stuff unnecessarily such as the linked
-list head and the waitqueue, which could be harmful.  Those should be
-outside the retry loop.
+A couple of error handlings forgot to process the URB completion.
+Those are both with WARN_ON() so should be visible, but we must fix
+them in anyway.
 
+Fixes: 7350b2a3fbc6 ("drm/udl: Replace BUG_ON() with WARN_ON()")
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- drivers/gpu/drm/udl/udl_main.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/udl/udl_main.c     | 8 +++++---
+ drivers/gpu/drm/udl/udl_transfer.c | 5 ++++-
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/udl/udl_main.c b/drivers/gpu/drm/udl/udl_main.c
-index 19dc8317e843..c1f4b6199949 100644
+index 3c97f647883f..8bbb4e2861fb 100644
 --- a/drivers/gpu/drm/udl/udl_main.c
 +++ b/drivers/gpu/drm/udl/udl_main.c
-@@ -187,15 +187,14 @@ static int udl_alloc_urb_list(struct drm_device *dev, int count, size_t size)
- 	struct usb_device *udev = udl_to_usb_device(udl);
+@@ -265,11 +265,13 @@ int udl_submit_urb(struct drm_device *dev, struct urb *urb, size_t len)
+ 	struct udl_device *udl = to_udl(dev);
+ 	int ret;
  
- 	spin_lock_init(&udl->urbs.lock);
+-	if (WARN_ON(len > udl->urbs.size))
+-		return -EINVAL;
 -
--retry:
--	udl->urbs.size = size;
- 	INIT_LIST_HEAD(&udl->urbs.list);
--
- 	init_waitqueue_head(&udl->urbs.sleep);
- 	udl->urbs.count = 0;
- 	udl->urbs.available = 0;
++	if (WARN_ON(len > udl->urbs.size)) {
++		ret = -EINVAL;
++		goto error;
++	}
+ 	urb->transfer_buffer_length = len; /* set to actual payload len */
+ 	ret = usb_submit_urb(urb, GFP_ATOMIC);
++ error:
+ 	if (ret) {
+ 		udl_urb_completion(urb); /* because no one else will */
+ 		DRM_ERROR("usb_submit_urb error %x\n", ret);
+diff --git a/drivers/gpu/drm/udl/udl_transfer.c b/drivers/gpu/drm/udl/udl_transfer.c
+index a431208dda85..b57844632dbd 100644
+--- a/drivers/gpu/drm/udl/udl_transfer.c
++++ b/drivers/gpu/drm/udl/udl_transfer.c
+@@ -180,8 +180,11 @@ int udl_render_hline(struct drm_device *dev, int log_bpp, struct urb **urb_ptr,
+ 	u8 *cmd = *urb_buf_ptr;
+ 	u8 *cmd_end = (u8 *) urb->transfer_buffer + urb->transfer_buffer_length;
  
-+retry:
-+	udl->urbs.size = size;
-+
- 	while (udl->urbs.count * size < wanted_size) {
- 		unode = kzalloc(sizeof(struct urb_node), GFP_KERNEL);
- 		if (!unode)
+-	if (WARN_ON(!(log_bpp == 1 || log_bpp == 2)))
++	if (WARN_ON(!(log_bpp == 1 || log_bpp == 2))) {
++		/* need to finish URB at error from this function */
++		udl_urb_completion(urb);
+ 		return -EINVAL;
++	}
+ 
+ 	line_start = (u8 *) (front + byte_offset);
+ 	next_pixel = line_start;
 -- 
 2.35.3
 
