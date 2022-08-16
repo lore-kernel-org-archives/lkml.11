@@ -2,327 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC41C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59453C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232492AbiHPIqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S233367AbiHPIr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbiHPIqV (ORCPT
+        with ESMTP id S232713AbiHPIqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:46:21 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA697962C
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:51:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SDAGDQtByKdFMNf718gjFc9JQEEPcQjRr/AnxAbAaRB3Ypfhhl9DTqJNzI8dh1Za22QfcTaZvP9rT7wecWTpd6ivnI3gbSVtlyaaqLKDN+LSEHp62aJVyXY/IJgVuh5DvYMzDYkyYtpg4BOstW5SOVkcJCQb/vMd+xWBbyU5pJI9xTXV0yGJI8xPiqU2FincmRSD+ZO78sa5phbnO6W/1/BQF39UkUAZ5OCXO1KBybljBC9TOnnPV9Gh22MWFBhc1KUelk6IDRhorfeP9fM2K+vHnvYl6hbVSJY4IOm6bLDCF4jJqfR/mXZIahyJJjyNru3JsCOramAkiM2gY1Yb1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ys1x4tb/g/17mSf0RPPZNnvh92yh4LIJAGkb9dh1wjY=;
- b=gNudmKzCI0gm45tyiCuXQGqQ/BP/Nf+bRDwcdKrirVHI+07w/j5XJfFt7fp7Gzj9PbpYzCOanPn/V76re/nITOopBjzoBd9FSE4y+lIU1vxqKIpnj2bhydVDcwP7lx6PatzDTuM6rq9vmOBrv7t3SrPgBukfvMSyPWwNVuXomEbjlP+LQChaXqHuSlwqsvKOFDDHNZfCgFnr5uoyIRI7bxzpWAXToBlZiP0dQDk4WYTHk/UF+u4DVX67BfOxEjdArpB90rzxKDIFXBuSqXaX93WyL7+maRU+Vr0yMzrAtgcofwwjjnOCSwiH+jZglfs0a9RXoCC4pjcLv7GlL5LUzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ys1x4tb/g/17mSf0RPPZNnvh92yh4LIJAGkb9dh1wjY=;
- b=Ml5U1jFb3NI7VL4ES8AytOQumfu8u3UqMY51C+viID5IutM8mJAWenj4woVudZRct7xOowiZJgxzRrukcbhZyElY6zXsJ99C5AoSDD1ekY7urn+KMELgM/mJsOVXR+ot6/9vbC4Rb3KjogxJBJqa4Jm1ElaFU7j2Qkdryufk9N8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN2PR12MB3661.namprd12.prod.outlook.com (2603:10b6:208:169::31)
- by DM6PR12MB4435.namprd12.prod.outlook.com (2603:10b6:5:2a6::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
- 2022 06:51:47 +0000
-Received: from MN2PR12MB3661.namprd12.prod.outlook.com
- ([fe80::bc80:d6e7:d73f:d955]) by MN2PR12MB3661.namprd12.prod.outlook.com
- ([fe80::bc80:d6e7:d73f:d955%5]) with mapi id 15.20.5504.027; Tue, 16 Aug 2022
- 06:51:47 +0000
-Message-ID: <bd701478-364f-fe3f-e16a-515e2714d430@amd.com>
-Date:   Tue, 16 Aug 2022 12:19:48 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 04/13] ASoC: amd: add platform devices for acp6.2 pdm
- driver and dmic driver
-Content-Language: en-US
-To:     =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Syed Saba kareem <Syed.SabaKareem@amd.com>,
-        broonie@kernel.org, alsa-devel@alsa-project.org
-Cc:     Sunil-kumar.Dommati@amd.com,
-        open list <linux-kernel@vger.kernel.org>,
-        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>, mario.limonciello@amd.com,
-        Vijendar.Mukunda@amd.com
-References: <20220812120731.788052-1-Syed.SabaKareem@amd.com>
- <20220812120731.788052-5-Syed.SabaKareem@amd.com>
- <f55c444b-d1c7-9d61-1f0c-c6bfe32ca2db@linux.intel.com>
-From:   Syed Saba Kareem <ssabakar@amd.com>
-In-Reply-To: <f55c444b-d1c7-9d61-1f0c-c6bfe32ca2db@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN3PR01CA0075.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:9a::15) To MN2PR12MB3661.namprd12.prod.outlook.com
- (2603:10b6:208:169::31)
+        Tue, 16 Aug 2022 04:46:55 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C1314CEEB
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:52:25 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id u10so7241611qvp.12
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:52:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=H+QryRTUOZZqR0vf2O8cYSZqf6P6R6tUCcAZ2UjdGFQ=;
+        b=h4pX7HZUJqfqq8yzL16T+uncKDWeoGboy9s9qweLD2nh02VL7PHYr9g7wp5UObekV9
+         X86X0mYxFDK196e+cGnlD2LFxCVGiguwrI1lxjZZDizuEyjVVoOlTqpEq0eisE6sDsjx
+         UiH8TuRsxppQMo+cxEJw5x52I/Cx7mRTTXT7owLAiYMnRthi3zcH1IZcJjUS+8dqOfun
+         MXq7f6UnAyeh7ceGlxrKLLK2e0qurPv2ctTIE8DlQzDItDPu2BcUwiuqOUrhXkdA4D2g
+         t+p9Kl5jX2EDzfBkSFN238zSuQS29y4T12Yo/V7UtPNv2gg68jpAYr6UakU2cM6sjVth
+         I6OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=H+QryRTUOZZqR0vf2O8cYSZqf6P6R6tUCcAZ2UjdGFQ=;
+        b=LWsgzsfcJdC680YDyln+uYuKsPwyOdYimg4U5Nw3hflanQpt9J9RDYrFQoNfyXGUU5
+         IwQkIu1j4ePM17Zd/Vzmc0chGVjzS68Vtq8r9YfG5Yk2dA9Nu8LSEVRVH2N+k+5naI9c
+         WuGwCG3+afkp74JImYBSklX3QK4POfB1CKtrPBaQb7sEGejGNP89EP4gr34OOde/3htt
+         H+C5lhCT9t50C8g6IZhxXLdmkS42xCXmgJr26ndOqDwwW4U1xQaxIoIx9WxFUa6VYKEq
+         yBSYW++ANgbx+XHI066d2HbWQDRg9hns7yuT/SLS8AVZ+h00ACs5yNVDrKt4nxU8Ps1Q
+         n4rA==
+X-Gm-Message-State: ACgBeo3YN3P4OUQfv+khAA51p9QzLUoiXXwx69j+EqVQIhD4qIXRzpy6
+        JmJz28Pi/lBpZnHWuitYaGT0rOK6XOHeSEtSPKTy9g==
+X-Google-Smtp-Source: AA6agR6N30KlvjclYfzTHDfvMuY9eCRK0xq6hEedvonkB1ZWbLMDeYc/AFLfqy9p72rTh9qF5UtJV1iqOVC3rUv9g8I=
+X-Received: by 2002:a05:6214:2267:b0:474:8ff7:a21c with SMTP id
+ gs7-20020a056214226700b004748ff7a21cmr16708427qvb.56.1660632743775; Mon, 15
+ Aug 2022 23:52:23 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f97b460-c319-4008-5e40-08da7f53c987
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4435:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4OmMS/AR2qdd+6Pg2h7AQbMrKlezRifh5AgIvZTEd0T1Jdnw20x/H33KAawxy3R88WMaH9Hg/mu9N2iAKVgy/Dy8QnCx8oPMkfdevEXnK5Tr5V+yZg+vTyQPz3AM8GaKfh4m+QplhFdDdKC9Rw2Q46E125WRjXTNWWFx5+fOnR6v6XE/SSAQcGx/o2CsH+nUFBPPAF0UefmHECD2RkD453KxOOx1sajSiuJM3s66Hkou9JIw1RN1/hzfuip0zdfbfMbOzeNhFkoVKexjhF1Rv71cyeAh2qQTT2KIamuIx/bOzNZ5jWlJ/jZ6MrsE/UbPsxPjq+Ro+ipSAR5QrjgbPmC7XeI5gB3HXicfKMZkWu37uXNHOF6ytcAPQY3tHNg2IX6pzGpDJuM++qeUgeBUmcP0lE4pfBPxjV5ILrS5dWVDrEoWOytqx6a7481syIXGpzt7wzx2BdCs806+7CuiHar3O/mnAsgxm5DxXr4T9xkvBkiuGpV/uHnWxf3QAxyYVLOnmd6Jrw/Uccptv6LC8PGKy8U+EdKN6WoN/z2BkYYJdZMqspLE3gWS6LB29rIQm/UVgFg+Vzy124RRPcq9TGTecz5lGvQohmJKAfPmPEOK9JCnZ1juCTyAmSZsROq/CV+hgheeg3Pjs7goODkRAA1gESVonWrBXNEhzunPVhS8PNDurdRMswgAhhOPjqkDYfx8HjMyrwFW9pggCES+1D64Hb3Vxs670yIbGo44HBci5MZ0BYuV96V3OOfOwD6PAQOaZBEXPRaEmxi30JL9tIBwdIoHHJlyJ+pvf7kaEU7jqVtN6UGIfDHnQAxzVTcdW7/tBrAbpgjtQR3wSvCETg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3661.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(376002)(366004)(136003)(54906003)(5660300002)(6506007)(53546011)(41300700001)(26005)(31696002)(6512007)(8936002)(66946007)(6486002)(66476007)(478600001)(110136005)(8676002)(316002)(66556008)(36756003)(2906002)(4326008)(83380400001)(2616005)(31686004)(38100700002)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RE4xS3hzNlRvdURjVnFGRW9qRURlOHJvMDlFMmhrNTlLelBqYStJbEdQWXcw?=
- =?utf-8?B?WWJZb2JucS9YUzhadTlvVVRnT2F0OGFIVEVFVkhWZUlwTCtHcTd5UDRjNVVr?=
- =?utf-8?B?Q2RIYjFiU2w4KzBBb1RBVFZZQlIyUnNJaitxeTROYi9MQWpaamdjREhzZkhl?=
- =?utf-8?B?VEg5b1JmaVcya0VnK3B2ZldmNTRHQ1pOdXB0NlBjVUNpUmFSb01QWStIbjJn?=
- =?utf-8?B?VHpuYklNQ3FJS0ZqSTdhMldIQ1k1ZCs2cVJBbTQzYmhuTjgybnNVdUQvZzZW?=
- =?utf-8?B?cDFuNFRPYU9Ra0lxRTBINzFNMk40ZmNlVmxSQmZ0UDZLNzBTR2FBNC9Ed3NO?=
- =?utf-8?B?QkxEOXV3eDBmRUJRb2c5NnpaWEg0bjhseExORm41UlVwS1JMQTZneEd4d3I4?=
- =?utf-8?B?UFlhNkxrQ3U3MXFUNXJ3R0cxNVQxQ2p2UUJEY2IzcDE0bW4vK0s2ZlpUYnZz?=
- =?utf-8?B?OWp3TnVEUzM2ZHJTLzArS3BUTlJURHpyOVJGMHM2cjRSTU8yZDA4bERPbVU2?=
- =?utf-8?B?Wmk1WWNJUng3eDdzcit0enFRNUNZbkNWOHhzdjlRTGRvSmFHNGJ6ampzWFJH?=
- =?utf-8?B?cVgyQTViUHg1MTlUVXA4TjRXNkxyaHpOY2NITS85K2V1VVFwZnBid3pIM00r?=
- =?utf-8?B?aWE5ME0rcGZta3AwSU5rUHJ6amxaREliQXExaE5GNk9qRHVBYkFRUEc3SGRs?=
- =?utf-8?B?SU9rWE9oOWRYMThVNzdtR0NWOStObVdaQzREVUYzNCtKTS90TnpOWlFYbDRv?=
- =?utf-8?B?QXptVnVHYjZqaW1HdjZvL1dwVkpka2dLUmVpYjBBaHJMMmh0UDlnRHRtSzla?=
- =?utf-8?B?U1lSTm5FOEU3bytTeE9xbjJoR1RKY2cxVjR5ZFNmZFZkOEQwV2dYdHZaWnBk?=
- =?utf-8?B?ZDJUNmZnd3ZIdlljdEEzK2FyNHh3bkh2VktjaEJhalduY0RTMjExdUcvZFFG?=
- =?utf-8?B?b2crd0tiQnRzV0s2dzBYaUdqTkZTRHYvaXc5MStUV3lmOXJmcHlCWlYxcFov?=
- =?utf-8?B?QzhBaEYzcUV6NEFMQUZwYkF3a2RWcktHblMvM2Z2V21VZWdhVTR1SmZtMzJr?=
- =?utf-8?B?TWhwNXAvb0pOdXA0R2NEQTE1N1pzMkRxZGNJcHJzVEhybWt5ZW4waFpxdGt3?=
- =?utf-8?B?YmNPbkdWSUd5VXp0RUY3OWQ0c1dlSXNHUmhNcDFlVGRsRUZLaG1Hejl0Rmh4?=
- =?utf-8?B?TjJETWs1Z2NJcFZkZVpqQ1Ztb3lGWUZDVHlTQ3UwS1lZaXFGSjVndDJlUHFF?=
- =?utf-8?B?REd2QmZmM3dDWVZyMk9MVjlVZ1MzOUIreTJkNFlpbGhEL0JWNUFkTXRlT1ZI?=
- =?utf-8?B?SlFaVXJ4UHE4dlBFUmY0T0V2UEhHUUpNMjNBdXczSWxDRnRnMnRPcjdWOXFs?=
- =?utf-8?B?R2ZZVkFKTVQ4VU0rZ2VXZ2RRNkpvQVFmbjZGREhYNE1RVEllbkpURkV0WlJw?=
- =?utf-8?B?cHVvRnppeHI0Q2lEcGd4STl3YTdSTk10NFVITWtFb0NtK2ozM05lZnUxSE1o?=
- =?utf-8?B?b3gwaVcrdktUWGJCeVkwbXdxd2hnUG4vR094WGNETWYyeDZNeHY3STVJNjVJ?=
- =?utf-8?B?TzBHY2JDVm9DL1hydkg1VkttdFQrSVVtMFVnbC9ocnJ4cmRzNzVtZU1GYWpQ?=
- =?utf-8?B?ZnNEOEZaQ0VpVmlHMTFzMFRTcG1UUmdVcEVGYzZMd0ZRRVZycE9OYjRrd05p?=
- =?utf-8?B?eDhJQmhFRXZZSXYrVU84OU5KZFowQkRRTHIzQnZEdUdTdkV5TVFuN3lmZ3pY?=
- =?utf-8?B?Z0xhN0o5akc4VFlBZjhrRlNTMnExUmZDdzlpN3pETUVZdU92NjAwSi9XdFps?=
- =?utf-8?B?bGdNSEFCaVFxMkJpaUp3N3l1SEtDL3pVQzJ0VnhUbmhGeHA4a2tqVUQ0c3ln?=
- =?utf-8?B?TDRwVUozQ3JlWjM1M2s2dDRPVmxsK3NFNXZUWXRyQStGbzJFdm1ETlFIVGk3?=
- =?utf-8?B?aldOV2tuRmFKT241MWZsdklFM0JnaklBb1d3V1ZUV3BjbktnWWQ2Q2JQZlV6?=
- =?utf-8?B?QXVDaEt2ZDFodzdnY2crdDlUV1haSzRNcGxVNGxKVW1BcG5lQ2l1eUZ5Zmc2?=
- =?utf-8?B?ckVmdFZGRzFZNGE0UDZDVC9OK1AzNWdPMmltZ3VTUzdxejB6Vnh3NjJFOEtm?=
- =?utf-8?Q?4cChjOtK41fiKVp0+ycpeku90?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f97b460-c319-4008-5e40-08da7f53c987
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3661.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 06:51:47.0513
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gc/f52UcbXHNcF1Sh1HKEiYIkxueuNbAPgAtKcO3Z2ijDZimRjDzXFyS89C9WOuCZSd71L5ABUV5f87ng9Em6w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4435
+References: <20220805214821.1058337-1-haoluo@google.com> <20220805214821.1058337-5-haoluo@google.com>
+ <CAEf4BzZHf89Ds8nQWFCH00fKs9-9GkJ0d+Hrp-LkMCDUP_td0A@mail.gmail.com>
+ <CA+khW7hUVOkHBO3dhRze2_VKZuxD-LuNQdO3nHUkLCYmuuR6eg@mail.gmail.com>
+ <20220809162325.hwgvys5n3rivuz7a@MacBook-Pro-3.local.dhcp.thefacebook.com>
+ <CA+khW7j0kzP+W_Qgsim52J+HeR27XJcyMk73Hq93tsmNzT7q6w@mail.gmail.com>
+ <CA+khW7j1Ni_PfvsGisUpUgFtgg=f_qEUVd1VUmocn6L3=kndhw@mail.gmail.com>
+ <CAJD7tkY6ihK9PkaAwrdRr-3QyiVFf8h4WkLXx73zYwNUjS_7pw@mail.gmail.com> <CAEf4BzZTrsBOPpCTFouoWZJG9yXkz8LZgLQrqDREAY-XdGb7ew@mail.gmail.com>
+In-Reply-To: <CAEf4BzZTrsBOPpCTFouoWZJG9yXkz8LZgLQrqDREAY-XdGb7ew@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Mon, 15 Aug 2022 23:52:12 -0700
+Message-ID: <CA+khW7gR7XWaXLHtVYE3c3HTYTNmo5gp7mETAxTg=O9-URwu0w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 4/8] bpf: Introduce cgroup iter
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cgroups <cgroups@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Michal Koutny <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Aug 15, 2022 at 9:13 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Aug 11, 2022 at 7:10 AM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >
+> > On Wed, Aug 10, 2022 at 8:10 PM Hao Luo <haoluo@google.com> wrote:
+> > >
+> > > On Tue, Aug 9, 2022 at 11:38 AM Hao Luo <haoluo@google.com> wrote:
+> > > >
+> > > > On Tue, Aug 9, 2022 at 9:23 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, Aug 08, 2022 at 05:56:57PM -0700, Hao Luo wrote:
+> > > > > > On Mon, Aug 8, 2022 at 5:19 PM Andrii Nakryiko
+> > > > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, Aug 5, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
+> > > > > > > >
+> > > > > > > > Cgroup_iter is a type of bpf_iter. It walks over cgroups in four modes:
+> > > > > > > >
+> > > > > > > >  - walking a cgroup's descendants in pre-order.
+> > > > > > > >  - walking a cgroup's descendants in post-order.
+> > > > > > > >  - walking a cgroup's ancestors.
+> > > > > > > >  - process only the given cgroup.
+> > > > > > > >
+> > > > [...]
+> > > > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > > > > > index 59a217ca2dfd..4d758b2e70d6 100644
+> > > > > > > > --- a/include/uapi/linux/bpf.h
+> > > > > > > > +++ b/include/uapi/linux/bpf.h
+> > > > > > > > @@ -87,10 +87,37 @@ struct bpf_cgroup_storage_key {
+> > > > > > > >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
+> > > > > > > >  };
+> > > > > > > >
+> > > > > > > > +enum bpf_iter_order {
+> > > > > > > > +       BPF_ITER_ORDER_DEFAULT = 0,     /* default order. */
+> > > > > > >
+> > > > > > > why is this default order necessary? It just adds confusion (I had to
+> > > > > > > look up source code to know what is default order). I might have
+> > > > > > > missed some discussion, so if there is some very good reason, then
+> > > > > > > please document this in commit message. But I'd rather not do some
+> > > > > > > magical default order instead. We can set 0 to mean invalid and error
+> > > > > > > out, or just do SELF as the very first value (and if user forgot to
+> > > > > > > specify more fancy mode, they hopefully will quickly discover this in
+> > > > > > > their testing).
+> > > > > > >
+> > > > > >
+> > > > > > PRE/POST/UP are tree-specific orders. SELF applies on all iters and
+> > > > > > yields only a single object. How does task_iter express a non-self
+> > > > > > order? By non-self, I mean something like "I don't care about the
+> > > > > > order, just scan _all_ the objects". And this "don't care" order, IMO,
+> > > > > > may be the common case. I don't think everyone cares about walking
+> > > > > > order for tasks. The DEFAULT is intentionally put at the first value,
+> > > > > > so that if users don't care about order, they don't have to specify
+> > > > > > this field.
+> > > > > >
+> > > > > > If that sounds valid, maybe using "UNSPEC" instead of "DEFAULT" is better?
+> > > > >
+> > > > > I agree with Andrii.
+> > > > > This:
+> > > > > +       if (order == BPF_ITER_ORDER_DEFAULT)
+> > > > > +               order = BPF_ITER_DESCENDANTS_PRE;
+> > > > >
+> > > > > looks like an arbitrary choice.
+> > > > > imo
+> > > > > BPF_ITER_DESCENDANTS_PRE = 0,
+> > > > > would have been more obvious. No need to dig into definition of "default".
+> > > > >
+> > > > > UNSPEC = 0
+> > > > > is fine too if we want user to always be conscious about the order
+> > > > > and the kernel will error if that field is not initialized.
+> > > > > That would be my preference, since it will match the rest of uapi/bpf.h
+> > > > >
+> > > >
+> > > > Sounds good. In the next version, will use
+> > > >
+> > > > enum bpf_iter_order {
+> > > >         BPF_ITER_ORDER_UNSPEC = 0,
+> > > >         BPF_ITER_SELF_ONLY,             /* process only a single object. */
+> > > >         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
+> > > >         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
+> > > >         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
+> > > > };
+> > > >
+> > >
+> > > Sigh, I find that having UNSPEC=0 and erroring out when seeing UNSPEC
+> > > doesn't work. Basically, if we have a non-iter prog and a cgroup_iter
+> > > prog written in the same source file, I can't use
+> > > bpf_object__attach_skeleton to attach them. Because the default
+> > > prog_attach_fn for iter initializes `order` to 0 (that is, UNSPEC),
+> > > which is going to be rejected by the kernel. In order to make
+> > > bpf_object__attach_skeleton work on cgroup_iter, I think I need to use
+> > > the following
+> > >
+> > > enum bpf_iter_order {
+>
+> so first of all, this can't be called "bpf_iter_order" as it doesn't
+> apply to BPF iterators in general. I think this should be called
+> bpf_iter_cgroup_order (or maybe bpf_cgroup_iter_order) and if/when we
+> add ability to iterate tasks within cgroups then we'll just reuse enum
+> bpf_iter_cgroup_order as an extra parameter for task iterator.
+>
+> And with that future case in mind I do think that we should have 0
+> being "UNSPEC" case.
+>
 
-On 8/12/22 19:50, Amadeusz Sławiński wrote:
-> [CAUTION: External Email]
+Ok.
+
+> > >         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
+> > >         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
+> > >         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
+> > >         BPF_ITER_SELF_ONLY,             /* process only a single object. */
+> > > };
+> > >
+> > > So that when calling bpf_object__attach_skeleton() on cgroup_iter, a
+> > > link can be generated and the generated link defaults to pre-order
+> > > walk on the whole hierarchy. Is there a better solution?
+> > >
 >
-> On 8/12/2022 2:07 PM, Syed Saba kareem wrote:
->> ACP6.2 IP has PDM decoder block.
->> Create a platform device for it, so that the PDM platform driver
->> can be bound to this device.
->> Pass PCI resources like MMIO to this platform device.
->>
->> Create a platform device for generic dmic codec driver.
->>
->> Signed-off-by: Syed Saba Kareem <Syed.SabaKareem@amd.com>
->> Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
->> ---
->>   sound/soc/amd/ps/acp62.h  | 23 +++++++++++
->>   sound/soc/amd/ps/pci-ps.c | 83 ++++++++++++++++++++++++++++++++++++++-
->>   2 files changed, 104 insertions(+), 2 deletions(-)
->>
->> diff --git a/sound/soc/amd/ps/acp62.h b/sound/soc/amd/ps/acp62.h
->> index 8e734f190b11..ab56e1f8c31b 100644
->> --- a/sound/soc/amd/ps/acp62.h
->> +++ b/sound/soc/amd/ps/acp62.h
->> @@ -9,6 +9,10 @@
->>
->>   #define ACP_DEVICE_ID 0x15E2
->>   #define ACP62_PHY_BASE_ADDRESS 0x1240000
->> +#define ACP6x_REG_START              0x1240000
->> +#define ACP6x_REG_END                0x1250200
->> +#define ACP6x_DEVS           2
->> +#define ACP6x_PDM_MODE               1
->>
->>   #define ACP_SOFT_RESET_SOFTRESET_AUDDONE_MASK       0x00010001
->>   #define ACP_PGFSM_CNTL_POWER_ON_MASK        1
->> @@ -22,6 +26,25 @@
->>   #define ACP_ERROR_MASK 0x20000000
->>   #define ACP_EXT_INTR_STAT_CLEAR_MASK 0xFFFFFFFF
->>
->> +enum acp_config {
->> +     ACP_CONFIG_0 = 0,
->> +     ACP_CONFIG_1,
->> +     ACP_CONFIG_2,
->> +     ACP_CONFIG_3,
->> +     ACP_CONFIG_4,
->> +     ACP_CONFIG_5,
->> +     ACP_CONFIG_6,
->> +     ACP_CONFIG_7,
->> +     ACP_CONFIG_8,
->> +     ACP_CONFIG_9,
->> +     ACP_CONFIG_10,
->> +     ACP_CONFIG_11,
->> +     ACP_CONFIG_12,
->> +     ACP_CONFIG_13,
->> +     ACP_CONFIG_14,
->> +     ACP_CONFIG_15,
->> +};
->> +
->>   static inline u32 acp62_readl(void __iomem *base_addr)
->>   {
->>       return readl(base_addr - ACP62_PHY_BASE_ADDRESS);
->> diff --git a/sound/soc/amd/ps/pci-ps.c b/sound/soc/amd/ps/pci-ps.c
->> index 2014f415af15..94201f75427a 100644
->> --- a/sound/soc/amd/ps/pci-ps.c
->> +++ b/sound/soc/amd/ps/pci-ps.c
->> @@ -9,11 +9,16 @@
->>   #include <linux/module.h>
->>   #include <linux/io.h>
->>   #include <linux/delay.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/acpi.h>
->>
->>   #include "acp62.h"
->>
->>   struct acp62_dev_data {
->>       void __iomem *acp62_base;
->> +     struct resource *res;
->> +     bool acp62_audio_mode;
->> +     struct platform_device *pdev[ACP6x_DEVS];
->>   };
->>
->>   static int acp62_power_on(void __iomem *acp_base)
->> @@ -117,8 +122,11 @@ static int snd_acp62_probe(struct pci_dev *pci,
->>                          const struct pci_device_id *pci_id)
->>   {
->>       struct acp62_dev_data *adata;
->> +     struct platform_device_info pdevinfo[ACP6x_DEVS];
->> +     int index, ret;
->> +     int val = 0x00;
->> +     struct acpi_device *adev;
->>       u32 addr;
->> -     int ret;
->>
->>       /* Pink Sardine device check */
->>       switch (pci->revision) {
->> @@ -157,8 +165,75 @@ static int snd_acp62_probe(struct pci_dev *pci,
->>       ret = acp62_init(adata->acp62_base);
->>       if (ret)
->>               goto release_regions;
->> +     val = acp62_readl(adata->acp62_base + ACP_PIN_CONFIG);
->> +     switch (val) {
->> +     case ACP_CONFIG_0:
->> +     case ACP_CONFIG_1:
->> +     case ACP_CONFIG_2:
->> +     case ACP_CONFIG_3:
->> +     case ACP_CONFIG_9:
->> +     case ACP_CONFIG_15:
->> +             dev_info(&pci->dev, "Audio Mode %d\n", val);
->> +             break;
->> +     default:
->> +
->> +             /* Checking DMIC hardware*/
->> +             adev = 
->> acpi_find_child_device(ACPI_COMPANION(&pci->dev), 0x02, 0);
->> +
+> I was actually surprised that we specify these additional parameters
+> at attach (LINK_CREATE) time, and not at bpf_iter_create() call time.
+> It seems more appropriate to allow to specify such runtime parameters
+> very late, when we create a specific instance of seq_file. But I guess
+> this was done because one of the initial motivations for iterators was
+> to be pinned in BPFFS and read as a file, so it was more convenient to
+> store such parameters upfront at link creation time to keep
+> BPF_OBJ_PIN simpler. I guess it makes sense, worst case you'll need to
+> create multiple bpf_link files, one for each cgroup hierarchy you'd
+> like to query with the same single BPF program.
 >
-> You can probably remove one level of indentation in following code if
-> you do:
-> if (!adev)
->                        break;
+
+Right. That was the design from the beginning.
+
+> But I digress.
 >
-Okay Will use this logic.
->> +             if (adev) {
->> +                     const union acpi_object *obj;
->> +
->> +                     if (!acpi_dev_get_property(adev, 
->> "acp-audio-device-type",
->> + ACPI_TYPE_INTEGER, &obj) &&
->> + obj->integer.value == 2) {
->> +                             adata->res = devm_kzalloc(&pci->dev,
->> + sizeof(struct resource), GFP_KERNEL);
->> +
->> +                             if (!adata->res) {
->> +                                     ret = -ENOMEM;
->> +                                     goto de_init;
->> +                             }
->> +
->> +                             adata->res->name = "acp_iomem";
->> +                             adata->res->flags = IORESOURCE_MEM;
->> +                             adata->res->start = addr;
->> +                             adata->res->end = addr + (ACP6x_REG_END 
->> - ACP6x_REG_START);
->> +                             adata->acp62_audio_mode = ACP6x_PDM_MODE;
->>
->> +                             memset(&pdevinfo, 0, sizeof(pdevinfo));
->> +                             pdevinfo[0].name = "acp_ps_pdm_dma";
->> +                             pdevinfo[0].id = 0;
->> +                             pdevinfo[0].parent = &pci->dev;
->> +                             pdevinfo[0].num_res = 1;
->> +                             pdevinfo[0].res = adata->res;
->> +
->> +                             pdevinfo[1].name = "dmic-codec";
->> +                             pdevinfo[1].id = 0;
->> +                             pdevinfo[1].parent = &pci->dev;
->> +
->> +                             for (index = 0; index < ACP6x_DEVS; 
->> index++) {
->> +                                     adata->pdev[index] =
->> + platform_device_register_full(&pdevinfo[index]);
->> +
->> +                                     if (IS_ERR(adata->pdev[index])) {
->> + dev_err(&pci->dev,
->> +                                                     "cannot 
->> register %s device\n",
->> + pdevinfo[index].name);
->> +                                             ret = 
->> PTR_ERR(adata->pdev[index]);
->> +                                             goto unregister_devs;
->> +                                     }
->> +                             }
->> +                     }
->> +             }
->> +             break;
->> +     }
->>       return 0;
->> +unregister_devs:
->> +     for (--index; index >= 0; index--)
->> +             platform_device_unregister(adata->pdev[index]);
->> +de_init:
->> +     if (acp62_deinit(adata->acp62_base))
->> +             dev_err(&pci->dev, "ACP de-init failed\n");
->>   release_regions:
->>       pci_release_regions(pci);
->>   disable_pci:
->> @@ -170,9 +245,13 @@ static int snd_acp62_probe(struct pci_dev *pci,
->>   static void snd_acp62_remove(struct pci_dev *pci)
->>   {
->>       struct acp62_dev_data *adata;
->> -     int ret;
->> +     int ret, index;
->>
->>       adata = pci_get_drvdata(pci);
->> +     if (adata->acp62_audio_mode == ACP6x_PDM_MODE) {
->> +             for (index = 0; index < ACP6x_DEVS; index++)
->> + platform_device_unregister(adata->pdev[index]);
->> +     }
->>       ret = acp62_deinit(adata->acp62_base);
->>       if (ret)
->>               dev_err(&pci->dev, "ACP de-init failed\n");
+> As for not being able to auto-attach cgroup iterator. I think that's
+> sort of expected and is in line with not being able to auto-attach
+> cgroup programs, as you need cgroup FD at runtime. So even if you had
+> some reasonable default order, you still would need to specify target
+> cgroup (either through FD or ID).
 >
+> So... either don't do skeleton auto-attach,
+
+This is not okay IMHO. It would be very inconvenient to use.
+
+> or let's teach libbpf code
+> to not auto-attach some iter types?
+>
+
+I'm thinking of two options:
+
+1. Maybe we could add libbpf APIs for disabling auto-attach just like
+prog autoload. Like:
+
+bpf_program__set_auto_attach()
+bpf_program__get_auto_attach(...)
+
+2. In auto-attach, if the program's link is already set, attach will
+be skipped. So, we could just manually attach, which specifies the
+order, and set the link in skeleton. This way, no change in libbpf is
+needed. Does this sound good to you?
+
+> Alternatively, we could teach libbpf to parse some sort of cgroup
+> iterator spec, like:
+>
+> SEC("iter/cgroup:/path/to/cgroup:descendants_pre")
+>
+> But this approach won't work for a bunch of other parameterized
+> iterators (e.g., task iter, or map elem iter), so I'm hesitant about
+> adding this to libbpf as a generic functionality.
+>
+
+Agree. Let's explore other options first.
+
+> >
+> > I think this can be handled by userspace? We can attach the
+> > cgroup_iter separately first (and maybe we will need to set prog->link
+> > as well) so that bpf_object__attach_skeleton() doesn't try to attach
+> > it? I am following this pattern in the selftest in the final patch,
+> > although I think I might be missing setting prog->link, so I am
+> > wondering why there are no issues in that selftest which has the same
+> > scenario that you are talking about.
+> >
+> > I think such a pattern will need to be used anyway if the users need
+> > to set any non-default arguments for the cgroup_iter prog (like the
+> > selftest), right? The only case we are discussing here is the case
+> > where the user wants to attach the cgroup_iter with all default
+> > options (in which case the default order will fail).
+> > I agree that it might be inconvenient if the default/uninitialized
+> > options don't work for cgroup_iter, but Alexei pointed out that this
+> > matches other bpf uapis.
+> >
+> > My concern is that in the future we try to reuse enum bpf_iter_order
+> > to set ordering for other iterators, and then the
+> > default/uninitialized value (BPF_ITER_DESCENDANTS_PRE) doesn't make
+> > sense for that iterator (e.g. not a tree). In this case, the same
+> > problem that we are avoiding for cgroup_iter here will show up for
+> > that iterator, and we can't easily change it at this point because
+> > it's uapi.
+>
+> Yep, valid concern, I agree.
+>
+
+Andrii, other than auto-attach, do you have any concern for the rest
+of this patchset?
+
+> >
+> >
+> > > > and explicitly list the values acceptable by cgroup_iter, error out if
+> > > > UNSPEC is detected.
+> > > >
+> > > > Also, following Andrii's comments, will change BPF_ITER_SELF to
+> > > > BPF_ITER_SELF_ONLY, which does seem a little bit explicit in
+> > > > comparison.
+> > > >
+> > > > > I applied the first 3 patches to ease respin.
+> > > >
+> > > > Thanks! This helps!
+> > > >
+> > > > > Thanks!
