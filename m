@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAF8C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBEFC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235181AbiHPLDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S235104AbiHPLDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235048AbiHPLC5 (ORCPT
+        with ESMTP id S235084AbiHPLDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:02:57 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B2FBB692;
-        Tue, 16 Aug 2022 03:29:28 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GA1hTi019246;
-        Tue, 16 Aug 2022 06:29:19 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3hx5t7xf0r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 06:29:19 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27GATHe1037531
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Aug 2022 06:29:17 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 16 Aug 2022 06:29:16 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 16 Aug 2022 06:29:16 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 16 Aug 2022 06:29:16 -0400
-Received: from george-precision5560.ad.analog.com ([10.48.65.128])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27GAT2AP030411;
-        Tue, 16 Aug 2022 06:29:12 -0400
-From:   George Mois <george.mois@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <lucas.p.stankus@gmail.com>, George Mois <george.mois@analog.com>
-Subject: [PATCH 1/2] bindings: iio: accel: extend adxl313 documentation file
-Date:   Tue, 16 Aug 2022 13:28:27 +0300
-Message-ID: <20220816102828.182345-2-george.mois@analog.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220816102828.182345-1-george.mois@analog.com>
-References: <20220816102828.182345-1-george.mois@analog.com>
+        Tue, 16 Aug 2022 07:03:01 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A3571BED
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id j26so2787043wms.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=KFNiCUdXTrEiAGiz+4FQbAw1rF3AEPapoVwJtLEaQ9g=;
+        b=pLl9wgCJPBpAaPBgmBmy0+7N5b3VHGocJ9PLCcmKSttmVZMVQMA5WEaSWLumu+44oQ
+         mIaFuoENpibdoIIOWFTJEvv3PHvNH7ng5VyzcEOQwCKZhBmVAi/dl/jk4KDnnOhKxB+5
+         1AXE6MpJlQCPXESMuDi62G56fRHhixGcGytm+pfQ9pgKtn3uMNUS/SPP8zWvOe3uZxEW
+         6QfssBudlzVoxaGqyDMDtDgy10rr7/x5bbf7/KelB9YqpRCrAdCxFPzLSEedDw04gv+r
+         fNA77mgsIn+V630dzHDimwD7rbNsa0J2GO8gFyImcLba2r/Y9w9hZZotQGtIPu9Ojvh9
+         Dniw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=KFNiCUdXTrEiAGiz+4FQbAw1rF3AEPapoVwJtLEaQ9g=;
+        b=wswLSno7MGz5xcXq93m2FqAPGIODIsy1rWx2lWkaEAgx0PruIBMw0A3Ia1mdEaNNNk
+         KKObC5lc21+z7uWPieP0DDJDkY3pXsSQ3pNWOgy7svJ2lOrGX18pzjO4ezya3EissHAz
+         L2ytRWFTDkhHavxru1s6v40r+/x/I5OvEdeDuADhmaLtKRafvENSPoza179y5ICFbKgv
+         SqO1uaaY8ksdI7Wjunix99eFsnt9iLgCwYYhXR3QXlsw8/axaPwMPa1NSN+WuGNIGyhs
+         WllttwMoJu7/hGOEXO+B5Zf9NeLVeZ/CIAaVQibV0EcQl27J9fLQQ63X/Af9a3l6vefz
+         L+ug==
+X-Gm-Message-State: ACgBeo1ex3a1ywuGeW4Yf0vjtGvXc6x2SPMA2c0DWfoqNt3XNrR3YkXm
+        AFcmBWsg7EyHtS1EdE8MC0E=
+X-Google-Smtp-Source: AA6agR6qUGwb4CpPib/vdpS1BwS6mngZO3z+s86OwgGv9ciLUEA6YtJkII4a18RqRQ/RwCj9Z4CMhQ==
+X-Received: by 2002:a05:600c:4f02:b0:3a5:fc0f:9566 with SMTP id l2-20020a05600c4f0200b003a5fc0f9566mr4261092wmq.107.1660645751897;
+        Tue, 16 Aug 2022 03:29:11 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.32.249])
+        by smtp.gmail.com with ESMTPSA id m9-20020adffe49000000b002251639bfd0sm1668407wrs.59.2022.08.16.03.29.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:29:11 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
+        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, geert@linux-m68k.org,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 0/3] KUnit tests for RGB888, XRGB2101010 and grayscale
+Date:   Tue, 16 Aug 2022 12:29:00 +0200
+Message-Id: <20220816102903.276879-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: yyKdHyOSt18Bn9u8ztVaS8mZJZEb2gi-
-X-Proofpoint-GUID: yyKdHyOSt18Bn9u8ztVaS8mZJZEb2gi-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- impostorscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0 bulkscore=0
- clxscore=1011 priorityscore=1501 suspectscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208160040
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the adi,adxl313.yaml file with information regrding the
-ADXL312 and ADXL314 devices.
+Hello everyone,
 
-Signed-off-by: George Mois <george.mois@analog.com>
----
- .../devicetree/bindings/iio/accel/adi,adxl313.yaml     | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+This series is a follow up on my work adding KUnit test to the XRGB8888
+conversion functions. This time RGB888, XRGB2101010 and gray8 are added.
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
-index d6afc1b8c272..59d48ff1a16c 100644
---- a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
-@@ -4,20 +4,24 @@
- $id: http://devicetree.org/schemas/iio/accel/adi,adxl313.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Analog Devices ADXL313 3-Axis Digital Accelerometer
-+title: Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometers
- 
- maintainers:
-   - Lucas Stankus <lucas.p.stankus@gmail.com>
- 
- description: |
--  Analog Devices ADXL313 3-Axis Digital Accelerometer that supports
--  both I2C & SPI interfaces.
-+  Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometer that
-+  support both I2C & SPI interfaces.
-+    https://www.analog.com/en/products/adxl312.html
-     https://www.analog.com/en/products/adxl313.html
-+    https://www.analog.com/en/products/adxl314.html
- 
- properties:
-   compatible:
-     enum:
-+      - adi,adxl312
-       - adi,adxl313
-+      - adi,adxl314
- 
-   reg:
-     maxItems: 1
+Best wishes,
+Jose
+
+José Expósito (3):
+  drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb888()
+  drm/format-helper: Add KUnit tests for
+    drm_fb_xrgb8888_to_xrgb2101010()
+  drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_gray8()
+
+ .../gpu/drm/tests/drm_format_helper_test.c    | 190 ++++++++++++++++++
+ 1 file changed, 190 insertions(+)
+
 -- 
-2.30.2
+2.25.1
 
