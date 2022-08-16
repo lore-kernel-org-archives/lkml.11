@@ -2,112 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0A6C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D47C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbiHPIVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
+        id S232449AbiHPIVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbiHPIUC (ORCPT
+        with ESMTP id S232793AbiHPIUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:20:02 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA022CDD9;
-        Mon, 15 Aug 2022 23:04:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660629900; x=1692165900;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xPNIrkcFCfvS9ZaGQOj/prDr79CDpw4QxyV4FdP7r80=;
-  b=cqzVFe+kUaMUBpkFd/9GzucLOcRqfobvCA2QLh7jWuMApeE2FVaIgOlY
-   w1JTjdtKyNnWoAecRzWygG5hPcLnupaMIlqXNfIFDcOZUn7VBbptPyb70
-   Gqjb3LwBC09Uhw+S2mbVicXX1AmshXk4cS90Kjg9wmWArn1w9Ob4EI8GK
-   G+cqn1wx85XMArrKF+PmQZLQqt5/EqjOraqUZ7ofunE5vQzKH22WyXSGK
-   BGdGbURZd7euua606GwJb3XUwc6zfUPFyrQINenZF9tSI64SLSEgIOVH8
-   9qumTUUUPyCodvuuTihg5mQTn9+H6jt1DQzSdBpZWx9zuV4IaQAU0phnS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="290887403"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="290887403"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 23:04:56 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="666967947"
-Received: from asmit6-mobl2.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.38.228])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 23:04:53 -0700
-Message-ID: <edd637d1-e85c-bc18-a8a2-8aa63d02146f@intel.com>
-Date:   Tue, 16 Aug 2022 09:04:48 +0300
+        Tue, 16 Aug 2022 04:20:37 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65A64A107;
+        Mon, 15 Aug 2022 23:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=SVRLcL3c7t4xux2inMx+BQpiWgYVYAAoRoR2FuDT7Po=; b=FPLQsd26E6o6WLCt+bSUPdpcHx
+        H9fzOawMmwXCUd6JIc6pq2/MNU1uf5NZ2Os9nxttup0lT0c4jxRMTQKFbNWofQ0IN0EnSWcJaszbl
+        A8a7kl5zECeBVavX2dn/B1mow7kwwxRrg42YLrY7VF9sS2PP7tK1kUwLnzcWtzURl7WrQuAv79IFO
+        H1EnwIKP7LTF6YGEZaOKj0g1ueoX8KZsKmaodtWIJuFzNkjkyg6tXxMmnVPk7UcMdVcJdsF4SgHJc
+        RZD/IEmYkCXZPZTBt1e9BPJ2ArqPF1daq3tYalwzMuWQno/XcatUU/YXa1LwAlYi5ZnOkmFcuDGGe
+        l0ygrUzQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNpgs-00D70J-NI; Tue, 16 Aug 2022 06:04:38 +0000
+Message-ID: <5530ed1f-90ec-ce84-2348-80e484fa48cb@infradead.org>
+Date:   Mon, 15 Aug 2022 23:04:35 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: perf tools man pages on the web
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] vfio-pci/zdev: require KVM to be built-in
 Content-Language: en-US
-To:     Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <cecae74c-6bb2-d7da-bce3-35772b6e3f8c@intel.com>
- <CAP-5=fXJtRVKuPA_xpa=jBzq66y5JMv+jmr1GFNzh-zQ-7j5QA@mail.gmail.com>
- <CAM9d7cgWXP2s25XUM90=b5Eaojutxi=LobkqrUkRoF5gek4DPQ@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CAM9d7cgWXP2s25XUM90=b5Eaojutxi=LobkqrUkRoF5gek4DPQ@mail.gmail.com>
+To:     Pierre Morel <pmorel@linux.ibm.com>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220814215154.32112-1-rdunlap@infradead.org>
+ <663c7595-1c18-043e-5f12-b0ce880b84bf@linux.ibm.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <663c7595-1c18-043e-5f12-b0ce880b84bf@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/22 08:07, Namhyung Kim wrote:
-> Hi Ian and Adrian,
-> 
-> On Mon, Aug 15, 2022 at 7:56 AM Ian Rogers <irogers@google.com> wrote:
->>
->> On Mon, Aug 15, 2022 at 5:05 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->>>
->>> Hi
->>>
->>> I notice man pages on man7.org e.g.
->>>
->>>         https://www.man7.org/linux/man-pages/man1/perf.1.html
->>>
->>> do not get updated every release, and I wondered if the perf tools
->>> man pages should also be under:
->>>
->>>         https://docs.kernel.org/tools/index.html
->>>
->>> Thoughts?
->>
->> Sounds good to me. I'm assuming it would be some kind of build step
->> that would take the man pages and add them to what linux-doc needs?
-> 
-> I guess it's the RST format.  I'm not sure if there's a converter
-> from asciidoc to RST.
+Hi--
 
-Could use the html files that are already generated by:
-
-	make -C perf/tools html
-
->                        Anyway having the perf man pages in the
-> tools section looks good.
+On 8/15/22 02:43, Pierre Morel wrote:
+> Thank you Randy for this good catch.
+> However forcing KVM to be include statically in the kernel when using VFIO_PCI extensions is not a good solution for us I think.
 > 
->>
->> Fwiw, there has been some effort to try to improve the wiki:
->> https://perf.wiki.kernel.org/index.php/Main_Page
->> For example, the useful links are now broken apart and have more
->> links, there is a work-in-progress glossary. Perhaps there can be some
->> guidance on what to capture and where.
+> I suggest we better do something like:
 > 
-> Thanks for working on this.  I really need to take a look...
+> ----
 > 
-> Thanks,
-> Namhyung
+> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+> index 6287a843e8bc..1733339cc4eb 100644
+> --- a/arch/s390/include/asm/kvm_host.h
+> +++ b/arch/s390/include/asm/kvm_host.h
+> @@ -1038,7 +1038,7 @@ static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
+>  #define __KVM_HAVE_ARCH_VM_FREE
+>  void kvm_arch_free_vm(struct kvm *kvm);
+> 
+> -#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+> +#if defined(CONFIG_VFIO_PCI_ZDEV_KVM) || defined(CONFIG_VFIO_PCI_ZDEV_KVM_MODULE)
 
+This all looks good except for the line above.
+It should be:
+
+#if IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM)
+
+Thanks.
+
+
+>  int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
+>  void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
+>  #else
+> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> index f9d0c908e738..bbc375b028ef 100644
+> --- a/drivers/vfio/pci/Kconfig
+> +++ b/drivers/vfio/pci/Kconfig
+> @@ -45,9 +45,9 @@ config VFIO_PCI_IGD
+>  endif
+> 
+>  config VFIO_PCI_ZDEV_KVM
+> -       bool "VFIO PCI extensions for s390x KVM passthrough"
+> +       def_tristate y
+> +       prompt "VFIO PCI extensions for s390x KVM passthrough"
+>         depends on S390 && KVM
+> -       default y
+>         help
+>           Support s390x-specific extensions to enable support for enhancements
+>           to KVM passthrough capabilities, such as interpretive execution of
+> 
+> ----
+> 
+> What do you think? It seems to me it solves the problem, what do you think?
+> 
+> Regards,
+> Pierre
+
+
+-- 
+~Randy
