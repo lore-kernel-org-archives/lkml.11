@@ -2,108 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE61CC28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E8FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232176AbiHPLUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
+        id S233520AbiHPLU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234715AbiHPLTz (ORCPT
+        with ESMTP id S234381AbiHPLUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:19:55 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4342E2C55
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:44:40 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id v2so14179866lfi.6
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Enloy5lgKrMKVLbqE4UqCEXL8D9Wgy3KUpK/qyBoIrI=;
-        b=bmhY0kYxRm0Pu1Cs0YlMSETk0hz7OlpKbOUt8eVnlNIeRbuboqVaSXl/78n+u1O29t
-         RWkFw0mRgGs6O9xp37PVWEjfbpC9cvfDuPeJDbI1CWUKikDaalsk6P+uWh8uNsnn+f/P
-         QIFsP8CfQuNuSIih2QvNTFRYGLDmv2wNF3ku4sXH+o83ZAkPRnbVk/wplO4egti048ZD
-         ErxTSkVmZxvFPLxaqXZd1gC4KD0DYq32h2XL+NCU4wmEzS981G+5fm+K2KJHHNjFk5CC
-         UzE9+Q6LCgzSP1ffDEM/NbheuzW8sp649Ns0J1nneXwCLJwPo+miQhcLwuRVAiQukuJU
-         I7aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Enloy5lgKrMKVLbqE4UqCEXL8D9Wgy3KUpK/qyBoIrI=;
-        b=JNj/9a+Q+bucNnPuSUjhvh2fyPePrYDmCQAV3r8SMLcsZ0/QYIsDHkbQswP5i992cj
-         y9nnfDUetn5evzzRnThtyA8v6OCHxp7uEYsI1kJk6hM0eronTmJwB23pro+VrQMaIrbc
-         lLkwDQiFg0cfgUB9x49QbI8XPXi1uzY5aWrl6fFF74IVoFDFcwWHGO6dlwaEEcEsuD/r
-         Bt4C2AAegKpvTIRK8fqwDY5YHhjXC9JxZHgZokruMk7EC5kGbv3dgzCpzcRNbzmd5O40
-         C6Le6V5Q5RXaPZZ/N36pIQ9HmDiwO/ry/V1T4qSXh3Kz47YqBg+cvDvcK08w7e/O0RE7
-         E3yQ==
-X-Gm-Message-State: ACgBeo0YXYJaJN5nPsmYjz6wB67WvsXvBzAFJ9alQX96xxhmdz0jYoli
-        In25B33EXBm1ao8E/HxG54mW9Q==
-X-Google-Smtp-Source: AA6agR54PZx7XS1rYcJtMRhTAqOXN6+VFqLfzj/NiD8GAFWFKJ+lry6TmRGXna2tZtdoMf6GdwYMxQ==
-X-Received: by 2002:ac2:44af:0:b0:48a:f361:fe1d with SMTP id c15-20020ac244af000000b0048af361fe1dmr7226313lfm.190.1660643079100;
-        Tue, 16 Aug 2022 02:44:39 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id z12-20020a056512370c00b0048b08e25979sm1330665lfr.199.2022.08.16.02.44.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 02:44:38 -0700 (PDT)
-Message-ID: <b630a007-2548-2196-a963-786c6a98b748@linaro.org>
-Date:   Tue, 16 Aug 2022 12:44:37 +0300
+        Tue, 16 Aug 2022 07:20:00 -0400
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F409475FC1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:49:31 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id B14432B059FF;
+        Tue, 16 Aug 2022 05:49:26 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 16 Aug 2022 05:49:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660643366; x=1660650566; bh=LDg0F/tdWm
+        uuX+5Y52zO8Sqcm7DQL0YcyaqGkQk8adc=; b=GPpFjSOrwZxIYxYGAXsZL6mHjD
+        WbjU9v6Cap1kKGhAEqkg57BIGNOPRu2hyTIbMt7feU6DsQpypdeWuoTEyC/buFjX
+        rk2MONDaPv9NB3Ig+QokHa5oA98ZpWJoXyFA2tcQfUcu5t+1S+oedTww0kKzo7NU
+        yaPmk8EUfi4c2+xNI0YjM1CXGv22lWemlWZl8x5QSycKGykmDH13U0fI3PDII043
+        YpYk8UEsy4wk741tnCqA/AvXdH8FUCixrYVSLAe5BpFwv1Fcrvhf/8diiRG5Eu8x
+        otMOeoTcNjVRrlmwMvQ5K4xRMgRq1TphmgdkW6PUa8eeezdDTJy7rz/q1Rwg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660643366; x=1660650566; bh=LDg0F/tdWmuuX+5Y52zO8Sqcm7DQ
+        L0YcyaqGkQk8adc=; b=3Ax3i/frWA1OJ/WVrRDv96/pDYIOq+xB3sBoWFdH93O/
+        d+E8N3D5uiix0u5hIsoOzu1B6xy1iuXInlcuUTOQwWfP4rghbaotNkEukW6wnxZz
+        3zNWdBo34rrVe2jpV7L+epwEr0ke9uBhMVc3Hh069JCweIrJuRPkMu0ecjkTisvI
+        RE4hGsBf5hCU1rE2ChO8nndii3HbsP2eMrL8ty45mv/HhGxkftE/RJUS18iP9QnX
+        G6+f6O2nisM/yWvQ19b+sAuJDAMHaskW1WkltLGBUhmrJJ4kPHuqe2so1lLne4XI
+        vIE45/4Q+Wc6+MMPDs5WPDbVOWzvXD2mL13r0G6i+A==
+X-ME-Sender: <xms:JWj7YmJ2NdSrJApiuS_qsqrvR7DFDeJm9787V7XliSkuq9hHJuVKBw>
+    <xme:JWj7YuKPbclW3rHsThJRK-7jLiV_b3I5zfTpWR4g-AnfNzzd6hxjr_cJgTycWkxsp
+    VYY8lmhggu0WbWScJY>
+X-ME-Received: <xmr:JWj7Ymuno8rq01Nb1Z8-oyF0Irh3B8eOgkhXeL7ahfp9kVf2ihQgcEDCD0k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgedgvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpedukeevvdehheeuhefhhfefteeiffefgeffuefgkeetffevgeevgeejteei
+    gffghfenucffohhmrghinhepfhhrvggvuggvshhkthhophdrohhrghenucevlhhushhtvg
+    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhn
+    ohdrthgvtghh
+X-ME-Proxy: <xmx:JWj7YrbWn7UHWJgGfNxx5L3ZSRi_2z9w7seKrmSh0e-w89WzmrAYIA>
+    <xmx:JWj7YtazAfBfmbhzLNpiqYbkr7bdx71dbJowYgq8817v2UYa5dqsNw>
+    <xmx:JWj7YnByepaGyImxjUck4n1YplQ2s7xp7VgiN2rXgIAcWX7lvHGMUA>
+    <xmx:Jmj7YqJp35QTIMSU1Q05bl9u74Ce-NNm75OwDKsOOSwtg18qO_VHALNIk_s>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 16 Aug 2022 05:49:24 -0400 (EDT)
+Date:   Tue, 16 Aug 2022 11:49:22 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+Message-ID: <20220816094922.oqhrhefv327zo2ou@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <9fdecae2-80ad-6212-0522-7dccf9fb57be@tronnes.org>
+ <20220816082612.grebxql5ynnfnvfd@houat>
+ <ea6ebdda-f779-78af-1ffd-bd86d715077f@tronnes.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
-Content-Language: en-US
-To:     Peng Fan <peng.fan@nxp.com>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Clark Wang <xiaoning.wang@nxp.com>
-References: <20220812043424.4078034-1-peng.fan@oss.nxp.com>
- <f1add9c7-fc2e-a600-49a6-a6579f17db1b@linaro.org>
- <DU0PR04MB9417D62230578AC8CA4234F288689@DU0PR04MB9417.eurprd04.prod.outlook.com>
- <039566a7-5c65-b2d8-7b45-c616863cb292@linaro.org>
- <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wxlquavc6w2uimy2"
+Content-Disposition: inline
+In-Reply-To: <ea6ebdda-f779-78af-1ffd-bd86d715077f@tronnes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 11:43, Peng Fan wrote:
->> No. For such patch ABI break is also not allowed in that case. Just make the
->> driver backwards compatible and both problems - non bisectability and ABI
->> break - go away.
-> 
-> One more point that I am not very clear about  
-> "non bisectability and ABI break "
-> 
-> ABI, I suppose you mean dt-binding, right?
-> The I2C bindings and dts update will go through different tree, I think. So
-> dtbs_check may fail considering the PR merge order.
 
-ABI break means breaking Application Binary Interface, so out of tree
-DTS conforming to old bindings stop working with new kernel.
+--wxlquavc6w2uimy2
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ABI is described by bindings and implemented by driver. You broke it in
-the driver.
+On Tue, Aug 16, 2022 at 11:42:20AM +0200, Noralf Tr=F8nnes wrote:
+>=20
+>=20
+> Den 16.08.2022 10.26, skrev Maxime Ripard:
+> > Hi,
+> >=20
+> > On Mon, Aug 08, 2022 at 02:44:56PM +0200, Noralf Tr=F8nnes wrote:
+> >> Den 29.07.2022 18.34, skrev Maxime Ripard:
+> >>> The TV mode property has been around for a while now to select and ge=
+t the
+> >>> current TV mode output on an analog TV connector.
+> >>>
+> >>> Despite that property name being generic, its content isn't and has b=
+een
+> >>> driver-specific which makes it hard to build any generic behaviour on=
+ top
+> >>> of it, both in kernel and user-space.
+> >>>
+> >>> Let's create a new bitmask tv norm property, that can contain any of =
+the
+> >>> analog TV standards currently supported by kernel drivers. Each drive=
+r can
+> >>> then pass in a bitmask of the modes it supports.
+> >>>
+> >>> We'll then be able to phase out the older tv mode property.
+> >>>
+> >>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> >>>
+> >>
+> >> Please also update Documentation/gpu/kms-properties.csv
+> >>
+> >> Requirements for adding a new property is found in
+> >> Documentation/gpu/drm-kms.rst
+> >=20
+> > I knew this was going to be raised at some point, so I'm glad it's that
+> > early :)
+> >=20
+> > I really don't know what to do there. If we stick by our usual rules,
+> > then we can't have any of that work merged.
+> >=20
+> > However, I think the status quo is not really satisfactory either.
+> > Indeed, we have a property, that doesn't follow those requirements
+> > either, with a driver-specific content, and that stands in the way of
+> > fixes and further improvements at both the core framework and driver
+> > levels.
+> >=20
+> > So having that new property still seems like a net improvement at the
+> > driver, framework and uAPI levels, even if it's not entirely following
+> > the requirements we have in place.
+> >=20
+> > Even more so since, realistically, those kind of interfaces will never
+> > get any new development on the user-space side of things, it's
+> > considered by everyone as legacy.
+> >=20
+> > This also is something we need to support at some point if we want to
+> > completely deprecate the fbdev drivers and provide decent alternatives
+> > in KMS.
+> >=20
+> > So yeah, strictly speaking, we would not qualify for our requirements
+> > there. I still think we have a strong case for an exception though.
+>
+> Which requirements would that be? The only one I can see is the
+> documentation and maybe an IGT test.
 
-Best regards,
-Krzysztof
+This is the one I had in mind
+https://dri.freedesktop.org/docs/drm/gpu/drm-uapi.html#open-source-userspac=
+e-requirements
+
+I overlooked yours obviously, so I'll update my patches to fix it.
+
+Maxime
+
+--wxlquavc6w2uimy2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYvtoIgAKCRDj7w1vZxhR
+xdmCAP0TxNLQ337aCmZF1DrZ9PxgyCBlNhBMtaDX8zJsaRfqJgD+Kw7tZK+ncFk4
+xnge3+28RfIGi25dtfBBzpr7m1dc6QA=
+=aMK2
+-----END PGP SIGNATURE-----
+
+--wxlquavc6w2uimy2--
