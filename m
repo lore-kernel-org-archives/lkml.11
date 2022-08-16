@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1500BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D06C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbiHPIE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        id S230388AbiHPIEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiHPIDU (ORCPT
+        with ESMTP id S230311AbiHPIDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:03:20 -0400
+        Tue, 16 Aug 2022 04:03:39 -0400
 Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B92C7F8E;
-        Mon, 15 Aug 2022 22:26:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605E85FAE0;
+        Mon, 15 Aug 2022 22:26:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660627563; x=1692163563;
+  t=1660627594; x=1692163594;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dz2esrhsI156vyMdLRFq7dqF8C3xs8XYjFG8TZjmx7Y=;
-  b=tXIyvrASS+kxNrzvqLdf+AVrpWMgbEAPQecvkpP7MrGtu9jA2Es6CUXZ
-   3RLMudrKDA2lzut7AmsjzNPhYma7Di4Ejv5ZLnDH+yA2EfHwlAL1g8m4O
-   fLH5e5SgUkxfVRhEEZmQdrwm3oA52wfZcA3/cYhGcBAmFfxwETU0Eytws
-   w=;
+  bh=pmwCB1rtML/9o8e4ui5GvkioOpZG4mwOUDHFknLWzWw=;
+  b=B/g2HQziSnwT+9603TspJyvI6SaAd/cbfj3sw2vnbA8L+zKvF/QtCEUy
+   lKb61uieX4A8BMLEdiAMEENZ4EKcsfFOxHQbpp2AR3Inaz2RbIKbarKmu
+   yHLLVlp2mqsUH/V1S2YOaxd9Vvhx6DbzZkthzfS1LoUBDFbfCeszUbzZp
+   0=;
 X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="230039601"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-41c1ef8b.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:26:01 +0000
+   d="scan'208";a="230039760"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:26:33 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-41c1ef8b.us-east-1.amazon.com (Postfix) with ESMTPS id 48E17160C04;
-        Tue, 16 Aug 2022 05:25:59 +0000 (UTC)
+        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id 31347E00CF;
+        Tue, 16 Aug 2022 05:26:30 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 05:25:58 +0000
+ id 15.0.1497.38; Tue, 16 Aug 2022 05:26:30 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.55) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 16 Aug 2022 05:25:56 +0000
+ Tue, 16 Aug 2022 05:26:28 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -46,11 +46,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH v1 net 07/15] bpf: Fix a data-race around bpf_jit_limit.
-Date:   Mon, 15 Aug 2022 22:23:39 -0700
-Message-ID: <20220816052347.70042-8-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 net 09/15] ratelimit: Fix data-races in ___ratelimit().
+Date:   Mon, 15 Aug 2022 22:23:41 -0700
+Message-ID: <20220816052347.70042-10-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220816052347.70042-1-kuniyu@amazon.com>
 References: <20220816052347.70042-1-kuniyu@amazon.com>
@@ -64,30 +63,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reading bpf_jit_limit, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading rs->interval and rs->burst, they can be changed
+concurrently.  Thus, we need to add READ_ONCE() to their readers.
 
-Fixes: ede95a63b5e8 ("bpf: add bpf_jit_limit knob to restrict unpriv allocations")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
-CC: Daniel Borkmann <daniel@iogearbox.net>
----
- kernel/bpf/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/ratelimit.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index c1e10d088dbb..3d9eb3ae334c 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -971,7 +971,7 @@ pure_initcall(bpf_jit_charge_init);
- 
- int bpf_jit_charge_modmem(u32 size)
+diff --git a/lib/ratelimit.c b/lib/ratelimit.c
+index e01a93f46f83..b59a1d3d0cc3 100644
+--- a/lib/ratelimit.c
++++ b/lib/ratelimit.c
+@@ -26,10 +26,12 @@
+  */
+ int ___ratelimit(struct ratelimit_state *rs, const char *func)
  {
--	if (atomic_long_add_return(size, &bpf_jit_current) > bpf_jit_limit) {
-+	if (atomic_long_add_return(size, &bpf_jit_current) > READ_ONCE(bpf_jit_limit)) {
- 		if (!bpf_capable()) {
- 			atomic_long_sub(size, &bpf_jit_current);
- 			return -EPERM;
++	int interval = READ_ONCE(rs->interval);
++	int burst = READ_ONCE(rs->burst);
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	if (!rs->interval)
++	if (!interval)
+ 		return 1;
+ 
+ 	/*
+@@ -44,7 +46,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 	if (!rs->begin)
+ 		rs->begin = jiffies;
+ 
+-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
++	if (time_is_before_jiffies(rs->begin + interval)) {
+ 		if (rs->missed) {
+ 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
+ 				printk_deferred(KERN_WARNING
+@@ -56,7 +58,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 		rs->begin   = jiffies;
+ 		rs->printed = 0;
+ 	}
+-	if (rs->burst && rs->burst > rs->printed) {
++	if (burst && burst > rs->printed) {
+ 		rs->printed++;
+ 		ret = 1;
+ 	} else {
 -- 
 2.30.2
 
