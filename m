@@ -2,166 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CB2C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CBFC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236379AbiHPQ0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
+        id S236392AbiHPQ0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236351AbiHPQ0J (ORCPT
+        with ESMTP id S236375AbiHPQ0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:26:09 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44E7B29A;
-        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id ha11so10184153pjb.2;
-        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
-        b=Am2ouX+tQrg3Qs4kMQHVsVlDKBFlmbflfJQCKuXndB3MHEu5WSgnWGi0F9EaSYN4xe
-         ZUSaOhQeIoRuynwiaW1dKomNhDpt8wKVUsEGQNd+IwEjZ3XgG8Com7hxykU7G+qmy5Bi
-         PTwBqnKH4Qk1YwqlPwRhgoUphKD7SMjylxX+1+xZkKGjHI6rwqwLu9J9FLoy4sjXxH9o
-         0TBIlt1c3Qe7Bqvcps2WC6/LxhZpB3S0HtOaiyd3gqaoFmSEc71xTqvHFPV4H3n+5oqu
-         WAxS9jWDTaL5YJeGlAA/EzZq3kmTgfgw4v4gSIAsitQckCD8neZgMjtVDeaosy6lpHum
-         1Qtw==
+        Tue, 16 Aug 2022 12:26:10 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1E87B1F5;
+        Tue, 16 Aug 2022 09:26:09 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id i77so5105104ioa.7;
+        Tue, 16 Aug 2022 09:26:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
-        b=bleyaWwODfiXEfQ2kH2w3akC+VIqvc8kDLIGY33ggoSZe2d8qDXKLru5y6O6afQdwu
-         bBpJ9y2f4B0KRQanKxm77u65OHStuxhGm0S9CSDClZixesQvjnJqbJHQknNoIuju2dok
-         Xe6Hbge72Y/gON3abGzIwPXe2NONM5zX6y+A8Q8++y/W1u3KRnZ3rnuW2B+iOHmyr8Mc
-         K0PfVk8OW20L7R+4TPyR7+1rvwQayWEKnD1Qge3x5Gc2tNKbonEScCJOzH68xV10cekt
-         iyRGLkkFjnPtgQ4zGN7hb8xF/u8LsPG105YLcV/+gsM7b163HbTX93c35oXRggOTjzz0
-         3+WA==
-X-Gm-Message-State: ACgBeo0oPqG6HpMWKnPDnjMexQZqLm11WLkvjm5/7KhY3Rf4MaRCMqSI
-        Vak/JeUmHqWIEiPZuve5pwI=
-X-Google-Smtp-Source: AA6agR5vDBZ3vhyHnItujfIaNht8KZtHXHBsEN9eLZCLlIMXA0vxLKU47fOf6q9VckZ/Tl9GAVjwjQ==
-X-Received: by 2002:a17:902:b182:b0:16e:e4ad:360c with SMTP id s2-20020a170902b18200b0016ee4ad360cmr21696621plr.21.1660667165525;
-        Tue, 16 Aug 2022 09:26:05 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id b190-20020a621bc7000000b0052d87b76d12sm8660302pfb.68.2022.08.16.09.26.04
+        bh=wzuSEP+VTXN0cwYkMVQpCqVkuFjEXSOY4lGyaDNFC9M=;
+        b=13kWgu/ScnwVWlsbP0olfmZrC8rUiRE7aHaFFfejCXTmbeiO3YGQhIapqU1iTNz+s/
+         tuHJtGCAHszQ86zqCw+Er1sF10jA4RKj7LLX/q+Ho7/KLVxj7lITmuAqoE6ha4wxJdaS
+         nNjyexCBAJV8ssqAHy6+O/xYXU3WCw+2QaTp7BoZipR2eQuNvVJzjgdiw6qsSwGXtEuW
+         wiuZO8/gRId3N/F7LWBesyThZVVoDNNHsi1EdBGs0HKSKYwusB5aOGT4FllbrcY4Lyja
+         HAqVcr2bMd9ImG/cyZmKjB4GVz6PptXRQmCu5bazWW7GGpuV4pr+g/QhFnVdzIK723v/
+         I05A==
+X-Gm-Message-State: ACgBeo1zzcsdhGYMBEvlUNpmlv9y/On8tvwf52/iPNOhVHOvoPPf/KX8
+        Tzu7GvIU0oR2UrV8xDuCGg==
+X-Google-Smtp-Source: AA6agR4BJn8XnmIhH71UkTnsF8ILLBsb4m6dSK+gjIs1F7/P+tvqRmNZfK+X772OtSGpaT0GTD4NQA==
+X-Received: by 2002:a6b:c343:0:b0:67c:6033:a682 with SMTP id t64-20020a6bc343000000b0067c6033a682mr8999898iof.148.1660667168262;
+        Tue, 16 Aug 2022 09:26:08 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id y92-20020a029565000000b003433f35eb40sm4509919jah.80.2022.08.16.09.26.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 09:26:04 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 02:29:53 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc:     virtio-dev@lists.oasis-open.org,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <YvsBIQU/DlHOpbEH@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+        Tue, 16 Aug 2022 09:26:07 -0700 (PDT)
+Received: (nullmailer pid 2325302 invoked by uid 1000);
+        Tue, 16 Aug 2022 16:26:05 -0000
+Date:   Tue, 16 Aug 2022 10:26:05 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Irui Wang <irui.wang@mediatek.com>
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        angelogioacchino.delregno@collabora.com,
+        nicolas.dufresne@collabora.com, wenst@chromium.org,
+        kyrie wu <kyrie.wu@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Tomasz Figa <tfiga@chromium.org>, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com
+Subject: Re: [V6,1/8] dt-bindings: mediatek: Add mediatek,mt8195-jpgdec
+ compatible
+Message-ID: <20220816162605.GA2315090-robh@kernel.org>
+References: <20220729062603.5533-1-irui.wang@mediatek.com>
+ <20220729062603.5533-2-irui.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+In-Reply-To: <20220729062603.5533-2-irui.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC'ing virtio-dev@lists.oasis-open.org
+On Fri, Jul 29, 2022 at 02:25:56PM +0800, Irui Wang wrote:
+> From: kyrie wu <kyrie.wu@mediatek.com>
+> 
+> Add mediatek,mt8195-jpgdec compatible to binding document.
+> 
+> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+> Signed-off-by: irui wang <irui.wang@mediatek.com>
+> ---
+>  .../media/mediatek,mt8195-jpegdec.yaml        | 160 ++++++++++++++++++
+>  1 file changed, 160 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+> new file mode 100644
+> index 000000000000..ebda0ade8153
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+> @@ -0,0 +1,160 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/mediatek,mt8195-jpegdec.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek JPEG Encoder Device Tree Bindings
+> +
+> +maintainers:
+> +  - kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>
+> +
+> +description:
+> +  MediaTek JPEG Decoder is the JPEG decode hardware present in MediaTek SoCs
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: mediatek,mt8195-jpgdec
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  iommus:
+> +    maxItems: 6
+> +    description:
+> +      Points to the respective IOMMU block with master port as argument, see
+> +      Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
+> +      Ports are according to the HW.
+> +
+> +  "#address-cells":
+> +    const: 2
+> +
+> +  "#size-cells":
+> +    const: 2
+> +
+> +  ranges: true
+> +
+> +# Required child node:
+> +patternProperties:
+> +  "^jpgdec@[0-9a-f]+$":
+> +    type: object
+> +    description:
+> +      The jpeg decoder hardware device node which should be added as subnodes to
+> +      the main jpeg node.
+> +
+> +    properties:
+> +      compatible:
+> +        const: mediatek,mt8195-jpgdec-hw
+> +
+> +      reg:
+> +        maxItems: 1
+> +
+> +      iommus:
+> +        minItems: 1
+> +        maxItems: 32
+> +        description:
+> +          List of the hardware port in respective IOMMU block for current Socs.
+> +          Refer to bindings/iommu/mediatek,iommu.yaml.
+> +
+> +      interrupts:
+> +        maxItems: 1
+> +
+> +      clocks:
+> +        maxItems: 1
+> +
+> +      clock-names:
+> +        items:
+> +          - const: jpgdec
+> +
+> +      power-domains:
+> +        maxItems: 1
+> +
+> +    required:
+> +      - compatible
+> +      - reg
+> +      - iommus
+> +      - interrupts
+> +      - clocks
+> +      - clock-names
+> +      - power-domains
+> +
+> +    additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - power-domains
+> +  - iommus
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/memory/mt8195-memory-port.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/clock/mt8195-clk.h>
+> +    #include <dt-bindings/power/mt8195-power.h>
+> +
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        jpgdec_master {
+> +                compatible = "mediatek,mt8195-jpgdec";
+> +                power-domains = <&spm MT8195_POWER_DOMAIN_VDEC1>;
+> +                iommus = <&iommu_vpp M4U_PORT_L19_JPGDEC_WDMA0>,
+> +                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BSDMA0>,
+> +                     <&iommu_vpp M4U_PORT_L19_JPGDEC_WDMA1>,
+> +                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BSDMA1>,
+> +                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
+> +                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
+> +                #address-cells = <2>;
+> +                #size-cells = <2>;
+> +
 
-On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
-> Hey everybody,
-> 
-> This series introduces datagrams, packet scheduling, and sk_buff usage
-> to virtio vsock.
-> 
-> The usage of struct sk_buff benefits users by a) preparing vsock to use
-> other related systems that require sk_buff, such as sockmap and qdisc,
-> b) supporting basic congestion control via sock_alloc_send_skb, and c)
-> reducing copying when delivering packets to TAP.
-> 
-> The socket layer no longer forces errors to be -ENOMEM, as typically
-> userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
-> messages are being sent with option MSG_DONTWAIT.
-> 
-> The datagram work is based off previous patches by Jiang Wang[1].
-> 
-> The introduction of datagrams creates a transport layer fairness issue
-> where datagrams may freely starve streams of queue access. This happens
-> because, unlike streams, datagrams lack the transactions necessary for
-> calculating credits and throttling.
-> 
-> Previous proposals introduce changes to the spec to add an additional
-> virtqueue pair for datagrams[1]. Although this solution works, using
-> Linux's qdisc for packet scheduling leverages already existing systems,
-> avoids the need to change the virtio specification, and gives additional
-> capabilities. The usage of SFQ or fq_codel, for example, may solve the
-> transport layer starvation problem. It is easy to imagine other use
-> cases as well. For example, services of varying importance may be
-> assigned different priorities, and qdisc will apply appropriate
-> priority-based scheduling. By default, the system default pfifo qdisc is
-> used. The qdisc may be bypassed and legacy queuing is resumed by simply
-> setting the virtio-vsock%d network device to state DOWN. This technique
-> still allows vsock to work with zero-configuration.
-> 
-> In summary, this series introduces these major changes to vsock:
-> 
-> - virtio vsock supports datagrams
-> - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
->   - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
->     which applies the throttling threshold sk_sndbuf.
-> - The vsock socket layer supports returning errors other than -ENOMEM.
->   - This is used to return -EAGAIN when the sk_sndbuf threshold is
->     reached.
-> - virtio vsock uses a net_device, through which qdisc may be used.
->  - qdisc allows scheduling policies to be applied to vsock flows.
->   - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
->     it may avoid datagrams from flooding out stream flows. The benefit
->     to this is that additional virtqueues are not needed for datagrams.
->   - The net_device and qdisc is bypassed by simply setting the
->     net_device state to DOWN.
-> 
-> [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
-> 
-> Bobby Eshleman (5):
->   vsock: replace virtio_vsock_pkt with sk_buff
->   vsock: return errors other than -ENOMEM to socket
->   vsock: add netdev to vhost/virtio vsock
->   virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
->   virtio/vsock: add support for dgram
-> 
-> Jiang Wang (1):
->   vsock_test: add tests for vsock dgram
-> 
->  drivers/vhost/vsock.c                   | 238 ++++----
->  include/linux/virtio_vsock.h            |  73 ++-
->  include/net/af_vsock.h                  |   2 +
->  include/uapi/linux/virtio_vsock.h       |   2 +
->  net/vmw_vsock/af_vsock.c                |  30 +-
->  net/vmw_vsock/hyperv_transport.c        |   2 +-
->  net/vmw_vsock/virtio_transport.c        | 237 +++++---
->  net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
->  net/vmw_vsock/vmci_transport.c          |   9 +-
->  net/vmw_vsock/vsock_loopback.c          |  51 +-
->  tools/testing/vsock/util.c              | 105 ++++
->  tools/testing/vsock/util.h              |   4 +
->  tools/testing/vsock/vsock_test.c        | 195 ++++++
->  13 files changed, 1176 insertions(+), 543 deletions(-)
-> 
+Missing ranges.
+
+Presumably at least 1 child node is required because there's no 'reg' 
+property in the parent to access the h/w. So 'ranges', "#address-cells', 
+and '#size-cells' should all be required.
+
+> +                jpgdec@1a040000 {
+> +                    compatible = "mediatek,mt8195-jpgdec-hw";
+> +                    reg = <0 0x1a040000 0 0x10000>;/* JPGDEC_C0 */
+> +                    iommus = <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA0>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA0>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
+> +                    interrupts = <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                    clocks = <&vencsys CLK_VENC_JPGDEC>;
+> +                    clock-names = "jpgdec";
+> +                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC0>;
+> +                };
+> +
+> +                jpgdec@1a050000 {
+> +                    compatible = "mediatek,mt8195-jpgdec-hw";
+> +                    reg = <0 0x1a050000 0 0x10000>;/* JPGDEC_C1 */
+> +                    iommus = <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA0>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA0>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
+> +                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
+> +                    interrupts = <GIC_SPI 344 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                    clocks = <&vencsys CLK_VENC_JPGDEC_C1>;
+> +                    clock-names = "jpgdec";
+> +                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC1>;
+> +                };
+> +
+> +                jpgdec@1b040000 {
+> +                    compatible = "mediatek,mt8195-jpgdec-hw";
+> +                    reg = <0 0x1b040000 0 0x10000>;/* JPGDEC_C2 */
+> +                    iommus = <&iommu_vpp M4U_PORT_L20_JPGDEC_WDMA0>,
+> +                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BSDMA0>,
+> +                        <&iommu_vpp M4U_PORT_L20_JPGDEC_WDMA1>,
+> +                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BSDMA1>,
+> +                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BUFF_OFFSET1>,
+> +                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BUFF_OFFSET0>;
+> +                    interrupts = <GIC_SPI 348 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                    clocks = <&vencsys_core1 CLK_VENC_CORE1_JPGDEC>;
+> +                    clock-names = "jpgdec";
+> +                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC2>;
+> +                };
+> +        };
+> +    };
 > -- 
-> 2.35.1
+> 2.18.0
+> 
 > 
