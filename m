@@ -2,82 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE500C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F57BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235901AbiHPOFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 10:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        id S235685AbiHPOGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 10:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiHPOEc (ORCPT
+        with ESMTP id S234841AbiHPOGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 10:04:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76B86610C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:04:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B88A5B819C9
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACAB4C433C1;
-        Tue, 16 Aug 2022 14:04:15 +0000 (UTC)
-Date:   Tue, 16 Aug 2022 10:04:23 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH 0/2] ftrace/recordmcount: Handle object files without
- section symbols
-Message-ID: <20220816100423.5ee2e17c@gandalf.local.home>
-In-Reply-To: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 16 Aug 2022 10:06:38 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53C29F1A7
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:06:36 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y3so13638486eda.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=v67fLx2SsYmXkg1Fdi0JXC8gGND5NRH5uKTqVhwYSUI=;
+        b=Ju5xuuLC9C+n6VMthS725e6wl8VEnc3vzrwV5dn6dZsgGzedXd3n7k4QoLTaCRMAgK
+         LAm0VyCVErNs0kAwHwvlj3smae7Tnf2VXX/wwZr3Risbm+fhqNou7gL9DvATGXZ3OM2t
+         ClZ6z3K3/0PhpCGWzexwOQ+gSEx9Qb/Z4PrhWtgnwN5GY7SakBbfsBSHLNEwfDtU2QEH
+         SzImyJT5V9R2G+Eym8fIvC/Z7aK3auCUc99ook/6+uZqytYFf6uXmlZVz1W/Psl3au9g
+         6erT4JI5IP00PNBlNMvY4gpOTtL/lNu9w25ISae95TsXgRoL2qtAxr+ZcQITXoukZ/lV
+         UumA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=v67fLx2SsYmXkg1Fdi0JXC8gGND5NRH5uKTqVhwYSUI=;
+        b=RRUVw2U9GDSD0sBmEo35bRMGzDW2hoJgbut8FFwK3gUX4koyDs8eNEWg1ig/VadD9Z
+         toliU8ykPtHrj0gQUyDsx2L10S/iKLf0wlFvZ8JwtuftKLv91fQiKI68m2yHeJzl8JDf
+         Gvs3HPYnNIZzM3/FaHMYXkRw8FmW3MtiaanSWGskBqEq+QInv7E4v4KEtBlgQ+/HcJmj
+         jXSpfRJTgw479Nq/8TIMeOx060xP4r/t+/TMarVpvzLnYDITNxZ8YhTlwy80bG2Ja13d
+         WOWs3PI5g0Tz0BboG9i7YI3jJSGmVLdI1dDjA2E+SC76vVSVXBziaecf78/rhA27Wqke
+         LVFw==
+X-Gm-Message-State: ACgBeo3eFvg9S5D6myVca0g6YUasfnABP54PUSAQiNTMwSVuV4sAPgH3
+        S48XhE4L5I74BqmK7Uzng9GMKw==
+X-Google-Smtp-Source: AA6agR6r1l6Sr0C+9O74LK7tEXhHcKr5WkJuNVf5fov9/5YQxlPkY7/Fk0oRlGomhuTpkbuGdBedSQ==
+X-Received: by 2002:a05:6402:1777:b0:43d:85da:2fac with SMTP id da23-20020a056402177700b0043d85da2facmr19125475edb.32.1660658795422;
+        Tue, 16 Aug 2022 07:06:35 -0700 (PDT)
+Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id e1-20020a1709062c0100b00730799724c3sm5450092ejh.149.2022.08.16.07.06.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 07:06:34 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 16:06:33 +0200
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Conor.Dooley@microchip.com
+Cc:     jrtc27@jrtc27.com, palmer@dabbelt.com, robh@kernel.org,
+        tglx@linutronix.de, maz@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, daniel.lezcano@linaro.org,
+        anup@brainfault.org, guoren@kernel.org, sagar.kadam@sifive.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org
+Subject: Re: [PATCH 0/3] Fix dt-validate issues on qemu dtbdumps due to
+ dt-bindings
+Message-ID: <20220816140633.pkjws7n3qxsescjh@kamzik>
+References: <20220805162844.1554247-1-mail@conchuod.ie>
+ <YvGBYKZyW0B2/wSr@Jessicas-MacBook-Pro>
+ <94fe7e46-6156-1cc5-a4dc-1eee78e99bc4@microchip.com>
+ <20220809141436.GA1706120-robh@kernel.org>
+ <61829ccd-20d7-e2f0-0a6b-bcd0e076b9ea@microchip.com>
+ <1d94e18d-7f51-0619-95a9-6ca5fa7d9671@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1d94e18d-7f51-0619-95a9-6ca5fa7d9671@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 15:01:20 +0530
-"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
+On Mon, Aug 15, 2022 at 07:18:02PM +0000, Conor.Dooley@microchip.com wrote:
+> Any takers on trashing my regex? Otherwise I'll just submit
+> a v2 with the regex and it can be shat on there instead :)
+> 
+> On 09/08/2022 19:36, Conor Dooley wrote:
+> > On 09/08/2022 15:14, Rob Herring wrote:
+> >> On Mon, Aug 08, 2022 at 10:01:11PM +0000, Conor.Dooley@microchip.com wrote:
+> >>> On 08/08/2022 22:34, Jessica Clarke wrote:
+> >>>> On Fri, Aug 05, 2022 at 05:28:42PM +0100, Conor Dooley wrote:
+> >>>>> From: Conor Dooley <conor.dooley@microchip.com>
+> >>>>> The final patch adds some new ISA strings
+> >>>>> which needs scruitiny from someone with more knowledge about what ISA
+> >>>>> extension strings should be reported in a dt than I have.
+> >>>>
+> >>>> Listing every possible ISA string supported by the Linux kernel really
+> >>>> is not going to scale...
+> >>
+> >> How does the kernel scale? (No need to answer)
+> >>
+> >>> Yeah, totally correct there. Case for adding a regex I suppose, but I
+> >>> am not sure how to go about handling the multi-letter extensions or
+> >>> if parsing them is required from a binding compliance point of view.
+> >>> Hoping for some input from Palmer really.
+> >>
+> >> Yeah, looks like a regex pattern is needed.
+> > 
+> > I started pottering away at this but I have arrived at:
+> > rv64imaf?d?c?h?(_z[imafdqcbvkh]([a-z])*)*$
 
-> This solves a build issue on powerpc with binutils v2.36 and newer [1].
-> Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
-> symbols") [2], binutils started dropping section symbols that it thought
-> were unused. Due to this, in certain scenarios, recordmcount is unable 
-> to find a non-weak symbol to generate a relocation record against.
-> 
-> Clang integrated assembler is also aggressive in dropping section 
-> symbols [3].
-> 
-> In the past, there have been various workarounds to address this. See 
-> commits 55d5b7dd6451b5 ("initramfs: fix clang build failure") and 
-> 6e7b64b9dd6d96 ("elfcore: fix building with clang") and a recent patch:
-> https://lore.kernel.org/linuxppc-dev/20220425174128.11455-1-naveen.n.rao@linux.vnet.ibm.com/T/#u
-> 
-> Fix this issue by using the weak symbol in the relocation record. This 
-> can result in duplicate locations in the mcount table if those weak 
-> functions are overridden, so have ftrace skip dupicate entries.
-> 
-> Objtool already follows this approach, so patch 2 updates recordmcount 
-> to do the same. Patch 1 updates ftrace to skip duplicate entries.
-> 
-> - Naveen
-> 
-> 
-> [1] https://github.com/linuxppc/issues/issues/388
-> [2] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
-> [3] https://github.com/ClangBuiltLinux/linux/issues/981
-> 
->
+Don't forget the ^ at the start.
 
-There's been work to handle weak functions, but I'm not sure that work
-handled the issues here. Are these patches still needed, or was there
-another workaround to handle the problems this addressed?
+Do we need to worry about optional major and minor version numbers?
+Or check that Z names have at least one character following the category
+character? Actually, the first letter after Z being a category is only a
+convention. Maybe we don't want to enforce that. What about X extensions?
 
--- Steve
+Thanks,
+drew
+
+> > 
+> > I suspect that before "h?" there should be more single letter
+> > extensions added for completeness sake. So then it'd bloat out to:
+> > rv64imaf?d?q?c?b?v?k?h?(_z[imafdqcbvkh]([a-z])*)*$
+> > 
+> > I checked a couple different "bad" isa strings against it and
+> > nothing went up in flames but my regex skills are far from great
+> > so I'm sure there's better ways to represent this.
+> > 
+> > Anyways, this pattern is based on my understanding that:
+> > - the single letter order is fixed & we don't care about things that
+> >   can't even do "ima"
+> > - the multi letter extensions are all in a "_z<foo>" format where the
+> >   first letter of <foo> is a valid single letter extension
+> > - we don't care about the e extension from an OS PoV (this could be a
+> >   very flawed take...)
+> > - after the first two chars, the extension name could be an english
+> >   word (ifencei anyone?) so it's not worth restricting the charset
+> > - that attempting to validate the contents of the multiletter extensions
+> >   with dt-validate beyond the formatting is a futile, massively verbose
+> >   or unwieldy exercise at best
+> > 
+> > Some or all of those assumptions could be very very wrong so if {someone,
+> > anyone} wants to correct me - feel ***more*** than free.. 
+> > 
+> > Thanks,
+> > Conor.
+> > 
+> > patch would then look like:
+> > 
+> > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > index d632ac76532e..1e54e7746190 100644
+> > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > @@ -74,9 +74,7 @@ properties:
+> >        insensitive, letters in the riscv,isa string must be all
+> >        lowercase to simplify parsing.
+> >      $ref: "/schemas/types.yaml#/definitions/string"
+> > -    enum:
+> > -      - rv64imac
+> > -      - rv64imafdc
+> > +    pattern: rv64imaf?d?q?c?b?v?k?h?(_z[imafdqcbvkh]([a-z])*)*$
+> >  
+> >    # RISC-V requires 'timebase-frequency' in /cpus, so disallow it here
+> >    timebase-frequency: false
+> 
