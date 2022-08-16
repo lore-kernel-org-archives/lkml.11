@@ -2,108 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A713C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCC9C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234093AbiHPKv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
+        id S234336AbiHPKxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233821AbiHPKvg (ORCPT
+        with ESMTP id S230172AbiHPKxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:51:36 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7FC47EFD2;
-        Tue, 16 Aug 2022 03:23:47 -0700 (PDT)
-Received: from pwmachine.localnet (85-170-37-153.rev.numericable.fr [85.170.37.153])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 08AD8210DA5E;
-        Tue, 16 Aug 2022 03:23:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 08AD8210DA5E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1660645427;
-        bh=YfkkOGSQxA2OzjWDewpNMpQo+oxj7eu+1OSnrSeEK4Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cmrKoiJeQ8xbvJW9ziVMLBaonuTZpJk6d2MfbsVZv0S9trKuNx1i/J1TAv0fcuPTo
-         C6PRgeNl7F48RhkKDnG/hStuNX33PpJcL1UnY9jIVFShckPYpDhF4TyjCNgbFokBOd
-         yHHrU4m7su454KWkXbuqn2UydG56HtdOEBjcnUUI=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Hengqi Chen <hengqi.chen@gmail.com>
-Subject: Re: [RFC PATCH v1 1/3] bpf: Make ring buffer overwritable.
-Date:   Tue, 16 Aug 2022 12:23:41 +0200
-Message-ID: <1735233.VLH7GnMWUR@pwmachine>
-In-Reply-To: <CAEf4BzYex03T7aYjLnbkfHb8vUsCHhj_DiMU6KbK29F+DyhXyA@mail.gmail.com>
-References: <20220810171702.74932-1-flaniel@linux.microsoft.com> <20220810171702.74932-2-flaniel@linux.microsoft.com> <CAEf4BzYex03T7aYjLnbkfHb8vUsCHhj_DiMU6KbK29F+DyhXyA@mail.gmail.com>
+        Tue, 16 Aug 2022 06:53:23 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51444E842
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:55:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660643729; x=1692179729;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Qs5JcP0DyxdDr2M+TfNbeXHgZMZJ7UyRrbaQPUfUtUw=;
+  b=G3syNGWH7XTVsW+Dfbw5P2o85olKoCqDYcF6A7Ro8g7tJyZKWA+Gaoxy
+   D7WibQiKXC5uePe9IwygX3FumpnJuuOjKxPFZgW+20lqGdkDYIVdy33Dt
+   uWbl30VZEIyMgo9yuogCnoU+BPCrVdiZdoFenFWzvgPAiwjLcmuk9W2Bz
+   rif4NN3AIEV9nAnDm43NqVpdq6M7HvKD/PgcoZSMSVgXnUiALMlyATSDD
+   RvySU3LNseJttDjIV+ZLANeRhwop5611RSBcvJ8V8mzFGUZ475Hu9XnOx
+   bV2GWGxt244cwDgHBrZi0iI/UwiICwpD4lg2ctIHCl4yuVglpn6cOE6PN
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293449978"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="293449978"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:55:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="610208209"
+Received: from kroegerb-mobl1.ger.corp.intel.com (HELO [10.252.51.43]) ([10.252.51.43])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:55:24 -0700
+Message-ID: <f6baa98e-af46-7ca8-397a-2e762cd444c6@linux.intel.com>
+Date:   Tue, 16 Aug 2022 11:55:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v2] ASoC: Intel: sof_rt5682: Add support for
+ jsl_rt5682_rt1019
+Content-Language: en-US
+To:     Sean Hong <sean.hong@quanta.corp-partner.google.com>,
+        perex@perex.cz, tiwai@suse.com, brent.lu@intel.com
+Cc:     cezary.rojewski@intel.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        linux-kernel@vger.kernel.org, liam.r.girdwood@linux.intel.com,
+        broonie@kernel.org, alsa-devel@alsa-project.org,
+        yung-chuan.liao@linux.intel.com
+References: <20220816075424.1245593-1-sean.hong@quanta.corp-partner.google.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220816075424.1245593-1-sean.hong@quanta.corp-partner.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi.
 
 
-Le lundi 15 ao=FBt 2022, 23:52:22 CEST Andrii Nakryiko a =E9crit :
-> On Wed, Aug 10, 2022 at 10:18 AM Francis Laniel
->=20
-> <flaniel@linux.microsoft.com> wrote:
-> > By default, BPF ring buffer are size bounded, when producers already
-> > filled the buffer, they need to wait for the consumer to get those data
-> > before adding new ones.
-> > In terms of API, bpf_ringbuf_reserve() returns NULL if the buffer is fu=
-ll.
-> >=20
-> > This patch permits making BPF ring buffer overwritable.
-> > When producers already wrote as many data as the buffer size, they will
-> > begin to over write existing data, so the oldest will be replaced.
-> > As a result, bpf_ringbuf_reserve() never returns NULL.
->=20
-> Part of BPF ringbuf record (first 8 bytes) stores information like
-> record size and offset in pages to the beginning of ringbuf map
-> metadata. This is used by consumer to know how much data belongs to
-> data record, but also for making sure that
-> bpf_ringbuf_reserve()/bpf_ringbuf_submit() work correctly and don't
-> corrupt kernel memory.
->=20
-> If we simply allow overwriting this information (and no, spinlock
-> doesn't protect from that, you can have multiple producers writing to
-> different parts of ringbuf data area in parallel after "reserving"
-> their respective records), it completely breaks any sort of
-> correctness, both for user-space consumer and kernel-side producers.
+On 8/16/22 09:54, Sean Hong wrote:
+> This patch adds the driver data for rt5682 support jsl_rt5682_rt1019.
+> 
+> Signed-off-by: Sean Hong <sean.hong@quanta.corp-partner.google.com>
+> ---
+>  sound/soc/intel/boards/sof_rt5682.c               |  9 +++++++++
+>  sound/soc/intel/common/soc-acpi-intel-jsl-match.c | 12 ++++++++++++
+>  2 files changed, 21 insertions(+)
+> 
+> diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
+> index 045965312..3a840f3a9 100644
+> --- a/sound/soc/intel/boards/sof_rt5682.c
+> +++ b/sound/soc/intel/boards/sof_rt5682.c
+> @@ -1100,6 +1100,15 @@ static const struct platform_device_id board_ids[] = {
+>  					SOF_RT5682_SSP_AMP(1) |
+>  					SOF_RT5682_NUM_HDMIDEV(4)),
+>  	},
+> +	{
+> +		.name = "jsl_rt5682_rt1019",
+> +		.driver_data = (kernel_ulong_t)(SOF_RT5682_MCLK_EN |
+> +					SOF_RT5682_MCLK_24MHZ |
 
-Thank you for your answer.
-My current implementation is indeed wrong as I based it on the wrong=20
-assumption than BPF ring buffer could only store data of the same size...
-With data of different size, we can have the troubles you described.
+I see it's the same setting for all JSL devices but I am having doubts
+on this MCLK.  Is this 24MHz value correct for JSL? It's derived from
+ICL so in theory the MCLK should be a multiple of 19.2MHz if the root
+frequency was the oscillator.
 
-I will rework my patches and send a new version once polished but I=20
-cannot give an ETA.
+Is this intentional?
 
-> > Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-> > ---
-> >=20
-> >  include/uapi/linux/bpf.h |  3 +++
-> >  kernel/bpf/ringbuf.c     | 51 +++++++++++++++++++++++++++++++---------
-> >  2 files changed, 43 insertions(+), 11 deletions(-)
->=20
-> [...]
-
-
-Best regards.
-
-
+> +					SOF_RT5682_SSP_CODEC(0) |
+> +					SOF_SPEAKER_AMP_PRESENT |
+> +					SOF_RT1019_SPEAKER_AMP_PRESENT |
+> +					SOF_RT5682_SSP_AMP(1)),
+> +	},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(platform, board_ids);
+> diff --git a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+> index b95c4b2cd..e374bf163 100644
+> --- a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+> +++ b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+> @@ -29,6 +29,11 @@ static const struct snd_soc_acpi_codecs rt1015p_spk = {
+>  	.codecs = {"RTL1015"}
+>  };
+>  
+> +static struct snd_soc_acpi_codecs rt1019p_spk = {
+> +	.num_codecs = 1,
+> +	.codecs = {"RTL1019"}
+> +};
+> +
+>  static const struct snd_soc_acpi_codecs mx98360a_spk = {
+>  	.num_codecs = 1,
+>  	.codecs = {"MX98360A"}
+> @@ -78,6 +83,13 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_jsl_machines[] = {
+>  		.quirk_data = &mx98360a_spk,
+>  		.sof_tplg_filename = "sof-jsl-rt5682-mx98360a.tplg",
+>  	},
+> +	{
+> +		.comp_ids = &rt5682_rt5682s_hp,
+> +		.drv_name = "jsl_rt5682_rt1019",
+> +		.machine_quirk = snd_soc_acpi_codec_list,
+> +		.quirk_data = &rt1019p_spk,
+> +		.sof_tplg_filename = "sof-jsl-rt5682-rt1019.tplg",
+> +	},
+>  	{
+>  		.id = "10134242",
+>  		.drv_name = "jsl_cs4242_mx98360a",
