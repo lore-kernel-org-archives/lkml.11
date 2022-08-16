@@ -2,102 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF5EC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD32C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbiHPJOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S231703AbiHPJPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231655AbiHPJNu (ORCPT
+        with ESMTP id S232503AbiHPJPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:13:50 -0400
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BF4E096F
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:29:27 -0700 (PDT)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id 7D589413B5;
-        Tue, 16 Aug 2022 12:29:22 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1660634963; bh=KO2yBCCsjyqMCOIjGZUnVjiLjyzF2mSA6vth3iKlpFs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyKSTkBpeELAqETpHujZtkVzXW8QG+Ln6oD4o87dZSJNTi0U/fL/lyiJ02aWGKclm
-         RBe7FaIlZJxDXzIHCr3pmHd/fSqy+ZUJhRg9glXvq5gqWNmycMT6aVu1UzrN6qfCPA
-         MDJw56YBxACMrQHM5d2SSd6bwBjhGSFcOW1k7OqeviDLrSlFIp8EXMcObBMfw4ORcO
-         mi5UmsntLQNA/t6er3NYGU8dhVi4SwLYhR3CRvfeRt1Sm9qIKEnkPLuRiwFgmw49W7
-         DyhVdtpUv6jg+h6cZUqgAIySs1Lm5Kw1Z6fitn0kz4ZFaKR9j3AJwnD9gVNp8BdFGe
-         sQkSlewmF/cjA==
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     samuel.thibault@ens-lyon.org
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        speakup@linux-speakup.org, Nikita Travkin <nikita@trvn.ru>
-Subject: Re: [PATCHv4] speakup: Generate speakupmap.h automatically
-Date:   Tue, 16 Aug 2022 12:28:43 +0500
-Message-Id: <20220816072843.1699317-1-nikita@trvn.ru>
-In-Reply-To: <20220612172244.il3siyq7ueqnvah5@begin>
-References: <20220612172244.il3siyq7ueqnvah5@begin>
+        Tue, 16 Aug 2022 05:15:08 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5BF3ECF2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:31:06 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 202so8548701pgc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=pZomNtEzGUGKmXZCD2savVujU1seUHJVTQWF1eiOxNQ=;
+        b=QjmEQILSFjI4Kne6cLHVWxwMBbH8TRZBTwz+LT/nsjKCXQsQsL/GH4dBb21VBnKfzs
+         9O7iBv+ixAgNKPkN8httl0K9Z34Tq53RpQBNjxCDhJR68ZGqfNJxSb7ZSLiwy+gdgwUe
+         Ev4+LeabykTjCmIO27EtOHkGhI16jH54LInfIm1mEULvkbQG07OE04+Uh664WlHw9bEB
+         cItnNF2cDpO+8wsv0BkJ5mh34xiuTb5nSGs/rdlXQDwqtb6dHCH5o0yQpmFR5J87vqnC
+         +LH/4xaTOZsE97EO6yi2ROYnZrwzImc6tGGqp4yLC0gfAb3DkR1kY2Ph9O7qpIBSCXdI
+         65ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=pZomNtEzGUGKmXZCD2savVujU1seUHJVTQWF1eiOxNQ=;
+        b=sJKc/gI3vQsFGsF9PLncIhmK8ykpQ7O/bnBY9kCNKww2Z/cejHxuW65HSuD3w5wF0o
+         Ns34WdKEpRC3wJ5hv0By/jzKhePlsWec06t0P7KHQNxSdH1KRK8D0QR3yZ++wa+kd2jX
+         t5cpjSBbnUtgcsCkms/cMAAJSXOVoMmEYaIW67q3S5TBmPSp7FJO7H0HRpVzMpwmnZ0+
+         xQumKoCBQqOWPt4Vr+GJa4jwUop304znouNAQ1caIiBt5PE4sGfe52FqlayYDp73b07k
+         rBAvJX07whpgRLeEfQk5mn5uY57L7921AAlevZNHuZAjUfb7ibZCSTcoQvDvqCxnI+uZ
+         xGqQ==
+X-Gm-Message-State: ACgBeo2sRUYD3JmAuCCbjfxAFrYT8z5D33YCF7ODXGtgmgkzuUmCYKOM
+        f3CbzcNIFKz7BJNP5E3w52aqlvij9eRFtOiB2D7T/g==
+X-Google-Smtp-Source: AA6agR7CMyviWO+Ob4bSFymSDvQjhmLVmHYcGGzU5T6qjyiPeGUaPlrAt9Vi66x+ZK47aKX0xest2qDOiNdQtIiZaK0=
+X-Received: by 2002:a05:6a00:1d9e:b0:52d:aa13:67fc with SMTP id
+ z30-20020a056a001d9e00b0052daa1367fcmr19695840pfw.73.1660635066424; Tue, 16
+ Aug 2022 00:31:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220801220931.181531-1-f.fainelli@gmail.com> <20220801220931.181531-4-f.fainelli@gmail.com>
+ <26ad247d-a4b3-4051-b8d9-505c09b76f6b@linaro.org> <375eac04-dbfd-080a-3003-cae3eda1f42b@gmail.com>
+ <fa283e3c-5b96-b0a4-95c5-a7230d16d8ca@linaro.org> <ec06e9c6-f475-fe19-9046-d57a6168e72b@gmail.com>
+ <c51c360e-a73f-9333-ffa1-3461de29f41f@linaro.org> <90d37d6e-52df-149e-5691-ae7a91521482@gmail.com>
+In-Reply-To: <90d37d6e-52df-149e-5691-ae7a91521482@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Date:   Tue, 16 Aug 2022 10:30:55 +0300
+Message-ID: <CAGE=qrqpnbgCkn3v2KfQs=VpGw+XOXndzWh2sg=6tXbj7Y3KHQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] memory: Add Broadcom STB memory controller driver
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-I was building 6.0-rc1 and this patch seem to cause some compiling
-issues. The u_char was not defined in my host build environment (I
-suspect because of the musl based host) which leads to the makemapdata
-failing to compile. Changing the file to use "unsigned char" seems to
-solve the issue.
+On Sat, 13 Aug 2022 at 01:23, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 8/12/22 11:41, Krzysztof Kozlowski wrote:
+> > On 12/08/2022 20:52, Florian Fainelli wrote:
+> >
+> >>>> unless you also implied enclosing those functions under an #if
+> >>>> IS_ENABLED(CONFIG_PM) or something which is IMHO less preferable.
+> >>>
+> >>> Are you sure you added also pm_ptr()? I don't see such warnings with W=1
+> >>> and final object does not have the functions (for a different driver but
+> >>> same principle).
+> >>
+> >> Yes I am sure I added pm_ptr() see the v4 I just submitted. I don't see
+> >> how the compiler cannot warn about the functions being unused the day
+> >> they stop being referenced by the pm_ops structure which is eliminated?
+> >
+> > I don't have the answer how it exactly works (or which gcc version
+> > introduced it), but I tested it and the functions were not present in
+> > the object file, thus of course no warnings.
+> >
+> > The driver change I am referring to is:
+> > https://lore.kernel.org/all/20220808174107.38676-15-paul@crapouillou.net/
+> >
+> > I think the only difference against your v4 is:
+> > DEFINE_SIMPLE_DEV_PM_OPS
+> > and lack of __maybe_unused on the functions.
+> >
+> > The DEFINE_SIMPLE_DEV_PM_OPS itself adds __maybe_unused for !CONFIG_PM
+> > case, but I don't think it is relevant.
+>
+> It definitively is relevant here. SIMPLE_DEV_PM_OPS without
+> __maybe_unused results in the following pre-processed code:
+>
 
-After that I also had some weird issues of the build system trying to
-write speakupmap.h into the source dir and not the output dir (the
-source is read only due to the tooling I use) but this seems to have
-been resolved by cleanly rebuilding the speakup dir.
+What I was referring to is "__maybe_unused" is not relevant here. The
+DEFINE_SIMPLE_DEV_PM_OPS (with pm_ptr()) are the change you need.
 
-A patch changing the type follows.
-
-Nikita
-
--- >8 --
-From bc239d8740f9e31240e8727f76227daa1aec3c4f Mon Sep 17 00:00:00 2001
-From: Nikita Travkin <nikita@trvn.ru>
-Date: Tue, 16 Aug 2022 11:39:52 +0500
-Subject: [PATCH] speakup: Fix compilation in some build environments
-
-A compilation error may occur if the host CC doesn't have u_char
-defined:
-
-  HOSTCC  drivers/accessibility/speakup/makemapdata.o
-In file included from ../drivers/accessibility/speakup/makemapdata.c:15:
-../drivers/accessibility/speakup/utils.h: In function 'hash_name':
-../drivers/accessibility/speakup/utils.h:57:9: error: unknown type name 'u_char'; did you mean 'char'?
-   57 |         u_char *pn = (u_char *)name;
-      |         ^~~~~~
-      |         char
-
-Fix this by using "unsigned char" instead.
-
-Fixes: 6a5c94d92699 ("speakup: Generate speakupmap.h automatically")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
----
- drivers/accessibility/speakup/utils.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/accessibility/speakup/utils.h b/drivers/accessibility/speakup/utils.h
-index 4bf2ee8ac246..4ce9a12f7664 100644
---- a/drivers/accessibility/speakup/utils.h
-+++ b/drivers/accessibility/speakup/utils.h
-@@ -54,7 +54,7 @@ static inline int oops(const char *msg, const char *info)
- 
- static inline struct st_key *hash_name(char *name)
- {
--	u_char *pn = (u_char *)name;
-+	unsigned char *pn = (unsigned char *)name;
- 	int hash = 0;
- 
- 	while (*pn) {
--- 
-2.35.3
-
+Best regards,
+Krzysztof
