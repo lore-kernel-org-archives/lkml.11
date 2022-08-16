@@ -2,73 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A7AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D68FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbiHPLK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S235295AbiHPLK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235488AbiHPLKg (ORCPT
+        with ESMTP id S235519AbiHPLKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:10:36 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A2FDBAE;
-        Tue, 16 Aug 2022 01:38:52 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.93,240,1654527600"; 
-   d="scan'208";a="131561635"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 16 Aug 2022 17:38:52 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 109B6405E379;
-        Tue, 16 Aug 2022 17:38:48 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] dt-bindings: spi: renesas,sh-msiof: Fix 'unevaluatedProperties' warnings
-Date:   Tue, 16 Aug 2022 09:38:42 +0100
-Message-Id: <20220816083842.25925-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 16 Aug 2022 07:10:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0218E1F60C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660639192; x=1692175192;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=haZJJ6qIsp18u5JMSxLBwZ3xo8DIn7m1qKopIr+1Xfg=;
+  b=OK1hXaQncULTuYAnDR9zKW5Q4r5ylVMlZC6PCFy+l0VptTqLDdeo5xuT
+   TAPlh76221rPFoDZl8si7DJLjYxkKQxq0LP+IUNs9QHF+6mkf8EjnKCDZ
+   EW2ru12vddDJFzRF2z2IXxTTkO55J2nXXLhPU6G8RegMxQnvy0/m/Rzqr
+   O0wv2fV15qgycSKSJkURu1AhyBqUgaDX3IO7eUeHzQfKrLB44ucWXdB41
+   3WN0YeAJqezHIX5kUaeVF2KlS7vMlwkEHoVsVvYGhOxgAYgWhj5psEV+/
+   KEl9uCwy2OWXyAl4ps/iYneIzMLJjTx12cGWpEhGdy5XSftDbbJslGFWp
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="289733824"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="289733824"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:39:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="610189582"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 16 Aug 2022 01:39:51 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNs74-0001e1-2d;
+        Tue, 16 Aug 2022 08:39:50 +0000
+Date:   Tue, 16 Aug 2022 16:39:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:bits/070-audio 4/16] sound/soc/codecs/tas2764.c:681:20:
+ warning: cast to smaller integer type 'enum tas2764_devid' from 'const void
+ *'
+Message-ID: <202208161624.BKESkCXj-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With 'unevaluatedProperties' support implemented, there's a number of
-warnings when running dtbs_check:
+tree:   https://github.com/AsahiLinux/linux bits/070-audio
+head:   51024ef467ff6c288e679bc72d0e3fcdd54d9b39
+commit: e8c4eabb2252a8ee21269737e90c57973ab36269 [4/16] ASoC: tas2764: Extend driver to SN012776
+config: arm64-randconfig-r022-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161624.BKESkCXj-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/AsahiLinux/linux/commit/e8c4eabb2252a8ee21269737e90c57973ab36269
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/070-audio
+        git checkout e8c4eabb2252a8ee21269737e90c57973ab36269
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash sound/soc/codecs/
 
-arch/arm64/boot/dts/renesas/r8a77951-ulcb-kf.dtb: spi@e6e90000: Unevaluated properties are not allowed ('power-domains', 'resets' were unexpected)
-	From schema: Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-The main problem is that SoC DTSI's include power-domains and resets
-property, whereas the renesas,sh-msiof.yaml has 'unevaluatedProperties:
-false'. So just add optional power-domains and resets properties.
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+>> sound/soc/codecs/tas2764.c:681:20: warning: cast to smaller integer type 'enum tas2764_devid' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+                   tas2764->devid = (enum tas2764_devid) of_id->data;
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
 
-diff --git a/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml b/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
-index 5de710adfa63..7bd86cf876f1 100644
---- a/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
-+++ b/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
-@@ -69,6 +69,10 @@ properties:
-   clocks:
-     maxItems: 1
- 
-+  power-domains: true
-+
-+  resets: true
-+
-   num-cs:
-     description: |
-       Total number of chip selects (default is 1).
+
+vim +681 sound/soc/codecs/tas2764.c
+
+   665	
+   666	static int tas2764_i2c_probe(struct i2c_client *client)
+   667	{
+   668		struct tas2764_priv *tas2764;
+   669		const struct of_device_id *of_id = NULL;
+   670		int result;
+   671	
+   672		tas2764 = devm_kzalloc(&client->dev, sizeof(struct tas2764_priv),
+   673				       GFP_KERNEL);
+   674		if (!tas2764)
+   675			return -ENOMEM;
+   676	
+   677		if (client->dev.of_node)
+   678			of_id = of_match_device(tas2764_of_match, &client->dev);	
+   679	
+   680		if (of_id)
+ > 681			tas2764->devid = (enum tas2764_devid) of_id->data;
+   682		else
+   683			tas2764->devid = DEVID_TAS2764;
+   684	
+   685		tas2764->dev = &client->dev;
+   686		i2c_set_clientdata(client, tas2764);
+   687		dev_set_drvdata(&client->dev, tas2764);
+   688	
+   689		tas2764->regmap = devm_regmap_init_i2c(client, &tas2764_i2c_regmap);
+   690		if (IS_ERR(tas2764->regmap)) {
+   691			result = PTR_ERR(tas2764->regmap);
+   692			dev_err(&client->dev, "Failed to allocate register map: %d\n",
+   693						result);
+   694			return result;
+   695		}
+   696	
+   697		if (client->dev.of_node) {
+   698			result = tas2764_parse_dt(&client->dev, tas2764);
+   699			if (result) {
+   700				dev_err(tas2764->dev, "%s: Failed to parse devicetree\n",
+   701					__func__);
+   702				return result;
+   703			}
+   704		}
+   705	
+   706		return devm_snd_soc_register_component(tas2764->dev,
+   707						       &soc_component_driver_tas2764,
+   708						       tas2764_dai_driver,
+   709						       ARRAY_SIZE(tas2764_dai_driver));
+   710	}
+   711	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
