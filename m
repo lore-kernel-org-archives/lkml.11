@@ -2,432 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E9DC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DA6C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbiHPGyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        id S230354AbiHPG4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiHPGyT (ORCPT
+        with ESMTP id S231557AbiHPGzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:54:19 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1D1109743;
-        Mon, 15 Aug 2022 19:09:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660615789; x=1692151789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+bzxfDJ5jmZfEPUMVMNi2m4Go8FDE/fAmruYSl2IrtA=;
-  b=euQwqTS20VZvr8EuWEvFuz+BgJF4Js0DMKR0SnD603/3BWIJDI6fGSj2
-   O4JYjmrSpgD926s8q02uiiFevMr+QVRGfX7bBbym74Fcgz2vQPPa+T5y0
-   hsQlf7MJK6DrGnAJK05Ge+4LDr2yXF/eSuOpCBaGfc6XdS6B8F7uh7g3e
-   gYVUZyQp+IQTIwYCnim4BqYPcayUfp3G5xU6cBWzBaqflNFmDaDx0hKmo
-   iwSTwu88FiLyPmMYpiOuoBGl/gfbut/Y6ROA7q1sIZ1bGD/MBUqQssXTW
-   oeks1NQvQwDzrFIU55SX9yKW7VB6wa8kiiQmvtiY28aoiW7ErpqdEQ7u5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="289673282"
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="289673282"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 19:09:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="666900513"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Aug 2022 19:09:45 -0700
-Date:   Tue, 16 Aug 2022 10:00:41 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v6 1/2] fpga: ecp5-spi: add Lattice ECP5 FPGA manager
-Message-ID: <Yvr6SY5WGXlYiLig@yilunxu-OptiPlex-7050>
-References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
- <20220815132157.8083-2-i.bornyakov@metrotek.ru>
+        Tue, 16 Aug 2022 02:55:41 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5371D1
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 19:15:25 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id l8so6967718qvr.5
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 19:15:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=gB3Bz5AjtMc1DQ28Gy11iyEZdEFjWI/WxGTjW9sxTk4=;
+        b=kDpyqKy8UaICjCOfptA2Vxv2ycuXszlDZH6qt9rTGwwmjFFMw0as2C/jXQRMjXjaF0
+         QTfJg/qpsP1LtMhzd0UQdzAodu30VegCI1Er6f/wwJvIqXkhdKiyQHufvHyHDGnVRLdo
+         WIg5v/KmBK2z6rBfvGZ5DG2BO94oNDow7ZMs7LCYm3l3EwoaOytdL1zaUOW9HYIzVEBd
+         LVuDSSRcGxqDjGrBdW/m8Qo9rWAQAjCo3ej2fXpIjyxUPfG8PHYZZ58BRu/V/8JueCu4
+         mEzJcoLanv9hXQvTqh6wft8m3kJVsrGDBgkCg9jUqlxqMQqDpio6Euy3BehDX8RFDTvm
+         +Okw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gB3Bz5AjtMc1DQ28Gy11iyEZdEFjWI/WxGTjW9sxTk4=;
+        b=i7hr+5zHXHOaIfwPRHgIwQZbyIEVELIk3plKZnKglazleOHfhYyDdE7+l2krKZRd36
+         l4gJcYg7LX1IVdZiAQtms7Lye48g8PL6aoKCcHeCg1SkALPn1PT+EnuJ1HdwJNdHyHWf
+         UWIRg808+tls8U+b23/wjMrYmOG5nnMiZLG4+ItFL9XXubJ//WmreeVugA1yywrUsfVb
+         CEGTrShHo/c12yLG80vN4YDwNavaddTXckMZn4skunaUh8COXUMw+rPtMAGAqyvJlV0N
+         J7CWRcnw8ETaczaaL9aVex8Y8XgR+2J7umRCZNepOsZtE9U5V3+1IDg4Fn2445Ntp83g
+         gqZA==
+X-Gm-Message-State: ACgBeo28tHipt7tUhgv1t9DQb12/xaFIfGpvrdd1KZDpusJXfSthcvp9
+        Knx8wM7asLPbbI6xteKz1sGnNU2TfJ7b5Q==
+X-Google-Smtp-Source: AA6agR45rSHkYcQeehtkvWA9pSrdBHzeEoYrm7SlmlHjE205JkOiNLcJ4sXer3fnZSKH6KRAClWpAQ==
+X-Received: by 2002:ad4:5cc9:0:b0:475:5b35:3b03 with SMTP id iu9-20020ad45cc9000000b004755b353b03mr15928484qvb.42.1660616124808;
+        Mon, 15 Aug 2022 19:15:24 -0700 (PDT)
+Received: from sophie ([185.156.46.184])
+        by smtp.gmail.com with ESMTPSA id ay36-20020a05620a17a400b006baf3ffba23sm7266045qkb.38.2022.08.15.19.15.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 19:15:24 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 21:15:22 -0500
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     "Huang, Shaoqin" <shaoqin.huang@intel.com>
+Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH 1/8] memblock tests: update tests to check if
+ memblock_alloc zeroed memory
+Message-ID: <20220816021522.GA3590@sophie>
+References: <cover.1660454730.git.remckee0@gmail.com>
+ <02d514d86f212c79e52792b8ecd919156d7a9c20.1660454730.git.remckee0@gmail.com>
+ <5dde66a7-2236-a890-aaeb-a45876057bec@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815132157.8083-2-i.bornyakov@metrotek.ru>
+In-Reply-To: <5dde66a7-2236-a890-aaeb-a45876057bec@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-15 at 16:21:56 +0300, Ivan Bornyakov wrote:
-> Add support to the FPGA manager for programming Lattice ECP5 FPGA over
-> slave SPI interface with .bit formatted uncompressed bitstream image.
-
-Not sure if something is missed.
-
-https://lore.kernel.org/all/20220729145757.GA2601292@yilunxu-OptiPlex-7050/
-
-I was considering if a generic driver for lattice slave SPI sysCONFIG
-interface could be introduced. From machxo2 & ecp5 Programming Usage
-Guide, or others in this series, they basically use the same reconfigure
-interface & protocol.
-
-Thanks,
-Yilun
-
+On Mon, Aug 15, 2022 at 04:50:51PM +0800, Huang, Shaoqin wrote:
+> Hi, Rebecca.
 > 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> ---
->  drivers/fpga/Kconfig    |   7 +
->  drivers/fpga/Makefile   |   1 +
->  drivers/fpga/ecp5-spi.c | 311 ++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 319 insertions(+)
->  create mode 100644 drivers/fpga/ecp5-spi.c
+> On 8/14/2022 1:53 PM, Rebecca Mckeever wrote:
+> > Add an assert in memblock_alloc() tests where allocation is expected to
+> > occur. The assert checks whether the entire chunk of allocated memory is
+> > cleared.
+> > 
+> > The current memblock_alloc() tests do not check whether the allocated
+> > memory was zeroed. memblock_alloc() should zero the allocated memory since
+> > it is a wrapper for memblock_alloc_try_nid().
+> > 
+> > Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> > ---
+> >   tools/testing/memblock/tests/alloc_api.c | 24 ++++++++++++++++++++++++
+> >   tools/testing/memblock/tests/common.c    |  7 +++++++
+> >   tools/testing/memblock/tests/common.h    | 13 +++++++++++++
+> >   3 files changed, 44 insertions(+)
+> > 
+> > diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
+> > index a14f38eb8a89..71c89cb9b2a8 100644
+> > --- a/tools/testing/memblock/tests/alloc_api.c
+> > +++ b/tools/testing/memblock/tests/alloc_api.c
+> > @@ -22,6 +22,8 @@ static int alloc_top_down_simple_check(void)
+> >   	allocated_ptr = memblock_alloc(size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, size);
+> > +
+> >   	ASSERT_EQ(rgn->size, size);
+> >   	ASSERT_EQ(rgn->base, expected_start);
+> > @@ -80,6 +82,8 @@ static int alloc_top_down_disjoint_check(void)
+> >   	allocated_ptr = memblock_alloc(r2_size, alignment);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+> > +
+> >   	ASSERT_EQ(rgn1->size, r1.size);
+> >   	ASSERT_EQ(rgn1->base, r1.base);
+> > @@ -125,6 +129,8 @@ static int alloc_top_down_before_check(void)
+> >   	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, total_size);
+> >   	ASSERT_EQ(rgn->base, memblock_end_of_DRAM() - total_size);
+> > @@ -173,6 +179,8 @@ static int alloc_top_down_after_check(void)
+> >   	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, total_size);
+> >   	ASSERT_EQ(rgn->base, r1.base - r2_size);
+> > @@ -223,6 +231,8 @@ static int alloc_top_down_second_fit_check(void)
+> >   	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, r2.size + r3_size);
+> >   	ASSERT_EQ(rgn->base, r2.base - r3_size);
+> > @@ -277,6 +287,8 @@ static int alloc_in_between_generic_check(void)
+> >   	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, total_size);
+> >   	ASSERT_EQ(rgn->base, r1.base - r2.size - r3_size);
+> > @@ -418,6 +430,8 @@ static int alloc_limited_space_generic_check(void)
+> >   	allocated_ptr = memblock_alloc(available_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, available_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, MEM_SIZE);
+> >   	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
+> > @@ -442,6 +456,7 @@ static int alloc_no_memory_generic_check(void)
+> >   	PREFIX_PUSH();
+> >   	reset_memblock_regions();
+> > +	fill_memblock();
 > 
-> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-> index 6c416955da53..920277a08ed9 100644
-> --- a/drivers/fpga/Kconfig
-> +++ b/drivers/fpga/Kconfig
-> @@ -263,4 +263,11 @@ config FPGA_MGR_MICROCHIP_SPI
->  	  programming over slave SPI interface with .dat formatted
->  	  bitstream image.
->  
-> +config FPGA_MGR_ECP5_SPI
-> +	tristate "Lattice ECP5 SPI FPGA manager"
-> +	depends on SPI
-> +	help
-> +	  FPGA manager driver support for Lattice ECP5 programming over slave
-> +	  SPI interface with .bit formatted uncompressed bitstream image.
-> +
->  endif # FPGA
-> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-> index 42ae8b58abce..17c7a3c4b385 100644
-> --- a/drivers/fpga/Makefile
-> +++ b/drivers/fpga/Makefile
-> @@ -20,6 +20,7 @@ obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
->  obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
->  obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
->  obj-$(CONFIG_FPGA_MGR_MICROCHIP_SPI)	+= microchip-spi.o
-> +obj-$(CONFIG_FPGA_MGR_ECP5_SPI)		+= ecp5-spi.o
->  obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
->  obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
->  
-> diff --git a/drivers/fpga/ecp5-spi.c b/drivers/fpga/ecp5-spi.c
-> new file mode 100644
-> index 000000000000..aa0dd10823a3
-> --- /dev/null
-> +++ b/drivers/fpga/ecp5-spi.c
-> @@ -0,0 +1,311 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Lattice ECP5 FPGA programming over slave SPI interface.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/fpga/fpga-mgr.h>
-> +#include <linux/spi/spi.h>
-> +
-> +#define	ECP5_SPI_MAX_SPEED_HZ		60000000
-> +
-> +#define	ECP5_SPI_ISC_ENABLE		{0xC6, 0x00, 0x00, 0x00}
-> +#define	ECP5_SPI_ISC_DISABLE		{0x26, 0x00, 0x00, 0x00}
-> +#define	ECP5_SPI_ISC_ERASE		{0x0E, 0x01, 0x00, 0x00}
-> +#define	ECP5_SPI_LSC_INIT_ADDR		{0x46, 0x00, 0x00, 0x00}
-> +#define	ECP5_SPI_LSC_BITSTREAM_BURST	{0x7a, 0x00, 0x00, 0x00}
-> +#define	ECP5_SPI_LSC_CHECK_BUSY		{0xF0, 0x00, 0x00, 0x00}
-> +
-> +#define ECP5_POLL_RETRIES		100000
-> +
-> +struct ecp5_priv {
-> +	struct gpio_desc *program;
-> +	struct gpio_desc *init;
-> +	struct gpio_desc *done;
-> +	struct spi_device *spi;
-> +};
-> +
-> +static enum fpga_mgr_states ecp5_ops_state(struct fpga_manager *mgr)
-> +{
-> +	struct ecp5_priv *priv = mgr->priv;
-> +
-> +	return gpiod_get_value(priv->done) ? FPGA_MGR_STATE_OPERATING :
-> +					     FPGA_MGR_STATE_UNKNOWN;
-> +}
-> +
-> +static int ecp5_poll_busy(struct spi_device *spi)
-> +{
-> +	const u8 lsc_check_busy[] = ECP5_SPI_LSC_CHECK_BUSY;
-> +	int ret, retries = ECP5_POLL_RETRIES;
-> +	struct spi_transfer xfers[2] = { 0 };
-> +	struct spi_message msg;
-> +	u8 busy;
-> +
-> +	xfers[0].tx_buf = lsc_check_busy;
-> +	xfers[0].len = sizeof(lsc_check_busy);
-> +	xfers[1].rx_buf = &busy;
-> +	xfers[1].len = sizeof(busy);
-> +
-> +	while (retries--) {
-> +		spi_message_init_with_transfers(&msg, xfers, ARRAY_SIZE(xfers));
-> +		ret = spi_sync_locked(spi, &msg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (!busy)
-> +			return 0;
-> +
-> +		usleep_range(50, 100);
-> +	}
-> +
-> +	return -EBUSY;
-> +}
-> +
-> +static int ecp5_poll_gpio(struct gpio_desc *gpio, bool is_active)
-> +{
-> +	int value, retries = ECP5_POLL_RETRIES;
-> +
-> +	while (retries--) {
-> +		value = gpiod_get_value(gpio);
-> +		if (value < 0)
-> +			return value;
-> +
-> +		if ((!is_active && !value) || (is_active && value))
-> +			return 0;
-> +
-> +		ndelay(10);
-> +	}
-> +
-> +	return -EFAULT;
-> +}
-> +
-> +static int ecp5_ops_write_init(struct fpga_manager *mgr,
-> +			       struct fpga_image_info *info,
-> +			       const char *buf, size_t count)
-> +{
-> +	const u8 lsc_bitstream_burst[] = ECP5_SPI_LSC_BITSTREAM_BURST;
-> +	const u8 lsc_init_addr[] = ECP5_SPI_LSC_INIT_ADDR;
-> +	const u8 isc_enable[] = ECP5_SPI_ISC_ENABLE;
-> +	const u8 isc_erase[] = ECP5_SPI_ISC_ERASE;
-> +	struct ecp5_priv *priv = mgr->priv;
-> +	struct spi_device *spi = priv->spi;
-> +	struct device *dev = &mgr->dev;
-> +	struct spi_transfer isc_xfers[] = {
-> +		{
-> +			.tx_buf = isc_enable,
-> +			.len = sizeof(isc_enable),
-> +			.cs_change = 1,
-> +		}, {
-> +			.tx_buf = isc_erase,
-> +			.len = sizeof(isc_erase),
-> +		},
-> +	};
-> +	struct spi_transfer lsc_xfers[] = {
-> +		{
-> +			.tx_buf = lsc_init_addr,
-> +			.len = sizeof(lsc_init_addr),
-> +			.cs_change = 1,
-> +		}, {
-> +			.tx_buf = lsc_bitstream_burst,
-> +			.len = sizeof(lsc_bitstream_burst),
-> +			.cs_change = 1,
-> +		},
-> +	};
-> +	struct spi_message msg;
-> +	int ret;
-> +
-> +	if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
-> +		dev_err(dev, "Partial reconfiguration is not supported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	/* Enter init mode */
-> +	gpiod_set_value(priv->program, 1);
-> +
-> +	ret = ecp5_poll_gpio(priv->init, true);
-> +	if (!ret)
-> +		ret = ecp5_poll_gpio(priv->done, false);
-> +
-> +	if (ret) {
-> +		dev_err(dev, "Failed to go to initialization mode\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Enter program mode */
-> +	gpiod_set_value(priv->program, 0);
-> +
-> +	ret = ecp5_poll_gpio(priv->init, false);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to go to program mode\n");
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * Lock SPI bus for exclusive usage until FPGA programming is done.
-> +	 * SPI bus will be released in ecp5_ops_write_complete() or on error.
-> +	 */
-> +	spi_bus_lock(spi->controller);
-> +
-> +	/* Enter ISC mode */
-> +	spi_message_init_with_transfers(&msg, isc_xfers, ARRAY_SIZE(isc_xfers));
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (!ret)
-> +		ret = ecp5_poll_busy(spi);
-> +
-> +	if (ret) {
-> +		dev_err(dev, "Failed to go to ISC mode\n");
-> +		goto out;
-> +	}
-> +
-> +	/* Prepare for bitstream burst write */
-> +	spi_message_init_with_transfers(&msg, lsc_xfers, ARRAY_SIZE(lsc_xfers));
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (ret)
-> +		dev_err(dev, "Failed to prepare for bitstream burst write\n");
-> +
-> +out:
-> +	if (ret)
-> +		spi_bus_unlock(spi->controller);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ecp5_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
-> +{
-> +	struct ecp5_priv *priv = mgr->priv;
-> +	struct spi_device *spi = priv->spi;
-> +	struct spi_transfer xfer = {
-> +		.tx_buf = buf,
-> +		.len = count,
-> +		.cs_change = 1,
-> +	};
-> +	struct spi_message msg;
-> +	int ret;
-> +
-> +	spi_message_init_with_transfers(&msg, &xfer, 1);
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (ret)
-> +		spi_bus_unlock(spi->controller);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ecp5_ops_write_complete(struct fpga_manager *mgr,
-> +				   struct fpga_image_info *info)
-> +{
-> +	const u8 isc_disable[] = ECP5_SPI_ISC_DISABLE;
-> +	struct ecp5_priv *priv = mgr->priv;
-> +	struct spi_device *spi = priv->spi;
-> +	struct spi_transfer xfer = { 0 };
-> +	struct device *dev = &mgr->dev;
-> +	struct spi_message msg;
-> +	int ret;
-> +
-> +	/* Toggle CS and wait for bitstream write to finish */
-> +	spi_message_init_with_transfers(&msg, &xfer, 1);
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (!ret)
-> +		ret = ecp5_poll_busy(spi);
-> +
-> +	if (ret) {
-> +		dev_err(dev, "Error while waiting bitstream write to finish\n");
-> +		goto out;
-> +	}
-> +
-> +	/* Exit ISC mode */
-> +	xfer.tx_buf = isc_disable;
-> +	xfer.len = sizeof(isc_disable);
-> +	spi_message_init_with_transfers(&msg, &xfer, 1);
-> +	ret = spi_sync_locked(spi, &msg);
-> +	if (!ret)
-> +		ret = ecp5_poll_gpio(priv->done, true);
-> +
-> +	if (ret)
-> +		dev_err(dev, "Failed to finish ISC\n");
-> +
-> +out:
-> +	spi_bus_unlock(spi->controller);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct fpga_manager_ops ecp5_fpga_ops = {
-> +	.state = ecp5_ops_state,
-> +	.write_init = ecp5_ops_write_init,
-> +	.write = ecp5_ops_write,
-> +	.write_complete = ecp5_ops_write_complete,
-> +};
-> +
-> +static int ecp5_probe(struct spi_device *spi)
-> +{
-> +	struct device *dev = &spi->dev;
-> +	struct fpga_manager *mgr;
-> +	struct ecp5_priv *priv;
-> +	int ret;
-> +
-> +	if (spi->max_speed_hz > ECP5_SPI_MAX_SPEED_HZ) {
-> +		dev_err(dev, "SPI speed %u is too high, maximum speed is %u\n",
-> +			spi->max_speed_hz, ECP5_SPI_MAX_SPEED_HZ);
-> +		return -EINVAL;
-> +	}
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->spi = spi;
-> +
-> +	priv->done = devm_gpiod_get(dev, "done", GPIOD_IN);
-> +	if (IS_ERR(priv->done)) {
-> +		ret = PTR_ERR(priv->done);
-> +		dev_err(dev, "Failed to get DONE GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	priv->init = devm_gpiod_get(dev, "init", GPIOD_IN);
-> +	if (IS_ERR(priv->init)) {
-> +		ret = PTR_ERR(priv->init);
-> +		dev_err(dev, "Failed to get INIT GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	priv->program = devm_gpiod_get(dev, "program", GPIOD_OUT_LOW);
-> +	if (IS_ERR(priv->program)) {
-> +		ret = PTR_ERR(priv->program);
-> +		dev_err(dev, "Failed to get PROGRAM GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	mgr = devm_fpga_mgr_register(dev, "Lattice ECP5 SPI FPGA Manager",
-> +				     &ecp5_fpga_ops, priv);
-> +
-> +	return PTR_ERR_OR_ZERO(mgr);
-> +}
-> +
-> +static const struct spi_device_id ecp5_spi_ids[] = {
-> +	{ .name = "ecp5-fpga-mgr" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(spi, ecp5_spi_ids);
-> +
-> +#if IS_ENABLED(CONFIG_OF)
-> +static const struct of_device_id ecp5_of_ids[] = {
-> +	{ .compatible = "lattice,ecp5-fpga-mgr" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, ecp5_of_ids);
-> +#endif /* IS_ENABLED(CONFIG_OF) */
-> +
-> +static struct spi_driver ecp5_driver = {
-> +	.probe = ecp5_probe,
-> +	.id_table = ecp5_spi_ids,
-> +	.driver = {
-> +		.name = "lattice_ecp5_spi_fpga_mgr",
-> +		.of_match_table = of_match_ptr(ecp5_of_ids),
-> +	},
-> +};
-> +
-> +module_spi_driver(ecp5_driver);
-> +
-> +MODULE_DESCRIPTION("Lattice ECP5 SPI FPGA Manager");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.37.1
+> Maybe we don't need this line, it has no effect at here. Anyway, Others
+> Looks Good to me.
 > 
+Do you mean that it's not necessary since the test doesn't run
+verify_mem_content()? 
+
+> Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
 > 
+> >   	allocated_ptr = memblock_alloc(SZ_1K, SMP_CACHE_BYTES);
+> > @@ -472,6 +487,8 @@ static int alloc_bottom_up_simple_check(void)
+> >   	allocated_ptr = memblock_alloc(SZ_2, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, SZ_2);
+> > +
+> >   	ASSERT_EQ(rgn->size, SZ_2);
+> >   	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
+> > @@ -528,6 +545,7 @@ static int alloc_bottom_up_disjoint_check(void)
+> >   	allocated_ptr = memblock_alloc(r2_size, alignment);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+> >   	ASSERT_EQ(rgn1->size, r1.size);
+> >   	ASSERT_EQ(rgn1->base, r1.base);
+> > @@ -571,6 +589,8 @@ static int alloc_bottom_up_before_check(void)
+> >   	allocated_ptr = memblock_alloc(r1_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r1_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, total_size);
+> >   	ASSERT_EQ(rgn->base, memblock_start_of_DRAM());
+> > @@ -618,6 +638,8 @@ static int alloc_bottom_up_after_check(void)
+> >   	allocated_ptr = memblock_alloc(r2_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r2_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, total_size);
+> >   	ASSERT_EQ(rgn->base, r1.base);
+> > @@ -669,6 +691,8 @@ static int alloc_bottom_up_second_fit_check(void)
+> >   	allocated_ptr = memblock_alloc(r3_size, SMP_CACHE_BYTES);
+> >   	ASSERT_NE(allocated_ptr, NULL);
+> > +	ASSERT_MEM_EQ((char *)allocated_ptr, 0, r3_size);
+> > +
+> >   	ASSERT_EQ(rgn->size, r2.size + r3_size);
+> >   	ASSERT_EQ(rgn->base, r2.base);
+> > diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
+> > index 76a8ad818f3a..0ca26fe12c38 100644
+> > --- a/tools/testing/memblock/tests/common.c
+> > +++ b/tools/testing/memblock/tests/common.c
+> > @@ -60,16 +60,23 @@ void reset_memblock_attributes(void)
+> >   	memblock.current_limit	= MEMBLOCK_ALLOC_ANYWHERE;
+> >   }
+> > +void fill_memblock(void)
+> > +{
+> > +	memset(memory_block.base, 1, MEM_SIZE);
+> > +}
+> > +
+> >   void setup_memblock(void)
+> >   {
+> >   	reset_memblock_regions();
+> >   	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
+> > +	fill_memblock();
+> >   }
+> >   void dummy_physical_memory_init(void)
+> >   {
+> >   	memory_block.base = malloc(MEM_SIZE);
+> >   	assert(memory_block.base);
+> > +	fill_memblock();
+> >   }
+> >   void dummy_physical_memory_cleanup(void)
+> > diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
+> > index d396e5423a8e..7a16a7dc8f2c 100644
+> > --- a/tools/testing/memblock/tests/common.h
+> > +++ b/tools/testing/memblock/tests/common.h
+> > @@ -51,6 +51,18 @@
+> >   	assert((_expected) < (_seen)); \
+> >   } while (0)
+> > +/**
+> > + * ASSERT_MEM_EQ():
+> > + * Check that the first @_size bytes of @_seen are all equal to @_expected.
+> > + * If false, print failed test message (if running with --verbose) and then
+> > + * assert.
+> > + */
+> > +#define ASSERT_MEM_EQ(_seen, _expected, _size) do { \
+> > +	for (int _i = 0; _i < (_size); _i++) { \
+> > +		ASSERT_EQ((_seen)[_i], (_expected)); \
+> > +	} \
+> > +} while (0)
+> > +
+> >   #define PREFIX_PUSH() prefix_push(__func__)
+> >   /*
+> > @@ -70,6 +82,7 @@ struct region {
+> >   void reset_memblock_regions(void);
+> >   void reset_memblock_attributes(void);
+> > +void fill_memblock(void);
+> >   void setup_memblock(void);
+> >   void dummy_physical_memory_init(void);
+> >   void dummy_physical_memory_cleanup(void);
