@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C60C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 112C8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237088AbiHPUrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 16:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        id S237269AbiHPUtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 16:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231594AbiHPUrm (ORCPT
+        with ESMTP id S237097AbiHPUtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 16:47:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D5589800
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:47:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660682860;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3JoZZmMRTLKhHqlvu8uJZ3OdJLMTuykuadzU2PRUVyo=;
-        b=HfULhG6FF0CDCsfYL0BbhyoZM2GPxb6aovAEAMbfFiyRwIX9tCC60XYpfnzpBAsbLAqj5R
-        leHFy0T0fyBNNHGcEjAohXqEdlSpTyH5P7A6YOgbSpX9FFVhJzZ8Ld0P5VglkfXf6XpdRX
-        qGm2wWpm8Ahi1CNaJl5hDz5C5kMbDZc=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-316-Ew1wESaJPzmPz9vYjNve1w-1; Tue, 16 Aug 2022 16:47:39 -0400
-X-MC-Unique: Ew1wESaJPzmPz9vYjNve1w-1
-Received: by mail-qk1-f197.google.com with SMTP id l15-20020a05620a28cf00b006b46997c070so10284890qkp.20
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:47:39 -0700 (PDT)
+        Tue, 16 Aug 2022 16:49:15 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550AD5E67A;
+        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id b142so6287683iof.10;
+        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=3JoZZmMRTLKhHqlvu8uJZ3OdJLMTuykuadzU2PRUVyo=;
-        b=lBzP+U6MpTusZW0D5okx1hN4uFjP/f575ljXm3TM+keZudVe5MpCGBhpKnkK4GfDO7
-         4NmlorDp3kF/WhYjMTMFObacWPO6pYZuUwJU8cB37bI9gTyn2BGQ27Z9uRlu3dVUmQXJ
-         L7fRRc6MtfznXThQXhuLW8HcUJ0ZYPnKvuL0k1wjlJMrRpGiV0bLTAR0txn1gngxy1ma
-         S/qL4rzjFMzdr1Iq3FeYJYVDV7wRZzhaSTU5gM64FxUVAAOahiFtUVY7ZtukPHxiVRcg
-         RzePZRKtvHG15zNKIFxHVrQVhMVrLdp9FHNzhQC6/X+Kz0pTLgFxGAneR1SZs2zngmVp
-         JfKg==
-X-Gm-Message-State: ACgBeo3dnYlYc0yMWQ6YBO4nBa5BYWA0YOncoDu9aj/fdV8hr8DcZiIF
-        RkNxftzrGsBQz4GMJOjJnFcOMExu28w8W7VcndALdQhpC0Ie+Ya5gbu/IWV5fBf87cSjVskTnOs
-        8jgCIRgsbNbwR1+YkP+zViXeK
-X-Received: by 2002:ac8:4e45:0:b0:343:5faf:3af6 with SMTP id e5-20020ac84e45000000b003435faf3af6mr20160984qtw.340.1660682857449;
-        Tue, 16 Aug 2022 13:47:37 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6IwiJJXWm5YftOp/luO9AW0MDhFAjgzItfksuHh5hDaCvWVcPNx39suKAdXZ2GyDmA+23zUg==
-X-Received: by 2002:ac8:4e45:0:b0:343:5faf:3af6 with SMTP id e5-20020ac84e45000000b003435faf3af6mr20160915qtw.340.1660682855766;
-        Tue, 16 Aug 2022 13:47:35 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id h5-20020a05620a400500b006b615cd8c13sm12717718qko.106.2022.08.16.13.47.34
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=Igzpe2dfFh072dG7M9af7EwnEZkHHQlF9Pf46jZtejY=;
+        b=PqEGG3q64rKWeyKsEbJNiL3pY5X5LW7lCo1WACA46+Oe5m6JfwodqHOwqvsbtsoYPZ
+         JoZ1eU58aEm0crqWqRvxdlYlE3ddcz13NQxDM65t04ESBuHa7XmyDupBejzEB+800hct
+         BYYsK+bbxexiW0xU0i6S4BeYoJZjrKnvsCMT4DilH59YzLLbJbwqDfmxofGlnbyf7DXQ
+         1n9VcSoBMsmEmPrdDWDONthBL2xq7kW0NyQde3eP7yLCDYVFKm6xrg/bByGKGSXeQ7wi
+         iOV7rpiyjXgIPCGjabzbgJPb4cxZ+ZRKXhX6Ahi17VfQci4vEbES4eImgGLL4eEbsVoA
+         n6yw==
+X-Gm-Message-State: ACgBeo0y0bHH5a5QvS25JVX+WokbLaCQg82dlVJ25haRKOMvcM7+SiIL
+        Y0W5Xuy9GMWsPEe1h3MW3w==
+X-Google-Smtp-Source: AA6agR4JUMnAxe73i4k/USANa7oT8A2bvPIyHs4SYiN3MfNVQoRaN9YqHKUNH74CBK0dcaCnelKJeg==
+X-Received: by 2002:a5d:94d6:0:b0:67c:55f9:f355 with SMTP id y22-20020a5d94d6000000b0067c55f9f355mr9749658ior.133.1660682952543;
+        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id z25-20020a056602081900b00688b30a7812sm1312208iow.42.2022.08.16.13.49.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 13:47:35 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 16:47:34 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>
-Subject: Re: [PATCH v2 3/3] kvm/x86: Allow to respond to generic signals
- during slow page faults
-Message-ID: <YvwCZsHxZV9kPn6I@xz-m1.local>
-References: <20220721000318.93522-1-peterx@redhat.com>
- <20220721000318.93522-4-peterx@redhat.com>
- <YvVitqmmj7Y0eggY@google.com>
- <YvVtX+rosTLxFPe3@xz-m1.local>
- <Yvq6DSu4wmPfXO5/@google.com>
+        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
+Received: (nullmailer pid 2709183 invoked by uid 1000);
+        Tue, 16 Aug 2022 20:49:08 -0000
+Date:   Tue, 16 Aug 2022 14:49:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        devicetree@vger.kernel.org, erkin.bozoglu@xeront.com,
+        Eric Dumazet <edumazet@google.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: make
+ trivial changes
+Message-ID: <20220816204908.GA2709132-robh@kernel.org>
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-2-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yvq6DSu4wmPfXO5/@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220813154415.349091-2-arinc.unal@arinc9.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 09:26:37PM +0000, Sean Christopherson wrote:
-> On Thu, Aug 11, 2022, Peter Xu wrote:
-> > On Thu, Aug 11, 2022 at 08:12:38PM +0000, Sean Christopherson wrote:
-> > > > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > > > index 17252f39bd7c..aeafe0e9cfbf 100644
-> > > > --- a/arch/x86/kvm/mmu/mmu.c
-> > > > +++ b/arch/x86/kvm/mmu/mmu.c
-> > > > @@ -3012,6 +3012,13 @@ static int kvm_handle_bad_page(struct kvm_vcpu *vcpu, gfn_t gfn, kvm_pfn_t pfn)
-> > > >  static int handle_abnormal_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
-> > > >  			       unsigned int access)
-> > > >  {
-> > > > +	/* NOTE: not all error pfn is fatal; handle sigpending pfn first */
-> > > > +	if (unlikely(is_sigpending_pfn(fault->pfn))) {
-> > > 
-> > > Move this into kvm_handle_bad_page(), then there's no need for a comment to call
-> > > out that this needs to come before the is_error_pfn() check.  This _is_ a "bad"
-> > > PFN, it just so happens that userspace might be able to resolve the "bad" PFN.
-> > 
-> > It's a pity it needs to be in "bad pfn" category since that's the only
-> > thing we can easily use, but true it is now.
+On Sat, 13 Aug 2022 18:44:09 +0300, Arınç ÜNAL wrote:
+> Make trivial changes on the binding.
 > 
-> Would renaming that to kvm_handle_error_pfn() help?  I agree that "bad" is poor
-> terminology now that it handles a variety of errors, hence the quotes.
+> - Update title to include MT7531 switch.
+> - Add me as a maintainer. List maintainers in alphabetical order by first
+> name.
+> - Add description to compatible strings.
+> - Stretch descriptions up to the 80 character limit.
+> - Remove quotes from $ref: "dsa.yaml#".
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 12 deletions(-)
+> 
 
-It could be slightly helpful I think, at least it starts to match with how
-we name KVM_PFN_ERR_*.  Will squash the renaming into the same patch.
-
-Thanks,
-
--- 
-Peter Xu
-
+Reviewed-by: Rob Herring <robh@kernel.org>
