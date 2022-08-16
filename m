@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EFCC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93278C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiHPJzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
+        id S232905AbiHPJ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234144AbiHPJzR (ORCPT
+        with ESMTP id S234218AbiHPJz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:55:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA8D760D3;
-        Tue, 16 Aug 2022 02:15:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 210F0B81600;
-        Tue, 16 Aug 2022 09:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BDA8C433C1;
-        Tue, 16 Aug 2022 09:15:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660641352;
-        bh=Wdxre7FFhDBD5lnB7uNrwJnK1gXcfMGy4iZmPUWmkpw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=POa0hku6HzuNL8VJQGSmnMS1A32/ZlsJR0Kw9BwSJZMzHwh51QVTZyYVG0PxvJ3tC
-         pfpTxRVAItzgrMTdAa4WlbPkcnOrt/CNeS9NGXKPsQCN1Ah66RU/nSY0wejAae0IUc
-         Qtpa3op3cFOMJDYgv409xFqnEB/4hayJI1T9Xyjk=
-Date:   Tue, 16 Aug 2022 11:15:49 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.15 154/779] netfilter: nf_tables: add rescheduling
- points during loop detection walks
-Message-ID: <YvtgRU9pjwNdX8ih@kroah.com>
-References: <20220815180337.130757997@linuxfoundation.org>
- <20220815180343.899696572@linuxfoundation.org>
- <20220815185822.GA26513@breakpoint.cc>
+        Tue, 16 Aug 2022 05:55:26 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6640C86FC5;
+        Tue, 16 Aug 2022 01:40:17 -0700 (PDT)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6Pf11nsMz688pK;
+        Tue, 16 Aug 2022 16:37:13 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 10:40:14 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Tue, 16 Aug 2022 10:40:14 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     KP Singh <kpsingh@kernel.org>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "martin.lau@linux.dev" <martin.lau@linux.dev>,
+        "song@kernel.org" <song@kernel.org>, "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "sdf@google.com" <sdf@google.com>,
+        "haoluo@google.com" <haoluo@google.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "paul@paul-moore.com" <paul@paul-moore.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v10 5/9] bpf: Add bpf_lookup_*_key() and bpf_key_put()
+ kfuncs
+Thread-Topic: [PATCH v10 5/9] bpf: Add bpf_lookup_*_key() and bpf_key_put()
+ kfuncs
+Thread-Index: AQHYrNrI3xbltKneMkianwQkzvowha2qT5IAgADB09A=
+Date:   Tue, 16 Aug 2022 08:40:14 +0000
+Message-ID: <7278db1e90de4c7bb669449e897d1946@huawei.com>
+References: <20220810165932.2143413-1-roberto.sassu@huawei.com>
+ <20220810165932.2143413-6-roberto.sassu@huawei.com>
+ <CACYkzJ718fr2TsvX0JPhTRiMQH8=HwaxLShrETLvrhPUy2p8OQ@mail.gmail.com>
+In-Reply-To: <CACYkzJ718fr2TsvX0JPhTRiMQH8=HwaxLShrETLvrhPUy2p8OQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.221.98.153]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815185822.GA26513@breakpoint.cc>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 08:58:22PM +0200, Florian Westphal wrote:
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > From: Florian Westphal <fw@strlen.de>
-> > 
-> > [ Upstream commit 81ea010667417ef3f218dfd99b69769fe66c2b67 ]
-> > 
-> > Add explicit rescheduling points during ruleset walk.
-> 
-> NAK.  There is a partial revert pending.
-> 
-> > @@ -9225,9 +9227,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
-> >  				break;
-> >  			}
-> >  		}
-> > +
-> > +		cond_resched();
-> >  	}
-> >  
-> >  	list_for_each_entry(set, &ctx->table->sets, list) {
-> > +		cond_resched();
-> 
-> Can't be used here, this can be called from atomic context.
-
-Thanks, now dropped from all branches.
-
-greg k-h
+PiBGcm9tOiBLUCBTaW5naCBbbWFpbHRvOmtwc2luZ2hAa2VybmVsLm9yZ10NCj4gU2VudDogRnJp
+ZGF5LCBBdWd1c3QgMTIsIDIwMjIgMjo1MCBBTQ0KDQpbLi4uXQ0KDQo+ID4gKy8qKg0KPiA+ICsg
+KiBicGZfa2V5X3B1dCAtIGRlY3JlbWVudCBrZXkgcmVmZXJlbmNlIGNvdW50IGlmIGtleSBpcyB2
+YWxpZCBhbmQgZnJlZQ0KPiBicGZfa2V5DQo+ID4gKyAqIEBia2V5OiBicGZfa2V5IHN0cnVjdHVy
+ZQ0KPiA+ICsgKg0KPiA+ICsgKiBEZWNyZW1lbnQgdGhlIHJlZmVyZW5jZSBjb3VudCBvZiB0aGUg
+a2V5IGluc2lkZSAqYmtleSosIGlmIHRoZSBwb2ludGVyDQo+ID4gKyAqIGlzIHZhbGlkLCBhbmQg
+ZnJlZSAqYmtleSouDQo+ID4gKyAqLw0KPiANCj4gVGhpcyBpcyBtb3JlIG9mIGEgc3R5bGUgdGhp
+bmcgYnV0IHlvdXIgY29tbWVudCBsaXRlcmFsbHkgZGVzY3JpYmVzIHRoZQ0KPiBzbWFsbCBmdW5j
+dGlvbg0KPiBiZWxvdy4gRG8gd2UgcmVhbGx5IG5lZWQgdGhpcz8NCg0KVGhhbmtzIGZvciB0aGUg
+cmV2aWV3LCBLUC4gSnVzdCBrZXB0IHRoaXMsIHRvIGZvbGxvdyB0aGUgc3R5bGUgb2Yga2VybmVs
+DQpkb2N1bWVudGF0aW9uIGZvciBmdW5jdGlvbnMuDQoNClJvYmVydG8NCg==
