@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCE6C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1867EC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbiHPILh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        id S231501AbiHPILk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232520AbiHPIKi (ORCPT
+        with ESMTP id S232327AbiHPIKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:10:38 -0400
+        Tue, 16 Aug 2022 04:10:25 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 528DE67C96
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 941A967162
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660628200;
+        s=mimecast20190719; t=1660628194;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0Woc1p74LnDMz9TXkvyQIlZ2BlUNGXfNgs76Y3D9lgg=;
-        b=I/neypUbeR2iAOHmGEfxaVrLFBUV08yHmcmbsarmc6S2IBFRjj3Anf5ZMpgFLFGA0zGq0C
-        fJlWabcuY1itR62OFBM7KI8IBCcnqSJshqwVPCc21+kSBDCQeR0+7QjpzZdpthlKq+RjuJ
-        q6eSh2YucMJnPcm3FmNHQ9Qj/OkR3IU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=bnInJhTNmcRkk5WIZQp/adh2w/55qWjBovtngHxo1PM=;
+        b=UnFnQdMICe1ph6hMhcpXCBN7MH3SirA2KSLaEpMhTQIRzV0XniY9JuNe1pxVDA37WECcKN
+        ZLqnHxKm6pTMOwW47nPXzSy59MmW8bp/xadJFiEAB7Rlhvc+xHKDsT6q6fqH/a2cfDaP8z
+        t0uPS+xh5Thpcz7gXpAYoNZIKfzpPXY=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-300-wq30lc0kN8Sn4qeZUYTQdQ-1; Tue, 16 Aug 2022 01:36:38 -0400
-X-MC-Unique: wq30lc0kN8Sn4qeZUYTQdQ-1
-Received: by mail-wm1-f69.google.com with SMTP id i132-20020a1c3b8a000000b003a537064611so4462835wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:38 -0700 (PDT)
+ us-mta-86-mf5XRy57OMmwUAYgPblalg-1; Tue, 16 Aug 2022 01:36:33 -0400
+X-MC-Unique: mf5XRy57OMmwUAYgPblalg-1
+Received: by mail-wr1-f70.google.com with SMTP id x5-20020adfbb45000000b0021ee56506dfso1576053wrg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=0Woc1p74LnDMz9TXkvyQIlZ2BlUNGXfNgs76Y3D9lgg=;
-        b=X1ulHijKPneqX8Xwbfh+gi9MxNDpNMJhAJ1m6abJ3vdl0NonsRrdS0nEptIvi2Uuly
-         ZR7lVgFV4BVk5rmPcfAh7Zf8jDOUwTSuzS1OKGJKgt38pmVHUgtGWchdFtztIjRZ9oJV
-         k43iiPYKqdBZMmuR1hVROUOPfSNfViARbjWWAq0XB8d61CSxx562Oye/Gr86vdbF3DP0
-         SQY79LxOr8q5jHw6WEpffVOLEnVAEkkpb//+sCns7rJNEE1DlBFYmSDopT6GdwADGwO0
-         4t32FRMDFoUSvlr0eeomd8fWRwS2d7Umptt5qRBB3lxE3dFPvBNPQ7TR5+B5fB3qy/Jw
-         zVhg==
-X-Gm-Message-State: ACgBeo32Z7hqDguIbF0hmAK4VdVFCcCDFhURJO4ycfuJ2PpPcct1UTUu
-        th24hp9JCCnuq/5khbt3HXlt7nL/WSOeaYis5dhKLPSk03rDJYDRin9xLP+F3Mbduedu0qKyScm
-        r1K8Z30KZ8EvThrJhYLQtk1F3mIqxwrYlrr2xpOb5TXaS3FxZWoR9VTPpNZaLI2p5R36xyA==
-X-Received: by 2002:a5d:6312:0:b0:220:6820:57d7 with SMTP id i18-20020a5d6312000000b00220682057d7mr10333261wru.8.1660628195741;
-        Mon, 15 Aug 2022 22:36:35 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5lfJNXkB52mr103dHeF1YNUqGQn4R8ZmPcZt7Bv3gQF4wEpKRHrZVkPc9XrO/DSv/ceTxJOA==
-X-Received: by 2002:a5d:6312:0:b0:220:6820:57d7 with SMTP id i18-20020a5d6312000000b00220682057d7mr10333235wru.8.1660628195428;
-        Mon, 15 Aug 2022 22:36:35 -0700 (PDT)
+        bh=bnInJhTNmcRkk5WIZQp/adh2w/55qWjBovtngHxo1PM=;
+        b=5b/LY4nPKbLMeepa9+Gv1JfA6S9rfyD/MRXVPSsAn9NOdob6j88q8PtjPfIxherNuC
+         tV4535yBVydqhaCJ690VH/gaUS1FxYS6prev6PKoGS+DWfRbNXL6XJ4JiC64EEMhWu5D
+         MGtveJCFbh4EoyDChWnvJg3uuVz9sIGgCWUdehN2dSoLs7PqMrt5R2mTlg4Dp8gcOMRq
+         pekvf3X00Q9B8NI36z/Ti/2rhMzsuy7OOZw+tXgeajgKDXy8fnjC2Ag+RWssc+TNKHU+
+         LBFKb+V8xrG77HC0+Skv6KdaCCaSzjLFR0T9okCrStVEbJP/H8vKpsNbwGxp6emA0F65
+         Umkg==
+X-Gm-Message-State: ACgBeo3Zzw3E5DOFvg7C71Don+oRDEUtvvhSKPNV8lAEgBJJ242tl4aj
+        OdvEQUSDbPurjhvGJ8rlUCBNoVpXEhBmlTMds7WTzqJvvvovOUeEqQRWrr/BNwK/O4XWiQJui+Z
+        sg1suPNfwE+1rtMRapAZdfBav6P6efImwzkhXFc2xcls9+dxbip6G8WOamLkv6ULEoyvyQg==
+X-Received: by 2002:a05:6000:1188:b0:220:6c20:fbf6 with SMTP id g8-20020a056000118800b002206c20fbf6mr10766521wrx.372.1660628192138;
+        Mon, 15 Aug 2022 22:36:32 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4EkqFgvn7hB2RJJpvVWV5jJVrRGEU1rfoAnhvs4XogqkEgf0eN7zdUfJbZFDbhzDt1P9Tkdg==
+X-Received: by 2002:a05:6000:1188:b0:220:6c20:fbf6 with SMTP id g8-20020a056000118800b002206c20fbf6mr10766495wrx.372.1660628191855;
+        Mon, 15 Aug 2022 22:36:31 -0700 (PDT)
 Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id ba11-20020a0560001c0b00b002235eb9d200sm9225278wrb.10.2022.08.15.22.36.33
+        by smtp.gmail.com with ESMTPSA id bg1-20020a05600c3c8100b003a317ee3036sm12197295wmb.2.2022.08.15.22.36.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 22:36:34 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:36:32 -0400
+        Mon, 15 Aug 2022 22:36:31 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:36:27 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
@@ -70,9 +70,9 @@ Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH v4 3/6] virtio-mmio: Revert "virtio_mmio: support the arg
- sizes of find_vqs()"
-Message-ID: <20220816053602.173815-4-mst@redhat.com>
+Subject: [PATCH v4 2/6] virtio: Revert "virtio: add helper
+ virtio_find_vqs_ctx_size()"
+Message-ID: <20220816053602.173815-3-mst@redhat.com>
 References: <20220816053602.173815-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -84,49 +84,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit fbed86abba6e0472d98079790e58060e4332608a.
-The API is now unused, let's not carry dead code around.
+This reverts commit fe3dc04e31aa51f91dc7f741a5f76cc4817eb5b4: the
+API is now unused and in fact can't be implemented on top of a legacy
+device.
 
-Fixes: fbed86abba6e ("virtio_mmio: support the arg sizes of find_vqs()")
+Fixes: fe3dc04e31aa ("virtio: add helper virtio_find_vqs_ctx_size()")
+Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- drivers/virtio/virtio_mmio.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ include/linux/virtio_config.h | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index c492a57531c6..dfcecfd7aba1 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -360,7 +360,7 @@ static void vm_synchronize_cbs(struct virtio_device *vdev)
+diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+index 6adff09f7170..888f7e96f0c7 100644
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -241,18 +241,6 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
+ 				      ctx, desc);
+ }
  
- static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int index,
- 				  void (*callback)(struct virtqueue *vq),
--				  const char *name, u32 size, bool ctx)
-+				  const char *name, bool ctx)
- {
- 	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
- 	struct virtio_mmio_vq_info *info;
-@@ -395,11 +395,8 @@ static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int in
- 		goto error_new_virtqueue;
- 	}
- 
--	if (!size || size > num)
--		size = num;
+-static inline
+-int virtio_find_vqs_ctx_size(struct virtio_device *vdev, u32 nvqs,
+-			     struct virtqueue *vqs[],
+-			     vq_callback_t *callbacks[],
+-			     const char * const names[],
+-			     u32 sizes[],
+-			     const bool *ctx, struct irq_affinity *desc)
+-{
+-	return vdev->config->find_vqs(vdev, nvqs, vqs, callbacks, names, sizes,
+-				      ctx, desc);
+-}
 -
- 	/* Create the vring */
--	vq = vring_create_virtqueue(index, size, VIRTIO_MMIO_VRING_ALIGN, vdev,
-+	vq = vring_create_virtqueue(index, num, VIRTIO_MMIO_VRING_ALIGN, vdev,
- 				 true, true, ctx, vm_notify, callback, name);
- 	if (!vq) {
- 		err = -ENOMEM;
-@@ -503,7 +500,6 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
- 		}
- 
- 		vqs[i] = vm_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
--				     sizes ? sizes[i] : 0,
- 				     ctx ? ctx[i] : false);
- 		if (IS_ERR(vqs[i])) {
- 			vm_del_vqs(vdev);
+ /**
+  * virtio_synchronize_cbs - synchronize with virtqueue callbacks
+  * @vdev: the device
 -- 
 MST
 
