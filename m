@@ -2,71 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E7CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF2AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235045AbiHPKrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58882 "EHLO
+        id S234485AbiHPKrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbiHPKqG (ORCPT
+        with ESMTP id S233990AbiHPKqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:46:06 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED6ADEA7B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:54:39 -0700 (PDT)
-Received: from dev011.ch-qa.sw.ru ([172.29.1.16])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.atanasov@virtuozzo.com>)
-        id 1oNt3t-00FxfB-7a;
-        Tue, 16 Aug 2022 11:41:48 +0200
-From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] drivers: virtio: balloon - update inflated memory
-Date:   Tue, 16 Aug 2022 12:41:17 +0300
-Message-Id: <20220816094117.3144881-5-alexander.atanasov@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
-References: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 16 Aug 2022 06:46:24 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D73D261D
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:51 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso9139107pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=95RmrDaOTs+TArBQIen65/TK8NYN58Pk/yEsVpA/XLQ=;
+        b=zz9Kx3opIvtvTrScnyxJFs+GMVOTDDp5nBSvQKpeRSoleANTX97HmK+QRmChlfTaKV
+         jGVVnWVywSPSjU/a1ky6Uzb13fGSTlUMNszCrAZnwHKYSsuJRvLnm9XnY/hSfuhXTxbY
+         UP3EsrGopcq32sK+1wS/JrcKLEUuEmAHuhB8T0Rlkd63ALxbuaOALnGeUDDAZpvicfFw
+         wBm6+MTqaNHlBnO60iQ98zQp0sfAdXY84wjR0IIBqqmM+NTV5XhCYShRZXQ6l/lxcEcD
+         0TdQrSd2U16XmkLX3UFTO3u2dhKUX1gwgXDG+2jiPAWkcbZRzCOEACiokc4Ud8V0GdU2
+         4mgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=95RmrDaOTs+TArBQIen65/TK8NYN58Pk/yEsVpA/XLQ=;
+        b=YjLUkNKbVjJwPKA1HhLuZRMWT+WOmDMWDUH2GxmuLzREg+I/p4/hjlRdz+qumLRHWm
+         XTJba9fg4D1n02cKzx4sM8Bf0e5uv3XH+fNp0mX6UX829lM5QU7wS+GA6AAKlqtVnrlV
+         36/xawtBt8BTqYz3axw77cO+/K94q4lxb6c1qr1eCLWrvXLLMI3D82lNJPeOAiqJZxjg
+         ORRKMk8+4riMw1Mm1qFmFUMxZedg5jMD5kSg1xu6QASZJhGZug0/FpxghcXbGzjG7R14
+         3wbN61XoCB4Ix00fImY0yasN/Zq+LpD9cYbmDBu4x8P6hcaEtlHHsSMBWdBO8suH77MC
+         ozsQ==
+X-Gm-Message-State: ACgBeo0seeUrOpbWzG+n3Xp1DBaau+J5NSqNQCCE7IBPU+QzR2FN0UNh
+        0riw1CrsHZybcdRoNYiHAK8rWA==
+X-Google-Smtp-Source: AA6agR6iuIfqsnKC8rmEvnL+RqpghMmdGBLz80IUfA88+gmFc61k0TjFisYsOWDicYjBJ7EdB/T1VA==
+X-Received: by 2002:a17:90b:17ce:b0:1f4:d068:5722 with SMTP id me14-20020a17090b17ce00b001f4d0685722mr31558785pjb.28.1660644411079;
+        Tue, 16 Aug 2022 03:06:51 -0700 (PDT)
+Received: from tyrell.hq.igel.co.jp (napt.igel.co.jp. [219.106.231.132])
+        by smtp.gmail.com with ESMTPSA id y24-20020a631818000000b004202cb1c491sm7219029pgl.31.2022.08.16.03.06.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:06:50 -0700 (PDT)
+From:   Shunsuke Mie <mie@igel.co.jp>
+To:     Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shunsuke Mie <mie@igel.co.jp>
+Subject: [PATCH] misc: pci_endpoint_test: Fix pci_endpoint_test_{copy,write,read}() panic
+Date:   Tue, 16 Aug 2022 19:06:17 +0900
+Message-Id: <20220816100617.90720-1-mie@igel.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the inflated memory when it changes.
+Although dma_map_single() doesn't permit zero length mapping, the each
+test functions called the function without zero checking.
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+A panic was reported on arm64:
+
+[   60.137988] ------------[ cut here ]------------
+[   60.142630] kernel BUG at kernel/dma/swiotlb.c:624!
+[   60.147508] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+[   60.152992] Modules linked in: dw_hdmi_cec crct10dif_ce simple_bridge rcar_fdp1 vsp1 rcar_vin videobuf2_vmalloc rcar_csi2 v4l
+2_mem2mem videobuf2_dma_contig videobuf2_memops pci_endpoint_test videobuf2_v4l2 videobuf2_common rcar_fcp v4l2_fwnode v4l2_asyn
+c videodev mc gpio_bd9571mwv max9611 pwm_rcar ccree at24 authenc libdes phy_rcar_gen3_usb3 usb_dmac display_connector pwm_bl
+[   60.186252] CPU: 0 PID: 508 Comm: pcitest Not tainted 6.0.0-rc1rpci-dev+ #237
+[   60.193387] Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
+[   60.201302] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   60.208263] pc : swiotlb_tbl_map_single+0x2c0/0x590
+[   60.213149] lr : swiotlb_map+0x88/0x1f0
+[   60.216982] sp : ffff80000a883bc0
+[   60.220292] x29: ffff80000a883bc0 x28: 0000000000000000 x27: 0000000000000000
+[   60.227430] x26: 0000000000000000 x25: ffff0004c0da20d0 x24: ffff80000a1f77c0
+[   60.234567] x23: 0000000000000002 x22: 0001000040000010 x21: 000000007a000000
+[   60.241703] x20: 0000000000200000 x19: 0000000000000000 x18: 0000000000000000
+[   60.248840] x17: 0000000000000000 x16: 0000000000000000 x15: ffff0006ff7b9180
+[   60.255977] x14: ffff0006ff7b9180 x13: 0000000000000000 x12: 0000000000000000
+[   60.263113] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+[   60.270249] x8 : 0001000000000010 x7 : ffff0004c6754b20 x6 : 0000000000000000
+[   60.277385] x5 : ffff0004c0da2090 x4 : 0000000000000000 x3 : 0000000000000001
+[   60.284521] x2 : 0000000040000000 x1 : 0000000000000000 x0 : 0000000040000010
+[   60.291658] Call trace:
+[   60.294100]  swiotlb_tbl_map_single+0x2c0/0x590
+[   60.298629]  swiotlb_map+0x88/0x1f0
+[   60.302115]  dma_map_page_attrs+0x188/0x230
+[   60.306299]  pci_endpoint_test_ioctl+0x5e4/0xd90 [pci_endpoint_test]
+[   60.312660]  __arm64_sys_ioctl+0xa8/0xf0
+[   60.316583]  invoke_syscall+0x44/0x108
+[   60.320334]  el0_svc_common.constprop.0+0xcc/0xf0
+[   60.325038]  do_el0_svc+0x2c/0xb8
+[   60.328351]  el0_svc+0x2c/0x88
+[   60.331406]  el0t_64_sync_handler+0xb8/0xc0
+[   60.335587]  el0t_64_sync+0x18c/0x190
+[   60.339251] Code: 52800013 d2e00414 35fff45c d503201f (d4210000)
+[   60.345344] ---[ end trace 0000000000000000 ]---
+
+To fix it, this patch adds checkings the payload length if it is zero.
+
+Fixes: 343dc693f7b7 ("misc: pci_endpoint_test: Prevent some integer overflows")
+Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
 ---
- drivers/virtio/virtio_balloon.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/misc/pci_endpoint_test.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index 6f69e483d98a..c8093c704c2f 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -450,10 +450,15 @@ static void virtballoon_changed(struct virtio_device *vdev)
- static void update_balloon_size(struct virtio_balloon *vb)
- {
- 	u32 actual = vb->num_pages;
-+	long inflated_kb = actual << (VIRTIO_BALLOON_PFN_SHIFT - 10);
+diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+index 8f786a225dcf..d45426a73396 100644
+--- a/drivers/misc/pci_endpoint_test.c
++++ b/drivers/misc/pci_endpoint_test.c
+@@ -364,7 +364,7 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
+ 	}
  
- 	/* Legacy balloon config space is LE, unlike all other devices. */
- 	virtio_cwrite_le(vb->vdev, struct virtio_balloon_config, actual,
- 			 &actual);
-+	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
-+		balloon_set_inflated_free(inflated_kb);
-+	else
-+		balloon_set_inflated_total(inflated_kb);
- }
+ 	size = param.size;
+-	if (size > SIZE_MAX - alignment)
++	if (size > SIZE_MAX - alignment || !size)
+ 		goto err;
  
- static void update_balloon_stats_func(struct work_struct *work)
+ 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+@@ -498,7 +498,7 @@ static bool pci_endpoint_test_write(struct pci_endpoint_test *test,
+ 	}
+ 
+ 	size = param.size;
+-	if (size > SIZE_MAX - alignment)
++	if (size > SIZE_MAX - alignment || !size)
+ 		goto err;
+ 
+ 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+@@ -596,7 +596,7 @@ static bool pci_endpoint_test_read(struct pci_endpoint_test *test,
+ 	}
+ 
+ 	size = param.size;
+-	if (size > SIZE_MAX - alignment)
++	if (size > SIZE_MAX - alignment || !size)
+ 		goto err;
+ 
+ 	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
 -- 
-2.31.1
+2.17.1
 
