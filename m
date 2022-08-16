@@ -2,96 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D8BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564AAC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234706AbiHPKcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
+        id S234679AbiHPKcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234436AbiHPKcX (ORCPT
+        with ESMTP id S234692AbiHPKcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 06:32:23 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C968D7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:18:07 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id f28so8757833pfk.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=yiBicl/xtck+sUvDa6HbwVr3KCpBiQ3kP9sWsGd0v+M=;
-        b=uT3jiYPYFRn7lq9viYTDzroDVdXL8pYjwBzK6ZhdPWJ3ales5ct7XINz7ercxdfD7Y
-         rvax/AK/RPxyH9Qyvj6cKGyu5Z9eSVcZeTL3ghWM02DMNeRTu1dNZ7beU/wveqK5kb+b
-         cgTDsiraqeHQID8d9ZRhhEi710zRj0h9tNoJIy/ZIZdDiEU/5Tq3uSnDDCMR184RYyCg
-         LVWxI+KwzGdKQ6ji/qPZRP+nel4pcCCfqXweiR63F69BqC+Nt+6QIM31Ab1sSdW2FTPk
-         LjcGqOsRMi5qhAbnOjRjnE/4ICeEvzLIfRc/1JoVKPEsJ2GoYjX+SmVkYwcf+ocJax8W
-         K0eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=yiBicl/xtck+sUvDa6HbwVr3KCpBiQ3kP9sWsGd0v+M=;
-        b=O6xrXrosaMHwekpKfjk1UFG6dqDzveWZZdzW5DBwFjwDPOfzFwZY0fZtUn+dOI6LnY
-         9U7D9H5NaxIsYfLtLiLaswkWCdInwQ0ltJ6PlC0k0WjessvWlTvbRGUpMs50CZRduPeg
-         yJKhb+2Lv7e8tDLOSi7TonVxBFQCAOk7mz+7WgLhMMgdMhpkjMutL5CnflXsKcDp935d
-         OpFg419WsZPpB9ojj0SMccgyEMffrUAnfvnk6GWk6sFKrn8+1LJuXF0N+2SMz3wOAIWV
-         LnWXlnKGm3zznJjEorkvRTxAd/88anmFDySgFIkbTQEqP/nbF+p5IHBHaRBdZRGFTOsI
-         Aw9Q==
-X-Gm-Message-State: ACgBeo3MIvJdSoxx5N3lcLbSRCB0TXDGjxts4Nm3QVKkBk/XGNNmw0j6
-        aEQ6EKWFVSgBeRWG5lkqmzcjN40CQhYuYSmlmeVXBEmzjeDkBg==
-X-Google-Smtp-Source: AA6agR7a2co2/3EHjLJWWfyl0Y9FC9Qup8Vvr947CQmLmaKAXgb15xFZYz1xNiLfRaHjV9zeEjmoSBme+mzy7PUZf/A=
-X-Received: by 2002:a63:e217:0:b0:41a:69b1:a68e with SMTP id
- q23-20020a63e217000000b0041a69b1a68emr16488504pgh.428.1660637887011; Tue, 16
- Aug 2022 01:18:07 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B853B94E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:48:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660639733; x=1692175733;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4dzc/qx53hVX29ifX4zMyW7ez/x2P7dWTA9KkO31wJ8=;
+  b=NZJWgAG8Z0zHUXotG7k7IyJ/wwjFwjxvihPEfgxGKd7mRa2FbhRzAwZg
+   3RBnFplCYkdSlJhTdSXysc3b14vF6GG08ZtaVL9HUeV48/lTlJznh7iiz
+   pgcmCwtIgseSGXjbit4Cl+N164G7cIfTbB7bzGq6kLnTnzxlKG7aqkkPM
+   drpmd6S3XI+Yrk8k8rP3zrCT4+WdEIJTSgAXaEVjRlDLAPsK7MSuxVRof
+   4PL6Fpx22VDLG2SpkH27S2mWmFDx4UlYw26GJcbtHscsbdwVmjheWfGs3
+   Rf9UKbe4rr1Ianh6I/rWwjcuKrGDX+pizIkJrI4fBR48Pefbpjk3tnQ7f
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292960495"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="292960495"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:48:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="733219835"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 16 Aug 2022 01:48:51 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNsFm-0001eP-2w;
+        Tue, 16 Aug 2022 08:48:50 +0000
+Date:   Tue, 16 Aug 2022 16:48:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [gustavoars:testing/fam1-v6.0] BUILD SUCCESS
+ 0be5e5d3e8a6c733c09424bdcefb5f2846e827a5
+Message-ID: <62fb59d6.pbyai36+qORIIiow%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20220812143055.12938-1-olivier.masse@nxp.com>
-In-Reply-To: <20220812143055.12938-1-olivier.masse@nxp.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Tue, 16 Aug 2022 10:17:56 +0200
-Message-ID: <CAHUa44EgA1btRyj2ByooyLr9Q+8AmW=9EfjtQFxyr7DuCXASvA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/1] tee: Add tee_shm_register_fd
-To:     Olivier Masse <olivier.masse@nxp.com>
-Cc:     etienne.carriere@linaro.org, sumit.garg@linaro.org,
-        sumit.semwal@linaro.org, christian.koenig@amd.com,
-        op-tee@lists.trustedfirmware.org, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, clement.faure@nxp.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Olivier,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git testing/fam1-v6.0
+branch HEAD: 0be5e5d3e8a6c733c09424bdcefb5f2846e827a5  scsi: megaraid_sas: Use struct_size() in code related to struct MR_PD_CFG_SEQ_NUM_SYNC
 
-On Fri, Aug 12, 2022 at 4:31 PM Olivier Masse <olivier.masse@nxp.com> wrote:
->
-> Add a new ioctl called TEE_IOC_SHM_REGISTER_FD to register a
-> shared memory from a dmabuf file descriptor.
-> This new ioctl will allow the Linux Kernel to register a buffer
-> to be used by the Secure Data Path OPTEE OS feature.
->
-> Please find more information here:
-> https://static.linaro.org/connect/san19/presentations/san19-107.pdf
->
-> Patch tested on Hikey 6220.
+elapsed time: 717m
 
-What's new in this V2?
+configs tested: 106
+configs skipped: 3
 
-Thanks,
-Jens
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
->
-> Etienne Carriere (1):
->   tee: new ioctl to a register tee_shm from a dmabuf file descriptor
->
->  drivers/tee/tee_core.c   | 38 +++++++++++++++
->  drivers/tee/tee_shm.c    | 99 +++++++++++++++++++++++++++++++++++++++-
->  include/linux/tee_drv.h  | 11 +++++
->  include/uapi/linux/tee.h | 29 ++++++++++++
->  4 files changed, 175 insertions(+), 2 deletions(-)
->
-> --
-> 2.25.0
->
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+arc                  randconfig-r043-20220815
+powerpc                           allnoconfig
+sh                               allmodconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                 randconfig-a001-20220815
+i386                 randconfig-a005-20220815
+i386                 randconfig-a004-20220815
+i386                 randconfig-a006-20220815
+i386                 randconfig-a003-20220815
+i386                 randconfig-a002-20220815
+x86_64                           rhel-8.3-kvm
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+i386                             allyesconfig
+i386                                defconfig
+arm                      integrator_defconfig
+sh                            shmin_defconfig
+xtensa                              defconfig
+arm                         at91_dt_defconfig
+m68k                        m5307c3_defconfig
+xtensa                  nommu_kc705_defconfig
+riscv                    nommu_k210_defconfig
+x86_64               randconfig-a006-20220815
+x86_64               randconfig-a003-20220815
+x86_64               randconfig-a005-20220815
+x86_64               randconfig-a004-20220815
+x86_64               randconfig-a001-20220815
+x86_64               randconfig-a002-20220815
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+ia64                             allmodconfig
+mips                         bigsur_defconfig
+powerpc                      chrp32_defconfig
+arm                           h3600_defconfig
+i386                 randconfig-c001-20220815
+sh                            hp6xx_defconfig
+powerpc                   currituck_defconfig
+powerpc                     redwood_defconfig
+powerpc                     sequoia_defconfig
+ia64                      gensparse_defconfig
+arm                           corgi_defconfig
+sh                        sh7785lcr_defconfig
+arm                      footbridge_defconfig
+powerpc                     stx_gp3_defconfig
+nios2                               defconfig
+arm                         vf610m4_defconfig
+s390                       zfcpdump_defconfig
+powerpc                 mpc8540_ads_defconfig
+powerpc              randconfig-c003-20220815
+i386                          debian-10.3-kvm
+i386                        debian-10.3-kunit
+i386                         debian-10.3-func
+m68k                            q40_defconfig
+arm                         s3c6400_defconfig
+powerpc                      makalu_defconfig
+arc                            hsdk_defconfig
+powerpc                    klondike_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+xtensa                         virt_defconfig
+powerpc                       eiger_defconfig
+arm                          iop32x_defconfig
+m68k                       m5208evb_defconfig
+m68k                         amcore_defconfig
+arc                           tb10x_defconfig
+
+clang tested configs:
+hexagon              randconfig-r045-20220815
+hexagon              randconfig-r041-20220815
+riscv                randconfig-r042-20220815
+s390                 randconfig-r044-20220815
+x86_64               randconfig-a011-20220815
+x86_64               randconfig-a016-20220815
+x86_64               randconfig-a013-20220815
+x86_64               randconfig-a015-20220815
+x86_64               randconfig-a014-20220815
+x86_64               randconfig-a012-20220815
+i386                 randconfig-a011-20220815
+i386                 randconfig-a012-20220815
+i386                 randconfig-a014-20220815
+i386                 randconfig-a016-20220815
+i386                 randconfig-a015-20220815
+i386                 randconfig-a013-20220815
+arm                        multi_v5_defconfig
+x86_64               randconfig-k001-20220815
+powerpc                          g5_defconfig
+powerpc                          allmodconfig
+powerpc                 mpc836x_mds_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
