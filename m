@@ -2,426 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D784C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 691E9C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbiHPHpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 03:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
+        id S231708AbiHPHxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232344AbiHPHoe (ORCPT
+        with ESMTP id S232346AbiHPHxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 03:44:34 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5218138A9BB
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 21:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660624804; x=1692160804;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=J00K2StCdEs0R/yUirw4VjNAGUKukj1ClH8RInNxsQY=;
-  b=IMp3SBoVHj/HAcEd4wb9LycuAh/3LVnEC8CrEqWG7VBf7twfIahlf8Zp
-   y18J+QXSX5cp7g0b0PVymQj6vI7tr0JpV/IVQyxw/CtxxmIdIC2XwHOcd
-   gRl9f8ZEH0Md0yDe1F8uyiWcrLYN+C79R1LtRVKywXey/2bUfMKJiTAcZ
-   gywfmG19E3ElH3vkzHAal2fl3HztyoCahjWK8SiA9X5tsUrDfdkFStbkM
-   syN8v6mbbGDu0ToeF2+d4kxeY0ckt+b2QlKS7ZD6IqZ/m5Y+HUgxRalIY
-   BTPMj3SknjPNS6iWciChPPwk5OtkzpFrVPIzD0l5ilVdgYK0V5ObBfBSz
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293395142"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293395142"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 21:38:20 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="675071604"
-Received: from araj-dh-work.jf.intel.com ([10.165.157.158])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 21:38:19 -0700
-From:   Ashok Raj <ashok.raj@intel.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     "LKML Mailing List" <linux-kernel@vger.kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        "Ashok Raj" <ashok.raj@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 4/4] x86/microcode: Place siblings in NMI loop while update in progress
-Date:   Tue, 16 Aug 2022 04:37:54 +0000
-Message-Id: <20220816043754.3258815-6-ashok.raj@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220816043754.3258815-1-ashok.raj@intel.com>
-References: <20220816043754.3258815-1-ashok.raj@intel.com>
+        Tue, 16 Aug 2022 03:53:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FDC1E2C78
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:02:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660626177;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SP+U2Pc7sWzJAq0KCIIR4ULIjV8K9utWLV+ekyPPst4=;
+        b=OQefthRZNhNvdWCFfpkvQrFKYzxLIrgwX6dw1lThfAiN+0VCqminpdjI5G4VwRBGJ68CQA
+        RwkuPxHRAAQQp3v2zp2bWqnQ2pStdR+h9LOevKVMzJIrz0DCnpuQXRrNuTZRRL20oiy5So
+        PBtXRFhgQ8gwiFz/HIzajen2b7dwbLs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-654-f1FMmC6VMI2CgsYY_HYbQA-1; Tue, 16 Aug 2022 01:02:53 -0400
+X-MC-Unique: f1FMmC6VMI2CgsYY_HYbQA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 526981C01B2B;
+        Tue, 16 Aug 2022 05:02:53 +0000 (UTC)
+Received: from [10.64.54.77] (vpn2-54-77.bne.redhat.com [10.64.54.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 39C27141512E;
+        Tue, 16 Aug 2022 05:02:48 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [KVM] e923b0537d: kernel-selftests.kvm.rseq_test.fail
+To:     Sean Christopherson <seanjc@google.com>,
+        kernel test robot <oliver.sang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Oliver Upton <oliver.upton@linux.dev>,
+        Andrew Jones <andrew.jones@linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, xudong.hao@intel.com,
+        regressions@lists.linux.dev
+References: <Yvn60W/JpPO8URLY@xsang-OptiPlex-9020>
+ <Yvq9wzXNF4ZnlCdk@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <5034abb9-e176-d480-c577-1ec5dd47182b@redhat.com>
+Date:   Tue, 16 Aug 2022 15:02:46 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yvq9wzXNF4ZnlCdk@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Microcode updates need a guarantee that the thread sibling that is waiting
-for the update to finish on the primary core will not execute any
-instructions until the update is complete. This is required to guarantee
-any MSR or instruction that's being patched will be executed before the
-update is complete.
+Hi Sean,
 
-After the stop_machine() rendezvous, an NMI handler is registered. If an
-NMI were to happen while the microcode update is not complete, the
-secondary thread will spin until the ucode update state is cleared.
+On 8/16/22 7:42 AM, Sean Christopherson wrote:
+> On Mon, Aug 15, 2022, kernel test robot wrote:
+>> commit: e923b0537d28e15c9d31ce8b38f810b325816903 ("KVM: selftests: Fix target thread to be migrated in rseq_test")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> ...
+> 
+>> # selftests: kvm: rseq_test
+>> # ==== Test Assertion Failure ====
+>> #   rseq_test.c:278: i > (NR_TASK_MIGRATIONS / 2)
+>> #   pid=49599 tid=49599 errno=4 - Interrupted system call
+>> #      1	0x000000000040265d: main at rseq_test.c:278
+>> #      2	0x00007fe44eed07fc: ?? ??:0
+>> #      3	0x00000000004026d9: _start at ??:?
+>> #   Only performed 23174 KVM_RUNs, task stalled too much?
+>> #
+>> not ok 56 selftests: kvm: rseq_test # exit=254
+> 
+> ...
+> 
+>> # Automatically generated file; DO NOT EDIT.
+>> # Linux/x86_64 5.19.0-rc6 Kernel Configuration
+>> #
+>> CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-3) 11.3.0"
+>> CONFIG_CC_IS_GCC=y
+>> CONFIG_GCC_VERSION=110300
+>> CONFIG_CLANG_VERSION=0
+>> CONFIG_AS_IS_GNU=y
+>> CONFIG_AS_VERSION=23800
+>> CONFIG_LD_IS_BFD=y
+>> CONFIG_LD_VERSION=23800
+>> CONFIG_LLD_VERSION=0
+> 
+> Assuming 23800 == 2.38, this is a known issue.
+> 
+> https://lore.kernel.org/all/20220810104114.6838-1-gshan@redhat.com
+> 
 
-Couple of choices discussed are:
+It's probably different story this time. The assert is triggered because
+of the following instructions. I would guess the reason is vcpu thread
+has been running on CPU where we has high CPU load. In this case, the
+vcpu thread can't be run in time. More specific, the vcpu thread can't
+be run in the 1 - 10us time window, which is specified by the migration
+worker (thread).
 
-1. Rendezvous inside the NMI handler, and also perform the update from
-   within the handler. This seemed too risky and might cause instability
-   with the races that we would need to solve. This would be a difficult
-   choice.
-   	1.a Since the primary thread of every core is performing a wrmsr
-	for the update, once the wrmsr has started, it can't be
-	interrupted. Hence its not required to NMI the primary thread of
-	the core. Only the secondary thread needs to be parked in NMI
-	before the update begins.
-	Suggested by From Andy Cooper
-2. Thomas (tglx) suggested that we could look into masking all the LVT
-   originating NMI's. Such as LINT1, Perf control LVT entries and such.
-   Since we are in the rendezvous loop, we don't need to worry about any
-   NMI IPI's generated by the OS.
+     TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
+                 "Only performed %d KVM_RUNs, task stalled too much?\n", i);
 
-   The one we didn't have any control over is the ACPI mechanism of sending
-   notifications to kernel for Firmware First Processing (FFM). Apparently
-   it seems there is a PCH register that BIOS in SMI would write to
-   generate such an interrupt (ACPI GHES).
-3. This is a simpler option. OS registers an NMI handler and doesn't do any
-   NMI rendezvous dance. But if an NMI were to happen, we check if any of
-   the CPUs thread siblings have an update in progress. Only those CPUs
-   would take an NMI. The thread performing the wrmsr() will only take an
-   NMI after the completion of the wrmsr 0x79 flow.
+I think we need to improve the handshake mechanism between the vcpu thread
+and migration worker. In current implementation, the handshake is done through
+the atomic counter. The mechanism is simple enough, but vcpu thread can miss
+the aforementioned time window. Another issue is the test case much more time
+than expected to finish.
 
-   [ Lutomirsky thinks this is weak, and what happens from taking the
-   interrupt and the path to the registered callback handler might be
-   exposed.]
+Sean, if you think it's reasonable, I can figure out something to do:
 
-   Seems like 1.a is the best candidate.
+- Reuse the atomic counter for a full synchronization between these two
+   threads. Something like below:
 
-The algorithm is something like this:
+   #define RSEQ_TEST_STATE_RUN_VCPU       0     // vcpu_run()
+   #define RSEQ_TEST_STATE_MIGRATE        1     // sched_setaffinity()
+   #define RSEQ_TEST_STATE_CHECK          2     // Check rseq.cpu_id and get_cpu()
 
-After stop_machine() all threads are executing __reload_late()
+   The atomic counter is reset to RSEQ_TEST_STATE_RUN_VCPU after RSEQ_TEST_STATE_RUN_VCPU
 
-nmi_callback()
-{
-	if (!in_ucode_update)
-		return NMI_DONE;
-	if (cpu not in sibling_mask)
-		return NMI_DONE;
-	update sibling reached NMI for primary to continue
+- Reduce NR_TASK_MIGRATIONS from 100000 to num_of_online_cpus(). With this,
+   less time is needed to finish the test case.
 
-	while (cpu in sibling_mask)
-		wait;
-	return NMI_HANDLED;
-}
+Thanks,
+Gavin
 
-__reload_late()
-{
+   
 
-	entry_rendezvous(&late_cpus_in);
-	set_mcip()
-	if (this_cpu is first_cpu in the core)
-		wait for siblings to drop in NMI
-		apply_microcode()
-	else
-		wait_for_siblings;
-
-wait_for_siblings:
-
-	exit_rendezvous(&late_cpus_out);
-	clear_mcip
-}
-
-reload_late()
-{
-	register_nmi_handler()
-	prepare_mask of all sibling cpus()
-	update state = ucode in progress;
-	send NMI to all threads in sibling_mask
-	unregister_nmi_handler();
-}
-
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
----
- arch/x86/kernel/cpu/microcode/core.c | 191 ++++++++++++++++++++++++++-
- 1 file changed, 184 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index d24e1c754c27..26ceb4e37a53 100644
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -39,7 +39,9 @@
- #include <asm/processor.h>
- #include <asm/cmdline.h>
- #include <asm/setup.h>
-+#include <asm/apic.h>
- #include <asm/mce.h>
-+#include <asm/nmi.h>
- 
- #define DRIVER_VERSION	"2.2"
- 
-@@ -411,6 +413,12 @@ static int check_online_cpus(void)
- 
- static atomic_t late_cpus_in;
- static atomic_t late_cpus_out;
-+static atomic_t nmi_cpus;	// number of CPUs that enter NMI
-+static atomic_t nmi_timeouts;   // number of siblings that timeout
-+static atomic_t nmi_siblings;   // Nmber of siblings that enter NMI
-+static atomic_t in_ucode_update;// Are we in microcode update?
-+
-+static struct cpumask all_sibling_mask;
- 
- static int __wait_for_cpus(atomic_t *t, long long timeout)
- {
-@@ -433,6 +441,74 @@ static int __wait_for_cpus(atomic_t *t, long long timeout)
- 	return 0;
- }
- 
-+struct core_rendez {
-+	int num_core_cpus;
-+	atomic_t callin;
-+};
-+
-+static DEFINE_PER_CPU(struct core_rendez, core_sync);
-+
-+static int ucode_nmi_cb(unsigned int val, struct pt_regs *regs)
-+{
-+	int first_cpu, cpu = smp_processor_id();
-+	int timeout = 100 * NSEC_PER_USEC;
-+	struct core_rendez *rendez;
-+
-+	atomic_inc(&nmi_cpus);
-+	if (!atomic_read(&in_ucode_update))
-+		return NMI_DONE;
-+
-+	if (!cpumask_test_cpu(cpu, &all_sibling_mask))
-+		return NMI_DONE;
-+
-+	atomic_inc(&nmi_siblings);
-+	pr_debug("CPU %d made into NMI handler\n", cpu);
-+	/*
-+	 * primary thread waits for this
-+	 * before performing update
-+	 */
-+	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-+	rendez = &per_cpu(core_sync, first_cpu);
-+
-+	atomic_inc(&rendez->callin);
-+	while (timeout < NSEC_PER_USEC) {
-+		if (timeout < NSEC_PER_USEC) {
-+			atomic_inc(&nmi_timeouts);
-+			pr_debug("CPU %d sibling timedout\n",cpu);
-+			break;
-+		}
-+		ndelay(NSEC_PER_USEC);
-+		timeout -= NSEC_PER_USEC;
-+		touch_nmi_watchdog();
-+		/*
-+		 * Once primary clears it from all_sibling_mask, we are
-+		 * released from the NMI loop
-+		 */
-+		if (!cpumask_test_cpu(cpu, &all_sibling_mask)) {
-+			pr_debug("CPU %d breaking from NMI\n",cpu);
-+			break;
-+		}
-+	}
-+	return NMI_HANDLED;
-+}
-+
-+/*
-+ * Primary thread clears the cpumask to release the siblings from the NMI
-+ * jail
-+ */
-+
-+static void clear_nmi_cpus(void)
-+{
-+	int first_cpu, wait_cpu, cpu = smp_processor_id();
-+
-+	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-+	for_each_cpu(wait_cpu, topology_sibling_cpumask(cpu)) {
-+		if (wait_cpu == first_cpu)
-+			continue;
-+		cpumask_clear_cpu(wait_cpu, &all_sibling_mask);
-+	}
-+}
-+
- /*
-  * Returns:
-  * < 0 - on error
-@@ -440,14 +516,14 @@ static int __wait_for_cpus(atomic_t *t, long long timeout)
-  */
- static int __reload_late(void *info)
- {
--	int cpu = smp_processor_id();
-+	int first_cpu, cpu = smp_processor_id();
- 	enum ucode_state err;
- 	int ret = 0;
- 
- 	/*
- 	 * Wait for all CPUs to arrive. A load will not be attempted unless all
- 	 * CPUs show up.
--	 * */
-+	 */
- 	if (__wait_for_cpus(&late_cpus_in, NSEC_PER_SEC))
- 		return -1;
- 
-@@ -459,6 +535,7 @@ static int __reload_late(void *info)
- 	 * the platform is taken to reset predictively.
- 	 */
- 	mce_set_mcip();
-+
- 	/*
- 	 * On an SMT system, it suffices to load the microcode on one sibling of
- 	 * the core because the microcode engine is shared between the threads.
-@@ -466,13 +543,47 @@ static int __reload_late(void *info)
- 	 * loading attempts happen on multiple threads of an SMT core. See
- 	 * below.
- 	 */
-+	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
- 
--	if (cpumask_first(topology_sibling_cpumask(cpu)) == cpu)
-+	/*
-+	 * Set the CPUs that we should hold in NMI until the primary has
-+	 * completed the microcode update.
-+	 */
-+	if (first_cpu == cpu) {
-+		struct core_rendez *pcpu_core = &per_cpu(core_sync, cpu);
-+		int num_sibs = pcpu_core->num_core_cpus - 1;
-+		int timeout = 100 * NSEC_PER_USEC;
-+
-+		/*
-+		 * Wait for all siblings to enter
-+		 * NMI before performing the update
-+		 */
-+		while (atomic_read(&pcpu_core->callin) < num_sibs) {
-+			if (timeout < NSEC_PER_USEC) {
-+				timeout -= NSEC_PER_USEC;
-+				ndelay(NSEC_PER_USEC);
-+				touch_nmi_watchdog();
-+			} else {
-+				/*
-+				 * Some unknown reason the siblings didn't
-+				 * check in with primary. We just signal
-+				 * failure, but better to update since
-+				 * other cores might be successful and we
-+				 * don't want to leave this alone
-+				 */
-+				pr_err("CPU %d core lead timeout waiting for"
-+				       " siblings\n", cpu);
-+				ret = -1;
-+				break;
-+			}
-+		}
-+		pr_debug("Primary CPU %d proceeding with update\n", cpu);
- 		apply_microcode_local(&err);
--	else
-+		clear_nmi_cpus();
-+	} else
- 		goto wait_for_siblings;
- 
--	if (err >= UCODE_NFOUND) {
-+	if (ret || err >= UCODE_NFOUND) {
- 		if (err == UCODE_ERROR)
- 			pr_warn("Error reloading microcode on CPU %d\n", cpu);
- 
-@@ -496,26 +607,92 @@ static int __reload_late(void *info)
- 	return ret;
- }
- 
-+static void set_nmi_cpus(int cpu)
-+{
-+	int first_cpu, wait_cpu;
-+	struct core_rendez *pcpu_core = &per_cpu(core_sync, cpu);
-+
-+	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-+	for_each_cpu(wait_cpu, topology_sibling_cpumask(cpu)) {
-+		if (wait_cpu == first_cpu) {
-+			pcpu_core->num_core_cpus =
-+					cpumask_weight(topology_sibling_cpumask(wait_cpu));
-+			continue;
-+		}
-+		cpumask_set_cpu(wait_cpu, &all_sibling_mask);
-+	}
-+}
-+
-+static void prepare_siblings(void)
-+{
-+	int cpu;
-+
-+	for_each_cpu(cpu, cpu_online_mask) {
-+		set_nmi_cpus(cpu);
-+	}
-+}
-+
- /*
-  * Reload microcode late on all CPUs. Wait for a sec until they
-  * all gather together.
-  */
- static int microcode_reload_late(void)
- {
--	int ret;
-+	int ret = 0;
- 
- 	pr_err("Attempting late microcode loading - it is dangerous and taints the kernel.\n");
- 	pr_err("You should switch to early loading, if possible.\n");
- 
-+	/*
-+	 * Used for late_load entry and exit rendezvous
-+	 */
- 	atomic_set(&late_cpus_in,  0);
- 	atomic_set(&late_cpus_out, 0);
- 
-+	/*
-+	 * in_ucode_update: Global state while in ucode update
-+	 * nmi_cpus: Count of CPUs entering NMI while ucode in progress
-+	 * nmi_siblings: Count of siblings that enter NMI
-+	 * nmi_timeouts: Count of siblings that fail to see mask clear
-+	 */
-+	atomic_set(&in_ucode_update,0);
-+	atomic_set(&nmi_cpus, 0);
-+	atomic_set(&nmi_timeouts, 0);
-+	atomic_set(&nmi_siblings, 0);
-+
-+	cpumask_clear(&all_sibling_mask);
-+
-+	ret = register_nmi_handler(NMI_LOCAL, ucode_nmi_cb, NMI_FLAG_FIRST,
-+				   "ucode_nmi");
-+	if (ret) {
-+		pr_err("Unable to register NMI handler\n");
-+		goto done;
-+	}
-+
-+	/*
-+	 * Prepare everything for siblings threads to drop into NMI while
-+	 * the update is in progress.
-+	 */
-+	prepare_siblings();
-+	atomic_set(&in_ucode_update, 1);
-+	apic->send_IPI_mask(&all_sibling_mask, NMI_VECTOR);
-+	pr_debug("Sent NMI broadcast to all sibling cpus\n");
- 	ret = stop_machine_cpuslocked(__reload_late, NULL, cpu_online_mask);
- 	if (ret == 0)
- 		microcode_check();
- 
--	pr_info("Reload completed, microcode revision: 0x%x\n", boot_cpu_data.microcode);
-+	unregister_nmi_handler(NMI_LOCAL, "ucode_nmi");
-+
-+	pr_debug("Total CPUs that entered NMI     ... %d\n",
-+			atomic_read(&nmi_cpus));
-+	pr_debug("Total siblings that entered NMI ... %d\n",
-+		  	atomic_read(&nmi_siblings));
-+	pr_debug("Total siblings timedout         ... %d\n",
-+			atomic_read(&nmi_timeouts));
-+	pr_info("Reload completed, microcode revision: 0x%x\n",
-+	        boot_cpu_data.microcode);
- 
-+done:
- 	return ret;
- }
- 
--- 
-2.32.0
 
