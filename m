@@ -2,153 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E09B6C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8B0C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234142AbiHPJyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
+        id S233302AbiHPJyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233711AbiHPJxY (ORCPT
+        with ESMTP id S234097AbiHPJxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:53:24 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C005CBC10F
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:14:27 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oNriC-00087l-C0; Tue, 16 Aug 2022 10:14:08 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oNriB-000640-9A; Tue, 16 Aug 2022 10:14:07 +0200
-Date:   Tue, 16 Aug 2022 10:14:07 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Peng Fan <peng.fan@nxp.com>
-Cc:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "abelvesa@kernel.org" <abelvesa@kernel.org>,
-        "abel.vesa@linaro.org" <abel.vesa@linaro.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: clock: imx8m: introduce
- fsl,protected-clocks property
-Message-ID: <20220816081407.GH17485@pengutronix.de>
-References: <20220815033632.1687854-1-peng.fan@oss.nxp.com>
- <20220815033632.1687854-2-peng.fan@oss.nxp.com>
- <20220815135756.GC17485@pengutronix.de>
- <DU0PR04MB9417593B87BB5A23A29D732E886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+        Tue, 16 Aug 2022 05:53:52 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3595B1146C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:26 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id z2-20020a921a42000000b002e5a6de09c1so3897890ill.21
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=KRPjL8GvYUvELGffbzamdGsssOGfHVZFVA/AFnScLEw=;
+        b=7EW7sBtU/L0/Uu2IL1m81MVewys8GgOdPSHixd9E/zAONn+hHNfU2Kt6MFz3Rmq8yU
+         JLC8vR2WYQqd9FgHV6MCcIEmRMqDn1jaXEdqqc28C68qSoMQn+9xcU3DEw+EONdkjaDV
+         L52khtk5dAd1I2MZh1IOUp+IlMGJaITTcdEvkb1NAySL5JRhnGhIRG0NFTjnXD4GwDyY
+         ET+z/B6LTXA/8CJOSrpisuENwpMoYxmqBob+g3RRuP4XzX2TQYI8IoqPPaVfRHEprzOo
+         RCUrxbm+xImECYeB/xp615+gN/WNs5ZzAG281dSNuv1oVceVSFw9Do1QP1Cj1qtTqgIo
+         bZAQ==
+X-Gm-Message-State: ACgBeo0y+hhXTWyQXkMzgaQBwoIGI1l/IZ0vQKJ1Kc7B+NelAgfCoJU9
+        sjOC1FPjX8JMPqoNeSQ5c0WW3xmkH5SDFhJctx9bZtmE3zjQ
+X-Google-Smtp-Source: AA6agR5cgHqgAhQKLNWZHTDbmAdZbKfGXCdXvUkDp+tS9uFR94JxSZsj7BWxKclXGZs8jZm7MO5Hwn5MlNlqq3IhmdspJW6qLisK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DU0PR04MB9417593B87BB5A23A29D732E886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-Received: by 2002:a05:6e02:1aaf:b0:2df:9b36:cf34 with SMTP id
+ l15-20020a056e021aaf00b002df9b36cf34mr8972694ilv.45.1660639345593; Tue, 16
+ Aug 2022 01:42:25 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:42:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004b540c05e657ba2e@google.com>
+Subject: [syzbot] upstream boot error: WARNING: ODEBUG bug in __do_softirq
+From:   syzbot <syzbot+94c142d893fadc95fe49@syzkaller.appspotmail.com>
+To:     Henry.Wang@arm.com, bigeasy@linutronix.de,
+        linux-kernel@vger.kernel.org, longpeng2@huawei.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vschneid@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 07:13:27AM +0000, Peng Fan wrote:
-> Hi Sascha,
-> 
-> > Subject: Re: [PATCH 1/2] dt-bindings: clock: imx8m: introduce fsl,protected-
-> > clocks property
-> > 
-> > Hi Peng,
-> > 
-> > On Mon, Aug 15, 2022 at 11:36:31AM +0800, Peng Fan (OSS) wrote:
-> > > From: Peng Fan <peng.fan@nxp.com>
-> > >
-> > > i.MX8M Linux run on top of Jailhouse hypervisor, the root cell Linux
-> > > should not disable clocks used by inmate. This would also benifit AMP
-> > > to avoid Linux disable clocks used by Cortex-M4/M7.
-> > >
-> > > So introduce fsl,protected-clocks for above case.
-> > >
-> > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/clock/imx8m-clock.yaml | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> > > b/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> > > index 458c7645ee68..0ec490ff9a09 100644
-> > > --- a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> > > +++ b/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> > > @@ -39,6 +39,10 @@ properties:
-> > >        ID in its "clocks" phandle cell. See include/dt-bindings/clock/imx8m-
-> > clock.h
-> > >        for the full list of i.MX8M clock IDs.
-> > >
-> > > +  fsl,protected-clocks:
-> > > +    description: List of the Protected clock.
-> > > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > 
-> > There already is a generic protected-clocks property described in
-> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithu
-> > b.com%2Fdevicetree-org%2Fdt-
-> > schema%2Fblob%2F0d1b78cd0c3d9a3d523ced17d7da64b03f6c18ea%2Fdtsc
-> > hema%2Fschemas%2Fclock%2Fclock.yaml%23L131&amp;data=05%7C01%7
-> > Cpeng.fan%40nxp.com%7C5dbc72639c9147765af208da7ec63315%7C686ea
-> > 1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637961686968811809%7CUn
-> > known%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI
-> > 6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=D%2BfJA5h
-> > wblaX8VH%2BdQoN0pEFmCipfZHHf0ZVo07B4kg%3D&amp;reserved=0
-> > We probably shouldn't add a property with the same name but different
-> > meaning.
-> > 
-> 
-> Thanks for sharing the info. I should check the common bindings before
-> cook this patchset.
-> 
-> > I am not sure if we want to go the route of a fsl specific property, it looks
-> > like other SoCs could have similar problems and it might be worth solving
-> > this problem with a broader view.
-> > 
-> 
-> I see qcom just drop the clock entries before registering the clocks. But to
-> i.MX8M, it is not feasible to drop those clocks, unless check the
-> protected-clocks property before registering every clock. This is odd.
-> 
-> So here I just wanna let i.MX8M clk driver prepare enable the clocks listed
-> in protected-clocks property to avoid linux disable those clocks.
-> > Anyway, please add a description to the binding what this property actually
-> > does.
-> I will switch to use the common bindings.
+Hello,
 
-There were cases when a property first started with a "soc," prefix and
-later when people realized that it could be useful for other
-drivers/SoCs as well, the prefix was removed. With that in mind I
-would expect that a "fsl,protected-clocks" property behaves the same
-as a "protected-clocks" property without the prefix.
+syzbot found the following issue on:
 
-If it doesn't please pick a different name. I didn't want to suggest
-to just drop the "fsl," prefix and to use the generic property name
-when the properties have a different meaning.
+HEAD commit:    69dac8e431af Merge tag 'riscv-for-linus-5.20-mw2' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12af94d3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6bcb425ba129b87
+dashboard link: https://syzkaller.appspot.com/bug?extid=94c142d893fadc95fe49
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Sascha
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+94c142d893fadc95fe49@syzkaller.appspotmail.com
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+------------[ cut here ]------------
+ODEBUG: active_state not available (active state 0) object type: rcu_head hint: 0x0
+WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:502 debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Modules linked in:
+CPU: 1 PID: 21 Comm: ksoftirqd/1 Not tainted 5.19.0-syzkaller-14184-g69dac8e431af #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd e0 fe 48 8a 4c 89 ee 48 c7 c7 80 f2 48 8a e8 bf 17 39 05 <0f> 0b 83 05 45 ca dd 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc900001b7c10 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+RDX: ffff888011ba1d80 RSI: ffffffff8161f148 RDI: fffff52000036f74
+RBP: 0000000000000001 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000100 R11: 0000000000000001 R12: ffffffff89ee2100
+R13: ffffffff8a48f760 R14: 0000000000000000 R15: ffff88800000eda9
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000bc8e000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ debug_object_active_state lib/debugobjects.c:948 [inline]
+ debug_object_active_state+0x1d2/0x350 lib/debugobjects.c:911
+ debug_rcu_head_unqueue kernel/rcu/rcu.h:198 [inline]
+ rcu_do_batch kernel/rcu/tree.c:2238 [inline]
+ rcu_core+0x75e/0x1890 kernel/rcu/tree.c:2505
+ __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
+ run_ksoftirqd kernel/softirq.c:934 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:926
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
