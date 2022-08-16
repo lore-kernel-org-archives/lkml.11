@@ -2,196 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9504EC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E73DC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234055AbiHPJvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
+        id S231878AbiHPJwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233888AbiHPJvQ (ORCPT
+        with ESMTP id S234031AbiHPJwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:51:16 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28837105F38;
-        Tue, 16 Aug 2022 01:28:22 -0700 (PDT)
+        Tue, 16 Aug 2022 05:52:18 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323A013E56D
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:06:17 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id d14so13740071lfl.13
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:06:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660638502; x=1692174502;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=I4ndVs36DtLZuD0EkdTFDFSmoQQ7OUW1UMKQNUkt/6g=;
-  b=pPPyDPQfVnzUB4au4FG8OyKMpiCHil9Os6Fh2JcisG+OhtSbxSJmJ7aY
-   w1aUdqK6zO52nVqWKF9hmWlTlsUaOoz4HMjfgM0i4mEzrvJ9rzUN2+pvL
-   QR9Hu0I6RjdXFMFNFUl2UkuILHPRmimAXLcQRA25OC3nI6i74C68e29tD
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="233486648"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-26daedd8.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:22 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-26daedd8.us-east-1.amazon.com (Postfix) with ESMTPS id 59E319052D;
-        Tue, 16 Aug 2022 08:28:20 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.129) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:03 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:02 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:28:01
- +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 5DB1A4C47; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
-        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
-        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
-        <rtanwar@maxlinear.com>
-Subject: [PATCH 06/16] hwmon: (mr75203) fix multi-channel voltage reading
-Date:   Tue, 16 Aug 2022 08:27:47 +0000
-Message-ID: <20220816082757.11990-7-farbere@amazon.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
-References: <20220816082757.11990-1-farbere@amazon.com>
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=qACRoIaUIx4q7Fq4+bP1/fvXnrMmd2GKs256tlkcKt4=;
+        b=BBO5LjKSiDFTYMhsWb3L99v5jd7KieKgdC3QskfSxYOOyAE7SNmfZ3GKt8U5fijlz0
+         UrobL5lUxrdDbTHHX/KYtanOIdwds87TbKepBUBpVz5HgeANmaBUry+m83dWcePHcQ/W
+         NeLyrbRPsqer3RC6HdC8/tti28uRzSYbtQQr5Qjw3mYAaujMqi8CtttKACVyLftkrpT0
+         /Jz59nJzkmCkuZ/YQQ126zpBfmWm7/pexFTT/APo1MqLcF2jY4vHas5fgOtWXdGa8xS6
+         yKcSy6pdp6TWQFpHW9hYEPXtUSeOoK/Q5aNJJVLlVEAOA4tP1tCvdgTWuJ7OK78K7S9L
+         P9RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=qACRoIaUIx4q7Fq4+bP1/fvXnrMmd2GKs256tlkcKt4=;
+        b=TJv6qGVc/uJTnlZMOg1d6KtuL2w1f0unrI8LT+lR/epf7VMFCirhUU9rI4WFMmwx6e
+         GQw8cBpVDXPLY9J8RqS3SHVUstCr9w1cpmhj+VXqNbCdJ/amH2wgppGNpIPEItfx5GoU
+         fEtIaSaUYb8zHNGV00CKTRP60i2sTrOKSpxchhBvECg5QxKY7ewiqees6D8IDJNkrMpL
+         mWPwAd3QN0wCOikhpImxcJrvu8ZR1pxkOFdQykh7KlDpK904TvdhCmoPu1XEelNRtDNS
+         Cyr78oi0CzXwDzE4ZV520IuOQAUuYELKWROqDUantlImXgTDZuC5Pfqtw/mZZYiCa0BT
+         uRnA==
+X-Gm-Message-State: ACgBeo0vzgLrZdQFQIFOUDNAoKhof5DDbySIgof8RjMLKGDWgM9upddO
+        MZDEP6fr+2+NA9bmtTB4oQl2ZQ==
+X-Google-Smtp-Source: AA6agR4ieUtBeNjjuanFgiNBKumVBvcQFgBFOIrRWccADDgSCX1mhvrhAIa2+vNHgbE9eqtjw/zKFg==
+X-Received: by 2002:a05:6512:250b:b0:48b:2c5:fe1e with SMTP id be11-20020a056512250b00b0048b02c5fe1emr7294718lfb.598.1660637176012;
+        Tue, 16 Aug 2022 01:06:16 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id f26-20020a2e381a000000b0025e2e70b41fsm1696716lja.71.2022.08.16.01.06.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 01:06:15 -0700 (PDT)
+Message-ID: <e1f1be24-7178-ceae-9038-ec90ffd9a28f@linaro.org>
+Date:   Tue, 16 Aug 2022 11:06:13 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] edac: zynqmp_ocm: Add EDAC support for ZynqMP OCM
+Content-Language: en-US
+To:     Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        saikrishna12468@gmail.com, git@amd.com,
+        Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+References: <20220816073203.27314-1-sai.krishna.potthuri@amd.com>
+ <20220816073203.27314-3-sai.krishna.potthuri@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220816073203.27314-3-sai.krishna.potthuri@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Fix voltage reading to support number of channels in VM IP (CH_NUM).
-- Configure the ip-polling register to enable polling for all channels.
+On 16/08/2022 10:32, Sai Krishna Potthuri wrote:
+> Add EDAC support for Xilinx ZynqMP OCM Controller, this driver
+> reports CE and UE errors based on the interrupts, and also creates ue/ce
+> sysfs entries for error injection.
+> 
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
----
- drivers/hwmon/mr75203.c | 40 +++++++++++++++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 9 deletions(-)
+A bit confusing SoB order, although sometimes rational. Are you sure
+about authorship here?
 
-diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-index bec63b611eb4..4419e481d47c 100644
---- a/drivers/hwmon/mr75203.c
-+++ b/drivers/hwmon/mr75203.c
-@@ -69,8 +69,9 @@
- 
- /* VM Individual Macro Register */
- #define VM_COM_REG_SIZE	0x200
--#define VM_SDIF_DONE(n)	(VM_COM_REG_SIZE + 0x34 + 0x200 * (n))
--#define VM_SDIF_DATA(n)	(VM_COM_REG_SIZE + 0x40 + 0x200 * (n))
-+#define VM_SDIF_DONE(vm)	(VM_COM_REG_SIZE + 0x34 + 0x200 * (vm))
-+#define VM_SDIF_DATA(vm, ch)	\
-+	(VM_COM_REG_SIZE + 0x40 + 0x200 * (vm) + 0x4 * (ch))
- 
- /* SDA Slave Register */
- #define IP_CTRL			0x00
-@@ -116,6 +117,7 @@ struct pvt_device {
- 	u32			t_num;
- 	u32			p_num;
- 	u32			v_num;
-+	u32			c_num;
- 	u32			ip_freq;
- 	u8			*vm_idx;
- };
-@@ -181,12 +183,14 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
- 	struct regmap *v_map = pvt->v_map;
- 	u32 n, stat;
- 	u8 vm_idx;
-+	u8 ch_idx;
- 	int ret;
- 
--	if (channel >= pvt->v_num)
-+	if (channel >= pvt->v_num * pvt->c_num)
- 		return -EINVAL;
- 
--	vm_idx = pvt->vm_idx[channel];
-+	vm_idx = pvt->vm_idx[channel / pvt->c_num];
-+	ch_idx = channel % pvt->c_num;
- 
- 	switch (attr) {
- 	case hwmon_in_input:
-@@ -197,7 +201,7 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
- 		if (ret)
- 			return ret;
- 
--		ret = regmap_read(v_map, VM_SDIF_DATA(vm_idx), &n);
-+		ret = regmap_read(v_map, VM_SDIF_DATA(vm_idx, ch_idx), &n);
- 		if(ret < 0)
- 			return ret;
- 
-@@ -386,6 +390,20 @@ static int pvt_init(struct pvt_device *pvt)
- 		if (ret)
- 			return ret;
- 
-+		val = GENMASK(pvt->c_num - 1, 0) | VM_CH_INIT |
-+		      IP_POLL << SDIF_ADDR_SFT |
-+		      SDIF_WRN_W | SDIF_PROG;
-+		ret = regmap_write(v_map, SDIF_W, val);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = regmap_read_poll_timeout(v_map, SDIF_STAT,
-+					       val, !(val & SDIF_BUSY),
-+					       PVT_POLL_DELAY_US,
-+					       PVT_POLL_TIMEOUT_US);
-+		if (ret)
-+			return ret;
-+
- 		val = CFG1_VOL_MEAS_MODE | CFG1_PARALLEL_OUT |
- 		      CFG1_14_BIT | IP_CFG << SDIF_ADDR_SFT |
- 		      SDIF_WRN_W | SDIF_PROG;
-@@ -501,7 +519,7 @@ static int pvt_reset_control_deassert(struct device *dev, struct pvt_device *pvt
- static int mr75203_probe(struct platform_device *pdev)
- {
- 	const struct hwmon_channel_info **pvt_info;
--	u32 ts_num, vm_num, pd_num, val, index, i;
-+	u32 ts_num, vm_num, pd_num, ch_num, val, index, i;
- 	struct device *dev = &pdev->dev;
- 	u32 *temp_config, *in_config;
- 	struct device *hwmon_dev;
-@@ -547,9 +565,11 @@ static int mr75203_probe(struct platform_device *pdev)
- 	ts_num = (val & TS_NUM_MSK) >> TS_NUM_SFT;
- 	pd_num = (val & PD_NUM_MSK) >> PD_NUM_SFT;
- 	vm_num = (val & VM_NUM_MSK) >> VM_NUM_SFT;
-+	ch_num = (val & CH_NUM_MSK) >> CH_NUM_SFT;
- 	pvt->t_num = ts_num;
- 	pvt->p_num = pd_num;
- 	pvt->v_num = vm_num;
-+	pvt->c_num = ch_num;
- 	val = 0;
- 	if (ts_num)
- 		val++;
-@@ -586,6 +606,8 @@ static int mr75203_probe(struct platform_device *pdev)
- 	}
- 
- 	if (vm_num) {
-+		u32 total_ch = ch_num * vm_num;
-+
- 		ret = pvt_get_regmap(pdev, "vm", pvt);
- 		if (ret)
- 			return ret;
-@@ -614,13 +636,13 @@ static int mr75203_probe(struct platform_device *pdev)
- 			pvt->v_num = i;
- 		}
- 
--		in_config = devm_kcalloc(dev, vm_num + 1,
-+		in_config = devm_kcalloc(dev, total_ch + 1,
- 					 sizeof(*in_config), GFP_KERNEL);
- 		if (!in_config)
- 			return -ENOMEM;
- 
--		memset32(in_config, HWMON_I_INPUT, vm_num);
--		in_config[vm_num] = 0;
-+		memset32(in_config, HWMON_I_INPUT, total_ch);
-+		in_config[total_ch] = 0;
- 		pvt_in.config = in_config;
- 
- 		pvt_info[index++] = &pvt_in;
--- 
-2.37.1
+> ---
+>  MAINTAINERS                    |   7 +
+>  drivers/edac/Kconfig           |   9 +
+>  drivers/edac/Makefile          |   1 +
+>  drivers/edac/zynqmp_ocm_edac.c | 643 +++++++++++++++++++++++++++++++++
+>  4 files changed, 660 insertions(+)
+>  create mode 100644 drivers/edac/zynqmp_ocm_edac.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index edc96cdb85e8..cd4c6c90bca3 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -21692,6 +21692,13 @@ F:	Documentation/devicetree/bindings/dma/xilinx/xlnx,zynqmp-dpdma.yaml
+>  F:	drivers/dma/xilinx/xilinx_dpdma.c
+>  F:	include/dt-bindings/dma/xlnx-zynqmp-dpdma.h
+>  
+> +XILINX ZYNQMP OCM EDAC DRIVER
+> +M:	Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+> +M:	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
+> +F:	drivers/edac/zynqmp_ocm_edac.c
+> +
+>  XILINX ZYNQMP PSGTR PHY DRIVER
+>  M:	Anurag Kumar Vulisha <anurag.kumar.vulisha@xilinx.com>
+>  M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+> index 58ab63642e72..fece60f586af 100644
+> --- a/drivers/edac/Kconfig
+> +++ b/drivers/edac/Kconfig
+> @@ -539,4 +539,13 @@ config EDAC_DMC520
+>  	  Support for error detection and correction on the
+>  	  SoCs with ARM DMC-520 DRAM controller.
+>  
+> +config EDAC_ZYNQMP_OCM
+> +	tristate "Xilinx ZynqMP OCM Controller"
+> +	depends on ARCH_ZYNQMP
 
+|| COMPILE_TEST
+
+
+> +	help
+> +	  Support for error de
+
+
+> +/**
+> + * zynqmp_ocm_edac_get_eccstate - Return the controller ecc status
+> + * @base:	Pointer to the ddr memory controller base address
+> + *
+> + * Get the ECC enable/disable status for the controller
+> + *
+> + * Return: ecc status 0/1.
+> + */
+> +static bool zynqmp_ocm_edac_get_eccstate(void __iomem *base)
+> +{
+> +	return readl(base + ECC_CTRL_OFST) & OCM_ECC_ENABLE_MASK;
+> +}
+> +
+> +static const struct of_device_id zynqmp_ocm_edac_match[] = {
+> +	{ .compatible = "xlnx,zynqmp-ocmc-1.0"},
+> +	{ /* end of table */ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, zynqmp_ocm_edac_match);
+
+This goes to the end. Do not embed static variables in the middle of the
+code.
+
+
+> +
+> +/**
+> + * zynqmp_set_ocm_edac_sysfs_attributes - create sysfs attributes
+> + * @edac_dev:	Pointer to the edac device struct
+> + *
+> + * Creates sysfs entries for error injection
+> + */
+> +static void zynqmp_set_ocm_edac_sysfs_attributes(struct edac_device_ctl_info
+> +						*edac_dev)
+> +{
+> +	edac_dev->sysfs_attributes = zynqmp_ocm_edac_sysfs_attributes;
+> +}
+> +
+> +/**
+> + * zynqmp_ocm_edac_probe - Check controller and bind driver
+> + * @pdev:	Pointer to the platform_device struct
+> + *
+> + * Probes a specific controller instance for binding with the driver.
+> + *
+> + * Return: 0 if the controller instance was successfully bound to the
+> + * driver; otherwise error code.
+> + */
+
+Drop the kerneldoc for probe(). It's obvious and exactly the same
+everywhere. You could keep it if you write something different than theh
+same message for 1000 other probes.
+
+> +static int zynqmp_ocm_edac_probe(struct platform_device *pdev)
+> +{
+> +	struct zynqmp_ocm_edac_priv *priv;
+> +	struct edac_device_ctl_info *dci;
+> +	void __iomem *baseaddr;
+> +	struct resource *res;
+> +	int irq, ret;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	baseaddr = devm_ioremap_resource(&pdev->dev, res);
+
+There is a wrapper for these.
+
+> +	if (IS_ERR(baseaddr))
+> +		return PTR_ERR(baseaddr);
+> +
+> +	if (!zynqmp_ocm_edac_get_eccstate(baseaddr)) {
+> +		edac_printk(KERN_INFO, EDAC_DEVICE,
+> +			    "ECC not enabled - Disabling EDAC driver\n");
+
+How do you disable the driver? What if there are two devices - how does
+this disables the driver for second device?
+
+> +		return -ENXIO;
+> +	}
+> +
+> +	dci = edac_device_alloc_ctl_info(sizeof(*priv), ZYNQMP_OCM_EDAC_STRING,
+> +					 1, ZYNQMP_OCM_EDAC_STRING, 1, 0, NULL, 0,
+> +					 edac_device_alloc_index());
+> +	if (!dci) {
+> +		edac_printk(KERN_ERR, EDAC_DEVICE,
+> +			    "Unable to allocate EDAC device\n");
+
+No ENOMEM prints.
+
+> +		return -ENOMEM;
+> +	}
+> +
+> +	priv = dci->pvt_info;
+> +	platform_set_drvdata(pdev, dci);
+> +	dci->dev = &pdev->dev;
+> +	priv->baseaddr = baseaddr;
+> +	dci->mod_name = pdev->dev.driver->name;
+> +	dci->ctl_name = ZYNQMP_OCM_EDAC_STRING;
+> +	dci->dev_name = dev_name(&pdev->dev);
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		edac_printk(KERN_ERR, EDAC_DEVICE,
+> +			    "No irq %d in DT\n", irq);
+
+The same, no need for printks. Core does it.
+
+> +		ret = irq;
+> +		goto free_dev_ctl;
+> +	}
+> +
+> +	ret = devm_request_irq(&pdev->dev, irq,
+> +			       zynqmp_ocm_edac_intr_handler,
+> +			       0, dev_name(&pdev->dev), dci);
+> +	if (ret) {
+> +		edac_printk(KERN_ERR, EDAC_DEVICE, "Failed to request Irq\n");
+> +		goto free_dev_ctl;
+> +	}
+> +
+> +	writel(OCM_CEUE_MASK, priv->baseaddr + OCM_IEN_OFST);
+> +
+> +	zynqmp_set_ocm_edac_sysfs_attributes(dci);
+> +	ret = edac_device_add_device(dci);
+> +	if (ret)
+> +		goto free_dev_ctl;
+> +
+> +	return 0;
+> +
+> +free_dev_ctl:
+> +	edac_device_free_ctl_info(dci);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * zynqmp_ocm_edac_remove - Unbind driver from controller
+> + * @pdev:	Pointer to the platform_device struct
+> + *
+> + * Return: Unconditionally 0
+> + */
+
+Same comment for kerneldoc.
+
+> +static int zynqmp_ocm_edac_remove(struct platform_device *pdev)
+> +{
+> +	struct edac_device_ctl_info *dci = platform_get_drvdata(pdev);
+> +	struct zynqmp_ocm_edac_priv *priv = dci->pvt_info;
+> +
+> +	writel(OCM_CEUE_MASK, priv->baseaddr + OCM_IDS_OFST);
+> +	edac_device_del_device(&pdev->dev);
+> +	edac_device_free_ctl_info(dci);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver zynqmp_ocm_edac_driver = {
+> +	.driver = {
+> +		   .name = "zynqmp-ocm-edac",
+> +		   .of_match_table = zynqmp_ocm_edac_match,
+> +		   },
+> +	.probe = zynqmp_ocm_edac_probe,
+> +	.remove = zynqmp_ocm_edac_remove,
+> +};
+> +
+> +module_platform_driver(zynqmp_ocm_edac_driver);
+> +
+> +MODULE_AUTHOR("Advanced Micro Devices, Inc");
+> +MODULE_DESCRIPTION("ZynqMP OCM ECC driver");
+> +MODULE_LICENSE("GPL");
+
+
+Best regards,
+Krzysztof
