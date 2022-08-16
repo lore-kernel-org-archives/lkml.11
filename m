@@ -2,89 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92376C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F46C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235861AbiHPOFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 10:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        id S235871AbiHPOFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 10:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbiHPOEk (ORCPT
+        with ESMTP id S235959AbiHPOEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 10:04:40 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D761B6BD50
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:04:22 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id 202so9306297pgc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:04:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=1GWQeJ3mO/AwsS1RxKEoiTmjiFwoCENhO2G+S4wDDKU=;
-        b=MXLWq8Ly9rTmRDyZNuNR3g8mJjeH9dgKfanuaq5Dl7nKAuhvDg5Di203a1rl6HAb+T
-         YlWob7XvmiC+vEXV5h0DLNEKpm3HCbMOLbktEzqOagm4T+BV29L94RAjxQy+JAhR7ZpC
-         LXT06avUI68wlEHazjn12U/Uhs1ARBLVUwM/Ql4kDcht82pw7Dcmi+ztzDW4iCaytcUV
-         nVZN4x8VXjiTgZp/viODvNKL35oVvxR7cBnmX/FXo/Kc+B+gBvP3J6LLMu0IgbS4JlHA
-         HyxKdVLgtKE+SHCJdGluZH6jwewFbU10TpkYWSJbkph9tS3ZkEjiLPhQXQk1FrRxB6G5
-         Z0mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=1GWQeJ3mO/AwsS1RxKEoiTmjiFwoCENhO2G+S4wDDKU=;
-        b=69Zh50ZtadAbt3kFTr9msZy/mk9Px7E8r8kXTfzkzgo+bUK+NGIfzp1kf7RRvpnhoU
-         /SlItZl088vV/euKjV00D/JoA3IQ4EH3bb6EFNTqGSfNd3HcfGO5ePp12KfSKEe9/DJI
-         yKBFE5sE6865n+sUSqzqTHDCTFv2MgBlAeL473Nc9/+rVw4C4KCddCr3Ewv/JcwADSiS
-         6aFQOQdKwybLmLfXfP1j3yRxXm1R0eklmY9f7Pi3cowr85TRFVLqdvdae3BICmU/Q9Se
-         XzYdfrnLKCHXGe+Rphhkz4uh1USv8VbgN4ddPjqVd6PWXgCQrVIWd26adB31o1ykcVKH
-         KyVg==
-X-Gm-Message-State: ACgBeo1Nb1AMuhxwWlOdRX28HL5syZoQtzJnQEoHS4gVwdY6Dj1M/6j8
-        jG9HFpmlW6tigiJrlMOP0aM/5A==
-X-Google-Smtp-Source: AA6agR7kLxy5v183YsULCWmOt3IC2ihIF8QYtRU7rFOfEhilKXIu3tcncvsozFV2ULPP1Ik7IBGQUQ==
-X-Received: by 2002:a05:6a00:13a7:b0:52e:3139:f895 with SMTP id t39-20020a056a0013a700b0052e3139f895mr20812990pfg.43.1660658662199;
-        Tue, 16 Aug 2022 07:04:22 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id e15-20020a170902784f00b0016f1c1f50f4sm9109452pln.235.2022.08.16.07.04.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 07:04:21 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 14:04:18 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     syzbot <syzbot+4f6eb69074ff62a1a33b@syzkaller.appspotmail.com>
-Cc:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jarkko@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sgx@vger.kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
-Subject: Re: [syzbot] BUG: unable to handle kernel paging request in
- kvm_arch_hardware_enable
-Message-ID: <Yvuj4ugWYpthUwhj@google.com>
-References: <0000000000009700a805e657c8fa@google.com>
+        Tue, 16 Aug 2022 10:04:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39C974E17;
+        Tue, 16 Aug 2022 07:04:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61B30B81A6D;
+        Tue, 16 Aug 2022 14:04:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 004EBC433C1;
+        Tue, 16 Aug 2022 14:04:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660658673;
+        bh=Wh+jI+PqTsQH8YzE0QsazGkkHZidRC6uVcJ+kYQYMlI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bjXJagJFCVZKSV3tJrcQnLFtFysSDQKz/D7YuLPy1S9mlkH3GtZ4qwYpfs+/U/2Zz
+         G9PhhC/7502IjDqw834ILwsFz+caU10Nr08nZttjgzuA21C3Gu6tuOU71Xr42m2wZI
+         DO2ddjVtB1xapBh5YXxMNEdVkvZ1WDtHUpKJjX32loqxEAProcjn0wCHMdCqqVmTmf
+         GotA9kj3JjsdqgQMnp8NrN6BGlw271uwgYq0EuXclMq85mnVdJqE+0RNLTwaSHDiep
+         CokoyPFXqYhiiwMwX3wGuqtXPZkL/3NsQ7AXGoYtOb7jWYalNpdpsMdei02Fd3Ysf6
+         Z1ZOsXxdPhcPw==
+Date:   Tue, 16 Aug 2022 15:04:24 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>, Tejun Heo <tj@kernel.org>,
+        jirislaby@kernel.org, Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Asahi Linux <asahi@lists.linux.dev>, stable@vger.kernel.org
+Subject: Re: [PATCH] locking/atomic: Make test_and_*_bit() ordered on failure
+Message-ID: <20220816140423.GC11202@willie-the-truck>
+References: <20220816070311.89186-1-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0000000000009700a805e657c8fa@google.com>
+In-Reply-To: <20220816070311.89186-1-marcan@marcan.st>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022, syzbot wrote:
-> Hello,
+On Tue, Aug 16, 2022 at 04:03:11PM +0900, Hector Martin wrote:
+> These operations are documented as always ordered in
+> include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
+> type use cases where one side needs to ensure a flag is left pending
+> after some shared data was updated rely on this ordering, even in the
+> failure case.
 > 
-> syzbot found the following issue on:
+> This is the case with the workqueue code, which currently suffers from a
+> reproducible ordering violation on Apple M1 platforms (which are
+> notoriously out-of-order) that ends up causing the TTY layer to fail to
+> deliver data to userspace properly under the right conditions. This
+> change fixes that bug.
 > 
-> HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-> git tree:       upstream
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=13d10985080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=20bc0b329895d963
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4f6eb69074ff62a1a33b
-> compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1538e0b5080000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=112756f3080000
+> Change the documentation to restrict the "no order on failure" story to
+> the _lock() variant (for which it makes sense), and remove the
+> early-exit from the generic implementation, which is what causes the
+> missing barrier semantics in that case. Without this, the remaining
+> atomic op is fully ordered (including on ARM64 LSE, as of recent
+> versions of the architecture spec).
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+4f6eb69074ff62a1a33b@syzkaller.appspotmail.com
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: stable@vger.kernel.org
+> Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
+> Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  Documentation/atomic_bitops.txt     | 2 +-
+>  include/asm-generic/bitops/atomic.h | 6 ------
+>  2 files changed, 1 insertion(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/atomic_bitops.txt b/Documentation/atomic_bitops.txt
+> index 093cdaefdb37..d8b101c97031 100644
+> --- a/Documentation/atomic_bitops.txt
+> +++ b/Documentation/atomic_bitops.txt
+> @@ -59,7 +59,7 @@ Like with atomic_t, the rule of thumb is:
+>   - RMW operations that have a return value are fully ordered.
+>  
+>   - RMW operations that are conditional are unordered on FAILURE,
+> -   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
+> +   otherwise the above rules apply. In the case of test_and_set_bit_lock(),
+>     if the bit in memory is unchanged by the operation then it is deemed to have
+>     failed.
 
-Fix posted[*], apparently the sybot id changes when bugs get forwarded upstream.
+The next sentence is:
 
-[*] https://lore.kernel.org/all/20220816053937.2477106-2-seanjc@google.com
+  | Except for a successful test_and_set_bit_lock() which has ACQUIRE
+  | semantics and clear_bit_unlock() which has RELEASE semantics.
+
+so I think it reads a bit strangely now. How about something like:
+
+
+diff --git a/Documentation/atomic_bitops.txt b/Documentation/atomic_bitops.txt
+index 093cdaefdb37..3b516729ec81 100644
+--- a/Documentation/atomic_bitops.txt
++++ b/Documentation/atomic_bitops.txt
+@@ -59,12 +59,15 @@ Like with atomic_t, the rule of thumb is:
+  - RMW operations that have a return value are fully ordered.
+ 
+  - RMW operations that are conditional are unordered on FAILURE,
+-   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
+-   if the bit in memory is unchanged by the operation then it is deemed to have
+-   failed.
++   otherwise the above rules apply. For the purposes of ordering, the
++   test_and_{}_bit() operations are treated as unconditional.
+ 
+-Except for a successful test_and_set_bit_lock() which has ACQUIRE semantics and
+-clear_bit_unlock() which has RELEASE semantics.
++Except for:
++
++ - test_and_set_bit_lock() which has ACQUIRE semantics on success and is
++   unordered on failure;
++
++ - clear_bit_unlock() which has RELEASE semantics.
+ 
+ Since a platform only has a single means of achieving atomic operations
+ the same barriers as for atomic_t are used, see atomic_t.txt.
+
+
+?
+
+> diff --git a/include/asm-generic/bitops/atomic.h b/include/asm-generic/bitops/atomic.h
+> index 3096f086b5a3..71ab4ba9c25d 100644
+> --- a/include/asm-generic/bitops/atomic.h
+> +++ b/include/asm-generic/bitops/atomic.h
+> @@ -39,9 +39,6 @@ arch_test_and_set_bit(unsigned int nr, volatile unsigned long *p)
+>  	unsigned long mask = BIT_MASK(nr);
+>  
+>  	p += BIT_WORD(nr);
+> -	if (READ_ONCE(*p) & mask)
+> -		return 1;
+> -
+>  	old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
+>  	return !!(old & mask);
+>  }
+> @@ -53,9 +50,6 @@ arch_test_and_clear_bit(unsigned int nr, volatile unsigned long *p)
+>  	unsigned long mask = BIT_MASK(nr);
+>  
+>  	p += BIT_WORD(nr);
+> -	if (!(READ_ONCE(*p) & mask))
+> -		return 0;
+> -
+>  	old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
+>  	return !!(old & mask);
+
+I suppose one sad thing about this is that, on arm64, we could reasonably
+keep the READ_ONCE() path with a DMB LD (R->RW) barrier before the return
+but I don't think we can express that in the Linux memory model so we
+end up in RmW territory every time. Perhaps we should roll our own
+implementation in the arch code?
+
+In any case, this should fix the problem so:
+
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
