@@ -2,75 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC387C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DA6C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbiHPKIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47710 "EHLO
+        id S233694AbiHPKIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234316AbiHPKIN (ORCPT
+        with ESMTP id S234262AbiHPKID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:08:13 -0400
-Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EB6103C66
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:12:44 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id NrgXoquoiGDTnNrgXo13bw; Tue, 16 Aug 2022 10:12:26 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 16 Aug 2022 10:12:26 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <b6025226-4fcd-1d82-60eb-301734cc8e5a@wanadoo.fr>
-Date:   Tue, 16 Aug 2022 10:12:25 +0200
+        Tue, 16 Aug 2022 06:08:03 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB1E356F4;
+        Tue, 16 Aug 2022 01:42:58 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id b2so7628325qkh.12;
+        Tue, 16 Aug 2022 01:42:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=M8+zN5n51GohpbStdjKXmJWXHgqhXr7wmE0QoYJl1Tg=;
+        b=qLuGJVydbZapmuhh/ri/mPvYA5bm4nMtIaG76TKtA3Mvo/gBhkJK17beJcQl4lBkM0
+         iPBdZSSrCNgcezsRIABTJwp7UtgOhSIzqLsuYw6uKZIdWj2+EzGX4Ynvo2pcygJ3ES0H
+         rNv2bDiwY+8yFgEBX8y3Q+RZ0w+7z61uHWS67T1C+ZdmOf9xIz3+Ss494E0LnAKj62KJ
+         uuV7tjhnSgJ133uq7dK9dc8YkqzpGgSLl11+J0G8NNyLbKRknzb7wyR2X4f7YRD/3396
+         ChRcoJ8Z8tpfDVeQs7eHQAwLSDOEU4j8m9CRydpoEnGFQI0rjqmOED+9BOVCNq8moS5U
+         UQgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=M8+zN5n51GohpbStdjKXmJWXHgqhXr7wmE0QoYJl1Tg=;
+        b=Nepdhtws48v2xij5S/nWebWOJnxuWP4JOjF/2KqaCvOgfmk3TiLhtYBKBiom95hkNS
+         gjU0XOwr5MW8JOxkNuPDG6BBnecPqoc09gvIePtGlb7iPAGaRs4Qo+5b28OYCPcgC+43
+         6Pty5tXDIzbhTHaXVTpEIitd1Qn2ZlJScZDw8ffK/aZUzgt22Xf+Z/o51x/oYWOVoAqF
+         gndFTmrZnjwe7UmD2gFmx9lPVUwkOnsUldY6hrO2HaZOHoRcb5eVIxDxyuyTBIZ/xz/M
+         uiDUCOmdl7judNDA1Pv8TNapNmlFTMwTYeev0jkQKrr4gRq7KWUX8Nhr7Hr/7OT2JfAW
+         Pinw==
+X-Gm-Message-State: ACgBeo0uJw2fp/LLnGgtYGDsjU4qdXa/Lai1LTrrKIn0na9QclHQfC75
+        hAcLSuZIYCKtjqJHK9m8xBDMqPvqpvdgcDp7bds=
+X-Google-Smtp-Source: AA6agR4R4lk0CDBQHZmGfGnS3MaEvTJE6k0Sqbe/jCHB+ee624GaEK+KH/pS5yDyRz1iFyVysOe/Lnz9Oes4idkTrfs=
+X-Received: by 2002:ae9:e311:0:b0:6ba:e711:fb27 with SMTP id
+ v17-20020ae9e311000000b006bae711fb27mr11131735qkf.320.1660639377250; Tue, 16
+ Aug 2022 01:42:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] scsi: target: Save a few cycles in
- transport_lookup_[cmd|tmr]_lun()
-Content-Language: en-US
-To:     Chaitanya Kulkarni <chaitanyak@nvidia.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michael.christie@oracle.com" <michael.christie@oracle.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-References: <03705222390bfa3b48ad7658f693fc0fc030b3ae.1660596679.git.christophe.jaillet@wanadoo.fr>
- <757f1326-bc70-aa93-b2d3-dfd91698406e@nvidia.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <757f1326-bc70-aa93-b2d3-dfd91698406e@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <cover.1660292316.git.mazziesaccount@gmail.com>
+ <166057828406.697572.228317501909350108.b4-ty@kernel.org> <YvpsRbguMXn74GhR@pendragon.ideasonboard.com>
+ <Yvp1Qkuh7xfeb/B2@sirena.org.uk> <YvqV9Mq6I3gXQaf2@pendragon.ideasonboard.com>
+ <20220815205857.308B1C433D6@smtp.kernel.org> <Yvq33T+XCduoqv7Z@pendragon.ideasonboard.com>
+In-Reply-To: <Yvq33T+XCduoqv7Z@pendragon.ideasonboard.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 16 Aug 2022 11:42:20 +0300
+Message-ID: <CAHp75VefRphjAhSmrUVC8aaAhrwMD+9Jr=OROFU-0JuNhuFYDw@mail.gmail.com>
+Subject: Re: (subset) [PATCH v2 0/7] Devm helpers for regulator get and enable
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Michael Turq uette <mturquette@baylibre.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-hwmon@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 16, 2022 at 8:37 AM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Mon, Aug 15, 2022 at 01:58:55PM -0700, Stephen Boyd wrote:
+> > Quoting Laurent Pinchart (2022-08-15 11:52:36)
+> > > On Mon, Aug 15, 2022 at 05:33:06PM +0100, Mark Brown wrote:
 
-Le 16/08/2022 à 08:06, Chaitanya Kulkarni a écrit :
-> On 8/15/22 13:52, Christophe JAILLET wrote:
->> Use percpu_ref_tryget_live_rcu() instead of percpu_ref_tryget_live() to
->> save a few cycles when it is known that the rcu lock is already
->> taken/released.
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
-> do you have a quantitative data that shows actual savings of cycles?
+...
+
+> > > we'll run into trouble. Supplying active high input signals
+> > > to a device that is not powered can lead to latch-up, which tends to
+> > > only manifest after a statistically significant number of occurrences of
+> > > the condition, and can slowly damage the hardware over time. This is a
+> > > real concern as it will typically not be caught during early
+> > > development. I think we would still be better off with requiring drivers
+> > > to manually handle powering off the device until we provide a mechanism
+> > > that can do so safely in an automated way.
+> >
+> > Can you describe the error scenario further? I think it's driver author
+> > error that would lead to getting and enabling the regulator after
+> > getting and enabling a clk that drives out a clock signal on some pins
+> > that aren't powered yet. I'm not sure that's all that much easier to do
+> > with these sorts of devm APIs, but if it is then I'm concerned.
 >
-> -ck
+> You will very quickly see drivers doing this (either directly or
+> indirectly):
 >
+> probe()
+> {
+>         devm_clk_get_enabled();
+>         devm_regulator_get_enable();
+> }
 
-Some numbers were given for io_uring by the one who introduced 
-percpu_ref_tryget_live_rcu().
+And how is it devm specific? If the author puts the same without devm
+the ordering would be wrong, correct? devm allows us to focus on
+ordering in a *single* place, which is a win. You seem to be proposing
+to make a high burden on a driver's author to focus on ordering in the
+*three* places. I disagree with that. Yet the driver author has to
+understand many issues with any tool they use. So the root cause of
+your whining is rather on the edge of documentation and education.
+(Yes, I have heard about issues with object lifetime in v4l2
+subdevices regarding to devm, but it seems irrelevant to devm
+mechanism itself.)
 
-See [1].
+> Without a devres-based get+enable API drivers can get the resources they
+> need in any order, possibly moving some of those resource acquisition
+> operations to different functions, and then have a clear block of code
+> that enables the resources in the right order. These devres helpers give
+> a false sense of security to driver authors and they will end up
+> introducing problems, the same way that devm_kzalloc() makes it
+> outrageously easy to crash the kernel by disconnecting a device that is
+> in use.
 
-I don't have specific numbers for the patch against scsi.
-
-CJ
 
 
-[1]: 
-https://lore.kernel.org/linux-kernel/cover.1634822969.git.asml.silence@gmail.com/
-
+-- 
+With Best Regards,
+Andy Shevchenko
