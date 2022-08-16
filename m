@@ -2,128 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CFAC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:01:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0001C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiHPKBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S234041AbiHPKBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiHPKAR (ORCPT
+        with ESMTP id S234037AbiHPKAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:00:17 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FF782D29
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:04:22 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 5EBC7221D4;
-        Tue, 16 Aug 2022 11:04:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660640659;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qwL2HEhoUW8wLgfRNaFDzK4F29xL7uRG6jMPu8nbo/I=;
-        b=MypHu4n7Pm4I9FZ4Ldrg+r9W8l+NFTqD5SCHWDqMrMQe6oZ1i3JpGx/tn7t7aIs7nx/dvT
-        OL/LrePIXbPf3OKajsYQT5dphb+3NGrzSjsFvXensLM9VD+ZnVk7/K9E31b68vv3IKN8DS
-        VzozlMgtLlG+8sa8hLcNS0V2hXP2wxM=
+        Tue, 16 Aug 2022 06:00:08 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C574C45053;
+        Tue, 16 Aug 2022 02:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=rFcsh5EaXMjyQvBz6Px9JuV8hMB5E551U26Ntc3NwIA=; b=GJchraaCp4Klmfi3ZVHxYa9oRu
+        b4agUH2uWZUTGNSV7SBi9fApi/iBoiVncfCPPHT8N/smFMxxCHdxc2qJL0NAbVmP78DMRliIAybve
+        8oFbik7+x32aIcWla7kp5/4bFOB86cScaS8UEumAsr9W+yElrNSfNFCf5pwnIHawItattmLVPtF9Q
+        nfyPrB4EWP+fCEnqnTrsY0Kxaw8X+ypYlJQyIHjy3clqn11hb/eScLGNIiJg3D3XNKZAnZcpbMVi5
+        Sl+UKBGD4B3ss+b8KxyJ1OrSsUMsYYCNDfajqcuNNHcv/f0zui+onWZGz0gCItg5Kw8bJdifIBHG8
+        +E+BKhcw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNsRn-002ufq-7J; Tue, 16 Aug 2022 09:01:15 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 6E714980083; Tue, 16 Aug 2022 11:01:14 +0200 (CEST)
+Date:   Tue, 16 Aug 2022 11:01:14 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
+        alison.schofield@intel.com, a.manzanares@samsung.com,
+        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, bp@alien8.de, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arch/cacheflush: Introduce flush_all_caches()
+Message-ID: <Yvtc2u1J/qip8za9@worktop.programming.kicks-ass.net>
+References: <165791918718.2491387.4203738301057301285.stgit@djiang5-desk3.ch.intel.com>
+ <165791937063.2491387.15277418618265930924.stgit@djiang5-desk3.ch.intel.com>
+ <20220718053039.5whjdcxynukildlo@offworld>
+ <4bedc81d-62fa-7091-029e-a2e56b4f8f7a@intel.com>
+ <20220803183729.00002183@huawei.com>
+ <9f3705e1-de21-0f3c-12af-fd011b6d613d@intel.com>
+ <YvO8pP7NUOdH17MM@FVFF77S0Q05N>
+ <62f40fba338af_3ce6829466@dwillia2-xfh.jf.intel.com.notmuch>
+ <20220815160706.tqd42dv24tgb7x7y@offworld>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 16 Aug 2022 11:04:18 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     biwen.li@nxp.com
-Cc:     leoyang.li@nxp.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, olteanv@gmail.com,
-        shawnguo@kernel.org
-Subject: Re: [PATCH v3 3/8] arm64: dts: ls1028a: add flextimer based pwm nodes
-In-Reply-To: <20220728093318.299798-1-michael@walle.cc>
-References: <DU2PR04MB89497E16D2E9A01BF763D92B8FEC9@DU2PR04MB8949.eurprd04.prod.outlook.com>
- <20220728093318.299798-1-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <a4fee40332f27c6ea83bf85ac067c46b@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815160706.tqd42dv24tgb7x7y@offworld>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-07-28 11:33, schrieb Michael Walle:
-> Hi,
+On Mon, Aug 15, 2022 at 09:07:06AM -0700, Davidlohr Bueso wrote:
+> diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
+> index b192d917a6d0..ce2ec9556093 100644
+> --- a/arch/x86/include/asm/cacheflush.h
+> +++ b/arch/x86/include/asm/cacheflush.h
+> @@ -10,4 +10,7 @@
 > 
-> sorry for digging up this old thread. But I've noticed some
-> inconsistencies here while syncing the device tree with u-boot.
+>  void clflush_cache_range(void *addr, unsigned int size);
 > 
->>> On Wed, Apr 13, 2022 at 06:07:20PM +0000, Leo Li wrote:
->>> > > arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi:1210.21-1219.5:
->>> > > Warning
->>> > > (unique_unit_address): /soc/pwm@2800000: duplicate unit-address
->>> > > (also used in node /soc/timer@2800000)
->>> > > arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi:1221.21-1230.5:
->>> > > Warning
->>> > > (unique_unit_address): /soc/pwm@2810000: duplicate unit-address
->>> > > (also used in node /soc/timer@2810000)
->>> >
->>> > Well, this is similar situation as pcie.  The flextimer controller can
->>> > be used as timer, PWM or alarm.  We have separate drivers and bindings
->>> > for these modes which resulted in different nodes for the same
->>> > controller.
->>> 
->>> I think the mfd framework can address the situation where multiple 
->>> drivers,
->>> with multiple functionalities, want access to the same memory region?
->> 
->> I know mfd is used for device providing multiple functions at the same
->> time. I'm not sure if it can help dealing with the one function at a 
->> time
->> scenario.
-> 
-> Funnily enough, I had the same concern:
-> https://lore.kernel.org/lkml/92eaa24876a823aa5833435f51095812@walle.cc/
-> 
-> Anyway, I have a few questions about the device tree here:
-> 
->> +	rtc_clk: rtc-clk {
->> +		compatible = "fixed-clock";
->> +		#clock-cells = <0>;
->> +		clock-frequency = <32768>;
->> +		clock-output-names = "rtc_clk";
->> +	};
->> +
-> 
-> Is that an internal clock? I've checked the RDB schematics and the
-> RTC clock output is not connected to anything. The RM of the LS1028A
-> mentions the fixed clock input of the flex timer, but it doesn't say
-> where it is connected to. It just says there is no 
-> "internally-generated
-> secure clock" support on any of the timer modules.
-> 
-> In ch19.3 it also says "For the chip-specific implementation details of
-> this module's instances, see the chip configuration information". But
-> I'm not sure where to find this.
-> 
-> 
->> +		pwm0: pwm@2800000 {
->> +			compatible = "fsl,vf610-ftm-pwm";
->> +			#pwm-cells = <3>;
->> +			reg = <0x0 0x2800000 0x0 0x10000>;
->> +			clock-names = "ftm_sys", "ftm_ext",
->> +				      "ftm_fix", "ftm_cnt_clk_en";
->> +			clocks = <&clockgen 4 1>, <&clockgen 4 1>,
->> +				 <&rtc_clk>, <&clockgen 4 1>;
-> 
-> ftm_ext seems to be the (optional) external clock, eg FTMn_EXTCLK. Why 
-> is
-> it connected to <&clockgen 4 1>? That doesn't make sense. The driver
-> itself, won't probe if the clock isn't there either and assumes that 
-> the
-> external clock is always there. That seems wrong, too.
-> 
-> Can you shed some light on this?
+> +#define flush_all_caches() \
+> +	do { wbinvd_on_all_cpus(); } while(0)
+> +
 
-Ping.
+This is horrific... we've done our utmost best to remove all WBINVD
+usage and here you're adding it back in the most horrible form possible
+?!?
 
--michael
+Please don't do this, do *NOT* use WBINVD.
