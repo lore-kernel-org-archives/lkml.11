@@ -2,97 +2,439 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FC6C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77580C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiHPH1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 03:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        id S232068AbiHPH1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbiHPH0z (ORCPT
+        with ESMTP id S230188AbiHPH1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 03:26:55 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BA817DDB8;
-        Mon, 15 Aug 2022 20:56:48 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d16so8087157pll.11;
-        Mon, 15 Aug 2022 20:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=qLSttsMwGgFXnsk5NhFWTdXd+2tQbLUyp0NNDCVHH9A=;
-        b=SZQdxn0LRoB3Sm/BK6myvoUmneF2rPxNoNYW/qkudaijogCTBK8foe9e9swRxqm8am
-         E2R0Q2dQ8sCFI/JHVrsKPlFPz/9U07gEMiKAkhodCIFqd1Y92AONNmo8g1eTQZQN5jWS
-         3/csoDncaFMVRbm4v10In1P48Eo5Kd2YL9uL3whrh18IpZtUfzi8qacl0HOHcAz/CPlP
-         vIdjoRWY2Cvdiu1PFyPlzThZh9rjP1vgiQ0lg5QNvYGyf5u8Ac5BaooXNF4ZuPIzLgdW
-         rJBDG3Eg4at3j9bz/ZSmHsNkng0dd2CDWXfEyYDbn/h15eckZHHq6vz/qnnpdUCV2ynb
-         1gbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=qLSttsMwGgFXnsk5NhFWTdXd+2tQbLUyp0NNDCVHH9A=;
-        b=3Hx7BIkbboe2Vuo1BdnPHMeVta+Uj0plbPVDVN0JAeAQskpo1qlpWOJZOC9F4HB4My
-         XBdlYxgohTsusAIYx8aFy3s+e7Oupj51pWVBuYJook72zZruD00iNp3FEFBeRYG9CeVr
-         itcNVy4nrXP/tFANM3kgydELf7FCXgYXKgXKvaz4Dkib1lMNMryYWFIORhMyXqajtbbg
-         rEVV3mTq/jjT/fHBEOmxAkWcUgLNv3duRrHHl7vS1ZV+MSELns9Ci6pdHxsjJJOPBa/H
-         kpyOtCs8fEslZe1lrvhJ42Ga2zK9lyyxmf3mWtWgc0vcWSzad9yr7mJT+dmt7/eW58kc
-         l86g==
-X-Gm-Message-State: ACgBeo0sa8p9J5nTQ1Z0BvmqMYOpMSWqgq1a0Dvo9EFEC/gDE3Cl8Vqm
-        8NaSeCJSn0OTpJmBqnYVano=
-X-Google-Smtp-Source: AA6agR6ezCfARSKr9teZqM98UWGmox8EuKcG/UykuOWOmBN60SUNF93S9sRfcJtcEICdyPuEUHCqig==
-X-Received: by 2002:a17:90b:4a0a:b0:1f4:e4fc:91d3 with SMTP id kk10-20020a17090b4a0a00b001f4e4fc91d3mr30956594pjb.67.1660622207573;
-        Mon, 15 Aug 2022 20:56:47 -0700 (PDT)
-Received: from localhost.localdomain ([116.75.96.232])
-        by smtp.gmail.com with ESMTPSA id l13-20020a17090ac58d00b001f2fa09786asm5356846pjt.19.2022.08.15.20.56.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 20:56:47 -0700 (PDT)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     alexandre.belloni@bootlin.com, a.zummo@towertech.it
-Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jagathjog1996@gmail.com
-Subject: [PATCH 3/3] rtc: rv3028: Alignment to match the open parenthesis
-Date:   Tue, 16 Aug 2022 09:26:36 +0530
-Message-Id: <20220816035636.27226-4-jagathjog1996@gmail.com>
+        Tue, 16 Aug 2022 03:27:08 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2062b.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB61387F34;
+        Mon, 15 Aug 2022 21:39:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jGjgCK1ZFT+2uUDKSD5/tLD7nta24qBBWD4+gV23gFUJ4X2QNYwZL3mYP3JFNiuguAS7wDFqg57uWh4Y3dPrTg0SQnkDVnQyB1v5q6I8nIu1isMEj54YhIbGPY81kWve0PTYqLUj0TwFGee9WcCE8RLUmXAsUSzhDBs/ZgHeScdilVkOoXTrB50p8FbXZcCGYsjCeF6GB91i2LpsuNWLG/OaS7VDgtg2d4DJTuTNxrFWxpRWeTPvXG/aGBvGIx6cMANMFYKvtdPtcTI3aq8uLvWYo3/LjWnRfUjYGVVkROfRCPV8HEpqq5q6FfhEp+9HWRdYr5sY7qyh3MZMSpLhkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IPe6kcN/NBW8g1cXcvCKdKblR9rCHhvtA00RdleoZhc=;
+ b=P4+lVhuU9xjKu6zmb5InURSjeY9ove2irSoTdJFRBP7ei1j2dHoTFuVW8UBfskExxLbfedjo1i3Fyywzup77aCjG1cxKIaGd7I4DiMtIKvDC4seTw9MYuxlgj6pnV93WOlAkDZIEuYwkKZeGjCQfbL9DowFx30e9VRPdwJHWO5+5AuDOfMDNS3tQGxUTeNH3deIBlhiSIQmM8Z4xZsIkSIqwNX0qx5ln7dvLuJmgJZdtiCijxB2zTWYHz3QRN4N6DAU2EV5xtncHf/39z+zwpGMtDmPoyKT5S6+BMOswyO9FQ95kMZvUcPTYAZsHPWCpPjf3KH3GQTK6TGhZWH9Qew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IPe6kcN/NBW8g1cXcvCKdKblR9rCHhvtA00RdleoZhc=;
+ b=fBNxTLs17/pMah3+KnETEEzYm+DcDpDhIEyxHbP8ks1lRKu6TcErHGudN+C0l1YQNmgxJkUoLVqlRV1JN6lYT9jKbtOWrOFcULsBCD2vyeEHVto1UYJUwaYZVSD+bqANfBvnfHPtjJXN5YpDQYXG4ZAsb/drReJ/VKQt8/vocdM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
+ by DB8PR04MB7036.eurprd04.prod.outlook.com (2603:10a6:10:12f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Tue, 16 Aug
+ 2022 04:38:32 +0000
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c]) by AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c%3]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
+ 04:38:32 +0000
+From:   "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com
+Cc:     kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 5/7] watchdog: imx7ulp_wdt: Handle wdog reconfigure failure
+Date:   Tue, 16 Aug 2022 12:36:41 +0800
+Message-Id: <20220816043643.26569-6-alice.guo@oss.nxp.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220816035636.27226-1-jagathjog1996@gmail.com>
-References: <20220816035636.27226-1-jagathjog1996@gmail.com>
+In-Reply-To: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0015.apcprd02.prod.outlook.com
+ (2603:1096:3:17::27) To AM6PR04MB6053.eurprd04.prod.outlook.com
+ (2603:10a6:20b:b9::10)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 49ecbad4-de7e-4d81-5407-08da7f412c7f
+X-MS-TrafficTypeDiagnostic: DB8PR04MB7036:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hK02G+206QfsbnUmnWJD/+8j2ZunoQLSUBKjNTAxiCflSz3GnAAfcBgCyMpB1m1pHho8/l4WTrq71gV2bE3wl5/IVTvw4YbhvWZYKfoqFQbSqI6MvLGTvH7m4Ag60IM8/0cIX2w/UR0jFasy8aD26J8XwsSMPnsd4YWkrz61wFxKxLmdrWtDwn5TNgDqNdz19BJxa8UimmpDPJ6fXkia5tk6ZSwzhOgBZOtP9N1SgebbpCdxVbxBRrVpAY7qerNLWO1we/Bc+tC6ah22uXK+UEvtmlb/2Bz+Djl/Z0PUEM7hbBlJ8TzaVGUPUjTZi6XN0YXp11zLoR9uIl4msEMPULBmAS5b0tzmiDYajseHJyvPrsG7KghTdpDwbO6l0YxL6whwgI5iOkq+pyvop8L39DNAeYQfO9w8Dbb5+ul0baBRGcwQGcwLUpxR4o1oFM1pGdOGcYFJeZQEBTpaYzzoMDkBc0ltTDcwhOFgOoksqaDsmABraRkdLpTmuN6EAI9KVF+1TV888008jo3t3OM0lgRzYIbJ0lOOG0sDRLML7DBKEb25Acai1f4Z6zxmZ227MlgwWtQN+53OeO7sdhzp1rWpYt5Acpg1fF+mbDxnIPOfs4goyDRFGnbk9hc6eyYcwBiR8xxIvq2+zBXGEkTWAGZXNxCkgsIzgcYFM0fmDHYgshk3W/DMBCrxlUxj5wuoMqdbYA5mDGQ1LAzosykZbFvyK/kuYqfZHOWvUKCPkcdxohBmoTnilGXboJooTO3rhIr5LbMD9449eBqe8ivKrfEfxxDGRQ7ey7pguy7pcHw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(39860400002)(376002)(136003)(83380400001)(38350700002)(86362001)(38100700002)(4326008)(8676002)(66556008)(66946007)(66476007)(316002)(2906002)(8936002)(5660300002)(6512007)(6506007)(26005)(1076003)(41300700001)(2616005)(186003)(52116002)(6666004)(6486002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rq1uxz80MThjU7Pn2Dn1c99DK2vbt8GCloRI9DJRpcFDNuBGfFGp0WOKr1as?=
+ =?us-ascii?Q?HHWRz89ysa8NxluZAvSGunyd5eMPDTRzKq9xpzLeIJ4FsPVZUUwR8tBmYnr4?=
+ =?us-ascii?Q?uxlv9tjVf2Q7k09iLWtJV4R2LvVbz1oNt3bv5rUame+EJx0Idp0oXdhqwpp0?=
+ =?us-ascii?Q?FAs3Y0h2A0+gM/rP/U4vCt4ib62ikHxRBXB1s8zvT5x9ccB5iRv6B+0A0IZV?=
+ =?us-ascii?Q?UpUXcErc0yLAq6yL4ZRUVQnqfa6zQd06r8cRrNA3TWxvV30q4kGvMzZEWQ3u?=
+ =?us-ascii?Q?4lVeDNDpEastPoNE39Ux16MIQYjq6j7WxnCnPoK8jwvbYTSGQwHejE48uAjn?=
+ =?us-ascii?Q?qaqaZUZVJMskRUGqorYNzT/jucIHUd5HpFXqjQ9z/WczsXc+t1CPLzMBcma8?=
+ =?us-ascii?Q?rB3/2ipqmKL9S3Xd/r59PfjIe3boQAZCIp5QvYiJ5HCHlHt4WxnvvOvglDNh?=
+ =?us-ascii?Q?dcgD+0Y9XUCktc8+Qe2/K661dC4ODHBtvXoogm3Ti6J0pJ1I7U+FPiQT/hNt?=
+ =?us-ascii?Q?Pcy5i1dat/87Ei2r6ko+kctPJOzQY68J/UDI35pSJDf4HIRL8jiTyRz9eZvq?=
+ =?us-ascii?Q?eMLmDC+IUX1iJkfF2uFovzae2/4IxiTHZwrHKJZhKIclaJ4qz0tB/2fWBYCL?=
+ =?us-ascii?Q?BwABQYYX1w1tbF4RLxe278aCpnQUDzReKP+1RsFnMGpw2cYXcEuQ9n1GIMhN?=
+ =?us-ascii?Q?6dU/0gR5z5y9M7ykjGMn40Ezb/O6isWvSXHNTQg/eKXjCGQLoNU+rMdtbDPz?=
+ =?us-ascii?Q?aaeqxgKBcIXP/AywASpskgtndRkRqC1v+98ujPFyxHtu2FymeOZHu9DlZ3JC?=
+ =?us-ascii?Q?w81hUYXILNVCr/qHu6cZrs5w6FKi6FAwrRSeKyhc2fkiDmLNu0XcTPJdX83x?=
+ =?us-ascii?Q?m5rIe4Nq69vzkKZ4BrJy9YkqAXf/GwhYtJEQoNsTyUwsT79pOtuoFTaqgGAo?=
+ =?us-ascii?Q?2YR3mSMqkY9EU4XNP1RrCymd4iNhKNRu5z7hMoL75VPfcIADxzrOnRTHlArm?=
+ =?us-ascii?Q?SIViLczDHPaIcJlHsj+x5X9TgXIw1y9sYCq12pSaN5fYu92d3FwMxK/5OTrK?=
+ =?us-ascii?Q?BofsFiEu7cJOzS3ZoeldcsqOv4/WJiIdDiqKWXyKVkm0P3/AVa7V93Ic+/Cv?=
+ =?us-ascii?Q?ttxytT2o/Zy3YJxPhV5G5EubiQ7KaCzYcsPChiXEaIWxWDPl58dpESfErIsl?=
+ =?us-ascii?Q?MS4Ojcc1V+w4gShzOwltC3dKZvJtNkCiP27eg5zWAzCBFfcL5kIYL6ueolDN?=
+ =?us-ascii?Q?C/h8SBf8jTok6BQxM63CYpbRw9+CHc/346XXjoiW8MHCCfIVz02q5LxptXHe?=
+ =?us-ascii?Q?oIEwTQ91GmzH1poNhyrGDFzLo+/HIcSnujlv2Ra13rYwJeFnnbXo5xCoLhux?=
+ =?us-ascii?Q?jgjgjtrU1ww5NQGDHMJKp1RjBxdqweht/+Bz0tQM2nHh6hl7vLM4uYOIrBNQ?=
+ =?us-ascii?Q?mIXf1BsXtlbkhRy2t3DZRsJgqTpwcisKfTFPvIy28XRwDkQNPbnzRU3JCKsS?=
+ =?us-ascii?Q?hIjRrMHcj/sjXemjxyJhtii7Cq4dSEjPCZWGMraDemwD0ZwILSrdxpv0RxQO?=
+ =?us-ascii?Q?1TEt2diWV4pIRF8veu8PBg51xVxIaaXDm0Oqe5d9?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49ecbad4-de7e-4d81-5407-08da7f412c7f
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 04:38:32.5146
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vfv7IAmDlf/IRjAq/1A43SaleJE61HxKpAiZdZvN51ZzexVNm/TFmVlmQyZAdz1KdC4hceMYcX+miXyCdku8yQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7036
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix following checkpatch.pl check by adding space to match the
-open parenthesis and removing unwanted blank line.
-CHECK: Alignment should match open parenthesis.
-CHECK: Blank lines aren't necessary before a close brace '}'.
+From: Ye Li <ye.li@nxp.com>
 
-Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Current driver may meet reconfigure failure caused by below reasons:
+
+1. The wdog on iMX7ULP has different behavior after RCS valid. It needs
+   to wait more than 2.5 wdog clock for clock sync before next
+   reconfiguration, while imx8ulp wdog does not need such delay.
+
+2. After unlock, there is 128 bus clock window opened for reconfiguration,
+   but on iMX8ULP, the HW can't guarantee the latency. So it is possible
+   the window is closed before the writing arrives to wdog.
+
+3. If the PRES is enabled, the RCS valid time becomes x256 to the time
+   of PRES disabled. It is about 1715ms on iMX8ULP. So We have to increase
+   the RCS timeout and can't wait it in IRQ disabled.
+
+The patch updates the driver to handle failures
+
+1. Using different wait for unlock and RCS. Unlock valid time is very short
+   and only related to bus clock. It must be in IRQ disabled to avoid
+   being interrupted in 128 clock window. But for RCS time, it is longer
+   and ok for IRQ enabled.
+
+2. Add retry for any reconfigure failure with default 5 times.
+
+3. Add "fsl,imx8ulp-wdt" compatile string for iMX8ULP and afterwards
+   platform which don't need more 2.5 wdog clock after RCS valid.
+   For imx7ulp, add post delay of 2.5 clock after RCS valid.
+
+Signed-off-by: Ye Li <ye.li@nxp.com>
+Signed-off-by: Alice Guo <alice.guo@nxp.com>
+Reviewed-by: Jacky Bai <ping.bai@nxp.com>
 ---
- drivers/rtc/rtc-rv3028.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/watchdog/imx7ulp_wdt.c | 163 ++++++++++++++++++++++++++-------
+ 1 file changed, 129 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/rtc/rtc-rv3028.c b/drivers/rtc/rtc-rv3028.c
-index f7c801c06d00..0da68fd7cedd 100644
---- a/drivers/rtc/rtc-rv3028.c
-+++ b/drivers/rtc/rtc-rv3028.c
-@@ -266,7 +266,7 @@ static irqreturn_t rv3028_handle_irq(int irq, void *dev_id)
- 	u32 status = 0, ctrl = 0;
+diff --git a/drivers/watchdog/imx7ulp_wdt.c b/drivers/watchdog/imx7ulp_wdt.c
+index 12715c248688..51eaaf24bd8f 100644
+--- a/drivers/watchdog/imx7ulp_wdt.c
++++ b/drivers/watchdog/imx7ulp_wdt.c
+@@ -14,7 +14,9 @@
+ #include <linux/watchdog.h>
  
- 	if (regmap_read(rv3028->regmap, RV3028_STATUS, &status) < 0 ||
--	   status == 0) {
-+	    status == 0) {
- 		return IRQ_NONE;
- 	}
+ #define WDOG_CS			0x0
++#define WDOG_CS_FLG		BIT(14)
+ #define WDOG_CS_CMD32EN		BIT(13)
++#define WDOG_CS_PRES		BIT(12)
+ #define WDOG_CS_ULK		BIT(11)
+ #define WDOG_CS_RCS		BIT(10)
+ #define LPO_CLK			0x1
+@@ -39,7 +41,11 @@
+ #define DEFAULT_TIMEOUT	60
+ #define MAX_TIMEOUT	128
+ #define WDOG_CLOCK_RATE	1000
+-#define WDOG_WAIT_TIMEOUT	10000
++#define WDOG_ULK_WAIT_TIMEOUT	1000
++#define WDOG_RCS_WAIT_TIMEOUT	10000
++#define WDOG_RCS_POST_WAIT 3000
++
++#define RETRY_MAX 5
  
-@@ -514,7 +514,6 @@ static int rv3028_set_offset(struct device *dev, long offset)
- 	rv3028_exit_eerd(rv3028, eerd);
+ static bool nowayout = WATCHDOG_NOWAYOUT;
+ module_param(nowayout, bool, 0000);
+@@ -50,40 +56,82 @@ struct imx7ulp_wdt_device {
+ 	struct watchdog_device wdd;
+ 	void __iomem *base;
+ 	struct clk *clk;
++	bool post_rcs_wait;
+ };
  
- 	return ret;
--
+-static int imx7ulp_wdt_wait(void __iomem *base, u32 mask)
++static int imx7ulp_wdt_wait_ulk(void __iomem *base)
+ {
+ 	u32 val = readl(base + WDOG_CS);
+ 
+-	if (!(val & mask) && readl_poll_timeout_atomic(base + WDOG_CS, val,
+-						       val & mask, 0,
+-						       WDOG_WAIT_TIMEOUT))
++	if (!(val & WDOG_CS_ULK) &&
++	    readl_poll_timeout_atomic(base + WDOG_CS, val,
++				      val & WDOG_CS_ULK, 0,
++				      WDOG_ULK_WAIT_TIMEOUT))
+ 		return -ETIMEDOUT;
+ 
+ 	return 0;
  }
  
- static int rv3028_param_get(struct device *dev, struct rtc_param *param)
+-static int imx7ulp_wdt_enable(struct watchdog_device *wdog, bool enable)
++static int imx7ulp_wdt_wait_rcs(struct imx7ulp_wdt_device *wdt)
+ {
+-	struct imx7ulp_wdt_device *wdt = watchdog_get_drvdata(wdog);
++	int ret = 0;
++	u32 val = readl(wdt->base + WDOG_CS);
++	u64 timeout = (val & WDOG_CS_PRES) ?
++		WDOG_RCS_WAIT_TIMEOUT * 256 : WDOG_RCS_WAIT_TIMEOUT;
++	unsigned long wait_min = (val & WDOG_CS_PRES) ?
++		WDOG_RCS_POST_WAIT * 256 : WDOG_RCS_POST_WAIT;
+ 
++	if (!(val & WDOG_CS_RCS) &&
++	    readl_poll_timeout(wdt->base + WDOG_CS, val, val & WDOG_CS_RCS, 0,
++			       timeout))
++		ret = -ETIMEDOUT;
++
++	/* Wait 2.5 clocks after RCS done */
++	if (wdt->post_rcs_wait)
++		usleep_range(wait_min, wait_min + 2000);
++
++	return ret;
++}
++
++static int _imx7ulp_wdt_enable(struct imx7ulp_wdt_device *wdt, bool enable)
++{
+ 	u32 val = readl(wdt->base + WDOG_CS);
+ 	int ret;
+ 
+ 	local_irq_disable();
+ 	writel(UNLOCK, wdt->base + WDOG_CNT);
+-	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_ULK);
++	ret = imx7ulp_wdt_wait_ulk(wdt->base);
+ 	if (ret)
+ 		goto enable_out;
+ 	if (enable)
+ 		writel(val | WDOG_CS_EN, wdt->base + WDOG_CS);
+ 	else
+ 		writel(val & ~WDOG_CS_EN, wdt->base + WDOG_CS);
+-	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
++
++	local_irq_enable();
++	ret = imx7ulp_wdt_wait_rcs(wdt);
++
++	return ret;
+ 
+ enable_out:
+ 	local_irq_enable();
++	return ret;
++}
++
++static int imx7ulp_wdt_enable(struct watchdog_device *wdog, bool enable)
++{
++	struct imx7ulp_wdt_device *wdt = watchdog_get_drvdata(wdog);
++	int ret;
++	u32 val;
++	u32 loop = RETRY_MAX;
++
++	do {
++		ret = _imx7ulp_wdt_enable(wdt, enable);
++		val = readl(wdt->base + WDOG_CS);
++	} while (--loop > 0 && ((!!(val & WDOG_CS_EN)) != enable || ret));
++
++	if (loop == 0)
++		return -EBUSY;
+ 
+ 	return ret;
+ }
+@@ -114,28 +162,44 @@ static int imx7ulp_wdt_stop(struct watchdog_device *wdog)
+ 	return imx7ulp_wdt_enable(wdog, false);
+ }
+ 
+-static int imx7ulp_wdt_set_timeout(struct watchdog_device *wdog,
+-				   unsigned int timeout)
++static int _imx7ulp_wdt_set_timeout(struct imx7ulp_wdt_device *wdt,
++				   unsigned int toval)
+ {
+-	struct imx7ulp_wdt_device *wdt = watchdog_get_drvdata(wdog);
+-	u32 val = WDOG_CLOCK_RATE * timeout;
+ 	int ret;
+ 
+ 	local_irq_disable();
+ 	writel(UNLOCK, wdt->base + WDOG_CNT);
+-	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_ULK);
++	ret = imx7ulp_wdt_wait_ulk(wdt->base);
+ 	if (ret)
+ 		goto timeout_out;
+-	writel(val, wdt->base + WDOG_TOVAL);
+-	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+-	if (ret)
+-		goto timeout_out;
+-
+-	wdog->timeout = timeout;
++	writel(toval, wdt->base + WDOG_TOVAL);
++	local_irq_enable();
++	ret = imx7ulp_wdt_wait_rcs(wdt);
++	return ret;
+ 
+ timeout_out:
+ 	local_irq_enable();
++	return ret;
++}
+ 
++static int imx7ulp_wdt_set_timeout(struct watchdog_device *wdog,
++				   unsigned int timeout)
++{
++	struct imx7ulp_wdt_device *wdt = watchdog_get_drvdata(wdog);
++	u32 toval = WDOG_CLOCK_RATE * timeout;
++	u32 val;
++	int ret;
++	u32 loop = RETRY_MAX;
++
++	do {
++		ret = _imx7ulp_wdt_set_timeout(wdt, toval);
++		val = readl(wdt->base + WDOG_TOVAL);
++	} while (--loop > 0 && (val != toval || ret));
++
++	if (loop == 0)
++		return -EBUSY;
++
++	wdog->timeout = timeout;
+ 	return ret;
+ }
+ 
+@@ -175,38 +239,59 @@ static const struct watchdog_info imx7ulp_wdt_info = {
+ 		    WDIOF_MAGICCLOSE,
+ };
+ 
+-static int imx7ulp_wdt_init(void __iomem *base, unsigned int timeout)
++static int _imx7ulp_wdt_init(struct imx7ulp_wdt_device *wdt, unsigned int timeout, unsigned int cs)
+ {
+ 	u32 val;
+ 	int ret;
+ 
+ 	local_irq_disable();
+ 
+-	val = readl(base + WDOG_CS);
++	val = readl(wdt->base + WDOG_CS);
+ 	if (val & WDOG_CS_CMD32EN) {
+-		writel(UNLOCK, base + WDOG_CNT);
++		writel(UNLOCK, wdt->base + WDOG_CNT);
+ 	} else {
+ 		mb();
+ 		/* unlock the wdog for reconfiguration */
+-		writel_relaxed(UNLOCK_SEQ0, base + WDOG_CNT);
+-		writel_relaxed(UNLOCK_SEQ1, base + WDOG_CNT);
++		writel_relaxed(UNLOCK_SEQ0, wdt->base + WDOG_CNT);
++		writel_relaxed(UNLOCK_SEQ1, wdt->base + WDOG_CNT);
+ 		mb();
+ 	}
+ 
+-	ret = imx7ulp_wdt_wait(base, WDOG_CS_ULK);
++	ret = imx7ulp_wdt_wait_ulk(wdt->base);
+ 	if (ret)
+ 		goto init_out;
+ 
+ 	/* set an initial timeout value in TOVAL */
+-	writel(timeout, base + WDOG_TOVAL);
+-	/* enable 32bit command sequence and reconfigure */
+-	val = WDOG_CS_CMD32EN | WDOG_CS_CLK | WDOG_CS_UPDATE |
+-	      WDOG_CS_WAIT | WDOG_CS_STOP;
+-	writel(val, base + WDOG_CS);
+-	imx7ulp_wdt_wait(base, WDOG_CS_RCS);
++	writel(timeout, wdt->base + WDOG_TOVAL);
++	writel(cs, wdt->base + WDOG_CS);
++	local_irq_enable();
++	ret = imx7ulp_wdt_wait_rcs(wdt);
++
++	return ret;
+ 
+ init_out:
+ 	local_irq_enable();
++	return ret;
++}
++
++static int imx7ulp_wdt_init(struct imx7ulp_wdt_device *wdt, unsigned int timeout)
++{
++	/* enable 32bit command sequence and reconfigure */
++	u32 val = WDOG_CS_CMD32EN | WDOG_CS_CLK | WDOG_CS_UPDATE |
++		  WDOG_CS_WAIT | WDOG_CS_STOP;
++	u32 cs, toval;
++	int ret;
++	u32 loop = RETRY_MAX;
++
++	do {
++		ret = _imx7ulp_wdt_init(wdt, timeout, val);
++		toval = readl(wdt->base + WDOG_TOVAL);
++		cs = readl(wdt->base + WDOG_CS);
++		cs &= ~(WDOG_CS_FLG | WDOG_CS_ULK | WDOG_CS_RCS);
++	} while (--loop > 0 && (cs != val || toval != timeout || ret));
++
++	if (loop == 0)
++		return -EBUSY;
+ 
+ 	return ret;
+ }
+@@ -239,6 +324,15 @@ static int imx7ulp_wdt_probe(struct platform_device *pdev)
+ 		return PTR_ERR(imx7ulp_wdt->clk);
+ 	}
+ 
++	imx7ulp_wdt->post_rcs_wait = true;
++	if (of_device_is_compatible(dev->of_node,
++				    "fsl,imx8ulp-wdt")) {
++		dev_info(dev, "imx8ulp wdt probe\n");
++		imx7ulp_wdt->post_rcs_wait = false;
++	} else {
++		dev_info(dev, "imx7ulp wdt probe\n");
++	}
++
+ 	ret = clk_prepare_enable(imx7ulp_wdt->clk);
+ 	if (ret)
+ 		return ret;
+@@ -259,7 +353,7 @@ static int imx7ulp_wdt_probe(struct platform_device *pdev)
+ 	watchdog_stop_on_reboot(wdog);
+ 	watchdog_stop_on_unregister(wdog);
+ 	watchdog_set_drvdata(wdog, imx7ulp_wdt);
+-	ret = imx7ulp_wdt_init(imx7ulp_wdt->base, wdog->timeout * WDOG_CLOCK_RATE);
++	ret = imx7ulp_wdt_init(imx7ulp_wdt, wdog->timeout * WDOG_CLOCK_RATE);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -289,7 +383,7 @@ static int __maybe_unused imx7ulp_wdt_resume_noirq(struct device *dev)
+ 		return ret;
+ 
+ 	if (imx7ulp_wdt_is_enabled(imx7ulp_wdt->base))
+-		imx7ulp_wdt_init(imx7ulp_wdt->base, timeout);
++		imx7ulp_wdt_init(imx7ulp_wdt, timeout);
+ 
+ 	if (watchdog_active(&imx7ulp_wdt->wdd))
+ 		imx7ulp_wdt_start(&imx7ulp_wdt->wdd);
+@@ -303,6 +397,7 @@ static const struct dev_pm_ops imx7ulp_wdt_pm_ops = {
+ };
+ 
+ static const struct of_device_id imx7ulp_wdt_dt_ids[] = {
++	{ .compatible = "fsl,imx8ulp-wdt", },
+ 	{ .compatible = "fsl,imx7ulp-wdt", },
+ 	{ /* sentinel */ }
+ };
 -- 
 2.17.1
 
