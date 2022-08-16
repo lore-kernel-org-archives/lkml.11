@@ -2,80 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F162FC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE4CC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234514AbiHPK05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
+        id S234567AbiHPK1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234505AbiHPK0Q (ORCPT
+        with ESMTP id S234557AbiHPK0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:26:16 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A2FDEE
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:00 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31f63772b89so96539907b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=EOnmlL6LsfTodQR77oJXoAN0zndUFH29ZZQq5z6fShA=;
-        b=ksnZOtVsQpnTNhmqOOPXxrs5IqXuxFIcTmOFlk76hKpPDUtlleKXGAwWUDkdGaCN9e
-         4cwxOGqLMomyIFchTf6OCwasMmAYp7f+rYosLs3c8G68lm1jauSK9+6mk0jyBSq7LtRt
-         MkCqC2uIgKfaj9345ubs0HF72kvhC9yf4ee9prhuWM/J9ydPqweIchGBL7z6CWavmDRg
-         WZTUFEmHFFL/MudmIYZ2YD8LOPSN04hvOCwAPrfLNcCep7Z+BVZ6mcrg6zdgJL/hS+Zl
-         LNaobAblgKvpd01LAhNJRnRpbfxpSfI59fdkEFpWCYJE/+jbDmN5uzgBowPXQMTVLKQd
-         qsNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=EOnmlL6LsfTodQR77oJXoAN0zndUFH29ZZQq5z6fShA=;
-        b=nRinLbqmKpByIZDrIXknmwoUDTOZcIQ22rEyhO4wAHw7tZcfodm483QXXvt2b/4PW7
-         jAT9Yqlr5SJMWwtv0nmTxvZPUUuPSt3XtFAB+VIEvMRa6R8R5Z9w606xdaGF3fYZ5aRm
-         itndJU6XoRSu9KgJJyH8OJWIZ7qy/+ac8VdYZwO6Ma7bVO6Q7eTtBRO9h24PTjOJRZVs
-         /pHKceqImTwFRQGzuOI0SSHKcirV0yHbZFpdK7OswZqIgUiqABdnnAckEVLbPeya6U2N
-         MYjp8RqoZeAXaqeOLV8q9EXRY2Vpq+4Bj2RLF5Uh74UOwewBF11yBM9HiLIsMLgNX9MT
-         7dwA==
-X-Gm-Message-State: ACgBeo2UE3/9Zxq/NHgWOj8AyTOLa+XAUp46so19jZyc7T5edSNyBrnj
-        ZZqfDmjJuJ+d7CYxjwih4l8Fotbulz4=
-X-Google-Smtp-Source: AA6agR66iqEt6akaam8vWCgoFbvY0jmRCa/rYuE7K5o6nnTQZ9Aic9AaluOidN0pnHQF8W3edRxwLGTTlNo=
-X-Received: from raychi.tao.corp.google.com ([2401:fa00:fc:202:5bfb:2ce6:1e1b:f496])
- (user=raychi job=sendgmr) by 2002:a81:ae55:0:b0:31f:6630:9736 with SMTP id
- g21-20020a81ae55000000b0031f66309736mr16694413ywk.346.1660639140284; Tue, 16
- Aug 2022 01:39:00 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 16:38:52 +0800
-Message-Id: <20220816083854.1491886-1-raychi@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH 0/2] Provide a hook to check port init status
-From:   Ray Chi <raychi@google.com>
-To:     gregkh@linuxfoundation.org, mathias.nyman@intel.com,
-        stern@rowland.harvard.edu
-Cc:     badhri@google.com, albertccwang@google.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ray Chi <raychi@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 16 Aug 2022 06:26:36 -0400
+X-Greylist: delayed 610 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 Aug 2022 02:35:42 PDT
+Received: from mx.swemel.ru (mx.swemel.ru [95.143.211.150])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDEB79607
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:35:40 -0700 (PDT)
+From:   Denis Arefev <arefev@swemel.ru>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=swemel.ru; s=mail;
+        t=1660641925;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4pN/HWYNP5Og6NT88D8bQhfdAYmJL0p3JtbVeMHSDU4=;
+        b=Ivk+0ti/i5rbLhfDR13Gj4UMSC2U3igGCdFugoWc8EPkhACXCtRR4JODk28pbDVJpywEis
+        2VtcV3npfjFwQo2yL/1PYuvYlF0MW/6vgEXe5i5n59RgkAKPpwI1iNZPH2OvyNjjgOsJ3/
+        SU+u5ghxEgNErrG6VQphdU8tEUZFgc8=
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org,
+        trufanov@swemel.ru, vfh@swemel.ru
+Subject: [PATCH 3/3] i915-pmu: Add extra check NULL
+Date:   Tue, 16 Aug 2022 12:25:25 +0300
+Message-Id: <20220816092525.37670-1-arefev@swemel.ru>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, only usbcore knows port init status even if the result
-is bad, so it will keep doing USB enumeration and other drivers can't
-do anything. Add the hook to let other drivers know the status and do
-error handling.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Ray Chi (2):
-  usb: core: add a hook to check port init status
-  usb: xhci: add check_init_status hook support
+Signed-off-by: Denis Arefev <arefev@swemel.ru>
+---
+ drivers/gpu/drm/i915/i915_pmu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
- drivers/usb/core/hub.c  | 14 ++++++++++++++
- drivers/usb/host/xhci.c | 17 +++++++++++++++++
- drivers/usb/host/xhci.h |  1 +
- include/linux/usb/hcd.h |  8 ++++++++
- 4 files changed, 40 insertions(+)
-
+diff --git a/drivers/gpu/drm/i915/i915_pmu.c b/drivers/gpu/drm/i915/i915_pmu.c
+index 34a7f0ef1f67..33db49ffac3d 100644
+--- a/drivers/gpu/drm/i915/i915_pmu.c
++++ b/drivers/gpu/drm/i915/i915_pmu.c
+@@ -704,8 +704,7 @@ static void i915_pmu_disable(struct perf_event *event)
+ 		 * Decrement the reference count and clear the enabled
+ 		 * bitmask when the last listener on an event goes away.
+ 		 */
+-		if(engine != NULL)
+-		{
++		if (engine != NULL) {
+ 		        if (--engine->pmu.enable_count[sample] == 0)
+ 			        engine->pmu.enable &= ~BIT(sample);
+ 		}
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.25.1
 
