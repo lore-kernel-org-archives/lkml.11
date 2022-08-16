@@ -2,117 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F39C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE10C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233255AbiHPKGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
+        id S232535AbiHPKHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234190AbiHPKFL (ORCPT
+        with ESMTP id S234312AbiHPKGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:05:11 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C8C6CD1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:11:40 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id uj29so17568270ejc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=W5qjF+03yjl4vJJBs76s6kPKVqJeVUsMt0AyY8twYsQ=;
-        b=a31uzct1G3C9D+Hs2qHPBGDerVJo1D+cDFBOyXDZSEkBthnRBULx8L05BG1z4Nz+vB
-         DlWvwn77Tw3lX8P+LXQ1P+3WsLW4h4nq4mtuqyh233rjBsC0l+Z4ljNbcsh1tWBYy/cQ
-         TrvXLv3+OD7spjwanEqomikpoS2aXmgZ6O4kRPp5m0FeDgxEU4lYUr4zl6QjJLdnkHr0
-         wiIznDUa21X6AddFwyVviVV15YX3yGbXDhI1P3P13Vi4a9NzRijk9nXmDiEX4SiCzh2i
-         smMr8cxGrPjWXTRKjFfOwBEVcr3Fbz8TFyNWD6FbEJxSsDYLRgLKZd0/URunHsAi5UEm
-         NThw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=W5qjF+03yjl4vJJBs76s6kPKVqJeVUsMt0AyY8twYsQ=;
-        b=zI8nUgZ5nOEmYj9nWBYuWlVPZphBuUTWWJm1DP9H5DGPi5DQh0rsPgV4lWdwaFJShr
-         1HDaNH7mtzZeLDquedjRJVxVYV1p3xvK8ODDdVE3PHo7KB7a8M7zTKaDGwQCgpEgjuxG
-         cVxr8BYM7Xq2B7wIrwYq0w+QdT5jAB5V0xo9c9Rv6u9ov3PVkBN60qsGz8N4znYQelwQ
-         cT7iBuWIPBpwvl58uPJ1C1+3wzjYGyL9V9pOsIBAq74igo8MjVEB+f0MiyyUUPAcxwFV
-         nTfiINh4yNuLFcWSybPWewQ26O/j8AQ1BOt6lITyBTBtgvqwtI0U2VlX1lXSmLgLSpBc
-         Yumw==
-X-Gm-Message-State: ACgBeo0KVCj6wbktkbg5kh3wRqiyq/lx8j46U1WaKYvjgCFDlt6XEh5l
-        rQQry3RpaLffDGW0ALQQQ7Lj9A==
-X-Google-Smtp-Source: AA6agR4WrdhecqaaLYVQ7wHTuKDpRrGzTG8WAdXe81yRK8N0ygsJbeUh5JlV6PmM5HfJe1+47RuRww==
-X-Received: by 2002:a17:907:762f:b0:730:95d9:9955 with SMTP id jy15-20020a170907762f00b0073095d99955mr12330008ejc.505.1660637497239;
-        Tue, 16 Aug 2022 01:11:37 -0700 (PDT)
-Received: from [192.168.1.69] (120.205.87.79.rev.sfr.net. [79.87.205.120])
-        by smtp.gmail.com with ESMTPSA id f25-20020a50fc99000000b004424429afd4sm8078244edq.16.2022.08.16.01.11.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 01:11:36 -0700 (PDT)
-Message-ID: <0730c493-b49f-02f5-c0e7-999d5871dc4a@baylibre.com>
-Date:   Tue, 16 Aug 2022 10:11:35 +0200
+        Tue, 16 Aug 2022 06:06:48 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C10D6C13B;
+        Tue, 16 Aug 2022 02:13:09 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id B97AD5C023C;
+        Tue, 16 Aug 2022 05:13:06 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 16 Aug 2022 05:13:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1660641186; x=1660727586; bh=8a1Us8uLfYqD/kfLMEoeT8k8O
+        knxiZLX1kGLg+OrAM4=; b=r6H+8a3y5yj7F0UBxWS3xmNGJ4AZCoV08iA9aYSiG
+        iIUMD0BVkiArJeidyP3+THHDgukkHtiYS2rV2+5jEczyQJWOJxa+ZTlU/LZywIWS
+        jIn0WD0vtvdAsrpKUe75BD5Vx/SgInIM8oyeFBWYjnul23Yq+Jc1VhQXQITkEX9X
+        8zs6nw70KAkOukTTHFd4WAytOG+3ydSI1JQuJTvF9oLI9+cHiDr15mPHkj3ROJsn
+        GzolNxC7i1+u7A9MSZNbGTYdtofb7F5t4LMWGpcCg3ovJpYAwi+ENSePxTE1uFI4
+        GcG0mtNLrBJAjou8YRD3LVd+XUzGW770AE4pH7tIXRvrA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1660641186; x=1660727586; bh=8a1Us8uLfYqD/kfLMEoeT8k8OknxiZLX1kG
+        Lg+OrAM4=; b=wrYGYkzDiCXY2jq9yVfNlwFSOW1/NZDsNT4xf02gU7Drm1Ei1QJ
+        NJiG9y7Vqv95PxaclaFAxVInyTQjKlZScb4tpZip+4HPtydJDOre9VjpLJjZQUbY
+        vMaNQm3i3OrdILpnDNqtBLyKJ/gnptxLxMo8UZ+Nnc8RB4EDuTbaat4f7Eha2+VK
+        dbVzXpccV2JY2643CcTGcd97TU5fz1msF9n5JBFo6E7VgKk92FrTeX/vREcE6mr1
+        1TzcvdmZPxzFpDa3F/Piz+LcbnzQ3zrQbljtlPw7k4Ds7tGE8TVCoYa8lFtP6c65
+        qBsGmMExD8Tcxq8R3qp4HMEQbsmvRQnt9dw==
+X-ME-Sender: <xms:ol_7YgtxxlMA42cgcxr0bVkHAmattxopCO_l9CI8J6QblsGfqubOUw>
+    <xme:ol_7YtcfKP1ox8rn6hoG4fMB6BPI6kxmW4owEBEs35Z21K-I0_jPQkwtT8nKngl2x
+    OYWqvRumZocdqE_GTU>
+X-ME-Received: <xmr:ol_7YrwQRZpYNfse4O4jlQKtMJOfkvzWMHvHCsT_fjOyjKHnK_N75aEm_uHQNvn008a8o0B_WTaTdQldztknVG5Gw2HKWZEKfFlGf80nNQ-4x2TIItzR7JfG>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgedgudegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
+    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhephfetuddtudevieeljeejte
+    ffheeujeduhefgffejudfhueelleduffefgfffveeknecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
+    grthdrtghomh
+X-ME-Proxy: <xmx:ol_7YjN0pHaGH713wYRLYfbjQbtuSU04CsZyS0JOSOEjfhTJMUmyPg>
+    <xmx:ol_7Yg8Qs9kdGRzPVQJgiJ8YxL0TNtXbWC_ML7BEiVc2SQR5IKYjSA>
+    <xmx:ol_7YrXsZeKZ0I5zREdmRUXKuaHtn1heGrrn8czkR53XWaFV4WJw2w>
+    <xmx:ol_7Yvkeo-Dttf3JulnEP_ywlgJvVFLVbZJRVwrNLQ51D415F7pWaQ>
+Feedback-ID: ifd894703:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 16 Aug 2022 05:13:05 -0400 (EDT)
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+To:     linux-mips@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, tsbogend@alpha.franken.de,
+        linux-api@vger.kernel.org, greg@kroah.com, f.fainelli@gmail.com,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Subject: [PATCH v4] MIPS: Expose prid and globalnumber to sysfs
+Date:   Tue, 16 Aug 2022 09:12:58 +0000
+Message-Id: <20220816091258.9571-1-jiaxun.yang@flygoat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH v4 3/3] counter: capture-tiecap: capture driver support
- for ECAP
-Content-Language: en-US
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     vilhelm.gray@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        mranostay@ti.com
-References: <20220810140724.182389-1-jpanis@baylibre.com>
- <20220810140724.182389-4-jpanis@baylibre.com> <Yvkq9Hy+hxAPQd8J@fedora>
- <YvosCeuntEKXJz+e@fedora>
-From:   Julien Panis <jpanis@baylibre.com>
-In-Reply-To: <YvosCeuntEKXJz+e@fedora>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Some application would like to know precise model and rev of processor
+to do errata workaround or optimization.
 
+Expose them in sysfs as:
+/sys/devices/system/cpu/cpuX/regs/identification/prid
+/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
 
-On 15/08/2022 13:20, William Breathitt Gray wrote:
-> On Sun, Aug 14, 2022 at 01:03:48PM -0400, William Breathitt Gray wrote:
->> On Wed, Aug 10, 2022 at 04:07:24PM +0200, Julien Panis wrote:
->>> +static int ecap_cnt_function_read(struct counter_device *counter,
->>> +				  struct counter_count *count,
->>> +				  enum counter_function *function)
->>> +{
->>> +	*function = COUNTER_FUNCTION_INCREASE;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int ecap_cnt_action_read(struct counter_device *counter,
->>> +				struct counter_count *count,
->>> +				struct counter_synapse *synapse,
->>> +				enum counter_synapse_action *action)
->>> +{
->>> +	*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
->>> +
->>> +	return 0;
->>> +}
->> Right now you have a Signal defined for the ECAPSIG line, but there is
->> at least one more relevant Signal to define: the clock updating ECAPCNT.
->> The Synapse action of COUNTER_SYNAPSE_ACTION_BOTH_EDGES is for that
->> clock Signal, but for the ECAPSIG Signal you will need to report a
->> Synapse action based on the polarity of the next capture (i.e. whether
->> high or low).
-> I need to make a correction here. IIUC, the ECAPSIG signal doesn't
-> affect the count value of ECAPCNT (ECAPSIG only triggers the captures),
-> so the Synapse action for ECAPSIG should always be
-> COUNTER_SYNAPSE_ACTION_NONE. You don't need to account for the capture
-> polarities because they're not relevant in this particular situation:
-> ECAPSIG doesn't trigger the ECAPCNT count function.
->
-> William Breathitt Gray
+Reusing AArch64 CPU registers directory.
 
-It appears to me that you spoke about TSCNT register content (32 bits). 
-So, you were
-not talking about the Mod4 counter (2 bits).
-Do you confirm that ?
+Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+---
+v2: Drop static qualifier for kobj (gregkh)
+v3: Use kzalloc to allocate struct cpuregs.
+    note: When Greg mentioned about static I was thinking about
+    static qualifier of percpu variable. After reading documents
+    again it turns out kobjs should be allocated at runtime. Arm64's
+    cpuinfo kobj is also on a percpu variable... I guess that was a
+    intentional use?
+v4: Properly handle err of kobj creation. (gregkh)
+---
+ .../ABI/testing/sysfs-devices-system-cpu      |  11 ++
+ arch/mips/kernel/topology.c                   | 103 ++++++++++++++++++
+ 2 files changed, 114 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+index 5bf61881f012..adf855e7bb9b 100644
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -512,6 +512,17 @@ Description:	information about CPUs heterogeneity.
+ 
+ 		cpu_capacity: capacity of cpuX.
+ 
++What:		/sys/devices/system/cpu/cpuX/regs/
++		/sys/devices/system/cpu/cpuX/regs/identification/
++		/sys/devices/system/cpu/cpuX/regs/identification/prid
++		/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
++Date:		Augest 2022
++Contact:	Linux MIPS Kernel Mailing list <linux-mips@vger.kernel.org>
++Description:	MIPS CPU registers
++
++		'identification' directory exposes the Processor ID and Global Number
++		registers for identifying model and revision of the CPU.
++
+ What:		/sys/devices/system/cpu/vulnerabilities
+ 		/sys/devices/system/cpu/vulnerabilities/meltdown
+ 		/sys/devices/system/cpu/vulnerabilities/spectre_v1
+diff --git a/arch/mips/kernel/topology.c b/arch/mips/kernel/topology.c
+index 9429d85a4703..45a15eda651a 100644
+--- a/arch/mips/kernel/topology.c
++++ b/arch/mips/kernel/topology.c
+@@ -5,6 +5,8 @@
+ #include <linux/node.h>
+ #include <linux/nodemask.h>
+ #include <linux/percpu.h>
++#include <linux/seq_file.h>
++#include <linux/smp.h>
+ 
+ static DEFINE_PER_CPU(struct cpu, cpu_devices);
+ 
+@@ -26,3 +28,104 @@ static int __init topology_init(void)
+ }
+ 
+ subsys_initcall(topology_init);
++
++static struct kobj_type cpuregs_kobj_type = {
++	.sysfs_ops = &kobj_sysfs_ops,
++};
++
++struct cpureg {
++	struct kobject kobj;
++	struct cpuinfo_mips *info;
++};
++static DEFINE_PER_CPU(struct cpureg *, cpuregs);
++
++#define kobj_to_cpureg(kobj)	container_of(kobj, struct cpureg, kobj)
++#define CPUREGS_ATTR_RO(_name, _field)						\
++	static ssize_t _name##_show(struct kobject *kobj,			\
++			struct kobj_attribute *attr, char *buf)			\
++	{									\
++		struct cpuinfo_mips *info = kobj_to_cpureg(kobj)->info;		\
++										\
++		return sprintf(buf, "0x%08x\n", info->_field);	\
++	}									\
++	static struct kobj_attribute cpuregs_attr_##_name = __ATTR_RO(_name)
++
++CPUREGS_ATTR_RO(prid, processor_id);
++CPUREGS_ATTR_RO(globalnumber, globalnumber);
++
++static struct attribute *cpuregs_id_attrs[] = {
++	&cpuregs_attr_prid.attr,
++	&cpuregs_attr_globalnumber.attr,
++	NULL
++};
++
++static const struct attribute_group cpuregs_attr_group = {
++	.attrs = cpuregs_id_attrs,
++	.name = "identification"
++};
++
++static int cpuregs_cpu_online(unsigned int cpu)
++{
++	int rc;
++	struct device *dev;
++	struct cpureg *reg;
++
++	dev = get_cpu_device(cpu);
++	if (!dev) {
++		rc = -ENODEV;
++		goto out;
++	}
++	reg = kzalloc(sizeof(struct cpureg), GFP_KERNEL);
++	if (!reg) {
++		rc = -ENOMEM;
++		goto out;
++	}
++	rc = kobject_init_and_add(&reg->kobj, &cpuregs_kobj_type,
++					&dev->kobj, "regs");
++	if (rc)
++		goto out_kfree;
++	rc = sysfs_create_group(&reg->kobj, &cpuregs_attr_group);
++	if (rc)
++		goto out_kobj;
++
++	return 0;
++out_kobj:
++	kobject_put(&reg->kobj);
++out_kfree:
++	kfree(reg);
++out:
++	return rc;
++}
++
++static int cpuregs_cpu_offline(unsigned int cpu)
++{
++	struct device *dev;
++	struct cpureg *reg = per_cpu(cpuregs, cpu);
++
++	dev = get_cpu_device(cpu);
++	if (!dev || !reg)
++		return -ENODEV;
++	if (reg->kobj.parent) {
++		sysfs_remove_group(&reg->kobj, &cpuregs_attr_group);
++		kobject_put(&reg->kobj);
++	}
++	kfree(reg);
++
++	return 0;
++}
++
++static int __init cpuinfo_regs_init(void)
++{
++	int ret;
++
++
++	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "mips/topology:online",
++				cpuregs_cpu_online, cpuregs_cpu_offline);
++	if (ret < 0) {
++		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
++		return ret;
++	}
++	return 0;
++}
++
++device_initcall(cpuinfo_regs_init);
+-- 
+2.34.1
+
