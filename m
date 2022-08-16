@@ -2,177 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AC5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94422C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237985AbiHPWXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51620 "EHLO
+        id S237991AbiHPW0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237974AbiHPWXI (ORCPT
+        with ESMTP id S237741AbiHPW0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:23:08 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45451282
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:23:06 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id 130so10520473pfv.13
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:23:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=+TNnx1dvmda/Lv7ys0WsGi7Qw8HijA+5loROtGlHDMQ=;
-        b=LQ1EVAcV5dNOwoU/W9/2lHc048oEom0zyeEB5KHkA+qwNr+/I4LkjK+TLTeNJak9zH
-         u5lBg5s9ADmflAAE/AUqYG0c2CpRwnNquEv33BPHHMNohvPzzs6yh6soip5xpKZWEGs1
-         O4CIkxGzEq/EQpcuVtgo1ar3zyv2x3Jg5i6fypRCUJBmxSkIq1SKf7GHWN2Lkmj1SKho
-         9nu57cfn7o6wwrcOuEWOCtQzQhmeV53CS3eH6kjpiktfpBCEjEy8EPivvpikwJx/r7MD
-         1OLwRYSOlD8m20USk21OHThe0zRLVegrMrlWAvSdisk5yEQOEathlxHbIw4FbkJuvcp4
-         W3UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=+TNnx1dvmda/Lv7ys0WsGi7Qw8HijA+5loROtGlHDMQ=;
-        b=eUsloCjaCKUOjzaaURV7WhO1Z5UBqGHGk5trHkyFeqCKXdJNZPd3FasRpu959UINzm
-         eprRsqlbM/4t6nw0bQVhRPvmcRSzX5/HQnp/IBQo89FIt/oZ5TDWUVCbAdSCcKH8FifR
-         bLUt1Pn9lbtrejRuIqjUrymQ69E1Hhn6y1MzUIkQq8fqD2WuWbLlBClThSfc2QlybRhk
-         k0TFCKaSekspNOIZCEIAM5J09cbqyC7uNKtz0yLhiun/+AYR8rL5kOeHNqrFoe4PgNn9
-         wLtED7HsoMAEY8kUwanr/Mw1XP7X33h22cqqQ9JVt3Ll9jgbGmywrMY9UsQfMLCcDb23
-         SHRw==
-X-Gm-Message-State: ACgBeo3A6NIzbSCwqTXwB/7I8l0sBwE1Pnon3g1hFmlSwSmknPC/iiue
-        Gq0pY/rBGRC+EdvjZuzsuEk4sA==
-X-Google-Smtp-Source: AA6agR75Oq14Fdh+tX2fxCj/DPx+VQc5mfO76YBWcRAtPB/vfTWm4VKe0ZIorrzX4EsFqy1Q0/6L1A==
-X-Received: by 2002:a63:9042:0:b0:41c:cdd4:ae66 with SMTP id a63-20020a639042000000b0041ccdd4ae66mr19087027pge.47.1660688585597;
-        Tue, 16 Aug 2022 15:23:05 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id nh14-20020a17090b364e00b001fa867105a3sm62942pjb.4.2022.08.16.15.23.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 15:23:05 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 22:23:01 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Oliver Upton <oliver.upton@linux.dev>,
-        Andrew Jones <andrew.jones@linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        lkp@lists.01.org, lkp@intel.com, xudong.hao@intel.com,
-        regressions@lists.linux.dev
-Subject: Re: [KVM] e923b0537d: kernel-selftests.kvm.rseq_test.fail
-Message-ID: <YvwYxeE4vc/Srbil@google.com>
-References: <Yvn60W/JpPO8URLY@xsang-OptiPlex-9020>
- <Yvq9wzXNF4ZnlCdk@google.com>
- <5034abb9-e176-d480-c577-1ec5dd47182b@redhat.com>
- <9bfeae26-b4b1-eedb-6cbd-b4f9f1e1cc55@redhat.com>
+        Tue, 16 Aug 2022 18:26:30 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1458FD78;
+        Tue, 16 Aug 2022 15:26:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660688754; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=iPK7Jhd8ypbEHwD/n+VtVEaj5rJAQKANFd4jbZYUJqfyaHpikst0/xxoi9x4uZS49n27Lfcc9NYd/R34Wjsv8KiKpTM//U4ghN7MxqKNRw60srjH9/hl8Ov/6e4W1mmpgKie9yQoo4JejvmbC8by3ugeVTX5uF6vPJGnkm4xZjs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1660688754; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=qZYvwhY+9f843t/9+9YeemY82s4b/y6qSCIkArr4MHo=; 
+        b=LX0p2Bqi7yEFJCOKc5jBnZMoCsjDwBkAUDAe9VERP0ll/nwFaGWYNO3F3fIXrgfM+OmjTkm2NUH56R0gDXRDEvqZNOEQDUuXWr26TYBlTPlaEBTfV2gOLeHYbRONxoZZNgkVno2pR4B4rJA2a63Dv2OY/HiCwZ6XZuvTNrxLCTk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660688754;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=qZYvwhY+9f843t/9+9YeemY82s4b/y6qSCIkArr4MHo=;
+        b=R191Jh7nPNErVKrhNalKb34SdbPW1G6pI6ieMvF9bSLuGQ8Y85GW6iNLP99Eo37x
+        AlvySHC3n41V4KyccZ5H8V/61wY8vzze6yzUyNiTUclYS/Kfc1JbsmWs7dQLW7cTSXu
+        MM0BG4eDpRyH35h3RUkTbxte2yVojwwvuDQf073M=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1660688751681828.667318330111; Tue, 16 Aug 2022 15:25:51 -0700 (PDT)
+Message-ID: <87f7dd90-d6b3-dad6-fe46-0b4ce38d9c29@arinc9.com>
+Date:   Wed, 17 Aug 2022 01:25:44 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset
+ lines
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-3-arinc.unal@arinc9.com>
+ <20220816205228.GA2709277-robh@kernel.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220816205228.GA2709277-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <9bfeae26-b4b1-eedb-6cbd-b4f9f1e1cc55@redhat.com>
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022, Gavin Shan wrote:
-> Hi Sean,
+On 16.08.2022 23:52, Rob Herring wrote:
+> On Sat, Aug 13, 2022 at 06:44:10PM +0300, ArÄ±nÃ§ ÃœNAL wrote:
+>> - Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
+>> - Add description for reset-gpios.
+>> - Invalidate reset-gpios if mediatek,mcm is used.
+>> - Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
+>> - Require mediatek,mcm for the described MT7621 SoCs as the compatible
+>> string is only used for MT7530 which is a part of the multi-chip module.
 > 
-> On 8/16/22 3:02 PM, Gavin Shan wrote:
-> > On 8/16/22 7:42 AM, Sean Christopherson wrote:
-> > > On Mon, Aug 15, 2022, kernel test robot wrote:
-> > > > commit: e923b0537d28e15c9d31ce8b38f810b325816903 ("KVM: selftests: Fix target thread to be migrated in rseq_test")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > 
-> > > ...
-> > > 
-> > > > # selftests: kvm: rseq_test
-> > > > # ==== Test Assertion Failure ====
-> > > > #   rseq_test.c:278: i > (NR_TASK_MIGRATIONS / 2)
-> > > > #   pid=49599 tid=49599 errno=4 - Interrupted system call
-> > > > #      1    0x000000000040265d: main at rseq_test.c:278
-> > > > #      2    0x00007fe44eed07fc: ?? ??:0
-> > > > #      3    0x00000000004026d9: _start at ??:?
-> > > > #   Only performed 23174 KVM_RUNs, task stalled too much?
-> > > > #
-> > > > not ok 56 selftests: kvm: rseq_test # exit=254
-> > > 
-> > > ...
-> > > 
-> > > > # Automatically generated file; DO NOT EDIT.
-> > > > # Linux/x86_64 5.19.0-rc6 Kernel Configuration
-> > > > #
-> > > > CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-3) 11.3.0"
-> > > > CONFIG_CC_IS_GCC=y
-> > > > CONFIG_GCC_VERSION=110300
-> > > > CONFIG_CLANG_VERSION=0
-> > > > CONFIG_AS_IS_GNU=y
-> > > > CONFIG_AS_VERSION=23800
-> > > > CONFIG_LD_IS_BFD=y
-> > > > CONFIG_LD_VERSION=23800
-> > > > CONFIG_LLD_VERSION=0
-> > > 
-> > > Assuming 23800 == 2.38, this is a known issue.
-> > > 
-> > > https://lore.kernel.org/all/20220810104114.6838-1-gshan@redhat.com
-> > > 
-> > 
-> > It's probably different story this time.
+> The commit message should answer 'why is this change needed/wanted?' not
+> 'what changed'. I can read the diff to see what changed.
 
-Doh, if I had bothered to actually look at the error message...
+I'll explain why to invalidating reset-gpios and mediatek,mcm.
 
-> > The assert is triggered because of the following instructions. I would
-> > guess the reason is vcpu thread has been running on CPU where we has high
-> > CPU load. In this case, the vcpu thread can't be run in time. More
-> > specific, the vcpu thread can't be run in the 1 - 10us time window, which
-> > is specified by the migration worker (thread).
-> > 
-> >      TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
-> >                  "Only performed %d KVM_RUNs, task stalled too much?\n", i);
-> > 
-> > I think we need to improve the handshake mechanism between the vcpu thread
-> > and migration worker. In current implementation, the handshake is done through
-> > the atomic counter. The mechanism is simple enough, but vcpu thread can miss
-> > the aforementioned time window. Another issue is the test case much more time
-> > than expected to finish.
-
-There's not really an expected time to finish.  The original purpose of the test
-is to trigger a kernel race condition, so it's a balance between letting the test
-run long enough to have some confidence that the kernel is bug free, and not running
-so long that it wastes time.
-
-> > Sean, if you think it's reasonable, I can figure out something to do:
-> > 
-> > - Reuse the atomic counter for a full synchronization between these two
-> >    threads. Something like below:
-> > 
-> >    #define RSEQ_TEST_STATE_RUN_VCPU       0     // vcpu_run()
-> >    #define RSEQ_TEST_STATE_MIGRATE        1     // sched_setaffinity()
-> >    #define RSEQ_TEST_STATE_CHECK          2     // Check rseq.cpu_id and get_cpu()
-> > 
-> >    The atomic counter is reset to RSEQ_TEST_STATE_RUN_VCPU after RSEQ_TEST_STATE_RUN_VCPU
-
-Again, because one of the primary goals is to ensure the kernel is race free, the
-test should avoid full synchronization.
-
-> > 
-> > - Reduce NR_TASK_MIGRATIONS from 100000 to num_of_online_cpus(). With this,
-> >    less time is needed to finish the test case.
-> > 
 > 
-> I'm able to recreate the issue on my local arm64 system.
-> 
-> - From the source code, the iteration count is changed from 100000 to 1000
-> - Only CPU#0 and CPU#1 are exposed in calc_min_max_cpu, meaning other CPUs
->   are cleared from @possible_mask
-> - Run some CPU bound task on CPU#0 and CPU#1
->   # while true; do taskset -c 0 ./a; done
->   # while true; do taskset -c 1 ./a; done
-> - Run 'rseq_test' and hit the issue
-
-At this point, this isn't a test bug.  The test is right to complain that it didn't
-provide the coverage it's supposed to provide.
-
-If the bot failure is a one-off, my preference is to leave things as-is for now.
-If the failure is an ongoing issue, then we probably need to understand why the
-bot is failing.
+> d>
+>> Signed-off-by: ArÄ±nÃ§ ÃœNAL <arinc.unal@arinc9.com>
+>> ---
+>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
+>>   1 file changed, 28 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> index edf48e917173..4c99266ce82a 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> @@ -110,11 +110,15 @@ properties:
+>>     mediatek,mcm:
+>>       type: boolean
+>>       description:
+>> -      if defined, indicates that either MT7530 is the part on multi-chip
+>> -      module belong to MT7623A has or the remotely standalone chip as the
+>> -      function MT7623N reference board provided for.
+>> +      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
+>> +      switch is a part of the multi-chip module.
+>>   
+>>     reset-gpios:
+>> +    description:
+>> +      GPIO to reset the switch. Use this if mediatek,mcm is not used.
+>> +      This property is optional because some boards share the reset line with
+>> +      other components which makes it impossible to probe the switch if the
+>> +      reset line is used.
+>>       maxItems: 1
+>>   
+>>     reset-names:
+>> @@ -165,6 +169,9 @@ allOf:
+>>         required:
+>>           - mediatek,mcm
+>>       then:
+>> +      properties:
+>> +        reset-gpios: false
+>> +
+>>         required:
+>>           - resets
+>>           - reset-names
+>> @@ -182,6 +189,24 @@ allOf:
+>>           - core-supply
+>>           - io-supply
+>>   
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+>> +            - const: mediatek,mt7531
+>> +    then:
+>> +      properties:
+>> +        mediatek,mcm: false
+>> +
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+>> +            - const: mediatek,mt7621
+>> +    then:
+>> +      required:
+>> +        - mediatek,mcm
+>> +
+>>   unevaluatedProperties: false
+>>   
+>>   examples:
+>> -- 
+>> 2.34.1
+>>
+>>
