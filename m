@@ -2,106 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1EBC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5374C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234571AbiHPLeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
+        id S234594AbiHPLe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234523AbiHPLdu (ORCPT
+        with ESMTP id S234573AbiHPLdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:33:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C557C1C5;
-        Tue, 16 Aug 2022 03:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660647333; x=1692183333;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ydczOs/B4f5E5PAGhD2udvBxWaaSFQ2xVkQP9xvCjU8=;
-  b=oTQzoV7YDMSyipRcfysxVCwIl8eYAFhxbhN38G9QCUwVU3uvdQIleI3Y
-   kahM2iMEBPswwj0IV1VBo3vLipO+KGBwKQk/RzOk1LW3ddU+/zhIRYyaG
-   6gvqX25GasRvTci3lEtuPT4xwuEgZiL8wucqGTvfUMK+Nqbj8KKgVdCAG
-   sRzjlRJo4z3jisqf/Q2TTHc7/5qrjEUlE2MmSTUQZzczyOLnWPTYwpmzK
-   DEHibJwbYVuu5/hbktrOGBa6wuafzsPYk1uEvMBQaI2C8Eosd7X5Rjiat
-   +OPU6r6RUqtq004icNz/HguJ8K5MsofZEfpfRSrvXiFvauEsYsPI8IMQ6
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="169486516"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Aug 2022 03:55:32 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 16 Aug 2022 03:55:30 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 16 Aug 2022 03:55:24 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [patch net v3] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
-Date:   Tue, 16 Aug 2022 16:25:16 +0530
-Message-ID: <20220816105516.18350-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 16 Aug 2022 07:33:55 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358B4F3B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:55:43 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id v10so10121607ljh.9
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:55:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=CBKTj5rqOn3nvVZvcReemvDBMrFOZ0r/iVEgRvVlj7w=;
+        b=Svwnc6Ps2mgT9rljkrmJhSM3ngCsPTTHBKJzpTazCrTqpdidG8FwIHPuGIgyAoVs8a
+         HQf+fS7Z8nY+INAGOTIma8iZTmjlJQI6M1kimeObK88koD6bClhAhI3AA+jdy7lAUVjG
+         /UzHgVuP1lc+egFn6Tj6VjKaIDM85G1ccfHfakvvt7QDc20ARPnoV91A8nTk8SlcKdvY
+         q+1uL/sXiTezwoEdVtr3ENmibRF/kVtU5AHCoz5bvmo2xDCz4H3WhJKBOvFhwIoRt/L9
+         ewgVblpBi4+u/eSvyR0Mf1rDOoUV8sYQQfyh00MJD3Ps1jU/IwqksR70UzMOkYqSWLzA
+         FoUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CBKTj5rqOn3nvVZvcReemvDBMrFOZ0r/iVEgRvVlj7w=;
+        b=XZyEUnZhkfBuH6ayPN/D4LZoZxb4Uec2GhNz1HzTwnJejtzVnRIu/Vi6GhOA3cIBPT
+         8iKpdZD4mHvdxWLyalqPNgT2mYd/t9LiOk0Rr8f1T5a4XynOUSPJ3AB4k+wvAfXcLct8
+         zpt4RwkHVRP6TxT9BkhB7+k2XQVADVRGWgnQsZsSPc3ahZa1WpypAhKyingZmJKdzJnL
+         HobmFoNmL5p8CXO9BG2iqYsthbDfCRINJFmXR1ZFn33tFzi+MpbF5PgMGnjPZE9AfNp9
+         fMF4q6BVzbEe/IwO3eSwxJX+NXQRvbNZ78sRp2X0sfZKY6YxEDYOeJBXqYm+XOZ1K+DT
+         Ws4A==
+X-Gm-Message-State: ACgBeo0q+dNvX2antZ2QL7ExeNdEDTkOqzy419roUbtRFSEJlSS4nHdY
+        uvO6rvoUJ+Lxzrxou7SQ45pc3g==
+X-Google-Smtp-Source: AA6agR7vC+j/ek79i+GD6KzISBYbeOBbqXj7aSllLfYBky7D81Wi0pnmae4dvqzohY1PwIPgyMwKyA==
+X-Received: by 2002:a2e:a410:0:b0:25e:4bca:6287 with SMTP id p16-20020a2ea410000000b0025e4bca6287mr6589533ljn.31.1660647341625;
+        Tue, 16 Aug 2022 03:55:41 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id s27-20020a056512203b00b0048b4690c78esm1345283lfs.288.2022.08.16.03.55.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 03:55:40 -0700 (PDT)
+Message-ID: <a9c71f3b-0c7b-ee8f-d350-0ab453018558@linaro.org>
+Date:   Tue, 16 Aug 2022 13:55:39 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH 01/14] drm/qaic: Add documentation for AIC100
+ accelerator driver
+Content-Language: en-US
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>, airlied@linux.ie,
+        daniel@ffwll.ch, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de
+Cc:     quic_carlv@quicinc.com, quic_ajitpals@quicinc.com,
+        quic_pkanojiy@quicinc.com, dri-devel@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1660588956-24027-1-git-send-email-quic_jhugo@quicinc.com>
+ <1660588956-24027-2-git-send-email-quic_jhugo@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1660588956-24027-2-git-send-email-quic_jhugo@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the ksz9477_fdb_dump function it reads the ALU control register and
-exit from the timeout loop if there is valid entry or search is
-complete. After exiting the loop, it reads the alu entry and report to
-the user space irrespective of entry is valid. It works till the valid
-entry. If the loop exited when search is complete, it reads the alu
-table. The table returns all ones and it is reported to user space. So
-bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
-To fix it, after exiting the loop the entry is reported only if it is
-valid one.
+On 15/08/2022 21:42, Jeffrey Hugo wrote:
+> Add documentation covering both the QAIC driver, and the device that it
+> drives.
 
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
-changes in v3
-- changed the subject from net-next to net
+Thank you for your patch. There is something to discuss/improve.
 
-changes in v2
-- changed the fixes commit id
-- reduced the indentation level by using ! and continue statement
 
- drivers/net/dsa/microchip/ksz9477.c | 3 +++
- 1 file changed, 3 insertions(+)
+> 
+> Change-Id: Iee519cc0a276249c4e8684507d27ae2c33e29aeb
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 4b14d80d27ed..e4f446db0ca1 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -613,6 +613,9 @@ int ksz9477_fdb_dump(struct ksz_device *dev, int port,
- 			goto exit;
- 		}
- 
-+		if (!(ksz_data & ALU_VALID))
-+			continue;
-+
- 		/* read ALU table */
- 		ksz9477_read_table(dev, alu_table);
- 
+You need to drop all such non-standard tags. Please run
+scripts/checkpatch and fix all the warnings.
 
-base-commit: 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
--- 
-2.36.1
-
+Best regards,
+Krzysztof
