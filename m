@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971C3C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5E0C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiHPIEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
+        id S231403AbiHPIEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbiHPIDC (ORCPT
+        with ESMTP id S230475AbiHPIDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:03:02 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2E661B02;
-        Mon, 15 Aug 2022 22:25:10 -0700 (PDT)
+        Tue, 16 Aug 2022 04:03:08 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770897E338;
+        Mon, 15 Aug 2022 22:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660627510; x=1692163510;
+  t=1660627532; x=1692163532;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GJIhiCbtCHoOrIVaCXT8PWqxLmpJFPI+WdGUWN+0WDU=;
-  b=CnHBdF3rGgS+GS/9P76jmfDF3NEx9Z51pt7glQBcSbLiLSL0o8Be6L80
-   HRThatSGzObG3OmLVq28mSw2HNKGlGrace3UMcQ+XhcbTTnj4S5kzkkOq
-   NR0WJlamdsGyqkv6j5wWv1XosDx7lSCm4CxIQmh1j8Fkg8pgMzKPqfIl1
-   c=;
+  bh=I9Q96aAATQFkHRHlBtYMnQxqL1NuXpUByIZYnpmWQtc=;
+  b=uvv7lVfSgYevBscKMaqOXhNPxwMxUYYCyC47GxlRAgwqRfY8EqFOY8Oe
+   LNaxFKryaXpipnPp0QqdRQRDbVLBJLqGzvbu0ObYDU/PzAfJgui5vw8rl
+   re62M+sb9EfeQGL2vBk2EqdcZUpDqa43PVhbr9W5qpG9R8doPZ5oIrrtI
+   M=;
 X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="233420022"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:24:59 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id B2E2FC08DC;
-        Tue, 16 Aug 2022 05:24:58 +0000 (UTC)
+   d="scan'208";a="230039421"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:25:31 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com (Postfix) with ESMTPS id 13AB097DA1;
+        Tue, 16 Aug 2022 05:25:29 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 05:24:58 +0000
+ id 15.0.1497.38; Tue, 16 Aug 2022 05:25:28 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.55) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 16 Aug 2022 05:24:55 +0000
+ Tue, 16 Aug 2022 05:25:26 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -46,10 +46,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 net 03/15] net: Fix data-races around netdev_max_backlog.
-Date:   Mon, 15 Aug 2022 22:23:35 -0700
-Message-ID: <20220816052347.70042-4-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH v1 net 05/15] bpf: Fix data-races around bpf_jit_harden.
+Date:   Mon, 15 Aug 2022 22:23:37 -0700
+Message-ID: <20220816052347.70042-6-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220816052347.70042-1-kuniyu@amazon.com>
 References: <20220816052347.70042-1-kuniyu@amazon.com>
@@ -63,95 +64,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reading netdev_max_backlog, it can be changed concurrently.
+While reading bpf_jit_harden, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its readers.
 
-While at it, we remove the unnecessary spaces in the doc.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 4f3446bb809f ("bpf: add generic constant blinding for use in jits")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- Documentation/admin-guide/sysctl/net.rst | 2 +-
- net/core/dev.c                           | 4 ++--
- net/core/gro_cells.c                     | 2 +-
- net/xfrm/espintcp.c                      | 2 +-
- net/xfrm/xfrm_input.c                    | 2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+CC: Daniel Borkmann <daniel@iogearbox.net>
+---
+ include/linux/filter.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index 805f2281e000..60d44165fba7 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -271,7 +271,7 @@ poll cycle or the number of packets processed reaches netdev_budget.
- netdev_max_backlog
- ------------------
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index ce8072626ccf..09566ad211bd 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -1090,6 +1090,8 @@ static inline bool bpf_prog_ebpf_jited(const struct bpf_prog *fp)
  
--Maximum number  of  packets,  queued  on  the  INPUT  side, when the interface
-+Maximum number of packets, queued on the INPUT side, when the interface
- receives packets faster than kernel can process them.
- 
- netdev_rss_key
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b5b92dcd5eea..07da69c1ac0a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4624,7 +4624,7 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
- 	struct softnet_data *sd;
- 	unsigned int old_flow, new_flow;
- 
--	if (qlen < (netdev_max_backlog >> 1))
-+	if (qlen < (READ_ONCE(netdev_max_backlog) >> 1))
+ static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
+ {
++	int jit_harden = READ_ONCE(bpf_jit_harden);
++
+ 	/* These are the prerequisites, should someone ever have the
+ 	 * idea to call blinding outside of them, we make sure to
+ 	 * bail out.
+@@ -1098,9 +1100,9 @@ static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
+ 		return false;
+ 	if (!prog->jit_requested)
+ 		return false;
+-	if (!bpf_jit_harden)
++	if (!jit_harden)
+ 		return false;
+-	if (bpf_jit_harden == 1 && capable(CAP_SYS_ADMIN))
++	if (jit_harden == 1 && capable(CAP_SYS_ADMIN))
  		return false;
  
- 	sd = this_cpu_ptr(&softnet_data);
-@@ -4672,7 +4672,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
- 	if (!netif_running(skb->dev))
- 		goto drop;
- 	qlen = skb_queue_len(&sd->input_pkt_queue);
--	if (qlen <= netdev_max_backlog && !skb_flow_limit(skb, qlen)) {
-+	if (qlen <= READ_ONCE(netdev_max_backlog) && !skb_flow_limit(skb, qlen)) {
- 		if (qlen) {
- enqueue:
- 			__skb_queue_tail(&sd->input_pkt_queue, skb);
-diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
-index 541c7a72a28a..21619c70a82b 100644
---- a/net/core/gro_cells.c
-+++ b/net/core/gro_cells.c
-@@ -26,7 +26,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
- 
- 	cell = this_cpu_ptr(gcells->cells);
- 
--	if (skb_queue_len(&cell->napi_skbs) > netdev_max_backlog) {
-+	if (skb_queue_len(&cell->napi_skbs) > READ_ONCE(netdev_max_backlog)) {
- drop:
- 		dev_core_stats_rx_dropped_inc(dev);
- 		kfree_skb(skb);
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-index 82d14eea1b5a..974eb97b77d2 100644
---- a/net/xfrm/espintcp.c
-+++ b/net/xfrm/espintcp.c
-@@ -168,7 +168,7 @@ int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
- {
- 	struct espintcp_ctx *ctx = espintcp_getctx(sk);
- 
--	if (skb_queue_len(&ctx->out_queue) >= netdev_max_backlog)
-+	if (skb_queue_len(&ctx->out_queue) >= READ_ONCE(netdev_max_backlog))
- 		return -ENOBUFS;
- 
- 	__skb_queue_tail(&ctx->out_queue, skb);
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 144238a50f3d..a3eb21a85810 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -783,7 +783,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk_buff *skb,
- 
- 	trans = this_cpu_ptr(&xfrm_trans_tasklet);
- 
--	if (skb_queue_len(&trans->queue) >= netdev_max_backlog)
-+	if (skb_queue_len(&trans->queue) >= READ_ONCE(netdev_max_backlog))
- 		return -ENOBUFS;
- 
- 	BUILD_BUG_ON(sizeof(struct xfrm_trans_cb) > sizeof(skb->cb));
+ 	return true;
+@@ -1111,7 +1113,7 @@ static inline bool bpf_jit_kallsyms_enabled(void)
+ 	/* There are a couple of corner cases where kallsyms should
+ 	 * not be enabled f.e. on hardening.
+ 	 */
+-	if (bpf_jit_harden)
++	if (READ_ONCE(bpf_jit_harden))
+ 		return false;
+ 	if (!bpf_jit_kallsyms)
+ 		return false;
 -- 
 2.30.2
 
