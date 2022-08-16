@@ -2,99 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A5FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EBAC28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235741AbiHPPi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 11:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
+        id S236211AbiHPPid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 11:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235361AbiHPPiF (ORCPT
+        with ESMTP id S235495AbiHPPiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 11:38:05 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDEF659C4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:37:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4C983078
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:37:02 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 97A781FE53;
-        Tue, 16 Aug 2022 15:37:00 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 646371FE90;
+        Tue, 16 Aug 2022 15:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1660664220; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=P009cW09xrhcJJVDDp3flRZgQWcxLyS3VXOA3fJen8U=;
-        b=t7tQ66YPO6qthRPGmocjobqeUAC9p7q/CHWmlwYNkFipHxUbu2VGqIpDliqJfeOl0Odbx1
-        PbMnnp6saElm5aUpA4XycMDdntJOQp3ncDttf+/icWaSFl3sIV6cVzlQJey3a7FvKllX0m
-        2TD6Kdmjt+sO/kfc6HaWEwHz7cWGTqY=
+        t=1660664221; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eS3+J1xXqrlEflC4+69MJ2yPUC0hDCX6aposgxx7isU=;
+        b=Y6iRCAtE63g2ELrm9EeNCxQNwW9kgwU95WSieYsd2/23Ji3kmd8kpJIeuijYmmWGSsH4HR
+        OJD7aflGFR6ttyVZ2gvrRQMW+rRTirhgtmZdNDTJV+xdZvwoe1nNhxO++kXLHrTZruc+8C
+        MnuVlHTddQ4GqZOV4Xg9i+AzYPr1uEw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1660664220;
+        s=susede2_ed25519; t=1660664221;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=P009cW09xrhcJJVDDp3flRZgQWcxLyS3VXOA3fJen8U=;
-        b=LEdS3+yxjJypiO+qzOQmG4/0ZUg8C2FFXE1wCxX1V3TuXGJvSMe4EyL65mGtSb+83SdZOQ
-        fQdXC3o9NiSM9TAA==
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eS3+J1xXqrlEflC4+69MJ2yPUC0hDCX6aposgxx7isU=;
+        b=cGzskk8o/xdi0N+lVV+borXjwtXabYB8KR7RtLKqhoTEwfSlqZLBnw3pd5JILW5M+jhwXm
+        ZXW/0zF4JfYTH3Cw==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5E09F139B7;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 00D23139B7;
         Tue, 16 Aug 2022 15:37:00 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id s+AkFpy5+2LKJAAAMHmgww
+        id +IvwOpy5+2LKJAAAMHmgww
         (envelope-from <tiwai@suse.de>); Tue, 16 Aug 2022 15:37:00 +0000
 From:   Takashi Iwai <tiwai@suse.de>
 To:     Thomas Zimmermann <tzimmermann@suse.de>
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 00/12] drm/udl: More fixes
-Date:   Tue, 16 Aug 2022 17:36:43 +0200
-Message-Id: <20220816153655.27526-1-tiwai@suse.de>
+Subject: [PATCH 02/12] drm/udl: Add reset_resume
+Date:   Tue, 16 Aug 2022 17:36:45 +0200
+Message-Id: <20220816153655.27526-3-tiwai@suse.de>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220816153655.27526-1-tiwai@suse.de>
+References: <20220816153655.27526-1-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-this patch set contains more fixes for UDL driver, to be applied on
-top of my previous patch set [*].  It covers the PM problems,
-regressions in the previous patch set, fixes for the stalls on some
-systems, as well as more hardening.
+Implement the reset_resume callback of struct usb_driver. Set the
+standard channel when called.
 
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ drivers/gpu/drm/udl/udl_drv.c  | 11 +++++++++++
+ drivers/gpu/drm/udl/udl_drv.h  |  1 +
+ drivers/gpu/drm/udl/udl_main.c |  2 +-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
-Takashi
-
-[*] https://lore.kernel.org/r/20220804075826.27036-1-tiwai@suse.de
-
-===
-
-Takashi Iwai (8):
-  Revert "drm/udl: Kill pending URBs at suspend and disconnect"
-  drm/udl: Suppress error print for -EPROTO at URB completion
-  drm/udl: Increase the default URB list size to 20
-  drm/udl: Drop unneeded alignment
-  drm/udl: Fix potential URB leaks
-  drm/udl: Fix inconsistent urbs.count value during udl_free_urb_list()
-  drm/udl: Don't re-initialize stuff at retrying the URB list allocation
-  drm/udl: Sync pending URBs at the end of suspend
-
-Thomas Zimmermann (4):
-  drm/udl: Restore display mode on resume
-  drm/udl: Add reset_resume
-  drm/udl: Enable damage clipping
-  drm/udl: Add parameter to set number of URBs
-
- drivers/gpu/drm/udl/udl_drv.c      | 19 +++++-
- drivers/gpu/drm/udl/udl_drv.h      | 13 +---
- drivers/gpu/drm/udl/udl_main.c     | 97 +++++++++++++++---------------
- drivers/gpu/drm/udl/udl_modeset.c  | 42 ++++---------
- drivers/gpu/drm/udl/udl_transfer.c | 45 ++------------
- 5 files changed, 86 insertions(+), 130 deletions(-)
-
+diff --git a/drivers/gpu/drm/udl/udl_drv.c b/drivers/gpu/drm/udl/udl_drv.c
+index 5703277c6f52..0ba88e5472a9 100644
+--- a/drivers/gpu/drm/udl/udl_drv.c
++++ b/drivers/gpu/drm/udl/udl_drv.c
+@@ -32,6 +32,16 @@ static int udl_usb_resume(struct usb_interface *interface)
+ 	return drm_mode_config_helper_resume(dev);
+ }
+ 
++static int udl_usb_reset_resume(struct usb_interface *interface)
++{
++	struct drm_device *dev = usb_get_intfdata(interface);
++	struct udl_device *udl = to_udl(dev);
++
++	udl_select_std_channel(udl);
++
++	return drm_mode_config_helper_resume(dev);
++}
++
+ /*
+  * FIXME: Dma-buf sharing requires DMA support by the importing device.
+  *        This function is a workaround to make USB devices work as well.
+@@ -140,6 +150,7 @@ static struct usb_driver udl_driver = {
+ 	.disconnect = udl_usb_disconnect,
+ 	.suspend = udl_usb_suspend,
+ 	.resume = udl_usb_resume,
++	.reset_resume = udl_usb_reset_resume,
+ 	.id_table = id_table,
+ };
+ module_usb_driver(udl_driver);
+diff --git a/drivers/gpu/drm/udl/udl_drv.h b/drivers/gpu/drm/udl/udl_drv.h
+index 28aaf75d71cf..37c14b0ff1fc 100644
+--- a/drivers/gpu/drm/udl/udl_drv.h
++++ b/drivers/gpu/drm/udl/udl_drv.h
+@@ -95,6 +95,7 @@ int udl_render_hline(struct drm_device *dev, int log_bpp, struct urb **urb_ptr,
+ 		     u32 byte_offset, u32 device_byte_offset, u32 byte_width);
+ 
+ int udl_drop_usb(struct drm_device *dev);
++int udl_select_std_channel(struct udl_device *udl);
+ 
+ #define CMD_WRITE_RAW8   "\xAF\x60" /**< 8 bit raw write command. */
+ #define CMD_WRITE_RL8    "\xAF\x61" /**< 8 bit run length command. */
+diff --git a/drivers/gpu/drm/udl/udl_main.c b/drivers/gpu/drm/udl/udl_main.c
+index fdafbf8f3c3c..7d1e6bbc165c 100644
+--- a/drivers/gpu/drm/udl/udl_main.c
++++ b/drivers/gpu/drm/udl/udl_main.c
+@@ -92,7 +92,7 @@ static int udl_parse_vendor_descriptor(struct udl_device *udl)
+ /*
+  * Need to ensure a channel is selected before submitting URBs
+  */
+-static int udl_select_std_channel(struct udl_device *udl)
++int udl_select_std_channel(struct udl_device *udl)
+ {
+ 	static const u8 set_def_chn[] = {0x57, 0xCD, 0xDC, 0xA7,
+ 					 0x1C, 0x88, 0x5E, 0x15,
 -- 
 2.35.3
 
