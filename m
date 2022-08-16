@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE25C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF2AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234559AbiHPLzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S234777AbiHPLzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiHPLy5 (ORCPT
+        with ESMTP id S234860AbiHPLy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 07:54:57 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62906E2F;
-        Tue, 16 Aug 2022 04:33:41 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6TYM2V3qz67VpW;
-        Tue, 16 Aug 2022 19:33:27 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19876265B;
+        Tue, 16 Aug 2022 04:33:46 -0700 (PDT)
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6TS55Hhkz67wrC;
+        Tue, 16 Aug 2022 19:28:53 +0800 (CST)
 Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 13:33:39 +0200
+ 15.1.2375.24; Tue, 16 Aug 2022 13:33:44 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 12:33:36 +0100
+ 15.1.2375.24; Tue, 16 Aug 2022 12:33:41 +0100
 From:   John Garry <john.garry@huawei.com>
 To:     <lenb@kernel.org>, <rafael@kernel.org>, <andy.shevchenko@gmail.com>
 CC:     <linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH PoC 1/3] ACPI / PNP: Don't add enumeration_by_parent devices
-Date:   Tue, 16 Aug 2022 19:27:22 +0800
-Message-ID: <1660649244-146842-2-git-send-email-john.garry@huawei.com>
+Subject: [PATCH PoC 3/3] bus: hisi_lpc: Use acpi_create_platform_device_ops()
+Date:   Tue, 16 Aug 2022 19:27:24 +0800
+Message-ID: <1660649244-146842-4-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
 References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
@@ -46,70 +46,246 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For ACPI devices with the enumeration_by_parent flag set, we expect the
-parent device to enumerate the device after the ACPI scan.
+Function acpi_create_platform_device_ops() was added to factor out the
+duplicated code to create platform device between ACPI platform device
+code and this driver.
 
-This patch does partially the same for devices which are enumerated as PNP
-devices.
-
-We still want PNP scan code to create the per-ACPI device PNP device, but
-hold off adding the device to allow the parent to do this optionally.
-
-Flag acpi_device.driver_data is used as temp store as a reference to the
-PNP device for the parent.
-
-A note on impact of this change:
-
-For the  hisi_lpc driver, for the UART ACPI node we have a binding like:
-
- Device (LPC0.CON0) {
-    Name (_HID, "HISI1031")
-    Name (_CID, "PNP0501")
-    Name (LORS, ResourceTemplate() {
-      QWordIO (
-
-We have the compat and hid string. The ACPI/PNP code matches the compat
-string first, and creates the PNP device. In doing so, the acpi_device
-created has physical_node_count member set in acpi_bind_one().
-
-The hisi_lpc driver also creates a platform device serial device for uart,
-which is the actual uart which we want to use - see
-hisi_lpc_acpi_add_child(). That function does not check
-physical_node_count value, but acpi_create_platform_device() does check it.
-So if we were to move hisi_lpc_acpi_add_child() across to use
-acpi_create_platform_device(), then the change in this patch is required to
-not create the PNP binding (so that physical_node_count is not set from
-PNP probe).
+Most of the complication added here comes from LPC UART support. To
+support the LPC UART, we create a serial platform device. For this we
+need to create a structure of plat_serial8250_port data. The specific
+complication comes from the fact that the UART iobase in
+plat_serial8250_port needs to be fixed up after the resource translation.
+As such, we need to provide a pointer to this plat_serial8250_port data
+to do the fix up in the xlat callback.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/pnp/pnpacpi/core.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/bus/hisi_lpc.c | 165 +++++++++++++++++------------------------
+ 1 file changed, 69 insertions(+), 96 deletions(-)
 
-diff --git a/drivers/pnp/pnpacpi/core.c b/drivers/pnp/pnpacpi/core.c
-index 38928ff7472b..b751381b0429 100644
---- a/drivers/pnp/pnpacpi/core.c
-+++ b/drivers/pnp/pnpacpi/core.c
-@@ -272,10 +272,15 @@ static int __init pnpacpi_add_device(struct acpi_device *device)
- 	if (!dev->active)
- 		pnp_init_resources(dev);
- 
--	error = pnp_add_device(dev);
--	if (error) {
--		put_device(&dev->dev);
--		return error;
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index 2e564803e786..ada1cea1affc 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -390,70 +390,49 @@ static void hisi_lpc_acpi_fixup_child_resource(struct device *hostdev,
+  * host-relative address resource.  This function will return the translated
+  * logical PIO addresses for each child devices resources.
+  */
+-static int hisi_lpc_acpi_set_io_res(struct acpi_device *adev,
+-				    struct device *hostdev,
+-				    const struct resource **res, int *num_res)
++struct hisi_lpc_acpi_cell_data;
 +
-+	if (device->flags.enumeration_by_parent) {
-+		device->driver_data = dev;
-+	} else {
-+		error = pnp_add_device(dev);
-+		if (error) {
-+			put_device(&dev->dev);
-+			return error;
-+		}
++struct hisi_lpc_acpi_cell {
++	const char *hid;
++	const char *name;
++	struct hisi_lpc_acpi_cell_data *data;
++	size_t data_size;
++};
++
++struct hisi_lpc_acpi_cell_data {
++	const struct hisi_lpc_acpi_cell *owner;
++	union {
++		struct plat_serial8250_port serial[2];
++	};
++};
++
++int hisi_lpc_acpi_xlat_res(struct acpi_device *adev, struct resource *res,
++			   void *data, size_t data_len)
+ {
+ 	struct acpi_device *host = to_acpi_device(adev->dev.parent);
+-	struct resource_entry *rentry;
+-	LIST_HEAD(resource_list);
+-	struct resource *resources;
+-	int count;
+-	int i;
+-
+-	if (!adev->status.present) {
+-		dev_dbg(&adev->dev, "device is not present\n");
+-		return -EIO;
+-	}
++	struct device *dev = &adev->dev;
++	struct device *hostdev = dev->parent;
++	int ret;
+ 
+-	if (acpi_device_enumerated(adev)) {
+-		dev_dbg(&adev->dev, "has been enumerated\n");
+-		return -EIO;
+-	}
++	hisi_lpc_acpi_fixup_child_resource(hostdev, res);
+ 
+-	/*
+-	 * The following code segment to retrieve the resources is common to
+-	 * acpi_create_platform_device(), so consider a common helper function
+-	 * in future.
+-	 */
+-	count = acpi_dev_get_resources(adev, &resource_list, NULL, NULL);
+-	if (count <= 0) {
+-		dev_dbg(&adev->dev, "failed to get resources\n");
+-		return count ? count : -EIO;
+-	}
++	if (!(res->flags & IORESOURCE_IO))
++		return 0;
+ 
+-	resources = devm_kcalloc(hostdev, count, sizeof(*resources),
+-				 GFP_KERNEL);
+-	if (!resources) {
+-		dev_warn(hostdev, "could not allocate memory for %d resources\n",
+-			 count);
+-		acpi_dev_free_resource_list(&resource_list);
+-		return -ENOMEM;
+-	}
+-	count = 0;
+-	list_for_each_entry(rentry, &resource_list, node) {
+-		resources[count] = *rentry->res;
+-		hisi_lpc_acpi_fixup_child_resource(hostdev, &resources[count]);
+-		count++;
+-	}
++	ret = hisi_lpc_acpi_xlat_io_res(adev, host, res);
++	if (data_len) {
++		struct hisi_lpc_acpi_cell_data *cell_data = container_of(data,
++				struct hisi_lpc_acpi_cell_data,  serial);
++		const struct hisi_lpc_acpi_cell *cell;
+ 
+-	acpi_dev_free_resource_list(&resource_list);
++		cell = cell_data->owner;
+ 
+-	/* translate the I/O resources */
+-	for (i = 0; i < count; i++) {
+-		int ret;
++		if (!strcmp(cell->hid, "HISI1031")) {
++			struct plat_serial8250_port *serial = data;
+ 
+-		if (!(resources[i].flags & IORESOURCE_IO))
+-			continue;
+-		ret = hisi_lpc_acpi_xlat_io_res(adev, host, &resources[i]);
+-		if (ret) {
+-			dev_err(&adev->dev, "translate IO range %pR failed (%d)\n",
+-				&resources[i], ret);
+-			return ret;
++			serial->iobase = res->start;
+ 		}
+ 	}
+-	*res = resources;
+-	*num_res = count;
+ 
+ 	return 0;
+ }
+@@ -470,13 +449,6 @@ static int hisi_lpc_acpi_clear_enumerated(struct acpi_device *adev, void *not_us
+ 	return 0;
+ }
+ 
+-struct hisi_lpc_acpi_cell {
+-	const char *hid;
+-	const char *name;
+-	void *pdata;
+-	size_t pdata_size;
+-};
+-
+ static void hisi_lpc_acpi_remove(struct device *hostdev)
+ {
+ 	device_for_each_child(hostdev, NULL, hisi_lpc_acpi_remove_subdev);
+@@ -490,15 +462,16 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
+ 	struct device *hostdev = data;
+ 	const struct hisi_lpc_acpi_cell *cell;
+ 	struct platform_device *pdev;
+-	const struct resource *res;
+ 	bool found = false;
+-	int num_res;
+-	int ret;
+ 
+-	ret = hisi_lpc_acpi_set_io_res(child, hostdev, &res, &num_res);
+-	if (ret) {
+-		dev_warn(hostdev, "set resource fail (%d)\n", ret);
+-		return ret;
++	if (!child->status.present) {
++		dev_err(&child->dev, "device is not present\n");
++		return -EIO;
++	}
++
++	if (acpi_device_enumerated(child)) {
++		dev_err(&child->dev, "has been enumerated\n");
++		return -EIO;
  	}
  
- 	num++;
+ 	cell = (struct hisi_lpc_acpi_cell []){
+@@ -511,16 +484,21 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
+ 		{
+ 			.hid = "HISI1031",
+ 			.name = "serial8250",
+-			.pdata = (struct plat_serial8250_port []) {
++			.data = (struct hisi_lpc_acpi_cell_data []) {
+ 				{
+-					.iobase = res->start,
+-					.uartclk = 1843200,
+-					.iotype = UPIO_PORT,
+-					.flags = UPF_BOOT_AUTOCONF,
++					.serial = {
++						{
++						//	.iobase to be set after xlat'ing resources
++							.uartclk = 1843200,
++							.iotype = UPIO_PORT,
++							.flags = UPF_BOOT_AUTOCONF,
++						},
++						{}
++					},
+ 				},
+ 				{}
+ 			},
+-			.pdata_size = 2 *
++			.data_size = 2 *
+ 				sizeof(struct plat_serial8250_port),
+ 		},
+ 		{}
+@@ -540,31 +518,26 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
+ 		return 0;
+ 	}
+ 
+-	pdev = platform_device_alloc(cell->name, PLATFORM_DEVID_AUTO);
+-	if (!pdev)
+-		return -ENOMEM;
+-
+-	pdev->dev.parent = hostdev;
+-	ACPI_COMPANION_SET(&pdev->dev, child);
+-
+-	ret = platform_device_add_resources(pdev, res, num_res);
+-	if (ret)
+-		goto fail;
+-
+-	ret = platform_device_add_data(pdev, cell->pdata, cell->pdata_size);
+-	if (ret)
+-		goto fail;
++	if (cell->data) {
++		struct hisi_lpc_acpi_cell_data *cell_data = cell->data;
++		struct plat_serial8250_port *data = cell_data->serial;
++
++		cell_data->owner = cell;
++		pdev = acpi_create_platform_device_ops(child, cell->name, NULL,
++						       data, cell->data_size,
++						       hisi_lpc_acpi_xlat_res,
++						       PLATFORM_DEVID_AUTO);
++	} else {
++		pdev = acpi_create_platform_device_ops(child, cell->name, NULL,
++						       NULL, 0,
++						       hisi_lpc_acpi_xlat_res,
++						       PLATFORM_DEVID_AUTO);
++	}
+ 
+-	ret = platform_device_add(pdev);
+-	if (ret)
+-		goto fail;
++	if (IS_ERR_OR_NULL(pdev))
++		return -ENOMEM;
+ 
+-	acpi_device_set_enumerated(child);
+ 	return 0;
+-
+-fail:
+-	platform_device_put(pdev);
+-	return ret;
+ }
+ 
+ /*
 -- 
 2.35.3
 
