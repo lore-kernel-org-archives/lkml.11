@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15784C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 671ECC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235864AbiHPPLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 11:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
+        id S236019AbiHPPLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 11:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbiHPPLk (ORCPT
+        with ESMTP id S233117AbiHPPLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 11:11:40 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2A96FA3F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC6A7269D
         for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1660662698;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wtQ3T2SnjxmANB9ZOMVYpxJhFmJErNinRxxSjh7HxJA=;
-        b=aWDUtQWEp/CvjO6j0e0piWFBdhaAWMmGNxvMcUjugMsq2mveXwGU2snrtJWe5/IuHlOFSI
-        O91phw6HX8cez68HSYFxeH3cLx/ilBmaSYoiBLRAxfffnuTcGKeAovSGY+rUVUmMN1somp
-        u7IZnDOvsYlB1NZUfvgA/UAl4zeb4f4=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jEYRKj1nlSqtCrHOWIArTdrELJ6+dwpREnZJE+d8OE8=;
+        b=NlhGKQg5Fnfz2cejt3KVKddjp9zO/GJ3dOkfIY9H+biFvjT6LRyU/x7L3rzD0aUQsxQwgV
+        3PwFjJqaPPRwI6hg7qBu5j8BK+lp4s99H1BR9NCYRmMa87pSISXqjAtDZVTkeFdFOeRNR+
+        HHIDldqEF2KXr0TTTBVuCQpZtefUF84=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-mg0bDmKvOx-UZNTFV0jDxg-1; Tue, 16 Aug 2022 11:11:35 -0400
-X-MC-Unique: mg0bDmKvOx-UZNTFV0jDxg-1
+ us-mta-581-d357ltXUNxGd5u3M3tPu0g-1; Tue, 16 Aug 2022 11:11:34 -0400
+X-MC-Unique: d357ltXUNxGd5u3M3tPu0g-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F7AD803301;
-        Tue, 16 Aug 2022 15:11:34 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE868811E87;
+        Tue, 16 Aug 2022 15:11:32 +0000 (UTC)
 Received: from llong.com (unknown [10.22.10.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 99494492C3B;
-        Tue, 16 Aug 2022 15:11:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BC25403340;
+        Tue, 16 Aug 2022 15:11:32 +0000 (UTC)
 From:   Waiman Long <longman@redhat.com>
 To:     Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -54,11 +53,9 @@ To:     Ingo Molnar <mingo@redhat.com>,
 Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Waiman Long <longman@redhat.com>
-Subject: [PATCH v4 2/3] sched: Provide copy_user_cpus_mask() to copy out user mask
-Date:   Tue, 16 Aug 2022 11:11:18 -0400
-Message-Id: <20220816151119.29534-3-longman@redhat.com>
-In-Reply-To: <20220816151119.29534-1-longman@redhat.com>
-References: <20220816151119.29534-1-longman@redhat.com>
+Subject: [PATCH v4 0/3] sched, cgroup/cpuset: Keep user set cpus affinity
+Date:   Tue, 16 Aug 2022 11:11:16 -0400
+Message-Id: <20220816151119.29534-1-longman@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -67,59 +64,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since accessing the content of the user_cpus_ptr requires lock protection
-to ensure its validity, provide a helper function copy_user_cpus_mask()
-to facilitate its reading.
+v4:
+ - Update patch 1 to make sched_setaffinity() the only function to
+   update user_cpus_ptr to make the logic simpler and
+   easier to understand. restrict_cpus_allowed_ptr() and
+   relax_compatible_cpus_allowed_ptr() will just use it if present.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- include/linux/sched.h |  1 +
- kernel/sched/core.c   | 19 +++++++++++++++++++
- 2 files changed, 20 insertions(+)
+v3:
+ - Attach a new patch 2 to introduce a copy_user_cpus_mask() to copy
+   out user masks with lock protection & use it in patch 3.
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index e7b2f8a5c711..f2b0340c094e 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1830,6 +1830,7 @@ extern int task_can_attach(struct task_struct *p, const struct cpumask *cs_effec
- extern void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask);
- extern int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask);
- extern int dup_user_cpus_ptr(struct task_struct *dst, struct task_struct *src, int node);
-+extern struct cpumask *copy_user_cpus_mask(struct task_struct *p, struct cpumask *user_mask);
- extern void release_user_cpus_ptr(struct task_struct *p);
- extern int dl_task_check_affinity(struct task_struct *p, const struct cpumask *mask);
- extern void force_compatible_cpus_allowed_ptr(struct task_struct *p);
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9353641efdca..ee0fa1635163 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2618,6 +2618,25 @@ void release_user_cpus_ptr(struct task_struct *p)
- 	kfree(clear_user_cpus_ptr(p));
- }
- 
-+/*
-+ * Return the copied mask pointer or NULL if user mask not available.
-+ * Acquiring pi_lock for read access protection.
-+ */
-+struct cpumask *copy_user_cpus_mask(struct task_struct *p,
-+				    struct cpumask *user_mask)
-+{
-+	struct cpumask *mask = NULL;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&p->pi_lock, flags);
-+	if (p->user_cpus_ptr) {
-+		cpumask_copy(user_mask, p->user_cpus_ptr);
-+		mask = user_mask;
-+	}
-+	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
-+	return mask;
-+}
-+
- /*
-  * This function is wildly self concurrent; here be dragons.
-  *
+v2:
+ - Rework the v1 patch by extending the semantics of user_cpus_ptr to
+   store user set cpus affinity and keeping to it as much as possible.
+
+The user_cpus_ptr field is added by commit b90ca8badbd1 ("sched:
+Introduce task_struct::user_cpus_ptr to track requested affinity")
+which uses it narrowly to allow keeping cpus affinity intact with
+asymmetric cpu setup.
+
+This patchset extends user_cpus_ptr to store user set cpus affinity via
+sched_setaffinity() API. With that information avaiable, it will enable
+cpuset to keep cpus afinity as close to what the user wants as possible
+within the cpu list constraint of the current cpuset. Otherwise some
+change to the cpuset hierarchy may reset the cpumask of the tasks in
+the affected cpusets to the default cpuset value even if those tasks
+have cpus affinity explicitly set by the users before.
+
+It also means that once sched_setaffinity() is called, user_cpus_ptr
+will remain allocated until the task exits.
+
+Waiman Long (3):
+  sched: Use user_cpus_ptr for saving user provided cpumask in
+    sched_setaffinity()
+  sched: Provide copy_user_cpus_mask() to copy out user mask
+  cgroup/cpuset: Keep user set cpus affinity
+
+ include/linux/sched.h  |   1 +
+ kernel/cgroup/cpuset.c |  28 +++++++++-
+ kernel/sched/core.c    | 119 ++++++++++++++++++++++++-----------------
+ kernel/sched/sched.h   |   1 -
+ 4 files changed, 98 insertions(+), 51 deletions(-)
+
 -- 
 2.31.1
 
