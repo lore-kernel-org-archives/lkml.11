@@ -2,209 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E742BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F33EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234086AbiHPLCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60642 "EHLO
+        id S235163AbiHPLCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233926AbiHPLBa (ORCPT
+        with ESMTP id S235133AbiHPLBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:01:30 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E369AD8E28;
-        Tue, 16 Aug 2022 03:10:48 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G8FuSr012453;
-        Tue, 16 Aug 2022 10:10:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=twB6Jx5/ys7RTnGH4YLfZT4z73HlzicFD69QuXLhYSw=;
- b=ihlZAYHWwPPfyGZkKWj5OLosu/QXT8x9UIZETJIaN7P/PHHZiW0p0HgVrtMaOGB/7J2b
- v8PP6pb8Lq8VR+OlTy9SuglWXqizr0/nBT07b9NeRQJyPxgWKhcLxQbyho8zb4K/4lQ0
- eW1LFftq+a9rBlzMMZB9oXkqVyg3rtXSEhULrQ6hNO+Xz9gTYBEmgKI2EbEJoT4s76Nt
- Lj3M+FdbxVENF5OSqn8esNedfQ587ybcS1OFOkWM9YCfY7AxUDE6ONkx9kDFFXIkg9u1
- i+/6eHO4C14eKta5/xe09wn7Xv2Klm8srd6iVFK0G1DYpO8kCfBlZd7YPqKjArc3cGOU wg== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hyw582d4v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:45 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GAAiil023916
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:44 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 16 Aug 2022 03:10:40 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [RESEND PATCH V7 5/5] clk: qcom: lpass: Add support for resets & external mclk for SC7280
-Date:   Tue, 16 Aug 2022 15:40:04 +0530
-Message-ID: <1660644604-6592-6-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 16 Aug 2022 07:01:52 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFF0CAC7E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:17 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id d5so2732138wms.5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=J8iZCnBWtxZ0luRrE1AM5j//meG3qtyDdNSPKnb1YHs=;
+        b=hUkuVh9lEKqrEmzF5ZobH61GwSmNKxGbR7mofpKpO0nrfUJoLYzig7Z7klxVp3W6l5
+         b8JLj1/EwCiuPmDaQyouGnTbFPdmTJBNIfidM1NmZAvHi2FBp5MhrEaLms+GDqNTavrn
+         umEHH/FCQQQ0ygdgj+V4KyQWboAkPfFgnRGr7jNOujVtwpSZyvzvXRCUnqWMzMIcXgeN
+         Q7WvkKOSPOcbdWNEsbJBbS9UGTWjeLmJk42QF7Nd5GmsJRi/8ZDWVumIXnzhlEWAYVHW
+         w4S7GTQlBh89aM0Jov5MrcrndqdGBQzeWz2RXh5+/LSV6R82DyB1Th1hQrNv5vAMcSgP
+         FbQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=J8iZCnBWtxZ0luRrE1AM5j//meG3qtyDdNSPKnb1YHs=;
+        b=dUbIqQOZmGG8iVR3B9Vsa0yWNchhL2pxdn/dfQK0FNYiRxF52u+l4ta8nsxJJqH3FW
+         6C4111X2YTzsNf5cllXnD6avx29hjrLFHoGYUV5/UxMvId8AWRrP0iDBuqqqQiaOTRMp
+         YUW9dhS1EmImzh7KDFnF7BvuTfYCyyDZXTiQT2YJWxCU5ejn7EuOW/U41UAUI+OShMyA
+         gvX5r71bwf3PmaER9tTz/5vXcV3gtANEuzn8qJkFSQKkubao9tx/KJOVXkMPKa+L+k9b
+         bhhS3yWyx/RcaRl2/Emsy/8cppFAJDMM1RRh8ZD5uqACIf5x4q2mTW2eRyGWFxm2TBEY
+         +uYA==
+X-Gm-Message-State: ACgBeo2AilVCMwRwc4bksqMhAj094AjaeoYhF4vFRG7qiCtXQfi5ipin
+        2E0nV3OyyFQLSFczYp6IBP8=
+X-Google-Smtp-Source: AA6agR5GZrhy96PxyNn6J8YPvp9VPH4OOXh2X8llRt4ZS2gJe7pGP8FEXNNx6VOywUColdgeHjlAMg==
+X-Received: by 2002:a7b:cbd0:0:b0:3a6:9f6:a3e8 with SMTP id n16-20020a7bcbd0000000b003a609f6a3e8mr1140857wmi.13.1660645755719;
+        Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.32.249])
+        by smtp.gmail.com with ESMTPSA id m9-20020adffe49000000b002251639bfd0sm1668407wrs.59.2022.08.16.03.29.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
+        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, geert@linux-m68k.org,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 3/3] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_gray8()
+Date:   Tue, 16 Aug 2022 12:29:03 +0200
+Message-Id: <20220816102903.276879-4-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220816102903.276879-1-jose.exposito89@gmail.com>
+References: <20220816102903.276879-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 2OAHxpOkvUNGt0S2Y3aNQQNYypKSwqCB
-X-Proofpoint-GUID: 2OAHxpOkvUNGt0S2Y3aNQQNYypKSwqCB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 adultscore=0 phishscore=0 mlxlogscore=999
- suspectscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0 spamscore=0
- impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208160039
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <quic_tdas@quicinc.com>
+Extend the existing test cases to test the conversion from XRGB8888 to
+grayscale.
 
-The clock gating control for TX/RX/WSA core bus clocks would be required
-to be reset(moved from hardware control) from audio core driver. Thus
-add the support for the reset clocks.
-
-Update the lpass_aon_cc_main_rcg_clk_src ops to park the RCG at XO after
-disable as this clock signal is used by hardware to turn ON memories in
-LPASS. Also add the external mclk to interface external MI2S.
-
-Fixes: a9dd26639d05 ("clk: qcom: lpass: Add support for LPASS clock controller for SC7280")
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 ---
- drivers/clk/qcom/lpassaudiocc-sc7280.c | 22 +++++++++++++++++++++-
- drivers/clk/qcom/lpasscorecc-sc7280.c  | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+), 1 deletion(-)
+ .../gpu/drm/tests/drm_format_helper_test.c    | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-diff --git a/drivers/clk/qcom/lpassaudiocc-sc7280.c b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-index 6067328..063e036 100644
---- a/drivers/clk/qcom/lpassaudiocc-sc7280.c
-+++ b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-@@ -23,6 +23,7 @@
- #include "clk-regmap-mux.h"
- #include "common.h"
- #include "gdsc.h"
-+#include "reset.h"
- 
- enum {
- 	P_BI_TCXO,
-@@ -248,7 +249,7 @@ static struct clk_rcg2 lpass_aon_cc_main_rcg_clk_src = {
- 		.parent_data = lpass_aon_cc_parent_data_0,
- 		.num_parents = ARRAY_SIZE(lpass_aon_cc_parent_data_0),
- 		.flags = CLK_OPS_PARENT_ENABLE,
--		.ops = &clk_rcg2_ops,
-+		.ops = &clk_rcg2_shared_ops,
- 	},
+diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
+index d8536db4de1e..2f548aa51a30 100644
+--- a/drivers/gpu/drm/tests/drm_format_helper_test.c
++++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
+@@ -37,6 +37,11 @@ struct convert_to_xrgb2101010_result {
+ 	const u32 expected[TEST_BUF_SIZE];
  };
  
-@@ -703,6 +704,18 @@ static const struct qcom_cc_desc lpass_audio_cc_sc7280_desc = {
- 	.num_clks = ARRAY_SIZE(lpass_audio_cc_sc7280_clocks),
- };
- 
-+static const struct qcom_reset_map lpass_audio_cc_sc7280_resets[] = {
-+	[LPASS_AUDIO_SWR_RX_CGCR] =  { 0xa0, 1 },
-+	[LPASS_AUDIO_SWR_TX_CGCR] =  { 0xa8, 1 },
-+	[LPASS_AUDIO_SWR_WSA_CGCR] = { 0xb0, 1 },
++struct convert_to_gray8_result {
++	unsigned int dst_pitch;
++	const u8 expected[TEST_BUF_SIZE];
 +};
 +
-+static const struct qcom_cc_desc lpass_audio_cc_reset_sc7280_desc = {
-+	.config = &lpass_audio_cc_sc7280_regmap_config,
-+	.resets = lpass_audio_cc_sc7280_resets,
-+	.num_resets = ARRAY_SIZE(lpass_audio_cc_sc7280_resets),
-+};
-+
- static const struct of_device_id lpass_audio_cc_sc7280_match_table[] = {
- 	{ .compatible = "qcom,sc7280-lpassaudiocc" },
- 	{ }
-@@ -779,6 +792,13 @@ static int lpass_audio_cc_sc7280_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	ret = qcom_cc_probe_by_index(pdev, 1, &lpass_audio_cc_reset_sc7280_desc);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register LPASS AUDIO CC Resets\n");
-+		pm_runtime_disable(&pdev->dev);
-+		return ret;
-+	}
-+
- 	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 	pm_runtime_put_sync(&pdev->dev);
-diff --git a/drivers/clk/qcom/lpasscorecc-sc7280.c b/drivers/clk/qcom/lpasscorecc-sc7280.c
-index 1f1f1bd..6ad19b0 100644
---- a/drivers/clk/qcom/lpasscorecc-sc7280.c
-+++ b/drivers/clk/qcom/lpasscorecc-sc7280.c
-@@ -190,6 +190,19 @@ static struct clk_rcg2 lpass_core_cc_ext_if1_clk_src = {
- 	},
+ struct convert_xrgb8888_case {
+ 	const char *name;
+ 	unsigned int pitch;
+@@ -46,6 +51,7 @@ struct convert_xrgb8888_case {
+ 	struct convert_to_rgb565_result rgb565_result;
+ 	struct convert_to_rgb888_result rgb888_result;
+ 	struct convert_to_xrgb2101010_result xrgb2101010_result;
++	struct convert_to_gray8_result gray8_result;
  };
  
-+static struct clk_rcg2 lpass_core_cc_ext_mclk0_clk_src = {
-+	.cmd_rcgr = 0x20000,
-+	.mnd_width = 8,
-+	.hid_width = 5,
-+	.parent_map = lpass_core_cc_parent_map_0,
-+	.freq_tbl = ftbl_lpass_core_cc_ext_if0_clk_src,
-+	.clkr.hw.init = &(const struct clk_init_data){
-+		.name = "lpass_core_cc_ext_mclk0_clk_src",
-+		.parent_data = lpass_core_cc_parent_data_0,
-+		.num_parents = ARRAY_SIZE(lpass_core_cc_parent_data_0),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
- 
- static struct clk_branch lpass_core_cc_core_clk = {
- 	.halt_reg = 0x1f000,
-@@ -283,6 +296,24 @@ static struct clk_branch lpass_core_cc_lpm_mem0_core_clk = {
- 	},
- };
- 
-+static struct clk_branch lpass_core_cc_ext_mclk0_clk = {
-+	.halt_reg = 0x20014,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x20014,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(const struct clk_init_data){
-+			.name = "lpass_core_cc_ext_mclk0_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&lpass_core_cc_ext_mclk0_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.flags = CLK_SET_RATE_PARENT,
-+			.ops = &clk_branch2_ops,
+ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+@@ -71,6 +77,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.dst_pitch = 0,
+ 			.expected = { 0x3FF00000 },
+ 		},
++		.gray8_result = {
++			.dst_pitch = 0,
++			.expected = { 0x4C },
 +		},
-+	},
-+};
-+
- static struct clk_branch lpass_core_cc_sysnoc_mport_core_clk = {
- 	.halt_reg = 0x23000,
- 	.halt_check = BRANCH_HALT_VOTED,
-@@ -326,6 +357,8 @@ static struct clk_regmap *lpass_core_cc_sc7280_clocks[] = {
- 	[LPASS_CORE_CC_LPM_CORE_CLK] = &lpass_core_cc_lpm_core_clk.clkr,
- 	[LPASS_CORE_CC_LPM_MEM0_CORE_CLK] = &lpass_core_cc_lpm_mem0_core_clk.clkr,
- 	[LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK] = &lpass_core_cc_sysnoc_mport_core_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK] = &lpass_core_cc_ext_mclk0_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK_SRC] = &lpass_core_cc_ext_mclk0_clk_src.clkr,
+ 	},
+ 	{
+ 		.name = "single_pixel_clip_rectangle",
+@@ -97,6 +107,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.dst_pitch = 0,
+ 			.expected = { 0x3FF00000 },
+ 		},
++		.gray8_result = {
++			.dst_pitch = 0,
++			.expected = { 0x4C },
++		},
+ 	},
+ 	{
+ 		/* Well known colors: White, black, red, green, blue, magenta,
+@@ -155,6 +169,15 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0x3FFFFC00, 0x000FFFFF,
+ 			},
+ 		},
++		.gray8_result = {
++			.dst_pitch = 0,
++			.expected = {
++				0xFF, 0x00,
++				0x4C, 0x99,
++				0x19, 0x66,
++				0xE5, 0xB2,
++			},
++		},
+ 	},
+ 	{
+ 		/* Randomly picked colors. Full buffer within the clip area. */
+@@ -206,6 +229,14 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0x2A20300C, 0x1B1705CD, 0x03844672, 0x00000000, 0x00000000,
+ 			},
+ 		},
++		.gray8_result = {
++			.dst_pitch = 5,
++			.expected = {
++				0x3C, 0x33, 0x34, 0x00, 0x00,
++				0x6F, 0x3C, 0x33, 0x00, 0x00,
++				0x34, 0x6F, 0x3C, 0x00, 0x00,
++			},
++		},
+ 	},
  };
  
- static struct regmap_config lpass_core_cc_sc7280_regmap_config = {
+@@ -381,11 +412,42 @@ static void xrgb8888_to_xrgb2101010_test(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
+ }
+ 
++static void xrgb8888_to_gray8_test(struct kunit *test)
++{
++	const struct convert_xrgb8888_case *params = test->param_value;
++	const struct convert_to_gray8_result *result = &params->gray8_result;
++	size_t dst_size;
++	__u8 *buf = NULL;
++	__u32 *xrgb8888 = NULL;
++	struct iosys_map dst, src;
++
++	struct drm_framebuffer fb = {
++		.format = drm_format_info(DRM_FORMAT_XRGB8888),
++		.pitches = { params->pitch, 0, 0 },
++	};
++
++	dst_size = conversion_buf_size(DRM_FORMAT_R8, result->dst_pitch,
++				       &params->clip);
++	KUNIT_ASSERT_GT(test, dst_size, 0);
++
++	buf = kunit_kzalloc(test, dst_size, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	iosys_map_set_vaddr(&dst, buf);
++
++	xrgb8888 = le32buf_to_cpu(test, params->xrgb8888, TEST_BUF_SIZE);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, xrgb8888);
++	iosys_map_set_vaddr(&src, xrgb8888);
++
++	drm_fb_xrgb8888_to_gray8(&dst, &result->dst_pitch, &src, &fb, &params->clip);
++	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
++}
++
+ static struct kunit_case drm_format_helper_test_cases[] = {
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb332_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb565_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb888_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_xrgb2101010_test, convert_xrgb8888_gen_params),
++	KUNIT_CASE_PARAM(xrgb8888_to_gray8_test, convert_xrgb8888_gen_params),
+ 	{}
+ };
+ 
 -- 
-2.7.4
+2.25.1
 
