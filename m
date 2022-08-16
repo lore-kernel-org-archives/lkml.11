@@ -2,167 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B838C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D45ECC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:47:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbiHPJrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
+        id S233517AbiHPJrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233969AbiHPJqh (ORCPT
+        with ESMTP id S233985AbiHPJqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:46:37 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69979A994
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:26:16 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso8951396pjl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:26:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=dRB3ek2IpNC0KMnCzrclpPy72oUpKT4lQZi90BQ6jjg=;
-        b=QJFyPrueNhZii7jHqZS60xLm2PgDusxYNWy+cySSKI3fXmsDG3G5JXPgZkPhn/6HY1
-         pZgM3RycunhesOwm+3sEdwmXfpmfCiGBXxfZoNcGqMpdiSEa0QdTleulp5w/FGFb/xQ0
-         Dfox8I3yRlhSyobXzDNQkF7RcbrOJEFWOY3o4/EbNo2yUGsuO0FNA+MOYampfHkS8Wip
-         Fip69USX/7G9JkKWbsdxyGv3IlcNY5VozJ8qGBeJkbBTN70GHu1lYcX0p6zIC9ed8+fv
-         tQ1mcJ98Afw95XG0qtzmoUL3/OqyDSaNdIbfqff//onYfcI+5XHKnHzfNADR/vf2b+ki
-         UeqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=dRB3ek2IpNC0KMnCzrclpPy72oUpKT4lQZi90BQ6jjg=;
-        b=w3Scxk9nH+qbgnNOM6VfOpodjZ0pclFdaLvgEXwAVqOVycgm4pq7ePKvH9CIlvxcuz
-         uyxRzuYfMrodutbL0op4zIu7sKgjuN2HUiB625AAQ2FmI5xc7rnmVW0nOTe2E8bLuScC
-         LfbUMLfXtuA7f0ax//S2RfE03T/kU8Lf2P1GgnNU2lAn41L9zEGc56JsmLDsvPrn5MyD
-         c70PypORNIES7un3YDOM1NVnY0gQgL/3j8UcMqFHmiLuiDA73BkSBq0PrjDIlxpolOjL
-         0QmmHzxq5E+HoMU3cTP0zAnLjn/n/+fTgSikczZyJ0wfL7z2XVwemwQL5pnXRpz3KtNx
-         F/ng==
-X-Gm-Message-State: ACgBeo2d67FfXGShbGRZU2KXwgsxuHvQA9604QzHX2WHeEDM00Tr8yuv
-        gVQCX1tziIf23sGLEwXsGgYP8IP5LBX4zkbPo2g=
-X-Google-Smtp-Source: AA6agR6XkfYmfBwjv/IdordNIWylrsd5Y89YxpRHhuQFNJZLhdsj+xDFduk4v11d5WmXI0Ztk31LBOPt/YWg/uNJKm8=
-X-Received: by 2002:a17:90b:190b:b0:1fa:a374:f563 with SMTP id
- mp11-20020a17090b190b00b001faa374f563mr546676pjb.52.1660638376362; Tue, 16
- Aug 2022 01:26:16 -0700 (PDT)
+        Tue, 16 Aug 2022 05:46:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C7BB81FB
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:16:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7EDAB81676
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:16:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D37C433D6;
+        Tue, 16 Aug 2022 09:16:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660641412;
+        bh=RCNCXlx7jOfPAXdgaKKdD1Ixni46vQe72pncfwQwk4I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BYM/KPVcKBlfC0RZP2E1ThUWz2FAq7nhixhlQIgpBXSHYhmg5kRYc8/6vL1U5EG0u
+         GM2F99Xwxi/GRJgsF5auG1EmgSmJy46L6781nVIR5y2hAlMlsWQT2iDRR5lF1XDIKb
+         Zd4SCD5Ph79kq6IuXqxeusnXRolJf0rUwYwbZ5/8=
+Date:   Tue, 16 Aug 2022 11:16:49 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>
+Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
+Message-ID: <YvtggZeUF9+xQu7D@kroah.com>
+References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-References: <20220812055710.357820-1-aneesh.kumar@linux.ibm.com>
- <20220812055710.357820-5-aneesh.kumar@linux.ibm.com> <87wnbacjsh.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <cd1c13ee-6fc3-bde8-96f9-8c3c93441275@linux.ibm.com> <CAC=cRTMZZ9bqyC7pnxD1zUWqfBiQ9U7im+8EYa_8GVK8iA7HXQ@mail.gmail.com>
- <e5fbaf30-1f97-63de-a9a5-2ae5359120ff@amd.com>
-In-Reply-To: <e5fbaf30-1f97-63de-a9a5-2ae5359120ff@amd.com>
-From:   huang ying <huang.ying.caritas@gmail.com>
-Date:   Tue, 16 Aug 2022 16:26:02 +0800
-Message-ID: <CAC=cRTO=+zdKGHRMLpzg2PfJ2rPSQL+xoqA5sAkafaaTYHPr+w@mail.gmail.com>
-Subject: Re: [PATCH v14 04/10] mm/demotion/dax/kmem: Set node's abstract
- distance to MEMTIER_DEFAULT_DAX_ADISTANCE
-To:     Bharata B Rao <bharata@amd.com>
-Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        "Huang, Ying" <ying.huang@intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, Wei Xu <weixugc@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 4:12 PM Bharata B Rao <bharata@amd.com> wrote:
->
-> On 8/16/2022 12:58 PM, huang ying wrote:
-> > On Tue, Aug 16, 2022 at 1:10 PM Aneesh Kumar K V
-> > <aneesh.kumar@linux.ibm.com> wrote:
-> >>
-> >> On 8/15/22 8:09 AM, Huang, Ying wrote:
-> >>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
-> >>>
-> >
-> > [snip]
-> >
-> >>>>
-> >>>> +/*
-> >>>> + * Default abstract distance assigned to the NUMA node onlined
-> >>>> + * by DAX/kmem if the low level platform driver didn't initialize
-> >>>> + * one for this NUMA node.
-> >>>> + */
-> >>>> +#define MEMTIER_DEFAULT_DAX_ADISTANCE       (MEMTIER_ADISTANCE_DRAM=
- * 2)
-> >>>
-> >>> If my understanding were correct, this is targeting Optane DCPMM for
-> >>> now.  The measured results in the following paper is,
-> >>>
-> >>> https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fa=
-rxiv.org%2Fpdf%2F2002.06018.pdf&amp;data=3D05%7C01%7Cbharata%40amd.com%7C1c=
-5015b55ff849e5275408da7f58e67d%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7=
-C637962317187856589%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2l=
-uMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DSxSC8WaKEeT=
-yfZXoqtI%2FZAoBXXp82PnTeyyavrV%2FGGg%3D&amp;reserved=3D0
-> >>>
-> >>> Section: 2.1 Read/Write Latencies
-> >>>
-> >>> "
-> >>> For read access, the latency of DCPMM was 400.1% higher than that of
-> >>> DRAM. For write access, it was 407.1% higher.
-> >>> "
-> >>>
-> >>> Section: 2.2 Read/Write Bandwidths
-> >>>
-> >>> "
-> >>> For read access, the throughput of DCPMM was 37.1% of DRAM. For write
-> >>> access, it was 7.8%
-> >>> "
-> >>>
-> >>> According to the above data, I think the MEMTIER_DEFAULT_DAX_ADISTANC=
-E
-> >>> can be "5 * MEMTIER_ADISTANCE_DRAM".
-> >>>
-> >>
-> >> If we look at mapping every 100% increase in latency as a memory tier,=
- we essentially
-> >> will have 4 memory tier here. Each memory tier is covering a range of =
-abstract distance 128.
-> >> which makes a total adistance increase from MEMTIER_ADISTANCE_DRAM by =
-512. This puts
-> >> DEFAULT_DAX_DISTANCE at 1024 or  MEMTIER_ADISTANCE_DRAM * 2
-> >
-> > If my understanding were correct, you are suggesting to use a kind of
-> > logarithmic mapping from latency to abstract distance?  That is,
-> >
-> >   abstract_distance =3D log2(latency)
-> >
-> > While I am suggesting to use a kind of linear mapping from latency to
-> > abstract distance.  That is,
-> >
-> >   abstract_distance =3D C * latency
-> >
-> > I think that linear mapping is easy to understand.
-> >
-> > Are there some good reasons to use logarithmic mapping?
->
-> Also, what is the recommendation for using bandwidth measure which
-> may be available from HMAT for CXL memory? How is bandwidth going
-> to influence the abstract distance?
+On Tue, Aug 16, 2022 at 04:44:26PM +0800, Kefeng Wang wrote:
+> From: Liu Shixin <liushixin2@huawei.com>
+> 
+> The page on pcplist could be used, but not counted into memory free or
+> avaliable, and pcp_free is only showed by show_mem(). Since commit
+> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+> significant decrease in the display of free memory, with a large number
+> of cpus and nodes, the number of pages in the percpu list can be very
+> large, so it is better to let user to know the pcp count.
+> 
+> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  drivers/base/node.c | 14 +++++++++++++-
+>  fs/proc/meminfo.c   |  9 +++++++++
+>  2 files changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index eb0f43784c2b..846864e45db6 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
+>  	struct sysinfo i;
+>  	unsigned long sreclaimable, sunreclaimable;
+>  	unsigned long swapcached = 0;
+> +	unsigned long free_pcp = 0;
+> +	struct zone *zone;
+> +	int cpu;
+>  
+>  	si_meminfo_node(&i, nid);
+>  	sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
+> @@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
+>  #ifdef CONFIG_SWAP
+>  	swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
+>  #endif
+> +	for_each_populated_zone(zone) {
+> +		if (zone_to_nid(zone) != nid)
+> +			continue;
+> +		for_each_online_cpu(cpu)
+> +			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
+> +	}
+> +
+>  	len = sysfs_emit_at(buf, len,
+>  			    "Node %d MemTotal:       %8lu kB\n"
+>  			    "Node %d MemFree:        %8lu kB\n"
+> +			    "Node %d PcpFree:        %8lu kB\n"
 
-This is a good question.
+First off, this sysfs file is a huge violation of the normal sysfs
+rules, so I will not allow any new entries to be added.  In fact, the
+whole thing should just be removed and multiple files created in its
+place.
 
-Per my understanding, latency stands for idle latency by default.  But
-in practice, the latency under some reasonable memory accessing
-throughput is the "real" latency.  So the memory with lower bandwidth
-should have a larger abstract distance than the memory with higher
-bandwidth even if the idle latency is the same.  But I don't have a
-perfect formula to combine idle latency and bandwidth into abstract
-distance.  One possibility is to increase abstract distance if the
-bandwidth of the memory is much lower than that of DRAM.
+Can you send a patch to do that instead please?
 
-Best Regards,
-Huang, Ying
+thanks,
+
+greg k-h
