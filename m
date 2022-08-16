@@ -2,86 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD68C32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2325AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234323AbiHPKH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S234288AbiHPKHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234236AbiHPKG7 (ORCPT
+        with ESMTP id S234264AbiHPKHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:06:59 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8EC844EE
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:24:37 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id r17so14049959lfm.11
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:24:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=dA9DhESaxIAdSuqYA69VElvQhXKaLx6GMaT3o/MxfcQ=;
-        b=pAYcHJ/DCBmLR9cpFpCsw+KdXs1oauKhBl0AkYjD7c8nyjJj3+eSFlS1/VCuw6wHn9
-         G6OSm0FBh/QkaDRo1ti/hDuY4VmQvslzvGnlspUuKrS3Ky3DqzYNHDKNgYRhw1Cpkhnu
-         cQtq6kzHMGotOKUXCPwoF0INia1hvQ/0Wt/ItkiqaFpHIy9U0m0cfVYiINu5hbBYp9bK
-         72rA5DZv4lzP86L9AgRiQoJjX8/H1O7S3YDKfwWUZan2CnkXRaTyakvAAzoE+Wd/YAAd
-         Hp/L5aZT4N6+3GtRgdA6f5T5yzIrcXG+IQ1Zr2670IWXX4JWNoWAye41nXDKSW7HVCnC
-         aj+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=dA9DhESaxIAdSuqYA69VElvQhXKaLx6GMaT3o/MxfcQ=;
-        b=pDv9xOkxpv5putDhf4CMKEYFw8DzlRU/8/CtYViy865Qu8NGNaEFZPlahuBUthHSh+
-         1AAlHNUoQr+r/qfDp/FZBUIc+u3o51Tq1WA+/3YE5ePL3cDvCbMdfaZOx0ylXMwdwI9f
-         NdW66w7ibjcVjiUqRNPUpc306FtT7Z5Yx+Gb0Q3YtZVNaYD+F970yb8YuvEUJIquKg13
-         ldEfRvhyXEwbUWbDQKI0aSyf+a9u28PWggR3EkknDgpS7Sq/BLb2sboSvEaqrejP98Q4
-         9gPHVSu+qE5VomW8VZLDKqdJzpEevTqOuxvnOIwf7pIou9D4RcWECD6Nu/VetYXTG841
-         Ub9Q==
-X-Gm-Message-State: ACgBeo09iboXZi/q2/PJZPT4CE6izjhrO8qRMSDyzpjAmkdZdeOJetCt
-        6GRjz7LDeNen1G4ZLZaWKiQjfg==
-X-Google-Smtp-Source: AA6agR4SacvxqdwEQnvdddBBMXsDS1BirINw4bHykF8sOxTwdBrYtb13QtvhxD+krOjDjpFrrNwVeQ==
-X-Received: by 2002:a05:651c:154b:b0:25e:c73d:a786 with SMTP id y11-20020a05651c154b00b0025ec73da786mr6211788ljp.397.1660641875620;
-        Tue, 16 Aug 2022 02:24:35 -0700 (PDT)
-Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id v11-20020a056512048b00b0048a8c907fe9sm1326420lfq.167.2022.08.16.02.24.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 02:24:35 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     tomasz.figa@gmail.com, linus.walleij@linaro.org,
-        saravanak@google.com, alim.akhtar@samsung.com,
-        s.nawrocki@samsung.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel-team@android.com, linux-samsung-soc@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v1] pinctrl: samsung: Finish initializing the gpios before registering them
-Date:   Tue, 16 Aug 2022 12:24:32 +0300
-Message-Id: <166064186857.38288.3043355425920212927.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727013349.3056826-1-saravanak@google.com>
-References: <20220727013349.3056826-1-saravanak@google.com>
+        Tue, 16 Aug 2022 06:07:02 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA01975399;
+        Tue, 16 Aug 2022 01:44:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660639451; x=1692175451;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=utA9ZYYdfIzqRA7D5VhDGQl155B+SJSPa8zrvZsBoyo=;
+  b=W3X4oA0n//X/JB6no7U5QVmmgcnB9EciEP7whI6w4+mH+vP+pYS4yy91
+   5Ny1jQHp/KyxH2YDkOOlj3aAt6ByvbGRMlUs0NjZCbeXuUf7SgNggjml/
+   0DtrILzcxt1amq5eCaPsRG+U1bZ3svNhYt8THAYmZShzFYxB4L5STbtNR
+   q1OpoL03owXC43jmeyqq4hdRRilt6u86sQwIuGFBXnajam59tsWb2IXRb
+   BxBCHx7kjasZkkwOJ3MPf6mfgQbGY3ntAcfK/f1yUVheMRqjj/UrvBFQs
+   +FnCI3PQw4sxzYw3q8av1losN9oSviw1IRMC6K5Vn0RZXnIxwYouilgR8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292161431"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="292161431"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:44:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="667018321"
+Received: from rongch2-desk.sh.intel.com (HELO localhost) ([10.239.159.175])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:44:09 -0700
+Date:   Tue, 16 Aug 2022 16:44:07 +0800
+From:   kernel test robot <rong.a.chen@intel.com>
+To:     Ashok Raj <ashok.raj@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Borislav Petkov <bp@suse.de>,
+        linux-doc@vger.kernel.org
+Subject: [tip:x86/microcode 1/2] htmldocs:
+ Documentation/admin-guide/tainted-kernels.rst:143: WARNING: Block quote ends
+ without a blank line; unexpected unindent.
+Message-ID: <YvtY15K5lzCW9EmI@rongch2-desk2>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Jul 2022 18:33:48 -0700, Saravana Kannan wrote:
-> As soon as a gpio is registered, it should be usable by a consumer. So,
-> do all the initialization before registering the gpios. Without this
-> change, a consumer can request a GPIO IRQ and have the gpio to IRQ
-> mapping fail.
-> 
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/microcode
+head:   71da8a554f25713964a919311c324e5a32f08239
+commit: 35da8ad78e9b1a25d95a281966c439da1ef9a98a [1/2] x86/microcode: Document the whole late loading problem
+reproduce: make htmldocs
 
-Applied, thanks!
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-[1/1] pinctrl: samsung: Finish initializing the gpios before registering them
-      https://git.kernel.org/pinctrl/samsung/c/152a81a0b1204e9c7f4af0004b5ed7a8d67dd037
+All warnings (new ones prefixed by >>):
 
-Best regards,
+>> Documentation/admin-guide/tainted-kernels.rst:143: WARNING: Block quote ends without a blank line; unexpected unindent.
+
+vim +143 Documentation/admin-guide/tainted-kernels.rst
+
+896dd323abbf6a Thorsten Leemhuis         2019-01-08  111  
+896dd323abbf6a Thorsten Leemhuis         2019-01-08  112   0)  ``G`` if all modules loaded have a GPL or compatible license, ``P`` if
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  113       any proprietary module has been loaded.  Modules without a
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  114       MODULE_LICENSE or with a MODULE_LICENSE that is not recognised by
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  115       insmod as GPL compatible are assumed to be proprietary.
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  116  
+896dd323abbf6a Thorsten Leemhuis         2019-01-08  117   1)  ``F`` if any module was force loaded by ``insmod -f``, ``' '`` if all
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  118       modules were loaded normally.
+337c188dff4a85 Mauro Carvalho Chehab     2016-11-07  119  
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  120   2)  ``S`` if the kernel is running on a processor or system that is out of
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  121       specification: hardware has been put into an unsupported configuration,
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  122       therefore proper execution cannot be guaranteed.
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  123       Kernel will be tainted if, for example:
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  124  
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  125       - on x86: PAE is forced through forcepae on intel CPUs (such as Pentium M)
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  126         which do not report PAE but may have a functional implementation, an SMP
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  127         kernel is running on non officially capable SMP Athlon CPUs, MSRs are
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  128         being poked at from userspace.
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  129       - on arm: kernel running on certain CPUs (such as Keystone 2) without
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  130         having certain kernel features enabled.
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  131       - on arm64: there are mismatched hardware features between CPUs, the
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  132         bootloader has booted CPUs in different modes.
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  133       - certain drivers are being used on non supported architectures (such as
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  134         scsi/snic on something else than x86_64, scsi/ips on non
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  135         x86/x86_64/itanium, have broken firmware settings for the
+547f574fd9d5e3 Mathieu Chouquet-Stringer 2020-12-02  136         irqchip/irq-gic on arm64 ...).
+35da8ad78e9b1a Ashok Raj                 2022-08-13  137       - x86/x86_64: Microcode late loading is dangerous and will result in
+35da8ad78e9b1a Ashok Raj                 2022-08-13  138         tainting the kernel. It requires that all CPUs rendezvous to make sure
+35da8ad78e9b1a Ashok Raj                 2022-08-13  139         the update happens when the system is as quiescent as possible. However,
+35da8ad78e9b1a Ashok Raj                 2022-08-13  140         a higher priority MCE/SMI/NMI can move control flow away from that
+35da8ad78e9b1a Ashok Raj                 2022-08-13  141         rendezvous and interrupt the update, which can be detrimental to the
+35da8ad78e9b1a Ashok Raj                 2022-08-13  142         machine.
+35da8ad78e9b1a Ashok Raj                 2022-08-13 @143  e
+
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+0-DAY CI Kernel Test Service
+https://01.org/lkp
+
