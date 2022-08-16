@@ -2,97 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59536C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFF7C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236404AbiHPQbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        id S236484AbiHPQbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236489AbiHPQbH (ORCPT
+        with ESMTP id S236503AbiHPQb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:31:07 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3D27FF8C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:31:01 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id w19so19922442ejc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:31:01 -0700 (PDT)
+        Tue, 16 Aug 2022 12:31:28 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B9B7FF8A;
+        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id r69so9692615pgr.2;
+        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=zQV/5VT7wDalmkEhlghHzSuKJXiFKNeXoOeTjzFLGpk=;
-        b=CAbU+smotGSq8NH4wYkOstoaMnYiFDhJwY6nrngetrdZ/mJm6/jTaIqqLaGPW30O10
-         ZPMiWKhTp58dBD5Ntrss1tFjKNz1xRr7g4dy+jzKSqTJRl+51VJOqZBH8d4xKgUoIpN+
-         AiJJ/PX/V4eJsxt2SYRVVb3V+v70ARkV2TjPDAPUqu4ckg5GXKtVRH2X/JKOEc4DnukI
-         Ei+99QevtnywDfNadIB1PROfUmaw4YB6gXB8/gFcqzbJbl/GTx7g80v7RjN4FAeXb9tx
-         digxmK7PCQNHpztxtFJDj5ro22pMCBNqdy7F4imn3cBFP4p3HZxrPqEo/MEgEC0m7QtA
-         2VTg==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=OWA+Z0+/O1EA7heD+/eE4RpipBhiyIekMqq5kYmUIfs=;
+        b=M+x6wNEzsTNJZ7HNuv5p+qPE7wTSY1jU1LA/N1j9ls2BfESkr9bENtx2G4I2WAOBKF
+         SkQJKneOmbCgTk6RXVwmBfB+X7o1CxRpt75aAXQ0PQwwjeyqaNs+9J9SFPpoDcgFCpBD
+         QTsu8P/88JljdjZwHHTxVnwlD5iNwhojAUJtMcfGEd5rEUgilpf6TW93ILO/ReyF2b/u
+         6kAdX+kWmMGsFFoP2Lstept34RYIto5bBB7N7eMczQ4x4aBT+ULxQmTTCNz+fNRb3dlL
+         HhiSp8Bfs9JRX/GWOBoTdZGw21+YdxcD6qy/pGmVy6rpbbsNetAZMcalJeZ3PxafFkOy
+         g1kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=zQV/5VT7wDalmkEhlghHzSuKJXiFKNeXoOeTjzFLGpk=;
-        b=G7xLY5xbRwA+kMS7wbLb1SJFPHZw9o9BPspLl5KwbLS9yZ/O/PQdUk5/f2XkJVsmkJ
-         k5lDd/h04qM7sdD6qLCqNnbzeVhjGSc6H1myqvZDEX8leStWTg85grrZn79/jmQ18EJu
-         ewZK+/oenbW41kdU8A5oyNyB1BXqSrLfG6tqVysaFVr5saMiXY5HYRRYFlG6h6kbiSqz
-         DoKLDfEEkSWJArzyz9QtSxtqlb4IMPpdu8c72VN35Zoh37Ad5KwqO2OK/tZTU5uYpEYy
-         EnNunaiufUXr0BXkWRGcKVRzvbJYa0S+aC/jHqwyFbpQ8ZNF3pjeqSZNVpSz/E1/hVIu
-         mf0A==
-X-Gm-Message-State: ACgBeo0NSs5gzSsBrmd3kTbfOzEXCwYP3wHznNTmuGyyED306eGElSBY
-        JYZIrXL1Yi1KaHQbvStrQaJK2w==
-X-Google-Smtp-Source: AA6agR4GtDno2qO3fgrQ9XAPgCZKZowFbrnnmPr+RSngGYDTP4QSH9ExK0n5/ZwnuuaI+FgJxxrvhA==
-X-Received: by 2002:a17:907:3e21:b0:730:92bb:7fcd with SMTP id hp33-20020a1709073e2100b0073092bb7fcdmr14039523ejc.170.1660667459930;
-        Tue, 16 Aug 2022 09:30:59 -0700 (PDT)
-Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id r30-20020a50d69e000000b0043bbc9503ddsm8730819edi.76.2022.08.16.09.30.59
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=OWA+Z0+/O1EA7heD+/eE4RpipBhiyIekMqq5kYmUIfs=;
+        b=3BImHZ3WNIO9Xm/Xgi5nbJPo5darSJrUicDUpUdtR3yvP5DxESTLRtU1dS1JFPP4o6
+         HPFj4dOHnfLtA/lTbReSMQtgCK3YyiUc+9BH810u56JnhQPplvT43H/Tyds9UPzTDvAR
+         e2mbU6Inxvky0091NUpou1j+QHmVx6CFmpnydHgB+O+rc60a/A2YJlVizRIZsxjziq3Q
+         zNW3JAtI1YpnFAkkbrKAIhKLDv/poY3U5LyhBEbLea39e/E9NdsRNB65NaV/gwQBb8Ml
+         Z2W9+oZnLSBnKk+t6h+G+yQZXFVK68A/knt/pXiMOzhjp9yh6Ob38Yt+3ktK76PINIan
+         a6ig==
+X-Gm-Message-State: ACgBeo1DTFomwFpjNeRFnhncTG0CdzU7jDIIefDkm9C4Q67q5OnmqYUo
+        MwvRMO468Z0ZFBNIEFF824Y=
+X-Google-Smtp-Source: AA6agR4Fv7w4ALaSxKqngT2CxCuZQR5SwOw0ac8clzW30E3xAO5Swo+o0p0bAyGj+86t+OGTbYP67g==
+X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id k11-20020a63d10b000000b0041dbd7d7759mr18535300pgg.196.1660667487026;
+        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id k13-20020a170902ce0d00b0016d738d5dbbsm9257840plg.97.2022.08.16.09.31.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 09:30:59 -0700 (PDT)
-From:   Andrew Jones <ajones@ventanamicro.com>
-To:     linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, daolu@rivosinc.com,
-        jszhang@kernel.org, palmer@dabbelt.com, Conor.Dooley@microchip.com,
-        re@w6rz.net, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH] riscv: Ensure isa-ext static keys are writable
-Date:   Tue, 16 Aug 2022 18:30:58 +0200
-Message-Id: <20220816163058.3004536-1-ajones@ventanamicro.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 16 Aug 2022 09:31:26 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 02:35:42 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <YvsCftVUqurKIaCC@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <CAGxU2F7+L-UiNPtUm4EukOgTVJ1J6Orqs1LMvhWWvfL9zWb23g@mail.gmail.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGxU2F7+L-UiNPtUm4EukOgTVJ1J6Orqs1LMvhWWvfL9zWb23g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-riscv_isa_ext_keys[] is an array of static keys used in the unified
-ISA extension framework. The keys added to this array may be used
-anywhere, including in modules. Ensure the keys remain writable by
-placing them in the data section.
+On Tue, Aug 16, 2022 at 09:00:45AM +0200, Stefano Garzarella wrote:
+> Hi Bobby,
 
-The need to change riscv_isa_ext_keys[]'s section was found when the
-kvm module started failing to load. Commit 8eb060e10185 ("arch/riscv:
-add Zihintpause support") adds a static branch check for a newly
-added isa-ext key to cpu_relax(), which kvm uses.
+..
 
-Fixes: c360cbec3511 ("riscv: introduce unified static key mechanism for ISA extensions")
-Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
----
- arch/riscv/kernel/cpufeature.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Please send next versions of this series as RFC until we have at least an
+> agreement on the spec changes.
+> 
+> I think will be better to agree on the spec before merge Linux changes.
+> 
+> Thanks,
+> Stefano
+> 
 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index 553d755483ed..3b5583db9d80 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -28,7 +28,7 @@ unsigned long elf_hwcap __read_mostly;
- /* Host ISA bitmap */
- static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
- 
--__ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
-+DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
- EXPORT_SYMBOL(riscv_isa_ext_keys);
- 
- /**
--- 
-2.37.1
+Duly noted, I'll tag it as RFC on the next send.
 
+
+Best,
+Bobby
