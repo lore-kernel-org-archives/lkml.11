@@ -2,90 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB1DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A67C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234358AbiHPLUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52310 "EHLO
+        id S234010AbiHPLUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233858AbiHPLTr (ORCPT
+        with ESMTP id S233895AbiHPLTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 07:19:47 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC82274CDB;
-        Tue, 16 Aug 2022 02:46:58 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id ch17-20020a17090af41100b001fa74771f61so1192664pjb.0;
-        Tue, 16 Aug 2022 02:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=pHRc3XNJRVdOlhGjXylbNoDow3CdvGIRDLCNfCwr39A=;
-        b=Dp4lZy24fLiDRTYbfL/btDWe4UT2Mo6FngI8Ahi75hGbrSe27KKncW1seWJooFwbLJ
-         0uBC+i730zsIwpaAsU4yLw7h92LkIXYX1aKtDy9vbOrPEt7vO3F7BNN4idj0EYfjvXQH
-         ryBZWhKGJBJgqp2ZlTqzIsuLeik2oWjgyr/7Ch0tGITiYbn+7h9y4bmi9HK3WIjvXVsQ
-         lQtm14c2utZhR0wKNDiSVrzDe5GMUP1D8FAtEcuNATnwiEQOKrY/bbHVm6W0kb4tIdD2
-         Ul0rAkNIVycp6cuPgCp37eWPGfGVIX49WsFq6dvqCmBZvVk8jNBAS9PqudgsoEntOStt
-         WlYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=pHRc3XNJRVdOlhGjXylbNoDow3CdvGIRDLCNfCwr39A=;
-        b=zOJTiTTygKMA8Pz7B4KdmzFE6t3IUy8fHSY1lCRcECFrV2Qa8icLFcQJiG1bneFfsn
-         yi38pccHxdqBDnbCcZ5VHUfuSxGjjLRz94oYUjZ/qUAcD6Qi5KGxU3ph9vjrvJj/dRnD
-         ouYT1MFZq34pHXWAYwqvTKO6feT4nMht/BN/MFrlNeZ2nW56EqkwHU8hZYSg/hMD8gmS
-         AWRwI4D2l6KDFj+JiNXUTG1hZPyLPOI6JgkTCJMPwWlTTNG1DkyA9DtsI+cecOkO9h3H
-         Fk4lrLDQC9fkxpfg/I+2MkzSl/TaMjGSSieu0JY9G90nfMQ2zFiRM9T8uLNfV/XY+VKZ
-         Wg0A==
-X-Gm-Message-State: ACgBeo1DVyZSgSDH/1Qq+/2Czl+P/ppS//XLVys3HcbQzZImO+WFmmUU
-        s/zDPRZyy9xdTkPTFgmSC/PUTvMFy2Rhig==
-X-Google-Smtp-Source: AA6agR7c2QGtIrRRRVg2sQ3CWbprJCmOgPTeTKk7l5ouPudQj59Nh8ZSBuwCXdv+2WInsIlFSElPNA==
-X-Received: by 2002:a17:902:d546:b0:16e:c70c:fdf5 with SMTP id z6-20020a170902d54600b0016ec70cfdf5mr21500871plf.100.1660643217711;
-        Tue, 16 Aug 2022 02:46:57 -0700 (PDT)
-Received: from localhost.localdomain (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id f12-20020a170902e98c00b0016bee668a5asm8578767plb.161.2022.08.16.02.46.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 02:46:56 -0700 (PDT)
-From:   Marvin Lin <milkfafa@gmail.com>
-To:     linux-edac@vger.kernel.org, rric@kernel.org, james.morse@arm.com,
-        tony.luck@intel.com, mchehab@kernel.org, bp@alien8.de,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
-        benjaminfair@google.com, yuenn@google.com, venture@google.com,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
-        tali.perry1@gmail.com, ctcchien@nuvoton.com, kflin@nuvoton.com,
-        Marvin Lin <milkfafa@gmail.com>
-Subject: [PATCH v13 0/3] EDAC/nuvoton: Add NPCM memory controller driver
-Date:   Tue, 16 Aug 2022 17:46:38 +0800
-Message-Id: <20220816094641.8484-1-milkfafa@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDD37E025;
+        Tue, 16 Aug 2022 02:50:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32EE6B8165D;
+        Tue, 16 Aug 2022 09:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD3FC433C1;
+        Tue, 16 Aug 2022 09:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660643404;
+        bh=j7OD01BeQky2yyGnFRKJwW2CZrOcLTaiWu0OC6mAhKk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=saKTtlrvrYOUXC5N+ab/ECi+H2W7J6qjYMYJVooEh3opiy1oPj85/x1CaCOAJ7E3R
+         lGiuB+rwqesV9DGEja1zPurkclOMxYy99nXkIJgOSsx7TWws5Wj2C/AJdXuH++2a1Z
+         Z9ietn+WxBELZXF4vMijO7pFrDjVI0F7Y5guY3wU=
+Date:   Tue, 16 Aug 2022 11:50:01 +0200
+From:   gregkh <gregkh@linuxfoundation.org>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     johan <johan@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-usb <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH] USB: serial: option: add support for Cinterion
+ MV32-WA/WB RmNet mode
+Message-ID: <YvtoSQUVuUkMCXtl@kroah.com>
+References: <20220810033050.3117-1-slark_xiao@163.com>
+ <54f2b923.341c.182a606bab3.Coremail.slark_xiao@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <54f2b923.341c.182a606bab3.Coremail.slark_xiao@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add DTS node, dt-bindings document and driver for memory
-controller present on Nuvoton NPCM SoCs.
+On Tue, Aug 16, 2022 at 05:40:35PM +0800, Slark Xiao wrote:
+> Any response？
 
-The memory controller supports single bit error correction and double bit
-error detection (in-line ECC in which a section 1/8th of the memory device
-used to store data is used for ECC storage).
+To what?
 
-Marvin Lin (3):
-  arm: dts: nuvoton: Add node for NPCM memory controller
-  dt-bindings: edac: nuvoton: Add document for NPCM memory controller
-  EDAC/nuvoton: Add NPCM memory controller driver
+It was the middle of the merge window, we can't do anything with new
+patches until after -rc1 is out, and then we have a few thousand to dig
+through afterward.
 
- .../edac/nuvoton,npcm-memory-controller.yaml  |  54 ++
- MAINTAINERS                                   |   7 +
- arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   7 +
- drivers/edac/Kconfig                          |  11 +
- drivers/edac/Makefile                         |   1 +
- drivers/edac/npcm_edac.c                      | 512 ++++++++++++++++++
- 6 files changed, 592 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
- create mode 100644 drivers/edac/npcm_edac.c
+Relax, there is no rush here.
 
--- 
-2.17.1
+thanks,
 
+greg k-h
