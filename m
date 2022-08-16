@@ -2,110 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671ECC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF27C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 15:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236019AbiHPPLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 11:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
+        id S235628AbiHPPLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 11:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233117AbiHPPLk (ORCPT
+        with ESMTP id S235053AbiHPPLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 11:11:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC6A7269D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660662698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jEYRKj1nlSqtCrHOWIArTdrELJ6+dwpREnZJE+d8OE8=;
-        b=NlhGKQg5Fnfz2cejt3KVKddjp9zO/GJ3dOkfIY9H+biFvjT6LRyU/x7L3rzD0aUQsxQwgV
-        3PwFjJqaPPRwI6hg7qBu5j8BK+lp4s99H1BR9NCYRmMa87pSISXqjAtDZVTkeFdFOeRNR+
-        HHIDldqEF2KXr0TTTBVuCQpZtefUF84=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-581-d357ltXUNxGd5u3M3tPu0g-1; Tue, 16 Aug 2022 11:11:34 -0400
-X-MC-Unique: d357ltXUNxGd5u3M3tPu0g-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE868811E87;
-        Tue, 16 Aug 2022 15:11:32 +0000 (UTC)
-Received: from llong.com (unknown [10.22.10.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BC25403340;
-        Tue, 16 Aug 2022 15:11:32 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v4 0/3] sched, cgroup/cpuset: Keep user set cpus affinity
-Date:   Tue, 16 Aug 2022 11:11:16 -0400
-Message-Id: <20220816151119.29534-1-longman@redhat.com>
+        Tue, 16 Aug 2022 11:11:43 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D980B1408A;
+        Tue, 16 Aug 2022 08:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:To:From:Subject:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=AnHbybbrXeCL0DxbE8ki5M5WAm/DsTNQ38HW5TopKkA=;
+        t=1660662700; x=1661872300; b=X3t6t0tv/ISzVUkt9rX9LMgyHDW7Uzp+0QEIu1Ih3ZtLTLT
+        UrC/AWjztf6aGBeWly8+SlkzvI98dv1KZ/yx/x/ha3veaMgf4Oy/0lXSuql2LWsQdDj1imsvbdMgZ
+        1xjeijBo4OZci3/CxeDG9y12dgI6Fgnof4GdNR+kvYfk8P8LWtqvO/G7TrqW+38N6n874Vd9UeWes
+        YApF5jsTNXy4HP0sOBBAZGuapXO165cq0otPOg5GDHBS3X6+ngkx2TNZWiijHJTTOwUbZWBQV5ApV
+        FkorQiQGiNSwbq7VqH4KT7+TVhS2xqfFhXBNBEnerJhFqbM/xOWTAWaKFGaoMycg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oNyE9-009ZK8-2r;
+        Tue, 16 Aug 2022 17:11:33 +0200
+Message-ID: <6a7b0bc82647440a9036a8e637807da618552cc5.camel@sipsolutions.net>
+Subject: Re: [syzbot] upstream boot error: general protection fault in
+ nl80211_put_iface_combinations
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     syzbot <syzbot+684d4ca200fda0b2141e@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Date:   Tue, 16 Aug 2022 17:11:32 +0200
+In-Reply-To: <00000000000033169005e657a852@google.com>
+References: <00000000000033169005e657a852@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v4:
- - Update patch 1 to make sched_setaffinity() the only function to
-   update user_cpus_ptr to make the logic simpler and
-   easier to understand. restrict_cpus_allowed_ptr() and
-   relax_compatible_cpus_allowed_ptr() will just use it if present.
+Hmm.
 
-v3:
- - Attach a new patch 2 to introduce a copy_user_cpus_mask() to copy
-   out user masks with lock protection & use it in patch 3.
+> HEAD commit:    568035b01cfb Linux 6.0-rc1
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D145d8a4708000=
+0
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D126b81cc3ce4f=
+07e
+>=20
 
-v2:
- - Rework the v1 patch by extending the semantics of user_cpus_ptr to
-   store user set cpus affinity and keeping to it as much as possible.
+I can't reproduce this, and I don't see anything obviously wrong with
+the code there in hwsim either.
 
-The user_cpus_ptr field is added by commit b90ca8badbd1 ("sched:
-Introduce task_struct::user_cpus_ptr to track requested affinity")
-which uses it narrowly to allow keeping cpus affinity intact with
-asymmetric cpu setup.
+Similarly with
+https://syzkaller.appspot.com/bug?extid=3D655209e079e67502f2da
 
-This patchset extends user_cpus_ptr to store user set cpus affinity via
-sched_setaffinity() API. With that information avaiable, it will enable
-cpuset to keep cpus afinity as close to what the user wants as possible
-within the cpu list constraint of the current cpuset. Otherwise some
-change to the cpuset hierarchy may reset the cpumask of the tasks in
-the affected cpusets to the default cpuset value even if those tasks
-have cpus affinity explicitly set by the users before.
+Anyone have any ideas what to do next?
 
-It also means that once sched_setaffinity() is called, user_cpus_ptr
-will remain allocated until the task exits.
-
-Waiman Long (3):
-  sched: Use user_cpus_ptr for saving user provided cpumask in
-    sched_setaffinity()
-  sched: Provide copy_user_cpus_mask() to copy out user mask
-  cgroup/cpuset: Keep user set cpus affinity
-
- include/linux/sched.h  |   1 +
- kernel/cgroup/cpuset.c |  28 +++++++++-
- kernel/sched/core.c    | 119 ++++++++++++++++++++++++-----------------
- kernel/sched/sched.h   |   1 -
- 4 files changed, 98 insertions(+), 51 deletions(-)
-
--- 
-2.31.1
-
+johannes
