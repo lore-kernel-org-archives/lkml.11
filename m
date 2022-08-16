@@ -2,199 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE44C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59657C32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbiHPHGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 03:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        id S231718AbiHPHHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbiHPHFV (ORCPT
+        with ESMTP id S231653AbiHPHH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 03:05:21 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A25133886;
-        Mon, 15 Aug 2022 19:48:20 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0VMOLX7E_1660618094;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VMOLX7E_1660618094)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Aug 2022 10:48:15 +0800
-Message-ID: <1660617956.233549-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: upstream kernel crashes
-Date:   Tue, 16 Aug 2022 10:45:56 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com, Andres Freund <andres@anarazel.de>
-References: <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
- <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
- <20220815161423-mutt-send-email-mst@kernel.org>
- <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
- <20220815170444-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220815170444-mutt-send-email-mst@kernel.org>
+        Tue, 16 Aug 2022 03:07:27 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2D7125D4D;
+        Mon, 15 Aug 2022 19:42:15 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 6C16E32006F5;
+        Mon, 15 Aug 2022 22:42:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 15 Aug 2022 22:42:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1660617729; x=
+        1660704129; bh=HaNW5dTGTh6zJmCxeaRGccdi0HcEeWElpDsk1nTJqRI=; b=t
+        O3umcuiU77ia+LxIcGxlsoBkD7xGUydhdJ15OVQ8IJk9/9QnSs6Nw4VOHLJvQZPR
+        Ca1LbWEeCaqVL2cKflNzJaTwpFPgJEqXlAmZ2T6VBtQD6Yr37epnef8pxbcXYlvW
+        N+5zRAps2D9YmYCHJxmyjgvszqrWn0AYMVHhKNPANOYg1IV4dvYgouGLe+vwgl5e
+        rrYL2n3bnJgPrD3fgSj6c8U7+KftUG8ATZfp86bgdH8fJ0zvZQDRu4A/LdJzCh3Z
+        uq7KzhuzOoGpxprxU+n2WwFfyjR8y08ICKbOgOGeDL+Es3zqUy0I7fqSS5SMTu3O
+        cT5VlqGObjDw605UnpXyA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660617729; x=
+        1660704129; bh=HaNW5dTGTh6zJmCxeaRGccdi0HcEeWElpDsk1nTJqRI=; b=D
+        pBGByD80wJUgFGnrCdO0dVRLJ7XXMteN7lEhuAw8XdBCtKAdlFlI/MdiBGdK3YI3
+        SxubzMPY0N8bSAPjjfYi3ndKcjo9C4eeGDAyKvSMmphrrHQb8XMitiNTNhBbTI9Q
+        uONwdbhGXDhEV1pdB8Gb6n2tXqxzHSaOBABa3z2uZYPlwo/pXqO8V+riWzLnETnO
+        dzyZkMx9RaJGtrk0sRqpeLCehCs64PSxExpZ+spgWbT0Fyh6QOKkAXj2V6EO0eL7
+        BZoFKE9czxotQfQg/WJIazwYjK8fkK6ZVvVa7ULKQdrs95sQ5uOWxqcGHijHbNvR
+        N/forPXnfLqWuj/R5IX2g==
+X-ME-Sender: <xms:AQT7YgPH9943MR27JtlDLBMQ1UDWv047NevytleYTJvMF2n4a1I9-A>
+    <xme:AQT7Ym-KBuVqpclJKq1G-J0IMAKHEuQ6tmR4qAdEgb9RiweiBQIlCmPzKTYZGrNzY
+    tKAJTDiCTh44ADd_g>
+X-ME-Received: <xmr:AQT7YnQD3TuKms4VX3_s7lvp7z8BjA6ZAq4wP1Dq_F1qJqgmtQujYSv8MZOY2rJBUF7_XWg0GrRH-2pVBgiffAeEAdxhH1X2clArD9SXWfbpDmcjYE9FkRQDVw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehfedgieegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefuvfevfhfhkffffgggjggtgfesth
+    ekredttdefjeenucfhrhhomhepufgrmhhuvghlucfjohhllhgrnhguuceoshgrmhhuvghl
+    sehshhholhhlrghnugdrohhrgheqnecuggftrfgrthhtvghrnhepjeelfedutdeggeevvd
+    ekheefjeefvefgfeeiffefgeduieeutdehkeejleegueejnecuffhomhgrihhnpehkvghr
+    nhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:AQT7YoscCBqM9HQ9Yup77uhI-lPB4SA5oRa0GwitHz5blQu4F_fpJg>
+    <xmx:AQT7YofNgHWbEhKUo6Q17YMlIynT7IQXQLpYbhxVchQ_K0jSM441vA>
+    <xmx:AQT7Ys1o2cu0k8uFmGdfJrpCjLqalFsZA60oI0oGL2RajLzD0iQhgw>
+    <xmx:AQT7YpXP4SgluZnONeW9Hylpj8Z5FhmZ0jq6Vt-1cLdxys3KCAl3kA>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 22:42:08 -0400 (EDT)
+Subject: Re: [PATCH 00/12] riscv: Allwinner D1 platform support
+To:     Conor.Dooley@microchip.com, wens@csie.org,
+        jernej.skrabec@gmail.com, linux-sunxi@lists.linux.dev,
+        palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220815050815.22340-1-samuel@sholland.org>
+ <50dc816c-3129-f5aa-9777-99c6f0fa58f1@microchip.com>
+ <6b8cd27d-5671-7bcb-549d-e903cf019fe3@microchip.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <6d54da3f-d4fc-7c40-38d6-4f02c7346458@sholland.org>
+Date:   Mon, 15 Aug 2022 21:42:07 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <6b8cd27d-5671-7bcb-549d-e903cf019fe3@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 17:32:06 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Mon, Aug 15, 2022 at 01:53:30PM -0700, Andres Freund wrote:
-> > Hi,
-> >
-> > On 2022-08-15 16:21:51 -0400, Michael S. Tsirkin wrote:
-> > > On Mon, Aug 15, 2022 at 10:46:17AM -0700, Andres Freund wrote:
-> > > > Hi,
-> > > >
-> > > > On 2022-08-15 12:50:52 -0400, Michael S. Tsirkin wrote:
-> > > > > On Mon, Aug 15, 2022 at 09:45:03AM -0700, Andres Freund wrote:
-> > > > > > Hi,
-> > > > > >
-> > > > > > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
-> > > > > > > OK so this gives us a quick revert as a solution for now.
-> > > > > > > Next, I would appreciate it if you just try this simple hack.
-> > > > > > > If it crashes we either have a long standing problem in virtio
-> > > > > > > code or more likely a gcp bug where it can't handle smaller
-> > > > > > > rings than what device requestes.
-> > > > > > > Thanks!
-> > > > > >
-> > > > > > I applied the below and the problem persists.
-> > > > > >
-> > > > > > [...]
-> > > > >
-> > > > > Okay!
-> > > >
-> > > > Just checking - I applied and tested this atop 6.0-rc1, correct? Or did you
-> > > > want me to test it with the 762faee5a267 reverted? I guess what you're trying
-> > > > to test if a smaller queue than what's requested you'd want to do so without
-> > > > the problematic patch applied...
-> > > >
-> > > >
-> > > > Either way, I did this, and there are no issues that I could observe. No
-> > > > oopses, no broken networking. But:
-> > > >
-> > > > To make sure it does something I added a debugging printk - which doesn't show
-> > > > up. I assume this is at a point at least earlyprintk should work (which I see
-> > > > getting enabled via serial)?
-> > > >
-> >
-> > > Sorry if I was unclear.  I wanted to know whether the change somehow
-> > > exposes a driver bug or a GCP bug. So what I wanted to do is to test
-> > > this patch on top of *5.19*, not on top of the revert.
-> >
-> > Right, the 5.19 part was clear, just the earlier test:
-> >
-> > > > > > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
-> > > > > > > OK so this gives us a quick revert as a solution for now.
-> > > > > > > Next, I would appreciate it if you just try this simple hack.
-> > > > > > > If it crashes we either have a long standing problem in virtio
-> > > > > > > code or more likely a gcp bug where it can't handle smaller
-> > > > > > > Thanks!
-> >
-> > I wasn't sure about.
-> >
-> > After I didn't see any effect on 5.19 + your patch, I grew a bit suspicious
-> > and added the printks.
-> >
-> >
-> > > Yes I think printk should work here.
-> >
-> > The reason the debug patch didn't change anything, and that my debug printk
-> > didn't show, is that gcp uses the legacy paths...
->
-> Wait a second. Eureka I think!
->
-> So I think GCP is not broken.
-> I think what's broken is this patch:
->
-> commit cdb44806fca2d0ad29ca644cbf1505433902ee0c
-> Author: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Date:   Mon Aug 1 14:38:54 2022 +0800
->
->     virtio_pci: support the arg sizes of find_vqs()
->
->
-> Specifically:
->
-> diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
-> index 2257f1b3d8ae..d75e5c4e637f 100644
-> --- a/drivers/virtio/virtio_pci_legacy.c
-> +++ b/drivers/virtio/virtio_pci_legacy.c
-> @@ -112,6 +112,7 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
->                                   unsigned int index,
->                                   void (*callback)(struct virtqueue *vq),
->                                   const char *name,
-> +                                 u32 size,
->                                   bool ctx,
->                                   u16 msix_vec)
->  {
-> @@ -125,10 +126,13 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
->         if (!num || vp_legacy_get_queue_enable(&vp_dev->ldev, index))
->                 return ERR_PTR(-ENOENT);
->
-> +       if (!size || size > num)
-> +               size = num;
-> +
->         info->msix_vector = msix_vec;
->
->         /* create the vring */
-> -       vq = vring_create_virtqueue(index, num,
-> +       vq = vring_create_virtqueue(index, size,
->                                     VIRTIO_PCI_VRING_ALIGN, &vp_dev->vdev,
->                                     true, false, ctx,
->                                     vp_notify, callback, name);
->
->
->
-> So if you pass the size parameter for a legacy device it will
-> try to make the ring smaller and that is not legal with
-> legacy at all. But the driver treats legacy and modern
-> the same, it allocates a smaller queue anyway.
->
->
-> Lo and behold, I pass disable-modern=on to qemu and it happily
-> corrupts memory exactly the same as GCP does.
+On 8/15/22 12:12 PM, Conor.Dooley@microchip.com wrote:
+> On 15/08/2022 08:05, Conor Dooley wrote:
+>> Hey Samuel,
+>> Apologies for the last email, the first 5 patches in this series
+>> didn't correctly land in my inbox and I skimmed & replied to the
+>> wrong cover letter... I blame it being pre 8 AM ;)
+>>
+>> On 15/08/2022 06:08, Samuel Holland wrote:
+>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>
+>>> This series adds the Kconfig/defconfig plumbing and devicetrees for a
+>>> range of Allwinner D1-based boards. Many features are already enabled,
+>>> including USB, Ethernet, and WiFi.
+>>>
+>>> The SoC devicetree uses bindings from the following series which have
+>>> not yet been merged:
+>>> - SRAM controller:
+>>>    https://lore.kernel.org/lkml/20220815041248.53268-1-samuel@sholland.org/
+>>> - NVMEM cell bits property change:
+>>>    https://lore.kernel.org/lkml/20220814173656.11856-1-samuel@sholland.org/
+>>> - In-package LDO regulators:
+>>>    https://lore.kernel.org/lkml/20220815043436.20170-1-samuel@sholland.org/
+>>>
+>>> All three of these are required to set the correct I/O domain voltages
+>>> in the pin controller, which I would consider important to have in the
+>>> initial version of the devicetree.
+>>>
+>>> The SoC devicetree does contain one small hack to avoid a dependency on
+>>> the audio codec binding, since that is not ready yet: the codec node
+>>> uses a bare "simple-mfd", "syscon" compatible.
+>>
+>>
+>> I tried this series on top of both 6.0-rc1 & next, but I saw a shed
+>> load of errors from dtbs_check. I'll take a look at the rest of the
+>> series later on, but just FYI. This time I did at least read the
+>> right cover letter and actually applied your dependent series..
+>> /facepalm
+>>
+>> I have been trying to get riscv down to 0 warnings and would not be
+>> in favour of accepting patches that go in the other direction.
+>> (This patchset currently produces about 47 new warnings)
 
-Yes, I think you are right.
+Only 4 unique ones :)
 
-Thank you very much.
+Thanks for checking this. I had done a couple of passes cleaning things up. The
+remaining warnings are the ones I was unsure how to fix.
 
->
->
-> So the new find_vqs API is actually completely broken, it can not work for
-> legacy at all and for added fun there's no way to find out
-> that it's legacy. Maybe we should interpret the patch
->
-> So I think I will also revert
->
-> 04ca0b0b16f11faf74fa92468dab51b8372586cd..fe3dc04e31aa51f91dc7f741a5f76cc4817eb5b4
->
->
->
->
->
->
->
-> > If there were a bug in the legacy path, it'd explain why the problem only
-> > shows on gcp, and not in other situations.
-> >
-> > I'll queue testing the legacy path with the equivalent change.
-> >
-> > - Andres
-> >
-> >
-> > Greetings,
-> >
-> > Andres Freund
->
+> FWIW this is what I see, LMK if I am missing something.
+> allwinner/sun20i-d1-lichee-rv.dtb: i2c@2502000: Unevaluated properties are not allowed ('dma-names', 'dmas' were unexpected)
+
+This one is new with dt-schema 2022.08.1 (I was previously on d1f3102e locally).
+I'm not sure if it is a bug in the binding or in the dt-schema tool. The
+warnings go away if I do:
+
+--- a/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml
+@@ -72,6 +72,7 @@ required:
+   - interrupts
+
+ allOf:
++  - $ref: /schemas/dma/dma.yaml#
+   - $ref: /schemas/i2c/i2c-controller.yaml#
+   - if:
+       properties:
+
+But I wouldn't expect this to be necessary, since dma.yaml has "select: true".
+Compare the this with the UARTs. Neither serial/snps-dw-apb-uart.yaml nor
+serial/serial.yaml references any DMA properties, yet there is no warning for those.
+
+> allwinner/sun20i-d1-clockworkpi-v3.14.dtb: pmic@34: compatible: 'oneOf' conditional failed, one must be fixed:
+> allwinner/sun20i-d1-devterm-v3.14.dtb: pmic@34: compatible: 'oneOf' conditional failed, one must be fixed:
+
+The new compatible is in linux-next. I can add it to the cover letter for v2:
+https://lore.kernel.org/linux-devicetree/20220810013430.27061-1-samuel@sholland.org/
+https://git.kernel.org/lee/mfd/c/97ecda0f615e
+
+> allwinner/sun20i-d1-lichee-rv.dtb: ethernet@4500000: Unevaluated properties are not allowed ('mdio', 'reset-names', 'resets' were unexpected)
+
+This showed up with a dt-schema update in the last year or so. This may be a bug
+in the binding? allwinner,sun8i-a83t-emac.yaml picks up these three properties
+from snps,dwmac.yaml, but does not have them in its own "properties" block.
+(resets and reset-names are even in "required"!)
+
+> allwinner/sun20i-d1-lichee-rv-86-panel-720p.dtb: ethernet@4500000: Unevaluated properties are not allowed ('phy-supply' was unexpected)
+> allwinner/sun20i-d1-dongshan-nezha-stu.dtb: ethernet@4500000: Unevaluated properties are not allowed ('phy-supply' was unexpected)
+
+I think this one is just flat out missing from the binding. It is present in the
+other two Allwinner Ethernet MAC bindings, but not this one.
+
+Regards,
+Samuel
