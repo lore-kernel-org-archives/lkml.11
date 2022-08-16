@@ -2,300 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC5BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB028C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237344AbiHPT4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 15:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
+        id S237361AbiHPT5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 15:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236924AbiHPT4G (ORCPT
+        with ESMTP id S229472AbiHPT5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 15:56:06 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FD779604;
-        Tue, 16 Aug 2022 12:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660679765; x=1692215765;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yixfxwAxzM7YBQGZsa87NJ7t2jyl79YfbDujqx61tcE=;
-  b=SOuWDChFpfHWPnCZEh5nbGfZBCKvfaEc5YtwisZtcOoRyQZLnu5G1Yx0
-   LiA4hxEBm6rytT6Dj8RA2FshQ02qnY9Od1Oh6dXNBTjofge01+zrWzIXH
-   mwZum6wDhF5xyZXWDbLrtsZNP2Z9NwEbcVdNyjtch2VeExyIqgBVTforY
-   xwHdhOIR8dF8Fb1wBTFANuJCGqOiWSwEF/6/DrlyLyoH273DiiimJAKHP
-   3Qv6924/YU5CFvasicw14xH9vYLCVzFm6O+TflK7GKZmd3zSOSElFtMW/
-   DVtpqtj3wBUpZdtsPnLRKpu/RenA96XCCGZDYev60NGeExberAhCoK5mQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272708982"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="272708982"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 12:56:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="935057276"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Aug 2022 12:56:00 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oO2fQ-0000C8-13;
-        Tue, 16 Aug 2022 19:56:00 +0000
-Date:   Wed, 17 Aug 2022 03:55:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eliav Farber <farbere@amazon.com>, jdelvare@suse.com,
-        linux@roeck-us.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, farbere@amazon.com, talel@amazon.com,
-        hhhawa@amazon.com, jonnyc@amazon.com, hanochu@amazon.com,
-        ronenk@amazon.com, itamark@amazon.com, shellykz@amazon.com,
-        shorer@amazon.com, amitlavi@amazon.com, almogbs@amazon.com,
-        dwmw@amazon.co.uk, rtanwar@maxlinear.com
-Subject: Re: [PATCH 08/16] hwmon: (mr75203) add VM active channel support
-Message-ID: <202208170350.3yIFIWEk-lkp@intel.com>
-References: <20220816082757.11990-9-farbere@amazon.com>
+        Tue, 16 Aug 2022 15:57:39 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E2D79A74;
+        Tue, 16 Aug 2022 12:57:35 -0700 (PDT)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GGI1R4010194;
+        Tue, 16 Aug 2022 19:57:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=HESUMwz8Kkq/bA7Cmdg/5s6tz64b87YQevezqxbVRI0=;
+ b=aFpgxDZpMx8ZTDMlpZbdkU56nWMuqAIIYseBviwILQOOWDE6Oc03vMKkwPqhNJJuaIJe
+ qoA/WWXq1uL7ilRWQJ7EbKBFCC5WsS4R/uiKkUWo8+u1aUV1/EG/OEZlWxiYzXRUZZRT
+ MAiR0uG8TiksXnryQRsYmecUpPwXBT3XkRQoyr6urPlW+pXqFZFyU+hlfzlPooLlV8Ha
+ 3UmYK+ZcV8wScLQ8DFOys8uafPo6uESDvQoP9uz2UgS2QuU9Vt6LVqFwYFZV0JmCZrW+
+ nuAdof8+/E79lC64eKK1AHXHuRB6TJYaK4no4e9VjX14KGP2BmXx1ZIYNJPNZ5vN3AtB DQ== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06b9jfd7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 19:57:30 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GJvTTQ017831
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 19:57:29 GMT
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 16 Aug 2022 12:57:29 -0700
+Received: from [10.110.85.160] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 16 Aug
+ 2022 12:57:28 -0700
+Message-ID: <dc5cdba3-fcbc-79a2-797e-2553c727cba5@quicinc.com>
+Date:   Tue, 16 Aug 2022 12:57:28 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816082757.11990-9-farbere@amazon.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/5] usb: gadget: Add function wakeup support
+Content-Language: en-US
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        "balbi@kernel.org" <balbi@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "quic_wcheng@quicinc.com" <quic_wcheng@quicinc.com>,
+        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>,
+        "quic_mrana@quicinc.com" <quic_mrana@quicinc.com>
+References: <1659467920-9095-1-git-send-email-quic_eserrao@quicinc.com>
+ <1659467920-9095-3-git-send-email-quic_eserrao@quicinc.com>
+ <049219f1-8c68-e4cc-7bf9-1e8c214e80aa@synopsys.com>
+ <32a0765e-00d9-1a67-bf36-4060c5fcb008@quicinc.com>
+ <8705d52e-2181-aebd-43b8-2c8d021339c7@synopsys.com>
+ <5ad70f41-622e-2d75-7c53-89aba1255a5f@quicinc.com>
+ <ac8e012f-08f3-baed-ead0-231f0527864c@synopsys.com>
+ <b123b543-6c82-2787-9730-addd3e6e70a3@quicinc.com>
+ <98966b47-0bc5-6ec0-ec80-5eff1d71d9fd@synopsys.com>
+ <e3bcfd4c-efdb-c7b0-4e94-1afcd3b8eb73@synopsys.com>
+ <1fac4c0f-4e8b-f333-7208-c50353a806f4@synopsys.com>
+From:   Elson Serrao <quic_eserrao@quicinc.com>
+In-Reply-To: <1fac4c0f-4e8b-f333-7208-c50353a806f4@synopsys.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: _8JoQb92KHYBsPd0n2jrpxoP7Plf9T4G
+X-Proofpoint-ORIG-GUID: _8JoQb92KHYBsPd0n2jrpxoP7Plf9T4G
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ bulkscore=0 adultscore=0 impostorscore=0 mlxlogscore=999 phishscore=0
+ suspectscore=0 malwarescore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208160074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eliav,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on groeck-staging/hwmon-next]
-[also build test WARNING on linus/master v6.0-rc1 next-20220816]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Eliav-Farber/Variety-of-fixes-and-new-features-for-mr75203-driver/20220816-183655
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-next
-config: microblaze-randconfig-r013-20220815 (https://download.01.org/0day-ci/archive/20220817/202208170350.3yIFIWEk-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/75e49737eb6188733096da72eb4692cfed872101
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eliav-Farber/Variety-of-fixes-and-new-features-for-mr75203-driver/20220816-183655
-        git checkout 75e49737eb6188733096da72eb4692cfed872101
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/hwmon/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/hwmon/mr75203.c: In function 'mr75203_probe':
->> drivers/hwmon/mr75203.c:604:17: warning: ISO C90 forbids variable length array 'vm_idx' [-Wvla]
-     604 |                 u8 vm_idx[vm_num];
-         |                 ^~
->> drivers/hwmon/mr75203.c:605:17: warning: ISO C90 forbids variable length array 'vm_active_ch' [-Wvla]
-     605 |                 u8 vm_active_ch[vm_num];
-         |                 ^~
 
 
-vim +/vm_idx +604 drivers/hwmon/mr75203.c
+On 8/12/2022 5:46 PM, Thinh Nguyen wrote:
+> On 8/11/2022, Thinh Nguyen wrote:
+>> On 8/11/2022, Thinh Nguyen wrote:
+>>> On 8/11/2022, Elson Serrao wrote:
+>>>>
+>>>>
+>>>> On 8/9/2022 6:08 PM, Thinh Nguyen wrote:
+>>>
+>>> <snip>
+>>>
+>>>
+>>>>> To summarize the points:
+>>>>>
+>>>>> 1) The host only arms function remote wakeup if the device is capable of
+>>>>> remote wakeup (check USB_CONFIG_ATT_WAKEUP in bmAttributes and hardware
+>>>>> capability)
+>>>>>
+>>>>> 2) If the device is in suspend, the device can do remote wakeup (through
+>>>>> LFPS handshake) if the function is armed for remote wakeup (through
+>>>>> SET_FEATURE(FUNC_SUSPEND)).
+>>>>>
+>>>>> 3) If the link transitions to U0 after the device triggering a remote
+>>>>> wakeup, the device will also send device notification function wake for
+>>>>> all the interfaces armed with remote wakeup.
+>>>>>
+>>>>> 4) If the device is not in suspend, the device can send device
+>>>>> notification function wake if it's in U0.
+>>>>>
+>>>>>
+>>>>> Now, remote wakeup and function wake device notification are 2 separate
+>>>>> operations. We have the usb_gadget_ops->wakeup() for remote wakeup. I
+>>>>> suggested to maybe add usb_gadget_ops->send_wakeup_notification(gadget,
+>>>>> intf_id) for the device notification. What you did was combining both
+>>>>> operations in usb_gadget_ops->func_wakeup(). That may only work for
+>>>>> point 4) (assuming you fix the U0 check), but not point 3).
+>>>>
+>>>> Thank you for your feedback and summary. I will rename func_wakeup to
+>>>> send_wakeup_notification to better align with the approach. The reason I
+>>>> have combined remote_wakeup and function wake notification in
+>>>> usb_gadget_ops->func_wakeup() is because since the implementation is at
+>>>> function/composite level it has no knowledge on the link state. So I
+>>>> have delegated that task to controller driver to handle the notification
+>>>> accordingly. That is do a LFPS handshake first if the device is
+>>>> suspended and then send notification (explained below). But we can
+>>>> definitely separate this by adding an additional flag in the composite
+>>>> layer to set the link state based on the gadget suspend callback called
+>>>> when U3 SUSPEND interrupt is received. Let me know if you feel
+>>>> separating the two is a better approach.
+>>>>
+>>>
+>>> The reason I think we need to separate it is because of point 3. As I
+>>> note earlier, the spec states that "If remote wake event occurs in
+>>> multiple functions, each function shall send a Function Wake Notification."
+>>>
+>>> But if there's no remote wake event, and the host brought the device up
+>>> instead, then the function suspend state is retained.
+>>>
+>>> If we separate these 2 operations, the caller can check whether the
+>>> operation went through properly. For example, if the wakeup() is
+>>> initiated properly, but the function wake device notification didn't go
+>>> through. We would only need to resend the device notification rather
+>>> than initiate remote wakeup again.
+>>
+>> If we don't have to send device notification for other interfaces, we
+>> can combine the operations here as you did.
+>>
+> 
+> I still think it's better to split up the operations. The way you're
+> handling it now is not clear.
+> 
+> If the func_awake() returns -EAGAIN, I'd expect that the remote wake did
+> not go through and expect user to retry again. But here it does initiate
+> remote wake, but it just does not send device notification yet. This is
+> confusing.
+> 
+> Also, instead of all the function wake handling coming from the function
+> driver, now we depend on the controller driver to call function resume()
+> on state change to U0, which will trigger device notification. What
+> happen if it doesn't call resume(). There's too many dependencies and it
+> seems fragile.
+> 
+> I think all this can be handled in the function driver. You can fix the
+> dwc3 wakeup() and poll for U0/ON state rather than RECOVERY state, which
+> is what it's supposed to poll.
 
-   514	
-   515	static int mr75203_probe(struct platform_device *pdev)
-   516	{
-   517		const struct hwmon_channel_info **pvt_info;
-   518		u32 ts_num, vm_num, pd_num, ch_num, val, index, i, j, k;
-   519		struct device *dev = &pdev->dev;
-   520		u32 *temp_config, *in_config;
-   521		struct device *hwmon_dev;
-   522		struct pvt_device *pvt;
-   523		int ret;
-   524	
-   525		pvt = devm_kzalloc(dev, sizeof(*pvt), GFP_KERNEL);
-   526		if (!pvt)
-   527			return -ENOMEM;
-   528	
-   529		ret = pvt_get_regmap(pdev, "common", pvt);
-   530		if (ret)
-   531			return ret;
-   532	
-   533		pvt->clk = devm_clk_get(dev, NULL);
-   534		if (IS_ERR(pvt->clk))
-   535			return dev_err_probe(dev, PTR_ERR(pvt->clk), "failed to get clock\n");
-   536	
-   537		ret = pvt_clk_enable(dev, pvt);
-   538		if (ret) {
-   539			dev_err(dev, "failed to enable clock\n");
-   540			return ret;
-   541		}
-   542	
-   543		if (of_property_read_bool(dev->of_node, "reset-control-skip")) {
-   544			dev_info(dev, "skipping reset-control\n");
-   545		} else {
-   546			pvt->rst = devm_reset_control_get_exclusive(dev, NULL);
-   547			if (IS_ERR(pvt->rst))
-   548				return dev_err_probe(dev, PTR_ERR(pvt->rst),
-   549						     "failed to get reset control\n");
-   550	
-   551			ret = pvt_reset_control_deassert(dev, pvt);
-   552			if (ret)
-   553				return dev_err_probe(dev, ret,
-   554						     "cannot deassert reset control\n");
-   555		}
-   556	
-   557		ret = regmap_read(pvt->c_map, PVT_IP_CONFIG, &val);
-   558		if(ret < 0)
-   559			return ret;
-   560	
-   561		ts_num = (val & TS_NUM_MSK) >> TS_NUM_SFT;
-   562		pd_num = (val & PD_NUM_MSK) >> PD_NUM_SFT;
-   563		vm_num = (val & VM_NUM_MSK) >> VM_NUM_SFT;
-   564		ch_num = (val & CH_NUM_MSK) >> CH_NUM_SFT;
-   565		pvt->t_num = ts_num;
-   566		pvt->p_num = pd_num;
-   567		pvt->v_num = vm_num;
-   568		val = 0;
-   569		if (ts_num)
-   570			val++;
-   571		if (vm_num)
-   572			val++;
-   573		if (!val)
-   574			return -ENODEV;
-   575	
-   576		pvt_info = devm_kcalloc(dev, val + 2, sizeof(*pvt_info), GFP_KERNEL);
-   577		if (!pvt_info)
-   578			return -ENOMEM;
-   579		pvt_info[0] = HWMON_CHANNEL_INFO(chip, HWMON_C_REGISTER_TZ);
-   580		index = 1;
-   581	
-   582		if (ts_num) {
-   583			ret = pvt_get_regmap(pdev, "ts", pvt);
-   584			if (ret)
-   585				return ret;
-   586	
-   587			temp_config = devm_kcalloc(dev, ts_num + 1,
-   588						   sizeof(*temp_config), GFP_KERNEL);
-   589			if (!temp_config)
-   590				return -ENOMEM;
-   591	
-   592			memset32(temp_config, HWMON_T_INPUT, ts_num);
-   593			pvt_temp.config = temp_config;
-   594			pvt_info[index++] = &pvt_temp;
-   595		}
-   596	
-   597		if (pd_num) {
-   598			ret = pvt_get_regmap(pdev, "pd", pvt);
-   599			if (ret)
-   600				return ret;
-   601		}
-   602	
-   603		if (vm_num) {
- > 604			u8 vm_idx[vm_num];
- > 605			u8 vm_active_ch[vm_num];
-   606	
-   607			ret = pvt_get_regmap(pdev, "vm", pvt);
-   608			if (ret)
-   609				return ret;
-   610	
-   611			ret = device_property_read_u8_array(dev, "intel,vm-map", vm_idx,
-   612							    vm_num);
-   613			if (ret) {
-   614				/*
-   615				 * Incase intel,vm-map property is not defined, we
-   616				 * assume incremental channel numbers.
-   617				 */
-   618				for (i = 0; i < vm_num; i++)
-   619					vm_idx[i] = i;
-   620			} else {
-   621				for (i = 0; i < vm_num; i++)
-   622					if (vm_idx[i] >= vm_num || vm_idx[i] == 0xff)
-   623						break;
-   624	
-   625				vm_num = i;
-   626				pvt->v_num = i;
-   627			}
-   628	
-   629			ret = device_property_read_u8_array(dev, "vm-active-channels",
-   630							    vm_active_ch, vm_num);
-   631			if (ret) {
-   632				/*
-   633				 * Incase vm-active-channels property is not defined,
-   634				 * we assume each VM sensor has all of its channels
-   635				 * active.
-   636				 */
-   637				for (i = 0; i < vm_num; i++)
-   638					vm_active_ch[i] = ch_num;
-   639	
-   640				pvt->vm_ch_max = ch_num;
-   641				pvt->vm_ch_total = ch_num * vm_num;
-   642			} else {
-   643				for (i = 0; i < vm_num; i++) {
-   644					if (vm_active_ch[i] > ch_num) {
-   645						dev_err(dev,
-   646							"invalid active channels: %u\n",
-   647							vm_active_ch[i]);
-   648						return -EINVAL;
-   649					}
-   650	
-   651					pvt->vm_ch_total += vm_active_ch[i];
-   652	
-   653					if (vm_active_ch[i] > pvt->vm_ch_max)
-   654						pvt->vm_ch_max = vm_active_ch[i];
-   655				}
-   656			}
-   657	
-   658			/*
-   659			 * Map between the channel-number to VM-index and channel-index.
-   660			 * Example - 3 VMs, vm_active_ch = [05 02 04]:
-   661			 * vm_map = [0 0 0 0 0 1 1 2 2 2 2]
-   662			 * ch_map = [0 1 2 3 4 0 1 0 1 2 3]
-   663			 */
-   664			pvt->vd = devm_kcalloc(dev, pvt->vm_ch_total, sizeof(*pvt->vd),
-   665					       GFP_KERNEL);
-   666			if (!pvt->vd)
-   667				return -ENOMEM;
-   668	
-   669			k = 0;
-   670			for (i = 0; i < vm_num; i++)
-   671				for (j = 0; j < vm_active_ch[i]; j++) {
-   672					pvt->vd[k].vm_map = vm_idx[i];
-   673					pvt->vd[k].ch_map = j;
-   674					k++;
-   675				}
-   676	
-   677			in_config = devm_kcalloc(dev, pvt->vm_ch_total + 1,
-   678						 sizeof(*in_config), GFP_KERNEL);
-   679			if (!in_config)
-   680				return -ENOMEM;
-   681	
-   682			memset32(in_config, HWMON_I_INPUT, pvt->vm_ch_total);
-   683			in_config[pvt->vm_ch_total] = 0;
-   684			pvt_in.config = in_config;
-   685	
-   686			pvt_info[index++] = &pvt_in;
-   687		}
-   688	
-   689		ret = pvt_init(pvt);
-   690		if (ret) {
-   691			dev_err(dev, "failed to init pvt: %d\n", ret);
-   692			return ret;
-   693		}
-   694	
-   695		pvt_chip_info.info = pvt_info;
-   696		hwmon_dev = devm_hwmon_device_register_with_info(dev, "pvt",
-   697								 pvt,
-   698								 &pvt_chip_info,
-   699								 NULL);
-   700	
-   701		return PTR_ERR_OR_ZERO(hwmon_dev);
-   702	}
-   703	
+For transitioning from U3 to U0, the current upstream implementation is 
+to poll for U0 state when dwc3_gadget_wakeup() is called and it is a 
+blocking call. (this is a common API for both HS and SS)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	/* poll until Link State changes to ON */
+	retries = 20000;
+
+	while (retries--) {
+		reg = dwc3_readl(dwc->regs, DWC3_DSTS);
+
+		/* in HS, means ON */
+		if (DWC3_DSTS_USBLNKST(reg) == DWC3_LINK_STATE_U0)
+			break;
+	}
+
+In my experiments I found that certain hosts take longer time to drive
+HS resume signalling between the remote wakeup and the resume K and this 
+time varies across hosts. Hence the above polling timer is not generic 
+across hosts. So how do we converge on a polling timer value to work 
+across HS/SS and without blocking the system for a long time?
+
+Some data layers like TCP/IP hold a TX lock while sending data (that 
+causes a remote wakeup event) and hence this wakeup() may run in atomic 
+context.
+
+To make this generic across hosts, I had switched to interrupt based 
+approach, enabling link state events and return error value immediately 
+from the dwc3_gadget_wakeup() API after doing a LFPS handshake. But 
+yeah, then we have to rely on the resume callback as an indication that 
+link is transitioned to ON state.
+
+
+
+  On usb_gadget_wakeup() returns
+> successful, we'd expect the device is linked up and woken up. then you
+> can send device notification through a different api such as
+> usb_gadget_send_wake_notification().
+> 
+> Thanks,
+> Thinh
+
