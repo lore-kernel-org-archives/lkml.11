@@ -2,193 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C53C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99967C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiHPIYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
+        id S232898AbiHPIYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbiHPIWQ (ORCPT
+        with ESMTP id S232566AbiHPIW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:22:16 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE65481DA;
-        Mon, 15 Aug 2022 23:02:09 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 16EA11A20B0;
-        Tue, 16 Aug 2022 08:02:08 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AA6E91A20AE;
-        Tue, 16 Aug 2022 08:02:07 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id F1D961820F57;
-        Tue, 16 Aug 2022 14:02:05 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org, kishon@ti.com,
-        kw@linux.com, frank.li@nxp.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: [PATCH v2 10/10] PCI: imx6: Add iMX8MQ PCIe EP support
-Date:   Tue, 16 Aug 2022 13:44:47 +0800
-Message-Id: <1660628687-25676-11-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660628687-25676-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1660628687-25676-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 16 Aug 2022 04:22:26 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B468053E;
+        Mon, 15 Aug 2022 23:02:18 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27G61i8c026973;
+        Tue, 16 Aug 2022 01:01:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660629704;
+        bh=iN6675DMmoPE4j92IAkYz9mtJk6FDb7QeD1TWHX9XgM=;
+        h=From:To:CC:Subject:Date;
+        b=nMV3P+6e26UWEIZCK1luov7Gbk0n+PbwAsagvMOWZWgxRHYU+hjOQkoTcNX0wYTFd
+         0TCQnscfmJ82yfPKbwQrFtvkAZ21RwTajZYuwlt+pglIBGhAcbIN4T0+2CZJrcQSVD
+         gQCMc/cS3ibdpbQnUkiz8oDSeu23IKow7h4k0Wpc=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27G61ilk013697
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Aug 2022 01:01:44 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 16
+ Aug 2022 01:01:44 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 16 Aug 2022 01:01:44 -0500
+Received: from uda0492258.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27G61dq2114915;
+        Tue, 16 Aug 2022 01:01:40 -0500
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
+        <vigneshr@ti.com>, <nsekhar@ti.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kishon@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH v4 0/3] J7200: CPSW5G: Add support for QSGMII mode to am65-cpsw driver
+Date:   Tue, 16 Aug 2022 11:31:36 +0530
+Message-ID: <20220816060139.111934-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the iMX8MQ PCIe EP support
+Add support for QSGMII mode to am65-cpsw driver.
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 35 +++++++++++++++++++++++----
- 1 file changed, 30 insertions(+), 5 deletions(-)
+Change log:
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 91dbf919cc55..707fbef33a56 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -52,6 +52,7 @@ enum imx6_pcie_variants {
- 	IMX8MQ,
- 	IMX8MM,
- 	IMX8MM_EP,
-+	IMX8MQ_EP,
- };
- 
- #define IMX6_PCIE_FLAG_IMX6_PHY			BIT(0)
-@@ -152,6 +153,7 @@ struct imx6_pcie {
- static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
- {
- 	WARN_ON(imx6_pcie->drvdata->variant != IMX8MQ &&
-+		imx6_pcie->drvdata->variant != IMX8MQ_EP &&
- 		imx6_pcie->drvdata->variant != IMX8MM &&
- 		imx6_pcie->drvdata->variant != IMX8MM_EP);
- 	return imx6_pcie->controller_id == 1 ? IOMUXC_GPR16 : IOMUXC_GPR14;
-@@ -166,13 +168,22 @@ static void imx6_pcie_configure_type(struct imx6_pcie *imx6_pcie)
- 	else
- 		mode = PCI_EXP_TYPE_ROOT_PORT;
- 
--	if (imx6_pcie->drvdata->variant == IMX8MQ &&
--	    imx6_pcie->controller_id == 1) {
--		mask = IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE;
--		val  = FIELD_PREP(IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE, mode);
--	} else {
-+	switch (imx6_pcie->drvdata->variant) {
-+	case IMX8MQ:
-+	case IMX8MQ_EP:
-+		if (imx6_pcie->controller_id == 1) {
-+			mask = IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE;
-+			val  = FIELD_PREP(IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE,
-+					  mode);
-+		} else {
-+			mask = IMX6Q_GPR12_DEVICE_TYPE;
-+			val  = FIELD_PREP(IMX6Q_GPR12_DEVICE_TYPE, mode);
-+		}
-+		break;
-+	default:
- 		mask = IMX6Q_GPR12_DEVICE_TYPE;
- 		val  = FIELD_PREP(IMX6Q_GPR12_DEVICE_TYPE, mode);
-+		break;
- 	}
- 
- 	regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12, mask, val);
-@@ -314,6 +325,7 @@ static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
- 		 */
- 		break;
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		/*
- 		 * TODO: Currently this code assumes external
- 		 * oscillator is being used
-@@ -566,6 +578,7 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
- 		if (ret) {
- 			dev_err(dev, "unable to enable pcie_aux clock\n");
-@@ -611,6 +624,7 @@ static void imx6_pcie_disable_ref_clk(struct imx6_pcie *imx6_pcie)
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		clk_disable_unprepare(imx6_pcie->pcie_aux);
- 		break;
- 	default:
-@@ -675,6 +689,7 @@ static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		reset_control_assert(imx6_pcie->pciephy_reset);
- 		fallthrough;
- 	case IMX8MM:
-@@ -716,6 +731,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
- 		break;
- 	case IMX7D:
-@@ -803,6 +819,7 @@ static void imx6_pcie_ltssm_enable(struct device *dev)
- 		break;
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 		reset_control_deassert(imx6_pcie->apps_reset);
-@@ -823,6 +840,7 @@ static void imx6_pcie_ltssm_disable(struct device *dev)
- 		break;
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 		reset_control_assert(imx6_pcie->apps_reset);
-@@ -1075,6 +1093,7 @@ static int imx6_add_pcie_ep(struct imx6_pcie *imx6_pcie,
- 
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MM_EP:
-+	case IMX8MQ_EP:
- 		pcie_dbi2_offset = SZ_1M;
- 		break;
- 	default:
-@@ -1262,6 +1281,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
- 					     "pcie_inbound_axi clock missing or invalid\n");
- 		break;
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		imx6_pcie->pcie_aux = devm_clk_get(dev, "pcie_aux");
- 		if (IS_ERR(imx6_pcie->pcie_aux))
- 			return dev_err_probe(dev, PTR_ERR(imx6_pcie->pcie_aux),
-@@ -1439,6 +1459,10 @@ static const struct imx6_pcie_drvdata drvdata[] = {
- 		.variant = IMX8MM_EP,
- 		.mode = DW_PCIE_EP_TYPE,
- 	},
-+	[IMX8MQ_EP] = {
-+		.variant = IMX8MQ_EP,
-+		.mode = DW_PCIE_EP_TYPE,
-+	},
- };
- 
- static const struct of_device_id imx6_pcie_of_match[] = {
-@@ -1449,6 +1473,7 @@ static const struct of_device_id imx6_pcie_of_match[] = {
- 	{ .compatible = "fsl,imx8mq-pcie", .data = &drvdata[IMX8MQ], },
- 	{ .compatible = "fsl,imx8mm-pcie", .data = &drvdata[IMX8MM], },
- 	{ .compatible = "fsl,imx8mm-pcie-ep", .data = &drvdata[IMX8MM_EP], },
-+	{ .compatible = "fsl,imx8mq-pcie-ep", .data = &drvdata[IMX8MQ_EP], },
- 	{},
- };
- 
--- 
+v3 -> v4:
+1. Update bindings to disallow ports based on compatible, instead of
+   adding a new if/then statement for the new compatible.
+2. Add Else-If condition for RMII mode in the set of supported interfaces.
+   Support for RMII mode is already present in the driver and I had
+   missed out adding a condition for RMII mode in the previous patches.
+
+v2 -> v3:
+1. In ti,k3-am654-cpsw-nuss.yaml, restrict if/then statement to port
+   nodes.
+
+v1 -> v2:
+1. Add new compatible for CPSW5G in ti,k3-am654-cpsw-nuss.yaml and extend
+   properties for new compatible.
+2. Add extra_modes member to struct am65_cpsw_pdata to be used for QSGMII
+   mode by new compatible.
+3. Add check for phylink supported modes to ensure that only one phy mode
+   is advertised as supported.
+4. Check if extra_modes supports QSGMII mode in am65_cpsw_nuss_mac_config()
+   for register write.
+5. Add check for assigning port->sgmii_base only when extra_modes is valid.
+
+v3: https://lore.kernel.org/r/20220606110443.30362-1-s-vadapalli@ti.com/
+v2: https://lore.kernel.org/r/20220602114558.6204-1-s-vadapalli@ti.com/
+v1: https://lore.kernel.org/r/20220531113058.23708-1-s-vadapalli@ti.com/
+
+Siddharth Vadapalli (3):
+  dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J7200
+    CPSW5G
+  net: ethernet: ti: am65-cpsw: Add support for J7200 CPSW5G
+  net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext() to correct
+    location
+
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 17 ++++++-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      | 44 ++++++++++++++++---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h      |  2 +
+ 3 files changed, 54 insertions(+), 9 deletions(-)
+
+--
 2.25.1
 
