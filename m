@@ -2,137 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B221C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87140C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233711AbiHPKK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
+        id S233660AbiHPKL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234344AbiHPKJk (ORCPT
+        with ESMTP id S233759AbiHPKK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:09:40 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDA112309F;
-        Tue, 16 Aug 2022 01:28:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660638504; x=1692174504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FNHPX12Pit1WxIpHyPTouV10hppwOlS2zHdFi1vLKSQ=;
-  b=anChMr3piLQwLFYGojdKtN7uUC+VQMcms+54NFx+LPI6TNxoxw+lYnsc
-   rz+4LkSI+f46QlnTyIerS/UjDAbOS9d7NaHNDUh1rnjVUGDK+oQD+aDzD
-   LnVv2IWrk75Ka09y8ETlYQc2HyfYQ6zlFmX/koDV+f1cqLp3XCC+OhOkL
-   g=;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="1044708753"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:22 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com (Postfix) with ESMTPS id 792FD1A17C2;
-        Tue, 16 Aug 2022 08:28:20 +0000 (UTC)
-Received: from EX19D013UWA002.ant.amazon.com (10.13.138.210) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:00 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX19D013UWA002.ant.amazon.com (10.13.138.210) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 16 Aug 2022 08:27:59 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
- Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:59
- +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 5E7E84C1C; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
-        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
-        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
-        <rtanwar@maxlinear.com>
-Subject: [PATCH 13/16] hwmon: (mr75203) add thermal coefficient properties for Moortec PVT controller
-Date:   Tue, 16 Aug 2022 08:27:54 +0000
-Message-ID: <20220816082757.11990-14-farbere@amazon.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
-References: <20220816082757.11990-1-farbere@amazon.com>
+        Tue, 16 Aug 2022 06:10:58 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7DDB84;
+        Tue, 16 Aug 2022 02:17:32 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oNshO-0002qi-Pk; Tue, 16 Aug 2022 11:17:22 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     samuel@sholland.org, wens@csie.org, jernej.skrabec@gmail.com,
+        linux-sunxi@lists.linux.dev, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        Conor.Dooley@microchip.com
+Subject: Re: [PATCH 05/12] riscv: Add the Allwinner SoC family Kconfig option
+Date:   Tue, 16 Aug 2022 11:17:22 +0200
+Message-ID: <10785313.BaYr0rKQ5T@diego>
+In-Reply-To: <a70e34b9-7106-ad2a-16e1-5f115e34ff1e@microchip.com>
+References: <20220815050815.22340-1-samuel@sholland.org> <20220815050815.22340-6-samuel@sholland.org> <a70e34b9-7106-ad2a-16e1-5f115e34ff1e@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add optional "ts-coeff-g", "ts-coeff-h", "ts-coeff-cal5" and
-"ts-coeff-j" properties to be used instead of defaults for the
-thermal equasion.
+Am Montag, 15. August 2022, 18:56:23 CEST schrieb Conor.Dooley@microchip.com:
+> On 15/08/2022 06:08, Samuel Holland wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Allwinner manufactures the sunxi family of application processors. This
+> > includes the "sun8i" series of ARMv7 SoCs, the "sun50i" series of ARMv8
+> > SoCs, and now the "sun20i" series of 64-bit RISC-V SoCs.
+> > 
+> > The first SoC in the sun20i series is D1, containing a single T-HEAD
+> > C906 core. D1s is a low-pin-count variant of D1 with co-packaged DRAM.
+> > 
+> > Most peripherals are shared across the entire chip family. In fact, the
+> > ARMv7 T113 SoC is pin-compatible and almost entirely register-compatible
+> > with the D1s.
+> > 
+> > This means many existing device drivers can be reused. To facilitate
+> > this reuse, name the symbol ARCH_SUNXI, since that is what the existing
+> > drivers have as their dependency.
+> 
+> Hey Samuel,
+> I think this and patch 12/12 with the defconfig changes should be
+> deferred until post LPC (which still leaves plenty of time for
+> making the 6.1 merge window). We already have like 4 different
+> approaches between the existing SOC_FOO symbols & two more when
+> D1 stuff and the Renesas stuff is considered.
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
----
- .../bindings/hwmon/moortec,mr75203.yaml       | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+On the other hand, I don't really think it's that hard to change things
+after the fact? I.e. ARCH_SUNXI is pretty much set in stone anyway,
+so there isn't very much that _could_ change without affecting most
+driver subsystems in the kernel.
 
-diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-index e2a55001eefc..867664bd937f 100644
---- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-+++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-@@ -62,6 +62,30 @@ properties:
-       used to normalzie the voltage output results.
-     $ref: /schemas/types.yaml#definitions/uint32
- 
-+  ts-coeff-g:
-+    description:
-+      G coefficient for thermal equation.
-+    maxItems: 1
-+    $ref: /schemas/types.yaml#definitions/uint32
-+
-+  ts-coeff-h:
-+    description:
-+      H coefficient for thermal equation.
-+    maxItems: 1
-+    $ref: /schemas/types.yaml#definitions/uint32
-+
-+  ts-coeff-cal5:
-+    description:
-+      cal5 coefficient for thermal equation (can't be 0).
-+    maxItems: 1
-+    $ref: /schemas/types.yaml#definitions/uint32
-+
-+  ts-coeff-j:
-+    description:
-+      J coefficient for thermal equation.
-+    maxItems: 1
-+    $ref: /schemas/types.yaml#definitions/int32
-+
- required:
-   - compatible
-   - reg
-@@ -75,6 +99,10 @@ additionalProperties:
-   - reset-control-skip
-   - vm-active-channels
-   - vm-pre-scalar-ch#
-+  - ts-coeff-g
-+  - ts-coeff-h
-+  - ts-coeff-cal5
-+  - ts-coeff-j
- 
- examples:
-   - |
-@@ -90,5 +118,10 @@ examples:
-         resets = <&rcu0 0x40 7>;
-         vm-active-channels = [08 10 02];
-         vm-pre-scalar-ch5 = <2>;
-+        ts-coeff-g = <57400>;
-+        ts-coeff-h = <249400>;
-+        ts-coeff-cal5 = <4096>;
-+        ts-coeff-j = <0>;
-+
-         #thermal-sensor-cells = <1>;
-     };
--- 
-2.37.1
+So I don't think we'd actually need to wait with the Allwinner symbol.
+
+
+Heiko
+
+> Plan is to decide at LPC on one approach for what to do with
+> Kconfig.socs & to me it seems like a good idea to do what's being
+> done here - it's likely that further arm vendors will move and
+> keeping the common symbols makes a lot of sense to me...
+> 
+> Thanks,
+> Conor.
+> 
+> > 
+> > Signed-off-by: Samuel Holland <samuel@sholland.org>
+> > ---
+> > 
+> >  arch/riscv/Kconfig.socs | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+> > index 69774bb362d6..1caacbfac1a5 100644
+> > --- a/arch/riscv/Kconfig.socs
+> > +++ b/arch/riscv/Kconfig.socs
+> > @@ -1,5 +1,14 @@
+> >  menu "SoC selection"
+> > 
+> > +config ARCH_SUNXI
+> > +       bool "Allwinner sun20i SoCs"
+> > +       select ERRATA_THEAD if MMU && !XIP_KERNEL
+> > +       select SIFIVE_PLIC
+> > +       select SUN4I_TIMER
+> > +       help
+> > +         This enables support for Allwinner sun20i platform hardware,
+> > +         including boards based on the D1 and D1s SoCs.
+> > +
+> >  config SOC_MICROCHIP_POLARFIRE
+> >         bool "Microchip PolarFire SoCs"
+> >         select MCHP_CLK_MPFS
+> > --
+> > 2.35.1
+> > 
+> 
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
+
+
+
 
