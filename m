@@ -2,97 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C9B1C52D6C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68163C49EC5
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235256AbiHPMI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
+        id S234974AbiHPMIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235085AbiHPMHo (ORCPT
+        with ESMTP id S235178AbiHPMHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:07:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D68EE01E;
-        Tue, 16 Aug 2022 04:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660651088; x=1692187088;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=g/F4tMrll8nHV2susd2hq+bFV1Y77UKistuJ9wgFtd4=;
-  b=GK8EXZH2jQhbzwp/siVI8lsinxg2K9olh8EVDwDbh+vpN6aUMPZcPw8g
-   5gz2v18kIa7DK53UcxbSYynVq+YkrPk/zIQ1v+Lo7kc1MIAp+IM+TtPYQ
-   Z3Tq+ijsI9/nKk3tz0LxYEnhqKOn/edM23nXHT78yLo0TJr5IB4PDry7z
-   pZWj8HIhqMllUCfU0LJncjACxXITEVSsjIfbXA0zIjM/MpJXcJsbc65RF
-   zeWENIwwLijZ1ld9vtWoeqlJk/6EQCxd55H+fO3EBO47URXV2VmyU84BJ
-   rrD8KV2aHpOf44Xg7+BlTEPdpO9UF9z4AkD/xTO6/8L/o8PTKx8T++Xdt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199340"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="356199340"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:08 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="667080814"
-Received: from tturcu-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.51.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:05 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Johan Hovold <johan@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 4/8] tty: Make tty_termios_copy_hw() old ktermios const
-Date:   Tue, 16 Aug 2022 14:57:35 +0300
-Message-Id: <20220816115739.10928-5-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
-References: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
+        Tue, 16 Aug 2022 08:07:36 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1C827B;
+        Tue, 16 Aug 2022 04:57:34 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id 130so8881819pfy.6;
+        Tue, 16 Aug 2022 04:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=WVBWgaTswemfzbw20qpPuEgDxV6dSmIqi1C1KwekqYY=;
+        b=TxwJ0LMbqWQRSogwJI+4gfDuv4S06duLKu8XKvr/GrOF2/qRelZ8hQgOHT9sikfN/F
+         W4BRoKzk8dfEIfyEjOkuh7k7IB9aZXV675vxRmp5IxpmfdkvJxU6mzuin6jb7bznrpVW
+         FBzH1aVg/Wkwo/EuLxYO/vH6OwGC6/PC+9ZYxu9tJzYfDLNk/wQ/KP67+t5gEf3YgvGt
+         phIO++y+yAX1WNBbXv2qvy53STlE5O/R/WlaDuemSirQXFAiIxyGqn/HCpyFBdq1Kl8H
+         XcT1n1qE42BLJJ4gy+IpwTmuGFrc2v0i4zhEG3mY1+xKEFiw5WQyAEAZB/iHLVbl6cPu
+         FnsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=WVBWgaTswemfzbw20qpPuEgDxV6dSmIqi1C1KwekqYY=;
+        b=3a172Drvy8nvWForQpSOCd9H8We83n6DCOtAXKM4ONlCF2Fbkzavbg7bOW1oI+YZAC
+         fefsMFYCzFdH0rzxzrFNBPgCTmuskBKsp4xXVbH0ydXBVKoMPBVQK0u5CTAoBxvbkaEA
+         LD8Jem21WMnA3zQQeK6CXRKKMgsUpFDCG11MxKX0vemQ1pgKPbkjRwC4FS7CdHcA9Ol1
+         RmBSWktwmk97Wx0mQKRWQbFSDOKolLkOBw5ZNB43eeM20IZIZxAtrtHRFObi1MQWoIKn
+         BdHGwrxil7LY6pVhDNYMqsmbL8LLR3OLxu8lFR6jwmbMHGzkPkdsTTuSbplbiJGXyh50
+         TDbQ==
+X-Gm-Message-State: ACgBeo2CZ2huyp7fHTkjjp70KuJ14jNetfJ0+R6d0uD+I7BmZ385a5oa
+        /GxvIFr78ygseP12tjnJ9s0r2iCf3uJ4LQ==
+X-Google-Smtp-Source: AA6agR4z4zYLIyvxZTTp8NXJrObkJJB64Hh4H7vQ9DRGQgYq5NWs23DiD6omwQiH1WOBNrW50yfo+A==
+X-Received: by 2002:a63:d94a:0:b0:412:6e04:dc26 with SMTP id e10-20020a63d94a000000b004126e04dc26mr17751528pgj.539.1660651054412;
+        Tue, 16 Aug 2022 04:57:34 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id s13-20020aa78bcd000000b0052cdb06c125sm8295548pfd.159.2022.08.16.04.57.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 04:57:34 -0700 (PDT)
+Message-ID: <e16680b0-8fb9-8ebd-8a2f-fc6830e28745@gmail.com>
+Date:   Tue, 16 Aug 2022 19:57:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/7] perf/x86/core: Update x86_pmu.pebs_capable for
+ ICELAKE_{X,D}
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        "Liang, Kan" <kan.liang@linux.intel.com>
+References: <20220721103549.49543-1-likexu@tencent.com>
+ <20220721103549.49543-2-likexu@tencent.com>
+ <959fedce-aada-50e4-ce8d-a842d18439fa@redhat.com>
+ <YvoSXyy7ojZ9ird/@worktop.programming.kicks-ass.net>
+ <94e6c414-38e1-ebd7-0161-34548f0b5aae@gmail.com>
+ <YvozNSvcxet0gX6b@worktop.programming.kicks-ass.net>
+ <952632db-b090-ceb9-1467-a6b598ca2b02@linux.intel.com>
+ <YvpYa+YagI/7x9MU@worktop.programming.kicks-ass.net>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <YvpYa+YagI/7x9MU@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There should be no reason to adjust old ktermios which is going to get
-discarded anyway.
+On 15/8/2022 10:30 pm, Peter Zijlstra wrote:
+> On Mon, Aug 15, 2022 at 09:06:01AM -0400, Liang, Kan wrote:
+> 
+>> Goldmont Plus should be the only platform which supports extended PEBS
+>> but doesn't have Baseline.
+> 
+> Like so then...
+> 
+> diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+> index 2db93498ff71..cb98a05ee743 100644
+> --- a/arch/x86/events/intel/core.c
+> +++ b/arch/x86/events/intel/core.c
+> @@ -6291,10 +6291,8 @@ __init int intel_pmu_init(void)
+>   		x86_pmu.pebs_aliases = NULL;
+>   		x86_pmu.pebs_prec_dist = true;
+>   		x86_pmu.pebs_block = true;
+> -		x86_pmu.pebs_capable = ~0ULL;
+>   		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+>   		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+> -		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+>   		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+>   		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+>   
+> @@ -6337,10 +6335,8 @@ __init int intel_pmu_init(void)
+>   		x86_pmu.pebs_aliases = NULL;
+>   		x86_pmu.pebs_prec_dist = true;
+>   		x86_pmu.pebs_block = true;
+> -		x86_pmu.pebs_capable = ~0ULL;
+>   		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+>   		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+> -		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+>   		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+>   		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+>   		x86_pmu.lbr_pt_coexist = true;
+> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+> index ba60427caa6d..ac6dd4c96dbc 100644
+> --- a/arch/x86/events/intel/ds.c
+> +++ b/arch/x86/events/intel/ds.c
+> @@ -2262,6 +2262,7 @@ void __init intel_ds_init(void)
+>   					PERF_SAMPLE_BRANCH_STACK |
+>   					PERF_SAMPLE_TIME;
+>   				x86_pmu.flags |= PMU_FL_PEBS_ALL;
+> +				x86_pmu.pebs_capable = ~0ULL;
+>   				pebs_qual = "-baseline";
+>   				x86_get_pmu(smp_processor_id())->capabilities |= PERF_PMU_CAP_EXTENDED_REGS;
+>   			} else {
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/tty_ioctl.c | 2 +-
- include/linux/tty.h     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Looks good to me.
 
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 2a76b330e108..fc94988f0283 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -249,7 +249,7 @@ static void unset_locked_termios(struct tty_struct *tty, struct ktermios *old)
-  *	in some cases where only minimal reconfiguration is supported
-  */
- 
--void tty_termios_copy_hw(struct ktermios *new, struct ktermios *old)
-+void tty_termios_copy_hw(struct ktermios *new, const struct ktermios *old)
- {
- 	/* The bits a dumb device handles in software. Smart devices need
- 	   to always provide a set_termios method */
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index cf5ab26de73d..ae41893f8653 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -458,7 +458,7 @@ static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
- unsigned char tty_get_char_size(unsigned int cflag);
- unsigned char tty_get_frame_size(unsigned int cflag);
- 
--void tty_termios_copy_hw(struct ktermios *new, struct ktermios *old);
-+void tty_termios_copy_hw(struct ktermios *new, const struct ktermios *old);
- int tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b);
- int tty_set_termios(struct tty_struct *tty, struct ktermios *kt);
- 
--- 
-2.30.2
-
+This diff touches PMU_FL_PEBS_ALL, which is less needed for guest PEBS fixes.
+It has be sent out separately to the linux-perf-users group for further review.
