@@ -2,418 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F53C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA078C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233391AbiHPKUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S234296AbiHPKVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbiHPKUE (ORCPT
+        with ESMTP id S234473AbiHPKU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:20:04 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D0E7CB72;
-        Tue, 16 Aug 2022 01:27:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DU3U4ZqdUiTdqdyqUB6K4Ivc4HbCetSb5S2WEilbMeaCDd8ikY3Z/TT3qWnQG2YCBKcJel+gtR5Zn73rFdGooE27XbDTrujKZdB1Zd9eLXFrjFBAmzeifKk5GL0LHk9sfI8bz1wA3+0o21zO4JIc4omYuJqlngGj72vTbv+SuPGXN2O4O67KfJrZdQ6g6Z0ybshFUkRIXTm2+Buftf5b72C+CW6IS/kJ5hjcO+nFbOC+zAHbiAncvoCHAKgupw6l5O6/OeTTl2OgwWEs+B8XPRlxRm+/9CNfHT+f06JVoaInbuOYs01s0GJ7lzr6UutaVggCqcSqIcC/L+74nkahWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vOubXvrRDcyx/MQMgcWpc9/cXRkd/m8ucNk64I1uR8Q=;
- b=g3MNxsqNUMcrvIlzJuStppfQ+5s5+XN8RmrUHkdmvJOqONXbWRx3WXYslHZhJNOfhHY2gPTdS/JW4J0Z9QYwhDMb96zIq0XNzf2ZHnRE6uole4hEZ4jea9UJVR/Xuoo3PDCfcwpktnLrZEmc3NNdCVn2CYIk4q3YuwdRwurjMY0uxYVvMCumUDTGeqPn+Ldm4lcanTbR0FstwVtL1LzHM03fAVbupviijZG9KDc8CP7hSqyb70nUrKPonKF69Jh3cKFu8hAERW3KLLhsYzsdz7dukfXPnRw+CAP6+/GyIzyMCrrXPEFTZ3R7oyWJaYNbldnkAoNrEAvuip4wbcdgjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vOubXvrRDcyx/MQMgcWpc9/cXRkd/m8ucNk64I1uR8Q=;
- b=0RN2+C6TX8rjxPAd+qC4KRLZJ4Kwj9eovgApP/o6l2QEIDvUsq97ZwycQIa3L11C8z7JLsTecrmP6sDCpONt1h7BvL77lIxzwABNYgQc9gB0Eukn9uvrULlqGtOIOA8nn2fbTUxxAnFjcinDaO2cvOxcNMHykeld/CCgbDrL7OU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by CY4PR1201MB0245.namprd12.prod.outlook.com (2603:10b6:910:1e::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Tue, 16 Aug
- 2022 08:27:34 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5504.020; Tue, 16 Aug 2022
- 08:27:34 +0000
-Message-ID: <327c77d5-5812-a158-6c9f-c68e15a5a6b4@amd.com>
-Date:   Tue, 16 Aug 2022 10:27:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/3] dma-buf: Add ioctl to query mmap coherency/cache
- info
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Clark <robdclark@chromium.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220815211516.3169470-1-robdclark@gmail.com>
- <20220815211516.3169470-2-robdclark@gmail.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20220815211516.3169470-2-robdclark@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0074.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1f::12) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Tue, 16 Aug 2022 06:20:28 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF2F65656
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:40:24 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id i4-20020a056e0212c400b002e5c72b3bd7so2963397ilm.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:40:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=Dwh0gS8jFs64hNlsf+lze9dSVRbAm8u7yK5LBD0pdLg=;
+        b=z/K4yMb54VzlNG1MbQLf3QIHeCqypbUXDKSmZAMKJPe+LjNcjfKC/kpDrKN6tNolYO
+         QCk0SLQBXGV4ZTW70e6T53wXcFiZszWDZPuk1sBu/jmnACOdvomTCuGL3qF/gmFWQOuP
+         sBNb0CKpHeIDKXg0W0Vgxx8N3kv14TJGZgfZcN1p4cHtQQyzqcDzN3XZYV4qK/qxT4Mz
+         NnALJKhzAXlE4+3GsajWQM3mFNGAeMKB5qaNpFwrlhCWMIMPdPaconkqGI4Q1ceTbDF+
+         4F2jeKJYZ1F98I+L1dCyqVj0noUICes8l9JzcDnbtUegLPhdQslduo1v/n8wMBKLdHb0
+         wp/Q==
+X-Gm-Message-State: ACgBeo3q+6ceRR4gmRQ0/qlB4zhdh64w4bCNlc4TzTEeNKoRJawkUgfE
+        0wXcBzC/d25QXk6Eq1CEyUDjG2z4p9IzVNjqsCmpYWcmCOdI
+X-Google-Smtp-Source: AA6agR5JuP2uqd8wNlSCkhc1kduZjGIqEpA1RqxELHnxLkd+IhD9MVUPeRbpXgTi1daetG2qSY6uOlsAAjkVx9Zb6Lkaj+8Y/c/v
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 39dd0c79-83e2-4630-cc09-08da7f612ba0
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB0245:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lbvWhSf0aj2flxwtAMBU/338I+vtuiXTy0kkjyLHzqLVPy0UW+XFExXROBlQ29LgrXifQpymNQKJftsU4I78Vk6umdX9PdvaiVBUUsj1K6PEeNYS7I69OhsgEZ5NpBXomYYREHUGQb9iYY3fF4PvIQhmCdhpM2CROsX1tbPhlw0Qrs2ZfYoBQSrIRn5ULkUVBlYnsyvpCTWKu34gsaJh2/cHHqYKG+vFBZPx4kUsaZ3JhUDf4ji0hThXXsDjMpG0lqQEd0Z829JJHxsvGHGZQrLzUgZTsLPN6iy9MIlgPZgStf+8JFq/26XY5x0/hX4s3nb9opuA2A/24N7hyONqTqALuA5gCVr27bXgOJ+laSfYPyUlzlgB6OCnzTxFCTCMMto5EgH8PHI2Wx7M1ai/5mvwuYFVRbsvlfSRuudm2Y44PFZ+ZNdkho27E825Zokb83vXfk0SazOQqxdtQ3+MhGBhukhkouba3G7XamrOb1SlYr0pt5ZP730+WihMB7D8l+jL6lhWJJWfgLC3DAk+ybsG9D87I2j7QzPZMMnpN7VRxBqQpTrA5OVaybmotL9hFIcXXcUO2g/Et9LkbSCQd2sAR0wIK1VN/vGoq7kCyYqfS7oe/WrJ/+3d0e/MVopONpaWPF5mSXnl6Bgz44YpWtHC132LPxj/INTRPny5hY+ZpT576H7klaY/ho9iNqmrPZekiT3aK7oIXI4BgzhD2yNo5YetlGApfGSyS+oU4EaQbOREnbAR+Z3tQE3zrUYBMzNVp7xwP5DfW+U5+YQXzO7q4ev+9LgoTWKeVCpsBp8q+HjXxo+2t9Yfi50pLXp8mON5VJpenx9uDVak/xhnGg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(39860400002)(376002)(366004)(136003)(66476007)(31696002)(38100700002)(86362001)(66946007)(66556008)(316002)(478600001)(36756003)(83380400001)(6486002)(6512007)(8676002)(4326008)(54906003)(186003)(6506007)(41300700001)(2906002)(31686004)(8936002)(2616005)(7416002)(5660300002)(26005)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d2FQVEtweWc1R0l3TkFpTjQ0V2t5eWs5SCtUL0JuZTRVU3EwUEM0clBRWnQr?=
- =?utf-8?B?SGJub2JhdFo1cHFPRGFka1BZUmcwRjNwOEFFNjJyODYyQWhLYlNUT1VBUXdQ?=
- =?utf-8?B?MEJMNlRTM3p4YlVBM3JFQjc1QjE3Z1NkVm1PdjZLaUNjUWpQaVRXUll1RTR3?=
- =?utf-8?B?aGY3ZXoyR1FweHZ3czNPaEJyZmVZM1grWEFjTlhZc09WeVZyZFpGTjh4RmM3?=
- =?utf-8?B?RUtqZ2lZdlRiUG84SVBIMlM3Y2F3TWc0UDBaVFRNY0UvZlkyK3BDT0E3eEZa?=
- =?utf-8?B?R2xleGVPYWV3dG5wRi9wbXJuTG1BWUdOZGJFUjlaY3lpd0hkUm1BbXZnblRB?=
- =?utf-8?B?V2gvMTQzZDRTUTFnT2tGUHNSVkZ5alN3WFdpMndFZ1FNR1pmTlZEUkdOT0Zp?=
- =?utf-8?B?STlHUzhKbTlKMzNoeVIrMnd5cXR5aVlwcU11bjlrdDVjanFqL0oyT0dsMHV4?=
- =?utf-8?B?U1JBN2RVa2Q5Q1hPa04zcDFzNWJlUEtrY0Zya2dpc0NYemNLOXFiNWczendS?=
- =?utf-8?B?Sld3RkNMNXV2ZUJ5TWF4aFV6dTdNdUFmVE1NYmtCc1IwYXBwN1VVT1R0aS91?=
- =?utf-8?B?bWNlVjlsOFFadElTaG1aMlZsMWMyUXJUem5jWUtHbXhBQnlUVzdUUjg2OS9N?=
- =?utf-8?B?aEFKa24xd0w3eVR5SW9nYnNMc2JlaDN1NVBhTXZQS1N5NDR2b0JiQkIyZzJi?=
- =?utf-8?B?RlNXMWliQUV3SE5pU3NOL1QyQURiUklSeE05RXNiWkhCQWthbG1lOGFoREtO?=
- =?utf-8?B?dVRaeEpRWkVyalREdzFYeUNYMGFGUG1wM3JTZXYxYmhpS2prQkFycHhaZVdZ?=
- =?utf-8?B?QTFkYStNKzM5Rm03ZXBlOVZGaVVDQm5xUkx3NTFja0FIbE12eHF6bE8wOTEv?=
- =?utf-8?B?SFlTRFVFYjM5QmpqNkc4MnRwQXhEVEdOY2wxcnVTeExEM1ZkbmIrR3dQOUxz?=
- =?utf-8?B?SUl0c0NyRmtSYzRlTys1dWlmZG05STNpZGFzUjhaU3JrbmxpUDRKYTJuS1hm?=
- =?utf-8?B?d2p4bisxWVVaNVFiQ0tYZ09aVnp6WXNQVFZERjlpOThlZ1RRREY0MHErclZF?=
- =?utf-8?B?QzRFM1J5L0lIVWd1TlFqdG9sbG5ENy8waGJpaTFlTUZBSUZpVlo1VWk1bVUv?=
- =?utf-8?B?Rm1WTEFlRjRGaDNoamJjc1dGRlk1eDJQbGU5cHlnNjdpMm9YVVcwZ21NYnY4?=
- =?utf-8?B?NjNNdUhRaUJPTXgvRG1keERYVjZ1NVh3bHQ3VTZLMmNNQnd3cjkyY2tyY0pv?=
- =?utf-8?B?L0pTbGJuN0N0Yzk1U3lCQjVxMkYweTV1UHVScW9aOFBRL0ExOUkwejBRbzl3?=
- =?utf-8?B?bEh4TzU2bFZxaDEvMkdWejlvazJyUGw5QzJCSkNvdGxCQjh4VkU3c2tEZ1hW?=
- =?utf-8?B?b00wb3RGVW1hS011WE9Jc3JNOE9pQWZ5QXlaSWtmY2NhcXN6a1dSUEVpUDRG?=
- =?utf-8?B?dG9jQTBsbWRrZzBkWjhsWnF4Ly9Sa0VBVGxBUjF2YXBGYVFCeGREdzBhUFNL?=
- =?utf-8?B?RjNNQXRaR25aalZvZ29HeVBsRmFSb1BMdEhuc28vdm05RFJXMkZLSVE3blQv?=
- =?utf-8?B?RVo1SkxCZWZzaFJsaUgyRHlTRk5xazRUN0dRSjhwbTg5QitGTC8zeUNlTk1h?=
- =?utf-8?B?TXhVQXJCT2dSNEdjcW05Z0U0ZGtTaDBLZDRUOGV5cTV0L1VDQm1XZkhISFgv?=
- =?utf-8?B?UE9wSzJDYURrejdHZWhjLzd1SGEwTmpNYklMd0QvUUpvd2NiRGF4emF5Zlhj?=
- =?utf-8?B?VnlhUHJ3cG1XampUZVo5Z3hQQkQ2R1ZhampiVUw4dnFPK2NrOWRkZkVmUWZI?=
- =?utf-8?B?Z0R1eUhDZVFKYUFvRHlVbm1MN1A3SUQ1V1dUQ2lFRW40aDJydXR5NXk2aE40?=
- =?utf-8?B?aXhyZC9JR2M1dzN6cEtZZGk3bmloWHlmVnNXK2J4ZHhQY3QwbWhTSzFnTHEw?=
- =?utf-8?B?OWRvdXIrWmpRd092MDdqVkVKbWZkdHpMZDZqTEQvVVBtZnp6QUIvZGRRU3NM?=
- =?utf-8?B?Kzg5L01sT1c0YlRqcFp3LzZVbVgwMGhzM1RUSzRzY2lIR2NCRVdSd0FFekE4?=
- =?utf-8?B?Wk43Vnk1endic1ZyTStKL3JhWk1PM0NVSHEyRFBsWitCWjAvcWNZSjNZZWdw?=
- =?utf-8?Q?dR65M0xpha/izjGx2LOnmKCst?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39dd0c79-83e2-4630-cc09-08da7f612ba0
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 08:27:34.8266
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4zVwVVy8UGAlA7bPV0DEsQ153Ucv803tPSwRu4/LwlHBW/RuKXZEVrc6RKp5Uh68
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0245
+X-Received: by 2002:a92:ca46:0:b0:2e5:d3dc:3d28 with SMTP id
+ q6-20020a92ca46000000b002e5d3dc3d28mr3090095ilo.238.1660639224209; Tue, 16
+ Aug 2022 01:40:24 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:40:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000f266f05e657b373@google.com>
+Subject: [syzbot] upstream boot error: general protection fault in timerqueue_del
+From:   syzbot <syzbot+621d4ae5dc548c7ac3f6@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 15.08.22 um 23:15 schrieb Rob Clark:
-> From: Rob Clark <robdclark@chromium.org>
->
-> This is a fairly narrowly focused interface, providing a way for a VMM
-> in userspace to tell the guest kernel what pgprot settings to use when
-> mapping a buffer to guest userspace.
->
-> For buffers that get mapped into guest userspace, virglrenderer returns
-> a dma-buf fd to the VMM (crosvm or qemu).  In addition to mapping the
-> pages into the guest VM, it needs to report to drm/virtio in the guest
-> the cache settings to use for guest userspace.  In particular, on some
-> architectures, creating aliased mappings with different cache attributes
-> is frowned upon, so it is important that the guest mappings have the
-> same cache attributes as any potential host mappings.
->
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
-> v2: Combine with coherency, as that is a related concept.. and it is
->      relevant to the VMM whether coherent access without the SYNC ioctl
->      is possible; set map_info at export time to make it more clear
->      that it applies for the lifetime of the dma-buf (for any mmap
->      created via the dma-buf)
+Hello,
 
-Well, exactly that's a conceptual NAK from my side.
+syzbot found the following issue on:
 
-The caching information can change at any time. For CPU mappings even 
-without further notice from the exporter.
+HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1249c047080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4757943c2b26daff
+dashboard link: https://syzkaller.appspot.com/bug?extid=621d4ae5dc548c7ac3f6
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
 
-If the hardware can't use the caching information from the host CPU page 
-tables directly then that pretty much completely breaks the concept that 
-the exporter is responsible for setting up those page tables.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+621d4ae5dc548c7ac3f6@syzkaller.appspotmail.com
 
-Regards,
-Christian.
+general protection fault, probably for non-canonical address 0xdffffdffe0000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: probably user-memory-access in range [0x00000fff00000000-0x00000fff00000007]
+CPU: 0 PID: 1108 Comm: kworker/u4:3 Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:timerqueue_del+0x26/0xf0 lib/timerqueue.c:55
+Code: 0f 1f 40 00 55 41 57 41 56 41 55 41 54 53 49 89 f5 49 89 fe 48 bd 00 00 00 00 00 fc ff df e8 21 3a 20 fd 4d 89 ec 49 c1 ec 03 <41> 80 3c 2c 00 74 08 4c 89 ef e8 cb d8 73 fd 49 8b 5d 00 48 89 df
+RSP: 0000:ffffc90004ebfc30 EFLAGS: 00010006
 
->
->   drivers/dma-buf/dma-buf.c    | 63 +++++++++++++++++++++++++++------
->   include/linux/dma-buf.h      | 11 ++++++
->   include/uapi/linux/dma-buf.h | 68 ++++++++++++++++++++++++++++++++++++
->   3 files changed, 132 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-> index 32f55640890c..262c4706f721 100644
-> --- a/drivers/dma-buf/dma-buf.c
-> +++ b/drivers/dma-buf/dma-buf.c
-> @@ -125,6 +125,32 @@ static struct file_system_type dma_buf_fs_type = {
->   	.kill_sb = kill_anon_super,
->   };
->   
-> +static int __dma_buf_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
-> +{
-> +	int ret;
-> +
-> +	/* check if buffer supports mmap */
-> +	if (!dmabuf->ops->mmap)
-> +		return -EINVAL;
-> +
-> +	ret = dmabuf->ops->mmap(dmabuf, vma);
-> +
-> +	/*
-> +	 * If the exporter claims to support coherent access, ensure the
-> +	 * pgprot flags match the claim.
-> +	 */
-> +	if ((dmabuf->map_info != DMA_BUF_MAP_INCOHERENT) && !ret) {
-> +		pgprot_t wc_prot = pgprot_writecombine(vma->vm_page_prot);
-> +		if (dmabuf->map_info == DMA_BUF_COHERENT_WC) {
-> +			WARN_ON_ONCE(pgprot_val(vma->vm_page_prot) != pgprot_val(wc_prot));
-> +		} else {
-> +			WARN_ON_ONCE(pgprot_val(vma->vm_page_prot) == pgprot_val(wc_prot));
-> +		}
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->   static int dma_buf_mmap_internal(struct file *file, struct vm_area_struct *vma)
->   {
->   	struct dma_buf *dmabuf;
-> @@ -134,16 +160,12 @@ static int dma_buf_mmap_internal(struct file *file, struct vm_area_struct *vma)
->   
->   	dmabuf = file->private_data;
->   
-> -	/* check if buffer supports mmap */
-> -	if (!dmabuf->ops->mmap)
-> -		return -EINVAL;
-> -
->   	/* check for overflowing the buffer's size */
->   	if (vma->vm_pgoff + vma_pages(vma) >
->   	    dmabuf->size >> PAGE_SHIFT)
->   		return -EINVAL;
->   
-> -	return dmabuf->ops->mmap(dmabuf, vma);
-> +	return __dma_buf_mmap(dmabuf, vma);
->   }
->   
->   static loff_t dma_buf_llseek(struct file *file, loff_t offset, int whence)
-> @@ -326,6 +348,27 @@ static long dma_buf_set_name(struct dma_buf *dmabuf, const char __user *buf)
->   	return 0;
->   }
->   
-> +static long dma_buf_info(struct dma_buf *dmabuf, void __user *uarg)
-> +{
-> +	struct dma_buf_info arg;
-> +
-> +	if (copy_from_user(&arg, uarg, sizeof(arg)))
-> +		return -EFAULT;
-> +
-> +	switch (arg.param) {
-> +	case DMA_BUF_INFO_MAP_INFO:
-> +		arg.value = dmabuf->map_info;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (copy_to_user(uarg, &arg, sizeof(arg)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
->   static long dma_buf_ioctl(struct file *file,
->   			  unsigned int cmd, unsigned long arg)
->   {
-> @@ -369,6 +412,9 @@ static long dma_buf_ioctl(struct file *file,
->   	case DMA_BUF_SET_NAME_B:
->   		return dma_buf_set_name(dmabuf, (const char __user *)arg);
->   
-> +	case DMA_BUF_IOCTL_INFO:
-> +		return dma_buf_info(dmabuf, (void __user *)arg);
-> +
->   	default:
->   		return -ENOTTY;
->   	}
-> @@ -530,6 +576,7 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
->   	dmabuf->priv = exp_info->priv;
->   	dmabuf->ops = exp_info->ops;
->   	dmabuf->size = exp_info->size;
-> +	dmabuf->map_info = exp_info->map_info;
->   	dmabuf->exp_name = exp_info->exp_name;
->   	dmabuf->owner = exp_info->owner;
->   	spin_lock_init(&dmabuf->name_lock);
-> @@ -1245,10 +1292,6 @@ int dma_buf_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma,
->   	if (WARN_ON(!dmabuf || !vma))
->   		return -EINVAL;
->   
-> -	/* check if buffer supports mmap */
-> -	if (!dmabuf->ops->mmap)
-> -		return -EINVAL;
-> -
->   	/* check for offset overflow */
->   	if (pgoff + vma_pages(vma) < pgoff)
->   		return -EOVERFLOW;
-> @@ -1262,7 +1305,7 @@ int dma_buf_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma,
->   	vma_set_file(vma, dmabuf->file);
->   	vma->vm_pgoff = pgoff;
->   
-> -	return dmabuf->ops->mmap(dmabuf, vma);
-> +	return __dma_buf_mmap(dmabuf, vma);
->   }
->   EXPORT_SYMBOL_NS_GPL(dma_buf_mmap, DMA_BUF);
->   
-> diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> index 71731796c8c3..37923c8d5c24 100644
-> --- a/include/linux/dma-buf.h
-> +++ b/include/linux/dma-buf.h
-> @@ -23,6 +23,8 @@
->   #include <linux/dma-fence.h>
->   #include <linux/wait.h>
->   
-> +#include <uapi/linux/dma-buf.h>
-> +
->   struct device;
->   struct dma_buf;
->   struct dma_buf_attachment;
-> @@ -307,6 +309,13 @@ struct dma_buf {
->   	 */
->   	size_t size;
->   
-> +	/**
-> +	 * @map_info:
-> +	 *
-> +	 * CPU mapping/coherency information for the buffer.
-> +	 */
-> +	enum dma_buf_map_info map_info;
-> +
->   	/**
->   	 * @file:
->   	 *
-> @@ -533,6 +542,7 @@ struct dma_buf_attachment {
->    * @ops:	Attach allocator-defined dma buf ops to the new buffer
->    * @size:	Size of the buffer - invariant over the lifetime of the buffer
->    * @flags:	mode flags for the file
-> + * @map_info:	CPU mapping/coherency information for the buffer
->    * @resv:	reservation-object, NULL to allocate default one
->    * @priv:	Attach private data of allocator to this buffer
->    *
-> @@ -545,6 +555,7 @@ struct dma_buf_export_info {
->   	const struct dma_buf_ops *ops;
->   	size_t size;
->   	int flags;
-> +	enum dma_buf_map_info map_info;
->   	struct dma_resv *resv;
->   	void *priv;
->   };
-> diff --git a/include/uapi/linux/dma-buf.h b/include/uapi/linux/dma-buf.h
-> index b1523cb8ab30..07b403ffdb43 100644
-> --- a/include/uapi/linux/dma-buf.h
-> +++ b/include/uapi/linux/dma-buf.h
-> @@ -85,6 +85,72 @@ struct dma_buf_sync {
->   
->   #define DMA_BUF_NAME_LEN	32
->   
-> +/**
-> + * enum dma_buf_map_info - CPU mapping info
-> + *
-> + * This enum describes coherency of a userspace mapping of the dmabuf.
-> + *
-> + * Importing devices should check dma_buf::map_info flag and reject an
-> + * import if unsupported.  For example, if the exporting device uses
-> + * @DMA_BUF_COHERENT_CACHED but the importing device does not support
-> + * CPU cache coherency, the dma-buf import should fail.
-> + */
-> +enum dma_buf_map_info {
-> +	/**
-> +	 * @DMA_BUF_MAP_INCOHERENT: CPU mapping is incoherent.
-> +	 *
-> +	 * Use of DMA_BUF_IOCTL_SYNC is required for CPU managed coherenency.
-> +	 */
-> +	DMA_BUF_MAP_INCOHERENT,
-> +
-> +	/**
-> +	 * @DMA_BUF_COHERENT_WC: CPU mapping is coherent but not cached.
-> +	 *
-> +	 * A cpu mmap'ing is coherent, and DMA_BUF_IOCTL_SYNC is not required.
-> +	 * However fences may be still required for synchronizing access.  Ie.
-> +	 * coherency can only be relied upon by an explicit-fencing userspace.
-> +	 * An implicit-sync userspace must still use DMA_BUF_IOCTL_SYNC.
-> +	 *
-> +	 * The cpu mapping is writecombine.
-> +	 */
-> +	DMA_BUF_COHERENT_WC,
-> +
-> +	/**
-> +	 * @DMA_BUF_COHERENT_CACHED: CPU mapping is coherent and CPU cached.
-> +	 *
-> +	 * A cpu mmap'ing is coherent, and DMA_BUF_IOCTL_SYNC is not required.
-> +	 * However fences may be still required for synchronizing access.  Ie.
-> +	 * coherency can only be relied upon by an explicit-fencing userspace.
-> +	 * An implicit-sync userspace must still use DMA_BUF_IOCTL_SYNC.
-> +	 *
-> +	 * The cpu mapping is cached.
-> +	 */
-> +	DMA_BUF_COHERENT_CACHED,
-> +};
-> +
-> +/**
-> + * struct dma_buf_info - Query info about the buffer.
-> + */
-> +struct dma_buf_info {
-> +
-> +#define DMA_BUF_INFO_MAP_INFO    1
-> +
-> +	/**
-> +	 * @param: Which param to query
-> +	 *
-> +	 * DMA_BUF_INFO_MAP_INFO:
-> +	 *     Returns enum dma_buf_map_info, describing the coherency and
-> +	 *     caching of a CPU mapping of the buffer.
-> +	 */
-> +	__u32 param;
-> +	__u32 pad;
-> +
-> +	/**
-> +	 * @value: Return value of the query.
-> +	 */
-> +	__u64 value;
-> +};
-> +
->   #define DMA_BUF_BASE		'b'
->   #define DMA_BUF_IOCTL_SYNC	_IOW(DMA_BUF_BASE, 0, struct dma_buf_sync)
->   
-> @@ -95,4 +161,6 @@ struct dma_buf_sync {
->   #define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, __u32)
->   #define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, __u64)
->   
-> +#define DMA_BUF_IOCTL_INFO	_IOWR(DMA_BUF_BASE, 2, struct dma_buf_info)
-> +
->   #endif
+RAX: ffffffff846958af RBX: 00000fff00000000 RCX: ffff888020858000
+RDX: 0000000000000000 RSI: 00000fff00000000 RDI: ffff8880207744d8
+RBP: dffffc0000000000 R08: dffffc0000000000 R09: fffff520009d7f84
+R10: fffff520009d7f85 R11: 1ffff920009d7f84 R12: 000001ffe0000000
+R13: 00000fff00000000 R14: ffff8880207744d8 R15: ffff8880207744d8
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000ca8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ cleanup_timerqueue kernel/time/posix-cpu-timers.c:519 [inline]
+ cleanup_timers kernel/time/posix-cpu-timers.c:534 [inline]
+ posix_cpu_timers_exit_group+0x7b/0x200 kernel/time/posix-cpu-timers.c:550
+ __exit_signal kernel/exit.c:109 [inline]
+ release_task+0x5b8/0x1890 kernel/exit.c:203
+ exit_notify kernel/exit.c:708 [inline]
+ do_exit+0x16ac/0x20a0 kernel/exit.c:815
+ call_usermodehelper_exec_async+0x3a1/0x3b0 kernel/umh.c:125
+ ret_from_fork+0x1f/0x30
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:timerqueue_del+0x26/0xf0 lib/timerqueue.c:55
+Code: 0f 1f 40 00 55 41 57 41 56 41 55 41 54 53 49 89 f5 49 89 fe 48 bd 00 00 00 00 00 fc ff df e8 21 3a 20 fd 4d 89 ec 49 c1 ec 03 <41> 80 3c 2c 00 74 08 4c 89 ef e8 cb d8 73 fd 49 8b 5d 00 48 89 df
+RSP: 0000:ffffc90004ebfc30 EFLAGS: 00010006
 
+RAX: ffffffff846958af RBX: 00000fff00000000 RCX: ffff888020858000
+RDX: 0000000000000000 RSI: 00000fff00000000 RDI: ffff8880207744d8
+RBP: dffffc0000000000 R08: dffffc0000000000 R09: fffff520009d7f84
+R10: fffff520009d7f85 R11: 1ffff920009d7f84 R12: 000001ffe0000000
+R13: 00000fff00000000 R14: ffff8880207744d8 R15: ffff8880207744d8
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000ca8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	0f 1f 40 00          	nopl   0x0(%rax)
+   4:	55                   	push   %rbp
+   5:	41 57                	push   %r15
+   7:	41 56                	push   %r14
+   9:	41 55                	push   %r13
+   b:	41 54                	push   %r12
+   d:	53                   	push   %rbx
+   e:	49 89 f5             	mov    %rsi,%r13
+  11:	49 89 fe             	mov    %rdi,%r14
+  14:	48 bd 00 00 00 00 00 	movabs $0xdffffc0000000000,%rbp
+  1b:	fc ff df
+  1e:	e8 21 3a 20 fd       	callq  0xfd203a44
+  23:	4d 89 ec             	mov    %r13,%r12
+  26:	49 c1 ec 03          	shr    $0x3,%r12
+* 2a:	41 80 3c 2c 00       	cmpb   $0x0,(%r12,%rbp,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	4c 89 ef             	mov    %r13,%rdi
+  34:	e8 cb d8 73 fd       	callq  0xfd73d904
+  39:	49 8b 5d 00          	mov    0x0(%r13),%rbx
+  3d:	48 89 df             	mov    %rbx,%rdi
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
