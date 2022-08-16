@@ -2,183 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564AAC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A769EC32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbiHPKcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
+        id S234754AbiHPKdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234692AbiHPKcX (ORCPT
+        with ESMTP id S234661AbiHPKcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:32:23 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B853B94E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:48:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660639733; x=1692175733;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=4dzc/qx53hVX29ifX4zMyW7ez/x2P7dWTA9KkO31wJ8=;
-  b=NZJWgAG8Z0zHUXotG7k7IyJ/wwjFwjxvihPEfgxGKd7mRa2FbhRzAwZg
-   3RBnFplCYkdSlJhTdSXysc3b14vF6GG08ZtaVL9HUeV48/lTlJznh7iiz
-   pgcmCwtIgseSGXjbit4Cl+N164G7cIfTbB7bzGq6kLnTnzxlKG7aqkkPM
-   drpmd6S3XI+Yrk8k8rP3zrCT4+WdEIJTSgAXaEVjRlDLAPsK7MSuxVRof
-   4PL6Fpx22VDLG2SpkH27S2mWmFDx4UlYw26GJcbtHscsbdwVmjheWfGs3
-   Rf9UKbe4rr1Ianh6I/rWwjcuKrGDX+pizIkJrI4fBR48Pefbpjk3tnQ7f
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292960495"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="292960495"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:48:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="733219835"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 Aug 2022 01:48:51 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNsFm-0001eP-2w;
-        Tue, 16 Aug 2022 08:48:50 +0000
-Date:   Tue, 16 Aug 2022 16:48:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:testing/fam1-v6.0] BUILD SUCCESS
- 0be5e5d3e8a6c733c09424bdcefb5f2846e827a5
-Message-ID: <62fb59d6.pbyai36+qORIIiow%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 16 Aug 2022 06:32:35 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E880E1838C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:44 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6PZv4SZ8zXdkF;
+        Tue, 16 Aug 2022 16:34:31 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 16:38:42 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 16:38:42 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>,
+        "Kefeng Wang" <wangkefeng.wang@huawei.com>
+Subject: [PATCH RFC] mm, proc: add PcpFree to meminfo
+Date:   Tue, 16 Aug 2022 16:44:26 +0800
+Message-ID: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git testing/fam1-v6.0
-branch HEAD: 0be5e5d3e8a6c733c09424bdcefb5f2846e827a5  scsi: megaraid_sas: Use struct_size() in code related to struct MR_PD_CFG_SEQ_NUM_SYNC
+From: Liu Shixin <liushixin2@huawei.com>
 
-elapsed time: 717m
+The page on pcplist could be used, but not counted into memory free or
+avaliable, and pcp_free is only showed by show_mem(). Since commit
+d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+significant decrease in the display of free memory, with a large number
+of cpus and nodes, the number of pages in the percpu list can be very
+large, so it is better to let user to know the pcp count.
 
-configs tested: 106
-configs skipped: 3
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/base/node.c | 14 +++++++++++++-
+ fs/proc/meminfo.c   |  9 +++++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-arc                  randconfig-r043-20220815
-powerpc                           allnoconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                 randconfig-a001-20220815
-i386                 randconfig-a005-20220815
-i386                 randconfig-a004-20220815
-i386                 randconfig-a006-20220815
-i386                 randconfig-a003-20220815
-i386                 randconfig-a002-20220815
-x86_64                           rhel-8.3-kvm
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-i386                             allyesconfig
-i386                                defconfig
-arm                      integrator_defconfig
-sh                            shmin_defconfig
-xtensa                              defconfig
-arm                         at91_dt_defconfig
-m68k                        m5307c3_defconfig
-xtensa                  nommu_kc705_defconfig
-riscv                    nommu_k210_defconfig
-x86_64               randconfig-a006-20220815
-x86_64               randconfig-a003-20220815
-x86_64               randconfig-a005-20220815
-x86_64               randconfig-a004-20220815
-x86_64               randconfig-a001-20220815
-x86_64               randconfig-a002-20220815
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-ia64                             allmodconfig
-mips                         bigsur_defconfig
-powerpc                      chrp32_defconfig
-arm                           h3600_defconfig
-i386                 randconfig-c001-20220815
-sh                            hp6xx_defconfig
-powerpc                   currituck_defconfig
-powerpc                     redwood_defconfig
-powerpc                     sequoia_defconfig
-ia64                      gensparse_defconfig
-arm                           corgi_defconfig
-sh                        sh7785lcr_defconfig
-arm                      footbridge_defconfig
-powerpc                     stx_gp3_defconfig
-nios2                               defconfig
-arm                         vf610m4_defconfig
-s390                       zfcpdump_defconfig
-powerpc                 mpc8540_ads_defconfig
-powerpc              randconfig-c003-20220815
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-m68k                            q40_defconfig
-arm                         s3c6400_defconfig
-powerpc                      makalu_defconfig
-arc                            hsdk_defconfig
-powerpc                    klondike_defconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-xtensa                         virt_defconfig
-powerpc                       eiger_defconfig
-arm                          iop32x_defconfig
-m68k                       m5208evb_defconfig
-m68k                         amcore_defconfig
-arc                           tb10x_defconfig
-
-clang tested configs:
-hexagon              randconfig-r045-20220815
-hexagon              randconfig-r041-20220815
-riscv                randconfig-r042-20220815
-s390                 randconfig-r044-20220815
-x86_64               randconfig-a011-20220815
-x86_64               randconfig-a016-20220815
-x86_64               randconfig-a013-20220815
-x86_64               randconfig-a015-20220815
-x86_64               randconfig-a014-20220815
-x86_64               randconfig-a012-20220815
-i386                 randconfig-a011-20220815
-i386                 randconfig-a012-20220815
-i386                 randconfig-a014-20220815
-i386                 randconfig-a016-20220815
-i386                 randconfig-a015-20220815
-i386                 randconfig-a013-20220815
-arm                        multi_v5_defconfig
-x86_64               randconfig-k001-20220815
-powerpc                          g5_defconfig
-powerpc                          allmodconfig
-powerpc                 mpc836x_mds_defconfig
-
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index eb0f43784c2b..846864e45db6 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
+ 	struct sysinfo i;
+ 	unsigned long sreclaimable, sunreclaimable;
+ 	unsigned long swapcached = 0;
++	unsigned long free_pcp = 0;
++	struct zone *zone;
++	int cpu;
+ 
+ 	si_meminfo_node(&i, nid);
+ 	sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
+@@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
+ #ifdef CONFIG_SWAP
+ 	swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
+ #endif
++	for_each_populated_zone(zone) {
++		if (zone_to_nid(zone) != nid)
++			continue;
++		for_each_online_cpu(cpu)
++			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
++	}
++
+ 	len = sysfs_emit_at(buf, len,
+ 			    "Node %d MemTotal:       %8lu kB\n"
+ 			    "Node %d MemFree:        %8lu kB\n"
++			    "Node %d PcpFree:        %8lu kB\n"
+ 			    "Node %d MemUsed:        %8lu kB\n"
+ 			    "Node %d SwapCached:     %8lu kB\n"
+ 			    "Node %d Active:         %8lu kB\n"
+@@ -397,7 +408,8 @@ static ssize_t node_read_meminfo(struct device *dev,
+ 			    "Node %d Mlocked:        %8lu kB\n",
+ 			    nid, K(i.totalram),
+ 			    nid, K(i.freeram),
+-			    nid, K(i.totalram - i.freeram),
++			    nid, K(free_pcp),
++			    nid, K(i.totalram - i.freeram - free_pcp),
+ 			    nid, K(swapcached),
+ 			    nid, K(node_page_state(pgdat, NR_ACTIVE_ANON) +
+ 				   node_page_state(pgdat, NR_ACTIVE_FILE)),
+diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+index 6e89f0e2fd20..672c784dfc8a 100644
+--- a/fs/proc/meminfo.c
++++ b/fs/proc/meminfo.c
+@@ -38,6 +38,9 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+ 	unsigned long pages[NR_LRU_LISTS];
+ 	unsigned long sreclaimable, sunreclaim;
+ 	int lru;
++	unsigned long free_pcp = 0;
++	struct zone *zone;
++	int cpu;
+ 
+ 	si_meminfo(&i);
+ 	si_swapinfo(&i);
+@@ -55,8 +58,14 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+ 	sreclaimable = global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B);
+ 	sunreclaim = global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B);
+ 
++	for_each_populated_zone(zone) {
++		for_each_online_cpu(cpu)
++			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
++	}
++
+ 	show_val_kb(m, "MemTotal:       ", i.totalram);
+ 	show_val_kb(m, "MemFree:        ", i.freeram);
++	show_val_kb(m, "PcpFree:        ", free_pcp);
+ 	show_val_kb(m, "MemAvailable:   ", available);
+ 	show_val_kb(m, "Buffers:        ", i.bufferram);
+ 	show_val_kb(m, "Cached:         ", cached);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.3
+
