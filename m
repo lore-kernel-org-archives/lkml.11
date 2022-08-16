@@ -2,75 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A3DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 608E9C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234710AbiHPN7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
+        id S235090AbiHPN7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiHPN7Q (ORCPT
+        with ESMTP id S231539AbiHPN7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:59:16 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E774C610
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:59:14 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M6Xlm0JDgzGpW8;
-        Tue, 16 Aug 2022 21:57:40 +0800 (CST)
-Received: from dggphis33418.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 21:59:11 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <cuigaosheng1@huawei.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <wangweiyang2@huawei.com>
-Subject: [PATCH -next] mtd: ftl: use container_of() rather than cast
-Date:   Tue, 16 Aug 2022 21:59:10 +0800
-Message-ID: <20220816135910.268016-1-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 16 Aug 2022 09:59:51 -0400
+X-Greylist: delayed 1316 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 Aug 2022 06:59:47 PDT
+Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E6D59253;
+        Tue, 16 Aug 2022 06:59:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=e/P0dZRVpx52m88paCNMNBZULrSwc01U661inww9QsU=; b=dAkQZjGmyeiMijnr1kaFmUYc7Z
+        rhU2n+/3qXOA73chZadip7JBKrTxHD9lCube0YK7xTL9Vrr81Jcjr4Wn51G70wXNolnXPJrGOL9xQ
+        VQDY6cZ9QmAkkT21DHZ+j4PmKAjg7vnHiz2So2XNLnP4gNMe1zJNR9WImdISvG486PnAH/RSxL9FS
+        XUHjGIAxh81nOvFRVuyn5MucSSJJ3+BB92XxstegQcLbLWdXQx2PWC4SF7G1XBf1YtJUgSUNYbYFH
+        miQICmEem4emk6wcFgxLMWVVaghGvmker2M7/FDpBtIGfq1LwUhcQfPfY8kwoVFuvQxZil2XDF4jy
+        J+97E1Zg==;
+Received: from [2600:1700:4830:1658::fb2] (port=38832)
+        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.95)
+        (envelope-from <david@lechnology.com>)
+        id 1oNwlO-0000Xz-03;
+        Tue, 16 Aug 2022 09:37:47 -0400
+Message-ID: <5d816181-65f1-0102-0faa-8940509ef0d3@lechnology.com>
+Date:   Tue, 16 Aug 2022 08:37:43 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] counter: Move symbols into COUNTER namespace
+Content-Language: en-US
+To:     William Breathitt Gray <william.gray@linaro.org>,
+        linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+References: <20220815220321.74161-1-william.gray@linaro.org>
+From:   David Lechner <david@lechnology.com>
+In-Reply-To: <20220815220321.74161-1-william.gray@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The container_of() is much more readable and also safer.
+On 8/15/22 5:03 PM, William Breathitt Gray wrote:
+> Counter subsystem symbols are only relevant to counter drivers. A
+> COUNTER namespace is created to control the availability of these
+> symbols to modules that import this namespace explicitly.
+> ---
 
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
----
- drivers/mtd/ftl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/ftl.c b/drivers/mtd/ftl.c
-index bec56070039d..7e56c77535e8 100644
---- a/drivers/mtd/ftl.c
-+++ b/drivers/mtd/ftl.c
-@@ -941,7 +941,7 @@ static int ftl_write(partition_t *part, caddr_t buffer,
- 
- static int ftl_getgeo(struct mtd_blktrans_dev *dev, struct hd_geometry *geo)
- {
--	partition_t *part = (void *)dev;
-+	partition_t *part = container_of(dev, struct partition_t, mbd);
- 	u_long sect;
- 
- 	/* Sort of arbitrary: round size down to 4KiB boundary */
-@@ -969,7 +969,7 @@ static int ftl_writesect(struct mtd_blktrans_dev *dev,
- static int ftl_discardsect(struct mtd_blktrans_dev *dev,
- 			   unsigned long sector, unsigned nr_sects)
- {
--	partition_t *part = (void *)dev;
-+	partition_t *part = container_of(dev, struct partition_t, mbd);
- 	uint32_t bsize = 1 << part->header.EraseUnitSize;
- 
- 	pr_debug("FTL erase sector %ld for %d sectors\n",
--- 
-2.25.1
-
+Acked-by: David Lechner <david@lechnology.com>
