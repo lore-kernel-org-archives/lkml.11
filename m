@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C9FBC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF5DC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 19:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237191AbiHPT2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 15:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
+        id S237199AbiHPT2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 15:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237175AbiHPT1t (ORCPT
+        with ESMTP id S237177AbiHPT1u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 15:27:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A727D7BF
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 12:27:48 -0700 (PDT)
+        Tue, 16 Aug 2022 15:27:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4D67549C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 12:27:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1660678068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5UzYem8u6o5YL1t0vuymkKlCZe7qLh/XnY007elL440=;
-        b=CjORCpl4c3ZlNZk0rZkJ3tqeb3Q2QN6OBZTIMp29imINI5CJ1EoG8pZBghhkA88PqqBfOz
-        EUPBAycrdE5rdHVV7q+TXcBbGFXQXk6YBQJMWqV6ts79rYfjOnEJ4N7dDDdXEMLvRbnZjH
-        0J8VawCCWFfVHdre0JvBKJ9IcZIrLZM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AdMi5hAffNheIEpe+PDcz4KKHqhLgVrtN02bVmFviGo=;
+        b=ZTk6SZqx+RRZenOWJjcPwJxjM8s0uAcmgQdFnzGkxALtTlC25qwl2XVMM2G6aUVbhek1K2
+        6CScuwZhF5Dbll3onqVWu39GwCWePTioyPLaIL1OZ9Z2iXFCx2lcRp4m+YhUYesZLXQGxP
+        g3i5RhtqTchzswQaMtsBKvWoX6Airnk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-423-YhntvkmPO_CSumbl_u0yhQ-1; Tue, 16 Aug 2022 15:27:47 -0400
-X-MC-Unique: YhntvkmPO_CSumbl_u0yhQ-1
+ us-mta-462-3UYZxSw9PVS8DynTZNmmKw-1; Tue, 16 Aug 2022 15:27:44 -0400
+X-MC-Unique: 3UYZxSw9PVS8DynTZNmmKw-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2DDC985A585;
-        Tue, 16 Aug 2022 19:27:46 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 091C03800C27;
+        Tue, 16 Aug 2022 19:27:44 +0000 (UTC)
 Received: from llong.com (unknown [10.22.10.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F7E81121314;
-        Tue, 16 Aug 2022 19:27:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D6B801121314;
+        Tue, 16 Aug 2022 19:27:42 +0000 (UTC)
 From:   Waiman Long <longman@redhat.com>
 To:     Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -54,11 +53,9 @@ To:     Ingo Molnar <mingo@redhat.com>,
 Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Waiman Long <longman@redhat.com>
-Subject: [PATCH v5 3/3] cgroup/cpuset: Keep user set cpus affinity
-Date:   Tue, 16 Aug 2022 15:27:34 -0400
-Message-Id: <20220816192734.67115-4-longman@redhat.com>
-In-Reply-To: <20220816192734.67115-1-longman@redhat.com>
-References: <20220816192734.67115-1-longman@redhat.com>
+Subject: [PATCH v5 0/3] sched, cgroup/cpuset: Keep user set cpus affinity
+Date:   Tue, 16 Aug 2022 15:27:31 -0400
+Message-Id: <20220816192734.67115-1-longman@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -67,103 +64,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was found that any change to the current cpuset hierarchy may reset
-the cpumask of the tasks in the affected cpusets to the default cpuset
-value even if those tasks have cpus affinity explicitly set by the users
-before. That is especially easy to trigger under a cgroup v2 environment
-where writing "+cpuset" to the root cgroup's cgroup.subtree_control
-file will reset the cpus affinity of all the processes in the system.
+v5:
+ - Update patch 3 to handle race with concurrent sched_setaffinity()
+   by rechecking a previously cleared user_cpus_ptr afterward.
 
-That is problematic in a nohz_full environment where the tasks running
-in the nohz_full CPUs usually have their cpus affinity explicitly set
-and will behave incorrectly if cpus affinity changes.
+v4:
+ - Update patch 1 to make sched_setaffinity() the only function to
+   update user_cpus_ptr to make the logic simpler and
+   easier to understand. restrict_cpus_allowed_ptr() and
+   relax_compatible_cpus_allowed_ptr() will just use it if present.
 
-Fix this problem by looking at user_cpus_ptr which will be set if
-cpus affinity have been explicitly set before and use it to restrcit
-the given cpumask unless there is no overlap. In that case, it will
-fallback to the given one.
+v3:
+ - Attach a new patch 2 to introduce a copy_user_cpus_mask() to copy
+   out user masks with lock protection & use it in patch 3.
 
-To handle possible racing with concurrent sched_setaffinity() call, the
-user_cpus_ptr is rechecked again after a successful set_cpus_allowed_ptr()
-call. If the user_cpus_ptr status changes, the operation is retried
-again with the newly assigned user_cpus_ptr.
+v2:
+ - Rework the v1 patch by extending the semantics of user_cpus_ptr to
+   store user set cpus affinity and keeping to it as much as possible.
 
-With that change in place, it was verified that tasks that have its
-cpus affinity explicitly set will not be affected by changes made to
-the v2 cgroup.subtree_control files.
+The user_cpus_ptr field is added by commit b90ca8badbd1 ("sched:
+Introduce task_struct::user_cpus_ptr to track requested affinity")
+which uses it narrowly to allow keeping cpus affinity intact with
+asymmetric cpu setup.
 
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- kernel/cgroup/cpuset.c | 42 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 40 insertions(+), 2 deletions(-)
+This patchset extends user_cpus_ptr to store user set cpus affinity via
+sched_setaffinity() API. With that information available, it will enable
+cpuset to keep cpus afinity as close to what the user wants as possible
+within the cpu list constraint of the current cpuset. Otherwise some
+change to the cpuset hierarchy may reset the cpumask of the tasks in
+the affected cpusets to the default cpuset value even if those tasks
+have cpus affinity explicitly set by the users before.
 
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index 58aadfda9b8b..a663848d0459 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -704,6 +704,44 @@ static int validate_change(struct cpuset *cur, struct cpuset *trial)
- 	return ret;
- }
- 
-+/*
-+ * Preserve user provided cpumask (if set) as much as possible unless there
-+ * is no overlap with the given mask.
-+ */
-+static int cpuset_set_cpus_allowed_ptr(struct task_struct *p,
-+				       const struct cpumask *mask)
-+{
-+	cpumask_var_t new_mask;
-+	int ret;
-+
-+	if (!READ_ONCE(p->user_cpus_ptr)) {
-+		ret = set_cpus_allowed_ptr(p, mask);
-+		/*
-+		 * If user_cpus_ptr becomes set now, we are racing with
-+		 * a concurrent sched_setaffinity(). So use the newly
-+		 * set user_cpus_ptr and retry again.
-+		 *
-+		 * TODO: We cannot detect change in the cpumask pointed to
-+		 * by user_cpus_ptr. We will have to add a sequence number
-+		 * if such a race needs to be addressed.
-+		 */
-+		if (ret || !READ_ONCE(p->user_cpus_ptr))
-+			return ret;
-+	}
-+
-+	if (!alloc_cpumask_var(&new_mask, GFP_KERNEL))
-+		return -ENOMEM;
-+
-+	if (copy_user_cpus_mask(p, new_mask) &&
-+	    cpumask_and(new_mask, new_mask, mask))
-+		ret = set_cpus_allowed_ptr(p, new_mask);
-+	else
-+		ret = set_cpus_allowed_ptr(p, mask);
-+
-+	free_cpumask_var(new_mask);
-+	return ret;
-+}
-+
- #ifdef CONFIG_SMP
- /*
-  * Helper routine for generate_sched_domains().
-@@ -1130,7 +1168,7 @@ static void update_tasks_cpumask(struct cpuset *cs)
- 
- 	css_task_iter_start(&cs->css, 0, &it);
- 	while ((task = css_task_iter_next(&it)))
--		set_cpus_allowed_ptr(task, cs->effective_cpus);
-+		cpuset_set_cpus_allowed_ptr(task, cs->effective_cpus);
- 	css_task_iter_end(&it);
- }
- 
-@@ -2303,7 +2341,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
- 		 * can_attach beforehand should guarantee that this doesn't
- 		 * fail.  TODO: have a better way to handle failure here
- 		 */
--		WARN_ON_ONCE(set_cpus_allowed_ptr(task, cpus_attach));
-+		WARN_ON_ONCE(cpuset_set_cpus_allowed_ptr(task, cpus_attach));
- 
- 		cpuset_change_task_nodemask(task, &cpuset_attach_nodemask_to);
- 		cpuset_update_task_spread_flag(cs, task);
+It also means that once sched_setaffinity() is called, user_cpus_ptr
+will remain allocated until the task exits.
+
+Waiman Long (3):
+  sched: Use user_cpus_ptr for saving user provided cpumask in
+    sched_setaffinity()
+  sched: Provide copy_user_cpus_mask() to copy out user mask
+  cgroup/cpuset: Keep user set cpus affinity
+
+ include/linux/sched.h  |   1 +
+ kernel/cgroup/cpuset.c |  42 ++++++++++++++-
+ kernel/sched/core.c    | 119 ++++++++++++++++++++++++-----------------
+ kernel/sched/sched.h   |   1 -
+ 4 files changed, 112 insertions(+), 51 deletions(-)
+
 -- 
 2.31.1
 
