@@ -2,114 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5208DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 23:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D468CC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 23:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237544AbiHPXAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 19:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S237588AbiHPXBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 19:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237692AbiHPXA2 (ORCPT
+        with ESMTP id S237427AbiHPXBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 19:00:28 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A7E7B1F5
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 16:00:27 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-32a17d3bba2so189411587b3.9
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 16:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ia+gWUguoxZfAy1Dg2ZzsdLR8URymW2ftEEeLv7mHds=;
-        b=Yd//NI6tGwsKJEtX6z8PRhifk+LuQiS1aOojM+MFA28Lu8+R5bhMsUQ6ynIAkNZrze
-         8vyihr/nj/DOBXHTpDmnvCQvjYx6VSIZEH5ptw08LL2k7akIFrov9i68o0LNb/DVMF33
-         I6R4HK28J6+SKN6RlbyxyG1U9sejG6tOZVHgYZ4zjQOjWTkSN04v4s3XVQZf6ObCcRJ+
-         SDoYrq/sWZLEHUgrsh7Mwm1dJaFYvFFHIoq//fEip6zwL+ckjoLEhnn9RoxtjkemSZuO
-         T9A2lm5sZDGXZcgIhlMODQxOm1mWr71ql/5sgS6Ly4ajPBuecTzbM99Sgdb5Yt7pw7jr
-         v0AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ia+gWUguoxZfAy1Dg2ZzsdLR8URymW2ftEEeLv7mHds=;
-        b=sA9Rjm83mCt6KuTfLusRUtekCqrrLcA4uWsTrBCPjjADkaHA+5O3/e//G2why91fdX
-         VN200rQhlqZZfyhe8/ravwOaVQbNUHuUNB8Zj2tc3eFnC8b3ytNambAOrIGCoGelvh+1
-         0g/Ed+RC6dpyaBbCiI3oAKaCWiOtIsezMaHiyi86I8K8soUhkk3zAYYsT4zZ+x2tBFaR
-         sR6D5XClMthRqebfh0ONiwJReeY0Kg+PbuRo4lbUJMM8uxYZAyerJBwVC1PI5xYdIOZL
-         10BcDrDdj6+AooaJnH3591x/ywnc5OyEUQhPW7ERPrgvOCMSKl4xUpHPG0YWe4AYayWS
-         Z3fA==
-X-Gm-Message-State: ACgBeo2EsQ3LEx3wT9bLiTeRm4FeZ3gtn4EGg+oYFFqHf9MvHqsyWm2Q
-        zsMYrn4pX1A8f70M5Tssave402UXiRK6komWwSq7wA==
-X-Google-Smtp-Source: AA6agR7i3ics6rMa6+rNF6jz5fcfliKyCvfj8cEvE52wQyRLeSajtUCH09+uQDf4N+H9qe9ZFH8JjuCnjEKDRfxG/Lc=
-X-Received: by 2002:a81:4806:0:b0:32f:f84c:f30a with SMTP id
- v6-20020a814806000000b0032ff84cf30amr11990225ywa.107.1660690826444; Tue, 16
- Aug 2022 16:00:26 -0700 (PDT)
+        Tue, 16 Aug 2022 19:01:09 -0400
+Received: from mellanox.co.il (mail-il-dmz.mellanox.com [193.47.165.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA59387681
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 16:01:05 -0700 (PDT)
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from asmaa@mellanox.com)
+        with SMTP; 17 Aug 2022 01:54:25 +0300
+Received: from bu-vnc02.mtbu.labs.mlnx (bu-vnc02.mtbu.labs.mlnx [10.15.2.65])
+        by mtbu-labmailer.labs.mlnx (8.14.4/8.14.4) with ESMTP id 27GMsKAJ022533;
+        Tue, 16 Aug 2022 18:54:20 -0400
+Received: (from asmaa@localhost)
+        by bu-vnc02.mtbu.labs.mlnx (8.14.7/8.13.8/Submit) id 27GMsKeM009232;
+        Tue, 16 Aug 2022 18:54:20 -0400
+From:   Asmaa Mnebhi <asmaa@nvidia.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Asmaa Mnebhi <asmaa@nvidia.com>,
+        Khalil Blaiech <kblaiech@nvidia.com>
+Subject: [PATCH v1 1/7] i2c-mlxbf.c: Fix frequency calculation
+Date:   Tue, 16 Aug 2022 18:54:06 -0400
+Message-Id: <20220816225412.9095-2-asmaa@nvidia.com>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20220816225412.9095-1-asmaa@nvidia.com>
+References: <20220816225412.9095-1-asmaa@nvidia.com>
 MIME-Version: 1.0
-References: <20220816214945.742924-1-haoluo@google.com> <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
- <CA+khW7hHGL1DAMSOjbJSj21wJYY=j4VrRJcFB1zv52Db20_MGA@mail.gmail.com> <CAEf4BzbBOrVU+BWySMk_v3w6019+5VpNXZY03JpmiwoQPnV1yA@mail.gmail.com>
-In-Reply-To: <CAEf4BzbBOrVU+BWySMk_v3w6019+5VpNXZY03JpmiwoQPnV1yA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 16 Aug 2022 16:00:15 -0700
-Message-ID: <CA+khW7g41jBCB3ePKpTgTC4iuvpWw7gp+272UWSdT5uSC2tG-A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: allow disabling auto attach
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 3:55 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 16, 2022 at 3:16 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > On Tue, Aug 16, 2022 at 3:01 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Aug 16, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
-> > > >
-> > > > Add libbpf APIs for disabling auto-attach for individual functions.
-> > > > This is motivated by the use case of cgroup iter [1]. Some iter
-> > > > types require their parameters to be non-zero, therefore applying
-> > > > auto-attach on them will fail. With these two new APIs, Users who
-> > > > want to use auto-attach and these types of iters can disable
-> > > > auto-attach for them and perform manual attach.
-> > > >
-> > > > [1] https://lore.kernel.org/bpf/CAEf4BzZ+a2uDo_t6kGBziqdz--m2gh2_EUwkGLDtMd65uwxUjA@mail.gmail.com/
-> > > >
-> > > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > > ---
-[...]
-> > > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > > index 61493c4cddac..88a1ac34b12a 100644
-> > > > --- a/tools/lib/bpf/libbpf.h
-> > > > +++ b/tools/lib/bpf/libbpf.h
-> > > > @@ -260,6 +260,8 @@ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
-> > > >  LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
-> > > >  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
-> > > >  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-> > > > +LIBBPF_API bool bpf_program__autoattach(const struct bpf_program *prog);
-> > > > +LIBBPF_API void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach);
-> > >
-> > > please add these APIs to libbpf.map as well
-> > >
-> >
-> > Ok. Which section? LIBBPF_1.0.0? Do the items in each section have a
-> > particular order?
->
-> Yes, 1.0.0 section. All the functions are sorted alphabetically.
->
+The i2c-mlxbf.c driver is currently broken because there is a bug
+in the calculation of the frequency. core_f, core_r and core_od
+are components read from hardware registers and are used to
+compute the frequency used to compute different timing parameters.
+The shifting mechanism used to get core_f, core_r and core_od is
+wrong. Use FIELD_GET to mask and shift the bitfields properly.
 
-Thanks for confirming. :)
+Reviewed-by: Khalil Blaiech <kblaiech@nvidia.com>
+Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+---
+ drivers/i2c/busses/i2c-mlxbf.c | 59 ++++++++++++----------------------
+ 1 file changed, 21 insertions(+), 38 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-mlxbf.c b/drivers/i2c/busses/i2c-mlxbf.c
+index 8716032f030a..2e2ac45d9ca0 100644
+--- a/drivers/i2c/busses/i2c-mlxbf.c
++++ b/drivers/i2c/busses/i2c-mlxbf.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/acpi.h>
++#include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -63,13 +64,14 @@
+  */
+ #define MLXBF_I2C_TYU_PLL_OUT_FREQ  (400 * 1000 * 1000)
+ /* Reference clock for Bluefield - 156 MHz. */
+-#define MLXBF_I2C_PLL_IN_FREQ       (156 * 1000 * 1000)
++#define MLXBF_I2C_PLL_IN_FREQ       156250000ULL
+ 
+ /* Constant used to determine the PLL frequency. */
+-#define MLNXBF_I2C_COREPLL_CONST    16384
++#define MLNXBF_I2C_COREPLL_CONST    16384ULL
++
++#define MLXBF_I2C_FREQUENCY_1GHZ  1000000000ULL
+ 
+ /* PLL registers. */
+-#define MLXBF_I2C_CORE_PLL_REG0         0x0
+ #define MLXBF_I2C_CORE_PLL_REG1         0x4
+ #define MLXBF_I2C_CORE_PLL_REG2         0x8
+ 
+@@ -181,22 +183,15 @@
+ #define MLXBF_I2C_COREPLL_FREQ          MLXBF_I2C_TYU_PLL_OUT_FREQ
+ 
+ /* Core PLL TYU configuration. */
+-#define MLXBF_I2C_COREPLL_CORE_F_TYU_MASK   GENMASK(12, 0)
+-#define MLXBF_I2C_COREPLL_CORE_OD_TYU_MASK  GENMASK(3, 0)
+-#define MLXBF_I2C_COREPLL_CORE_R_TYU_MASK   GENMASK(5, 0)
+-
+-#define MLXBF_I2C_COREPLL_CORE_F_TYU_SHIFT  3
+-#define MLXBF_I2C_COREPLL_CORE_OD_TYU_SHIFT 16
+-#define MLXBF_I2C_COREPLL_CORE_R_TYU_SHIFT  20
++#define MLXBF_I2C_COREPLL_CORE_F_TYU_MASK   GENMASK(15, 3)
++#define MLXBF_I2C_COREPLL_CORE_OD_TYU_MASK  GENMASK(19, 16)
++#define MLXBF_I2C_COREPLL_CORE_R_TYU_MASK   GENMASK(25, 20)
+ 
+ /* Core PLL YU configuration. */
+ #define MLXBF_I2C_COREPLL_CORE_F_YU_MASK    GENMASK(25, 0)
+ #define MLXBF_I2C_COREPLL_CORE_OD_YU_MASK   GENMASK(3, 0)
+-#define MLXBF_I2C_COREPLL_CORE_R_YU_MASK    GENMASK(5, 0)
++#define MLXBF_I2C_COREPLL_CORE_R_YU_MASK    GENMASK(31, 26)
+ 
+-#define MLXBF_I2C_COREPLL_CORE_F_YU_SHIFT   0
+-#define MLXBF_I2C_COREPLL_CORE_OD_YU_SHIFT  1
+-#define MLXBF_I2C_COREPLL_CORE_R_YU_SHIFT   26
+ 
+ /* Core PLL frequency. */
+ static u64 mlxbf_i2c_corepll_frequency;
+@@ -479,8 +474,6 @@ static struct mutex mlxbf_i2c_bus_lock;
+ #define MLXBF_I2C_MASK_8    GENMASK(7, 0)
+ #define MLXBF_I2C_MASK_16   GENMASK(15, 0)
+ 
+-#define MLXBF_I2C_FREQUENCY_1GHZ  1000000000
+-
+ /*
+  * Function to poll a set of bits at a specific address; it checks whether
+  * the bits are equal to zero when eq_zero is set to 'true', and not equal
+@@ -1407,24 +1400,19 @@ static int mlxbf_i2c_init_master(struct platform_device *pdev,
+ 	return 0;
+ }
+ 
+-static u64 mlxbf_calculate_freq_from_tyu(struct mlxbf_i2c_resource *corepll_res)
++static u64 mlxbf_i2c_calculate_freq_from_tyu(struct mlxbf_i2c_resource *corepll_res)
+ {
+-	u64 core_frequency, pad_frequency;
++	u64 core_frequency;
+ 	u8 core_od, core_r;
+ 	u32 corepll_val;
+ 	u16 core_f;
+ 
+-	pad_frequency = MLXBF_I2C_PLL_IN_FREQ;
+-
+ 	corepll_val = readl(corepll_res->io + MLXBF_I2C_CORE_PLL_REG1);
+ 
+ 	/* Get Core PLL configuration bits. */
+-	core_f = rol32(corepll_val, MLXBF_I2C_COREPLL_CORE_F_TYU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_F_TYU_MASK;
+-	core_od = rol32(corepll_val, MLXBF_I2C_COREPLL_CORE_OD_TYU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_OD_TYU_MASK;
+-	core_r = rol32(corepll_val, MLXBF_I2C_COREPLL_CORE_R_TYU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_R_TYU_MASK;
++	core_f = FIELD_GET(MLXBF_I2C_COREPLL_CORE_F_TYU_MASK, corepll_val);
++	core_od = FIELD_GET(MLXBF_I2C_COREPLL_CORE_OD_TYU_MASK, corepll_val);
++	core_r = FIELD_GET(MLXBF_I2C_COREPLL_CORE_R_TYU_MASK, corepll_val);
+ 
+ 	/*
+ 	 * Compute PLL output frequency as follow:
+@@ -1436,31 +1424,26 @@ static u64 mlxbf_calculate_freq_from_tyu(struct mlxbf_i2c_resource *corepll_res)
+ 	 * Where PLL_OUT_FREQ and PLL_IN_FREQ refer to CoreFrequency
+ 	 * and PadFrequency, respectively.
+ 	 */
+-	core_frequency = pad_frequency * (++core_f);
++	core_frequency = MLXBF_I2C_PLL_IN_FREQ * (++core_f);
+ 	core_frequency /= (++core_r) * (++core_od);
+ 
+ 	return core_frequency;
+ }
+ 
+-static u64 mlxbf_calculate_freq_from_yu(struct mlxbf_i2c_resource *corepll_res)
++static u64 mlxbf_i2c_calculate_freq_from_yu(struct mlxbf_i2c_resource *corepll_res)
+ {
+ 	u32 corepll_reg1_val, corepll_reg2_val;
+-	u64 corepll_frequency, pad_frequency;
++	u64 corepll_frequency;
+ 	u8 core_od, core_r;
+ 	u32 core_f;
+ 
+-	pad_frequency = MLXBF_I2C_PLL_IN_FREQ;
+-
+ 	corepll_reg1_val = readl(corepll_res->io + MLXBF_I2C_CORE_PLL_REG1);
+ 	corepll_reg2_val = readl(corepll_res->io + MLXBF_I2C_CORE_PLL_REG2);
+ 
+ 	/* Get Core PLL configuration bits */
+-	core_f = rol32(corepll_reg1_val, MLXBF_I2C_COREPLL_CORE_F_YU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_F_YU_MASK;
+-	core_r = rol32(corepll_reg1_val, MLXBF_I2C_COREPLL_CORE_R_YU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_R_YU_MASK;
+-	core_od = rol32(corepll_reg2_val,  MLXBF_I2C_COREPLL_CORE_OD_YU_SHIFT) &
+-			MLXBF_I2C_COREPLL_CORE_OD_YU_MASK;
++	core_f = FIELD_GET(MLXBF_I2C_COREPLL_CORE_F_YU_MASK, corepll_reg1_val);
++	core_r = FIELD_GET(MLXBF_I2C_COREPLL_CORE_R_YU_MASK, corepll_reg1_val);
++	core_od = FIELD_GET(MLXBF_I2C_COREPLL_CORE_OD_YU_MASK, corepll_reg2_val);
+ 
+ 	/*
+ 	 * Compute PLL output frequency as follow:
+@@ -1472,7 +1455,7 @@ static u64 mlxbf_calculate_freq_from_yu(struct mlxbf_i2c_resource *corepll_res)
+ 	 * Where PLL_OUT_FREQ and PLL_IN_FREQ refer to CoreFrequency
+ 	 * and PadFrequency, respectively.
+ 	 */
+-	corepll_frequency = (pad_frequency * core_f) / MLNXBF_I2C_COREPLL_CONST;
++	corepll_frequency = (MLXBF_I2C_PLL_IN_FREQ * core_f) / MLNXBF_I2C_COREPLL_CONST;
+ 	corepll_frequency /= (++core_r) * (++core_od);
+ 
+ 	return corepll_frequency;
+-- 
+2.30.1
+
