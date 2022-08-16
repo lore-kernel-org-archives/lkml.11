@@ -2,83 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F7BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A975C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235315AbiHPMHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
+        id S233062AbiHPMIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235446AbiHPMG6 (ORCPT
+        with ESMTP id S235343AbiHPMHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:06:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B07C32BA7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:56:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC7E06124E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:56:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACE5C433D6;
-        Tue, 16 Aug 2022 11:56:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660650995;
-        bh=FVUSKZvyxeYHla7DAI1S7uQ9b45W1lFMmWt54ll5JlA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v8PP2Y7zNU+FVQizPga9MODb0WFzHKVad+1VohxTjTDc+95kRo6+FlTlwZiET+gOj
-         rI3kpk1WipL/kLv/6gv0XXNK+NrFFcDJFwt2vngBa+mVLRX7m5i+DafP+blpINyKqM
-         iF0Qnt+XnOywNTiwwOBU918gkxWz6UVgzOTVIBMA=
-Date:   Tue, 16 Aug 2022 13:56:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Nadav Amit <namit@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 1/4] Make place for common balloon code
-Message-ID: <YvuF8CsP0M1TAK1a@kroah.com>
-References: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
- <20220816094117.3144881-2-alexander.atanasov@virtuozzo.com>
- <YvtoDxvefWUJBfAS@kroah.com>
- <f88fe469-d4a4-3240-b325-a745255bf01c@virtuozzo.com>
+        Tue, 16 Aug 2022 08:07:45 -0400
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E178399DF
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:58:21 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id 9EA072B05A10;
+        Tue, 16 Aug 2022 07:58:18 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 16 Aug 2022 07:58:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660651098; x=1660658298; bh=6Jh4QYGMoH
+        o8Uic4iv978KBBZgS0XFbP7zpUkCqVKX4=; b=FCrHz4tyUrvT59ofQy8bv49daB
+        b9ddhsClYCYaznQxsUbhQCBUVKiiky2iMysH4vDNk6e/iUUqYXKbv8IkDNRaXAIM
+        HoxDQS2e2jZ2q5Fnraf/cMcYro+04SDBbA14KFWtOsBHwUqyilR4L/9EDqy6PF4h
+        f0oacHQB+zDQc3tsBJIZx2zTRocB4RsdHhchVFcesQqKz8DpAbZxsLcECP1o7mz9
+        QFsjVo8VF8a9QvEvR+sVrTSwuyM8V+4I3Asm+F26jbXoYHGOjEAkcflOxALaJ9Ls
+        45R78V68i1ecrqap0yNf+VPtI3gUiE+9O5/ozmGhldRUMQ47DnTxTNYNDcrw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660651098; x=1660658298; bh=6Jh4QYGMoHo8Uic4iv978KBBZgS0
+        XFbP7zpUkCqVKX4=; b=CqM3xPr+nc9UfN/4WjR3csBYhFI33bC+6TTBegRKLKcc
+        k1gQyrqVDgN/Utvni23YWLg8U+C05A+hVUFMlE94Pu2IhF5laKmajz9DIlCvw0oQ
+        HpLXdEpaYJVQDtdfsk/25eEmkI+jcHsRZoEgfoblF06oTC6wj6uiHchXWbrCFtm9
+        GddW4Dfb5eZQ29viAglGOF4HjtErtdM8zwZ5SmNwDlTD/EQq9/Or0K9kwlXhfTEb
+        9GGhfL3t6S19YUhq81BnHH+jivbY3fvzeDlWMyN6+99vtQy90UjBjwfU1ZzPqapa
+        Yy3B5sxKVpO5lBEtlvfaiNtSu0Hp04SikV1+0pKtzw==
+X-ME-Sender: <xms:WIb7Ys_VI-WF_64BjUsMRp6hgkJNR386LYoRDrsWVDOydiVoAknNbQ>
+    <xme:WIb7YksfJKc1NBRiYwiqx8p7Zkr1gQrrt8vsxOxYaZh009HDH9a_GVPLE6dABlzAK
+    KUmJko9Jc09fVFBFnE>
+X-ME-Received: <xmr:WIb7YiANA3mQm-BFej2TzDFNkaWjr0CsDS-wAkZX8QZ6KLwlFArAVjtz68U>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgedggeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetfefffefgkedtfefgledugfdtjeefjedvtddtkeetieffjedvgfehheff
+    hfevudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:WIb7YsfCemL9tFFy8sGs_JIhBOlptgZwVEiwGRrbOFKQCZZTZqPr6w>
+    <xmx:WIb7YhN9-5Y4ca-TLP1ARLg_vMZNpontCTAM940_DRUP1V-YhQKdhw>
+    <xmx:WIb7Ymnv3YP06kW34I4-5iHoU4P-vrIvnk-oAyXsL2eZiDoQcFJ2nA>
+    <xmx:Wob7YsOQ2TYfwUPyuJVNCV4wNBlRMmm2-WxTvl83YbKdwr7UETeCpp9IDaw>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 16 Aug 2022 07:58:15 -0400 (EDT)
+Date:   Tue, 16 Aug 2022 13:58:14 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Dom Cobley <dom@raspberrypi.com>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-amlogic@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Phil Elwell <phil@raspberrypi.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
+Message-ID: <20220816115814.gtdymzjsutu4am7z@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-4-3d53ae722097@cerno.tech>
+ <8735eeg31e.fsf@intel.com>
+ <46871a84-3b17-5474-9608-cfbe7e6f4c7f@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="awchg3pjflohp76k"
 Content-Disposition: inline
-In-Reply-To: <f88fe469-d4a4-3240-b325-a745255bf01c@virtuozzo.com>
+In-Reply-To: <46871a84-3b17-5474-9608-cfbe7e6f4c7f@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 02:47:22PM +0300, Alexander Atanasov wrote:
-> Hello,
-> 
-> On 16.08.22 12:49, Greg Kroah-Hartman wrote:
-> > On Tue, Aug 16, 2022 at 12:41:14PM +0300, Alexander Atanasov wrote:
-> 
-> > >   rename include/linux/{balloon_compaction.h => balloon_common.h} (99%)
-> > 
-> > Why rename the .h file?  It still handles the "balloon compaction"
-> > logic.
-> 
-> File contains code that is common to balloon drivers,
-> compaction is only part of it. Series add more code to it.
-> Since it was suggested to use it for such common code.
-> I find that common becomes a better name for it so the rename.
-> I can drop the rename easy on next iteration if you suggest to.
 
-"balloon_common.h" is very vague, you should only need one balloon.h
-file in the include/linux/ directory, right, so of course it is "common"
-:)
+--awchg3pjflohp76k
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thanks,
+On Tue, Aug 02, 2022 at 04:16:29PM +0200, Thomas Zimmermann wrote:
+> Hi
+>=20
+> Am 02.08.22 um 15:58 schrieb Jani Nikula:
+> > On Fri, 29 Jul 2022, Maxime Ripard <maxime@cerno.tech> wrote:
+> > > Multiple drivers (meson, vc4) define the analog TV 525-lines and 625-=
+lines
+> > > modes in the drivers.
+> > >=20
+> > > Since those modes are fairly standards, and that we'll need to use th=
+em in
+> > > more places in the future, let's move the meson definition into the
+> > > framework.
+> >=20
+> > I think you should always expose interfaces, not data. Data is not an
+> > interface, and I think this sets a bad example that will be cargo
+> > culted.
+>=20
+> Although I wrote the opposite wrt patch 8, I agree with Jani here when it
+> comes to 'official' interfaces. The cases I've seen of exported data
+> structures often lead to intransparent code.
 
-greg "naming is hard" k-h
+Ack. The improvement Geert suggested would involve that change anyway,
+so this should be fixed for the next iteration.
+
+Maxime
+
+--awchg3pjflohp76k
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYvuGVgAKCRDj7w1vZxhR
+xS0WAP47XlF53evVNWhich0B1ptAwy/AePOsskAxEmgx3yqrNQD9E0bjZfOAyvz/
+e3gbsh9/yRHjOZuY9N1BqkC04K6VFQE=
+=ezHC
+-----END PGP SIGNATURE-----
+
+--awchg3pjflohp76k--
