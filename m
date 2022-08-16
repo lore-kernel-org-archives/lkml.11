@@ -2,128 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B69C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDEDC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236990AbiHPSKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
+        id S236974AbiHPSLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:11:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237090AbiHPSKY (ORCPT
+        with ESMTP id S236980AbiHPSLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:10:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756F28E12
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660673347;
+        Tue, 16 Aug 2022 14:11:15 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9DB24940;
+        Tue, 16 Aug 2022 11:10:43 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id DC55D4C134E;
+        Tue, 16 Aug 2022 18:10:41 +0000 (UTC)
+Received: from pdx1-sub0-mail-a314.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id E08AA4C25AB;
+        Tue, 16 Aug 2022 18:10:40 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1660673441; a=rsa-sha256;
+        cv=none;
+        b=M0b2IKzrAAOPQITbh7iytw6ce/vPhrfa7pp5GRBFWU1T1NeZPvBtMvvKEXWBMc7Vb+2St6
+        QnPLQGnf9zq2LVX8ZE+qD/JEHcnmVPAA7E1KETEt99Hkfg16k3ZR6VBfasEnPH3wly14RS
+        FJyPuDfUmT/hauLOkzj6ufT0gRP0lfHYi5umz0ruqO5GmHlnoK//1u9eR/+AJotMyIYcXR
+        1nFzL4ghI80JhF/+rg1z9lmuibmuXAhD16Rx6O2AfVfjwuoIm5GqHIOV+2PTOv+Hz53Y08
+        sLHJP2qdeuBrepPN1ibi2qRi698CNgWvNn5q13B/1aZcPuxEQMxdhWfMwusTBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1660673441;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5Cxl1yMNjN1JWkJUDea+B9kQSTSEbSpFhOYq99gTDk4=;
-        b=QG/J4FxPHFUVAo/RXrelALh9O1cQ476t2BcgiOmHqkQg4o35CFBMgNanFOeS3tNb+guAUd
-        CIH38R79cziATGWSR12g5GewrNK5rRtEUFbVVTNMYx9Mzd5PbPbawJby/8dDG6BVjwI2Sk
-        JavOd3c0yZgQsAzczfEVMHeM5C6p7Bs=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-170-tt4yDBeHNaO7FJrK3pY5jw-1; Tue, 16 Aug 2022 14:07:37 -0400
-X-MC-Unique: tt4yDBeHNaO7FJrK3pY5jw-1
-Received: by mail-wm1-f69.google.com with SMTP id v11-20020a1cf70b000000b003a318238826so2205115wmh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:07:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=5Cxl1yMNjN1JWkJUDea+B9kQSTSEbSpFhOYq99gTDk4=;
-        b=WMOBoq0ikO2MPBZ1pgGE/3oFC48DWZQpj7bcouvgEtS1WpXvbLlV8ByMzLIpVPaYzI
-         SkoHIzYem9dhXYh0zU2mxsdBDnP+cHBOgEgTB3wZqWhLbKZGU2GLSNz69E0D8T3cFY7t
-         9J1Sp6QCdVE7ROzcngjJXGrePVqP2qS15QT/dQlHepArikf82IYViBgi12JTfCXLJnLu
-         QeZXR/95swuKNjGS3/dfAtxIXQ5axZoLZg9VJi3OeqV3RnPWkMDzjjD/CW+xFf94OvLx
-         dP7ctgQUqTmVg/sORmGYgxcJlLYDy7w4s3yWabu05jPp0LTBoZXUhjHDL4ZNlL83UzuN
-         99cQ==
-X-Gm-Message-State: ACgBeo066tnFY+nlhP7wOPbOnXrhmXcTB8tOkQrfIfHnl9AhKUCzC78V
-        6u228pJefI/vmyO9YEcnKggdgXaU40cIZ/Zi9otnl5dL0mhnPy1EJqYBPeELh9iJzCegN3fX3qY
-        RerYiCS19MBZJjQzxEDpEpoX6
-X-Received: by 2002:a5d:4912:0:b0:220:6633:104f with SMTP id x18-20020a5d4912000000b002206633104fmr12446500wrq.625.1660673256724;
-        Tue, 16 Aug 2022 11:07:36 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6uR8z5D5D8T/gAXNcIujuyju0f7+AmovqCm4Vq6ys0+45zUiErhIRXXQQ3OhAWcNPgXMOXnw==
-X-Received: by 2002:a5d:4912:0:b0:220:6633:104f with SMTP id x18-20020a5d4912000000b002206633104fmr12446491wrq.625.1660673256534;
-        Tue, 16 Aug 2022 11:07:36 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id o8-20020a05600c4fc800b003a319bd3278sm14694961wmq.40.2022.08.16.11.07.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 11:07:36 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=I06/ecHUnT7zHJJuTwo7ZmgJud65PxCU9WXUPwrIBaQ=;
+        b=Jc5cJzdkgjrR8AA1cBgaJ7s60oN4UNv0gLEySENW4creNrvZKWfzYlkEtkri7idtY4kS2F
+        w/Uep2hurOZRzFTituEadVbugDDfxrI7d6cqBNv9tBKzgm/alOEw8aPOEYMHUM0ldT3cyD
+        Eprs8Kh5N7TWe0I6IvIQ798b/trPu8YznwHGhUXwU6nK3bWdkepYDcEaojIcOl0I06ZYGL
+        8BDgp0yA+EeeXQo5aXtLIDpT9SYDNvw4G+833jtFJY/XgcKuPqRYEHB07u54sHJjqF1Mml
+        Vk2iBGwPTTCf3L0JclrSy1XAW8GBFa0kLGBgqyiUQr4H22awZpkGwDJKxnGGng==
+ARC-Authentication-Results: i=1;
+        rspamd-7697cc766f-9rx62;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-White-Rock: 02ee42c1152eaacb_1660673441497_3181699394
+X-MC-Loop-Signature: 1660673441497:3222038149
+X-MC-Ingress-Time: 1660673441497
+Received: from pdx1-sub0-mail-a314.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.110.28.254 (trex/6.7.1);
+        Tue, 16 Aug 2022 18:10:41 +0000
+Received: from offworld (unknown [104.36.25.245])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a314.dreamhost.com (Postfix) with ESMTPSA id 4M6fMg1vT2zF1;
+        Tue, 16 Aug 2022 11:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1660673440;
+        bh=I06/ecHUnT7zHJJuTwo7ZmgJud65PxCU9WXUPwrIBaQ=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=VbXvJHvNVTgML/Vi2Xzn9FVbgGkc7dXYyKl1bUJv0Ja4nIaHHN3gzyVfyhk+zwJ5B
+         TD/Q49GkQIumI6/TXj6i85nLbJipITDDOitrbVF5YvIDO7C+z1hhfdBLYW1ilhIZUO
+         +HtNsN4hBOgoagNOtsGaDOp5pVqv66Y2g6wMILpTY04oC+R9Plh6JfdTPgiE/pgJSW
+         1Ly6s88hI95jSQ2gb/NMM9w5vqJCgFfk37lKd7meKs430vKwr50QrTnf8IgJCl4GZL
+         mEl5SjC0Zcg7ZhW1FTbirTL+KPuc2CLssRW1LCk9qstOU5Zpan3DfkE8vrvl5llHXO
+         k+s6laKDg1ZcQ==
+Date:   Tue, 16 Aug 2022 10:52:59 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Dave Jiang <dave.jiang@intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH 0/5] cpumask, sched/topology: NUMA-aware CPU spreading interface
-Date:   Tue, 16 Aug 2022 19:07:22 +0100
-Message-Id: <20220816180727.387807-1-vschneid@redhat.com>
-X-Mailer: git-send-email 2.31.1
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
+        alison.schofield@intel.com, a.manzanares@samsung.com,
+        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, bp@alien8.de, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arch/cacheflush: Introduce flush_all_caches()
+Message-ID: <20220816175259.o5h5wv23rs2bvcu6@offworld>
+References: <4bedc81d-62fa-7091-029e-a2e56b4f8f7a@intel.com>
+ <20220803183729.00002183@huawei.com>
+ <9f3705e1-de21-0f3c-12af-fd011b6d613d@intel.com>
+ <YvO8pP7NUOdH17MM@FVFF77S0Q05N>
+ <62f40fba338af_3ce6829466@dwillia2-xfh.jf.intel.com.notmuch>
+ <20220815160706.tqd42dv24tgb7x7y@offworld>
+ <Yvtc2u1J/qip8za9@worktop.programming.kicks-ass.net>
+ <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch>
+ <20220816165301.4m4w6zsse62z4hxz@offworld>
+ <CAA9_cmfBubQe6EGk5+wjotvofZavfjFud-JMPW13Au0gpAcWog@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAA9_cmfBubQe6EGk5+wjotvofZavfjFud-JMPW13Au0gpAcWog@mail.gmail.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks,
+On Tue, 16 Aug 2022, Dan Williams wrote:
 
-Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
-from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
-it).
+>On Tue, Aug 16, 2022 at 10:30 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>>
+>> On Tue, 16 Aug 2022, Dan Williams wrote:
+>>
+>> >Peter Zijlstra wrote:
+>> >> On Mon, Aug 15, 2022 at 09:07:06AM -0700, Davidlohr Bueso wrote:
+>> >> > diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
+>> >> > index b192d917a6d0..ce2ec9556093 100644
+>> >> > --- a/arch/x86/include/asm/cacheflush.h
+>> >> > +++ b/arch/x86/include/asm/cacheflush.h
+>> >> > @@ -10,4 +10,7 @@
+>> >> >
+>> >> >  void clflush_cache_range(void *addr, unsigned int size);
+>> >> >
+>> >> > +#define flush_all_caches() \
+>> >> > +  do { wbinvd_on_all_cpus(); } while(0)
+>> >> > +
+>> >>
+>> >> This is horrific... we've done our utmost best to remove all WBINVD
+>> >> usage and here you're adding it back in the most horrible form possible
+>> >> ?!?
+>> >>
+>> >> Please don't do this, do *NOT* use WBINVD.
+>> >
+>> >Unfortunately there are a few good options here, and the changelog did
+>> >not make clear that this is continuing legacy [1], not adding new wbinvd
+>> >usage.
+>>
+>> While I was hoping that it was obvious from the intel.c changes that this
+>> was not a new wbinvd, I can certainly improve the changelog with the below.
+>
+>I also think this cache_flush_region() API wants a prominent comment
+>clarifying the limited applicability of this API. I.e. that it is not
+>for general purpose usage, not for VMs, and only for select bare metal
+>scenarios that instantaneously invalidate wide swaths of memory.
+>Otherwise, I can now see how this looks like a potentially scary
+>expansion of the usage of wbinvd.
 
-The proposed interface involved an array of CPUs and a temporary cpumask, and
-being my difficult self what I'm proposing here is an interface that doesn't
-require any temporary storage other than some stack variables (at the cost of
-one wild macro).
+Sure.
 
-Patch 5/5 is just there to showcase how the thing would be used. If this doesn't
-get hated on, I'll let Tariq pick this up and push it with his networking driver
-changes (with actual changelogs).
+Also, in the future we might be able to bypass this hammer in the presence
+of persistent cpu caches.
 
-[1]: https://lore.kernel.org/all/20220728191203.4055-1-tariqt@nvidia.com/
-
-Cheers,
-Valentin
-
-Valentin Schneider (5):
-  bitops: Introduce find_next_andnot_bit()
-  cpumask: Introduce for_each_cpu_andnot()
-  sched/topology: Introduce sched_numa_hop_mask()
-  sched/topology: Introduce for_each_numa_hop_cpu()
-  SHOWCASE: net/mlx5e: Leverage for_each_numa_hop_cpu()
-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 12 ++++-
- include/linux/cpumask.h                      | 32 ++++++++++++++
- include/linux/find.h                         | 44 ++++++++++++++++---
- include/linux/topology.h                     | 46 ++++++++++++++++++++
- kernel/sched/topology.c                      | 28 ++++++++++++
- lib/cpumask.c                                | 19 ++++++++
- lib/find_bit.c                               | 16 ++++---
- 7 files changed, 184 insertions(+), 13 deletions(-)
-
---
-2.31.1
-
+Thanks,
+Davidlohr
