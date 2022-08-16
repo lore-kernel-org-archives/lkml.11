@@ -2,180 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B74A9C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3813FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234154AbiHPLL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        id S235375AbiHPLMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiHPLLW (ORCPT
+        with ESMTP id S235362AbiHPLLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:11:22 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173F4D631C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660642658; x=1692178658;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uNOE1dTwztKIHhBeWOrKk5mBYn1U2LqIR0BM6RNHtw0=;
-  b=E/+i0JII4p4Ar7zOarhRKn+AjO2e7eyNzT0mnD5oOf3TVSB+STZiaV2D
-   dvDkU7FEk5IqRrjHMmugYYi0nLhopXBKo5FuwFhmCyVg1kiqXxmtiMXB9
-   6F7UoO46n89AR08E9CqjSK46P2jN3IdcedQtHdF/rLIpumVuN8BYJCLad
-   K7wjM6nAeyQya1gj4C6oQFkY/I7fBNQjvlzQZhitWpL4H/efyMtqMCiQI
-   kGPlgVJ4hRxcxkAUSg8DFIBJlCahb2uSnTIo0y58fhG4LluXZceybaM+m
-   2QtilptQ/kM8C4wNQYFmqNt+7n28hs2OBkhKKoyXOW65H63JIa4AthoyN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293446796"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293446796"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:46 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="733231028"
-Received: from clbarnes-mobl.amr.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.7.166])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:43 -0700
-From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-To:     intel-gfx@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        mchehab@kernel.org, chris@chris-wilson.co.uk,
-        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
-        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
-        daniel@ffwll.ch, andi.shyti@linux.intel.com,
-        andrzej.hajda@intel.com
-Subject: [PATCH v7 1/8] overflow: Move and add few utility macros into overflow
-Date:   Tue, 16 Aug 2022 18:35:18 +0900
-Message-Id: <20220816093525.184940-2-gwan-gyeong.mun@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
-References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+        Tue, 16 Aug 2022 07:11:45 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E523A11A33
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:22 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id v5-20020a5d9405000000b0067c98e0011dso5553675ion.1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:39:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=LIRrM9Er52tS0cvVvdY5Sbdd6KgSVNZLH72A832Pq5s=;
+        b=ELZXkwoH4mbeQhxUC+r1FNg57ou1UUFQwyXJ6p1YUdk0OdhsZp1/jejlSlbCLcqvMP
+         jP87QYA+k51XV+8YceMHXIQE6PUlZDuFDhfEmxs3FbhnyF1v6tsJPm8Ga4nSdDpecI9/
+         RSixFsgo6a9BoJM3Lc7LiijJkfg6cmJ9dSqkd6XbhD6g1icLzQphUt+/dCPKCbP4U630
+         tA+cLdVlO7dLYx353/CudPd2c/8Pxw1B++9kFwg/LJ4cCnlF5h4BJks7zI4sKeeiZG7S
+         QveNhg/VI0jvU61auz0gUzc/EDn5Cd24gjlTeeWKu4d/oH8qlbwcetQXzwsPnT1rYLmK
+         8uew==
+X-Gm-Message-State: ACgBeo2w/2Rl7Tg0MA5W1wy4eaeT1aYeMmFdR++OTryD/EiII5xsL1az
+        hGHcUXvXPkaIGwTUIywziaMHEyZOqTSH7t15APq/KUWpYNiX
+X-Google-Smtp-Source: AA6agR5shgoxwqRTco3PC25nkmTsDzI/3TYQ1SSIQwdJv+o5Pi+qaVILR1CWQMOqYebZ9T+1kkGpssIkklEp2o1Uoir5WMFP/4j+
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:14ca:b0:346:a62f:cc9f with SMTP id
+ l10-20020a05663814ca00b00346a62fcc9fmr1436694jak.163.1660639162312; Tue, 16
+ Aug 2022 01:39:22 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:39:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005eae9a05e657afc9@google.com>
+Subject: [syzbot] upstream boot error: general protection fault in dup_fd
+From:   syzbot <syzbot+0bd8bc660debfdbd190d@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It moves overflows_type utility macro into overflow header from i915_utils
-header. The overflows_type can be used to catch the truncation between data
-types. And it adds safe_conversion() macro which performs a type conversion
-(cast) of an source value into a new variable, checking that the
-destination is large enough to hold the source value. And the functionality
-of overflows_type has been improved to handle the signbit.
-The is_unsigned_type macro has been added to check the sign bit of the
-built-in type.
+Hello,
 
-v3: Add is_type_unsigned() macro (Mauro)
-    Modify overflows_type() macro to consider signed data types (Mauro)
-    Fix the problem that safe_conversion() macro always returns true
-v4: Fix kernel-doc markups
-v6: Move macro addition location so that it can be used by other than drm
-    subsystem (Jani, Mauro, Andi)
-    Change is_type_unsigned to is_unsigned_type to have the same name form
-    as is_signed_type macro
+syzbot found the following issue on:
 
-Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Matthew Auld <matthew.auld@intel.com>
-Cc: Nirmoy Das <nirmoy.das@intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Andi Shyti <andi.shyti@linux.intel.com>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org> (v5)
+HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=169a15dd080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4757943c2b26daff
+dashboard link: https://syzkaller.appspot.com/bug?extid=0bd8bc660debfdbd190d
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0bd8bc660debfdbd190d@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xffff0000000001a0: 0000 [#1] PREEMPT SMP KASAN
+KASAN: maybe wild-memory-access in range [0xfff8200000000d00-0xfff8200000000d07]
+CPU: 1 PID: 46 Comm: kworker/u4:3 Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events_unbound call_usermodehelper_exec_work
+
+RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
+RIP: 0010:__kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+RIP: 0010:kmem_cache_alloc+0x12d/0x310 mm/slub.c:3268
+Code: 84 1c 01 00 00 48 83 78 10 00 0f 84 11 01 00 00 49 8b 3f 40 f6 c7 0f 0f 85 e3 01 00 00 45 84 c0 0f 84 dc 01 00 00 41 8b 47 28 <49> 8b 5c 05 00 48 8d 4a 08 4c 89 e8 65 48 0f c7 0f 0f 94 c0 a8 01
+RSP: 0000:ffffc90000b775c8 EFLAGS: 00010202
+RAX: 00000000000001a0 RBX: 0000000000000cc0 RCX: 0000000000000000
+RDX: 0000000000000b51 RSI: 0000000000000cc0 RDI: 0000000000040a00
+RBP: ffffffff81f3d035 R08: dffffc0000000001 R09: fffffbfff1c4ad5e
+R10: fffffbfff1c4ad5e R11: 1ffffffff1c4ad5d R12: ffffc90000b77720
+R13: ffff000000000000 R14: ffffffff81f3d035 R15: ffff888140006640
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ dup_fd+0x75/0xb90 fs/file.c:324
+ copy_files+0xe6/0x200 kernel/fork.c:1623
+ copy_process+0x18b6/0x4010 kernel/fork.c:2244
+ kernel_clone+0x22f/0x7a0 kernel/fork.c:2673
+ user_mode_thread+0x12d/0x190 kernel/fork.c:2742
+ call_usermodehelper_exec_work+0x57/0x220 kernel/umh.c:174
+ process_one_work+0x81c/0xd10 kernel/workqueue.c:2289
+ worker_thread+0xb14/0x1330 kernel/workqueue.c:2436
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+Modules linked in:
+----------------
+Code disassembly (best guess):
+   0:	84 1c 01             	test   %bl,(%rcx,%rax,1)
+   3:	00 00                	add    %al,(%rax)
+   5:	48 83 78 10 00       	cmpq   $0x0,0x10(%rax)
+   a:	0f 84 11 01 00 00    	je     0x121
+  10:	49 8b 3f             	mov    (%r15),%rdi
+  13:	40 f6 c7 0f          	test   $0xf,%dil
+  17:	0f 85 e3 01 00 00    	jne    0x200
+  1d:	45 84 c0             	test   %r8b,%r8b
+  20:	0f 84 dc 01 00 00    	je     0x202
+  26:	41 8b 47 28          	mov    0x28(%r15),%eax
+* 2a:	49 8b 5c 05 00       	mov    0x0(%r13,%rax,1),%rbx <-- trapping instruction
+  2f:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
+  33:	4c 89 e8             	mov    %r13,%rax
+  36:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
+  3b:	0f 94 c0             	sete   %al
+  3e:	a8 01                	test   $0x1,%al
+
+
 ---
- drivers/gpu/drm/i915/i915_utils.h |  5 +--
- include/linux/overflow.h          | 54 +++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 4 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
-index c10d68cdc3ca..eb0ded23fa9c 100644
---- a/drivers/gpu/drm/i915/i915_utils.h
-+++ b/drivers/gpu/drm/i915/i915_utils.h
-@@ -32,6 +32,7 @@
- #include <linux/types.h>
- #include <linux/workqueue.h>
- #include <linux/sched/clock.h>
-+#include <linux/overflow.h>
- 
- #ifdef CONFIG_X86
- #include <asm/hypervisor.h>
-@@ -111,10 +112,6 @@ bool i915_error_injected(void);
- #define range_overflows_end_t(type, start, size, max) \
- 	range_overflows_end((type)(start), (type)(size), (type)(max))
- 
--/* Note we don't consider signbits :| */
--#define overflows_type(x, T) \
--	(sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
--
- #define ptr_mask_bits(ptr, n) ({					\
- 	unsigned long __v = (unsigned long)(ptr);			\
- 	(typeof(ptr))(__v & -BIT(n));					\
-diff --git a/include/linux/overflow.h b/include/linux/overflow.h
-index f1221d11f8e5..462a03454377 100644
---- a/include/linux/overflow.h
-+++ b/include/linux/overflow.h
-@@ -35,6 +35,60 @@
- #define type_max(T) ((T)((__type_half_max(T) - 1) + __type_half_max(T)))
- #define type_min(T) ((T)((T)-type_max(T)-(T)1))
- 
-+/**
-+ * is_unsigned_type - helper for checking data type which is an unsigned data
-+ * type or not
-+ * @x: The data type to check
-+ *
-+ * Returns:
-+ * True if the data type is an unsigned data type, false otherwise.
-+ */
-+#define is_unsigned_type(x) ((typeof(x))-1 >= (typeof(x))0)
-+
-+/**
-+ * overflows_type - helper for checking the truncation between data types
-+ * @x: Source for overflow type comparison
-+ * @T: Destination for overflow type comparison
-+ *
-+ * It compares the values and size of each data type between the first and
-+ * second argument to check whether truncation can occur when assigning the
-+ * first argument to the variable of the second argument.
-+ * Source and Destination can be used with or without sign bit.
-+ * Composite data structures such as union and structure are not considered.
-+ * Enum data types are not considered.
-+ * Floating point data types are not considered.
-+ *
-+ * Returns:
-+ * True if truncation can occur, false otherwise.
-+ */
-+#define overflows_type(x, T) \
-+	(is_unsigned_type(x) ? \
-+		is_unsigned_type(T) ? \
-+			(sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-+			: (sizeof(x) >= sizeof(T) && (x) >> (BITS_PER_TYPE(T) - 1)) ? 1 : 0 \
-+	: is_unsigned_type(T) ? \
-+		((x) < 0) ? 1 : (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-+		: (sizeof(x) > sizeof(T)) ? \
-+			((x) < 0) ? (((x) * -1) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-+				: ((x) >> BITS_PER_TYPE(T)) ? 1 : 0 \
-+			: 0)
-+
-+/**
-+ * safe_conversion - perform a type conversion (cast) of an source value into
-+ * a new variable, checking that the destination is large enough to hold the
-+ * source value.
-+ * @ptr: Destination pointer address
-+ * @value: Source value
-+ *
-+ * Returns:
-+ * If the value would overflow the destination, it returns false.
-+ */
-+#define safe_conversion(ptr, value) ({ \
-+	typeof(value) __v = (value); \
-+	typeof(ptr) __ptr = (ptr); \
-+	overflows_type(__v, *__ptr) ? 0 : ((*__ptr = (typeof(*__ptr))__v), 1); \
-+})
-+
- /*
-  * Avoids triggering -Wtype-limits compilation warning,
-  * while using unsigned data types to check a < 0.
--- 
-2.37.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
