@@ -2,62 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B70C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F39C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233135AbiHPKGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
+        id S233255AbiHPKGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234194AbiHPKFT (ORCPT
+        with ESMTP id S234190AbiHPKFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:05:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19105C6CD0;
-        Tue, 16 Aug 2022 02:26:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91F6161255;
-        Tue, 16 Aug 2022 09:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7680CC433D6;
-        Tue, 16 Aug 2022 09:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660641977;
-        bh=HH0LKZi3cN9iX3f5XbyBtL6oi9LZPkk8/xXhG4QPW80=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G2ZnPky8rXQ5BjWdDQNabGVWclVBlCj+X50TlFjw93zEzKIv6w81vP4s9yU+ZwGVD
-         x9GnxgBfA6hNlC05qTuaVoEbFTpnXIEMt9uLe1n0jwhnaNoTFepvrxqr+q+7r+v7Q6
-         CRk3jGUp//ZprOKphnK7zXQq/brx/Mct2PIxjyb4=
-Date:   Tue, 16 Aug 2022 11:26:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     nobuhiro1.iwamatsu@toshiba.co.jp
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        stern@rowland.harvard.edu,
-        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Subject: Re: [PATCH 5.15 103/779] USB: gadget: Fix use-after-free Read in
- usb_udc_uevent()
-Message-ID: <YvtitluWL33RPxSW@kroah.com>
-References: <20220815180337.130757997@linuxfoundation.org>
- <20220815180341.711918032@linuxfoundation.org>
- <TYWPR01MB94203CD9FB4E48250368E1D7926B9@TYWPR01MB9420.jpnprd01.prod.outlook.com>
+        Tue, 16 Aug 2022 06:05:11 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C8C6CD1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:11:40 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id uj29so17568270ejc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=W5qjF+03yjl4vJJBs76s6kPKVqJeVUsMt0AyY8twYsQ=;
+        b=a31uzct1G3C9D+Hs2qHPBGDerVJo1D+cDFBOyXDZSEkBthnRBULx8L05BG1z4Nz+vB
+         DlWvwn77Tw3lX8P+LXQ1P+3WsLW4h4nq4mtuqyh233rjBsC0l+Z4ljNbcsh1tWBYy/cQ
+         TrvXLv3+OD7spjwanEqomikpoS2aXmgZ6O4kRPp5m0FeDgxEU4lYUr4zl6QjJLdnkHr0
+         wiIznDUa21X6AddFwyVviVV15YX3yGbXDhI1P3P13Vi4a9NzRijk9nXmDiEX4SiCzh2i
+         smMr8cxGrPjWXTRKjFfOwBEVcr3Fbz8TFyNWD6FbEJxSsDYLRgLKZd0/URunHsAi5UEm
+         NThw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=W5qjF+03yjl4vJJBs76s6kPKVqJeVUsMt0AyY8twYsQ=;
+        b=zI8nUgZ5nOEmYj9nWBYuWlVPZphBuUTWWJm1DP9H5DGPi5DQh0rsPgV4lWdwaFJShr
+         1HDaNH7mtzZeLDquedjRJVxVYV1p3xvK8ODDdVE3PHo7KB7a8M7zTKaDGwQCgpEgjuxG
+         cVxr8BYM7Xq2B7wIrwYq0w+QdT5jAB5V0xo9c9Rv6u9ov3PVkBN60qsGz8N4znYQelwQ
+         cT7iBuWIPBpwvl58uPJ1C1+3wzjYGyL9V9pOsIBAq74igo8MjVEB+f0MiyyUUPAcxwFV
+         nTfiINh4yNuLFcWSybPWewQ26O/j8AQ1BOt6lITyBTBtgvqwtI0U2VlX1lXSmLgLSpBc
+         Yumw==
+X-Gm-Message-State: ACgBeo0KVCj6wbktkbg5kh3wRqiyq/lx8j46U1WaKYvjgCFDlt6XEh5l
+        rQQry3RpaLffDGW0ALQQQ7Lj9A==
+X-Google-Smtp-Source: AA6agR4WrdhecqaaLYVQ7wHTuKDpRrGzTG8WAdXe81yRK8N0ygsJbeUh5JlV6PmM5HfJe1+47RuRww==
+X-Received: by 2002:a17:907:762f:b0:730:95d9:9955 with SMTP id jy15-20020a170907762f00b0073095d99955mr12330008ejc.505.1660637497239;
+        Tue, 16 Aug 2022 01:11:37 -0700 (PDT)
+Received: from [192.168.1.69] (120.205.87.79.rev.sfr.net. [79.87.205.120])
+        by smtp.gmail.com with ESMTPSA id f25-20020a50fc99000000b004424429afd4sm8078244edq.16.2022.08.16.01.11.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 01:11:36 -0700 (PDT)
+Message-ID: <0730c493-b49f-02f5-c0e7-999d5871dc4a@baylibre.com>
+Date:   Tue, 16 Aug 2022 10:11:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <TYWPR01MB94203CD9FB4E48250368E1D7926B9@TYWPR01MB9420.jpnprd01.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH v4 3/3] counter: capture-tiecap: capture driver support
+ for ECAP
+Content-Language: en-US
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     vilhelm.gray@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        mranostay@ti.com
+References: <20220810140724.182389-1-jpanis@baylibre.com>
+ <20220810140724.182389-4-jpanis@baylibre.com> <Yvkq9Hy+hxAPQd8J@fedora>
+ <YvosCeuntEKXJz+e@fedora>
+From:   Julien Panis <jpanis@baylibre.com>
+In-Reply-To: <YvosCeuntEKXJz+e@fedora>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 01:43:11AM +0000, nobuhiro1.iwamatsu@toshiba.co.jp wrote:
-> Hi,
-> 
-> This patch is related to "fc274c1e9973 "USB: gadget: Add a new bus for gadgets".
-> 5.15.y, 5.10.y, 5.5.y and 4.19.y tree doesn't include it, so it's unnecessary. Please drop each tree.
 
-Ick, good catch, my scripts got confused here.  Now dropped from
-everywhere.
 
-thanks,
+On 15/08/2022 13:20, William Breathitt Gray wrote:
+> On Sun, Aug 14, 2022 at 01:03:48PM -0400, William Breathitt Gray wrote:
+>> On Wed, Aug 10, 2022 at 04:07:24PM +0200, Julien Panis wrote:
+>>> +static int ecap_cnt_function_read(struct counter_device *counter,
+>>> +				  struct counter_count *count,
+>>> +				  enum counter_function *function)
+>>> +{
+>>> +	*function = COUNTER_FUNCTION_INCREASE;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int ecap_cnt_action_read(struct counter_device *counter,
+>>> +				struct counter_count *count,
+>>> +				struct counter_synapse *synapse,
+>>> +				enum counter_synapse_action *action)
+>>> +{
+>>> +	*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
+>>> +
+>>> +	return 0;
+>>> +}
+>> Right now you have a Signal defined for the ECAPSIG line, but there is
+>> at least one more relevant Signal to define: the clock updating ECAPCNT.
+>> The Synapse action of COUNTER_SYNAPSE_ACTION_BOTH_EDGES is for that
+>> clock Signal, but for the ECAPSIG Signal you will need to report a
+>> Synapse action based on the polarity of the next capture (i.e. whether
+>> high or low).
+> I need to make a correction here. IIUC, the ECAPSIG signal doesn't
+> affect the count value of ECAPCNT (ECAPSIG only triggers the captures),
+> so the Synapse action for ECAPSIG should always be
+> COUNTER_SYNAPSE_ACTION_NONE. You don't need to account for the capture
+> polarities because they're not relevant in this particular situation:
+> ECAPSIG doesn't trigger the ECAPCNT count function.
+>
+> William Breathitt Gray
 
-greg k-h
+It appears to me that you spoke about TSCNT register content (32 bits). 
+So, you were
+not talking about the Mod4 counter (2 bits).
+Do you confirm that ?
