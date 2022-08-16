@@ -2,279 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD5AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1D6C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbiHPNKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S235660AbiHPNK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235642AbiHPNKj (ORCPT
+        with ESMTP id S235648AbiHPNKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:10:39 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09510B275D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:10:35 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id f20so14844935lfc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:10:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=rD9PGKkXzgL1KFySy5MozS3RkXjsP+Wc7O/Cyd4VZ/Y=;
-        b=loa31jAHLNp549FJ9N0XJqCD4iy1lIHLdn8pMlMI7Prhl34LAKjjsFr87G2oOVuYyo
-         dJpbuH4wwHcNE7udmp9g/aBeH/9XIfFqGVeiA6XXqfVehsB6VBJ9K4swuuyF/n2XxnOZ
-         JDnAZpGq749q+1g2eHEvjiBnpK4UpXZRNmAi3H1j38zosJSqsenY5ImM5aWlRdexdLBk
-         ncbHrtpYhaIyM8IBKinFqTnz1WqYEdEn209FL3GIsQhuS/693nvnUWYiqwSjSyMLsyoj
-         Xv1TQi1ZA7ObWoa30LtCsO+nbek8tPY6au+tsApFxiETojE3R2voybwoRwc9bO4TCf5a
-         c64A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=rD9PGKkXzgL1KFySy5MozS3RkXjsP+Wc7O/Cyd4VZ/Y=;
-        b=sHAuPvMDwnWG2Y7mCQPBZa/pWSJsscBz20i7zcNzdwEEWXo6nh5Oz5Lkyx5GKpmNb0
-         TN0FUmysV/9M16Ti/+ntLc1S+8bZF9Peic9WF60n8MsZyB8uN7EZ29SWUmNhCMMNoGBg
-         TRBpIIteIPm2wVOSsR7PKKT3pYU9v1+5PXJLkFb2WdXgNglCxOD+mVNAVPZEkbc/zldz
-         Si89g7w17UiKjcYSo+KE3z4mN79BJ0bJvHt0+VrQcZvi2MJ0tGrJy1JlWDN8fbEu+B9t
-         jU3bU4sKygFjyBigZVs1BUjM+IR06tJaBszPCNvMvKjD4IenmI7pnvnB7dOtjBHXeSvd
-         bpSA==
-X-Gm-Message-State: ACgBeo3dXZIlKVWH0glu8T2sS+G2FtQeYOBp+k1hi9LF1b9AATmjB9Q2
-        tvMgewhtfaMwj0Z5nof6My7ViA==
-X-Google-Smtp-Source: AA6agR66f/3V9+gijF2iHMM45MRyzxqnhg1fK8rqTwv1z01+CzCLHGhuJR3/glRMCROuAkDfxVLc1A==
-X-Received: by 2002:a05:6512:3da0:b0:48b:3976:b323 with SMTP id k32-20020a0565123da000b0048b3976b323mr6979289lfv.402.1660655433383;
-        Tue, 16 Aug 2022 06:10:33 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id h25-20020ac24d39000000b0048b2be5320csm1385568lfk.118.2022.08.16.06.10.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 06:10:33 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 2/2 v3] regmap: mmio: Support accelerared noinc operations
-Date:   Tue, 16 Aug 2022 15:08:23 +0200
-Message-Id: <20220816130823.97903-2-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220816130823.97903-1-linus.walleij@linaro.org>
-References: <20220816130823.97903-1-linus.walleij@linaro.org>
+        Tue, 16 Aug 2022 09:10:55 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8704AB4437;
+        Tue, 16 Aug 2022 06:10:50 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 18B5322238;
+        Tue, 16 Aug 2022 15:10:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1660655447;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9LhVacs9F80sepfJM8+uixyHpf2jqhk2p1Fl5zzM5IU=;
+        b=cvMxnukhiBlbyuW2swNqXWTgkRqTSISeYg+BkXMlB0pALo5lFoYpupZLBy8vBopaun8QN4
+        1FCdDHTmtHVl34NAgBO3vC+lhYKNoFd91P0Qtxc84SOQLBS3dr+poZujjErRteWvo6IsrT
+        rUGDHwUdcvRVO0L67yF4RQymFVPgK1g=
+From:   Michael Walle <michael@walle.cc>
+To:     krzysztof.kozlowski@linaro.org, pratyush@kernel.org
+Cc:     devicetree@vger.kernel.org, kishon@ti.com,
+        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, robh+dt@kernel.org,
+        vkoul@kernel.org, Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH] dt-bindings: phy: Drop Pratyush Yadav
+Date:   Tue, 16 Aug 2022 15:10:41 +0200
+Message-Id: <20220816131041.1771872-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220811063840.7670-1-krzysztof.kozlowski@linaro.org>
+References: <20220811063840.7670-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the newly added callback for accelerated noinc MMIO
-to provide writesb, writesw, writesl, writesq, readsb, readsw,
-readsl and readsq.
+[+ Pratyush ]
 
-A special quirk is needed to deal with big endian regmaps: there
-are no accelerated operations defined for big endian, so fall
-back to calling the big endian operations itereatively for this
-case.
+> Emails to Pratyush Yadav bounce ("550 Invalid recipient").
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v2->v3:
-- Rebase on kernel v6.0-rc1
-ChangeLog v1->v2:
-- No changes.
----
- drivers/base/regmap/regmap-mmio.c | 153 ++++++++++++++++++++++++++++++
- 1 file changed, 153 insertions(+)
+FWIW, he updated his entry in MAINTAINERS in commit 92714596cdbe
+("MAINTAINERS: Use my kernel.org email"). So I'm not sure if this was
+just an oversight.
 
-diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
-index 71f16be7e717..031ee91020e8 100644
---- a/drivers/base/regmap/regmap-mmio.c
-+++ b/drivers/base/regmap/regmap-mmio.c
-@@ -17,6 +17,7 @@ struct regmap_mmio_context {
- 	void __iomem *regs;
- 	unsigned int val_bytes;
- 	bool relaxed_mmio;
-+	bool big_endian;
- 
- 	bool attached_clk;
- 	struct clk *clk;
-@@ -160,6 +161,79 @@ static int regmap_mmio_write(void *context, unsigned int reg, unsigned int val)
- 	return 0;
- }
- 
-+static int regmap_mmio_noinc_write(void *context, unsigned int reg,
-+				   const void *val, size_t val_count)
-+{
-+	struct regmap_mmio_context *ctx = context;
-+	int ret = 0;
-+	int i;
-+
-+	if (!IS_ERR(ctx->clk)) {
-+		ret = clk_enable(ctx->clk);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	/*
-+	 * There are no native, assembly-optimized write single register
-+	 * operations for big endian, so fall back to emulation if this
-+	 * is needed. (Single bytes are fine, they are not affected by
-+	 * endianness.)
-+	 */
-+	if (ctx->big_endian && (ctx->val_bytes > 1)) {
-+		switch (ctx->val_bytes) {
-+		case 2:
-+		{
-+			const u16 *valp = (const u16 *)val;
-+			for (i = 0; i < val_count; i++)
-+				iowrite16be(valp[i], ctx->regs + reg);
-+			break;
-+		}
-+		case 4:
-+		{
-+			const u32 *valp = (const u32 *)val;
-+			for (i = 0; i < val_count; i++)
-+				iowrite32be(valp[i], ctx->regs + reg);
-+			break;
-+		}
-+#ifdef CONFIG_64BIT
-+		case 8:
-+			/* This is just too esoteric */
-+			fallthrough;
-+#endif
-+		default:
-+			ret = -EINVAL;
-+			goto out_clk;
-+		}
-+	}
-+
-+	switch (ctx->val_bytes) {
-+	case 1:
-+		writesb(ctx->regs + reg, (const u8 *)val, val_count);
-+		break;
-+	case 2:
-+		writesw(ctx->regs + reg, (const u16 *)val, val_count);
-+		break;
-+	case 4:
-+		writesl(ctx->regs + reg, (const u32 *)val, val_count);
-+		break;
-+#ifdef CONFIG_64BIT
-+	case 8:
-+		writesq(ctx->regs + reg, (const u64 *)val, val_count);
-+		break;
-+#endif
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+out_clk:
-+	if (!IS_ERR(ctx->clk))
-+		clk_disable(ctx->clk);
-+
-+	return ret;
-+}
-+
- static unsigned int regmap_mmio_read8(struct regmap_mmio_context *ctx,
- 				      unsigned int reg)
- {
-@@ -241,6 +315,82 @@ static int regmap_mmio_read(void *context, unsigned int reg, unsigned int *val)
- 	return 0;
- }
- 
-+static int regmap_mmio_noinc_read(void *context, unsigned int reg,
-+				  void *val, size_t val_count)
-+{
-+	struct regmap_mmio_context *ctx = context;
-+	int ret = 0;
-+	int i;
-+
-+	if (!IS_ERR(ctx->clk)) {
-+		ret = clk_enable(ctx->clk);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	/*
-+	 * There are no native, assembly-optimized write single register
-+	 * operations for big endian, so fall back to emulation if this
-+	 * is needed. (Single bytes are fine, they are not affected by
-+	 * endianness.)
-+	 */
-+	if (ctx->big_endian && (ctx->val_bytes > 1)) {
-+		switch (ctx->val_bytes) {
-+		case 2:
-+		{
-+			u16 *valp = (u16 *)val;
-+			for (i = 0; i < val_count; i++)
-+				valp[i] = ioread16be(ctx->regs + reg);
-+			break;
-+		}
-+		case 4:
-+		{
-+			u32 *valp = (u32 *)val;
-+			for (i = 0; i < val_count; i++)
-+				valp[i] = ioread32be(ctx->regs + reg);
-+			break;
-+		}
-+#ifdef CONFIG_64BIT
-+		case 8:
-+			/* This is just too esoteric */
-+			fallthrough;
-+#endif
-+		default:
-+			ret = -EINVAL;
-+			goto out_clk;
-+		}
-+	}
-+
-+	switch (ctx->val_bytes) {
-+	case 1:
-+		readsb(ctx->regs + reg, (u8 *)val, val_count);
-+		break;
-+	case 2:
-+		readsw(ctx->regs + reg, (u16 *)val, val_count);
-+		break;
-+	case 4:
-+		readsl(ctx->regs + reg, (u32 *)val, val_count);
-+		break;
-+#ifdef CONFIG_64BIT
-+	case 8:
-+		readsq(ctx->regs + reg, (u64 *)val, val_count);
-+		break;
-+#endif
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+out_clk:
-+	if (!IS_ERR(ctx->clk))
-+		clk_disable(ctx->clk);
-+
-+	return ret;
-+
-+	return 0;
-+}
-+
-+
- static void regmap_mmio_free_context(void *context)
- {
- 	struct regmap_mmio_context *ctx = context;
-@@ -257,6 +407,8 @@ static const struct regmap_bus regmap_mmio = {
- 	.fast_io = true,
- 	.reg_write = regmap_mmio_write,
- 	.reg_read = regmap_mmio_read,
-+	.reg_noinc_write = regmap_mmio_noinc_write,
-+	.reg_noinc_read = regmap_mmio_noinc_read,
- 	.free_context = regmap_mmio_free_context,
- 	.val_format_endian_default = REGMAP_ENDIAN_LITTLE,
- };
-@@ -347,6 +499,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
- #ifdef __BIG_ENDIAN
- 	case REGMAP_ENDIAN_NATIVE:
- #endif
-+		ctx->big_endian = true;
- 		switch (config->val_bits) {
- 		case 8:
- 			ctx->reg_read = regmap_mmio_read8;
--- 
-2.37.2
+-michael
+
+>> 
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml | 2 +-
+>  Documentation/devicetree/bindings/phy/cdns,dphy.yaml    | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
+> index 07be031d82e6..834f65636819 100644
+> --- a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
+> +++ b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: Cadence DPHY Rx Device Tree Bindings
+>  
+>  maintainers:
+> -  - Pratyush Yadav <p.yadav@ti.com>
+> +  - Kishon Vijay Abraham I <kishon@ti.com>
+>  
+>  properties:
+>    compatible:
+> diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
+> index f0e9ca8427bb..37bc20493fd0 100644
+> --- a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: Cadence DPHY Device Tree Bindings
+>  
+>  maintainers:
+> -  - Pratyush Yadav <p.yadav@ti.com>
+> +  - Kishon Vijay Abraham I <kishon@ti.com>
+>  
+>  properties:
+>    compatible:
+> -- 
+> 2.34.1
+
 
