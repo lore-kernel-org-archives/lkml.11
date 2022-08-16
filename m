@@ -2,116 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 489C5C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 734C1C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbiHPJoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S233937AbiHPJoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbiHPJno (ORCPT
+        with ESMTP id S233920AbiHPJn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:43:44 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7790A5FAC5
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:53:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660640001; x=1692176001;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=K6Og00L1IjRsIWgGWRQD8kVwArgaWlic4/wfGISF5fQ=;
-  b=jBBY9h3HC15yJVNSxYeo82/9v9hvsDpam31ynIJN+coH5eThUNaCxtiT
-   EKLKTjz3qF/F7Yqu7BS13MyUTgEVN7zNNBTwoegxJLzBlnemIxs5xne/P
-   cnUzs5riBzNYuJbYQ3YJDP4sQBxusbHZ+WAvXRItUzbEGCnoFYh8XiJGr
-   sfqAYfIdEncvfo+/WdE3Sq9e1zx0ZAX43laTANv9l3kcXHoN/QZdwDcj7
-   cX3JNC2uUHutseRJXkOHCpEPo/olmqs6qe4Hvi816fPoOvW3KDo2YGBLn
-   pNmRWjWlBBN9I4EPTIpfnGOJvzbT4wUTBkmBHo12R5q/g0Zv1848zTplb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="378456011"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="378456011"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:53:21 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="583220366"
-Received: from kinzelba-mobl.ger.corp.intel.com (HELO localhost) ([10.252.39.194])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:53:17 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Bo Liu <liubo03@inspur.com>, airlied@linux.ie, daniel@ffwll.ch,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com, linus.walleij@linaro.org,
-        thierry.reding@gmail.com, sam@ravnborg.org
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, Bo Liu <liubo03@inspur.com>
-Subject: Re: [PATCH] drm: Fix all occurences of the "the the" typo
-In-Reply-To: <20220816083759.4382-1-liubo03@inspur.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220816083759.4382-1-liubo03@inspur.com>
-Date:   Tue, 16 Aug 2022 11:53:14 +0300
-Message-ID: <87edxgr2md.fsf@intel.com>
+        Tue, 16 Aug 2022 05:43:56 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CA927CFD
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:08:25 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id f16-20020a6b6210000000b006889725d748so1586174iog.8
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:08:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=FHXDhJvY2IkHhUd4tFK8q9dv+Fm/vXITFi2l3j4+4MY=;
+        b=QJ98yAg7XMYPoT1Hk08P/r0qSx0q9Xka7SPIl1VZq5KdJdB+b174Q/193k0MBnXT+t
+         cRqXzvNv9J1UFOTgJjdK3J2l6zl58lvC097ZscA1dGD3AdYv/S2fXKfl8CsTVDevO8No
+         lO773IwMkZW1+S1K7bnwOHzu9MW4x3QPh4ZXY/BC1OzDYkR0/Fy/EBuDbOy4USf70OZ6
+         G+uk7XyLkHGsUwy4pdktatABy0q3dAj0kHlaMbWAy1X8Nd+OKP5WUPyN8K44wuQ0bdQz
+         nAnxaLAqiEb/Z/rAPk/aj/G3p4OCeiqgp2EvL5xLS9gzoY4C/aM5MeZjDWucSeUz3Bp7
+         6TPA==
+X-Gm-Message-State: ACgBeo0cs2P16C8vCYqcID4KWehvUxFOmwSVWkFMLew3NRkePV/fugh+
+        vUYrZlUMFx+q6Ff7bQoQSx8/O2Wr++qMXBN2T2O5m8jlN5aK
+X-Google-Smtp-Source: AA6agR4HGiUDpWQJy4g/los7oIZ8kAAX3mo604F5RTbiJQf/LLkvWpUdyDJZjfmzMrSzApizVJ/qlQWvT2+i4cbCt4+mlkO56fn/
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a6b:6906:0:b0:688:b23c:7891 with SMTP id
+ e6-20020a6b6906000000b00688b23c7891mr954400ioc.95.1660637304989; Tue, 16 Aug
+ 2022 01:08:24 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:08:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aa2db405e657403f@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in f2fs_write_end_io
+From:   syzbot <syzbot+1a52906c5f8683d9c085@syzkaller.appspotmail.com>
+To:     chao@kernel.org, jaegeuk@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022, Bo Liu <liubo03@inspur.com> wrote:
-> There are double "the" in messages in file drm_dp_helper.c,
-> i915_irq.c and panel-novatek-nt35510.c, fix it.
+Hello,
 
-Please split to three patches.
+syzbot found the following issue on:
 
-BR,
-Jani.
+HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1184fa3e080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
+dashboard link: https://syzkaller.appspot.com/bug?extid=1a52906c5f8683d9c085
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
 
->
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  drivers/gpu/drm/display/drm_dp_helper.c       | 2 +-
->  drivers/gpu/drm/i915/i915_irq.c               | 2 +-
->  drivers/gpu/drm/panel/panel-novatek-nt35510.c | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/display/drm_dp_helper.c b/drivers/gpu/drm/display/drm_dp_helper.c
-> index e5bab236b3ae..32b295003f49 100644
-> --- a/drivers/gpu/drm/display/drm_dp_helper.c
-> +++ b/drivers/gpu/drm/display/drm_dp_helper.c
-> @@ -1597,7 +1597,7 @@ static int drm_dp_aux_reply_duration(const struct drm_dp_aux_msg *msg)
->  
->  /*
->   * Calculate the length of the i2c transfer in usec, assuming
-> - * the i2c bus speed is as specified. Gives the the "worst"
-> + * the i2c bus speed is as specified. Gives the "worst"
->   * case estimate, ie. successful while as long as possible.
->   * Doesn't account the "MOT" bit, and instead assumes each
->   * message includes a START, ADDRESS and STOP. Neither does it
-> diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-> index 73cebc6aa650..783a6ca41a61 100644
-> --- a/drivers/gpu/drm/i915/i915_irq.c
-> +++ b/drivers/gpu/drm/i915/i915_irq.c
-> @@ -65,7 +65,7 @@
->  
->  /*
->   * Interrupt statistic for PMU. Increments the counter only if the
-> - * interrupt originated from the the GPU so interrupts from a device which
-> + * interrupt originated from the GPU so interrupts from a device which
->   * shares the interrupt line are not accounted.
->   */
->  static inline void pmu_irq_stats(struct drm_i915_private *i915,
-> diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35510.c b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-> index 40ea41b0a5dd..4085822f619a 100644
-> --- a/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-> +++ b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-> @@ -231,7 +231,7 @@ struct nt35510_config {
->  	 * bits 0..2 in the lower nibble controls HCK, the booster clock
->  	 * frequency, the values are the same as for PCK in @bt1ctr.
->  	 * bits 4..5 in the upper nibble controls BTH, the boosting
-> -	 * amplification for the the step-up circuit.
-> +	 * amplification for the step-up circuit.
->  	 * 0 = AVDD + VDDB
->  	 * 1 = AVDD - AVEE
->  	 * 2 = AVDD - AVEE + VDDB
+Unfortunately, I don't have any reproducer for this issue yet.
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1a52906c5f8683d9c085@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+BUG: KASAN: use-after-free in atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+BUG: KASAN: use-after-free in get_pages fs/f2fs/f2fs.h:2423 [inline]
+BUG: KASAN: use-after-free in f2fs_write_end_io+0x141/0x12a0 fs/f2fs/data.c:348
+Read of size 4 at addr ffff8880752b4e58 by task ksoftirqd/1/23
+
+CPU: 1 PID: 23 Comm: ksoftirqd/1 Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+ get_pages fs/f2fs/f2fs.h:2423 [inline]
+ f2fs_write_end_io+0x141/0x12a0 fs/f2fs/data.c:348
+ bio_endio+0x5fe/0x780 block/bio.c:1562
+ req_bio_endio block/blk-mq.c:695 [inline]
+ blk_update_request+0x401/0x1310 block/blk-mq.c:825
+ blk_mq_end_request+0x4b/0x80 block/blk-mq.c:951
+ blk_flush_complete_seq+0x561/0xfd0 block/blk-flush.c:211
+ flush_end_io+0x77a/0xc60 block/blk-flush.c:268
+ __blk_mq_end_request+0x123/0x580 block/blk-mq.c:942
+ lo_complete_rq+0x1c2/0x280 drivers/block/loop.c:370
+ blk_complete_reqs+0xad/0xe0 block/blk-mq.c:1022
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+ run_ksoftirqd kernel/softirq.c:934 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:926
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+Allocated by task 16300:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:437 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:516 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:475 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ f2fs_fill_super+0xf9/0x75d0 fs/f2fs/super.c:3999
+ mount_bdev+0x34d/0x410 fs/super.c:1367
+ legacy_get_tree+0x105/0x220 fs/fs_context.c:610
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1497
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1320/0x1fa0 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __ia32_sys_mount+0x27e/0x300 fs/namespace.c:3568
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x70/0x82
+
+Freed by task 3896:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:367 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:329
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1754 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
+ slab_free mm/slub.c:3534 [inline]
+ kfree+0xe2/0x4d0 mm/slub.c:4562
+ f2fs_put_super+0x7d4/0xc10 fs/f2fs/super.c:1603
+ generic_shutdown_super+0x14c/0x400 fs/super.c:462
+ kill_block_super+0x97/0xf0 fs/super.c:1394
+ kill_f2fs_super+0x2b3/0x3c0 fs/f2fs/super.c:4516
+ deactivate_locked_super+0x94/0x160 fs/super.c:332
+ deactivate_super+0xad/0xd0 fs/super.c:363
+ cleanup_mnt+0x3a2/0x540 fs/namespace.c:1186
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x70/0x82
+
+The buggy address belongs to the object at ffff8880752b4000
+ which belongs to the cache kmalloc-8k of size 8192
+The buggy address is located 3672 bytes inside of
+ 8192-byte region [ffff8880752b4000, ffff8880752b6000)
+
+The buggy address belongs to the physical page:
+page:ffffea0001d4ac00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x752b0
+head:ffffea0001d4ac00 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x4fff00000010200(slab|head|node=1|zone=1|lastcpupid=0x7ff)
+raw: 04fff00000010200 ffffea0000864200 dead000000000002 ffff888011843180
+raw: 0000000000000000 0000000080020002 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 15655, tgid 15654 (syz-executor.0), ts 723661245241, free_ts 723629165352
+ prep_new_page mm/page_alloc.c:2457 [inline]
+ get_page_from_freelist+0x1298/0x3b80 mm/page_alloc.c:4203
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5431
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2272
+ alloc_slab_page mm/slub.c:1824 [inline]
+ allocate_slab+0x26c/0x3c0 mm/slub.c:1969
+ new_slab mm/slub.c:2029 [inline]
+ ___slab_alloc+0x99f/0xe10 mm/slub.c:3031
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
+ slab_alloc_node mm/slub.c:3209 [inline]
+ slab_alloc mm/slub.c:3251 [inline]
+ __kmalloc_track_caller+0x36f/0x450 mm/slub.c:4924
+ copy_array+0xc5/0xe0 kernel/bpf/verifier.c:991
+ copy_stack_state kernel/bpf/verifier.c:1037 [inline]
+ copy_func_state kernel/bpf/verifier.c:1154 [inline]
+ copy_verifier_state+0x71e/0xb80 kernel/bpf/verifier.c:1190
+ is_state_visited kernel/bpf/verifier.c:11876 [inline]
+ do_check kernel/bpf/verifier.c:11991 [inline]
+ do_check_common+0x19f5/0xd010 kernel/bpf/verifier.c:14371
+ do_check_main kernel/bpf/verifier.c:14434 [inline]
+ bpf_check+0x8538/0xb680 kernel/bpf/verifier.c:15003
+ bpf_prog_load+0xfb2/0x2250 kernel/bpf/syscall.c:2575
+ __sys_bpf+0x11a1/0x5700 kernel/bpf/syscall.c:4917
+ __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
+ __ia32_sys_bpf+0x74/0xc0 kernel/bpf/syscall.c:5019
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1371 [inline]
+ free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
+ free_unref_page_prepare mm/page_alloc.c:3344 [inline]
+ free_unref_page+0x19/0x6a0 mm/page_alloc.c:3439
+ __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2548
+ qlink_free mm/kasan/quarantine.c:168 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:447
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:727 [inline]
+ slab_alloc_node mm/slub.c:3243 [inline]
+ slab_alloc mm/slub.c:3251 [inline]
+ kmem_cache_alloc_trace+0x271/0x3f0 mm/slub.c:3282
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ kernfs_fop_open+0x317/0xda0 fs/kernfs/file.c:621
+ do_dentry_open+0x4a1/0x12d0 fs/open.c:878
+ do_open fs/namei.c:3499 [inline]
+ path_openat+0x1c92/0x28f0 fs/namei.c:3632
+ do_filp_open+0x1b6/0x400 fs/namei.c:3659
+ do_sys_openat2+0x16d/0x4c0 fs/open.c:1310
+ do_sys_open fs/open.c:1326 [inline]
+ __do_sys_openat fs/open.c:1342 [inline]
+ __se_sys_openat fs/open.c:1337 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1337
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Memory state around the buggy address:
+ ffff8880752b4d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880752b4d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff8880752b4e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                    ^
+ ffff8880752b4e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880752b4f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
