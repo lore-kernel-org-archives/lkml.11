@@ -2,102 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE7BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 428D2C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237330AbiHPUBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 16:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
+        id S237351AbiHPUB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 16:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233708AbiHPUBb (ORCPT
+        with ESMTP id S233708AbiHPUBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 16:01:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085C87E83A;
-        Tue, 16 Aug 2022 13:01:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5EFAB816A4;
-        Tue, 16 Aug 2022 20:01:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 629AEC433D6;
-        Tue, 16 Aug 2022 20:01:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660680084;
-        bh=exaNKYkS3RGsXGptBvcU0ygllszaHLvdDMEuOEXqDh8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ye5uz8wJF+KkzYAi6mwLSo+EQndL4RfeowxCt0/ubtbmZtHSqy0+5RZyHt3p+4buT
-         jcykLx6DVR4FUv7XfLSLkrCMKE54KrYwsxUvUngW5gwsfAKc/MfM2Vh82sl7kHsqXI
-         fz+BI+aw8VIy19PQQ8WleqiU+dqVkFCARE3LGairCU7+mU8pPjZC/0WmBwpKHJqtvo
-         T7wJSN9/d4tWsy3BvA21DrpuBQkF7SYTH6Q1cYW2cp/8x5FYVq0b/kA2nuRlR9jSf2
-         BJ1NUzWtTQ0KHf6zHeJh7VNetJH/DEEZ1H+JEsAmnBSTXQAJ9mG2k3AmFVyj27usaI
-         mP9jAOoaiZUTw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C88944035A; Tue, 16 Aug 2022 17:01:21 -0300 (-03)
-Date:   Tue, 16 Aug 2022 17:01:21 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH 0/4] perf tools: Support reading PERF_FORMAT_LOST
-Message-ID: <Yvv3kS9YqHMFSXDV@kernel.org>
-References: <20220815190106.1293082-1-namhyung@kernel.org>
+        Tue, 16 Aug 2022 16:01:55 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAF97E83A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:01:52 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id c28so12293351lfh.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=yFA0UslvIq0eiSY/TdS1XXH4y7vZZPWx9mCfR7QSqZQ=;
+        b=P1stvvwb73GJ0bY7vF2ouvbk5ywoZZ5CD6yzHQpvYzLWgRXgLGDDBn+OK89nSFBCaF
+         FRHMOiVDemm3RGW+Y3ZGAPP5W/BTAPrEsiQlpuJaEo7eykKGF/oLlbLgJXu6jtb9bW8d
+         5DODM9LwD0w9QZirjAT84czLBSz74G3vIWrmYcALfX3rgpIeE7u0QiXIIKb/9f3g+12G
+         jZSCyTGVuNXWaCOadGJjFRUnaubctafqI+ziCnvuvy68hKFmObe6LBaOkiF1Qr7DOW3t
+         34YBCn5WF2Xj+gCwYGVT+rToTtJ+M2vUpBhI9Q1w8K0Var2gtMVe/SObECD1Ijy11eJz
+         Ju6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=yFA0UslvIq0eiSY/TdS1XXH4y7vZZPWx9mCfR7QSqZQ=;
+        b=wm09PpawCQ4MlsIUps3NdzWkgmCKuefsTYiHs0ofvgv2tBwd/XrA3F1Zga6CjRQy4M
+         Eww+u147eWv9KhaErG2c91tQfFzqhANI2rWdbQkHIJov+sLxJnuGZzXnZBtUXAcwJkK8
+         v542znK3ynxrg5KmyC1vMuX87AX6bp2Boara/1YB7oW0xzOO1bmV3gTSNIY7Ohhn3hOP
+         eBbPXHS0rDij3itZWoqC3sfOrhlr/Z3Ac7HGwS5MqK3VCxo4it8nrZXZOyRIMoLs9eiK
+         qwQ8uDv4MCZR6sRr/HFyLDblSTH/Vj0hZB2NQ1x3EdPsCW6FpjaE60TfTS2nfk8wuTNo
+         JYKA==
+X-Gm-Message-State: ACgBeo0HRJnUzRfRyeJavVePEX3DJKSGgtoycebWjwa3MXwgRvaac+QO
+        2Ou9msNTK3mW2fWwC2/VY5cYgBKpXRPnTQ==
+X-Google-Smtp-Source: AA6agR6JsAB1Wqo0sNVHZcXtHOK/Brrj7pZp7HExeYEPTP/YQBYp1e63ZLH8hVCzj1odxtftcuwD6Q==
+X-Received: by 2002:a05:6512:681:b0:489:d509:e076 with SMTP id t1-20020a056512068100b00489d509e076mr8552862lfe.618.1660680110464;
+        Tue, 16 Aug 2022 13:01:50 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id e24-20020a2e9858000000b002618022d6a7sm1270429ljj.25.2022.08.16.13.01.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 13:01:50 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 1/2 v4] regmap: Support accelerated noinc operations
+Date:   Tue, 16 Aug 2022 21:59:46 +0200
+Message-Id: <20220816195947.242843-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815190106.1293082-1-namhyung@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Aug 15, 2022 at 12:01:02PM -0700, Namhyung Kim escreveu:
-> Hello,
-> 
-> The kernel v6.0 added PERF_FORMAT_LOST which can read a number of lost
+Several architectures have accelerated operations for MMIO
+operations writing to a single register, such as writesb, writesw,
+writesl, writesq, readsb, readsw, readsl and readsq but regmap
+currently cannot use them because we have no hooks for providing
+an accelerated noinc back-end for MMIO.
 
-I've tentantively added this to perf/urgent, as this matches a feature
-introduced in this merge window, we'll see how it goes, hopefully Linus
-accepts this at this point.
+Solve this by providing reg_[read/write]_noinc callbacks for
+the bus abstraction, so that the regmap-mmio bus can use this.
 
-- Arnaldo
+Currently I do not see a need to support this for custom regmaps
+so it is only added to the bus.
 
-> samples for the given event.  As it can change the output format of
-> read(2) and perf sample data, it needs to access them carefully.
-> 
-> You can get the code from 'perf/read-lost-v1' brach on
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
-> 
-> Thanks,
-> Namhyung
-> 
-> 
-> Namhyung Kim (4):
->   tools headers UAPI: Sync linux/perf_event.h with the kernel sources
->   tools lib perf: Handle read format in perf_evsel__read()
->   tools lib perf: Add a test case for read formats
->   perf tools: Support reading PERF_FORMAT_LOST
-> 
->  tools/include/uapi/linux/perf_event.h         |   5 +-
->  tools/lib/perf/evsel.c                        |  72 ++++++++
->  tools/lib/perf/include/perf/event.h           |   3 +-
->  tools/lib/perf/include/perf/evsel.h           |   4 +-
->  tools/lib/perf/tests/test-evsel.c             | 161 ++++++++++++++++++
->  tools/perf/tests/sample-parsing.c             |  14 +-
->  tools/perf/util/event.h                       |  18 +-
->  tools/perf/util/evsel.c                       |  33 +++-
->  .../scripting-engines/trace-event-python.c    |  16 +-
->  tools/perf/util/session.c                     |  32 ++--
->  tools/perf/util/synthetic-events.c            |  34 +++-
->  11 files changed, 354 insertions(+), 38 deletions(-)
-> 
-> 
-> base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-> -- 
-> 2.37.1.595.g718a3a8f04-goog
+Callbacks are passed a void * with the array of values and a
+count which is the number of items of the byte chunk size for
+the specific register width.
 
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v3->v4:
+- Rebase on regmap for-next
+ChangeLog v2->v3:
+- Rebase on kernel v6.0-rc1
+ChangeLog v1->v2:
+- Factor out and reuse the code to format and read or write a
+  buffer of data to a noinc register at the cost of dropping
+  const from the buffer pointer in the write call. This is a
+  deadly sin in Rust and therefore impossible, but hey, this is
+  C, and dropping a const is a lesser evil than not being
+  able to reuse code.
+---
+ drivers/base/regmap/regmap.c | 123 ++++++++++++++++++++++++++++++++++-
+ include/linux/regmap.h       |   8 +++
+ 2 files changed, 128 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index e371acea7e0e..41ff9f18b6a3 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -2129,6 +2129,99 @@ int regmap_raw_write(struct regmap *map, unsigned int reg,
+ }
+ EXPORT_SYMBOL_GPL(regmap_raw_write);
+ 
++static int regmap_noinc_readwrite(struct regmap *map, unsigned int reg,
++				  void *val, unsigned int val_len, bool write)
++{
++	size_t val_bytes = map->format.val_bytes;
++	size_t val_count = val_len / val_bytes;
++	unsigned int lastval;
++	u8 *u8p;
++	u16 *u16p;
++	u32 *u32p;
++#ifdef CONFIG_64BIT
++	u64 *u64p;
++#endif
++	int ret;
++	int i;
++
++	switch (val_bytes) {
++	case 1:
++		u8p = val;
++		if (write)
++			lastval = (unsigned int)u8p[val_count - 1];
++		break;
++	case 2:
++		u16p = val;
++		if (write)
++			lastval = (unsigned int)u16p[val_count - 1];
++		break;
++	case 4:
++		u32p = val;
++		if (write)
++			lastval = (unsigned int)u32p[val_count - 1];
++		break;
++#ifdef CONFIG_64BIT
++	case 8:
++		u64p = val;
++		if (write)
++			lastval = (unsigned int)u64p[val_count - 1];
++		break;
++#endif
++	default:
++		return -EINVAL;
++	}
++
++	/*
++	 * Update the cache with the last value we write, the rest is just
++	 * gone down in the hardware FIFO. We can't cache FIFOs. This makes
++	 * sure a single read from the cache will work.
++	 */
++	if (write) {
++		if (!map->cache_bypass && !map->defer_caching) {
++			ret = regcache_write(map, reg, lastval);
++			if (ret != 0)
++				return ret;
++			if (map->cache_only) {
++				map->cache_dirty = true;
++				return 0;
++			}
++		}
++		ret = map->bus->reg_noinc_write(map->bus_context, reg, val, val_count);
++	} else {
++		ret = map->bus->reg_noinc_read(map->bus_context, reg, val, val_count);
++	}
++
++	if (!ret && regmap_should_log(map)) {
++		dev_info(map->dev, "%x %s [", reg, write ? "<=" : "=>");
++		for (i = 0; i < val_len; i++) {
++			switch (val_bytes) {
++			case 1:
++				pr_cont("%x", u8p[i]);
++				break;
++			case 2:
++				pr_cont("%x", u16p[i]);
++				break;
++			case 4:
++				pr_cont("%x", u32p[i]);
++				break;
++#ifdef CONFIG_64BIT
++			case 8:
++				pr_cont("%llx", u64p[i]);
++				break;
++#endif
++			default:
++				break;
++			}
++			if (i == (val_len - 1))
++				pr_cont("]\n");
++			else
++				pr_cont(",");
++		}
++	}
++
++	return 0;
++}
++
+ /**
+  * regmap_noinc_write(): Write data from a register without incrementing the
+  *			register number
+@@ -2156,9 +2249,8 @@ int regmap_noinc_write(struct regmap *map, unsigned int reg,
+ 	size_t write_len;
+ 	int ret;
+ 
+-	if (!map->write)
+-		return -ENOTSUPP;
+-
++	if (!map->write && !(map->bus && map->bus->reg_noinc_write))
++		return -EINVAL;
+ 	if (val_len % map->format.val_bytes)
+ 		return -EINVAL;
+ 	if (!IS_ALIGNED(reg, map->reg_stride))
+@@ -2173,6 +2265,15 @@ int regmap_noinc_write(struct regmap *map, unsigned int reg,
+ 		goto out_unlock;
+ 	}
+ 
++	/*
++	 * Use the accelerated operation if we can. The val drops the const
++	 * typing in order to facilitate code reuse in regmap_noinc_readwrite().
++	 */
++	if (map->bus->reg_noinc_write) {
++		ret = regmap_noinc_readwrite(map, reg, (void *)val, val_len, true);
++		goto out_unlock;
++	}
++
+ 	while (val_len) {
+ 		if (map->max_raw_write && map->max_raw_write < val_len)
+ 			write_len = map->max_raw_write;
+@@ -2943,6 +3044,22 @@ int regmap_noinc_read(struct regmap *map, unsigned int reg,
+ 		goto out_unlock;
+ 	}
+ 
++	/* Use the accelerated operation if we can */
++	if (map->bus->reg_noinc_read) {
++		/*
++		 * We have not defined the FIFO semantics for cache, as the
++		 * cache is just one value deep. Should we return the last
++		 * written value? Just avoid this by always reading the FIFO
++		 * even when using cache. Cache only will not work.
++		 */
++		if (map->cache_only) {
++			ret = -EBUSY;
++			goto out_unlock;
++		}
++		ret = regmap_noinc_readwrite(map, reg, val, val_len, false);
++		goto out_unlock;
++	}
++
+ 	while (val_len) {
+ 		if (map->max_raw_read && map->max_raw_read < val_len)
+ 			read_len = map->max_raw_read;
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 8cccc247cd37..ca3434dca3a0 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -492,8 +492,12 @@ typedef int (*regmap_hw_read)(void *context,
+ 			      void *val_buf, size_t val_size);
+ typedef int (*regmap_hw_reg_read)(void *context, unsigned int reg,
+ 				  unsigned int *val);
++typedef int (*regmap_hw_reg_noinc_read)(void *context, unsigned int reg,
++					void *val, size_t val_count);
+ typedef int (*regmap_hw_reg_write)(void *context, unsigned int reg,
+ 				   unsigned int val);
++typedef int (*regmap_hw_reg_noinc_write)(void *context, unsigned int reg,
++					 const void *val, size_t val_count);
+ typedef int (*regmap_hw_reg_update_bits)(void *context, unsigned int reg,
+ 					 unsigned int mask, unsigned int val);
+ typedef struct regmap_async *(*regmap_hw_async_alloc)(void);
+@@ -514,6 +518,8 @@ typedef void (*regmap_hw_free_context)(void *context);
+  *               must serialise with respect to non-async I/O.
+  * @reg_write: Write a single register value to the given register address. This
+  *             write operation has to complete when returning from the function.
++ * @reg_write_noinc: Write multiple register value to the same register. This
++ *             write operation has to complete when returning from the function.
+  * @reg_update_bits: Update bits operation to be used against volatile
+  *                   registers, intended for devices supporting some mechanism
+  *                   for setting clearing bits without having to
+@@ -541,9 +547,11 @@ struct regmap_bus {
+ 	regmap_hw_gather_write gather_write;
+ 	regmap_hw_async_write async_write;
+ 	regmap_hw_reg_write reg_write;
++	regmap_hw_reg_noinc_write reg_noinc_write;
+ 	regmap_hw_reg_update_bits reg_update_bits;
+ 	regmap_hw_read read;
+ 	regmap_hw_reg_read reg_read;
++	regmap_hw_reg_noinc_read reg_noinc_read;
+ 	regmap_hw_free_context free_context;
+ 	regmap_hw_async_alloc async_alloc;
+ 	u8 read_flag_mask;
 -- 
+2.37.2
 
-- Arnaldo
