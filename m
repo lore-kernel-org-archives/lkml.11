@@ -2,117 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9DFC32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBA2C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234549AbiHPKa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47014 "EHLO
+        id S234604AbiHPKbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234698AbiHPKa0 (ORCPT
+        with ESMTP id S234701AbiHPKa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 06:30:26 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20D984EF6;
-        Tue, 16 Aug 2022 01:16:22 -0700 (PDT)
-Received: from mail-ej1-f41.google.com ([209.85.218.41]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MuDPh-1nVmG00fXh-00ucal; Tue, 16 Aug 2022 10:16:21 +0200
-Received: by mail-ej1-f41.google.com with SMTP id a7so17567241ejp.2;
-        Tue, 16 Aug 2022 01:16:21 -0700 (PDT)
-X-Gm-Message-State: ACgBeo33ceRETs9/Jye2QbXxzU5AEAna2/4O5cDeSTf88pRW+k587zJF
-        RQYlmByLPR1eD1q8YbKGd7/q3DHxJT/QjiHV0e0=
-X-Google-Smtp-Source: AA6agR6iJ0nwhhROioKsW3KiCcnkE21PLtVwi8+SbpiQ4ZkczWhJ8i5DpkLee3nWEvIKF41nGXZNZm3jeBE6JuFII7g=
-X-Received: by 2002:a17:906:8a67:b0:738:7bcd:dca1 with SMTP id
- hy7-20020a1709068a6700b007387bcddca1mr1923189ejc.547.1660637780770; Tue, 16
- Aug 2022 01:16:20 -0700 (PDT)
+Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE69422EE
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:55:53 -0700 (PDT)
+X-QQ-mid: bizesmtp75t1660640107t9u3xd1f
+Received: from localhost.localdomain ( [123.114.60.34])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 16 Aug 2022 16:55:04 +0800 (CST)
+X-QQ-SSF: 01400000002000D0T000B00A0000000
+X-QQ-FEAT: 6aXALTFZqPsYTigoi/pJHQIrfEjlbZTVVo4ceE/miflM2QL0ScN/MLKWd9pj/
+        GpI0Y0g4qovfiem9q3Z4SWKP5MlRzDTno+u3GL4PM5mbtBXO1WJo87SgDryelNO5b+KbCo1
+        NDdEC7iYKBCJIT0zjx28cAXU3afo3bcJHpKQb+2xypQmKjrX3+PeqMkUlok2zrH4YSP6Xof
+        P3ocSKToVuCM5NhP6UKY0j5U0XyEvbkqt2W0HGR4i3ACGDI2sCY6IUEAEDzg9Guy1VXWsYn
+        0JNzO3WBs1tO1hvkNDIpnW6zFIBetn4QxfGTB6REcvv59IkDvcTLffgOOQkscmi22zR2iCW
+        23sOHumGks+sjSme0AjnLWeAEAfLBIVMJUhoPNL8cSi/hAbBEWF2FigQ7QXiw==
+X-QQ-GoodBg: 2
+From:   zhaoxiao <zhaoxiao@uniontech.com>
+To:     perex@perex.cz, tiwai@suse.com
+Cc:     pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
+        peter.ujfalusi@linux.intel.com, yung-chuan.liao@linux.intel.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        daniel.baluta@nxp.com, broonie@kernel.org,
+        guennadi.liakhovetski@linux.intel.com,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, zhaoxiao <zhaoxiao@uniontech.com>
+Subject: [PATCH] ASoC: intel: Replace scnprintf() calls with sysfs_emit_at()
+Date:   Tue, 16 Aug 2022 16:55:02 +0800
+Message-Id: <20220816085502.25295-1-zhaoxiao@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20220816070311.89186-1-marcan@marcan.st>
-In-Reply-To: <20220816070311.89186-1-marcan@marcan.st>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 16 Aug 2022 10:16:04 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a03pfrPzjnx1tB5z0HcKnY=JL=y+F8PMQDpc=Bavs3UCA@mail.gmail.com>
-Message-ID: <CAK8P3a03pfrPzjnx1tB5z0HcKnY=JL=y+F8PMQDpc=Bavs3UCA@mail.gmail.com>
-Subject: Re: [PATCH] locking/atomic: Make test_and_*_bit() ordered on failure
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>, Tejun Heo <tj@kernel.org>,
-        jirislaby@kernel.org, Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Asahi Linux <asahi@lists.linux.dev>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Jg5mkr7l+zrNyfFzBvs5i1+/l2UlfgBGsjuyilNfjoCAl7e0vIK
- TicO0qiEDijREu19FTd6lsJ/xG/qL+EIpVuiumbZd62aIFx2OXh1gQ+2geNFdBVwvelIaws
- U/qaLsKuC7aXaYHFXRmlVqfYYgxXkdSQJQ1VV3jTdwC81L27G6FvdY7TSzor0+xh/J7PEDb
- qG4zsEw7nQqMDQnoYIF+Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0YAPTbXMD6Q=:Cpy3XZMvFH2GhcX0VVyvOx
- 0YzlCxR6gGq9Pz3C5g7UZVwFHunn/VyMHkyx8i8pVxdcNhLTiZhcOSq/VKk3uS69cn8rThieC
- 191ZejESr8C3yo26hkMLJcrOk6z9Vo7EeTMVzPT1SrhFNJeg029pH9llcmlNznfIfSq2l/yIi
- n70ffHRZBUVLLcRASCGyf6Ht2a1xAvBCw+wtxUjILb324Hqr1BY9nDl2Xhb4YcnD4rhHUmnvd
- CBPw8M17qfmdxtn7bSaRbZ2gXnGca/UQLP9Arj4y0Rc4Yq1ZCdEsOum560JZuBd4IH5HWkw2d
- aPrVpwDiOYHnxK2tKkQOIf6N1TeXIP/RuU3RGT2B6itpK1tCO1VFRa4r/75bQYTtPGLPsY5wE
- 9BC2YTZVmza2ADitrSTrAO6yCOE7sAepV6ZIg+KmGB+v5uJhhicb7OoTQ9/AWTW/vPCO6qvjS
- Gc8VBh9rDEoGHZF0SBxY5w+AEPmdykpWxbn1iYKASCGStVasZHrKR/JpV7ldQ1gRmImc0yNYw
- Ch51lpl7AeGzkZwYOZrXSR4OWKc5bPxjw/tliWPkeHuyhdZH59NvYSqE9ZJ7/JRazAOgMS5HN
- j5ohyglFYFGM5PB7pLegV6Ze4tuhGTmZp5/WCMLXciq8C6sSZQqLEjYC63qBIQ6OagxNpPDed
- a1kSkcKSdgzGaBKyW/yTu32BNgyFTKIsdH4C8Jj8TzyD5WZoU/astR6yZN6UyZw8WfXyFt0rl
- gNh0wPeo7rDK6GMzLvZt8KlWzdZLv/GwAUZCJw==
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 9:03 AM Hector Martin <marcan@marcan.st> wrote:
->
-> These operations are documented as always ordered in
-> include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
-> type use cases where one side needs to ensure a flag is left pending
-> after some shared data was updated rely on this ordering, even in the
-> failure case.
->
-> This is the case with the workqueue code, which currently suffers from a
-> reproducible ordering violation on Apple M1 platforms (which are
-> notoriously out-of-order) that ends up causing the TTY layer to fail to
-> deliver data to userspace properly under the right conditions. This
-> change fixes that bug.
->
-> Change the documentation to restrict the "no order on failure" story to
-> the _lock() variant (for which it makes sense), and remove the
-> early-exit from the generic implementation, which is what causes the
-> missing barrier semantics in that case. Without this, the remaining
-> atomic op is fully ordered (including on ARM64 LSE, as of recent
-> versions of the architecture spec).
->
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: stable@vger.kernel.org
-> Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
-> Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  Documentation/atomic_bitops.txt     | 2 +-
->  include/asm-generic/bitops/atomic.h | 6 ------
+For sysfs outputs, it's safer to use a new helper, sysfs_emit(),
+instead of the raw sprintf() & co.  This patch replaces the open-code
+with a new helper, sysfs_emit_at(), by passing the string offset.
 
-I double-checked all the architecture specific implementations to ensure
-that the asm-generic one is the only one that needs the fix.
+Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
+---
+ sound/soc/sof/intel/hda.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I assume this gets merged through the locking tree or that Linus picks it up
-directly, not through my asm-generic tree.
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index 6d4ecbe14adf..917d639671a7 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -574,7 +574,7 @@ static void hda_dsp_dump_ext_rom_status(struct snd_sof_dev *sdev, const char *le
+ 	chip = get_chip_info(sdev->pdata);
+ 	for (i = 0; i < HDA_EXT_ROM_STATUS_SIZE; i++) {
+ 		value = snd_sof_dsp_read(sdev, HDA_DSP_BAR, chip->rom_status_reg + i * 0x4);
+-		len += scnprintf(msg + len, sizeof(msg) - len, " 0x%x", value);
++		len += sysfs_emit_at(msg, len, " 0x%x", value);
+ 	}
+ 
+ 	dev_printk(level, sdev->dev, "extended rom status: %s", msg);
+-- 
+2.20.1
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
