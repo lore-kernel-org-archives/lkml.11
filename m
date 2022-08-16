@@ -2,170 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF48DC32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E09C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbiHPJxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S234123AbiHPJx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234151AbiHPJxG (ORCPT
+        with ESMTP id S234173AbiHPJxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:53:06 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A81BFC5B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:15:06 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id fy5so17540651ejc.3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:15:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=T1hC+4yFQUH4qgK9gud3ypzghlmARyu3cwDIo1GGebc=;
-        b=fsQtfO8w4EmdTySO70hlROW+fJHevfQFkEyHCuHQ1L0BKSCMsadpaVFAyY9YzxciEM
-         ZXArEpKN9d8DpPokGSjtxZ5B+kc+NVe4kzmk2H/X46RzxdvHJxALC+koLgCnzdPwylBl
-         kEX4A9/PoopQqgUvvoQ9qaYMYBBuvEhamCA5DRhwuPBqvfrWfYua8m3MhZ/BtrJn58er
-         pG4pXDEUjxmczhAeMJfUCppGZ6pxSOZWtj9hZXMaOiEoLmgV/5I0EvsUk5cByx0FtUVu
-         wjcjbtQCil/l4NA+++nTJHios0BcJBiqq8jEcERg4+PH8eIWqJj55FE4pYlpAti945ZD
-         Cs2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=T1hC+4yFQUH4qgK9gud3ypzghlmARyu3cwDIo1GGebc=;
-        b=j8gs8LjWR4R61cKibrucy8N4m7H053K4uORB9ZsM/EhEWVF/Jb4BvFGrzqCOR9EAVJ
-         1XFEqz1sJwa0WOOzuG+EAMofcfxVPfPfkeksZkjoDntqmb6zFXmXT8fvYXgMuYp0UkXK
-         BUye90IDhcJE6Gscs9IVSx8dkXH/xbLr7IFUz2ZRxlUGwQZNEJiADGVBcn2jMZDaYVSO
-         Xf/jVE2qOFGGI4xaaBu2aaMKAPWZvMen+xX6H7NWvOCGRdz6KcHSbZXL7H9JYC7ML5nq
-         i0+EdPuoPOBSNV2CIOyV1fXLRV+2wGhYANQM9Db7mvfc72MGFuogZTyI+2VrGvcjp+e5
-         wihw==
-X-Gm-Message-State: ACgBeo1R6qtBmphfgoZFZ331HTPEI3JH7s3QmJdkDbkTL0xrhEZFb8X+
-        xG/MfoTaPUTsWYATT9OfwxxULs17/7wq61mm2SvNRaoGVgDV3Q==
-X-Google-Smtp-Source: AA6agR52TSsA0htngy2rFuGyWB0Nl2gGNzbftZs2wwGHTbpGvlm5zLLLa6G3qnBX9PiXXNhtzHfMcFlMNyEDjZmdw0Y=
-X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
- qa44-20020a17090786ac00b0073151808aa0mr12791312ejc.366.1660637705317; Tue, 16
- Aug 2022 01:15:05 -0700 (PDT)
+        Tue, 16 Aug 2022 05:53:10 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312DAA5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:54:45 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R661e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VMPKNX3_1660640081;
+Received: from 30.97.48.47(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VMPKNX3_1660640081)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 16:54:41 +0800
+Message-ID: <eb6eb8ff-f0f3-fe6f-feac-887e46593a0e@linux.alibaba.com>
+Date:   Tue, 16 Aug 2022 16:54:53 +0800
 MIME-Version: 1.0
-References: <20220815180429.240518113@linuxfoundation.org>
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 16 Aug 2022 13:44:53 +0530
-Message-ID: <CA+G9fYu6_GrP_H5T1QYy9cZy4G4N3=iyCYG=6Y4sgn6UY3412A@mail.gmail.com>
-Subject: Re: [PATCH 5.18 0000/1095] 5.18.18-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v6 1/2] mm: migration: fix the FOLL_GET failure on
+ following huge page
+To:     Haiyue Wang <haiyue.wang@intel.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, david@redhat.com, apopple@nvidia.com,
+        linmiaohe@huawei.com, ying.huang@intel.com,
+        songmuchun@bytedance.com, naoya.horiguchi@linux.dev,
+        alex.sierra@amd.com
+References: <20220812084921.409142-1-haiyue.wang@intel.com>
+ <20220816022102.582865-1-haiyue.wang@intel.com>
+ <20220816022102.582865-2-haiyue.wang@intel.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20220816022102.582865-2-haiyue.wang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 at 00:25, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.18.18 release.
-> There are 1095 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.18-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Results from Linaro's test farm.
-No regressions on arm64, arm, x86_64, and i386.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On 8/16/2022 10:21 AM, Haiyue Wang wrote:
+> Not all huge page APIs support FOLL_GET option, so move_pages() syscall
+> will fail to get the page node information for some huge pages.
+> 
+> Like x86 on linux 5.19 with 1GB huge page API follow_huge_pud(), it will
+> return NULL page for FOLL_GET when calling move_pages() syscall with the
+> NULL 'nodes' parameter, the 'status' parameter has '-2' error in array.
+> 
+> Note: follow_huge_pud() now supports FOLL_GET in linux 6.0.
+>        Link: https://lore.kernel.org/all/20220714042420.1847125-3-naoya.horiguchi@linux.dev
+> 
+> But these huge page APIs don't support FOLL_GET:
+>    1. follow_huge_pud() in arch/s390/mm/hugetlbpage.c
+>    2. follow_huge_addr() in arch/ia64/mm/hugetlbpage.c
+>       It will cause WARN_ON_ONCE for FOLL_GET.
+>    3. follow_huge_pgd() in mm/hugetlb.c
+> 
+> This is an temporary solution to mitigate the side effect of the race
+> condition fix by calling follow_page() with FOLL_GET set for huge pages.
+> 
+> After supporting follow huge page by FOLL_GET is done, this fix can be
+> reverted safely.
+> 
+> Fixes: 4cd614841c06 ("mm: migration: fix possible do_pages_stat_array racing with memory offline")
+> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+> ---
 
-## Build
-* kernel: 5.18.18-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.18.y
-* git commit: 56bd9e4c28e9ed65e07e7148e65adfdf1f1c5524
-* git describe: v5.18.17-1096-g56bd9e4c28e9
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18.17-1096-g56bd9e4c28e9
+Looks good to me.
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
 
-## No test Regressions (compared to v5.18.16-36-g732bf05a92ab)
-
-## No metric Regressions (compared to v5.18.16-36-g732bf05a92ab)
-
-## No test Fixes (compared to v5.18.16-36-g732bf05a92ab)
-
-## No metric Fixes (compared to v5.18.16-36-g732bf05a92ab)
-
-## Test result summary
-total: 93607, pass: 85358, fail: 732, skip: 6930, xfail: 587
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 301 total, 301 passed, 0 failed
-* arm64: 62 total, 60 passed, 2 failed
-* i386: 52 total, 50 passed, 2 failed
-* mips: 45 total, 45 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 54 passed, 6 failed
-* riscv: 27 total, 22 passed, 5 failed
-* s390: 18 total, 18 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 55 total, 53 passed, 2 failed
-
-## Test suites summary
-* fwts
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+>   mm/migrate.c | 10 ++++++++--
+>   1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 6a1597c92261..581dfaad9257 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -1848,6 +1848,7 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
+>   
+>   	for (i = 0; i < nr_pages; i++) {
+>   		unsigned long addr = (unsigned long)(*pages);
+> +		unsigned int foll_flags = FOLL_DUMP;
+>   		struct vm_area_struct *vma;
+>   		struct page *page;
+>   		int err = -EFAULT;
+> @@ -1856,8 +1857,12 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
+>   		if (!vma)
+>   			goto set_status;
+>   
+> +		/* Not all huge page follow APIs support 'FOLL_GET' */
+> +		if (!is_vm_hugetlb_page(vma))
+> +			foll_flags |= FOLL_GET;
+> +
+>   		/* FOLL_DUMP to ignore special (like zero) pages */
+> -		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
+> +		page = follow_page(vma, addr, foll_flags);
+>   
+>   		err = PTR_ERR(page);
+>   		if (IS_ERR(page))
+> @@ -1865,7 +1870,8 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
+>   
+>   		if (page && !is_zone_device_page(page)) {
+>   			err = page_to_nid(page);
+> -			put_page(page);
+> +			if (foll_flags & FOLL_GET)
+> +				put_page(page);
+>   		} else {
+>   			err = -ENOENT;
+>   		}
