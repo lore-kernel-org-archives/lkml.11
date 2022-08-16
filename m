@@ -2,131 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3FEC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:39:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CD9C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbiHPJj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54508 "EHLO
+        id S233838AbiHPJj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233654AbiHPJjW (ORCPT
+        with ESMTP id S233738AbiHPJj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:39:22 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345AF13F201
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:06:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660637198; x=1692173198;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=w+c/e2AkjNu1SyDCQR+vXt15ugvR4JTciB+nrN0p4kI=;
-  b=SEhpqqv0LUPEjtGaaNg2n+KQ90iPxDm6q0hdKgZFwOTFBDN8gABOSM0H
-   Hl3pk5KLjEIIl2QSIINJNugcQzbX3llsXrMNVQjAtoh1mNpV6piz7lCs+
-   q1rKpjGjNsrj4ss2FRGj0ZYJp51XpUuzy3xU/yBCN6e2bb3H24hqMuPMk
-   aPw9bdVnJTC/laOemVz8wnE5u9+vNgJD5FNn858Ail+UvaaoFqy0Ybrjb
-   S1jWHoJT3/5QZqpcsOQ2ISIc/t/QtoWJrRl0MB0Es5Z0XK3jTWyFE8mxi
-   w0SpsZYt+/cj7ZmA/bcoLpLD/cvlbeCNCEOepEbSsmGMEQ0VDCIPJyiWC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292153650"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="292153650"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:06:24 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="667006509"
-Received: from kinzelba-mobl.ger.corp.intel.com (HELO localhost) ([10.252.39.194])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:06:20 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Ville =?utf-8?B?U3ly?= =?utf-8?B?asOkbMOk?= 
-        <ville.syrjala@linux.intel.com>, Zenghui Yu <yuzenghui@huawei.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/i915: Switch TGL-H DP-IN to dGFX when it's supported
-In-Reply-To: <20220816025217.618181-1-kai.heng.feng@canonical.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220816025217.618181-1-kai.heng.feng@canonical.com>
-Date:   Tue, 16 Aug 2022 11:06:18 +0300
-Message-ID: <87leror4sl.fsf@intel.com>
+        Tue, 16 Aug 2022 05:39:27 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B437A6AA23;
+        Tue, 16 Aug 2022 02:09:32 -0700 (PDT)
+X-UUID: 6fb4a6f92b5e4a0fbc338d31687428da-20220816
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=nTDkzXP779v1onwYVpNERKCNAZl7uIj+G6XLFlu+OrI=;
+        b=oSWAgMmkVKiZo8o5UR6n0l424do7eFvU9EuczQRw3XA3tB/A5QPReVHH/xQ4LKtw8wajDzpaIHnk9QOLbY6q68m2C2U5cNG3oUgD5p0vdJL3CRixqhgPbeT6WmTg1snvUUNmkQCThpyXRLFyKGQgQ7mFGQxuAu9BdheNY2heBww=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.9,REQID:728d4889-b26d-42fa-ad8c-369e73d472fd,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:-5
+X-CID-META: VersionHash:3d8acc9,CLOUDID:badd73fd-9e71-4a0f-ba6b-417998daea35,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 6fb4a6f92b5e4a0fbc338d31687428da-20220816
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <will.shiu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 388599243; Tue, 16 Aug 2022 17:09:25 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 16 Aug 2022 17:09:24 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Tue, 16 Aug 2022 17:09:24 +0800
+From:   Will Shiu <Will.Shiu@mediatek.com>
+To:     <stanley.chu@mediatek.com>, <linus.walleij@linaro.org>,
+        <matthias.bgg@gmail.com>, <linux-gpio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <Will.Shiu@mediatek.com>
+CC:     <wsd_upstream@mediatek.com>
+Subject: [PATCH 1/1] Pinctrl: Add in zero check
+Date:   Tue, 16 Aug 2022 17:09:03 +0800
+Message-ID: <20220816090903.19558-1-Will.Shiu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-> On mobile workstations like HP ZBook Fury G8, iGFX's DP-IN can switch to
-> dGFX so external monitors are routed to dGFX, and more monitors can be
-> supported as result.
->
-> To switch the DP-IN to dGFX, the driver needs to invoke _DSM function 20
-> on intel_dsm_guid2. This method is described in Intel document 632107.
+add in check of buffer offset to avoid the exception when input 0 size.
 
-Is this the policy decision that we want to unconditionally make,
-though?
+Signed-off-by: Will Shiu <Will.Shiu@mediatek.com>
+---
+ drivers/pinctrl/pinmux.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-BR,
-Jani.
-
->
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/gpu/drm/i915/display/intel_acpi.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_acpi.c b/drivers/gpu/drm/i915/display/intel_acpi.c
-> index e78430001f077..3bd5930e2769b 100644
-> --- a/drivers/gpu/drm/i915/display/intel_acpi.c
-> +++ b/drivers/gpu/drm/i915/display/intel_acpi.c
-> @@ -20,6 +20,7 @@ static const guid_t intel_dsm_guid =
->  		  0xa8, 0x54, 0x0f, 0x13, 0x17, 0xb0, 0x1c, 0x2c);
->  
->  #define INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED 0 /* No args */
-> +#define INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX 20 /* No args */
->  
->  static const guid_t intel_dsm_guid2 =
->  	GUID_INIT(0x3e5b41c6, 0xeb1d, 0x4260,
-> @@ -187,6 +188,7 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
->  	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
->  	acpi_handle dhandle;
->  	union acpi_object *obj;
-> +	int supported = 0;
->  
->  	dhandle = ACPI_HANDLE(&pdev->dev);
->  	if (!dhandle)
-> @@ -194,8 +196,22 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
->  
->  	obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2, INTEL_DSM_REVISION_ID,
->  				INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED, NULL);
-> -	if (obj)
-> +	if (obj) {
-> +		if (obj->type == ACPI_TYPE_INTEGER)
-> +			supported = obj->integer.value;
-> +
->  		ACPI_FREE(obj);
-> +	}
-> +
-> +	/* Tiger Lake H DP-IN Boot Time Switching from iGfx to dGfx */
-> +	if (supported & BIT(20)) {
-> +		obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2,
-> +					INTEL_DSM_REVISION_ID,
-> +					INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX,
-> +					NULL);
-> +		if (obj)
-> +			ACPI_FREE(obj);
-> +	}
->  }
->  
->  /*
-
+diff --git a/drivers/pinctrl/pinmux.c b/drivers/pinctrl/pinmux.c
+index f94d43b082d9..646dff591b21 100644
+--- a/drivers/pinctrl/pinmux.c
++++ b/drivers/pinctrl/pinmux.c
+@@ -689,6 +689,9 @@ static ssize_t pinmux_select(struct file *file, const char __user *user_buf,
+ 	if (len > PINMUX_SELECT_MAX)
+ 		return -ENOMEM;
+ 
++	if (len <= 0)
++		return -EINVAL;
++
+ 	buf = kzalloc(PINMUX_SELECT_MAX, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+2.18.0
+
