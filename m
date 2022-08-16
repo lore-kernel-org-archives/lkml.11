@@ -2,67 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E2EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD5AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiHPNKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
+        id S235641AbiHPNKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235639AbiHPNKj (ORCPT
+        with ESMTP id S235642AbiHPNKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 09:10:39 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2133AB24A2;
-        Tue, 16 Aug 2022 06:10:30 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1660655421t8je3jh3
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 21:10:20 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: ILHsT53NKPjhC6sTij/xeN8rhMmPWGvtPJWDYLMgqxtZVM17yqE/y8x0oYmur
-        P3QNT5Z+NZ2Q7QT5l4tKEdo0LQ5FIjMBiHYQFqeRGLXgCYvv+5HrDPvVPYMO7AeYC2FQX5n
-        n5XVMiCVIWdhxo1eP3QsY+fq8o79IPJMfNhkr9lr8DEgRvuEGlH9wfrkDNnY44bxKoK5myb
-        wS3wZkQIS0ofdF2hcVsQsThYeFiGDiOE5arlFcm7csNcgcWYe7ec/znNS+g1N5WasmNvHB0
-        paeFk/BJErwZyQGzBkdQu/qkJWHOKMnpNidV2BIUuCWfOHRcO1xK41gtBZqbyd34t8epPiL
-        l4zgg5ap6dFjEPPNaKrfaMLwgtKLrfnGcMH8I2VjGz+cQ/gOobYAT3Gx2tVlP6NVIqmFHYJ
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     deller@gmx.de
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] video/fbdev: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 21:10:13 +0800
-Message-Id: <20220816131013.30643-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09510B275D
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:10:35 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id f20so14844935lfc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:10:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=rD9PGKkXzgL1KFySy5MozS3RkXjsP+Wc7O/Cyd4VZ/Y=;
+        b=loa31jAHLNp549FJ9N0XJqCD4iy1lIHLdn8pMlMI7Prhl34LAKjjsFr87G2oOVuYyo
+         dJpbuH4wwHcNE7udmp9g/aBeH/9XIfFqGVeiA6XXqfVehsB6VBJ9K4swuuyF/n2XxnOZ
+         JDnAZpGq749q+1g2eHEvjiBnpK4UpXZRNmAi3H1j38zosJSqsenY5ImM5aWlRdexdLBk
+         ncbHrtpYhaIyM8IBKinFqTnz1WqYEdEn209FL3GIsQhuS/693nvnUWYiqwSjSyMLsyoj
+         Xv1TQi1ZA7ObWoa30LtCsO+nbek8tPY6au+tsApFxiETojE3R2voybwoRwc9bO4TCf5a
+         c64A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=rD9PGKkXzgL1KFySy5MozS3RkXjsP+Wc7O/Cyd4VZ/Y=;
+        b=sHAuPvMDwnWG2Y7mCQPBZa/pWSJsscBz20i7zcNzdwEEWXo6nh5Oz5Lkyx5GKpmNb0
+         TN0FUmysV/9M16Ti/+ntLc1S+8bZF9Peic9WF60n8MsZyB8uN7EZ29SWUmNhCMMNoGBg
+         TRBpIIteIPm2wVOSsR7PKKT3pYU9v1+5PXJLkFb2WdXgNglCxOD+mVNAVPZEkbc/zldz
+         Si89g7w17UiKjcYSo+KE3z4mN79BJ0bJvHt0+VrQcZvi2MJ0tGrJy1JlWDN8fbEu+B9t
+         jU3bU4sKygFjyBigZVs1BUjM+IR06tJaBszPCNvMvKjD4IenmI7pnvnB7dOtjBHXeSvd
+         bpSA==
+X-Gm-Message-State: ACgBeo3dXZIlKVWH0glu8T2sS+G2FtQeYOBp+k1hi9LF1b9AATmjB9Q2
+        tvMgewhtfaMwj0Z5nof6My7ViA==
+X-Google-Smtp-Source: AA6agR66f/3V9+gijF2iHMM45MRyzxqnhg1fK8rqTwv1z01+CzCLHGhuJR3/glRMCROuAkDfxVLc1A==
+X-Received: by 2002:a05:6512:3da0:b0:48b:3976:b323 with SMTP id k32-20020a0565123da000b0048b3976b323mr6979289lfv.402.1660655433383;
+        Tue, 16 Aug 2022 06:10:33 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id h25-20020ac24d39000000b0048b2be5320csm1385568lfk.118.2022.08.16.06.10.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 06:10:33 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 2/2 v3] regmap: mmio: Support accelerared noinc operations
+Date:   Tue, 16 Aug 2022 15:08:23 +0200
+Message-Id: <20220816130823.97903-2-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220816130823.97903-1-linus.walleij@linaro.org>
+References: <20220816130823.97903-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'its'.
+Use the newly added callback for accelerated noinc MMIO
+to provide writesb, writesw, writesl, writesq, readsb, readsw,
+readsl and readsq.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+A special quirk is needed to deal with big endian regmaps: there
+are no accelerated operations defined for big endian, so fall
+back to calling the big endian operations itereatively for this
+case.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/video/fbdev/skeletonfb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ChangeLog v2->v3:
+- Rebase on kernel v6.0-rc1
+ChangeLog v1->v2:
+- No changes.
+---
+ drivers/base/regmap/regmap-mmio.c | 153 ++++++++++++++++++++++++++++++
+ 1 file changed, 153 insertions(+)
 
-diff --git a/drivers/video/fbdev/skeletonfb.c b/drivers/video/fbdev/skeletonfb.c
-index 818b3a5003e1..f316ea320d29 100644
---- a/drivers/video/fbdev/skeletonfb.c
-+++ b/drivers/video/fbdev/skeletonfb.c
-@@ -97,7 +97,7 @@ static const struct fb_fix_screeninfo xxxfb_fix = {
-     /*
-      * 	Modern graphical hardware not only supports pipelines but some 
-      *  also support multiple monitors where each display can have its  
--     *  own unique data. In this case each display could be  
-+     *  own unique data. In this case each display could be
-      *  represented by a separate framebuffer device thus a separate 
-      *  struct fb_info. Now the struct xxx_par represents the graphics
-      *  hardware state thus only one exist per card. In this case the 
+diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
+index 71f16be7e717..031ee91020e8 100644
+--- a/drivers/base/regmap/regmap-mmio.c
++++ b/drivers/base/regmap/regmap-mmio.c
+@@ -17,6 +17,7 @@ struct regmap_mmio_context {
+ 	void __iomem *regs;
+ 	unsigned int val_bytes;
+ 	bool relaxed_mmio;
++	bool big_endian;
+ 
+ 	bool attached_clk;
+ 	struct clk *clk;
+@@ -160,6 +161,79 @@ static int regmap_mmio_write(void *context, unsigned int reg, unsigned int val)
+ 	return 0;
+ }
+ 
++static int regmap_mmio_noinc_write(void *context, unsigned int reg,
++				   const void *val, size_t val_count)
++{
++	struct regmap_mmio_context *ctx = context;
++	int ret = 0;
++	int i;
++
++	if (!IS_ERR(ctx->clk)) {
++		ret = clk_enable(ctx->clk);
++		if (ret < 0)
++			return ret;
++	}
++
++	/*
++	 * There are no native, assembly-optimized write single register
++	 * operations for big endian, so fall back to emulation if this
++	 * is needed. (Single bytes are fine, they are not affected by
++	 * endianness.)
++	 */
++	if (ctx->big_endian && (ctx->val_bytes > 1)) {
++		switch (ctx->val_bytes) {
++		case 2:
++		{
++			const u16 *valp = (const u16 *)val;
++			for (i = 0; i < val_count; i++)
++				iowrite16be(valp[i], ctx->regs + reg);
++			break;
++		}
++		case 4:
++		{
++			const u32 *valp = (const u32 *)val;
++			for (i = 0; i < val_count; i++)
++				iowrite32be(valp[i], ctx->regs + reg);
++			break;
++		}
++#ifdef CONFIG_64BIT
++		case 8:
++			/* This is just too esoteric */
++			fallthrough;
++#endif
++		default:
++			ret = -EINVAL;
++			goto out_clk;
++		}
++	}
++
++	switch (ctx->val_bytes) {
++	case 1:
++		writesb(ctx->regs + reg, (const u8 *)val, val_count);
++		break;
++	case 2:
++		writesw(ctx->regs + reg, (const u16 *)val, val_count);
++		break;
++	case 4:
++		writesl(ctx->regs + reg, (const u32 *)val, val_count);
++		break;
++#ifdef CONFIG_64BIT
++	case 8:
++		writesq(ctx->regs + reg, (const u64 *)val, val_count);
++		break;
++#endif
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++out_clk:
++	if (!IS_ERR(ctx->clk))
++		clk_disable(ctx->clk);
++
++	return ret;
++}
++
+ static unsigned int regmap_mmio_read8(struct regmap_mmio_context *ctx,
+ 				      unsigned int reg)
+ {
+@@ -241,6 +315,82 @@ static int regmap_mmio_read(void *context, unsigned int reg, unsigned int *val)
+ 	return 0;
+ }
+ 
++static int regmap_mmio_noinc_read(void *context, unsigned int reg,
++				  void *val, size_t val_count)
++{
++	struct regmap_mmio_context *ctx = context;
++	int ret = 0;
++	int i;
++
++	if (!IS_ERR(ctx->clk)) {
++		ret = clk_enable(ctx->clk);
++		if (ret < 0)
++			return ret;
++	}
++
++	/*
++	 * There are no native, assembly-optimized write single register
++	 * operations for big endian, so fall back to emulation if this
++	 * is needed. (Single bytes are fine, they are not affected by
++	 * endianness.)
++	 */
++	if (ctx->big_endian && (ctx->val_bytes > 1)) {
++		switch (ctx->val_bytes) {
++		case 2:
++		{
++			u16 *valp = (u16 *)val;
++			for (i = 0; i < val_count; i++)
++				valp[i] = ioread16be(ctx->regs + reg);
++			break;
++		}
++		case 4:
++		{
++			u32 *valp = (u32 *)val;
++			for (i = 0; i < val_count; i++)
++				valp[i] = ioread32be(ctx->regs + reg);
++			break;
++		}
++#ifdef CONFIG_64BIT
++		case 8:
++			/* This is just too esoteric */
++			fallthrough;
++#endif
++		default:
++			ret = -EINVAL;
++			goto out_clk;
++		}
++	}
++
++	switch (ctx->val_bytes) {
++	case 1:
++		readsb(ctx->regs + reg, (u8 *)val, val_count);
++		break;
++	case 2:
++		readsw(ctx->regs + reg, (u16 *)val, val_count);
++		break;
++	case 4:
++		readsl(ctx->regs + reg, (u32 *)val, val_count);
++		break;
++#ifdef CONFIG_64BIT
++	case 8:
++		readsq(ctx->regs + reg, (u64 *)val, val_count);
++		break;
++#endif
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++out_clk:
++	if (!IS_ERR(ctx->clk))
++		clk_disable(ctx->clk);
++
++	return ret;
++
++	return 0;
++}
++
++
+ static void regmap_mmio_free_context(void *context)
+ {
+ 	struct regmap_mmio_context *ctx = context;
+@@ -257,6 +407,8 @@ static const struct regmap_bus regmap_mmio = {
+ 	.fast_io = true,
+ 	.reg_write = regmap_mmio_write,
+ 	.reg_read = regmap_mmio_read,
++	.reg_noinc_write = regmap_mmio_noinc_write,
++	.reg_noinc_read = regmap_mmio_noinc_read,
+ 	.free_context = regmap_mmio_free_context,
+ 	.val_format_endian_default = REGMAP_ENDIAN_LITTLE,
+ };
+@@ -347,6 +499,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ #ifdef __BIG_ENDIAN
+ 	case REGMAP_ENDIAN_NATIVE:
+ #endif
++		ctx->big_endian = true;
+ 		switch (config->val_bits) {
+ 		case 8:
+ 			ctx->reg_read = regmap_mmio_read8;
 -- 
-2.36.1
+2.37.2
 
