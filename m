@@ -2,68 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20876C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C49C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbiHPRXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S236066AbiHPR2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbiHPRXe (ORCPT
+        with ESMTP id S233537AbiHPR2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:23:34 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1A36390;
-        Tue, 16 Aug 2022 10:23:31 -0700 (PDT)
-X-QQ-mid: bizesmtp67t1660670602t07ismjf
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 17 Aug 2022 01:23:11 +0800 (CST)
-X-QQ-SSF: 0100000000200060D000B00A0000020
-X-QQ-FEAT: 7L1V3dHhUFOfrXcLe5fWClKG+8D1dNxLwt1NI5KRaUqLUr7x0f7ef9UW0l2/8
-        dXJin9wACu/JKd1EY4RoPJXQg7WNzCi+uQPl3JkyG6I1mfHi9gQBsxj0u+Sq+1UL9ZqmndH
-        lZNMLYVaL6YOPGGgXTuF1gzYJqv6QXC74rR9CONOZUkvnMk2rGH1fKGi4uOc+ShWDjlHGH1
-        FBZR2p9yD6LGbexuSUV9W0FgnIT1v/ELCeRk5fPVG//i8l40YdAEKy53BLZ9BFnbdL413yR
-        /YKoG4+iq9kjLX9VXgriHyXn7v9KSbKLF0fAuiOZydTrtaLI/4/KvL92AwEgUJggEWVJZjP
-        sk2DfPFopAsTxMznZY2vCxxQS33O/L7EbmQcmh/7Iv5GfOdmONHD5ymLclu1A==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] tools: hv: Fix comment typo
-Date:   Wed, 17 Aug 2022 01:23:09 +0800
-Message-Id: <20220816172309.7072-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 16 Aug 2022 13:28:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EC4FFE6;
+        Tue, 16 Aug 2022 10:28:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3A20D113E;
+        Tue, 16 Aug 2022 10:28:14 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 54B573F67D;
+        Tue, 16 Aug 2022 10:28:11 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org
+Cc:     will@kernel.org, catalin.marinas@arm.com, jean-philippe@linaro.org,
+        inki.dae@samsung.com, sw0312.kim@samsung.com,
+        kyungmin.park@samsung.com, tglx@linutronix.de, maz@kernel.org,
+        alex.williamson@redhat.com, cohuck@redhat.com,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH 1/3] iommu/dma: Clean up Kconfig
+Date:   Tue, 16 Aug 2022 18:28:03 +0100
+Message-Id: <2e33c8bc2b1bb478157b7964bfed976cb7466139.1660668998.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
+In-Reply-To: <cover.1660668998.git.robin.murphy@arm.com>
+References: <cover.1660668998.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+Although iommu-dma is a per-architecture chonce, that is currently
+implemented in a rather haphazard way. Selecting from the arch Kconfig
+was the original logical approach, but is complicated by having to
+manage dependencies; conversely, selecting from drivers ends up hiding
+the architecture dependency *too* well. Instead, let's just have it
+enable itself automatically when IOMMU API support is enabled for the
+relevant architectures. It can't get much clearer than that.
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- tools/hv/hv_kvp_daemon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/Kconfig          | 1 -
+ drivers/iommu/Kconfig       | 3 +--
+ drivers/iommu/amd/Kconfig   | 1 -
+ drivers/iommu/intel/Kconfig | 1 -
+ 4 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/tools/hv/hv_kvp_daemon.c b/tools/hv/hv_kvp_daemon.c
-index 1e6fd6ca513b..d5ddab830b6b 100644
---- a/tools/hv/hv_kvp_daemon.c
-+++ b/tools/hv/hv_kvp_daemon.c
-@@ -43,7 +43,7 @@
- #include <getopt.h>
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 571cc234d0b3..59af600445c2 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -209,7 +209,6 @@ config ARM64
+ 	select HAVE_KPROBES
+ 	select HAVE_KRETPROBES
+ 	select HAVE_GENERIC_VDSO
+-	select IOMMU_DMA if IOMMU_SUPPORT
+ 	select IRQ_DOMAIN
+ 	select IRQ_FORCED_THREADING
+ 	select KASAN_VMALLOC if KASAN
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 5c5cb5bee8b6..1d99c2d984fb 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -137,7 +137,7 @@ config OF_IOMMU
  
- /*
-- * KVP protocol: The user mode component first registers with the
-+ * KVP protocol: The user mode component first registers with
-  * the kernel component. Subsequently, the kernel component requests, data
-  * for the specified keys. In response to this message the user mode component
-  * fills in the value corresponding to the specified key. We overload the
+ # IOMMU-agnostic DMA-mapping layer
+ config IOMMU_DMA
+-	bool
++	def_bool ARM64 || IA64 || X86
+ 	select DMA_OPS
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+@@ -476,7 +476,6 @@ config VIRTIO_IOMMU
+ 	depends on VIRTIO
+ 	depends on (ARM64 || X86)
+ 	select IOMMU_API
+-	select IOMMU_DMA
+ 	select INTERVAL_TREE
+ 	select ACPI_VIOT if ACPI
+ 	help
+diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
+index a3cbafb603f5..9b5fc3356bf2 100644
+--- a/drivers/iommu/amd/Kconfig
++++ b/drivers/iommu/amd/Kconfig
+@@ -9,7 +9,6 @@ config AMD_IOMMU
+ 	select PCI_PASID
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+-	select IOMMU_DMA
+ 	select IOMMU_IO_PGTABLE
+ 	depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
+ 	help
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 39a06d245f12..c48005147ac5 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -19,7 +19,6 @@ config INTEL_IOMMU
+ 	select DMAR_TABLE
+ 	select SWIOTLB
+ 	select IOASID
+-	select IOMMU_DMA
+ 	select PCI_ATS
+ 	help
+ 	  DMA remapping (DMAR) devices support enables independent address
 -- 
-2.30.2
+2.36.1.dirty
 
