@@ -2,121 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E07C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F617C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234804AbiHPLBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        id S231583AbiHPLBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235140AbiHPLAe (ORCPT
+        with ESMTP id S235201AbiHPLAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:00:34 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C38E56;
-        Tue, 16 Aug 2022 03:10:30 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G9c7Pl012713;
-        Tue, 16 Aug 2022 10:10:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=zQ1eKkhn5S4sqWJRfm7DLCvRzfdADJqgGcWVSrrtZ+E=;
- b=Xfk/UUuZj11PjyEIZyn9ywz5D2uhZQt6uS5bXP/y59/HT8h9NlMz17xNA8VmCcjFClxU
- GABWUGO31SgtpDkdonuCtRXvZxJg7xyT4CaiO4yiiJqL8IdmEyNeeN6W15ZhKY3XP4yC
- ysg9g2lnRCBxN/FN69f3aL9R+sZ+xJtunVcvYTngz35xzrpUZ0ir+RL6eHRfp1n4rB5K
- xQBvrX+LFZGQl93o8S29q1A93VM6yKK+2G0IHnDHN9DrlqhKtZLmIO7QSi/abecWSZBe
- ti/LRBD60/9tay0JxTb560qIAZu1iI/+j84YyASfRGQZone2g7M7Z0flmosFc+vo3HSs PA== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06c0rjgb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:27 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GAAQnm015426
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:26 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 16 Aug 2022 03:10:22 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [RESEND PATCH V7 0/5] Add support for audio clock gating resets for SC7280
-Date:   Tue, 16 Aug 2022 15:39:59 +0530
-Message-ID: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 16 Aug 2022 07:00:44 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6210C877F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id s23so5013352wmj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=/7pcMlkWYdqvd9nF4xjztw1PEhSKdH6W+Iikd1ByWuw=;
+        b=fjgXliTQmp5AXMdjyj5BNorQm9b2QUgkuF9SUN7Rt5bCG3Yq9Kr1x94ZifYm+8nVx0
+         inz8PqyRLDZjqb5gY81bWFL0yvLSIjXMVAKdCo8E5qpHS2UAhTiT/w55V1fR2cD5Pd2B
+         1Rx+cRG/T9KhAKwyGRinIsjzPbukSldQFl1GGVizLBrfm1XMPI72YWtoNtMgkYEmKW05
+         TXbTLePLT8qZVgAgEuCwywy9mlzdoK4LGNXQ3/iGFhUMp7OpcHa3REKtRBee4KGA151v
+         8ho4BL9+LhpURGEzBp4FXtfYChdegmjZyBxMB5w8yIaqOYOy9rxlBIE1yRCag9ZeJB1e
+         IxVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=/7pcMlkWYdqvd9nF4xjztw1PEhSKdH6W+Iikd1ByWuw=;
+        b=VR8RXm1H15u+rIpFm2Vrqbgjq1blSAMfI+FTbEOH9oLB9tNsGBbJFeoZfgrD7nKQVT
+         MUIs5svfOq6rV0Fc3Kg5erpZ4aNbUQ8Ek6DqreN2QJASsZw2E6QC8hNr1ILzEGsvs4vZ
+         lC9sEqT/4nS9P/WWjDf+RJ3JLcjQRWKjzjwH0DtE64I9msxZ3Yz/jAs0ui03pU+Bo8lV
+         jtbACa7qHS522gCJh0+uY0spif0CpsplSnpVuHp2Jg4KZzvklv1CmDEUiMDBONhB8TIe
+         rnCJmN4MR/X0is1OQ7m2rY1VMiNFovVL9CPkjPndK3iKz5Qn8WPXV6pWuG1myQ3Ivkto
+         6H0g==
+X-Gm-Message-State: ACgBeo2NsjUp3lLD2l7fSrkKtULT+oI8+FGCHnxs6NnMyy7wHtLW46Ad
+        81LStLsc11Cg605NBqf5ugY=
+X-Google-Smtp-Source: AA6agR4bNICp6baTecdnoJqeEJgR+Z8OLujzSNuslJ6EgUSTKVKO7aJi7ympl6exGaWyuJ1XuiVDSg==
+X-Received: by 2002:a05:600c:1f08:b0:3a5:e8d6:ddd2 with SMTP id bd8-20020a05600c1f0800b003a5e8d6ddd2mr7393277wmb.57.1660645753401;
+        Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.32.249])
+        by smtp.gmail.com with ESMTPSA id m9-20020adffe49000000b002251639bfd0sm1668407wrs.59.2022.08.16.03.29.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
+        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, geert@linux-m68k.org,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 1/3] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb888()
+Date:   Tue, 16 Aug 2022 12:29:01 +0200
+Message-Id: <20220816102903.276879-2-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220816102903.276879-1-jose.exposito89@gmail.com>
+References: <20220816102903.276879-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: Uzn17Q8uGfDrkO5ePMLJa1UYzRVIlQAk
-X-Proofpoint-GUID: Uzn17Q8uGfDrkO5ePMLJa1UYzRVIlQAk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- priorityscore=1501 mlxlogscore=758 impostorscore=0 clxscore=1015
- suspectscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208160039
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Extend the existing test cases to test the conversion from XRGB8888 to
+RGB888.
 
-Resending this series after correcting commit text in [1/5] patch.
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+---
+ .../gpu/drm/tests/drm_format_helper_test.c    | 65 +++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
-[v7]
-  * Fix commit text of [5/5]. Remove '.' from Fixes tag.
-
-[v6]
-  * Add [1], [2] to handle the regmap overlap of lpasscc and lpass_aon 
-
-[v5]
-  * Fix the fail path and add pm_runtime_disable().
-
-[v4]
-  * Fix the "fixes" tag.
-
-[v3]
-  * Remove the maxItems from reg property.
-
-[v2]
-  * Update/fix the YAML for reg property against each compatible.
-
-[v1]
-  * Add support for clock gating resets for lpass audio clock
-    controller & MCLKs.
-
-Satya Priya (2):
-  dt-bindings: clock: Add "qcom,adsp-pil-mode" property
-  clk: qcom: lpass: Handle the regmap overlap of lpasscc and lpass_aon
-
-Taniya Das (3):
-  dt-bindings: clock: Add resets for LPASS audio clock controller for
-    SC7280
-  dt-bindings: clock: Add support for external MCLKs for LPASS on SC7280
-  clk: qcom: lpass: Add support for resets & external mclk for SC7280
-
- .../bindings/clock/qcom,sc7280-lpasscc.yaml        |  6 +-
- .../bindings/clock/qcom,sc7280-lpasscorecc.yaml    | 26 ++++++++-
- drivers/clk/qcom/lpassaudiocc-sc7280.c             | 66 +++++++++++++++++++++-
- drivers/clk/qcom/lpasscc-sc7280.c                  | 44 ---------------
- drivers/clk/qcom/lpasscorecc-sc7280.c              | 33 +++++++++++
- .../dt-bindings/clock/qcom,lpassaudiocc-sc7280.h   |  5 ++
- .../dt-bindings/clock/qcom,lpasscorecc-sc7280.h    |  2 +
- 7 files changed, 130 insertions(+), 52 deletions(-)
-
+diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
+index 828487071796..08d08e7ab19a 100644
+--- a/drivers/gpu/drm/tests/drm_format_helper_test.c
++++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
+@@ -27,6 +27,11 @@ struct convert_to_rgb565_result {
+ 	const u16 expected_swab[TEST_BUF_SIZE];
+ };
+ 
++struct convert_to_rgb888_result {
++	unsigned int dst_pitch;
++	const u8 expected[TEST_BUF_SIZE];
++};
++
+ struct convert_xrgb8888_case {
+ 	const char *name;
+ 	unsigned int pitch;
+@@ -34,6 +39,7 @@ struct convert_xrgb8888_case {
+ 	const u32 xrgb8888[TEST_BUF_SIZE];
+ 	struct convert_to_rgb332_result rgb332_result;
+ 	struct convert_to_rgb565_result rgb565_result;
++	struct convert_to_rgb888_result rgb888_result;
+ };
+ 
+ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+@@ -51,6 +57,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.expected = { 0xF800 },
+ 			.expected_swab = { 0x00F8 },
+ 		},
++		.rgb888_result = {
++			.dst_pitch = 0,
++			.expected = { 0x00, 0x00, 0xFF },
++		},
+ 	},
+ 	{
+ 		.name = "single_pixel_clip_rectangle",
+@@ -69,6 +79,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.expected = { 0xF800 },
+ 			.expected_swab = { 0x00F8 },
+ 		},
++		.rgb888_result = {
++			.dst_pitch = 0,
++			.expected = { 0x00, 0x00, 0xFF },
++		},
+ 	},
+ 	{
+ 		/* Well known colors: White, black, red, green, blue, magenta,
+@@ -109,6 +123,15 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0xE0FF, 0xFF07,
+ 			},
+ 		},
++		.rgb888_result = {
++			.dst_pitch = 0,
++			.expected = {
++				0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
++				0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00,
++				0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF,
++				0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
++			},
++		},
+ 	},
+ 	{
+ 		/* Randomly picked colors. Full buffer within the clip area. */
+@@ -141,6 +164,17 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0x00A8, 0x8E6B, 0x330A, 0x0000, 0x0000,
+ 			},
+ 		},
++		.rgb888_result = {
++			.dst_pitch = 15,
++			.expected = {
++				0x9C, 0x44, 0x0E, 0x05, 0x4D, 0x11, 0x03, 0x03, 0xA8,
++				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++				0x73, 0x70, 0x6C, 0x9C, 0x44, 0x0E, 0x05, 0x4D, 0x11,
++				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++				0x03, 0x03, 0xA8, 0x73, 0x70, 0x6C, 0x9C, 0x44, 0x0E,
++				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			},
++		},
+ 	},
+ };
+ 
+@@ -255,9 +289,40 @@ static void xrgb8888_to_rgb565_test(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected_swab, dst_size), 0);
+ }
+ 
++static void xrgb8888_to_rgb888_test(struct kunit *test)
++{
++	const struct convert_xrgb8888_case *params = test->param_value;
++	const struct convert_to_rgb888_result *result = &params->rgb888_result;
++	size_t dst_size;
++	__u8 *buf = NULL;
++	__u32 *xrgb8888 = NULL;
++	struct iosys_map dst, src;
++
++	struct drm_framebuffer fb = {
++		.format = drm_format_info(DRM_FORMAT_XRGB8888),
++		.pitches = { params->pitch, 0, 0 },
++	};
++
++	dst_size = conversion_buf_size(DRM_FORMAT_RGB888, result->dst_pitch,
++				       &params->clip);
++	KUNIT_ASSERT_GT(test, dst_size, 0);
++
++	buf = kunit_kzalloc(test, dst_size, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	iosys_map_set_vaddr(&dst, buf);
++
++	xrgb8888 = le32buf_to_cpu(test, params->xrgb8888, TEST_BUF_SIZE);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, xrgb8888);
++	iosys_map_set_vaddr(&src, xrgb8888);
++
++	drm_fb_xrgb8888_to_rgb888(&dst, &result->dst_pitch, &src, &fb, &params->clip);
++	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
++}
++
+ static struct kunit_case drm_format_helper_test_cases[] = {
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb332_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb565_test, convert_xrgb8888_gen_params),
++	KUNIT_CASE_PARAM(xrgb8888_to_rgb888_test, convert_xrgb8888_gen_params),
+ 	{}
+ };
+ 
 -- 
-2.7.4
+2.25.1
 
