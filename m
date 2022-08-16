@@ -2,162 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EA9C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF5EC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiHPJOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S232338AbiHPJOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiHPJNt (ORCPT
+        with ESMTP id S231655AbiHPJNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:13:49 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84D520BF1;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id k14so8673402pfh.0;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=mH1RjIhrn3aTtFyCwsCBvghOzpu3SOjgxxeBJokMeGs=;
-        b=bQ++3ewJ5b1mkfkRwtY/lFZjK+RQFbmhzW2sFLKkLiDVC/7jLmcJZao4iOMQm4R5Mn
-         eYlJPnqeRMLYwfRmHXqCpvxt2NxZ+nptfXn++9q06WT8LY4TgODwtxgXor+tnuYhIDeF
-         NFGhZt8MY2PzkWamFGJvCis/qHLTq0V64gIoxYov1ZSz8xJ35YUJxYETm0s/bNwNilvB
-         bywig2MG7n7YQDjaTCOPVDs6C3gSTDMjd6U8IIJ8rCejeUGYc9aRuTwdchoN0gaZvcJR
-         MX5JokCiDvsUWClL+wLFYSt1IPBWFvxa/uYzmr4tLCCGSADMpUDl7RlZf93DP4/LVBpL
-         WAxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=mH1RjIhrn3aTtFyCwsCBvghOzpu3SOjgxxeBJokMeGs=;
-        b=TeFXGQlF7nkn4d1keBTLGFDoQFhOJ2R/OUDDPG4SgEP3mlyxvSFOadifck69Mj+c1g
-         VlPYT7BtQiqQB6pOSvQFd724tRc5cTbPn0QdEbPcPjrmzJxYtDmxHYMK+GzMMvVfoGgX
-         o65Qvz0RKdgwAZfmP6tdbrvBZQHb6BMgjBHOSlnV4pWlIKdJmRv4FWrxyMTFLwNKZUkc
-         TYA1Z3nHqm3kcJ+yry44F/nUAG9fg5PwdRoAC2a8FbNYWxf6mg0E+HyfrY0oiMLxNBNG
-         WjSHiSs1TXboOmvfk+y3pmwwyt2b+TeGNdFZXZp7d09TIo60gVLFdTy8bOOL5aUQKWxG
-         cNPQ==
-X-Gm-Message-State: ACgBeo1f4rBR5qGxsnBER7HoMsGlZK7qOqRwEwP0k+LPy5Wg9nEQ9a8d
-        AsLBHHQrQYL/VsncWOL/zH0=
-X-Google-Smtp-Source: AA6agR4MGBJnpQx+M7cZDeNam6p/GTiltcfQJBve8I/U3lKM9dJRI6QW9Myzjt6hhQQvP+kf15uDXg==
-X-Received: by 2002:a62:7b8e:0:b0:535:2420:7fc2 with SMTP id w136-20020a627b8e000000b0053524207fc2mr3474466pfc.60.1660634951171;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y85-20020a626458000000b005286124df03sm7675410pfb.87.2022.08.16.00.29.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 00:29:10 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 15:29:04 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3 2/2] bonding: 802.3ad: fix no transmission of
- LACPDUs
-Message-ID: <YvtHQCkyKBTiP4aw@Laptop-X1>
-References: <cover.1660572700.git.jtoppins@redhat.com>
- <0639f1e3d366c5098d561a947fd416fa5277e7f4.1660572700.git.jtoppins@redhat.com>
+        Tue, 16 Aug 2022 05:13:50 -0400
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BF4E096F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:29:27 -0700 (PDT)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id 7D589413B5;
+        Tue, 16 Aug 2022 12:29:22 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1660634963; bh=KO2yBCCsjyqMCOIjGZUnVjiLjyzF2mSA6vth3iKlpFs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hyKSTkBpeELAqETpHujZtkVzXW8QG+Ln6oD4o87dZSJNTi0U/fL/lyiJ02aWGKclm
+         RBe7FaIlZJxDXzIHCr3pmHd/fSqy+ZUJhRg9glXvq5gqWNmycMT6aVu1UzrN6qfCPA
+         MDJw56YBxACMrQHM5d2SSd6bwBjhGSFcOW1k7OqeviDLrSlFIp8EXMcObBMfw4ORcO
+         mi5UmsntLQNA/t6er3NYGU8dhVi4SwLYhR3CRvfeRt1Sm9qIKEnkPLuRiwFgmw49W7
+         DyhVdtpUv6jg+h6cZUqgAIySs1Lm5Kw1Z6fitn0kz4ZFaKR9j3AJwnD9gVNp8BdFGe
+         sQkSlewmF/cjA==
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     samuel.thibault@ens-lyon.org
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        speakup@linux-speakup.org, Nikita Travkin <nikita@trvn.ru>
+Subject: Re: [PATCHv4] speakup: Generate speakupmap.h automatically
+Date:   Tue, 16 Aug 2022 12:28:43 +0500
+Message-Id: <20220816072843.1699317-1-nikita@trvn.ru>
+In-Reply-To: <20220612172244.il3siyq7ueqnvah5@begin>
+References: <20220612172244.il3siyq7ueqnvah5@begin>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0639f1e3d366c5098d561a947fd416fa5277e7f4.1660572700.git.jtoppins@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:08:35AM -0400, Jonathan Toppins wrote:
-> This is caused by the global variable ad_ticks_per_sec being zero as
-> demonstrated by the reproducer script discussed below. This causes
-> all timer values in __ad_timer_to_ticks to be zero, resulting
-> in the periodic timer to never fire.
-> 
-> To reproduce:
-> Run the script in
-> `tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-> puts bonding into a state where it never transmits LACPDUs.
-> 
-> line 44: ip link add fbond type bond mode 4 miimon 200 \
->             xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-> setting bond param: ad_actor_sys_prio
-> given:
->     params.ad_actor_system = 0
-> call stack:
->     bond_option_ad_actor_sys_prio()
->     -> bond_3ad_update_ad_actor_settings()
->        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->             params.ad_actor_system == 0
-> results:
->      ad.system.sys_mac_addr = bond->dev->dev_addr
-> 
-> line 48: ip link set fbond address 52:54:00:3B:7C:A6
-> setting bond MAC addr
-> call stack:
->     bond->dev->dev_addr = new_mac
-> 
-> line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-> setting bond param: ad_actor_sys_prio
-> given:
->     params.ad_actor_system = 0
-> call stack:
->     bond_option_ad_actor_sys_prio()
->     -> bond_3ad_update_ad_actor_settings()
->        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->             params.ad_actor_system == 0
-> results:
->      ad.system.sys_mac_addr = bond->dev->dev_addr
-> 
-> line 60: ip link set veth1-bond down master fbond
-> given:
->     params.ad_actor_system = 0
->     params.mode = BOND_MODE_8023AD
->     ad.system.sys_mac_addr == bond->dev->dev_addr
-> call stack:
->     bond_enslave
->     -> bond_3ad_initialize(); because first slave
->        -> if ad.system.sys_mac_addr != bond->dev->dev_addr
->           return
-> results:
->      Nothing is run in bond_3ad_initialize() because dev_add equals
->      sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
->      never initialized anywhere else.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
-> 
-> Notes:
->     v2:
->      * split this fix from the reproducer
->     v3:
->      * rebased to latest net/master
-> 
->  drivers/net/bonding/bond_3ad.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-> index d7fb33c078e8..957d30db6f95 100644
-> --- a/drivers/net/bonding/bond_3ad.c
-> +++ b/drivers/net/bonding/bond_3ad.c
-> @@ -84,7 +84,8 @@ enum ad_link_speed_type {
->  static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned = {
->  	0, 0, 0, 0, 0, 0
->  };
-> -static u16 ad_ticks_per_sec;
-> +
-> +static u16 ad_ticks_per_sec = 1000 / AD_TIMER_INTERVAL;
->  static const int ad_delta_in_ticks = (AD_TIMER_INTERVAL * HZ) / 1000;
->  
->  static const u8 lacpdu_mcast_addr[ETH_ALEN + 2] __long_aligned =
-> -- 
-> 2.31.1
-> 
+Hi,
+I was building 6.0-rc1 and this patch seem to cause some compiling
+issues. The u_char was not defined in my host build environment (I
+suspect because of the musl based host) which leads to the makemapdata
+failing to compile. Changing the file to use "unsigned char" seems to
+solve the issue.
 
-Acked-by: Hangbin Liu <liuhangbin@gmail.com>
+After that I also had some weird issues of the build system trying to
+write speakupmap.h into the source dir and not the output dir (the
+source is read only due to the tooling I use) but this seems to have
+been resolved by cleanly rebuilding the speakup dir.
+
+A patch changing the type follows.
+
+Nikita
+
+-- >8 --
+From bc239d8740f9e31240e8727f76227daa1aec3c4f Mon Sep 17 00:00:00 2001
+From: Nikita Travkin <nikita@trvn.ru>
+Date: Tue, 16 Aug 2022 11:39:52 +0500
+Subject: [PATCH] speakup: Fix compilation in some build environments
+
+A compilation error may occur if the host CC doesn't have u_char
+defined:
+
+  HOSTCC  drivers/accessibility/speakup/makemapdata.o
+In file included from ../drivers/accessibility/speakup/makemapdata.c:15:
+../drivers/accessibility/speakup/utils.h: In function 'hash_name':
+../drivers/accessibility/speakup/utils.h:57:9: error: unknown type name 'u_char'; did you mean 'char'?
+   57 |         u_char *pn = (u_char *)name;
+      |         ^~~~~~
+      |         char
+
+Fix this by using "unsigned char" instead.
+
+Fixes: 6a5c94d92699 ("speakup: Generate speakupmap.h automatically")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+---
+ drivers/accessibility/speakup/utils.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/accessibility/speakup/utils.h b/drivers/accessibility/speakup/utils.h
+index 4bf2ee8ac246..4ce9a12f7664 100644
+--- a/drivers/accessibility/speakup/utils.h
++++ b/drivers/accessibility/speakup/utils.h
+@@ -54,7 +54,7 @@ static inline int oops(const char *msg, const char *info)
+ 
+ static inline struct st_key *hash_name(char *name)
+ {
+-	u_char *pn = (u_char *)name;
++	unsigned char *pn = (unsigned char *)name;
+ 	int hash = 0;
+ 
+ 	while (*pn) {
+-- 
+2.35.3
+
