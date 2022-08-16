@@ -2,150 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D56C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACD8C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiHPK7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
+        id S235065AbiHPLAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbiHPK70 (ORCPT
+        with ESMTP id S234171AbiHPK7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:59:26 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0A466A48;
-        Tue, 16 Aug 2022 03:10:34 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G6pUYD007950;
-        Tue, 16 Aug 2022 10:10:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=l+tIFk905R+cdNRGRHG3he8TeMJjuNU1aF1sos3nHJw=;
- b=Geecp6bOTkt8kVzjccFjHPZ/Q5e0dDxS/YogNtaaX14T3BBYk8556iae9/wXtqWjn9Iq
- 2af41UTyYkaGL8IA/gjKOa92UdeINVGgYcz0iEJ9cIRRr3P+1FjlFUTBvn+QTOUAhDj4
- OU0vaWbqlY+5t2h6yhL31dolfWLnbQKZE3qZj6Ai0nXywV8Az7PSCKnHgjbZCBQRt2Lp
- sMrlLFOiWj9/6NzKMiL7IE4/KI1SIf9qxdJBEkK4Ng5kO3nsJqKURDQmo4bV7R1Wweg0
- fl6cpKbdTklxuwY7OewoeOVds1npTQp0tmNIvP5G9mAjKnz3qlGHFaYfEnMJmrK7GLnj /g== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06b9gjdj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:30 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GAATUE025804
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 10:10:29 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 16 Aug 2022 03:10:26 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [RESEND PATCH V7 1/5] dt-bindings: clock: Add "qcom,adsp-pil-mode" property
-Date:   Tue, 16 Aug 2022 15:40:00 +0530
-Message-ID: <1660644604-6592-2-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 16 Aug 2022 06:59:50 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F2715FCA
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:11:22 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6Rfm016PzkWQK;
+        Tue, 16 Aug 2022 18:07:59 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 18:11:19 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 18:11:19 +0800
+Message-ID: <7bdc252f-15dd-8d92-9e08-1ba7dd8308ad@huawei.com>
+Date:   Tue, 16 Aug 2022 18:11:18 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: sD-ctP7pReU8F950Wjn0W9ix6CGJxV1f
-X-Proofpoint-ORIG-GUID: sD-ctP7pReU8F950Wjn0W9ix6CGJxV1f
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- bulkscore=0 adultscore=4 impostorscore=0 mlxlogscore=999 phishscore=0
- suspectscore=0 malwarescore=0 clxscore=1015 spamscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208160039
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
+References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
+ <YvtggZeUF9+xQu7D@kroah.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <YvtggZeUF9+xQu7D@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When this property is set, the remoteproc is used to boot the
-LPASS and therefore lpass_q6ss_ahbm_clk and lpass_q6ss_ahbs_clk
-clocks would be used to bring LPASS out of reset and the rest of
-the lpass clocks would be controlled directly by the remoteproc.
 
-This is a cleanup done to handle overlap of regmap of
-lpasscc and lpass_aon blocks.
+On 2022/8/16 17:16, Greg Kroah-Hartman wrote:
+> On Tue, Aug 16, 2022 at 04:44:26PM +0800, Kefeng Wang wrote:
+>> From: Liu Shixin <liushixin2@huawei.com>
+>>
+>> The page on pcplist could be used, but not counted into memory free or
+>> avaliable, and pcp_free is only showed by show_mem(). Since commit
+>> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+>> significant decrease in the display of free memory, with a large number
+>> of cpus and nodes, the number of pages in the percpu list can be very
+>> large, so it is better to let user to know the pcp count.
+>>
+>> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>> ---
+>>   drivers/base/node.c | 14 +++++++++++++-
+>>   fs/proc/meminfo.c   |  9 +++++++++
+>>   2 files changed, 22 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/base/node.c b/drivers/base/node.c
+>> index eb0f43784c2b..846864e45db6 100644
+>> --- a/drivers/base/node.c
+>> +++ b/drivers/base/node.c
+>> @@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
+>>   	struct sysinfo i;
+>>   	unsigned long sreclaimable, sunreclaimable;
+>>   	unsigned long swapcached = 0;
+>> +	unsigned long free_pcp = 0;
+>> +	struct zone *zone;
+>> +	int cpu;
+>>   
+>>   	si_meminfo_node(&i, nid);
+>>   	sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
+>> @@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
+>>   #ifdef CONFIG_SWAP
+>>   	swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
+>>   #endif
+>> +	for_each_populated_zone(zone) {
+>> +		if (zone_to_nid(zone) != nid)
+>> +			continue;
+>> +		for_each_online_cpu(cpu)
+>> +			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
+>> +	}
+>> +
+>>   	len = sysfs_emit_at(buf, len,
+>>   			    "Node %d MemTotal:       %8lu kB\n"
+>>   			    "Node %d MemFree:        %8lu kB\n"
+>> +			    "Node %d PcpFree:        %8lu kB\n"
+> First off, this sysfs file is a huge violation of the normal sysfs
+> rules, so I will not allow any new entries to be added.  In fact, the
+> whole thing should just be removed and multiple files created in its
+> place.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
----
- Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml   | 6 ++----
- .../devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml         | 7 +++++++
- 2 files changed, 9 insertions(+), 4 deletions(-)
+Hi Greg, do you mean to remove all /sys/devices/system/node/node*/meminfo,
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-index 47028d7..633887d 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-@@ -36,13 +36,11 @@ properties:
-     items:
-       - description: LPASS qdsp6ss register
-       - description: LPASS top-cc register
--      - description: LPASS cc register
- 
-   reg-names:
-     items:
-       - const: qdsp6ss
-       - const: top_cc
--      - const: cc
- 
- required:
-   - compatible
-@@ -59,8 +57,8 @@ examples:
-     #include <dt-bindings/clock/qcom,lpass-sc7280.h>
-     clock-controller@3000000 {
-       compatible = "qcom,sc7280-lpasscc";
--      reg = <0x03000000 0x40>, <0x03c04000 0x4>, <0x03389000 0x24>;
--      reg-names = "qdsp6ss", "top_cc", "cc";
-+      reg = <0x03000000 0x40>, <0x03c04000 0x4>;
-+      reg-names = "qdsp6ss", "top_cc";
-       clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
-       clock-names = "iface";
-       #clock-cells = <1>;
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-index bad9135..5ccfb24 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-@@ -41,6 +41,12 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  qcom,adsp-pil-mode:
-+    description:
-+      Indicates if the LPASS would be brought out of reset using
-+      peripheral loader.
-+    type: boolean
-+
- required:
-   - compatible
-   - reg
-@@ -165,6 +171,7 @@ examples:
-       clocks = <&rpmhcc RPMH_CXO_CLK>, <&rpmhcc RPMH_CXO_CLK_A>,
-                <&lpasscore LPASS_CORE_CC_CORE_CLK>;
-       clock-names = "bi_tcxo", "bi_tcxo_ao","iface";
-+      qcom,adsp-pil-mode;
-       #clock-cells = <1>;
-       #power-domain-cells = <1>;
-     };
--- 
-2.7.4
+but this will beak ABI, is it acceptable?
 
+>
+> Can you send a patch to do that instead please?
+>
+> thanks,
+>
+> greg k-h
+> .
