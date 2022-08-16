@@ -2,144 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0CAC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70FA2C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236429AbiHPQ13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        id S236446AbiHPQ1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236423AbiHPQ11 (ORCPT
+        with ESMTP id S236430AbiHPQ13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:27:27 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A660B7C191
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:27:26 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id w7-20020a5d9607000000b0067c6030dfb8so6217462iol.10
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:27:26 -0700 (PDT)
+        Tue, 16 Aug 2022 12:27:29 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890C47C189;
+        Tue, 16 Aug 2022 09:27:28 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q7-20020a17090a7a8700b001f300db8677so10101400pjf.5;
+        Tue, 16 Aug 2022 09:27:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=x4/kpaQuNYrzUh38g84EMVxH34iswe3EzotqneurjvA=;
+        b=auUhkkI4XSJlq1y8/dv/WUv/d5W+5KA9NjFpJ9B3E8janhi9a0DvOidv42gyscytkF
+         U53B5JYNiSHaYqdRnJL4G6V5QVgdQiRcwEhZMKH5nvKbl/mN/odKcXZX42udhVJuzKjI
+         FJVC3jyUColwRZOlvCsXbxCvGqLdUqDt53rMCbuC/zN/91UqJx+WVC63i3exbc7u8NNQ
+         MtO1bo233zLOxtdQtYCfDDrgkpJgbXmHuc1O7SgvpajC1GlF/4QfLYyb1W+td2xRsITW
+         cat0nEsigakewoGevCKQeKFq5A0P16ODdmIOPkyeiZvd4Ye/z3n17yTXCzMvQRVV6vlm
+         UBGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=L19ReosZ+SutQpLWRA4SjdcE5TxJ42u1htGWgO7oKGk=;
-        b=ACxjggAnTJb+svPPAo50Oxhm6Kwj/FNIRENJFhdyn8nNm6ckfU6Nv+1wD5btuhhuDE
-         lIPnECDm0hIXzG77rq8212Ynty3OHQ7y3LAw/128H4JLJj8a4WTAOjKcTqA//ctA6+HU
-         JV0EmcjSrqWu7V6guJSodPegOGjGMyrWLZqP2oSOXYUYyA9DUMS/JPsDNxpyvQasYc99
-         GpI52rk2msENpY8H33XfqNUUcZJENbec3ArlniBOKbnPIfZgJbkbFUfhCLYuyzgTocyv
-         fFHAg3z408NwOsO7ef03h/ySvKQroRhhHUbDTENHlU188VIW4AzrH6qVyM7g95NOh2M7
-         mj2Q==
-X-Gm-Message-State: ACgBeo0J2WHjEaxrcOFJ2IfidkKO9h69NRrC9A4/pynJS269kPtoCUH6
-        XjVxwo3Aogx8mJHCfarquoUAaN+iIxlOumYfcgk56VMwVs+a
-X-Google-Smtp-Source: AA6agR59smHEGOnrF9wzSQhMR9WQicPzs+7V1IXpr2eSTMRFRlXxPi1byRyIhux+YhXU6r+Xh6y+y8ZJAxfbl4JyPAkFwIw2eyrR
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=x4/kpaQuNYrzUh38g84EMVxH34iswe3EzotqneurjvA=;
+        b=zFL9RSkKhUMmxvwWIHIno5RKlOZnodvNT9J+p2IPz2sqvzlH+FruHDFP3lp6VuALbB
+         EU2XxcAYPnkA5S5bx7A3oHTqlXKZ1O012rCZqyHC6VacyNl5Q9dxhumFmvTU8WwKJ3+8
+         /MG5+LRAc6ZXOpJFzo4IrD3nf2wswGz/VNTqzHfrv/IjQHH4ncFpV2WDxwewx+zW6Sto
+         +MGQdQx/rNNug+bRburJIJ2hDYyyP+eFTm19Ql6OJh4Hi7eJtgsvQh38w5pM/oKaC9FL
+         rORDFmd0bOx2H+waxMIdi6pOv6ig2rf4gLhS+T51HQ65FsetYSCyEKYeR28DUDVhbctc
+         vV+g==
+X-Gm-Message-State: ACgBeo1itT/OpR6sHcNmesETPCGKHy0SElr6VsvTYbWwCoxyruf3rvjx
+        Pj11g5oFraPi0y2T1J5dI9A=
+X-Google-Smtp-Source: AA6agR66cC//606lT5Flw40pcAyFN2Anb2uJCQSXzbLYeDTCit8YS3QampHakdMgKeH0KNUo0qQgOQ==
+X-Received: by 2002:a17:902:b489:b0:171:5091:d53b with SMTP id y9-20020a170902b48900b001715091d53bmr22920757plr.44.1660667247888;
+        Tue, 16 Aug 2022 09:27:27 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id x2-20020a17090300c200b0016ee708350bsm9271522plc.14.2022.08.16.09.27.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 09:27:27 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 02:31:22 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc:     virtio-dev@lists.oasis-open.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
+Message-ID: <YvsBei6p30vw7b9I@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1bae:b0:2e5:aa0f:154a with SMTP id
- n14-20020a056e021bae00b002e5aa0f154amr5133902ili.295.1660667245997; Tue, 16
- Aug 2022 09:27:25 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 09:27:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000049baa505e65e3939@google.com>
-Subject: [syzbot] general protection fault in hci_uart_tty_ioctl
-From:   syzbot <syzbot+c19afa60d78984711078@syzkaller.appspotmail.com>
-To:     johan.hedberg@gmail.com, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+CC'ing virtio-dev@lists.oasis-open.org
 
-syzbot found the following issue on:
-
-HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14aad4f3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=c19afa60d78984711078
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15669ae3080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=156d9b4b080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c19afa60d78984711078@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 3641 Comm: syz-executor395 Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:hci_uart_tty_ioctl+0x23f/0xc20 drivers/bluetooth/hci_ldisc.c:771
-Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 cb 08 00 00 48 8b 9b b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 68 08 00 00 44 8b 23 e9 14 ff
-RSP: 0018:ffffc90003b8fd10 EFLAGS: 00010256
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff86978565 RDI: ffff88807902a0b8
-RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 000000000008c07c R12: ffff88801cb1a000
-R13: 0000000000000000 R14: ffffffffffffffea R15: ffff888020e03b20
-FS:  00007fef078ad700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff911ec960 CR3: 0000000071d89000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- tty_ioctl+0x1045/0x15d0 drivers/tty/tty_io.c:2787
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fef0791cee9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fef078ad318 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fef079a53f8 RCX: 00007fef0791cee9
-RDX: 0000000000000000 RSI: 00000000800455c9 RDI: 0000000000000003
-RBP: 00007fef079a53f0 R08: 00007fef078ad700 R09: 0000000000000000
-R10: 00007fef078ad700 R11: 0000000000000246 R12: 6d74702f7665642f
-R13: 00007fff911b316f R14: 00007fef078ad400 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:hci_uart_tty_ioctl+0x23f/0xc20 drivers/bluetooth/hci_ldisc.c:771
-Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 cb 08 00 00 48 8b 9b b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 68 08 00 00 44 8b 23 e9 14 ff
-RSP: 0018:ffffc90003b8fd10 EFLAGS: 00010256
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff86978565 RDI: ffff88807902a0b8
-RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 000000000008c07c R12: ffff88801cb1a000
-R13: 0000000000000000 R14: ffffffffffffffea R15: ffff888020e03b20
-FS:  00007fef078ad700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fef079641c0 CR3: 0000000071d89000 CR4: 0000000000350ef0
-----------------
-Code disassembly (best guess):
-   0:	df 48 89             	fisttps -0x77(%rax)
-   3:	fa                   	cli
-   4:	48 c1 ea 03          	shr    $0x3,%rdx
-   8:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   c:	0f 85 cb 08 00 00    	jne    0x8dd
-  12:	48 8b 9b b8 00 00 00 	mov    0xb8(%rbx),%rbx
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 da             	mov    %rbx,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	74 08                	je     0x3a
-  32:	3c 03                	cmp    $0x3,%al
-  34:	0f 8e 68 08 00 00    	jle    0x8a2
-  3a:	44 8b 23             	mov    (%rbx),%r12d
-  3d:	e9                   	.byte 0xe9
-  3e:	14 ff                	adc    $0xff,%al
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
+> In order to support usage of qdisc on vsock traffic, this commit
+> introduces a struct net_device to vhost and virtio vsock.
+> 
+> Two new devices are created, vhost-vsock for vhost and virtio-vsock
+> for virtio. The devices are attached to the respective transports.
+> 
+> To bypass the usage of the device, the user may "down" the associated
+> network interface using common tools. For example, "ip link set dev
+> virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
+> simply using the FIFO logic of the prior implementation.
+> 
+> For both hosts and guests, there is one device for all G2H vsock sockets
+> and one device for all H2G vsock sockets. This makes sense for guests
+> because the driver only supports a single vsock channel (one pair of
+> TX/RX virtqueues), so one device and qdisc fits. For hosts, this may not
+> seem ideal for some workloads. However, it is possible to use a
+> multi-queue qdisc, where a given queue is responsible for a range of
+> sockets. This seems to be a better solution than having one device per
+> socket, which may yield a very large number of devices and qdiscs, all
+> of which are dynamically being created and destroyed. Because of this
+> dynamism, it would also require a complex policy management daemon, as
+> devices would constantly be spun up and down as sockets were created and
+> destroyed. To avoid this, one device and qdisc also applies to all H2G
+> sockets.
+> 
+> Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+> ---
+>  drivers/vhost/vsock.c                   |  19 +++-
+>  include/linux/virtio_vsock.h            |  10 +++
+>  net/vmw_vsock/virtio_transport.c        |  19 +++-
+>  net/vmw_vsock/virtio_transport_common.c | 112 +++++++++++++++++++++++-
+>  4 files changed, 152 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index f8601d93d94d..b20ddec2664b 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -927,13 +927,30 @@ static int __init vhost_vsock_init(void)
+>  				  VSOCK_TRANSPORT_F_H2G);
+>  	if (ret < 0)
+>  		return ret;
+> -	return misc_register(&vhost_vsock_misc);
+> +
+> +	ret = virtio_transport_init(&vhost_transport, "vhost-vsock");
+> +	if (ret < 0)
+> +		goto out_unregister;
+> +
+> +	ret = misc_register(&vhost_vsock_misc);
+> +	if (ret < 0)
+> +		goto out_transport_exit;
+> +	return ret;
+> +
+> +out_transport_exit:
+> +	virtio_transport_exit(&vhost_transport);
+> +
+> +out_unregister:
+> +	vsock_core_unregister(&vhost_transport.transport);
+> +	return ret;
+> +
+>  };
+>  
+>  static void __exit vhost_vsock_exit(void)
+>  {
+>  	misc_deregister(&vhost_vsock_misc);
+>  	vsock_core_unregister(&vhost_transport.transport);
+> +	virtio_transport_exit(&vhost_transport);
+>  };
+>  
+>  module_init(vhost_vsock_init);
+> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+> index 9a37eddbb87a..5d7e7fbd75f8 100644
+> --- a/include/linux/virtio_vsock.h
+> +++ b/include/linux/virtio_vsock.h
+> @@ -91,10 +91,20 @@ struct virtio_transport {
+>  	/* This must be the first field */
+>  	struct vsock_transport transport;
+>  
+> +	/* Used almost exclusively for qdisc */
+> +	struct net_device *dev;
+> +
+>  	/* Takes ownership of the packet */
+>  	int (*send_pkt)(struct sk_buff *skb);
+>  };
+>  
+> +int
+> +virtio_transport_init(struct virtio_transport *t,
+> +		      const char *name);
+> +
+> +void
+> +virtio_transport_exit(struct virtio_transport *t);
+> +
+>  ssize_t
+>  virtio_transport_stream_dequeue(struct vsock_sock *vsk,
+>  				struct msghdr *msg,
+> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> index 3bb293fd8607..c6212eb38d3c 100644
+> --- a/net/vmw_vsock/virtio_transport.c
+> +++ b/net/vmw_vsock/virtio_transport.c
+> @@ -131,7 +131,9 @@ virtio_transport_send_pkt_work(struct work_struct *work)
+>  		 * the vq
+>  		 */
+>  		if (ret < 0) {
+> -			skb_queue_head(&vsock->send_pkt_queue, skb);
+> +			spin_lock_bh(&vsock->send_pkt_queue.lock);
+> +			__skb_queue_head(&vsock->send_pkt_queue, skb);
+> +			spin_unlock_bh(&vsock->send_pkt_queue.lock);
+>  			break;
+>  		}
+>  
+> @@ -676,7 +678,9 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
+>  		kfree_skb(skb);
+>  	mutex_unlock(&vsock->tx_lock);
+>  
+> -	skb_queue_purge(&vsock->send_pkt_queue);
+> +	spin_lock_bh(&vsock->send_pkt_queue.lock);
+> +	__skb_queue_purge(&vsock->send_pkt_queue);
+> +	spin_unlock_bh(&vsock->send_pkt_queue.lock);
+>  
+>  	/* Delete virtqueues and flush outstanding callbacks if any */
+>  	vdev->config->del_vqs(vdev);
+> @@ -760,6 +764,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+>  	flush_work(&vsock->event_work);
+>  	flush_work(&vsock->send_pkt_work);
+>  
+> +	virtio_transport_exit(&virtio_transport);
+> +
+>  	mutex_unlock(&the_virtio_vsock_mutex);
+>  
+>  	kfree(vsock);
+> @@ -844,12 +850,18 @@ static int __init virtio_vsock_init(void)
+>  	if (ret)
+>  		goto out_wq;
+>  
+> -	ret = register_virtio_driver(&virtio_vsock_driver);
+> +	ret = virtio_transport_init(&virtio_transport, "virtio-vsock");
+>  	if (ret)
+>  		goto out_vci;
+>  
+> +	ret = register_virtio_driver(&virtio_vsock_driver);
+> +	if (ret)
+> +		goto out_transport;
+> +
+>  	return 0;
+>  
+> +out_transport:
+> +	virtio_transport_exit(&virtio_transport);
+>  out_vci:
+>  	vsock_core_unregister(&virtio_transport.transport);
+>  out_wq:
+> @@ -861,6 +873,7 @@ static void __exit virtio_vsock_exit(void)
+>  {
+>  	unregister_virtio_driver(&virtio_vsock_driver);
+>  	vsock_core_unregister(&virtio_transport.transport);
+> +	virtio_transport_exit(&virtio_transport);
+>  	destroy_workqueue(virtio_vsock_workqueue);
+>  }
+>  
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> index d5780599fe93..bdf16fff054f 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -16,6 +16,7 @@
+>  
+>  #include <net/sock.h>
+>  #include <net/af_vsock.h>
+> +#include <net/pkt_sched.h>
+>  
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/vsock_virtio_transport_common.h>
+> @@ -23,6 +24,93 @@
+>  /* How long to wait for graceful shutdown of a connection */
+>  #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
+>  
+> +struct virtio_transport_priv {
+> +	struct virtio_transport *trans;
+> +};
+> +
+> +static netdev_tx_t virtio_transport_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	struct virtio_transport *t =
+> +		((struct virtio_transport_priv *)netdev_priv(dev))->trans;
+> +	int ret;
+> +
+> +	ret = t->send_pkt(skb);
+> +	if (unlikely(ret == -ENODEV))
+> +		return NETDEV_TX_BUSY;
+> +
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +const struct net_device_ops virtio_transport_netdev_ops = {
+> +	.ndo_start_xmit = virtio_transport_start_xmit,
+> +};
+> +
+> +static void virtio_transport_setup(struct net_device *dev)
+> +{
+> +	dev->netdev_ops = &virtio_transport_netdev_ops;
+> +	dev->needs_free_netdev = true;
+> +	dev->flags = IFF_NOARP;
+> +	dev->mtu = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
+> +	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
+> +}
+> +
+> +static int ifup(struct net_device *dev)
+> +{
+> +	int ret;
+> +
+> +	rtnl_lock();
+> +	ret = dev_open(dev, NULL) ? -ENOMEM : 0;
+> +	rtnl_unlock();
+> +
+> +	return ret;
+> +}
+> +
+> +/* virtio_transport_init - initialize a virtio vsock transport layer
+> + *
+> + * @t: ptr to the virtio transport struct to initialize
+> + * @name: the name of the net_device to be created.
+> + *
+> + * Return 0 on success, otherwise negative errno.
+> + */
+> +int virtio_transport_init(struct virtio_transport *t, const char *name)
+> +{
+> +	struct virtio_transport_priv *priv;
+> +	int ret;
+> +
+> +	t->dev = alloc_netdev(sizeof(*priv), name, NET_NAME_UNKNOWN, virtio_transport_setup);
+> +	if (!t->dev)
+> +		return -ENOMEM;
+> +
+> +	priv = netdev_priv(t->dev);
+> +	priv->trans = t;
+> +
+> +	ret = register_netdev(t->dev);
+> +	if (ret < 0)
+> +		goto out_free_netdev;
+> +
+> +	ret = ifup(t->dev);
+> +	if (ret < 0)
+> +		goto out_unregister_netdev;
+> +
+> +	return 0;
+> +
+> +out_unregister_netdev:
+> +	unregister_netdev(t->dev);
+> +
+> +out_free_netdev:
+> +	free_netdev(t->dev);
+> +
+> +	return ret;
+> +}
+> +
+> +void virtio_transport_exit(struct virtio_transport *t)
+> +{
+> +	if (t->dev) {
+> +		unregister_netdev(t->dev);
+> +		free_netdev(t->dev);
+> +	}
+> +}
+> +
+>  static const struct virtio_transport *
+>  virtio_transport_get_ops(struct vsock_sock *vsk)
+>  {
+> @@ -147,6 +235,24 @@ static u16 virtio_transport_get_type(struct sock *sk)
+>  		return VIRTIO_VSOCK_TYPE_SEQPACKET;
+>  }
+>  
+> +/* Return pkt->len on success, otherwise negative errno */
+> +static int virtio_transport_send_pkt(const struct virtio_transport *t, struct sk_buff *skb)
+> +{
+> +	int ret;
+> +	int len = skb->len;
+> +
+> +	if (unlikely(!t->dev || !(t->dev->flags & IFF_UP)))
+> +		return t->send_pkt(skb);
+> +
+> +	skb->dev = t->dev;
+> +	ret = dev_queue_xmit(skb);
+> +
+> +	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN))
+> +		return len;
+> +
+> +	return -ENOMEM;
+> +}
+> +
+>  /* This function can only be used on connecting/connected sockets,
+>   * since a socket assigned to a transport is required.
+>   *
+> @@ -202,9 +308,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>  
+>  	virtio_transport_inc_tx_pkt(vvs, skb);
+>  
+> -	err = t_ops->send_pkt(skb);
+> -
+> -	return err < 0 ? -ENOMEM : err;
+> +	return virtio_transport_send_pkt(t_ops, skb);
+>  }
+>  
+>  static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+> @@ -834,7 +938,7 @@ static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
+>  		return -ENOTCONN;
+>  	}
+>  
+> -	return t->send_pkt(reply);
+> +	return virtio_transport_send_pkt(t, reply);
+>  }
+>  
+>  /* This function should be called with sk_lock held and SOCK_DONE set */
+> -- 
+> 2.35.1
+> 
