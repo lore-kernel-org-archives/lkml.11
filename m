@@ -2,131 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCC9C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9C9C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234336AbiHPKxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
+        id S234368AbiHPKyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiHPKxX (ORCPT
+        with ESMTP id S232298AbiHPKyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:53:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51444E842
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:55:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660643729; x=1692179729;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Qs5JcP0DyxdDr2M+TfNbeXHgZMZJ7UyRrbaQPUfUtUw=;
-  b=G3syNGWH7XTVsW+Dfbw5P2o85olKoCqDYcF6A7Ro8g7tJyZKWA+Gaoxy
-   D7WibQiKXC5uePe9IwygX3FumpnJuuOjKxPFZgW+20lqGdkDYIVdy33Dt
-   uWbl30VZEIyMgo9yuogCnoU+BPCrVdiZdoFenFWzvgPAiwjLcmuk9W2Bz
-   rif4NN3AIEV9nAnDm43NqVpdq6M7HvKD/PgcoZSMSVgXnUiALMlyATSDD
-   RvySU3LNseJttDjIV+ZLANeRhwop5611RSBcvJ8V8mzFGUZ475Hu9XnOx
-   bV2GWGxt244cwDgHBrZi0iI/UwiICwpD4lg2ctIHCl4yuVglpn6cOE6PN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293449978"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293449978"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:55:29 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="610208209"
-Received: from kroegerb-mobl1.ger.corp.intel.com (HELO [10.252.51.43]) ([10.252.51.43])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:55:24 -0700
-Message-ID: <f6baa98e-af46-7ca8-397a-2e762cd444c6@linux.intel.com>
-Date:   Tue, 16 Aug 2022 11:55:21 +0200
+        Tue, 16 Aug 2022 06:54:05 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678C233356;
+        Tue, 16 Aug 2022 03:21:37 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id q19so8959480pfg.8;
+        Tue, 16 Aug 2022 03:21:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=gk5spmMleYDB5E6yzSXkYXDq0W9ZxoMNmm79ibU/KLs=;
+        b=ooUezOaJ7bL3Vrcz7k/onDIrSEwngP/K2dpLWayA1Y4TePLMi14ak10c89vlV6R4CP
+         dtKM4IdLCu2oot4iEbtUF1d8hzXt5uTYtzcN2zCoRpYZ3oOeFiIffuquuLSPI7JVhwu9
+         TX2NPbW9Tjak+H77euKPhwAffRszTQZ/4xZVUOR1PnqQs5AaMWu1AKZWE555ddu+SdHh
+         naS9ShgvLtR2wQ2Pi4iA6r3p2BgIAVLxUdfixg0mkY7dAKhLOHkGEM6ygG6EPHLnr3n5
+         jMU/J7k5w2hv71mywkRjwEEqiL/GkgpiMnzFHVZMm6MxneXLZCg+Ih0sVSJ1wXC7iQdU
+         Ob8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=gk5spmMleYDB5E6yzSXkYXDq0W9ZxoMNmm79ibU/KLs=;
+        b=e+x8vCtnKMIC7MYmAgTdAdHDB1eneWoawrZgr6f0vwVIzNzawpChqKsN/y26DtNYHs
+         h0YtfMLa+vhosVjLcFoXDuNQrMEwaKctCWiqnL2VIU0FEVNYpM2ldtHm+Z+xMCrQ8GaD
+         qlkn4Pi0iDnTefNMo+oCA+z2nBFHtQClIM0JM8+S6Mw3eP/vMnR/BixCFoTxqkjZnYfU
+         ICfdgjcQpzfn4pQCohsOsLMnRLj00uupPgr31QFBRWKiPfce1p+8CG1+LRuH8lZAgOkj
+         BpQMJJIthMJRmuE/Bsp0sEGsneGn839tCgA/ZfcxFsKGE048oT+50xA/dgg4TY4uC1rx
+         wTiQ==
+X-Gm-Message-State: ACgBeo05+iSYjDgbuY6Mc71yQnpqRoQ+fT3Yy9EGBtm+KbcnYhs9YuvE
+        XydNwcQNyKFXUPru+l8Bx5w=
+X-Google-Smtp-Source: AA6agR7uyINHbIv1zyIDimnsWbzI1puM5XJvr2Ubu7kDjkIgc56i296ZU2t2ADuN3Fdkx2wZ0ObygQ==
+X-Received: by 2002:a63:80c8:0:b0:41c:62c7:abd7 with SMTP id j191-20020a6380c8000000b0041c62c7abd7mr17611213pgd.570.1660645296906;
+        Tue, 16 Aug 2022 03:21:36 -0700 (PDT)
+Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
+        by smtp.gmail.com with ESMTPSA id 22-20020a621516000000b0052ceaba7411sm8065181pfv.125.2022.08.16.03.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:21:36 -0700 (PDT)
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     Basavaraj Natikar <basavaraj.natikar@amd.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH v3] AMD_SFH: Add a DMI quirk entry for Chromebooks
+Date:   Tue, 16 Aug 2022 19:21:20 +0900
+Message-Id: <20220816102120.6131-1-akihiko.odaki@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v2] ASoC: Intel: sof_rt5682: Add support for
- jsl_rt5682_rt1019
-Content-Language: en-US
-To:     Sean Hong <sean.hong@quanta.corp-partner.google.com>,
-        perex@perex.cz, tiwai@suse.com, brent.lu@intel.com
-Cc:     cezary.rojewski@intel.com, kai.vehmanen@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        linux-kernel@vger.kernel.org, liam.r.girdwood@linux.intel.com,
-        broonie@kernel.org, alsa-devel@alsa-project.org,
-        yung-chuan.liao@linux.intel.com
-References: <20220816075424.1245593-1-sean.hong@quanta.corp-partner.google.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220816075424.1245593-1-sean.hong@quanta.corp-partner.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Google Chromebooks use Chrome OS Embedded Controller Sensor Hub instead
+of Sensor Hub Fusion and leaves MP2 uninitialized, which disables all
+functionalities, even including the registers necessary for feature
+detections.
 
+The behavior was observed with Lenovo ThinkPad C13 Yoga.
 
-On 8/16/22 09:54, Sean Hong wrote:
-> This patch adds the driver data for rt5682 support jsl_rt5682_rt1019.
-> 
-> Signed-off-by: Sean Hong <sean.hong@quanta.corp-partner.google.com>
-> ---
->  sound/soc/intel/boards/sof_rt5682.c               |  9 +++++++++
->  sound/soc/intel/common/soc-acpi-intel-jsl-match.c | 12 ++++++++++++
->  2 files changed, 21 insertions(+)
-> 
-> diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
-> index 045965312..3a840f3a9 100644
-> --- a/sound/soc/intel/boards/sof_rt5682.c
-> +++ b/sound/soc/intel/boards/sof_rt5682.c
-> @@ -1100,6 +1100,15 @@ static const struct platform_device_id board_ids[] = {
->  					SOF_RT5682_SSP_AMP(1) |
->  					SOF_RT5682_NUM_HDMIDEV(4)),
->  	},
-> +	{
-> +		.name = "jsl_rt5682_rt1019",
-> +		.driver_data = (kernel_ulong_t)(SOF_RT5682_MCLK_EN |
-> +					SOF_RT5682_MCLK_24MHZ |
+Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-I see it's the same setting for all JSL devices but I am having doubts
-on this MCLK.  Is this 24MHz value correct for JSL? It's derived from
-ICL so in theory the MCLK should be a multiple of 19.2MHz if the root
-frequency was the oscillator.
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+index 4b90c86ee5f8..47774b9ab3de 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -288,11 +288,29 @@ int amd_sfh_irq_init(struct amd_mp2_dev *privdata)
+ 	return 0;
+ }
+ 
++static const struct dmi_system_id dmi_nodevs[] = {
++	{
++		/*
++		 * Google Chromebooks use Chrome OS Embedded Controller Sensor
++		 * Hub instead of Sensor Hub Fusion and leaves MP2
++		 * uninitialized, which disables all functionalities, even
++		 * including the registers necessary for feature detections.
++		 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
++		},
++	},
++	{ }
++};
++
+ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct amd_mp2_dev *privdata;
+ 	int rc;
+ 
++	if (dmi_first_match(dmi_nodevs))
++		return -ENODEV;
++
+ 	privdata = devm_kzalloc(&pdev->dev, sizeof(*privdata), GFP_KERNEL);
+ 	if (!privdata)
+ 		return -ENOMEM;
+-- 
+2.37.2
 
-Is this intentional?
-
-> +					SOF_RT5682_SSP_CODEC(0) |
-> +					SOF_SPEAKER_AMP_PRESENT |
-> +					SOF_RT1019_SPEAKER_AMP_PRESENT |
-> +					SOF_RT5682_SSP_AMP(1)),
-> +	},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(platform, board_ids);
-> diff --git a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
-> index b95c4b2cd..e374bf163 100644
-> --- a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
-> +++ b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
-> @@ -29,6 +29,11 @@ static const struct snd_soc_acpi_codecs rt1015p_spk = {
->  	.codecs = {"RTL1015"}
->  };
->  
-> +static struct snd_soc_acpi_codecs rt1019p_spk = {
-> +	.num_codecs = 1,
-> +	.codecs = {"RTL1019"}
-> +};
-> +
->  static const struct snd_soc_acpi_codecs mx98360a_spk = {
->  	.num_codecs = 1,
->  	.codecs = {"MX98360A"}
-> @@ -78,6 +83,13 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_jsl_machines[] = {
->  		.quirk_data = &mx98360a_spk,
->  		.sof_tplg_filename = "sof-jsl-rt5682-mx98360a.tplg",
->  	},
-> +	{
-> +		.comp_ids = &rt5682_rt5682s_hp,
-> +		.drv_name = "jsl_rt5682_rt1019",
-> +		.machine_quirk = snd_soc_acpi_codec_list,
-> +		.quirk_data = &rt1019p_spk,
-> +		.sof_tplg_filename = "sof-jsl-rt5682-rt1019.tplg",
-> +	},
->  	{
->  		.id = "10134242",
->  		.drv_name = "jsl_cs4242_mx98360a",
