@@ -2,158 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B9FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E77C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbiHPRGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S233073AbiHPRKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231916AbiHPRGJ (ORCPT
+        with ESMTP id S236776AbiHPRKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:06:09 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACEA79609
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:06:07 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GGiLUQ005227;
-        Tue, 16 Aug 2022 17:05:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : message-id : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=GjjxBkmOT7kfjjNUvdcUnZZdNAdgE5EWLferPMUXAnA=;
- b=YL3OJlfJ14C/KPkJRH8fKhPKtxIOlqOJCCgFbLlBfYmMkMVlPwl1iHQEcGvVjiGMJsXo
- yO9JGi5Mip9t30SQtzLm7bG2lseHrj967Kdgd5+z0DoVUkLuqBmERm+owzOgze1gPTci
- bUn1XWIJ9+3/wtPDjt2/OWXJvXD9bqeKpK6XqSYRKn9RYfPr+FHHd9GtLEj0/1pnHNdW
- ml8JmcSALUfRyXMglrSbQtCMj56n2OeR9UImqhMG3DmpdYe8g0/D75pGT7LWK1sOYczT
- pUwR1/hJD7YS1iTDHzA1y/2gDaQ+rWpgipepo4Qcf1UO35BDDeUoiK/tMe4XbTh9Bd7J Ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j0f0y0kd0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 17:05:41 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27GGjE2Q008425;
-        Tue, 16 Aug 2022 17:05:41 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j0f0y0kc1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 17:05:40 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27GH5LZN002388;
-        Tue, 16 Aug 2022 17:05:38 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3hx37jbgk9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 17:05:38 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27GH5a8b26608022
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Aug 2022 17:05:36 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5780611C04A;
-        Tue, 16 Aug 2022 17:05:36 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E38E011C04C;
-        Tue, 16 Aug 2022 17:05:35 +0000 (GMT)
-Received: from localhost (unknown [9.43.58.12])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 16 Aug 2022 17:05:35 +0000 (GMT)
-Date:   Tue, 16 Aug 2022 22:35:34 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH 0/2] ftrace/recordmcount: Handle object files without
- section symbols
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        llvm@lists.linux.dev, Michael Ellerman <mpe@ellerman.id.au>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-        <20220816100423.5ee2e17c@gandalf.local.home>
-In-Reply-To: <20220816100423.5ee2e17c@gandalf.local.home>
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1660668823.oegvwl2214.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: OzR97rxPfkN_j2hNnQzGXDMJE-1aixqM
-X-Proofpoint-ORIG-GUID: PYoTJVUk2zunDwCz72cxwia_qgxH99mO
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 16 Aug 2022 13:10:46 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE6E659EE;
+        Tue, 16 Aug 2022 10:10:44 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 8F2006C1B90;
+        Tue, 16 Aug 2022 17:10:43 +0000 (UTC)
+Received: from pdx1-sub0-mail-a225.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id AEDA46C1977;
+        Tue, 16 Aug 2022 17:10:42 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1660669843; a=rsa-sha256;
+        cv=none;
+        b=IbHFQs+XHp4MZI3X6oCtUbIZS0/XG+6TYvsn8I5KVkcFEbRthAx3z/u/xMqP+fReeDCFai
+        Z3Y7WnvekUrlkotbQKRIqZVWFgdrrXMgehf/6yQUmYjzOl8xBbMagixZ0erABnsQYjWcm+
+        JXD/9n8ut9ePLNRvhrcKAUcp8ZC/vH4YAsV2VwJVJwBEbzuc1QPmsE1boSkHKGdr/J31fL
+        Iq5QQEWGKvX97E1u4DZk4jgAyZapMVF1ISnAtI1AVZ4Gw4qHn1u7N6IBi5OCHODClQGWU/
+        FA54Vv7PV/UOmG8URN5smUid4VNZu8h+qKGchGJwvx0W5Ji6TYigj2n5XmzrUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1660669843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=OHBgu+nCXZPgIF8SF+iAlqU9/Ri3M1yE/jeNQa9OyJ8=;
+        b=sqUdMlhmauBvWpJJdPaZzAT9WJQcj7oPOrs5e1+DYWIQHYeXAUylZOB2solv/r9cDy4MJa
+        /Vn3kxQN0o1V2pc6VaMxXb88kR/ZiDFiYLRmPuI11kR9aszKtpUjMKNYM/4F7cz3RecL1z
+        8T9Q9/mY5GmHeVupSd9kbFjdaikGdRO8ein1Uu+MFsmSM+SeE74oJpIHJHrpk+prTKUswz
+        VyQMe+ZZ7wU50z9sFwzbGEIVg9KikGf4n+Xr1q+eBcrLLZjZuDANeO3A8jXyC+OiuGlHjS
+        5/gv+xlxCkjhhzr+h8GTRvWr2eB2GqDFrulFkRwsNTVFrd7xIl598YkiyGsD+g==
+ARC-Authentication-Results: i=1;
+        rspamd-7697cc766f-vpvlp;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Bitter-Robust: 2ac89aff49f3d01c_1660669843343_3379587907
+X-MC-Loop-Signature: 1660669843343:2764178874
+X-MC-Ingress-Time: 1660669843343
+Received: from pdx1-sub0-mail-a225.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.124.238.93 (trex/6.7.1);
+        Tue, 16 Aug 2022 17:10:43 +0000
+Received: from offworld (unknown [104.36.25.245])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a225.dreamhost.com (Postfix) with ESMTPSA id 4M6d2T1Wsvz2V;
+        Tue, 16 Aug 2022 10:10:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1660669842;
+        bh=OHBgu+nCXZPgIF8SF+iAlqU9/Ri3M1yE/jeNQa9OyJ8=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=NJfSoY0zDKVG3Yq23Z8ww/mW+b8bq82/EFoJqrDMz2sdpQW5WWBb0SZ0gcH+gSaMD
+         MJfmttLaOMlcKx8nIPtmIKcf7pp+9DH39izVmSbD8+KrK5N0jC7pfDMriq8eKC1rE4
+         x3T/C2ADWt7uoU0nXrG/msbyzT0Jh3J/A/i3/AU2I26hh4VIsQOVGsLDMpCSG/wSc7
+         EpSyHLLUskSnCFYWzK7LZL2SvbpwVswJ+si6XS2laX1HTGXQlkZCiDeOiYc7WPyDxU
+         Yh5DfgfPlkFc/Rm7xvoU5lukELPTcMwYHhOvBwT4bBQ4nEV/YicmNKprHd/Flrq+hk
+         W9i5FRKQDlcBg==
+Date:   Tue, 16 Aug 2022 09:53:01 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
+        alison.schofield@intel.com, a.manzanares@samsung.com,
+        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, bp@alien8.de, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arch/cacheflush: Introduce flush_all_caches()
+Message-ID: <20220816165301.4m4w6zsse62z4hxz@offworld>
+References: <165791937063.2491387.15277418618265930924.stgit@djiang5-desk3.ch.intel.com>
+ <20220718053039.5whjdcxynukildlo@offworld>
+ <4bedc81d-62fa-7091-029e-a2e56b4f8f7a@intel.com>
+ <20220803183729.00002183@huawei.com>
+ <9f3705e1-de21-0f3c-12af-fd011b6d613d@intel.com>
+ <YvO8pP7NUOdH17MM@FVFF77S0Q05N>
+ <62f40fba338af_3ce6829466@dwillia2-xfh.jf.intel.com.notmuch>
+ <20220815160706.tqd42dv24tgb7x7y@offworld>
+ <Yvtc2u1J/qip8za9@worktop.programming.kicks-ass.net>
+ <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 phishscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 malwarescore=0 spamscore=0 mlxscore=0 impostorscore=0
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208160065
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steven,
+On Tue, 16 Aug 2022, Dan Williams wrote:
 
-Steven Rostedt wrote:
-> On Wed, 27 Apr 2022 15:01:20 +0530
-> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
->=20
->> This solves a build issue on powerpc with binutils v2.36 and newer [1].
->> Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
->> symbols") [2], binutils started dropping section symbols that it thought
->> were unused. Due to this, in certain scenarios, recordmcount is unable=20
->> to find a non-weak symbol to generate a relocation record against.
->>=20
->> Clang integrated assembler is also aggressive in dropping section=20
->> symbols [3].
->>=20
->> In the past, there have been various workarounds to address this. See=20
->> commits 55d5b7dd6451b5 ("initramfs: fix clang build failure") and=20
->> 6e7b64b9dd6d96 ("elfcore: fix building with clang") and a recent patch:
->> https://lore.kernel.org/linuxppc-dev/20220425174128.11455-1-naveen.n.rao=
-@linux.vnet.ibm.com/T/#u
->>=20
->> Fix this issue by using the weak symbol in the relocation record. This=20
->> can result in duplicate locations in the mcount table if those weak=20
->> functions are overridden, so have ftrace skip dupicate entries.
->>=20
->> Objtool already follows this approach, so patch 2 updates recordmcount=20
->> to do the same. Patch 1 updates ftrace to skip duplicate entries.
->>=20
->> - Naveen
->>=20
->>=20
->> [1] https://github.com/linuxppc/issues/issues/388
->> [2] https://sourceware.org/git/?p=3Dbinutils-gdb.git;a=3Dcommit;h=3Dd1bc=
-ae833b32f1
->> [3] https://github.com/ClangBuiltLinux/linux/issues/981
->>=20
+>Peter Zijlstra wrote:
+>> On Mon, Aug 15, 2022 at 09:07:06AM -0700, Davidlohr Bueso wrote:
+>> > diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
+>> > index b192d917a6d0..ce2ec9556093 100644
+>> > --- a/arch/x86/include/asm/cacheflush.h
+>> > +++ b/arch/x86/include/asm/cacheflush.h
+>> > @@ -10,4 +10,7 @@
+>> >
+>> >  void clflush_cache_range(void *addr, unsigned int size);
+>> >
+>> > +#define flush_all_caches() \
+>> > +	do { wbinvd_on_all_cpus(); } while(0)
+>> > +
 >>
->=20
-> There's been work to handle weak functions, but I'm not sure that work
-> handled the issues here. Are these patches still needed, or was there
-> another workaround to handle the problems this addressed?
+>> This is horrific... we've done our utmost best to remove all WBINVD
+>> usage and here you're adding it back in the most horrible form possible
+>> ?!?
+>>
+>> Please don't do this, do *NOT* use WBINVD.
+>
+>Unfortunately there are a few good options here, and the changelog did
+>not make clear that this is continuing legacy [1], not adding new wbinvd
+>usage.
 
-I'm afraid these patches are still needed to address issues in=20
-recordmcount.
+While I was hoping that it was obvious from the intel.c changes that this
+was not a new wbinvd, I can certainly improve the changelog with the below.
 
-I submitted patches to remove use of weak functions in the kexec=20
-subsystem, but those have only enabled building ppc64le defconfig=20
-without errors:
-https://lore.kernel.org/all/20220519091237.676736-1-naveen.n.rao@linux.vnet=
-.ibm.com/
-https://lore.kernel.org/all/cover.1656659357.git.naveen.n.rao@linux.vnet.ib=
-m.com/
+Thanks,
+Davidlohr
 
-The patch adding support for FTRACE_MCOUNT_MAX_OFFSET to powerpc only=20
-helps ignore weak functions during runtime:
-https://lore.kernel.org/all/20220809105425.424045-1-naveen.n.rao@linux.vnet=
-.ibm.com/
-
-We still see errors from recordmcount when trying to build certain=20
-powerpc configs.
-
-We are pursuing support for objtool, which doesn't have the same issues:
-https://lore.kernel.org/all/20220808114908.240813-1-sv@linux.ibm.com/
-
-
-- Naveen
+>
+>The functionality this is enabling is to be able to instantaneously
+>secure erase potentially terabytes of memory at once and the kernel
+>needs to be sure that none of the data from before the secure is still
+>present in the cache. It is also used when unlocking a memory device
+>where speculative reads and firmware accesses could have cached poison
+>from before the device was unlocked.
+>
+>This capability is typically only used once per-boot (for unlock), or
+>once per bare metal provisioning event (secure erase), like when handing
+>off the system to another tenant. That small scope plus the fact that
+>none of this is available to a VM limits the potential damage. So,
+>similar to the mitigation we did in [2] that did not kill off wbinvd
+>completely, this is limited to specific scenarios and should be disabled
+>in any scenario where wbinvd is painful / forbidden.
+>
+>[1]: 4c6926a23b76 ("acpi/nfit, libnvdimm: Add unlock of nvdimm support for Intel DIMMs")
+>[2]: e2efb6359e62 ("ACPICA: Avoid cache flush inside virtual machines")
