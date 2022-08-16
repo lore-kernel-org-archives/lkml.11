@@ -2,108 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C99FBC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D178EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235855AbiHPSOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:14:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S233076AbiHPSPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbiHPSOp (ORCPT
+        with ESMTP id S232099AbiHPSPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:14:45 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0AD7AC02;
-        Tue, 16 Aug 2022 11:14:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=MySzvGXqRSaBBJhmsw3ulDhggVAysoOKEMJnaszkKsU=; b=YPrEDcLvKjIb0xNBG+Jk/CGOJ6
-        kW006eJ0NtmQgEuIfrtpv18W/AT3E6P4tU5tApVpU7iXAmUuqgW37qBLQwW2Knu5FTIuqME+NNPyp
-        YadFUKbPi+Tq8trcm0xs6iZy0i2DBc3igLK50MYONBYKHxtUkGtlV31WJyX2fPAFh1cO7W3lL6vBo
-        rNXj8n/uobl/HADOp+sc3StKPN9OlbxVN+x6YSldP1qDn+vr9g7EePepooP8GXvGf41FpHgOg9w5Q
-        eUbNbWIvPg7EMgqcJ9XQFTfQntotK8qMPpjXTNgqVHkWILVngJ8OwCDNX5OV/DmArUSafNpj+lANo
-        lPG7MazQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oO153-007DVO-MT; Tue, 16 Aug 2022 18:14:21 +0000
-Date:   Tue, 16 Aug 2022 19:14:21 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Hector Martin <marcan@marcan.st>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>, Tejun Heo <tj@kernel.org>,
-        jirislaby@kernel.org, Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Asahi Linux <asahi@lists.linux.dev>, stable@vger.kernel.org
-Subject: Re: [PATCH] locking/atomic: Make test_and_*_bit() ordered on failure
-Message-ID: <Yvveff1aW/zeYzBo@casper.infradead.org>
-References: <20220816070311.89186-1-marcan@marcan.st>
- <CAK8P3a03pfrPzjnx1tB5z0HcKnY=JL=y+F8PMQDpc=Bavs3UCA@mail.gmail.com>
- <20220816140640.GD11202@willie-the-truck>
+        Tue, 16 Aug 2022 14:15:06 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCB583F0F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:14:59 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 0B2B35FD08;
+        Tue, 16 Aug 2022 21:14:56 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660673696;
+        bh=xfHTkxXrCHnztOzjD8Yip06Xh0zVLSOu698v7fo46eA=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=RMpLcbL27d3JmoB54Z+M+LCcHJ2ikq+kjPtQzydBOBF+giLGZnKEpuxXIHhv0IatC
+         HmyW9+IH0WNaZNYbi7A4ZW/kigY2diKEl+hEIBH5fOzm0bx8o1eCwKZE2AKdQjgOrz
+         bmVlslO3bOpD9ymXjZ999IRneQ0EJXY6b0VEKWjjEWtyQec4Srr1o29MucjfO2G8jT
+         gj6lrRgjtwrnrXOucZIDVlMW/G2OdXNLanCGNcngJq5SSmC0wP2Z8dOOshxWEVN6BS
+         oIIy8FjSUAegzs9a5d7Bz5jVm4rDkdGi0e12vxwevCDrMVpcPfxkcI8rKeZmmrSbKc
+         bDzDD6RS82Jyw==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue, 16 Aug 2022 21:14:55 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     "broonie@kernel.org" <broonie@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>
+CC:     kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Subject: [PATCH v1] regmap: introduce value tracing for regmap bulk operations
+Thread-Topic: [PATCH v1] regmap: introduce value tracing for regmap bulk
+ operations
+Thread-Index: AQHYsZwRTOzZdLxKvkqpBNcAgWIdzg==
+Date:   Tue, 16 Aug 2022 18:14:48 +0000
+Message-ID: <20220816181451.5628-1-ddrokosov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816140640.GD11202@willie-the-truck>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/16 16:01:00 #20126973
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 03:06:41PM +0100, Will Deacon wrote:
-> On Tue, Aug 16, 2022 at 10:16:04AM +0200, Arnd Bergmann wrote:
-> > On Tue, Aug 16, 2022 at 9:03 AM Hector Martin <marcan@marcan.st> wrote:
-> > >
-> > > These operations are documented as always ordered in
-> > > include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
-> > > type use cases where one side needs to ensure a flag is left pending
-> > > after some shared data was updated rely on this ordering, even in the
-> > > failure case.
-> > >
-> > > This is the case with the workqueue code, which currently suffers from a
-> > > reproducible ordering violation on Apple M1 platforms (which are
-> > > notoriously out-of-order) that ends up causing the TTY layer to fail to
-> > > deliver data to userspace properly under the right conditions. This
-> > > change fixes that bug.
-> > >
-> > > Change the documentation to restrict the "no order on failure" story to
-> > > the _lock() variant (for which it makes sense), and remove the
-> > > early-exit from the generic implementation, which is what causes the
-> > > missing barrier semantics in that case. Without this, the remaining
-> > > atomic op is fully ordered (including on ARM64 LSE, as of recent
-> > > versions of the architecture spec).
-> > >
-> > > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > > Cc: stable@vger.kernel.org
-> > > Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
-> > > Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
-> > > Signed-off-by: Hector Martin <marcan@marcan.st>
-> > > ---
-> > >  Documentation/atomic_bitops.txt     | 2 +-
-> > >  include/asm-generic/bitops/atomic.h | 6 ------
-> > 
-> > I double-checked all the architecture specific implementations to ensure
-> > that the asm-generic one is the only one that needs the fix.
-> 
-> I couldn't figure out parisc -- do you know what ordering their spinlocks
-> provide? They have a comment talking about a release, but I don't know what
-> the ordering guarantees of an "ldcw" are.
+Currently, only one-register io operations support tracepoints with
+value logging. For the regmap bulk operations developer can view
+hw_start/hw_done tracepoints with starting reg number and registers
+count to be reading or writing. This patch injects tracepoints with
+dumping registers values in the hex format to regmap bulk reading
+and writing.
 
-"The semaphore operation is strongly ordered" (that's from the
-description of the LDCW instruction)
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+---
+ drivers/base/regmap/regmap.c |  7 ++++++
+ drivers/base/regmap/trace.h  | 43 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index c3517ccc3159..673ad37df11f 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -2323,6 +2323,10 @@ int regmap_bulk_write(struct regmap *map, unsigned i=
+nt reg, const void *val,
+=20
+ 		kfree(wval);
+ 	}
++
++	if (!ret)
++		trace_regmap_bulk_write(map, reg, val, val_bytes * val_count);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(regmap_bulk_write);
+@@ -3068,6 +3072,9 @@ int regmap_bulk_read(struct regmap *map, unsigned int=
+ reg, void *val,
+ 		map->unlock(map->lock_arg);
+ 	}
+=20
++	if (!ret)
++		trace_regmap_bulk_read(map, reg, val, val_bytes * val_count);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(regmap_bulk_read);
+diff --git a/drivers/base/regmap/trace.h b/drivers/base/regmap/trace.h
+index 9abee14df9ee..04329ba68ec5 100644
+--- a/drivers/base/regmap/trace.h
++++ b/drivers/base/regmap/trace.h
+@@ -64,6 +64,49 @@ DEFINE_EVENT(regmap_reg, regmap_reg_read_cache,
+=20
+ );
+=20
++DECLARE_EVENT_CLASS(regmap_bulk,
++
++	TP_PROTO(struct regmap *map, unsigned int reg,
++		 const void *val, int val_len),
++
++	TP_ARGS(map, reg, val, val_len),
++
++	TP_STRUCT__entry(
++		__string(name, regmap_name(map))
++		__field(unsigned int, reg)
++		__dynamic_array(char, buf, val_len)
++		__field(int, val_len)
++	),
++
++	TP_fast_assign(
++		__assign_str(name, regmap_name(map));
++		__entry->reg =3D reg;
++		__entry->val_len =3D val_len;
++		if (val)
++			memcpy(__get_dynamic_array(buf), val, val_len);
++	),
++
++	TP_printk("%s reg=3D%x val=3D%s", __get_str(name),
++		  (unsigned int)__entry->reg,
++		  __print_hex(__get_dynamic_array(buf), __entry->val_len))
++);
++
++DEFINE_EVENT(regmap_bulk, regmap_bulk_write,
++
++	TP_PROTO(struct regmap *map, unsigned int reg,
++		 const void *val, int val_len),
++
++	TP_ARGS(map, reg, val, val_len)
++);
++
++DEFINE_EVENT(regmap_bulk, regmap_bulk_read,
++
++	TP_PROTO(struct regmap *map, unsigned int reg,
++		 const void *val, int val_len),
++
++	TP_ARGS(map, reg, val, val_len)
++);
++
+ DECLARE_EVENT_CLASS(regmap_block,
+=20
+ 	TP_PROTO(struct regmap *map, unsigned int reg, int count),
+--=20
+2.36.0
