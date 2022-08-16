@@ -2,231 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CB1C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F06C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234717AbiHPLn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33014 "EHLO
+        id S235072AbiHPLpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234529AbiHPLnY (ORCPT
+        with ESMTP id S235005AbiHPLom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:43:24 -0400
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59C575CE2;
-        Tue, 16 Aug 2022 04:14:16 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id a7so18301656ejp.2;
-        Tue, 16 Aug 2022 04:14:16 -0700 (PDT)
+        Tue, 16 Aug 2022 07:44:42 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C30895D3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:16:16 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id x10so10185514ljq.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:16:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=vxhUXo1uEQJMnS2dZ0psgwOJl8jAChRYRa0xNGSk+nE=;
+        b=jADfo7N+5CWzn+QQpHnZrdsZNzFLWzAhD8S8cqugx6QriISxUPkfuk8nlE1fI0P1ep
+         6v5haewQD2r6YZFnmTzjOKvD+R4ijmGNb31x00BKIqQAKeLRn+Zg6OC4Onf9IaBM0UNw
+         vieBweV8bCQ5HaMa4IA+qiRjJTYqNk7jtdFg6LI05uewzd18TThzQFEJ3CcYQ8SKUlcP
+         R7y5t2zI4+A6M3pBsEz4kq/I5LAZC9NEF5yzqUJGlTGdIP3Z8fABJZtAS4orYLIZ8283
+         zTK0/S4/skJ5nZFV6fmbo8y98fCfnV552cKnVdydclCc7xAAl7fE1dB+xB46WA6qCkCA
+         la8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=Obe6W2yJAm2883KwIBzstZcaq5UArNoMv3/JbWe7NcE=;
-        b=ol/jKLpEFbBv3BqS83UeY2qw/lnNNyBpTrK+LR+N6+Ubl+19zBCck/zs/aykIt/dlq
-         Y802tRdddGBPhtYuup4sU7C/T6sSB/ENt1tJcmjz1Fkpem0vRyAkc31rDK0qyWaHJfwF
-         cXZS8kkn2NwHL1VZJrTC5Ie5LeB6Tvjvwu/0V9gZrriidpA4iWKcoW0cPlcIGzDiMRrD
-         8zj5JYvX2iA4CnCE2dkCx3DH5RJntpS9M9pXmZMRt4Kpu2kOK3Y4tKNIEJGYfjeufjPp
-         A/tE022C38nWR19ERR6XDGHwdvaOIGnVAsoiD85QL2n2pXTF1rzLftvLX9E2RJXR8tg1
-         OYEg==
-X-Gm-Message-State: ACgBeo037gc+foJF9xVWFU7HGKaGvc10NdPny4PCST/PfAKY/9fsYRYQ
-        TqIeusOK53RXlxTzBXiioUE=
-X-Google-Smtp-Source: AA6agR63aapTjtTsBOQSR6SdrrZzwMje5fjCLEyJsk2wtM4owBuwvgHz/uPtMfJia0MrAvT9GllXWw==
-X-Received: by 2002:a17:907:da4:b0:733:f44:c96d with SMTP id go36-20020a1709070da400b007330f44c96dmr13095654ejc.546.1660648455093;
-        Tue, 16 Aug 2022 04:14:15 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id f25-20020a50fc99000000b004424429afd4sm8317573edq.16.2022.08.16.04.14.14
+        bh=vxhUXo1uEQJMnS2dZ0psgwOJl8jAChRYRa0xNGSk+nE=;
+        b=VF4JizUAovw1XYeK5VvMu9720ZkKpoiBXApLfMKMQ7iQ79IDRu5Lt2YXGInpOjCnon
+         n2HjEBIY5W8fWyGJo2DC5geZmg2wrHmO9b3bfQOfLqMU8AWIh5Tf6DsVwtHl/VHS15Mt
+         8yTV7CV7vu3qfAFnOKIBfOxeeG6/KLaZova3fTWpa8IR/IqiI2+uFYDI0BhZluNatndN
+         nXtePtzuL8+GqShGsqUDratuyzGZub9etHNVwAVp/9nEg9sSlM6JbGLxET1O/o6QMv+p
+         zjUc7uoS7xVKp6kjc3ODoljgnBlE50hfss2EPpOtHTAQK/u/bzfhXy23b7wR281bvuGJ
+         AH7w==
+X-Gm-Message-State: ACgBeo0MImLVKW6cklcH/IOhX7b8S6hwquQsbG6elBo3T8R8MSkkwd7q
+        xW8Bl9dQ63jCYj+f6npzCmbzKA==
+X-Google-Smtp-Source: AA6agR5uHRjZuOPTilLXcUIIBtaqcmsgT5CliKeRdvVBEEXgR6NVMyVbDgl4VvLQ1QopbxeRTY9XAg==
+X-Received: by 2002:a05:651c:2003:b0:25e:5c53:8915 with SMTP id s3-20020a05651c200300b0025e5c538915mr6768030ljo.88.1660648575280;
+        Tue, 16 Aug 2022 04:16:15 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id z8-20020ac24188000000b0048dacaa8c32sm1352391lfh.254.2022.08.16.04.16.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 04:14:14 -0700 (PDT)
-Message-ID: <817356d8-2a5f-56a4-ca4e-03f5a185c8af@kernel.org>
-Date:   Tue, 16 Aug 2022 13:14:13 +0200
+        Tue, 16 Aug 2022 04:16:14 -0700 (PDT)
+Message-ID: <8cf4ea9e-89a4-1ab0-334b-9ecc5b1e6f25@linaro.org>
+Date:   Tue, 16 Aug 2022 14:16:13 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH 5.19 0767/1157] kasan: fix zeroing vmalloc memory with
- HW_TAGS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] drivers: iio: accel adxl312 and adxl314 support
 Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     George Mois <george.mois@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-References: <20220815180439.416659447@linuxfoundation.org>
- <20220815180510.173732661@linuxfoundation.org>
- <9b1474ea-8568-cdb5-72dc-51d577497f8a@kernel.org>
-In-Reply-To: <9b1474ea-8568-cdb5-72dc-51d577497f8a@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Cc:     lucas.p.stankus@gmail.com
+References: <20220816102828.182345-1-george.mois@analog.com>
+ <20220816102828.182345-3-george.mois@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220816102828.182345-3-george.mois@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16. 08. 22, 13:04, Jiri Slaby wrote:
-> On 15. 08. 22, 20:02, Greg Kroah-Hartman wrote:
->> From: Andrey Konovalov <andreyknvl@google.com>
->>
->> [ Upstream commit 6c2f761dad7851d8088b91063ccaea3c970efe78 ]
->>
->> HW_TAGS KASAN skips zeroing page_alloc allocations backing vmalloc
->> mappings via __GFP_SKIP_ZERO.  Instead, these pages are zeroed via
->> kasan_unpoison_vmalloc() by passing the KASAN_VMALLOC_INIT flag.
->>
->> The problem is that __kasan_unpoison_vmalloc() does not zero pages when
->> either kasan_vmalloc_enabled() or is_vmalloc_or_module_addr() fail.
->>
->> Thus:
->>
->> 1. Change __vmalloc_node_range() to only set KASAN_VMALLOC_INIT when
->>     __GFP_SKIP_ZERO is set.
->>
->> 2. Change __kasan_unpoison_vmalloc() to always zero pages when the
->>     KASAN_VMALLOC_INIT flag is set.
->>
->> 3. Add WARN_ON() asserts to check that KASAN_VMALLOC_INIT cannot be set
->>     in other early return paths of __kasan_unpoison_vmalloc().
->>
->> Also clean up the comment in __kasan_unpoison_vmalloc.
->>
->> Link: 
->> https://lkml.kernel.org/r/4bc503537efdc539ffc3f461c1b70162eea31cf6.1654798516.git.andreyknvl@google.com
->> Fixes: 23689e91fb22 ("kasan, vmalloc: add vmalloc tagging for HW_TAGS")
->> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
->> Cc: Marco Elver <elver@google.com>
->> Cc: Alexander Potapenko <glider@google.com>
->> Cc: Dmitry Vyukov <dvyukov@google.com>
->> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
->> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>   mm/kasan/hw_tags.c | 32 +++++++++++++++++++++++---------
->>   mm/vmalloc.c       | 10 +++++-----
->>   2 files changed, 28 insertions(+), 14 deletions(-)
->>
->> diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
->> index 9e1b6544bfa8..9ad8eff71b28 100644
->> --- a/mm/kasan/hw_tags.c
->> +++ b/mm/kasan/hw_tags.c
->> @@ -257,27 +257,37 @@ static void unpoison_vmalloc_pages(const void 
->> *addr, u8 tag)
->>       }
->>   }
->> +static void init_vmalloc_pages(const void *start, unsigned long size)
->> +{
->> +    const void *addr;
->> +
->> +    for (addr = start; addr < start + size; addr += PAGE_SIZE) {
->> +        struct page *page = virt_to_page(addr);
->> +
->> +        clear_highpage_kasan_tagged(page);
-> 
-> This breaks build on aarch64:
->> mm/kasan/hw_tags.c: In function 'init_vmalloc_pages':
->> mm/kasan/hw_tags.c:267:17: error: implicit declaration of function 
->> 'clear_highpage_kasan_tagged' [-Werror=implicit-function-declaration]
-
-Which translates into: this is missing:
-commit d9da8f6cf55eeca642c021912af1890002464c64
-Author: Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Thu Jun 9 20:18:46 2022 +0200
-
-     mm: introduce clear_highpage_kasan_tagged
-
->> +    }
->> +}
->> +
->>   void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
->>                   kasan_vmalloc_flags_t flags)
->>   {
->>       u8 tag;
->>       unsigned long redzone_start, redzone_size;
->> -    if (!kasan_vmalloc_enabled())
->> -        return (void *)start;
->> -
->> -    if (!is_vmalloc_or_module_addr(start))
->> +    if (!kasan_vmalloc_enabled() || !is_vmalloc_or_module_addr(start)) {
->> +        if (flags & KASAN_VMALLOC_INIT)
->> +            init_vmalloc_pages(start, size);
->>           return (void *)start;
->> +    }
->>       /*
->> -     * Skip unpoisoning and assigning a pointer tag for non-VM_ALLOC
->> -     * mappings as:
->> +     * Don't tag non-VM_ALLOC mappings, as:
->>        *
->>        * 1. Unlike the software KASAN modes, hardware tag-based KASAN 
->> only
->>        *    supports tagging physical memory. Therefore, it can only 
->> tag a
->>        *    single mapping of normal physical pages.
->>        * 2. Hardware tag-based KASAN can only tag memory mapped with 
->> special
->> -     *    mapping protection bits, see arch_vmalloc_pgprot_modify().
->> +     *    mapping protection bits, see arch_vmap_pgprot_tagged().
->>        *    As non-VM_ALLOC mappings can be mapped outside of vmalloc 
->> code,
->>        *    providing these bits would require tracking all non-VM_ALLOC
->>        *    mappers.
->> @@ -289,15 +299,19 @@ void *__kasan_unpoison_vmalloc(const void 
->> *start, unsigned long size,
->>        *
->>        * For non-VM_ALLOC allocations, page_alloc memory is tagged as 
->> usual.
->>        */
->> -    if (!(flags & KASAN_VMALLOC_VM_ALLOC))
->> +    if (!(flags & KASAN_VMALLOC_VM_ALLOC)) {
->> +        WARN_ON(flags & KASAN_VMALLOC_INIT);
->>           return (void *)start;
->> +    }
->>       /*
->>        * Don't tag executable memory.
->>        * The kernel doesn't tolerate having the PC register tagged.
->>        */
->> -    if (!(flags & KASAN_VMALLOC_PROT_NORMAL))
->> +    if (!(flags & KASAN_VMALLOC_PROT_NORMAL)) {
->> +        WARN_ON(flags & KASAN_VMALLOC_INIT);
->>           return (void *)start;
->> +    }
->>       tag = kasan_random_tag();
->>       start = set_tag(start, tag);
->> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
->> index effd1ff6a4b4..a1ab9b472571 100644
->> --- a/mm/vmalloc.c
->> +++ b/mm/vmalloc.c
->> @@ -3168,15 +3168,15 @@ void *__vmalloc_node_range(unsigned long size, 
->> unsigned long align,
->>       /*
->>        * Mark the pages as accessible, now that they are mapped.
->> -     * The init condition should match the one in post_alloc_hook()
->> -     * (except for the should_skip_init() check) to make sure that 
->> memory
->> -     * is initialized under the same conditions regardless of the 
->> enabled
->> -     * KASAN mode.
->> +     * The condition for setting KASAN_VMALLOC_INIT should complement 
->> the
->> +     * one in post_alloc_hook() with regards to the __GFP_SKIP_ZERO 
->> check
->> +     * to make sure that memory is initialized under the same 
->> conditions.
->>        * Tag-based KASAN modes only assign tags to normal non-executable
->>        * allocations, see __kasan_unpoison_vmalloc().
->>        */
->>       kasan_flags |= KASAN_VMALLOC_VM_ALLOC;
->> -    if (!want_init_on_free() && want_init_on_alloc(gfp_mask))
->> +    if (!want_init_on_free() && want_init_on_alloc(gfp_mask) &&
->> +        (gfp_mask & __GFP_SKIP_ZERO))
->>           kasan_flags |= KASAN_VMALLOC_INIT;
->>       /* KASAN_VMALLOC_PROT_NORMAL already set if required. */
->>       area->addr = kasan_unpoison_vmalloc(area->addr, real_size, 
->> kasan_flags);
+On 16/08/2022 13:28, George Mois wrote:
+> ADXL312 and ADXL314 are small, thin, low power, 3-axis accelerometers
+> with high resolution (13-bit) measurement up to +/-12 g and +/- 200 g
+> respectively.
 > 
 
--- 
-js
-suse labs
+Thank you for your patch. There is something to discuss/improve.
 
+>  
+>  static const struct spi_device_id adxl313_spi_id[] = {
+> -	{ "adxl313" },
+> +	{ "adxl312", ADXL312 },
+> +	{ "adxl313", ADXL313 },
+> +	{ "adxl314", ADXL314 },
+>  	{ }
+>  };
+>  
+>  MODULE_DEVICE_TABLE(spi, adxl313_spi_id);
+>  
+>  static const struct of_device_id adxl313_of_match[] = {
+> +	{ .compatible = "adi,adxl312" },
+>  	{ .compatible = "adi,adxl313" },
+> +	{ .compatible = "adi,adxl314" },
+
+You miss here driver data. I don't remember which driver matching takes
+precedence (especially in various cases like DT platforms with device
+instantiated by MFD), but for consistency I think both device id tables
+should have same driver data.
+
+
+Best regards,
+Krzysztof
