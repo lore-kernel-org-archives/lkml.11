@@ -2,64 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A67C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE61CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234010AbiHPLUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S232176AbiHPLUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233895AbiHPLTr (ORCPT
+        with ESMTP id S234715AbiHPLTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:19:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDD37E025;
-        Tue, 16 Aug 2022 02:50:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32EE6B8165D;
-        Tue, 16 Aug 2022 09:50:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD3FC433C1;
-        Tue, 16 Aug 2022 09:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660643404;
-        bh=j7OD01BeQky2yyGnFRKJwW2CZrOcLTaiWu0OC6mAhKk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=saKTtlrvrYOUXC5N+ab/ECi+H2W7J6qjYMYJVooEh3opiy1oPj85/x1CaCOAJ7E3R
-         lGiuB+rwqesV9DGEja1zPurkclOMxYy99nXkIJgOSsx7TWws5Wj2C/AJdXuH++2a1Z
-         Z9ietn+WxBELZXF4vMijO7pFrDjVI0F7Y5guY3wU=
-Date:   Tue, 16 Aug 2022 11:50:01 +0200
-From:   gregkh <gregkh@linuxfoundation.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     johan <johan@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH] USB: serial: option: add support for Cinterion
- MV32-WA/WB RmNet mode
-Message-ID: <YvtoSQUVuUkMCXtl@kroah.com>
-References: <20220810033050.3117-1-slark_xiao@163.com>
- <54f2b923.341c.182a606bab3.Coremail.slark_xiao@163.com>
+        Tue, 16 Aug 2022 07:19:55 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4342E2C55
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:44:40 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id v2so14179866lfi.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:44:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Enloy5lgKrMKVLbqE4UqCEXL8D9Wgy3KUpK/qyBoIrI=;
+        b=bmhY0kYxRm0Pu1Cs0YlMSETk0hz7OlpKbOUt8eVnlNIeRbuboqVaSXl/78n+u1O29t
+         RWkFw0mRgGs6O9xp37PVWEjfbpC9cvfDuPeJDbI1CWUKikDaalsk6P+uWh8uNsnn+f/P
+         QIFsP8CfQuNuSIih2QvNTFRYGLDmv2wNF3ku4sXH+o83ZAkPRnbVk/wplO4egti048ZD
+         ErxTSkVmZxvFPLxaqXZd1gC4KD0DYq32h2XL+NCU4wmEzS981G+5fm+K2KJHHNjFk5CC
+         UzE9+Q6LCgzSP1ffDEM/NbheuzW8sp649Ns0J1nneXwCLJwPo+miQhcLwuRVAiQukuJU
+         I7aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Enloy5lgKrMKVLbqE4UqCEXL8D9Wgy3KUpK/qyBoIrI=;
+        b=JNj/9a+Q+bucNnPuSUjhvh2fyPePrYDmCQAV3r8SMLcsZ0/QYIsDHkbQswP5i992cj
+         y9nnfDUetn5evzzRnThtyA8v6OCHxp7uEYsI1kJk6hM0eronTmJwB23pro+VrQMaIrbc
+         lLkwDQiFg0cfgUB9x49QbI8XPXi1uzY5aWrl6fFF74IVoFDFcwWHGO6dlwaEEcEsuD/r
+         Bt4C2AAegKpvTIRK8fqwDY5YHhjXC9JxZHgZokruMk7EC5kGbv3dgzCpzcRNbzmd5O40
+         C6Le6V5Q5RXaPZZ/N36pIQ9HmDiwO/ry/V1T4qSXh3Kz47YqBg+cvDvcK08w7e/O0RE7
+         E3yQ==
+X-Gm-Message-State: ACgBeo0YXYJaJN5nPsmYjz6wB67WvsXvBzAFJ9alQX96xxhmdz0jYoli
+        In25B33EXBm1ao8E/HxG54mW9Q==
+X-Google-Smtp-Source: AA6agR54PZx7XS1rYcJtMRhTAqOXN6+VFqLfzj/NiD8GAFWFKJ+lry6TmRGXna2tZtdoMf6GdwYMxQ==
+X-Received: by 2002:ac2:44af:0:b0:48a:f361:fe1d with SMTP id c15-20020ac244af000000b0048af361fe1dmr7226313lfm.190.1660643079100;
+        Tue, 16 Aug 2022 02:44:39 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id z12-20020a056512370c00b0048b08e25979sm1330665lfr.199.2022.08.16.02.44.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 02:44:38 -0700 (PDT)
+Message-ID: <b630a007-2548-2196-a963-786c6a98b748@linaro.org>
+Date:   Tue, 16 Aug 2022 12:44:37 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <54f2b923.341c.182a606bab3.Coremail.slark_xiao@163.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
+Content-Language: en-US
+To:     Peng Fan <peng.fan@nxp.com>,
+        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        Aisheng Dong <aisheng.dong@nxp.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Clark Wang <xiaoning.wang@nxp.com>
+References: <20220812043424.4078034-1-peng.fan@oss.nxp.com>
+ <f1add9c7-fc2e-a600-49a6-a6579f17db1b@linaro.org>
+ <DU0PR04MB9417D62230578AC8CA4234F288689@DU0PR04MB9417.eurprd04.prod.outlook.com>
+ <039566a7-5c65-b2d8-7b45-c616863cb292@linaro.org>
+ <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 05:40:35PM +0800, Slark Xiao wrote:
-> Any response？
+On 16/08/2022 11:43, Peng Fan wrote:
+>> No. For such patch ABI break is also not allowed in that case. Just make the
+>> driver backwards compatible and both problems - non bisectability and ABI
+>> break - go away.
+> 
+> One more point that I am not very clear about  
+> "non bisectability and ABI break "
+> 
+> ABI, I suppose you mean dt-binding, right?
+> The I2C bindings and dts update will go through different tree, I think. So
+> dtbs_check may fail considering the PR merge order.
 
-To what?
+ABI break means breaking Application Binary Interface, so out of tree
+DTS conforming to old bindings stop working with new kernel.
 
-It was the middle of the merge window, we can't do anything with new
-patches until after -rc1 is out, and then we have a few thousand to dig
-through afterward.
+ABI is described by bindings and implemented by driver. You broke it in
+the driver.
 
-Relax, there is no rush here.
-
-thanks,
-
-greg k-h
+Best regards,
+Krzysztof
