@@ -2,137 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491C3C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C600C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbiHPJgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S233742AbiHPJhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiHPJgW (ORCPT
+        with ESMTP id S233716AbiHPJgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:36:22 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D1C79639
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:58:51 -0700 (PDT)
-X-UUID: 8be3416577b24019a4e64a0c05ee6e4a-20220816
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=0rfrDY0ew2VMjQjsOZ1u2MHFXAegfu4ILXAlANJbEH8=;
-        b=bM0ngYYPpoFQ4L/WsNEiHjJrRmhnCyRD00Ih2UugKhNJ8PibvmnDfEH9FrKu+C48n7yi4zdKvyN6p0ltnRH9uPfvuwwOxzNBhR8Uouq3fRs3qpNr6EFZ0MXuuhcOssKJcMQYdA21g0a8zSczQHPgUY45L/q582nbMEYrgSbcrZU=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:9c873005-3cb4-4752-80c0-566e40e43566,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_H
-        am,ACTION:release,TS:0
-X-CID-META: VersionHash:3d8acc9,CLOUDID:538ccc9c-da39-4e3b-a854-56c7d2111b46,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 8be3416577b24019a4e64a0c05ee6e4a-20220816
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 825081248; Tue, 16 Aug 2022 15:58:21 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 16 Aug 2022 15:58:19 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Tue, 16 Aug 2022 15:58:19 +0800
-Message-ID: <e9943d0fb9aca562afe1ca11372392883d2b6d5a.camel@mediatek.com>
-Subject: Re: [RFC PATCH] phy: phy-mtk-tphy: Make USB PHY work on MT6735
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Yassine Oudjana <yassine.oudjana@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-CC:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 16 Aug 2022 15:58:19 +0800
-In-Reply-To: <20220815215859.253962-1-y.oudjana@protonmail.com>
-References: <20220815215859.253962-1-y.oudjana@protonmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 16 Aug 2022 05:36:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6E2BB68B;
+        Tue, 16 Aug 2022 00:59:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BD2FB81647;
+        Tue, 16 Aug 2022 07:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43541C433D6;
+        Tue, 16 Aug 2022 07:59:05 +0000 (UTC)
+Date:   Tue, 16 Aug 2022 08:59:05 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Will Deacon <will@kernel.org>, linux-pci@vger.kernel.org,
+        bhelgaas@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lpieralisi@kernel.org,
+        kw@linux.com, mark.rutland@arm.com, sudeep.holla@arm.com,
+        boqun.feng@gmail.com, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maz@kernel.org, jonmasters@google.com
+Subject: Re: [PATCH 0/4] PCI SMC conduit, now with DT support
+Message-ID: <YvtOSedi3SqYngbV@arm.com>
+References: <20220725163905.2024437-1-jeremy.linton@arm.com>
+ <20220726114000.GA21450@willie-the-truck>
+ <7e4a0b4a-ac2f-5454-9778-e83f651b84a3@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e4a0b4a-ac2f-5454-9778-e83f651b84a3@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-15 at 22:58 +0100, Yassine Oudjana wrote:
-> The USB PHY on MT6735 seems to be a TPHY V1, but the FMREG base
-> here is 0xf00 rather than 0x100. Since it is definitely not a V2
-> or later as it has shared registers, would this mean that it is
-> an even earlier revision, or one between V1 and V2? Or is the
-> address used currently in this driver wrong?
-> 
-> Furthermore, there is one additional step needed in the power on
-> sequence to make USB work on MT6735, which is to set the 10th bit
-> of U3P_U2PHYDTM1. This was found through trial and error by adding
-> the power on sequence from the downstream driver then stripping
-> parts of it until a critical part is found. This specific part[1]
-> was found under a comment saying "force enter device mode", but
-> there are other bits that are cleared/set under the same comment,
-> some of which are set in the same write as this bit, so it is
-> unclear whether this bit is the one (or the only one) responsible
-> for "forcing enter device mode". There is no documentation on this
-> register (or any port registers for that matter) so this bit's
-> name and function are unknown. Does anyone have more information
-> on this? And if no information were to be found, would leaving
-> this as a magic value, or with the placeholder name currently used
-> (P2C_FORCE_ENTER_DEVICE_MODE) be acceptable?
+Hi Jeremy,
 
-Can't use force mode, there is side-effect with dual-role controller.
+On Thu, Jul 28, 2022 at 12:20:55PM -0500, Jeremy Linton wrote:
+> On 7/26/22 06:40, Will Deacon wrote:
+> > On Mon, Jul 25, 2022 at 11:39:01AM -0500, Jeremy Linton wrote:
+> > > This is a rebase of the later revisions of [1], but refactored
+> > > slightly to add a DT method as well. It has all the same advantages of
+> > > the ACPI method (putting HW quirks in the firmware rather than the
+> > > kernel) but now applied to a 'pci-host-smc-generic' compatible
+> > > property which extends the pci-host-generic logic to handle cases
+> > > where the PCI Config region isn't ECAM compliant. With this in place,
+> > > and firmware managed clock/phy/etc its possible to run the generic
+> > > driver on hardware that isn't what one would consider standards
+> > > compliant PCI root ports.
+> > 
+> > I still think that hiding the code in firmware because the hardware is
+> > broken is absolutely the wrong way to tackle this problem and I thought
+> > the general idea from last time was that we were going to teach Linux
+> > about the broken hardware instead [1]. I'd rather have the junk where we
+> > can see it, reason about it and modify it.
+[...]
+> Is it the official position of the Linux kernel maintainers that they will
+> refuse to support future Arm standards in order to gate keep specific
+> hardware platforms?
 
-> 
-> [1] 
-> https://urldefense.com/v3/__https://gitlab.com/Tooniis/linux-samsung-grandpplte/-/blob/master/drivers/misc/mediatek/usb20/mt6735/usb20_phy.c*L404__;Iw!!CTRNKA9wMg0ARbw!26SfFWZy9e7D178mgOIWZ6iv4hM4OCTq4cndOspiaTxIQgvATHYlMsPCd4YiWq3S3Fal$
->  
-> ---
->  drivers/phy/mediatek/phy-mtk-tphy.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c
-> b/drivers/phy/mediatek/phy-mtk-tphy.c
-> index 8ee7682b8e93..f54b8a9872bf 100644
-> --- a/drivers/phy/mediatek/phy-mtk-tphy.c
-> +++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-> @@ -23,7 +23,7 @@
->  /* version V1 sub-banks offset base address */
->  /* banks shared by multiple phys */
->  #define SSUSB_SIFSLV_V1_SPLLC		0x000	/* shared by
-> u3 phys */
-> -#define SSUSB_SIFSLV_V1_U2FREQ		0x100	/* shared by
-> u2 phys */
-> +#define SSUSB_SIFSLV_V1_U2FREQ		0xf00	/* shared by
-> u2 phys */
->  #define SSUSB_SIFSLV_V1_CHIP		0x300	/* shared by u3 phys
-> */
->  /* u2 phy bank */
->  #define SSUSB_SIFSLV_V1_U2PHY_COM	0x000
-> @@ -119,6 +119,7 @@
->  
->  #define U3P_U2PHYDTM1		0x06C
->  #define P2C_RG_UART_EN			BIT(16)
-> +#define P2C_FORCE_ENTER_DEVICE_MODE	BIT(10)
->  #define P2C_FORCE_IDDIG		BIT(9)
->  #define P2C_RG_VBUSVALID		BIT(5)
->  #define P2C_RG_SESSEND			BIT(4)
-> @@ -579,6 +580,8 @@ static void u2_phy_instance_power_on(struct
-> mtk_tphy *tphy,
->  		mtk_phy_set_bits(com + U3P_U2PHYDTM0, P2C_RG_SUSPENDM |
-> P2C_FORCE_SUSPENDM);
->  	}
->  	dev_dbg(tphy->dev, "%s(%d)\n", __func__, index);
-> +
-> +	mtk_phy_set_bits(com + U3P_U2PHYDTM1,
-> P2C_FORCE_ENTER_DEVICE_MODE);
->  }
->  
->  static void u2_phy_instance_power_off(struct mtk_tphy *tphy,
+(just back from holiday; well, briefly, going away for a few days soon)
 
+We shouldn't generalise what maintainers wwould accept or not. We decide
+on a case by case basis. With speculative execution mitigations, for
+example, we try to do as much as we can in the kernel but sometimes
+that's just not possible, hence an EL3 call and we'd rather have this
+standardised (e.g. custom branch loops to flush the branch predictor if
+possible from the normal world, secure call if not).
+
+You mention PSCI but that's not working around broken hardware, it was a
+concious decision from the start to standardise the booting protocol and
+CPU power management.
+
+Now this PCI SMC protocol was simply created because hardware did not
+comply with another PCI standard that has been around for a long time.
+As with the speculative execution mitigations, we'd rather work around
+broken hardware in the kernel first and, if it's not possible, we can
+look at a firmware interface (and ideally standardised). Do you have an
+example where we cannot work around the PCI hardware bugs in the kernel
+and EL3 firmware involvement is necessary?
+
+So, in summary, Arm Ltd proposing a new standard because hardware
+companies can't be bothered with an existing one is not an argument for
+accepting its support in the Linux kernel. This PCI SMC conduit is not
+presented as a hardware bug workaround interface but rather as an
+alternative to ECAM (and, yes, the kernel maintainers can choose not to
+support specific "standards" in Linux).
+
+-- 
+Catalin
