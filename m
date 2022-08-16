@@ -2,102 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4D5C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2255C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiHPLPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
+        id S233678AbiHPLPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234382AbiHPLOj (ORCPT
+        with ESMTP id S235406AbiHPLP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:14:39 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778CABD6A;
-        Tue, 16 Aug 2022 02:53:54 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G8NjSa003123;
-        Tue, 16 Aug 2022 09:53:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=dR/uvLs6SiwPEgsqsis5avHAdp7Zj1BQdn9EYbxX6NM=;
- b=ay6d4TjFdW1k3vlXkHbZZlKeiRL7Y1DVQ+uNbgJU07e/OmQwPpB8vuLOc+KIqR+GDNIt
- sS6ONLnAbQ+TF3Y5eImFs/DfCABP8LmOuNHRuXHxql//dj4yjJtP5q72mSHvllBLFJv0
- ajUeMEnAT8/eMBhq+TtxFcD+SlQfCoc+0oEQ6VFF/qrGLxcx7354ta+QPr3sDljn41BJ
- 4h+1rNk7dWob939LaGfWg0CCDOP7CTAiX6Gw85aoz3navYDpCUndU9W7OaoMaGYZN8YF
- xrasAWNvUZSd31/3B7PI0M6IkPzbChHYe3bLQt9xOc4O1mywS1dm3XbCwjiTcYnsXLiP gw== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06wr0c60-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 09:53:06 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27G9r57Y001431
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 09:53:05 GMT
-Received: from [10.216.49.243] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 16 Aug
- 2022 02:52:58 -0700
-Message-ID: <b9c56267-05f8-04ac-405c-bd3dca9f0add@quicinc.com>
-Date:   Tue, 16 Aug 2022 15:22:55 +0530
+        Tue, 16 Aug 2022 07:15:27 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E03974E11;
+        Tue, 16 Aug 2022 03:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660644992; x=1692180992;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6zUPqg/E6WJ3Fq2O6W3oFh9h+ZOs8adLY8vipG0PDk0=;
+  b=jyva4G3NI+lIsqimwh2EBMfSVs57p9C/NLr0alaoz39fAxsZuG59BEEI
+   76b9qlJcfkysP89FXVWyb3s4HJoSXL72pGff/bmh581gz4mJQa5t0Aik1
+   7pQdtExqNen1eyQ5Zvzsk4oSfoE6I/gqyIWeVtUIrGbj+lbDKOpxJs6wf
+   hbL3YLyu94kfsxdynkUV+kx2AqN9XkpF6onCg1bYIa4VKk0tzBvdk77o9
+   1OEbV3NJIlUINe6c6Gk5E/PEpKxVM/bNH0J2WybdYXNMltI2YJ5XRb+O9
+   FwNsD26Wv2g7EHubpQSPpFIQ42FAJJXzkVKaI3/CS+yaVZz8H+f/LDBrF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279141273"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="279141273"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 03:16:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="749260771"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Aug 2022 03:16:24 -0700
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Utkarsh Patel <utkarsh.h.patel@intel.com>, rajmohan.mani@intel.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH 3/6] ACPI: resource: Add helper function acpi_dev_get_memory_resources()
+Date:   Tue, 16 Aug 2022 13:16:26 +0300
+Message-Id: <20220816101629.69054-4-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
+References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 1/8] dt-bindings: remoteproc: qcom: adsp: Make ADSP pil
- loader as generic
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <lgirdwood@gmail.com>,
-        <devicetree@vger.kernel.org>, <broonie@kernel.org>,
-        <bjorn.andersson@linaro.org>, <agross@kernel.org>,
-        <quic_plai@quicinc.com>, <linux-remoteproc@vger.kernel.org>,
-        <robh+dt@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <quic_rohkumar@quicinc.com>, <bgoswami@quicinc.com>,
-        <swboyd@chromium.org>, <srinivas.kandagatla@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>, <judyhsiao@chromium.org>
-References: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
- <1660117558-21829-2-git-send-email-quic_srivasam@quicinc.com>
- <20220814204505.GA677523-robh@kernel.org>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <20220814204505.GA677523-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 3VhQ6nOFnHdI4jGJYBLjMSx8Hq2May52
-X-Proofpoint-GUID: 3VhQ6nOFnHdI4jGJYBLjMSx8Hq2May52
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-16_07,2022-08-16_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 clxscore=1015 mlxlogscore=880 impostorscore=0
- adultscore=0 mlxscore=0 spamscore=0 priorityscore=1501 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208160038
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Wrapper function that finds all memory type resources by
+using acpi_dev_get_resources(). It removes the need for the
+drivers to check the resource data type separately.
 
-On 8/15/2022 2:15 AM, Rob Herring wrote:
-Thanks for Your time Rob!!!
-> On Wed, 10 Aug 2022 13:15:51 +0530, Srinivasa Rao Mandadapu wrote:
->> Rename sdm845 adsp pil bindings to generic name, for using same binings
->> file for subsequent SoCs.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> ---
->> Changes since V2:
->> 	-- Generate patch with -M flag.
->>
->>   .../{qcom,sdm845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml}           | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>   rename Documentation/devicetree/bindings/remoteproc/{qcom,sdm845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml} (97%)
->>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-This patch dropped in consequent series. Please ignore this patch.
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ drivers/acpi/resource.c | 17 +++++++++++++++++
+ include/linux/acpi.h    |  1 +
+ 2 files changed, 18 insertions(+)
+
+diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
+index e644e90d18847..8032d50ca9441 100644
+--- a/drivers/acpi/resource.c
++++ b/drivers/acpi/resource.c
+@@ -721,6 +721,23 @@ int acpi_dev_get_dma_resources(struct acpi_device *adev, struct list_head *list)
+ }
+ EXPORT_SYMBOL_GPL(acpi_dev_get_dma_resources);
+ 
++/**
++ * acpi_dev_get_memory_resources - Get current memory resources of a device.
++ * @adev: ACPI device node to get the resources for.
++ * @list: Head of the resultant list of resources (must be empty).
++ *
++ * This is a helper function that locates all memory type resources of @adev
++ * with acpi_dev_get_resources().
++ *
++ * The number of resources in the output list is returned on success, an error
++ * code reflecting the error condition is returned otherwise.
++ */
++int acpi_dev_get_memory_resources(struct acpi_device *adev, struct list_head *list)
++{
++	return acpi_dev_get_resources(adev, list, is_memory, NULL);
++}
++EXPORT_SYMBOL_GPL(acpi_dev_get_memory_resources);
++
+ /**
+  * acpi_dev_filter_resource_type - Filter ACPI resource according to resource
+  *				   types
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 6f64b2f3dc547..ed4aa395cc49b 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -506,6 +506,7 @@ int acpi_dev_get_resources(struct acpi_device *adev, struct list_head *list,
+ 			   void *preproc_data);
+ int acpi_dev_get_dma_resources(struct acpi_device *adev,
+ 			       struct list_head *list);
++int acpi_dev_get_memory_resources(struct acpi_device *adev, struct list_head *list);
+ int acpi_dev_filter_resource_type(struct acpi_resource *ares,
+ 				  unsigned long types);
+ 
+-- 
+2.35.1
+
