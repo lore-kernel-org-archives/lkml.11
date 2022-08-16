@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E282C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7363FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233842AbiHPJkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        id S233633AbiHPJlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233769AbiHPJja (ORCPT
+        with ESMTP id S233595AbiHPJj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:39:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E9F1365F8;
+        Tue, 16 Aug 2022 05:39:59 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5551367D7;
         Tue, 16 Aug 2022 01:28:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9116F611F2;
-        Tue, 16 Aug 2022 08:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A48C433C1;
-        Tue, 16 Aug 2022 08:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660638492;
-        bh=kn/cDzx5wgLfYQgDaZMLwVmKJJDcenaMUgsJ7D0lmXg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OWKY8C2GcbgTNqhHhuZhYFir9funE6n/P4pENhoRIJd/oAk2M+cpmYlGh0tHRvzur
-         LNzpuaA/0+J6Y2PrMjqHHO+lWiRWkJpjGm2beJvCpG4rKjlahzhyrAo8/NN2UijSLV
-         +P15i/QlyobPuje8dvZKtv3dlGcUxhsbo4euUq2k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 713/779] serial: 8250_pci: Refactor the loop in pci_ite887x_init()
-Date:   Mon, 15 Aug 2022 20:05:57 +0200
-Message-Id: <20220815180407.929169761@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660638494; x=1692174494;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9K9d4IjBMmcloaT+QG5eIvNYUR3xOoTYrU9248uTcL8=;
+  b=RL1BBWbhtBKQW143Cw1JhTGrLvoKQipy+ui9/EbVUs3CNtXKlTPd0E5v
+   amz9Yp646NL4g0tO9thkRTTRu6yj+Y5cOoeDH0VQAsCDk7TUobJwJXQ5W
+   9vXsKGe/ynp8s55DIybFpjF8MOyOdxTQCXTTSMDvYMlQmq9R0MLbT6Yl1
+   8=;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
+   d="scan'208";a="233486519"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:00 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id 14069450A1;
+        Tue, 16 Aug 2022 08:28:00 +0000 (UTC)
+Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
+ EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:59
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id 5F4D64C55; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
+        <rtanwar@maxlinear.com>
+Subject: [PATCH 02/16] hwmon: (mr75203) update pvt->v_num to the actual number of used sensors
+Date:   Tue, 16 Aug 2022 08:27:43 +0000
+Message-ID: <20220816082757.11990-3-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
+References: <20220816082757.11990-1-farbere@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+This issue is relevant when intel,vm-map is set, and defines a lower
+number of VMs than actually supported.
 
-[ Upstream commit 35b4f17231923e2f64521bdf7a2793ce2c3c74a6 ]
+This change is needed for all places that use pvt->v_num later on in the
+code.
 
-The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
-This reduces code base and makes it easier to read and understand.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Jiri Slaby <jslaby@kernel.org>
-Link: https://lore.kernel.org/r/20211022135147.70965-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Eliav Farber <farbere@amazon.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/hwmon/mr75203.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e7b9805903f4..ef44e5320bef 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -897,18 +897,16 @@ static int pci_netmos_init(struct pci_dev *dev)
- /* enable IO_Space bit */
- #define ITE_887x_POSIO_ENABLE		(1 << 31)
+diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+index 0e29877a1a9c..f89f7bb5d698 100644
+--- a/drivers/hwmon/mr75203.c
++++ b/drivers/hwmon/mr75203.c
+@@ -605,6 +605,7 @@ static int mr75203_probe(struct platform_device *pdev)
+ 					break;
  
-+/* inta_addr are the configuration addresses of the ITE */
-+static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280 };
- static int pci_ite887x_init(struct pci_dev *dev)
- {
--	/* inta_addr are the configuration addresses of the ITE */
--	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
--							0x200, 0x280, 0 };
- 	int ret, i, type;
- 	struct resource *iobase = NULL;
- 	u32 miscr, uartbar, ioport;
- 
- 	/* search for the base-ioport */
--	i = 0;
--	while (inta_addr[i] && iobase == NULL) {
-+	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
- 		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
- 								"ite887x");
- 		if (iobase != NULL) {
-@@ -925,12 +923,10 @@ static int pci_ite887x_init(struct pci_dev *dev)
- 				break;
- 			}
- 			release_region(iobase->start, ITE_887x_IOSIZE);
--			iobase = NULL;
+ 			vm_num = i;
++			pvt->v_num = i;
  		}
--		i++;
- 	}
  
--	if (!inta_addr[i]) {
-+	if (i == ARRAY_SIZE(inta_addr)) {
- 		dev_err(&dev->dev, "ite887x: could not find iobase\n");
- 		return -ENODEV;
- 	}
+ 		in_config = devm_kcalloc(dev, vm_num + 1,
 -- 
-2.35.1
-
-
+2.37.1
 
