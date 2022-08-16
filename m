@@ -2,92 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF5AC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6508BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235099AbiHPKrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S232155AbiHPKsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235027AbiHPKrf (ORCPT
+        with ESMTP id S235048AbiHPKrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:47:35 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D0EAE22B
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:47 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id by6so10002777ljb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:06:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=3P+rHXFq/Ju0+klAigNeKQlci4oKet9YOA0bldjm0Zs=;
-        b=csHnIcOwUWQxrQCh4kMZCM3lIHd/7QbLGLsWO0pdvwAF9+9GQoRb6Ia4FcgmceJfvP
-         BHynpZrRt5dGjq8BpcXQdRwEpJ3bDbr2mCaeslxUxw7Ntkl7yZoH4hBtF0JpE6iZxVR/
-         JVkMN5M4IiY1ptjbQ0o8GYQOS2H0Rg/WpGUqykfDw6RBj5ij3Jcv19c6YOcFHxtpF7bW
-         aTXpX13HCqPzWz93p0tLATReG5w33k29t/MixKOTAxXLsvM2gDJqwsJ1C18dA0y5dq7W
-         fAD/WrvRjt0eYtE1RaLUO/0yvAOaHSNRMYrw4AeByRv4h4LsVD17ZnuLgvwA7BMPkSzu
-         T5gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=3P+rHXFq/Ju0+klAigNeKQlci4oKet9YOA0bldjm0Zs=;
-        b=DMS0eqOQ8jl+HOw0Shey3S4pahDjMRoWkp4IvvljC0cR8JANh32W33CTvjD6kV3yIy
-         h2HRg87eHrJSrGiRZ6swPWI+al5vuBWc6U1n/M0FzKMT1O9mPun+xQ6v0xrYu6raAso4
-         Nq3Mkuk4NciZpWbbUgHqrDYysCMvHaZk4Af6jotEkNmoW1As+7kFYMT3bpMZNv27JyCU
-         8Rgb8wmBTzpwgOTqWYQUamLeCdrYIv7YpzGYZQvKWppfUEruSTwo9QTiUQDfUIDKLPNF
-         fqwyKPvCZotAFoWra5wSgeVOLk/tpqs4/b8wgooGp44JAt1F2V8oc9uhLOJ5SN6t3UFC
-         8prw==
-X-Gm-Message-State: ACgBeo3AHp2fFyjvZZ1nZylUDrw8c8/XqeP+vZVpW3VVkky/gWh2aa/0
-        +LlzqVy4/o87fa3DTog/PYOR9A==
-X-Google-Smtp-Source: AA6agR4BH5PwcsY3gEJ8rvtE71DqoG3p/u7jTfoGw6gfPC++4bLqy79XHhPj7FU2rIJuhiD66NqjJQ==
-X-Received: by 2002:a2e:8881:0:b0:255:7790:25e6 with SMTP id k1-20020a2e8881000000b00255779025e6mr6184568lji.525.1660644405978;
-        Tue, 16 Aug 2022 03:06:45 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056512201400b0048aeff37812sm1328349lfb.308.2022.08.16.03.06.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 03:06:45 -0700 (PDT)
-Message-ID: <7532753c-60d6-a8cd-b462-bcbf01035d89@linaro.org>
-Date:   Tue, 16 Aug 2022 13:06:44 +0300
+        Tue, 16 Aug 2022 06:47:36 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E24BBA5A;
+        Tue, 16 Aug 2022 03:10:44 -0700 (PDT)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G6rucQ026767;
+        Tue, 16 Aug 2022 10:10:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=hDK80vDpkuXPJNz0zWKF4J/lc/t8yhaBiwQSS2Kg5Do=;
+ b=J4pUzHQgUs5IJkKT+WdUyxvaSugzCZdB0QU4xQXKjhFApYaKxXydcHNbiV+dYOsjsa4X
+ ZFTh2L0oYkdC1dhsDK7ZeAZZ6GpZW9wbXWAr0WKKkcMVId69VBthInNyrTMznDQigMle
+ xA1Vd1ZHZF7n1XLXojb0c2XsG/MV+e/QbUejWyQshe8CfnnTVBABL5rwlWjeDlmgCXS7
+ PoCyhHPlod+KmRmvi5z1qgkh8MctZfaNty2yF8hAxLBUwNke6GIXpc5h7QsgDroVBNwv
+ 65gbWTb5374S9Skdv7M8Iq6kq7+FkRmzZ9OFVIbPSq7Lb0t1AMbAksAwC3J+PB3onPk4 VA== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06c0rjhb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 10:10:41 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27GAAes9025970
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 10:10:40 GMT
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 16 Aug 2022 03:10:36 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
+        <linux-clk@vger.kernel.org>
+Subject: [RESEND PATCH V7 4/5] dt-bindings: clock: Add support for external MCLKs for LPASS on SC7280
+Date:   Tue, 16 Aug 2022 15:40:03 +0530
+Message-ID: <1660644604-6592-5-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1660644604-6592-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 2/3] arm64: dts: qcom: sa8295p: move common nodes to
- dtsi
-Content-Language: en-US
-To:     Parikshit Pareek <quic_ppareek@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Halaney <ahalaney@redhat.com>
-References: <20220812165453.11608-1-quic_ppareek@quicinc.com>
- <20220812165453.11608-3-quic_ppareek@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220812165453.11608-3-quic_ppareek@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: jB0DI2SUvrvS_Y_foELEZisCcJ-PEI7Q
+X-Proofpoint-GUID: jB0DI2SUvrvS_Y_foELEZisCcJ-PEI7Q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_07,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=997 impostorscore=0 clxscore=1015
+ suspectscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208160039
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 19:54, Parikshit Pareek wrote:
-> There are many ADP boards with lot of common features. Move common
-> nodes to sa8540p-adp.dtsi file. This will be base for many ADP boards
-> to be introduced in near future.
-> 
-> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sa8295p-adp.dts  | 377 +--------------------
->  arch/arm64/boot/dts/qcom/sa8540p-adp.dtsi | 384 ++++++++++++++++++++++
+From: Taniya Das <quic_tdas@quicinc.com>
 
-Please send patch with tweaking -B/-M/-C parameters, so the copy is
-properly detected.
+Support external mclk to interface external MI2S clocks for SC7280.
 
-Best regards,
-Krzysztof
+Fixes: 4185b27b3bef ("dt-bindings: clock: Add YAML schemas for LPASS clocks on SC7280")
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+---
+ include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h b/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
+index 28ed2a0..0324c69 100644
+--- a/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
++++ b/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
+@@ -19,6 +19,8 @@
+ #define LPASS_CORE_CC_LPM_CORE_CLK			9
+ #define LPASS_CORE_CC_LPM_MEM0_CORE_CLK			10
+ #define LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK		11
++#define LPASS_CORE_CC_EXT_MCLK0_CLK			12
++#define LPASS_CORE_CC_EXT_MCLK0_CLK_SRC			13
+ 
+ /* LPASS_CORE_CC power domains */
+ #define LPASS_CORE_CC_LPASS_CORE_HM_GDSC		0
+-- 
+2.7.4
+
