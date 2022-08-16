@@ -2,89 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE582C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F2AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235934AbiHPWGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
+        id S237823AbiHPWII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233253AbiHPWG2 (ORCPT
+        with ESMTP id S232330AbiHPWIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:06:28 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536DF72FF8
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:06:27 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id s206so10445739pgs.3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xsBdI6TSxfWyoZQzEtdTKDjNFKRklp/Qj7KShglt0Qk=;
-        b=hMnUic3qQq0HLIZNOhUZeDw6iBDDbHjQMKshXUA6XQtPWFUXR1pRy1CGLBGDulkZTt
-         jJQMScRHIjExRTDpled6nwJp0I7Fz+e9Cp37Pxni6yVbKuv8ot4lSAvhj60c88kYBi3b
-         U3xvmOupwH00xFmN6UgwXm4GJKN3w7/DaQfrPfaf5N7li637MndH2bJxJALWqB2hy3kT
-         0e8Uu8fXDQyUpj1ko0EBgsd5vjRjPCggF65QC83j9OqH+grhl58WqiAj35XPfpRNpw1u
-         W+rA0vk2SVf8i3NlcOInp6GkfvXLQ3NquCSMzgPZpK8kJU9mFcDloCEkivNoEhDAYDqI
-         idXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xsBdI6TSxfWyoZQzEtdTKDjNFKRklp/Qj7KShglt0Qk=;
-        b=3gYKm/R5g95YtEYIQtvttU45ocEpzRH1ucqnMyzgRIchtubT8IUjervb5bRgCMljuN
-         G/KQYRPn/3dXCpmvhJvZtbQ1gkmNP6DhCx7ziJ+D8Z0f/Om/WMyum5+r2CoTodzpNapl
-         AqXUDWKG2KI/Y85pDDoYZgaoF4A1pN+ZQyh5F98Cyf0HfwFZnKii/OQwbRpoxSEBY071
-         a1dcjy+f9+84+jcJpCATxbJ4CWV33fUUga+UDAsBgxjhz9OfjQExLKGva6smuytDx43s
-         KdW2hMx1VGYOz2Dmp3eLCsnHy/0T58/D9b8tu/c/7JYRJtUU68O2UCsOq7pu3dvSCc7G
-         Aoig==
-X-Gm-Message-State: ACgBeo2nUFoOC8GdpvkCR2icX9j2XeMLDlmVh5JC3s44S1dbchu4u/Gn
-        hX9rii5i7LgeMWiiF/8tiCnEXh5/G5aY8aRXAbmbNA==
-X-Google-Smtp-Source: AA6agR66Eb2drsgo0xC0IsiAl2PXcMRX7zfibAHC48aSSjgpYKXqJIogSAcpz1yWsdrnwY/vgyl9I5HjpChP7FKsVkY=
-X-Received: by 2002:a65:494b:0:b0:428:d68c:35bf with SMTP id
- q11-20020a65494b000000b00428d68c35bfmr10005680pgs.509.1660687586695; Tue, 16
- Aug 2022 15:06:26 -0700 (PDT)
+        Tue, 16 Aug 2022 18:08:06 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD63473335
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660687684; x=1692223684;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=r/NS3DQl1MQodpjLTUQmONt+iMp15to1k/iMUg+p9sA=;
+  b=fDcLSOpZ2JGbakTYVy+RAeH0XS/ng23uJGHzUVWNdk27L35kwRahSk0p
+   iw9ju4eCw4bSBLWBClg2+xI7+hsrcDF42kcAYzsk0TKHYLXRNQyl136EO
+   wspMh9cYjACzP1S5CVdeC0CcZCFq3xZjLZzfxSrSiIet0pAh4tHj6IPUy
+   Giplj7Wj+MN7brWa8CRi4JKZQh08iua5nfeTVGbNvWhmH1ktZI5YtV++d
+   EuPCTKkB/70sSZb8BFLv/pwdaylhH5JJKZlLCX1dnjyuZ2PsTK6zhnd61
+   D0t/LTToBez+ZN0QptRlsVTyket3UpYYXOyZpdrgrhVN2yvU2z55HGTOw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="378631562"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="378631562"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 15:08:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="696540562"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 16 Aug 2022 15:08:02 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oO4jC-0000Gk-0h;
+        Tue, 16 Aug 2022 22:08:02 +0000
+Date:   Wed, 17 Aug 2022 06:07:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:tglx/devel/depthtracking 9/59]
+ arch/x86/include/asm/linkage.h:20:3: error: #error Unsupported function
+ alignment
+Message-ID: <202208170630.b7YljGAi-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220816185801.651091-1-shy828301@gmail.com>
-In-Reply-To: <20220816185801.651091-1-shy828301@gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 16 Aug 2022 15:06:15 -0700
-Message-ID: <CALvZod5t7Qo1NQ040pRyWco+nJGn3hSrxZyuFQ0UBi31Ni6=_g@mail.gmail.com>
-Subject: Re: [PATCH] mm: memcg: export workingset refault stats for cgroup v1
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 11:58 AM Yang Shi <shy828301@gmail.com> wrote:
->
-> Workingset refault stats are important and usefule metrics to measure
-> how well reclaimer and swapping work and how healthy the services are,
-> but they are just available for cgroup v2.  There are still plenty users
-> with cgroup v1, export the stats for cgroup v1.
->
-> Signed-off-by: Yang Shi <shy828301@gmail.com>
-> ---
-> I do understand the development of cgroup v1 is actually stalled and
-> the community is reluctant to accept new features for v1.  However
-> the workingset refault stats are really quite useful and exporting
-> two new stats, which have been supported by v2, seems ok IMHO.  So
-> hopefully this patch could be considered.  Thanks.
->
+tree:   https://github.com/ammarfaizi2/linux-block tglx/devel/depthtracking
+head:   9bbf33b92f4c755dd56f4d9bc1b40e94fdd1fff7
+commit: bf8d55ad26e37b4ebef53eab531481e6e35d36a2 [9/59] x86/asm: Ensure proper function alignment
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220817/202208170630.b7YljGAi-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/bf8d55ad26e37b4ebef53eab531481e6e35d36a2
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block tglx/devel/depthtracking
+        git checkout bf8d55ad26e37b4ebef53eab531481e6e35d36a2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 prepare
 
-Is just workingset refault good enough for your use-case? What about
-the other workingset stats? I don't have a strong opinion against
-adding these to v1 and I think these specific stats should be fine.
-(There is subtlety in exposing objcg based stats (i.e. reparenting) in
-v1 due to non-hierarchical stats in v1. I remember Yosry and Muchun
-were looking into that.)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/x86/um/user-offsets.c:17:6: warning: no previous prototype for 'foo' [-Wmissing-prototypes]
+      17 | void foo(void)
+         |      ^~~
+   In file included from include/linux/linkage.h:8,
+                    from include/linux/printk.h:8,
+                    from include/asm-generic/bug.h:22,
+                    from ./arch/um/include/generated/asm/bug.h:1,
+                    from include/linux/bug.h:5,
+                    from include/linux/page-flags.h:10,
+                    from kernel/bounds.c:10:
+   arch/x86/include/asm/linkage.h:15:5: warning: "CONFIG_FUNCTION_ALIGNMENT" is not defined, evaluates to 0 [-Wundef]
+      15 | #if CONFIG_FUNCTION_ALIGNMENT == 8
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/x86/include/asm/linkage.h:17:7: warning: "CONFIG_FUNCTION_ALIGNMENT" is not defined, evaluates to 0 [-Wundef]
+      17 | #elif CONFIG_FUNCTION_ALIGNMENT == 16
+         |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> arch/x86/include/asm/linkage.h:20:3: error: #error Unsupported function alignment
+      20 | # error Unsupported function alignment
+         |   ^~~~~
+   In file included from include/linux/printk.h:8,
+                    from include/asm-generic/bug.h:22,
+                    from ./arch/um/include/generated/asm/bug.h:1,
+                    from include/linux/bug.h:5,
+                    from include/linux/page-flags.h:10,
+                    from kernel/bounds.c:10:
+   include/linux/linkage.h:73: warning: "__ALIGN_STR" redefined
+      73 | #define __ALIGN_STR     ".align 4,0x90"
+         | 
+   In file included from include/linux/linkage.h:8,
+                    from include/linux/printk.h:8,
+                    from include/asm-generic/bug.h:22,
+                    from ./arch/um/include/generated/asm/bug.h:1,
+                    from include/linux/bug.h:5,
+                    from include/linux/page-flags.h:10,
+                    from kernel/bounds.c:10:
+   arch/x86/include/asm/linkage.h:23: note: this is the location of the previous definition
+      23 | #define __ALIGN_STR             __stringify(__ALIGN)
+         | 
+   make[2]: *** [scripts/Makefile.build:117: kernel/bounds.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1207: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:222: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +20 arch/x86/include/asm/linkage.h
+
+    14	
+    15	#if CONFIG_FUNCTION_ALIGNMENT == 8
+    16	#define __ALIGN			.p2align 3, 0x90;
+    17	#elif CONFIG_FUNCTION_ALIGNMENT == 16
+    18	#define __ALIGN			.p2align 4, 0x90;
+    19	#else
+  > 20	# error Unsupported function alignment
+    21	#endif
+    22	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
