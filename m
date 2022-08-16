@@ -2,162 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B886C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3129CC32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234723AbiHPKhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
+        id S234879AbiHPKhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234697AbiHPKgd (ORCPT
+        with ESMTP id S234704AbiHPKgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:36:33 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4BCDB7D2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id a13-20020a921a0d000000b002e5f544ee47so1599574ila.9
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
+        Tue, 16 Aug 2022 06:36:35 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BC3BC96;
+        Tue, 16 Aug 2022 01:58:56 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id t22so9197050pjy.1;
+        Tue, 16 Aug 2022 01:58:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=UV497+nq9aRZ6EHD8/12Y71WbNxm7+fRZfBRKqrBQwM=;
+        b=CQoQ8WFq7aduitDEdmjUkyykiF1V1Q40rxJ6zyuzNCuJ7Xu0CDc+RMhO1m3ehYAgdy
+         wVMlVAakJKiadX6VSivL79hJriVdtS8XHoTHYi4DZeh3Aqla1eiO6Os0BejcmJ+xJC93
+         lrw0gEC8B1HHQOxGSMBoD2IXv0LjmUzT8l3vrhF7aYLs0F+XB0Kj2TAWj6qz23l4zZ/T
+         7mC+i1TTPI4/EVDVjtW3HtETDG/jOjk1kp+m1tdCaHUqMN7zu6hy7PNzfsvyuTZEEpJe
+         6Wz8Hjae39X2ErNk38HqXXftFUeIZHlSCVrrbZQh5za9q9/wzEKCSP4oWhNo0eh8eL0Z
+         QN2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=QoJU5GGMy8v8yEZNFxM99bTCjQW1eFlhk+iiG3fJdLI=;
-        b=gyQTv/ikgE7AyLCZdzHIOhaYSjH85SYEgmMPnCFhahCbuK6snhVojpekqYzzVgIKVO
-         wZuWDUt/GnTdLE6DzceTdY3SBQCKtmZmPw6M+jCYwXJqkDeUBIbcJLyTHQVFB6xvSazv
-         LoBRI2Kblll4c6+R2kV8iyLjRVoz0eiiqv2yeTPmqLrESW/mljmaq35kkjDiMVZ93yhX
-         gC4U7ryyuTWzBsU9r6XdwPsofS+R1xMQ2qOl9uOgnN31B+meJU99j3TuwBojHgzLgBy0
-         VVKLpcNM2FQJwz5cA9XZCQ14zR/x17MJRsrcPY27cnrfw0aB1LCBA3VYq03VetYqVI5f
-         /Jnw==
-X-Gm-Message-State: ACgBeo0QaAYpK4/zMSzlkTyTwU9ccw1t3sIWOlyp52kIdb+MDJVcZv70
-        cJrPFbyPUL6qLQ0rK2RfcZudRbTAYwiqYS/zda0POykMMo/O
-X-Google-Smtp-Source: AA6agR72pfTFc5Nk70AuqknQizPu6jLKL7iJFFPqgDk7a5kQ7izKd/NlV+VSVv6WZrRf/Lm1ZySMpdIMRZk6PsLGPasFpCgAOzQH
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=UV497+nq9aRZ6EHD8/12Y71WbNxm7+fRZfBRKqrBQwM=;
+        b=VH9Jd8vUCXE/BH0Tu5lT3Nohxj+iWDJLeOiS5zNt06O4fQQ3P55Ksj2BrGu/zyrfyR
+         umiHMGWDUrwlwegz6K8X1XamGGCHAhCppCb9ORVYk7Jtu6Wq/BtbbdUK30/yD04uDDUV
+         Le54BeRW2cfKXiVCajEdC9rMrImcGQoQ459ro7Dk4IRebgWdBiNaKCklPPNPj+j6CZfa
+         XhJw/nU5n8Ys8F4h68gwJGk8AIEMM9PwdRpaoVgew973MNx9k/xeyUDg8naf8/bYKLT0
+         7lXK9lwk9NSLtel8+7hdBNFh9Jtyj/PY3wdXJ6Ifgquq2W5LRPCEx0b4sEN3rf5f/5Q+
+         N0xA==
+X-Gm-Message-State: ACgBeo31+e8U/TMmZOUTXrAIx2A0RWDaXO0VSZb3ZgBR+e2pChcWJOgR
+        WSD/MkyWco8DLQ+/B8tIjn8=
+X-Google-Smtp-Source: AA6agR6h4VsRwPE0IQM4jMyBWSUeeD40gs80UzAbpro2X2WbTUDtRikbrK3DGxrU6kDvw7MrxB0zsw==
+X-Received: by 2002:a17:90b:390c:b0:1f5:5bbc:2e8 with SMTP id ob12-20020a17090b390c00b001f55bbc02e8mr32891611pjb.233.1660640336247;
+        Tue, 16 Aug 2022 01:58:56 -0700 (PDT)
+Received: from localhost.localdomain ([129.227.148.126])
+        by smtp.gmail.com with ESMTPSA id x1-20020a17090300c100b00170a8973137sm8446285plc.17.2022.08.16.01.58.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 01:58:55 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     narmstrong@baylibre.com, mchehab@kernel.org, khilman@baylibre.com,
+        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
+        bin.liu@mediatek.com, matthias.bgg@gmail.com,
+        m.szyprowski@samsung.com, andrzej.hajda@intel.com
+Cc:     linux-media@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] media: platform: fix some double free in meson-ge2d and mtk-jpeg and s5p-mfc
+Date:   Tue, 16 Aug 2022 16:58:19 +0800
+Message-Id: <20220816085819.39108-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2145:b0:2e4:b2f3:d6fb with SMTP id
- d5-20020a056e02214500b002e4b2f3d6fbmr7270506ilv.163.1660639294552; Tue, 16
- Aug 2022 01:41:34 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:41:34 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000040801b05e657b77f@google.com>
-Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
- request in __rhashtable_lookup
-From:   syzbot <syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        fw@strlen.de, harshit.m.mogalapalli@oracle.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+video_unregister_device will release device internally. There is no need to
+call video_device_release after video_unregister_device.
 
-syzbot found the following issue on:
-
-HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16259e35080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5d647c9572405910
-dashboard link: https://syzkaller.appspot.com/bug?extid=6fccf62d7c237e1b4c85
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com
-
-8021q: adding VLAN 0 to HW filter on device bond0
-eql: remember to turn off Van-Jacobson compression on your slave devices
-BUG: unable to handle page fault for address: ffffdbffffffffc8
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 11825067 P4D 11825067 PUD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 3187 Comm: dhcpcd Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
-RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
-Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
-RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
-RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
-RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
-R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
-FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- rhashtable_lookup include/linux/rhashtable.h:638 [inline]
- rhashtable_lookup_fast include/linux/rhashtable.h:664 [inline]
- __netlink_lookup net/netlink/af_netlink.c:518 [inline]
- netlink_lookup+0x130/0x470 net/netlink/af_netlink.c:538
- netlink_getsockbyportid net/netlink/af_netlink.c:1154 [inline]
- netlink_unicast+0x244/0x7f0 net/netlink/af_netlink.c:1339
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
- __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fbe245ad163
-Code: 64 89 02 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 89 54 24 1c 48
-RSP: 002b:00007ffd4a7738f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fbe244b56c8 RCX: 00007fbe245ad163
-RDX: 0000000000000000 RSI: 00007ffd4a787aa8 RDI: 0000000000000005
-RBP: 0000000000000005 R08: 0000000000000000 R09: 00007ffd4a787aa8
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 00007ffd4a787aa8 R14: 0000000000000030 R15: 0000000000000001
- </TASK>
-Modules linked in:
-CR2: ffffdbffffffffc8
----[ end trace 0000000000000000 ]---
-RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
-RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
-Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
-RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
-RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
-RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
-R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
-FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	01 44 89 e6          	add    %eax,-0x1a(%rcx,%rcx,4)
-   4:	e8 83 19 e8 f9       	callq  0xf9e8198c
-   9:	45 84 e4             	test   %r12b,%r12b
-   c:	0f 85 8f 01 00 00    	jne    0x1a1
-  12:	e8 f5 1c e8 f9       	callq  0xf9e81d0c
-  17:	4d 8d 24 1f          	lea    (%r15,%rbx,1),%r12
-  1b:	49 8d bc 24 00 05 00 	lea    0x500(%r12),%rdi
-  22:	00
-  23:	48 89 f8             	mov    %rdi,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	74 08                	je     0x3b
-  33:	3c 03                	cmp    $0x3,%al
-  35:	0f 8e 9c 02 00 00    	jle    0x2d7
-  3b:	45                   	rex.RB
-  3c:	8b                   	.byte 0x8b
-  3d:	ac                   	lods   %ds:(%rsi),%al
-  3e:	24 00                	and    $0x0,%al
-
-
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/media/platform/amlogic/meson-ge2d/ge2d.c     | 1 -
+ drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c | 1 -
+ drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c     | 3 +--
+ 3 files changed, 1 insertion(+), 4 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/media/platform/amlogic/meson-ge2d/ge2d.c b/drivers/media/platform/amlogic/meson-ge2d/ge2d.c
+index 5e7b319f300d..142d421a8d76 100644
+--- a/drivers/media/platform/amlogic/meson-ge2d/ge2d.c
++++ b/drivers/media/platform/amlogic/meson-ge2d/ge2d.c
+@@ -1030,7 +1030,6 @@ static int ge2d_remove(struct platform_device *pdev)
+ 
+ 	video_unregister_device(ge2d->vfd);
+ 	v4l2_m2m_release(ge2d->m2m_dev);
+-	video_device_release(ge2d->vfd);
+ 	v4l2_device_unregister(&ge2d->v4l2_dev);
+ 	clk_disable_unprepare(ge2d->clk);
+ 
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+index 87685a62a5c2..3071b61946c3 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+@@ -1414,7 +1414,6 @@ static int mtk_jpeg_remove(struct platform_device *pdev)
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 	video_unregister_device(jpeg->vdev);
+-	video_device_release(jpeg->vdev);
+ 	v4l2_m2m_release(jpeg->m2m_dev);
+ 	v4l2_device_unregister(&jpeg->v4l2_dev);
+ 
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+index 761341934925..f85d1eebafac 100644
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
+@@ -1399,6 +1399,7 @@ static int s5p_mfc_probe(struct platform_device *pdev)
+ /* Deinit MFC if probe had failed */
+ err_enc_reg:
+ 	video_unregister_device(dev->vfd_dec);
++	dev->vfd_dec = NULL;
+ err_dec_reg:
+ 	video_device_release(dev->vfd_enc);
+ err_enc_alloc:
+@@ -1444,8 +1445,6 @@ static int s5p_mfc_remove(struct platform_device *pdev)
+ 
+ 	video_unregister_device(dev->vfd_enc);
+ 	video_unregister_device(dev->vfd_dec);
+-	video_device_release(dev->vfd_enc);
+-	video_device_release(dev->vfd_dec);
+ 	v4l2_device_unregister(&dev->v4l2_dev);
+ 	s5p_mfc_unconfigure_dma_memory(dev);
+ 
+-- 
+2.25.1
+
