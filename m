@@ -2,68 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B787C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DB7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbiHPRip (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        id S236097AbiHPRkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236759AbiHPRih (ORCPT
+        with ESMTP id S235633AbiHPRkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:38:37 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C791C3718C;
-        Tue, 16 Aug 2022 10:38:33 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1660671497tp0hmleu
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 17 Aug 2022 01:38:05 +0800 (CST)
-X-QQ-SSF: 0100000000200060D000B00A0000020
-X-QQ-FEAT: r/cTxDoDoiHFKS4LFalCA3jzslwrLAnPDYJotktburOuxpIbzU2Nz4ejWIojG
-        YfYQG6qV5Nr5Mln0E1HFO3Mbhv2SRzh54hosARBoMD29aUBa8fMZ/5SNk3JF/HWY5/36hMG
-        bIxSI/yvWVWkc9w//De82CmXkDoKOfnVx+6UOLdhvV1GJF8KsBXNLAMQF+r9CmrgT7PfoMw
-        BavNCMEwba7wUTZjkY3hjm67SuR4eK0jUcFUw3no+Q73XnMwDRSymEEXEsuro2IFJpdS9/V
-        LsgMz9gjns9mJ++JTvjX8iEh7C3n9FsJW1CHkLoiM+dgdexcr9uomgpsL0z75pkkARIQxMq
-        rR8glep3N/qYRcLn4UoxCefKmbhJGi4pmvYyZVKAtZ++jR4j8A=
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org
-Cc:     namhyung@kernel.org, irogers@google.com, john.garry@huawei.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] perf metrics: Variable type completion
-Date:   Wed, 17 Aug 2022 01:38:04 +0800
-Message-Id: <20220816173804.7539-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 16 Aug 2022 13:40:09 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C197F104
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:40:07 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id x23so9847577pll.7
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:40:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:from:to:cc;
+        bh=hIMXk1lCy7PeMgMus9bPUNIc2yzEqIefq4WSi+UIz3g=;
+        b=gU23TNm472yJs3AYqGyYKrwfLS2f6Nk7Rj9rKopRrOtj2OZaZeYJXPuj9+bsEV3Ckg
+         IWXMzfRX2+cdXvkbjuffEQmwKQi84FsiTAgZXzqMkHWQ5vy1oB/xyjdzLGJRz6LY+5oS
+         oEPLku9+93HGey8m6M0RubpDyeoXv4UkEtQHKfNyVsav73ti+8JXsUSJSkNXTLo6ZBbd
+         6Z7SZTO79smvNijNR6LLZgPbrXD38xjyjB6GtteYjC4b2IYj2x0+qmQqhUbY3v84AkSv
+         8oW4VxasJ+xgnIteVFMJfZlPL1M/oZ/is244hdD3vQcW2IrVd3eImVjnzUnifWvRYUgE
+         rWcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=hIMXk1lCy7PeMgMus9bPUNIc2yzEqIefq4WSi+UIz3g=;
+        b=u2OD4ldCK86eLZA7b/mAno3TEiNW31tY+nvR+qcDxU2LOtbEcqJjcjUzuU+j3twU0D
+         vt1aA+cqwCkBu6Eus5wJUY21Tykx/uKJI7vXyrMB9K1CAfUG7XeN2CrtBgz9erLa4fCu
+         D4bIqj8kzs3Jzb94bzaADcD5pRq3nh8/M3mFCoA7HLnevCIJhU8SJ3VZFlJggHFAhlwr
+         fjPvFhjTGXllERHxUjiVuau5JeFTBPYJkIP/VItrOFuCOHGsRT3idS1H3Np3I8ZeP9A3
+         PIgNFJiXZx9WYHpURWvs0zk4DowbCzK7XuPlIwpI5JNWTxBPYfHXcWK2sBxjGMJS7uK1
+         1pLA==
+X-Gm-Message-State: ACgBeo2xg7D2O26QvOf8db6PUAjTg3T8MtuR6VUak+oAaAWTmw5/UVoC
+        nT8nFPO6az21KHQu4DAlzPdpQQ==
+X-Google-Smtp-Source: AA6agR52J8m2xodPayu3JfjmxNMO+0/0nJn8LACM9hVk8SrKFlqPoYwm4lTP+KDm6rI3hZkyoFEigg==
+X-Received: by 2002:a17:90b:3849:b0:1f4:89bb:14dc with SMTP id nl9-20020a17090b384900b001f489bb14dcmr25184319pjb.144.1660671606634;
+        Tue, 16 Aug 2022 10:40:06 -0700 (PDT)
+Received: from localhost ([76.146.1.42])
+        by smtp.gmail.com with ESMTPSA id t12-20020a170902dccc00b0016d4f05eb95sm9279904pll.272.2022.08.16.10.40.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 10:40:06 -0700 (PDT)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?utf-8?Q?P=C3=A9ter?= Ujfalusi <peter.ujfalusi@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-omap@vger.kernel.org
+Subject: Re: [PATCH] of: irq: Export of_msi_get_domain
+In-Reply-To: <CAL_Jsq+DDPTYodAk-TKs61AUpdYhocWq+EoRGgVwgc1hz5gk0A@mail.gmail.com>
+References: <20220812174420.2706827-1-khilman@baylibre.com>
+ <CAL_Jsq+DDPTYodAk-TKs61AUpdYhocWq+EoRGgVwgc1hz5gk0A@mail.gmail.com>
+Date:   Tue, 16 Aug 2022 10:40:05 -0700
+Message-ID: <7hh72cw0i2.fsf@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'unsigned int' is better than 'unsigned'.
+Rob Herring <robh+dt@kernel.org> writes:
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- tools/perf/util/metricgroup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, Aug 12, 2022 at 11:44 AM Kevin Hilman <khilman@baylibre.com> wrote:
+>>
+>> From: Matthias Brugger <matthias.bgg@gmail.com>
+>>
+>> Export of_mis_get_domain to enable it for users from outside.
+>
+> typo
+>
+>>
+>> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+>> Acked-by: Rob Herring <robh@kernel.org>
+>> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+>> Link: https://lore.kernel.org/r/20200122104723.16955-1-peter.ujfalusi@ti.com
+>> Signed-off-by: Kevin Hilman <khilman@baylibre.com>
+>> ---
+>> Peter tried to resurrect this in 2020 (c.f. Link tag in log) but it
+>> didn't work.  Here's one more attempt.  I need this enable building
+>> some TI DMA drivers as modules.
+>
+> Then apply this with that enabling. I've already acked it (which keeps
+> it out of my queue, so drop that if you want to ensure I see it).
 
-diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-index ee8fcfa115e5..8926de9617ef 100644
---- a/tools/perf/util/metricgroup.c
-+++ b/tools/perf/util/metricgroup.c
-@@ -1620,7 +1620,7 @@ int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
- 				    struct rblist *new_metric_events,
- 				    struct rblist *old_metric_events)
- {
--	unsigned i;
-+	unsigned int i;
- 
- 	for (i = 0; i < rblist__nr_entries(old_metric_events); i++) {
- 		struct rb_node *nd;
--- 
-2.30.2
+OK.
+
+I assumed you'd want to take this through your tree, but if you're OK
+with it getting merged with the series using it, I'll do that.
+
+Thanks,
+
+Kevin
+
 
