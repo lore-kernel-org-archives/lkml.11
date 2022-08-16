@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 508B9C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F62C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234629AbiHPKiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        id S234823AbiHPKid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbiHPKhX (ORCPT
+        with ESMTP id S234445AbiHPKi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:37:23 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AC1DAED3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id a21-20020a5d9815000000b006882e9be20aso3114371iol.17
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
+        Tue, 16 Aug 2022 06:38:29 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDAC3E758
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:22 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id s3-20020a056e021a0300b002e10f0e8965so6704819ild.23
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=nGjlzvwcBZaemnjd+owBIFDV0Vis9TUHVKBGegmuTWc=;
-        b=WeN6dVuS1sS/3Db68ehnhyxpH4nPBIYLp1RKqUm/qAcd40obq2Fy9j7UZOoSikx397
-         ELxxWwU9T10ozPWhQSuKbORr1mb6hIW/9o3G9UlJv9baGx4uSJm3S+6sKHH1ffhF0AWd
-         O97rRXBYtxELggoKfJOLYJwNtpJ4pdE03X7x1ZLiF8woU6ecmyF8XaOsnAiL3Wgk2a4w
-         jKIJPvBVMs1BGTq+9nRJSM5rhctNfSuNYDDsXx1xINDoHGLJeD5fvmclUh4Ji3af+IV7
-         m7HXF5B0LQPrIt1S7WKXsMpOgcQn4LpknfyQnL43v41qROLCq2YiKE+pAFF8l+O/AECN
-         I77Q==
-X-Gm-Message-State: ACgBeo3olEzgl+hpMSnd/P6yh44FroPPLTVAdP01FU/idkLtOxBdAafe
-        fIbuY/i+PUKgPa1me5dlBA/YGX2t0Kxd5xQPbC0UuEnhCi3B
-X-Google-Smtp-Source: AA6agR5m1fKJIjKEfhhgjeRC37lonyEANjQQJTvbHtI4GVgvr9SPEKm/1GXC/HiZIyaJRUfLKtW15fBqRcya1X8QGW9T60Jpr3T3
+        bh=82mnOCie5mgnQOZdZuXbQHyJgQ642MjSMUz2Nnms+RI=;
+        b=7c2FhYK3ZxskdcQG93GsX0pkjNQe/1ivrdjQrhVwGEdv64+QuiTAexAwJqE9scojEo
+         ohUJ8OTXCFAUJQNFVNixoN9ZzlWtHLLCjZRJtGFddPEtfnZuw2KlSoSoZHtxx833NUc2
+         w685uPwnGYG69qYcQP/0HwwnfNw6uTBfZ1J/MwFasC7RF4MR2sz2gkZC/fF2hOO1tjND
+         oGqkoQIah7TPEkVH/KP5Im2mq0Z/kth8vW6zgqOqPDcH913h2IioPvJNKpKAJfCtgqQ4
+         C5/hHhcaJ7QucN7QLtY8knUfmdEwGHCCmSRvcZQVHLiZYE7dsLftjka9QpnhkjUnf3tz
+         2b1w==
+X-Gm-Message-State: ACgBeo2b8e9kxO6FJQkKk9uVTqx+TnsU4ysKJS3WMHlMcMv23cpjqHWf
+        anWU8ecj26bbDtKKY+JRmg1DWqVLu0KLPIFz0aFmI5WzLxMm
+X-Google-Smtp-Source: AA6agR720cBV3eukUqhnbuPdbUsju4w1ZdCTwmurQS4bv9li4klCzfXqbUjQj1HgGNaoNzBDOqtAj09VYiJjk8HvV2/S+katk34w
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1ca5:b0:2df:3283:b4a8 with SMTP id
- x5-20020a056e021ca500b002df3283b4a8mr9506125ill.131.1660638983909; Tue, 16
- Aug 2022 01:36:23 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:36:23 -0700
+X-Received: by 2002:a05:6e02:b26:b0:2de:b192:9dfc with SMTP id
+ e6-20020a056e020b2600b002deb1929dfcmr9325868ilu.273.1660639101658; Tue, 16
+ Aug 2022 01:38:21 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:38:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bc792405e657a41b@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in getname_kernel
-From:   syzbot <syzbot+90d970f179aab5888426@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Message-ID: <000000000000c1304c05e657ab8d@google.com>
+Subject: [syzbot] upstream boot error: WARNING in corrupted
+From:   syzbot <syzbot+702878cf206fb347f510@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,89 +53,18 @@ syzbot found the following issue on:
 
 HEAD commit:    568035b01cfb Linux 6.0-rc1
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=169f00cb080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=90d970f179aab5888426
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+console output: https://syzkaller.appspot.com/x/log.txt?x=1401a5a5080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f267ed4fb258122a
+dashboard link: https://syzkaller.appspot.com/bug?extid=702878cf206fb347f510
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90d970f179aab5888426@syzkaller.appspotmail.com
+Reported-by: syzbot+702878cf206fb347f510@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xffff000000000800: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200000004000-0xfff8200000004007]
-CPU: 0 PID: 24 Comm: kdevtmpfs Not tainted 6.0.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
-RIP: 0010:get_freepointer mm/slub.c:354 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:__kmem_cache_alloc_lru mm/slub.c:3258 [inline]
-RIP: 0010:kmem_cache_alloc+0xf6/0x3b0 mm/slub.c:3268
-Code: 51 08 48 8b 01 48 83 79 10 00 48 89 04 24 0f 84 99 02 00 00 48 85 c0 0f 84 90 02 00 00 49 8b 3c 24 41 8b 4c 24 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 9f 02 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0000:ffffc900001efcc0 EFLAGS: 00010246
-RAX: ffff000000000000 RBX: 0000000000001000 RCX: 0000000000000800
-RDX: 00000000000021e0 RSI: 0000000000000cc0 RDI: 00000000000410f0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff888140007500
-R13: ffffffff81da9ebe R14: 0000000000000cc0 R15: 0000000000000cc0
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- getname_kernel+0x4e/0x370 fs/namei.c:227
- kern_path_create+0x20/0x50 fs/namei.c:3823
- handle_create+0xa8/0x4b3 drivers/base/devtmpfs.c:218
- handle drivers/base/devtmpfs.c:391 [inline]
- devtmpfs_work_loop drivers/base/devtmpfs.c:406 [inline]
- devtmpfsd+0x1a4/0x2a3 drivers/base/devtmpfs.c:448
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
-RIP: 0010:get_freepointer mm/slub.c:354 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:__kmem_cache_alloc_lru mm/slub.c:3258 [inline]
-RIP: 0010:kmem_cache_alloc+0xf6/0x3b0 mm/slub.c:3268
-Code: 51 08 48 8b 01 48 83 79 10 00 48 89 04 24 0f 84 99 02 00 00 48 85 c0 0f 84 90 02 00 00 49 8b 3c 24 41 8b 4c 24 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 9f 02 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0000:ffffc900001efcc0 EFLAGS: 00010246
-
-RAX: ffff000000000000 RBX: 0000000000001000 RCX: 0000000000000800
-RDX: 00000000000021e0 RSI: 0000000000000cc0 RDI: 00000000000410f0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff888140007500
-R13: ffffffff81da9ebe R14: 0000000000000cc0 R15: 0000000000000cc0
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000bc8e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	51                   	push   %rcx
-   1:	08 48 8b             	or     %cl,-0x75(%rax)
-   4:	01 48 83             	add    %ecx,-0x7d(%rax)
-   7:	79 10                	jns    0x19
-   9:	00 48 89             	add    %cl,-0x77(%rax)
-   c:	04 24                	add    $0x24,%al
-   e:	0f 84 99 02 00 00    	je     0x2ad
-  14:	48 85 c0             	test   %rax,%rax
-  17:	0f 84 90 02 00 00    	je     0x2ad
-  1d:	49 8b 3c 24          	mov    (%r12),%rdi
-  21:	41 8b 4c 24 28       	mov    0x28(%r12),%ecx
-  26:	40 f6 c7 0f          	test   $0xf,%dil
-* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
-  2e:	0f 85 9f 02 00 00    	jne    0x2d3
-  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
-  3d:	0f 94 c0             	sete   %al
+scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+WARNING: CPU: 1 PID: 8 at kernel/locking/mutex.c:582 __mutex_lock_common+0x1bb7/0x26c0 kernel/locking/mutex.c:582
 
 
 ---
