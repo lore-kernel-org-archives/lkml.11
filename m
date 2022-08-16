@@ -2,100 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803B2C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F09AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbiHPKtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
+        id S234970AbiHPKtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235024AbiHPKsx (ORCPT
+        with ESMTP id S235084AbiHPKtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:48:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AB0FC307;
-        Tue, 16 Aug 2022 03:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660644981; x=1692180981;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xF5gG7Oy9lHphcE7lhSpuLFD+wByK3zXWrKkUkteKYw=;
-  b=CNI4YNi9oNULA7+YtJtoXygH4UBw/+5u0CI7naJE7NDpfV1PpxrmGpdH
-   DbU3bDVvjtdDltPug/ZeoS6d9Jnbv1hQzD0uFbU68HErZCh+PQOfbNsOs
-   wA81qs1B3H/lNRd4DoEzmfnchpd2Fg2bhZFyEuukqciwMAVpS7vEZgBDk
-   t4vuELddrpw4bYY2Un2Ct2JKNsbDxE/nHJA9nN9nTQ2tvAgyQpgEDap0w
-   6uzH4SrZXzeVZgw+JO1xPoUttKaVSZ/ZH9mJ8biWPR9xNCWh7IMgAS2rx
-   z01axY+TgHoUt3CJnizAaYOWjzGdqx2Qy1I3doOItcDxJsIZXM5gJ5huK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279141254"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="279141254"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 03:16:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="749260741"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Aug 2022 03:16:16 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Utkarsh Patel <utkarsh.h.patel@intel.com>, rajmohan.mani@intel.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH 0/6] ACPI: New helper function acpi_dev_get_memory_resources() and a new ACPI ID
-Date:   Tue, 16 Aug 2022 13:16:23 +0300
-Message-Id: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 16 Aug 2022 06:49:04 -0400
+Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC50DEB79
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:54:31 -0700 (PDT)
+Received: from dev011.ch-qa.sw.ru ([172.29.1.16])
+        by relay.virtuozzo.com with esmtp (Exim 4.95)
+        (envelope-from <alexander.atanasov@virtuozzo.com>)
+        id 1oNt3k-00FxfB-0V;
+        Tue, 16 Aug 2022 11:41:39 +0200
+From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nadav Amit <namit@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     kernel@openvz.org,
+        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org, linux-mm@kvack.org
+Subject: [PATCH v2 1/4] Make place for common balloon code
+Date:   Tue, 16 Aug 2022 12:41:14 +0300
+Message-Id: <20220816094117.3144881-2-alexander.atanasov@virtuozzo.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
+References: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+File already contains code that is common along balloon
+drivers so rename it to reflect its contents.
+mm/balloon_compaction.c -> mm/balloon_common.c
 
-The helper function returns all memory resources described for a
-device regardless of the ACPI descriptor type (as long as it's
-memory), but the first patch introduces new ACPI ID for the IOM
-controller on Intel Meteor Lake and also separately modifies the
-driver so that it can get the memory resource from Address Space
-Resource Descriptor.
+Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+---
+ MAINTAINERS                                              | 4 ++--
+ arch/powerpc/platforms/pseries/cmm.c                     | 2 +-
+ drivers/misc/vmw_balloon.c                               | 2 +-
+ drivers/virtio/virtio_balloon.c                          | 2 +-
+ include/linux/{balloon_compaction.h => balloon_common.h} | 2 +-
+ mm/Makefile                                              | 2 +-
+ mm/{balloon_compaction.c => balloon_common.c}            | 4 ++--
+ mm/migrate.c                                             | 2 +-
+ mm/vmscan.c                                              | 2 +-
+ 9 files changed, 11 insertions(+), 11 deletions(-)
+ rename include/linux/{balloon_compaction.h => balloon_common.h} (99%)
+ rename mm/{balloon_compaction.c => balloon_common.c} (99%)
 
-An alternative would have been to introduce that helper function first
-so we would not need to modify the driver when the new ID is added,
-but then the helper would also need to be applied to the stable kernel
-releases, and that does not feel necessary or appropriate in this
-case, at least not IMO.
-
-So that's why I'm proposing here that we first add the ID, and only
-after that introduce the helper, and only for mainline. That way the
-patch introducing the ID is the only that goes to the stable releases.
-
-If that's okay, and these don't have any other problems, I assume it's
-OK if Rafael takes all of these, including the ID?
-
-thanks,
-
-Heikki Krogerus (5):
-  ACPI: resource: Filter out the non memory resources in is_memory()
-  ACPI: resource: Add helper function acpi_dev_get_memory_resources()
-  ACPI: APD: Use the helper acpi_dev_get_memory_resources()
-  ACPI: LPSS: Use the helper acpi_dev_get_memory_resources()
-  usb: typec: intel_pmc_mux: Use the helper
-    acpi_dev_get_memory_resources()
-
-Utkarsh Patel (1):
-  usb: typec: intel_pmc_mux: Add new ACPI ID for Meteor Lake IOM device
-
- drivers/acpi/acpi_apd.c               |  9 +--------
- drivers/acpi/acpi_lpss.c              |  9 +--------
- drivers/acpi/resource.c               | 20 ++++++++++++++++++++
- drivers/usb/typec/mux/intel_pmc_mux.c | 12 ++++--------
- include/linux/acpi.h                  |  1 +
- 5 files changed, 27 insertions(+), 24 deletions(-)
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8a5012ba6ff9..1b94bf3eb95d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21493,8 +21493,8 @@ L:	virtualization@lists.linux-foundation.org
+ S:	Maintained
+ F:	drivers/virtio/virtio_balloon.c
+ F:	include/uapi/linux/virtio_balloon.h
+-F:	include/linux/balloon_compaction.h
+-F:	mm/balloon_compaction.c
++F:	include/linux/balloon_common.h
++F:	mm/balloon_common.c
+ 
+ VIRTIO CRYPTO DRIVER
+ M:	Gonglei <arei.gonglei@huawei.com>
+diff --git a/arch/powerpc/platforms/pseries/cmm.c b/arch/powerpc/platforms/pseries/cmm.c
+index 5f4037c1d7fe..3beb109c7e44 100644
+--- a/arch/powerpc/platforms/pseries/cmm.c
++++ b/arch/powerpc/platforms/pseries/cmm.c
+@@ -19,7 +19,7 @@
+ #include <linux/stringify.h>
+ #include <linux/swap.h>
+ #include <linux/device.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ #include <asm/firmware.h>
+ #include <asm/hvcall.h>
+ #include <asm/mmu.h>
+diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
+index 61a2be712bf7..6c6d24783548 100644
+--- a/drivers/misc/vmw_balloon.c
++++ b/drivers/misc/vmw_balloon.c
+@@ -29,7 +29,7 @@
+ #include <linux/rwsem.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ #include <linux/vmw_vmci_defs.h>
+ #include <linux/vmw_vmci_api.h>
+ #include <asm/hypervisor.h>
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index 3f78a3a1eb75..6f69e483d98a 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -13,7 +13,7 @@
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ #include <linux/oom.h>
+ #include <linux/wait.h>
+ #include <linux/mm.h>
+diff --git a/include/linux/balloon_compaction.h b/include/linux/balloon_common.h
+similarity index 99%
+rename from include/linux/balloon_compaction.h
+rename to include/linux/balloon_common.h
+index 5ca2d5699620..a45e9fd76235 100644
+--- a/include/linux/balloon_compaction.h
++++ b/include/linux/balloon_common.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /*
+- * include/linux/balloon_compaction.h
++ * include/linux/balloon_common.h
+  *
+  * Common interface definitions for making balloon pages movable by compaction.
+  *
+diff --git a/mm/Makefile b/mm/Makefile
+index 9a564f836403..a3390f255b82 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -112,7 +112,7 @@ obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
+ obj-$(CONFIG_Z3FOLD)	+= z3fold.o
+ obj-$(CONFIG_GENERIC_EARLY_IOREMAP) += early_ioremap.o
+ obj-$(CONFIG_CMA)	+= cma.o
+-obj-$(CONFIG_MEMORY_BALLOON) += balloon_compaction.o
++obj-$(CONFIG_MEMORY_BALLOON) += balloon_common.o
+ obj-$(CONFIG_PAGE_EXTENSION) += page_ext.o
+ obj-$(CONFIG_PAGE_TABLE_CHECK) += page_table_check.o
+ obj-$(CONFIG_CMA_DEBUGFS) += cma_debug.o
+diff --git a/mm/balloon_compaction.c b/mm/balloon_common.c
+similarity index 99%
+rename from mm/balloon_compaction.c
+rename to mm/balloon_common.c
+index 22c96fed70b5..54ed98653c78 100644
+--- a/mm/balloon_compaction.c
++++ b/mm/balloon_common.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * mm/balloon_compaction.c
++ * mm/balloon_common.c
+  *
+  * Common interface for making balloon pages movable by compaction.
+  *
+@@ -9,7 +9,7 @@
+ #include <linux/mm.h>
+ #include <linux/slab.h>
+ #include <linux/export.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ 
+ static void balloon_page_enqueue_one(struct balloon_dev_info *b_dev_info,
+ 				     struct page *page)
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 6a1597c92261..a6df467a250a 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -41,7 +41,7 @@
+ #include <linux/pfn_t.h>
+ #include <linux/memremap.h>
+ #include <linux/userfaultfd_k.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ #include <linux/page_idle.h>
+ #include <linux/page_owner.h>
+ #include <linux/sched/mm.h>
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index b2b1431352dc..4732f8c24264 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -54,7 +54,7 @@
+ #include <asm/div64.h>
+ 
+ #include <linux/swapops.h>
+-#include <linux/balloon_compaction.h>
++#include <linux/balloon_common.h>
+ #include <linux/sched/sysctl.h>
+ 
+ #include "internal.h"
 -- 
-2.35.1
+2.31.1
 
