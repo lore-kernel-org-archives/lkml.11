@@ -2,68 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B5DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4216C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:47:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234089AbiHPLqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
+        id S234529AbiHPLrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiHPLpc (ORCPT
+        with ESMTP id S234758AbiHPLo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:45:32 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DBEB99E5;
-        Tue, 16 Aug 2022 04:18:37 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 19:18:11 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660648715;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Slj6KW7j+aRbwOvxR1ThXixlcUq7nqFr9P+t/YYZJcc=;
-        b=BaliCKMl2s0UI1dHshRH3V+gFHeYLfnKcoPFxFMXm334CdYAlO10KFTqyU9eSp2RrP2ZWK
-        UUBxhaSPJ3z2xQPRRcyUAUlZOOZLkNVx7odMzN7qSKxppDpX1xK8qvU/443eFSatnLKSIk
-        1kEUjoDdnI7A9PV9lr6jpvbMPxgUB7Q=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Wu XiangCheng <wu.xiangcheng@linux.dev>
-To:     alexlzhu@fb.com
-Cc:     corbet@lwn.net, bobwxc@email.cn, rppt@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kernel-team@fb.com
-Subject: Re: [PATCH v2] docs: admin-guide/mm: Improve grammar on MM concepts
- documentation
-Message-ID: <Yvt88zVAtuCvxGZP@bobwxc.mipc>
-References: <20220816022621.253778-1-alexlzhu@fb.com>
+        Tue, 16 Aug 2022 07:44:56 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211E295A2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:17:34 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id w5so14467388lfq.5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:17:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=DnBcbykCjgjoLCVXUKOX/+T3fFd+3MmvxDCHpKOOzXY=;
+        b=DZxwtA4FyMl0z6PuJe5QAb+MASfLY57qimpbuVts1iYoLObAkpHlyCBK/IQE7tWGOr
+         ihXUa9Y8VSgJoCmtYvfgvVZUjCtvWfwS78bjL8LGWk7WZKohUqs/cJ4ccR4tsWH4C2yH
+         R64R4ux7EDnVTDdTaslRTB3X/y2NjhagfPDsGnK1Fk6qwQNoZIzYzJtJuQ6QPe/EYvRI
+         5P9NhuUFAKVriM3Jc51BMhj//DrTiB37wx49pHlYxUgrnhh7neVoNA+FYbbmpm1MvhRQ
+         2/WS+jowuBhf9KHo/9ZZqUfhdkCdD8ZQ37EdriweYSNdKS66IP1dRdBAcpkG5e5tWaLR
+         VH4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=DnBcbykCjgjoLCVXUKOX/+T3fFd+3MmvxDCHpKOOzXY=;
+        b=VvtJVntQEz1hBaiF492OhFbYF1atzuFhD0ip++AMTRt3bkVBQ1trbNycOFzxBP3gG/
+         2WxVTqSJxu/acG53p9fEcfPse+YLwHd3Le0pqc4ZzaWE4ln8RBR/GVcXfbNbsPBL4aNQ
+         inktKeyoBFsOiZdz0j7lUGvV8ixI8XTOK814RP1e7IbcHVhfNRd+wLaXnjqvdANp0ZCJ
+         X1PzOD7GvqX8AZAjIdCQJrvWrK+5choQ6kWuW4gL7+JcKh2pyCEsyLzdOfPdM4RP8oDW
+         Q5sQwqeRDuwV5/H1f77El0qT5QsbtiVxJXgMYPuU24bYnhRPOg3qiOhRJ8WAyczXEcpA
+         LyWQ==
+X-Gm-Message-State: ACgBeo3fYJr3gGays0RYyLv/caV3GvkPXlc8Qp97GFVoPGWWl6Pj4b3K
+        q9p6Qa7DXcNKpCcv0cZwsDcsuQ==
+X-Google-Smtp-Source: AA6agR6xjFFQtSED8gZoiFVO4nfTINML2Fbso7I7IHeF7JLH+EokSoD61FgiZY4mfRhy7u12dRcFBQ==
+X-Received: by 2002:a05:6512:4004:b0:48b:363b:fdc6 with SMTP id br4-20020a056512400400b0048b363bfdc6mr6505378lfb.448.1660648652293;
+        Tue, 16 Aug 2022 04:17:32 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id g5-20020a2eb5c5000000b0025e5755fd16sm1752920ljn.36.2022.08.16.04.17.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 04:17:31 -0700 (PDT)
+Message-ID: <f518afbd-be7b-283f-bdb2-7c7cd9d20ae5@linaro.org>
+Date:   Tue, 16 Aug 2022 14:17:30 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220816022621.253778-1-alexlzhu@fb.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] arm64: dts: microchip: use "okay" instead of "ok"
+Content-Language: en-US
+To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     luka.perkov@sartura.hr
+References: <20220816103613.22806-1-robert.marko@sartura.hr>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220816103613.22806-1-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-话说 alexlzhu@fb.com 于 2022-08-15 (一) 19:26:21 -0700 曰过：
-> From: Alexander Zhu <alexlzhu@fb.com>
+On 16/08/2022 13:36, Robert Marko wrote:
+> DT specification only allows "okay", and for projects like U-boot
+> status = "ok" won't enable the device at all.
 > 
-> Improve grammar on MM concepts documentation.
-> 
-> Signed-off-by: Alexander Zhu <alexlzhu@fb.com>
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-I have no authorization for this document, so only
 
-Acked-by: Wu XiangCheng <bobwxc@email.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Thanks,
 
-> ---
->  Documentation/admin-guide/mm/concepts.rst | 138 +++++++++++-----------
->  1 file changed, 68 insertions(+), 70 deletions(-)
-
--- 
-Wu XiangCheng	0x32684A40BCA7AEA7
-
+Best regards,
+Krzysztof
