@@ -2,403 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFDAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 915B5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 14:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234546AbiHPOZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 10:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S235622AbiHPOZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 10:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbiHPOZe (ORCPT
+        with ESMTP id S235656AbiHPOZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 10:25:34 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836A18306D;
-        Tue, 16 Aug 2022 07:25:33 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id i77so4815116ioa.7;
-        Tue, 16 Aug 2022 07:25:33 -0700 (PDT)
+        Tue, 16 Aug 2022 10:25:49 -0400
+Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EB89D8CC
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:25:48 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id sc31-20020a1709078a1f00b0073096c2b4e1so1874621ejc.22
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 07:25:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=hlPqld0MkkDzkP6nlR9+xwe5ym6yN7qtcrF+O0hs2y8=;
-        b=hhVXCUBxtngsOXAc6MKLkbqPptQ7caYH5YoYz2TsHCZipiu4nB29ljNurOc4WPWzPW
-         MKo0WvLARZDo7zmak1U7qrJRQGZY2nuEfNDIyp3qhsQJH63Am9rDKPpYCNg9Njwt8E+T
-         kkz7fH0b+PvbqqQxyp1Hqlw/MvWlGDdWRxq+h5cp4jqYQVwiK4rf5afli4fdqfiFe55B
-         32rP5fbB3A/l0fbZKr6FqUaoruUWBKCOxh1WnaAalrQPPtNVrMdSw8GMEQipYOEKyVcY
-         4OS9ujSuNDmzZZSSWm4EnJ2fPyJq5xr5V2yjx3bikhUe0j6rgFtCKyE5sJYgf9GY4yoP
-         5SkA==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=hy9UEqt4hbmFGdzKrmujqIQhaC8w3Q92dlmS+f+lkQs=;
+        b=nQ93mu+9MYBlAVVRshlJ2qiHdIT3FAlp3XTxCxOoApR/HIk3YecCcej73gcqPsmZpC
+         Wo1BaRsiZ1VlI05iAjCzu9eC3ih6+EhuFw9Tlk1nbMmJTjI0F2ucwa7n1As53X3vdCZK
+         adxnXbmSRHNUgqHpV9yTs/zYPnVLVDnp/L5MtUKqfiMS6eq3XkZnCz+eJmm1jWyHcN70
+         oZp5/OvdQWRgGPZkCAMnghcJ6jofS8ZHkL+nbfUde6ukenvSPj7OCdmHo7wvLVP3e8Hf
+         UXZpG16wW0EeGksHK2EousEcoTBHPobx3CQheSaTWV5wFSCcTWe2o0w5mEldnFN1Ivxf
+         ia6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=hlPqld0MkkDzkP6nlR9+xwe5ym6yN7qtcrF+O0hs2y8=;
-        b=C5RNi54raJSfIocVx4QuHVaBd7fOojtj3LyPKxwxnw1QHoKPXQU1j7nPiGZv4EtT4U
-         E3siM15Tq5LYyTujyB/bmvJzdZl58Su1VuXb5BFmiFv6rTwZbU++MQQ7DjvopTwzU2y6
-         muWAb+sSq/ElYU73rcezow9spbnkKhYwDXCoeRNu8HBluAAjp2L9EadYKysOEUvgM7cl
-         xrYcx9pp/gNZuhnXnW13OGOFbQQ5BwZEzH9W6mwB8g3ypol4KXTg0KNYYyHO8j5jlaYI
-         y5Vmp7IWRuqWZlXNJ0s/Fmt0qWHm/GweESdJVVJISavgRmfISaepWS5niDJgvLXtzCNr
-         Yi+Q==
-X-Gm-Message-State: ACgBeo1GkNWcVpBJp4BtsZp3O5M550H6BWbDMYaRE/pQmfoaxD0c5pt3
-        01Ckuhxgf9sUyvzET1fCUXfNevYf+0ajbCDoa1RH3PHhpyg=
-X-Google-Smtp-Source: AA6agR4xEs1XMyR1EW/f5TP3OUKn5DGc+mwcUXNgPFGPvWU/puhG5LB5XDjy/1yi/N+effprNDe6LAh/XgDwkBH0SD4=
-X-Received: by 2002:a05:6638:25d6:b0:342:916c:d59a with SMTP id
- u22-20020a05663825d600b00342916cd59amr9425579jat.51.1660659932782; Tue, 16
- Aug 2022 07:25:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220815211516.3169470-1-robdclark@gmail.com> <20220815211516.3169470-2-robdclark@gmail.com>
- <327c77d5-5812-a158-6c9f-c68e15a5a6b4@amd.com>
-In-Reply-To: <327c77d5-5812-a158-6c9f-c68e15a5a6b4@amd.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Tue, 16 Aug 2022 07:26:04 -0700
-Message-ID: <CAF6AEGu3oxM+EX_FsLpw4m0KouMyFMLN=AGGbf=6TVQGkJ7jQg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] dma-buf: Add ioctl to query mmap coherency/cache info
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Clark <robdclark@chromium.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>,
-        open list <linux-kernel@vger.kernel.org>
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=hy9UEqt4hbmFGdzKrmujqIQhaC8w3Q92dlmS+f+lkQs=;
+        b=X2a2z/qAOw8ezf4daFUc5cYarsgIYtda4DeRdS0osl5fUjzGVodqk3jsuNQflWJqG0
+         2GTsN/bYRZzj7hT3JuWD2qHDuDXwCh3cLogsRcnaTAP41YxnmN3CB9sEdHMvXHNhLGau
+         26e5fXXrFb2lQx3F819Uv6tAiSQmtwfJYe0PcOplf5d68hULTJ0OgHyoKeGW6KsuOvFE
+         UIgizN8x8Sn7LIiLkKPbwKl6ZX0tXLspmN8Ci10KcZtAfyKeGIeqp0lW/04XodqNKHxk
+         sn7Su3Demr19ANtDJXHPX+a00MBBWmxxERXPj9brR2wVkvo/cX1+yv8lxvChkQrIx617
+         mbsQ==
+X-Gm-Message-State: ACgBeo0LFasCYRKzTgqgUCHmp0xgS5YX/o4V8hdmOSYYvqa7pGfYqgy1
+        w+t6E7ze4Ss9O+mM+JCBJ9UIw2F/qw==
+X-Google-Smtp-Source: AA6agR4NrawCOqPWC6pOdWwNu471s80KRbfcN+j8Jq3jUxNPXYFC7pYpWjcXkV+7PgvXTxeCXJ7gCF+xbA==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:b8f6:52b8:6a74:6073])
+ (user=elver job=sendgmr) by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id
+ g10-20020a056402428a00b0042e8f7e1638mr19083589edc.228.1660659946902; Tue, 16
+ Aug 2022 07:25:46 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 16:25:29 +0200
+Message-Id: <20220816142529.1919543-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH] kfence: free instead of ignore pool from kmemleak
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, Andrew Morton <akpm@linux-foundation.org>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Max Schulze <max.schulze@online.de>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Yee Lee <yee.lee@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 1:27 AM Christian K=C3=B6nig
-<christian.koenig@amd.com> wrote:
->
-> Am 15.08.22 um 23:15 schrieb Rob Clark:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > This is a fairly narrowly focused interface, providing a way for a VMM
-> > in userspace to tell the guest kernel what pgprot settings to use when
-> > mapping a buffer to guest userspace.
-> >
-> > For buffers that get mapped into guest userspace, virglrenderer returns
-> > a dma-buf fd to the VMM (crosvm or qemu).  In addition to mapping the
-> > pages into the guest VM, it needs to report to drm/virtio in the guest
-> > the cache settings to use for guest userspace.  In particular, on some
-> > architectures, creating aliased mappings with different cache attribute=
-s
-> > is frowned upon, so it is important that the guest mappings have the
-> > same cache attributes as any potential host mappings.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> > v2: Combine with coherency, as that is a related concept.. and it is
-> >      relevant to the VMM whether coherent access without the SYNC ioctl
-> >      is possible; set map_info at export time to make it more clear
-> >      that it applies for the lifetime of the dma-buf (for any mmap
-> >      created via the dma-buf)
->
-> Well, exactly that's a conceptual NAK from my side.
->
-> The caching information can change at any time. For CPU mappings even
-> without further notice from the exporter.
+Due to recent changes to kmemleak and how memblock allocated memory is
+stored in the phys object tree of kmemleak, 07313a2b29ed ("mm: kfence:
+apply kmemleak_ignore_phys on early allocated pool") tried to fix KFENCE
+compatibility.
 
-You should look before you criticize, as I left you a way out.. the
-idea was that DMA_BUF_MAP_INCOHERENT should indicate that the buffer
-cannot be mapped to the guest.  We could ofc add more DMA_BUF_MAP_*
-values if something else would suit you better.  But the goal is to
-give the VMM enough information to dtrt, or return an error if mapping
-to guest is not possible.  That seems better than assuming mapping to
-guest will work and guessing about cache attrs
+KFENCE's memory can't simply be ignored, but must be freed completely
+due to it being handed out on slab allocations, and the slab post-alloc
+hook attempting to insert the object to the kmemleak object tree.
 
-BR,
--R
+Without this fix, reports like the below will appear during boot, and
+kmemleak is effectively rendered useless when KFENCE is enabled:
 
-> If the hardware can't use the caching information from the host CPU page
-> tables directly then that pretty much completely breaks the concept that
-> the exporter is responsible for setting up those page tables.
->
-> Regards,
-> Christian.
->
-> >
-> >   drivers/dma-buf/dma-buf.c    | 63 +++++++++++++++++++++++++++------
-> >   include/linux/dma-buf.h      | 11 ++++++
-> >   include/uapi/linux/dma-buf.h | 68 +++++++++++++++++++++++++++++++++++=
-+
-> >   3 files changed, 132 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-> > index 32f55640890c..262c4706f721 100644
-> > --- a/drivers/dma-buf/dma-buf.c
-> > +++ b/drivers/dma-buf/dma-buf.c
-> > @@ -125,6 +125,32 @@ static struct file_system_type dma_buf_fs_type =3D=
- {
-> >       .kill_sb =3D kill_anon_super,
-> >   };
-> >
-> > +static int __dma_buf_mmap(struct dma_buf *dmabuf, struct vm_area_struc=
-t *vma)
-> > +{
-> > +     int ret;
-> > +
-> > +     /* check if buffer supports mmap */
-> > +     if (!dmabuf->ops->mmap)
-> > +             return -EINVAL;
-> > +
-> > +     ret =3D dmabuf->ops->mmap(dmabuf, vma);
-> > +
-> > +     /*
-> > +      * If the exporter claims to support coherent access, ensure the
-> > +      * pgprot flags match the claim.
-> > +      */
-> > +     if ((dmabuf->map_info !=3D DMA_BUF_MAP_INCOHERENT) && !ret) {
-> > +             pgprot_t wc_prot =3D pgprot_writecombine(vma->vm_page_pro=
-t);
-> > +             if (dmabuf->map_info =3D=3D DMA_BUF_COHERENT_WC) {
-> > +                     WARN_ON_ONCE(pgprot_val(vma->vm_page_prot) !=3D p=
-gprot_val(wc_prot));
-> > +             } else {
-> > +                     WARN_ON_ONCE(pgprot_val(vma->vm_page_prot) =3D=3D=
- pgprot_val(wc_prot));
-> > +             }
-> > +     }
-> > +
-> > +     return ret;
-> > +}
-> > +
-> >   static int dma_buf_mmap_internal(struct file *file, struct vm_area_st=
-ruct *vma)
-> >   {
-> >       struct dma_buf *dmabuf;
-> > @@ -134,16 +160,12 @@ static int dma_buf_mmap_internal(struct file *fil=
-e, struct vm_area_struct *vma)
-> >
-> >       dmabuf =3D file->private_data;
-> >
-> > -     /* check if buffer supports mmap */
-> > -     if (!dmabuf->ops->mmap)
-> > -             return -EINVAL;
-> > -
-> >       /* check for overflowing the buffer's size */
-> >       if (vma->vm_pgoff + vma_pages(vma) >
-> >           dmabuf->size >> PAGE_SHIFT)
-> >               return -EINVAL;
-> >
-> > -     return dmabuf->ops->mmap(dmabuf, vma);
-> > +     return __dma_buf_mmap(dmabuf, vma);
-> >   }
-> >
-> >   static loff_t dma_buf_llseek(struct file *file, loff_t offset, int wh=
-ence)
-> > @@ -326,6 +348,27 @@ static long dma_buf_set_name(struct dma_buf *dmabu=
-f, const char __user *buf)
-> >       return 0;
-> >   }
-> >
-> > +static long dma_buf_info(struct dma_buf *dmabuf, void __user *uarg)
-> > +{
-> > +     struct dma_buf_info arg;
-> > +
-> > +     if (copy_from_user(&arg, uarg, sizeof(arg)))
-> > +             return -EFAULT;
-> > +
-> > +     switch (arg.param) {
-> > +     case DMA_BUF_INFO_MAP_INFO:
-> > +             arg.value =3D dmabuf->map_info;
-> > +             break;
-> > +     default:
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     if (copy_to_user(uarg, &arg, sizeof(arg)))
-> > +             return -EFAULT;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >   static long dma_buf_ioctl(struct file *file,
-> >                         unsigned int cmd, unsigned long arg)
-> >   {
-> > @@ -369,6 +412,9 @@ static long dma_buf_ioctl(struct file *file,
-> >       case DMA_BUF_SET_NAME_B:
-> >               return dma_buf_set_name(dmabuf, (const char __user *)arg)=
-;
-> >
-> > +     case DMA_BUF_IOCTL_INFO:
-> > +             return dma_buf_info(dmabuf, (void __user *)arg);
-> > +
-> >       default:
-> >               return -ENOTTY;
-> >       }
-> > @@ -530,6 +576,7 @@ struct dma_buf *dma_buf_export(const struct dma_buf=
-_export_info *exp_info)
-> >       dmabuf->priv =3D exp_info->priv;
-> >       dmabuf->ops =3D exp_info->ops;
-> >       dmabuf->size =3D exp_info->size;
-> > +     dmabuf->map_info =3D exp_info->map_info;
-> >       dmabuf->exp_name =3D exp_info->exp_name;
-> >       dmabuf->owner =3D exp_info->owner;
-> >       spin_lock_init(&dmabuf->name_lock);
-> > @@ -1245,10 +1292,6 @@ int dma_buf_mmap(struct dma_buf *dmabuf, struct =
-vm_area_struct *vma,
-> >       if (WARN_ON(!dmabuf || !vma))
-> >               return -EINVAL;
-> >
-> > -     /* check if buffer supports mmap */
-> > -     if (!dmabuf->ops->mmap)
-> > -             return -EINVAL;
-> > -
-> >       /* check for offset overflow */
-> >       if (pgoff + vma_pages(vma) < pgoff)
-> >               return -EOVERFLOW;
-> > @@ -1262,7 +1305,7 @@ int dma_buf_mmap(struct dma_buf *dmabuf, struct v=
-m_area_struct *vma,
-> >       vma_set_file(vma, dmabuf->file);
-> >       vma->vm_pgoff =3D pgoff;
-> >
-> > -     return dmabuf->ops->mmap(dmabuf, vma);
-> > +     return __dma_buf_mmap(dmabuf, vma);
-> >   }
-> >   EXPORT_SYMBOL_NS_GPL(dma_buf_mmap, DMA_BUF);
-> >
-> > diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> > index 71731796c8c3..37923c8d5c24 100644
-> > --- a/include/linux/dma-buf.h
-> > +++ b/include/linux/dma-buf.h
-> > @@ -23,6 +23,8 @@
-> >   #include <linux/dma-fence.h>
-> >   #include <linux/wait.h>
-> >
-> > +#include <uapi/linux/dma-buf.h>
-> > +
-> >   struct device;
-> >   struct dma_buf;
-> >   struct dma_buf_attachment;
-> > @@ -307,6 +309,13 @@ struct dma_buf {
-> >        */
-> >       size_t size;
-> >
-> > +     /**
-> > +      * @map_info:
-> > +      *
-> > +      * CPU mapping/coherency information for the buffer.
-> > +      */
-> > +     enum dma_buf_map_info map_info;
-> > +
-> >       /**
-> >        * @file:
-> >        *
-> > @@ -533,6 +542,7 @@ struct dma_buf_attachment {
-> >    * @ops:    Attach allocator-defined dma buf ops to the new buffer
-> >    * @size:   Size of the buffer - invariant over the lifetime of the b=
-uffer
-> >    * @flags:  mode flags for the file
-> > + * @map_info:        CPU mapping/coherency information for the buffer
-> >    * @resv:   reservation-object, NULL to allocate default one
-> >    * @priv:   Attach private data of allocator to this buffer
-> >    *
-> > @@ -545,6 +555,7 @@ struct dma_buf_export_info {
-> >       const struct dma_buf_ops *ops;
-> >       size_t size;
-> >       int flags;
-> > +     enum dma_buf_map_info map_info;
-> >       struct dma_resv *resv;
-> >       void *priv;
-> >   };
-> > diff --git a/include/uapi/linux/dma-buf.h b/include/uapi/linux/dma-buf.=
-h
-> > index b1523cb8ab30..07b403ffdb43 100644
-> > --- a/include/uapi/linux/dma-buf.h
-> > +++ b/include/uapi/linux/dma-buf.h
-> > @@ -85,6 +85,72 @@ struct dma_buf_sync {
-> >
-> >   #define DMA_BUF_NAME_LEN    32
-> >
-> > +/**
-> > + * enum dma_buf_map_info - CPU mapping info
-> > + *
-> > + * This enum describes coherency of a userspace mapping of the dmabuf.
-> > + *
-> > + * Importing devices should check dma_buf::map_info flag and reject an
-> > + * import if unsupported.  For example, if the exporting device uses
-> > + * @DMA_BUF_COHERENT_CACHED but the importing device does not support
-> > + * CPU cache coherency, the dma-buf import should fail.
-> > + */
-> > +enum dma_buf_map_info {
-> > +     /**
-> > +      * @DMA_BUF_MAP_INCOHERENT: CPU mapping is incoherent.
-> > +      *
-> > +      * Use of DMA_BUF_IOCTL_SYNC is required for CPU managed coherene=
-ncy.
-> > +      */
-> > +     DMA_BUF_MAP_INCOHERENT,
-> > +
-> > +     /**
-> > +      * @DMA_BUF_COHERENT_WC: CPU mapping is coherent but not cached.
-> > +      *
-> > +      * A cpu mmap'ing is coherent, and DMA_BUF_IOCTL_SYNC is not requ=
-ired.
-> > +      * However fences may be still required for synchronizing access.=
-  Ie.
-> > +      * coherency can only be relied upon by an explicit-fencing users=
-pace.
-> > +      * An implicit-sync userspace must still use DMA_BUF_IOCTL_SYNC.
-> > +      *
-> > +      * The cpu mapping is writecombine.
-> > +      */
-> > +     DMA_BUF_COHERENT_WC,
-> > +
-> > +     /**
-> > +      * @DMA_BUF_COHERENT_CACHED: CPU mapping is coherent and CPU cach=
-ed.
-> > +      *
-> > +      * A cpu mmap'ing is coherent, and DMA_BUF_IOCTL_SYNC is not requ=
-ired.
-> > +      * However fences may be still required for synchronizing access.=
-  Ie.
-> > +      * coherency can only be relied upon by an explicit-fencing users=
-pace.
-> > +      * An implicit-sync userspace must still use DMA_BUF_IOCTL_SYNC.
-> > +      *
-> > +      * The cpu mapping is cached.
-> > +      */
-> > +     DMA_BUF_COHERENT_CACHED,
-> > +};
-> > +
-> > +/**
-> > + * struct dma_buf_info - Query info about the buffer.
-> > + */
-> > +struct dma_buf_info {
-> > +
-> > +#define DMA_BUF_INFO_MAP_INFO    1
-> > +
-> > +     /**
-> > +      * @param: Which param to query
-> > +      *
-> > +      * DMA_BUF_INFO_MAP_INFO:
-> > +      *     Returns enum dma_buf_map_info, describing the coherency an=
-d
-> > +      *     caching of a CPU mapping of the buffer.
-> > +      */
-> > +     __u32 param;
-> > +     __u32 pad;
-> > +
-> > +     /**
-> > +      * @value: Return value of the query.
-> > +      */
-> > +     __u64 value;
-> > +};
-> > +
-> >   #define DMA_BUF_BASE                'b'
-> >   #define DMA_BUF_IOCTL_SYNC  _IOW(DMA_BUF_BASE, 0, struct dma_buf_sync=
-)
-> >
-> > @@ -95,4 +161,6 @@ struct dma_buf_sync {
-> >   #define DMA_BUF_SET_NAME_A  _IOW(DMA_BUF_BASE, 1, __u32)
-> >   #define DMA_BUF_SET_NAME_B  _IOW(DMA_BUF_BASE, 1, __u64)
-> >
-> > +#define DMA_BUF_IOCTL_INFO   _IOWR(DMA_BUF_BASE, 2, struct dma_buf_inf=
-o)
-> > +
-> >   #endif
->
+ | kmemleak: Cannot insert 0xffffff806e24f000 into the object search tree (overlaps existing)
+ | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-v8-0815+ #5
+ | Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+ | Call trace:
+ |  dump_backtrace.part.0+0x1dc/0x1ec
+ |  show_stack+0x24/0x80
+ |  dump_stack_lvl+0x8c/0xb8
+ |  dump_stack+0x1c/0x38
+ |  create_object.isra.0+0x490/0x4b0
+ |  kmemleak_alloc+0x3c/0x50
+ |  kmem_cache_alloc+0x2f8/0x450
+ |  __proc_create+0x18c/0x400
+ |  proc_create_reg+0x54/0xd0
+ |  proc_create_seq_private+0x94/0x120
+ |  init_mm_internals+0x1d8/0x248
+ |  kernel_init_freeable+0x188/0x388
+ |  kernel_init+0x30/0x150
+ |  ret_from_fork+0x10/0x20
+ | kmemleak: Kernel memory leak detector disabled
+ | kmemleak: Object 0xffffff806e24d000 (size 2097152):
+ | kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+ | kmemleak:   min_count = -1
+ | kmemleak:   count = 0
+ | kmemleak:   flags = 0x5
+ | kmemleak:   checksum = 0
+ | kmemleak:   backtrace:
+ |      kmemleak_alloc_phys+0x94/0xb0
+ |      memblock_alloc_range_nid+0x1c0/0x20c
+ |      memblock_alloc_internal+0x88/0x100
+ |      memblock_alloc_try_nid+0x148/0x1ac
+ |      kfence_alloc_pool+0x44/0x6c
+ |      mm_init+0x28/0x98
+ |      start_kernel+0x178/0x3e8
+ |      __primary_switched+0xc4/0xcc
+
+Reported-by: Max Schulze <max.schulze@online.de>
+Fixes: 07313a2b29ed ("mm: kfence: apply kmemleak_ignore_phys on early allocated pool")
+Fixes: 0c24e061196c ("mm: kmemleak: add rbtree and store physical address for objects allocated with PA")
+Signed-off-by: Marco Elver <elver@google.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Yee Lee <yee.lee@mediatek.com>
+---
+
+Note: This easily reproduces on v5.19, but on 6.0-rc1 the issue is
+hidden by yet more kmemleak changes, but properly freeing the pool is
+the correct thing to do either way, given the post-alloc slab hooks.
+---
+ mm/kfence/core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index c252081b11df..9e52f2b87374 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -617,12 +617,13 @@ static bool __init kfence_init_pool_early(void)
+ 
+ 	if (!addr) {
+ 		/*
+-		 * The pool is live and will never be deallocated from this point on.
+-		 * Ignore the pool object from the kmemleak phys object tree, as it would
+-		 * otherwise overlap with allocations returned by kfence_alloc(), which
+-		 * are registered with kmemleak through the slab post-alloc hook.
++		 * The pool is live and will never be deallocated from this
++		 * point on. Remove the pool object from the kmemleak phys
++		 * object tree, as it would otherwise overlap with allocations
++		 * returned by kfence_alloc(), which are registered with
++		 * kmemleak through the slab post-alloc hook.
+ 		 */
+-		kmemleak_ignore_phys(__pa(__kfence_pool));
++		kmemleak_free_part_phys(__pa(__kfence_pool), KFENCE_POOL_SIZE);
+ 		return true;
+ 	}
+ 
+-- 
+2.37.1.595.g718a3a8f04-goog
+
