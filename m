@@ -2,302 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D32BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E109C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiHPKkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S234829AbiHPKk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234821AbiHPKjb (ORCPT
+        with ESMTP id S235020AbiHPKk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:39:31 -0400
+        Tue, 16 Aug 2022 06:40:26 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D409FB9422;
-        Tue, 16 Aug 2022 02:56:43 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G52Dbu031473;
-        Tue, 16 Aug 2022 09:56:03 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E126E1AA4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:56:11 -0700 (PDT)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27G6rYEg026269;
+        Tue, 16 Aug 2022 09:55:58 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
  mime-version : subject : to : cc : references : from : in-reply-to :
  content-type : content-transfer-encoding; s=qcppdkim1;
- bh=Kkga1wf++c4F7p0F3XA1MWZfAKpsyxpIOAiuUzJwNJI=;
- b=ntCT2j78h/H3/4nK2a4FQtGOBswhmL34ctkTY6Y3ts8TY9qDsyDBPf6SRJYXcFT0OP+t
- 9XEfBk5LYv5aouTQZZ4bIpgBZB86a5UROtujBwZ13fdoQiTXMN9gt/EA+UHBtftIy9JK
- 0rGty45j16fbObANnZ6YDbZV+ljOYERObmzNnECNs/fNdOs980/1GURikYIrbPxyh+vq
- GHltbdkcmpbW1jqQwKi8Bela64Ngn3Iu7WEhI44FdHtKvGrQrOOdLho7at8dQB8AWOJp
- 7co3y6AHkhMd7AXG44+1fifD332Yvr/cPSaL+euYRpLSNBgqPClDUcnQ8mjvXc4JYE0x 8Q== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hyw582bm8-1
+ bh=FQp52PLFgVbJw2aht4M/bASp8ZYFDR4UuvYTkFhDuyY=;
+ b=XrCaKDNGEo1+OY3FO1PREM4pIoZ1XR/1Z3gLVFFp5l2+sbHZc8AcBDoUnowGjqW4VJ5g
+ D9Y+Ih9vjzFulAmUhagq25uowNRa6zdOS1rPvqqh1XWdnATEdfDSy9tzaQNK9V4l+iZT
+ ttpYd1i5+TjNNoXlDZuyF11ZN4ouf1WTfAjr62ZxYGLQoWEGwYZiI0+Weh+1h3M4Y7O+
+ a6f58FG5aO+lH8sTh3Gn6ckm1t8ELc7xz/GwdlihZjTtHoCqaa2Rle4HcuLVVYfm3DJw
+ vpo/uZQodPktxI9HuxY1jRHVP3PmqVbNAzRE9V2AiYDfJI+QnUHiAD6AUTHfQ9Lc45NA 0A== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j06c0rh55-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 09:56:02 +0000
+        Tue, 16 Aug 2022 09:55:58 +0000
+Received: from pps.filterd (NALASPPMTA05.qualcomm.com [127.0.0.1])
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27G9WU5r029316;
+        Tue, 16 Aug 2022 09:34:09 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 3hxnebq3xh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 09:34:09 +0000
+Received: from NALASPPMTA05.qualcomm.com (NALASPPMTA05.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27G9Y9sk031703;
+        Tue, 16 Aug 2022 09:34:09 GMT
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27G9p13L019181
+        by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 27G9Y9Fk031701
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 09:51:01 GMT
-Received: from [10.216.49.243] (10.80.80.8) by nalasex01a.na.qualcomm.com
+        Tue, 16 Aug 2022 09:34:09 +0000
+Received: from [10.216.44.198] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 16 Aug
- 2022 02:50:56 -0700
-Message-ID: <315fbab4-faa4-a147-5002-b06f1af3d158@quicinc.com>
-Date:   Tue, 16 Aug 2022 15:20:53 +0530
+ 2022 02:34:05 -0700
+Message-ID: <286e47e7-3d63-133c-aa6c-05100b557d42@quicinc.com>
+Date:   Tue, 16 Aug 2022 15:04:01 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 1/7] dt-bindings: remoteproc: qcom: Add SC7280 ADSP
- support
+ Thunderbird/91.9.1
+Subject: Re: [PATCH V3] mm: fix use-after free of page_ext after race with
+ memory-offline
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <quic_plai@quicinc.com>,
-        <bgoswami@quicinc.com>, <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <quic_rohkumar@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <devicetree@vger.kernel.org>
-References: <1660308466-410-1-git-send-email-quic_srivasam@quicinc.com>
- <1660308466-410-2-git-send-email-quic_srivasam@quicinc.com>
- <20220814203530.GA640885-robh@kernel.org>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <20220814203530.GA640885-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Michal Hocko <mhocko@suse.com>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <pasha.tatashin@soleen.com>, <sieberf@amazon.com>,
+        <shakeelb@google.com>, <sjpark@amazon.de>, <dhowells@redhat.com>,
+        <willy@infradead.org>, <quic_pkondeti@quicinc.com>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+References: <1660056403-20894-1-git-send-email-quic_charante@quicinc.com>
+ <Yvpg6odyDsXrjw5i@dhcp22.suse.cz>
+From:   Charan Teja Kalla <quic_charante@quicinc.com>
+In-Reply-To: <Yvpg6odyDsXrjw5i@dhcp22.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
+X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 9RYf9f2XQDFU0rIePLoAGDJ2a6pqssnK
-X-Proofpoint-GUID: 9RYf9f2XQDFU0rIePLoAGDJ2a6pqssnK
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: S-duNGSCNRSsd3EgSFzJ9C-7F0IYt5ZO
+X-Proofpoint-GUID: S-duNGSCNRSsd3EgSFzJ9C-7F0IYt5ZO
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-16_07,2022-08-16_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 adultscore=0 phishscore=0 mlxlogscore=999
- suspectscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0 spamscore=0
- impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208160038
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 clxscore=1015
+ suspectscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208160038
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Thanks Michal!!
 
-On 8/15/2022 2:05 AM, Rob Herring wrote:
-Thanks for Your time Rob!!!
-> On Fri, Aug 12, 2022 at 06:17:40PM +0530, Srinivasa Rao Mandadapu wrote:
->> Add ADSP PIL loading support for SC7280 SoCs.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> ---
->>   .../bindings/remoteproc/qcom,sc7280-adsp-pil.yaml  | 189 +++++++++++++++++++++
->>   1 file changed, 189 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-adsp-pil.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-adsp-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-adsp-pil.yaml
->> new file mode 100644
->> index 0000000..e656cc8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-adsp-pil.yaml
->> @@ -0,0 +1,189 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/remoteproc/qcom,sc7280-adsp-pil.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+On 8/15/2022 8:36 PM, Michal Hocko wrote:
+> On Tue 09-08-22 20:16:43, Charan Teja Kalla wrote:
+> [...]
+>> diff --git a/include/linux/page_ext.h b/include/linux/page_ext.h
+>> index fabb2e1..0e259da 100644
+>> --- a/include/linux/page_ext.h
+>> +++ b/include/linux/page_ext.h
+> [...]
+>> @@ -87,5 +83,14 @@ static inline void page_ext_init_flatmem_late(void)
+>>  static inline void page_ext_init_flatmem(void)
+>>  {
+>>  }
 >> +
->> +title: Qualcomm SC7280 ADSP Peripheral Image Loader
+>> +static inline struct page *page_ext_get(struct page *page)
+> struct page_ext *
+> 
+oops!! It didn't get caught as this is in !CONFIG_PAGE_EXTENSION.
+>> +{
+>> +	return NULL;
+>> +}
 >> +
->> +maintainers:
->> +  - Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> +static inline void page_ext_put(void)
+>> +{
+>> +}
+>>  #endif /* CONFIG_PAGE_EXTENSION */
+>>  #endif /* __LINUX_PAGE_EXT_H */
+> [...]
+>> diff --git a/mm/page_ext.c b/mm/page_ext.c
+>> index 3dc715d..91d7bd2 100644
+>> --- a/mm/page_ext.c
+>> +++ b/mm/page_ext.c
+>> @@ -9,6 +9,7 @@
+>>  #include <linux/page_owner.h>
+>>  #include <linux/page_idle.h>
+>>  #include <linux/page_table_check.h>
+>> +#include <linux/rcupdate.h>
+>>  
+>>  /*
+>>   * struct page extension
+>> @@ -59,6 +60,10 @@
+>>   * can utilize this callback to initialize the state of it correctly.
+>>   */
+>>  
+>> +#ifdef CONFIG_SPARSEMEM
+>> +#define PAGE_EXT_INVALID       (0x1)
+>> +#endif
 >> +
->> +description:
->> +  This document defines the binding for a component that loads and boots firmware
->> +  on the Qualcomm Technology Inc. ADSP.
+>>  #if defined(CONFIG_PAGE_IDLE_FLAG) && !defined(CONFIG_64BIT)
+>>  static bool need_page_idle(void)
+>>  {
+>> @@ -84,6 +89,7 @@ static struct page_ext_operations *page_ext_ops[] __initdata = {
+>>  unsigned long page_ext_size = sizeof(struct page_ext);
+>>  
+>>  static unsigned long total_usage;
+>> +static struct page_ext *lookup_page_ext(const struct page *page);
+>>  
+>>  static bool __init invoke_need_callbacks(void)
+>>  {
+>> @@ -125,6 +131,37 @@ static inline struct page_ext *get_entry(void *base, unsigned long index)
+>>  	return base + page_ext_size * index;
+>>  }
+>>  
+>> +/*
+>> + * This function gives proper page_ext of a memory section
+>> + * during race with the offline operation on a memory block
+>> + * this section falls into. Not using this function to get
+>> + * page_ext of a page, in code paths where extra refcount
+>> + * is not taken on that page eg: pfn walking, can lead to
+>> + * use-after-free access of page_ext.
+> I do not think this is really useful comment, it goes into way too much
+> detail about memory hotplug yet not enough to actually understand the
+> interaction because there are no references to the actual
+> synchronization scheme. I would go with something like:
+> 
+> /*
+>  * Get a page_ext associated with the given page. Returns NULL if
+>  * no such page_ext exists otherwise ensures that the page_ext will
+>  * stay alive until page_ext_put is called.
+>  * This implies a non-sleeping context.
+>  */
+
+Will update as per the Matthew input @
+https://lore.kernel.org/all/YvplthTjM8Ez5DIq@casper.infradead.org/
+>> + */
+>> +struct page_ext *page_ext_get(struct page *page)
+>> +{
+>> +	struct page_ext *page_ext;
 >> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,sc7280-adsp-pil
+>> +	rcu_read_lock();
+>> +	page_ext = lookup_page_ext(page);
+>> +	if (!page_ext) {
+>> +		rcu_read_unlock();
+>> +		return NULL;
+>> +	}
 >> +
->> +  reg:
->> +    minItems: 1
->> +    items:
->> +      - description: qdsp6ss register
->> +      - description: efuse q6ss register
+>> +	return page_ext;
+>> +}
 >> +
->> +  interrupts:
->> +    items:
->> +      - description: Watchdog interrupt
->> +      - description: Fatal interrupt
->> +      - description: Ready interrupt
->> +      - description: Handover interrupt
->> +      - description: Stop acknowledge interrupt
->> +      - description: Shutdown acknowledge interrupt
+>> +/*
+>> + * Must be called after work is done with the page_ext received
+>> + * with page_ext_get().
+>> + */
 >> +
->> +  interrupt-names:
->> +    items:
->> +      - const: wdog
->> +      - const: fatal
->> +      - const: ready
->> +      - const: handover
->> +      - const: stop-ack
->> +      - const: shutdown-ack
+>> +void page_ext_put(void)
+>> +{
+>> +	rcu_read_unlock();
+>> +}
+> Thinking about this some more I am not sure this is a good interface. It
+> doesn't have any reference to the actual object this is called for. This
+> is nicely visible in __folio_copy_owner which just calles page_ext_put()
+> twice because there are 2 page_exts and I can already see how somebody
+> might get confused this is just an error and send a patch to drop one of
+> them.
+> 
+> I do understand why you went this way because having a parameter which
+> is not used will likely lead to the same situation. On the other hand it
+> could be annotated to not raise warnings. One potential way to
+> workaround that would be
+> 
+> void page_ext_put(struct page_ext *page_ext)
+> {
+> 	if (unlikely(!page_ext))
+> 		return;
+> 	
+> 	rcu_read_unlock();
+> }
+> 
+> which would help to make the api slightly more robust in case somebody
+> does page_ext_put in a branch where page_ext_get returns NULL.
+> 
+Looks better. Will change this accordingly.
+
+> No strong opinion on that though. WDYI?
+> 
+>>  #ifndef CONFIG_SPARSEMEM
+>>  
+>>  
+> [...]
+>> @@ -183,19 +184,26 @@ static inline void __set_page_owner_handle(struct page_ext *page_ext,
+>>  noinline void __set_page_owner(struct page *page, unsigned short order,
+>>  					gfp_t gfp_mask)
+>>  {
+>> -	struct page_ext *page_ext = lookup_page_ext(page);
+>> +	struct page_ext *page_ext = page_ext_get(page);
+>>  	depot_stack_handle_t handle;
+>>  
+>>  	if (unlikely(!page_ext))
+>>  		return;
+> Either add a comment like this
+> 	/* save_stack can sleep in general so we have to page_ext_put */
+
+
+Vlastimil suggested to go for save stack first since !page_ext is mostly
+unlikely.  Snip from his comments:
+Why not simply do the save_stack() first and then page_ext_get() just
+once? It should be really rare that it's NULL, so I don't think we save
+much by avoiding an unnecessary save_stack(), while the overhead of
+doing two get/put instead of one will affect every call.
+
+https://lore.kernel.org/all/f5fd4942-b03e-1d1c-213b-9cd5283ced91@suse.cz/
+>> +	page_ext_put();
+>>  
+>>  	handle = save_stack(gfp_mask);
+> or just drop the initial page_ext_get altogether. This function is
+> called only when page_ext is supposed to be initialized and !page_ext
+> case above should be very unlikely. Or is there any reason to keep this?
+> 
+
+
 >> +
->> +  clocks:
->> +    items:
->> +      - description: XO clock
->> +      - description: GCC CFG NOC LPASS clock
->> +      - description: LPASS AHBS AON clock
->> +      - description: LPASS AHBM AON clock
->> +      - description: QDSP XO clock
->> +      - description: Q6SP6SS SLEEP clock
->> +      - description: Q6SP6SS CORE clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: xo
->> +      - const: gcc_cfg_noc_lpass
->> +      - const: lpass_ahbs_aon_cbcr
->> +      - const: lpass_ahbm_aon_cbcr
->> +      - const: qdsp6ss_xo
->> +      - const: qdsp6ss_sleep
->> +      - const: qdsp6ss_core
->> +
->> +  power-domains:
->> +    items:
->> +      - description: LCX power domain
->> +
->> +  resets:
->> +    items:
->> +      - description: PDC AUDIO SYNC RESET
->> +      - description: CC LPASS restart
->> +
->> +  reset-names:
->> +    items:
->> +      - const: pdc_sync
->> +      - const: cc_lpass
->> +
->> +  memory-region:
->> +    maxItems: 1
->> +    description: Reference to the reserved-memory for the Hexagon core
->> +
->> +  qcom,adsp-memory-regions:
->> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
->> +    description:
->> +      Each entry consists of 4 integers and represents the
->> +      list of memory regions accessed by ADSP firmware.
->> +    items:
->> +      items:
->> +        - description: |
->> +            "iova reg" indicates the address of virtual memory region.
->> +        - description: |
->> +            "physical reg" indicates the address of phyical memory region.
->> +        - description: |
->> +            "size" indicates the offset memory region.
->> +        - description: |
->> +            "access level" indicates the read, read and write access levels.
->> +          minimum: 0
->> +          maximum: 1
->> +
->> +  qcom,halt-regs:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    description:
->> +      Phandle reference to a syscon representing TCSR followed by the
->> +      three offsets within syscon for q6, modem and nc halt registers.
-> items:
->    - items:
->        - description: phandle to TCSR
->        - description: offset to q6 halt registers
->        - ...
-Okay. Will update accordingly and re post it.
->
->> +
->> +  qcom,smem-states:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    description: States used by the AP to signal the Hexagon core
->> +    items:
->> +      - description: Stop the modem
->> +
->> +  qcom,smem-state-names:
->> +    $ref: /schemas/types.yaml#/definitions/string
->> +    description: The names of the state bits used for SMP2P output
->> +    items:
->> +      - const: stop
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - interrupt-names
->> +  - clocks
->> +  - clock-names
->> +  - power-domains
->> +  - resets
->> +  - reset-names
->> +  - qcom,halt-regs
->> +  - memory-region
->> +  - qcom,smem-states
->> +  - qcom,smem-state-names
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +    #include <dt-bindings/clock/qcom,rpmh.h>
->> +    #include <dt-bindings/clock/qcom,gcc-sc7280.h>
->> +    #include <dt-bindings/clock/qcom,lpass-sc7280.h>
->> +    #include <dt-bindings/reset/qcom,sdm845-aoss.h>
->> +    #include <dt-bindings/reset/qcom,sdm845-pdc.h>
->> +    #include <dt-bindings/power/qcom-rpmpd.h>
->> +
->> +    remoteproc@3000000 {
->> +        compatible = "qcom,sc7280-adsp-pil";
->> +        reg = <0x03000000 0x5000>,
->> +              <0x355B000 0x10>;
->> +
->> +        interrupts-extended = <&pdc 162 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 7 IRQ_TYPE_EDGE_RISING>;
->> +
->> +        interrupt-names = "wdog", "fatal", "ready",
->> +                "handover", "stop-ack", "shutdown-ack";
->> +
->> +        clocks = <&rpmhcc RPMH_CXO_CLK>,
->> +                 <&gcc GCC_CFG_NOC_LPASS_CLK>,
->> +                 <&lpasscc LPASS_Q6SS_AHBM_CLK>,
->> +                 <&lpasscc LPASS_Q6SS_AHBS_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_XO_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_SLEEP_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_CORE_CLK>;
->> +        clock-names = "xo", "gcc_cfg_noc_lpass",
->> +                "lpass_ahbs_aon_cbcr",
->> +                "lpass_ahbm_aon_cbcr", "qdsp6ss_xo",
->> +                "qdsp6ss_sleep", "qdsp6ss_core";
->> +
->> +        power-domains = <&rpmhpd SC7280_LCX>;
->> +
->> +        resets = <&pdc_reset PDC_AUDIO_SYNC_RESET>,
->> +                 <&aoss_reset AOSS_CC_LPASS_RESTART>;
->> +        reset-names = "pdc_sync", "cc_lpass";
->> +
->> +        qcom,halt-regs = <&tcsr_mutex 0x23000 0x25000 0x28000 0x33000>;
->> +
->> +        memory-region = <&adsp_mem>;
->> +
->> +        qcom,smem-states = <&adsp_smp2p_out 0>;
->> +        qcom,smem-state-names = "stop";
->> +
->> +        qcom,adsp-memory-regions = <0x00100000 0x00100000 0x4000 0>,
->> +                                   <0x00113000 0x00113000 0x1000 0>,
->> +                                   <0x00117000 0x00117000 0x2000 1>;
->> +    };
->> -- 
->> 2.7.4
->>
->>
+>> +	/* Ensure page_ext is valid after page_ext_put() above */
+>> +	page_ext = page_ext_get(page);
+>> +	if (unlikely(!page_ext))
+>> +		return;
+>>  	__set_page_owner_handle(page_ext, handle, order, gfp_mask);
+>> +	page_ext_put();
+>>  }
+>>  
+> [...]
+>> @@ -558,13 +590,17 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  		 */
+>>  		handle = READ_ONCE(page_owner->handle);
+>>  		if (!handle)
+>> -			continue;
+>> +			goto loop;
+>>  
+>>  		/* Record the next PFN to read in the file offset */
+>>  		*ppos = (pfn - min_low_pfn) + 1;
+>>  
+>> +		memcpy(&page_owner_tmp, page_owner, sizeof(struct page_owner));
+>> +		page_ext_put();
+> why not
+> 		page_owner_tmp = *page_owner;
+
+Done!!
+> 
+>>  		return print_page_owner(buf, count, pfn, page,
+>> -				page_owner, handle);
+>> +				&page_owner_tmp, handle);
+>> +loop:
+>> +		page_ext_put();
+>>  	}
+>>  
+>>  	return 0;
