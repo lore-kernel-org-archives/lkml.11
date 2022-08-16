@@ -2,100 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0876C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CE5C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231795AbiHPLzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        id S235114AbiHPL4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234875AbiHPLzA (ORCPT
+        with ESMTP id S233569AbiHPLy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:55:00 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D550233E24;
-        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id h28so9081316pfq.11;
-        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=hOaorKIBjJgqQCTYy4uwngH9aexUVaWig1LTjcqZICE=;
-        b=jgi3MlyGRuZU0sGKK67DR+ftEmeqdLT017xvKjrTgWcDC44lWgbkwpPCE0CAwm7hFh
-         lDlcoo3GuOMyt5y4nAzsfDx/0Lt9vrHQSbnsuiKLAfKbvCyrfOE6imrTJld1pfSqC1BJ
-         uwr6FahbmRyeaC5jokmFRQFJ7MV7qtm0/lXZomIlul78Xm/+NgPxmPjSBkKCJ2dnrTVz
-         vSy2/vaGRt++ppwZBuYw7bJlXcYBKy5I3r4fku6fee5z8HHFgWIC+bLE2/iu00eQL/uD
-         egXY6VmTrZOz1dx64VMlrQJV3WaCW1s7927q5J4GXsymGszJoKD/v6x16nta7GQXisDG
-         dyGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=hOaorKIBjJgqQCTYy4uwngH9aexUVaWig1LTjcqZICE=;
-        b=RBToTnWMz0aP3HLZ3XZBYyY+MW571ybOpbAyn2qd4osorDjX3ozgeP7xnJUzONkm8N
-         q/hHLAB6X5dKOAr7SQItQIJIsMkIXO1OGqEK5/6fgyDBYaYnNb7DvxW/vSLKVAqnYABJ
-         04dVTb2SiMclbixOiUhu2UlY3JyJJ4uS3hyvU33Py24FtYxFiGQCDFWH4adF8JwQkRkl
-         oupaSqYj9/5G+Fs9Gpa5PTbLurlDLkJIpVvm6DSY0m8xkePzaIdfUdYywtqZYf6hUUHK
-         QeBzO5YAdut34481pFFCPErPh+Fm5a1Wv+vsU/zu9nnWy5UpDdhEiUGKy9WyWqQgrAcW
-         ivJg==
-X-Gm-Message-State: ACgBeo3DwgzWufV0MUKIYI9Wtr2E6vBVBWEtlzfe0Egfkpvmkmo5grdu
-        DVB+/LBDLUfDrnzAuJegvyc=
-X-Google-Smtp-Source: AA6agR44EcjSp1Z2nU/bfFkaSdYaV9nSLPoWvXPvyVGF+6/JAbvgpVfZQFY6QUKttAk7UnLTN9dEUA==
-X-Received: by 2002:a63:e109:0:b0:419:c3bc:b89 with SMTP id z9-20020a63e109000000b00419c3bc0b89mr17435298pgh.176.1660649649368;
-        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a15-20020a1709027e4f00b0016d72804664sm8776994pln.205.2022.08.16.04.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 04:34:08 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 16 Aug 2022 04:34:07 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/779] 5.15.61-rc1 review
-Message-ID: <20220816113407.GA1809610@roeck-us.net>
-References: <20220815180337.130757997@linuxfoundation.org>
+        Tue, 16 Aug 2022 07:54:56 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B6F1FC;
+        Tue, 16 Aug 2022 04:33:39 -0700 (PDT)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6TRy3SbYz67tfn;
+        Tue, 16 Aug 2022 19:28:46 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 13:33:36 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 12:33:34 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <lenb@kernel.org>, <rafael@kernel.org>, <andy.shevchenko@gmail.com>
+CC:     <linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>
+Subject: [PATCH PoC 0/3] ACPI/PNP/HISI_LPC: Refactor ACPI platform code for reuse
+Date:   Tue, 16 Aug 2022 19:27:21 +0800
+Message-ID: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 07:54:04PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.61 release.
-> There are 779 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
-> Anything received after that time might be too late.
-> 
+This series attempts to refactor the ACPI platform device creation code
+such that it may reused in the HiSilicon LPC driver. The topic was
+recently discussed at the following:
+https://lore.kernel.org/lkml/CAJZ5v0hkiOqhWyOcd2vjj-tcyHWB-cK=Dae-3sifhRfcbKWWGg@mail.gmail.com/
 
-Building powerpc:ppc32_allmodconfig ... failed
-Building powerpc:ppc6xx_defconfig ... failed
---------------
-Error log:
-arch/powerpc/sysdev/fsl_pci.c: In function 'fsl_add_bridge':
-arch/powerpc/sysdev/fsl_pci.c:601:39: error: 'PCI_CLASS_BRIDGE_PCI_NORMAL' undeclared
+So first off I'll say that I am not advocating pursing the changes in this
+series, but just wanted to share to show others how it would look.
 
-This affects v5.15.y and earlier branches. Several patches
-would be needded to make this work. In mainline:
+Apart from requiring PNP driver changes, the API in
+acpi_create_platform_device_ops() ain't pretty. And also the PNP change
+means that the LPC uart changes from ttyS1 -> ttyS0, which would be a
+nuisance for anyone still using a board which uses the LPC UART.
 
-0c551abfa004 powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-113fe88eed53 powerpc: Don't include asm/setup.h in asm/machdep.h
-e6f6390ab7b9 powerpc: Add missing headers
-904b10fb189c PCI: Add defines for normal and subtractive PCI bridges
+I have a separate change to show how the HiSilicon LPC driver would look
+by using platform_device_register_full() instead, and it is a lot neater:
+https://github.com/hisilicon/kernel-dev/commits/private-topic-lpc-6.0-platform-full
 
-There may be others since the patches touch several files, and it seems
-quite unlikely that they all apply to older kernels. It may be easier
-to define PCI_CLASS_BRIDGE_PCI_NORMAL locally.
+Anyway, the commit messages should describe anything else needed to be
+known.
 
-Guenter
+Please share any comments, thanks.
+
+John Garry (3):
+  ACPI / PNP: Don't add enumeration_by_parent devices
+  ACPI: platform: Refactor acpi_create_platform_device()
+  bus: hisi_lpc: Use acpi_create_platform_device_ops()
+
+ drivers/acpi/acpi_platform.c |  37 ++++++--
+ drivers/bus/hisi_lpc.c       | 165 +++++++++++++++--------------------
+ drivers/pnp/pnpacpi/core.c   |  13 ++-
+ include/linux/acpi.h         |  17 +++-
+ 4 files changed, 122 insertions(+), 110 deletions(-)
+
+-- 
+2.35.3
+
