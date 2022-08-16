@@ -2,122 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E097C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD8FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbiHPILM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
+        id S232177AbiHPILU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232512AbiHPIKg (ORCPT
+        with ESMTP id S232529AbiHPIKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:10:36 -0400
-X-Greylist: delayed 41899 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 22:36:40 PDT
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE1C67C84;
+        Tue, 16 Aug 2022 04:10:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C411067CA3
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660628203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7KUDnR7ITSXzGuGHvfD+T/glFccQWZ3L+AQhNkH7LGU=;
+        b=FFDNSbvKIMyhgkWAHIlH9TLopnddZ1QYJdfEI5zcoeTR2+l12UDZ4RP6SVqkFjrReeN8nt
+        3eZlyQXfOtmWetqEq0IOi2KxrRN7F70jgZmNSNbjrTZk9Y6VhEZHHhEIR54ZPYQoKLrgXs
+        aNaJI3YeOs4xp4ulJDcv5h38hp9x0N4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-338-5rajqE1_M-uEr5w1vL45_g-1; Tue, 16 Aug 2022 01:36:42 -0400
+X-MC-Unique: 5rajqE1_M-uEr5w1vL45_g-1
+Received: by mail-wm1-f70.google.com with SMTP id p19-20020a05600c1d9300b003a5c3141365so7156035wms.9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=7KUDnR7ITSXzGuGHvfD+T/glFccQWZ3L+AQhNkH7LGU=;
+        b=tNJZpRZI3LBr8UqIe3V0FG1FzmXQ2ogK5zaJNPCf2W4pSBPmDS6LYOuC1NDJTf2VKu
+         V7y9KIksZvP0sI4e+0xL2OWxsHtpr/awdy/f68xLBOW9pA3a7BUBGuOQcv34Rxjv+mTL
+         WxG9l88G8MEvk4yb9Tu4eBR0aeUyHJOvbPd6YVOmxVqsZvWZPOyCPuIBKmMsxHwFKBX/
+         PI0DTjsGRlYZLR1nHCpdXTL6/CZdodqJaLQdoxeVb1WAB6/ircukAwAUZW/Y5ZTAQkBX
+         FLLfkSr7czSKMg7vQB8RIxMiVXRuEOjwLXTtbnIISyi3ZTylqV9yG8V1XyBpAaQL/GTN
+         bX3g==
+X-Gm-Message-State: ACgBeo1+3jMKZBhRnAsGgBzAgsKKKjcK0s7OJbjSc3c7CIk3OwnxuxRN
+        2Nk6lQprRVZ/cxCAiUphjGcDQjNBUmNHBmUsT3p22FoIUR5xbzMr8Hk1zbrXNioGx4h/VbWSQyx
+        hMwAcPUdksbuyuN01sxdmEWX5fpXyNGmo0/w6loDWQkwAOjj5Gw2xVwDu0AnaD1o2Vq25Jg==
+X-Received: by 2002:a05:600c:1c83:b0:3a3:1f70:25a5 with SMTP id k3-20020a05600c1c8300b003a31f7025a5mr18412715wms.54.1660628201093;
+        Mon, 15 Aug 2022 22:36:41 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4kzmUA2mS0iZBrt5q7gKzWHCvCko36MWp8hTvWspyQu/9LQBLLi7D8U8GszfgwIHA29QVLJw==
+X-Received: by 2002:a05:600c:1c83:b0:3a3:1f70:25a5 with SMTP id k3-20020a05600c1c8300b003a31f7025a5mr18412690wms.54.1660628200817;
         Mon, 15 Aug 2022 22:36:40 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 9D5EB447D6;
-        Tue, 16 Aug 2022 05:36:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1660628198; bh=LDV8KEPCOtRgxMbfux9/6KsJjkeggvwXB+aHn8IlWLI=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=EcSu5BD6o5VrpBFcpBXJIz6I/+WaBA0jWNVC8P/rW4gyyZncMVpPk1bJgjIK5ksTW
-         fHqtXhFxFgAWCzs7stoll3p0mS2G/dTkmwoCCbvyqO+CLva3jPNvavrtR5GWCKtDli
-         2k45NWTqBLW3zOpP83gvbLc9/hQ2RrjzZv/xWgOqK670RCY5oY2mihSGfXOoFOM3Pd
-         L1Wj81O5ZhAmR99xY6Jvce2M6GvxekL6bBHrcL2OfG1ByMfu2plrwW032Fj67Egexc
-         mfSW4St7Shka/buVYsWjsTV1EW/c0OevIMBwJszNcv7hVP4nQrWtm7gfo+wKuHymKc
-         WhbfgvKJgpG0Q==
-Message-ID: <cd51b422-89f3-1856-5d3b-d6e5b0029085@marcan.st>
-Date:   Tue, 16 Aug 2022 14:36:31 +0900
+Received: from redhat.com ([2.55.4.37])
+        by smtp.gmail.com with ESMTPSA id q18-20020adff952000000b00222ed7ea203sm8819074wrr.100.2022.08.15.22.36.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 22:36:40 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:36:35 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andres Freund <andres@anarazel.de>
+Subject: [PATCH v4 4/6] virtio_pci: Revert "virtio_pci: support the arg sizes
+ of find_vqs()"
+Message-ID: <20220816053602.173815-5-mst@redhat.com>
+References: <20220816053602.173815-1-mst@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: es-ES
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>
-Cc:     Tejun Heo <tj@kernel.org>, peterz@infradead.org,
-        jirislaby@kernel.org, maz@kernel.org, mark.rutland@arm.com,
-        boqun.feng@gmail.com, catalin.marinas@arm.com, oneukum@suse.com,
-        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <YvqaK3hxix9AaQBO@slm.duckdns.org>
- <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
- <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
-In-Reply-To: <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816053602.173815-1-mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 14.27, Linus Torvalds wrote:
-> On Mon, Aug 15, 2022 at 9:15 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->>
->> Please revert this as test_and_set_bit was always supposed to be
->> a full memory barrier.  This is an arch bug.
-> 
-<snip>
-> From looking at it, the asm-generic implementation is a bit
-> questionable, though. In particular, it does
-> 
->         if (READ_ONCE(*p) & mask)
->                 return 1;
-> 
-> so it's *entirely* unordered for the "bit was already set" case.
+This reverts commit cdb44806fca2d0ad29ca644cbf1505433902ee0c: the legacy
+path is wrong and in fact can not support the proposed API since for a
+legacy device we never communicate the vq size to the hypervisor.
 
-These ops are documented in Documentation/atomic_bitops.txt as being
-unordered in the failure ("bit was already set" case), and that matches
-the generic implementation (which arm64 uses).
+Reported-by: Andres Freund <andres@anarazel.de>
+Fixes: cdb44806fca2 ("virtio_pci: support the arg sizes of find_vqs()")
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/virtio/virtio_pci_common.c | 18 ++++++++----------
+ drivers/virtio/virtio_pci_common.h |  1 -
+ drivers/virtio/virtio_pci_legacy.c |  6 +-----
+ drivers/virtio/virtio_pci_modern.c | 10 +++-------
+ 4 files changed, 12 insertions(+), 23 deletions(-)
 
-On the other hand, Twitter just pointed out that contradicting
-documentation exists (I believe this was the source of the third party
-doc I found that claimed it's always a barrier):
+diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+index 00ad476a815d..7ad734584823 100644
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -174,7 +174,6 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
+ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned int index,
+ 				     void (*callback)(struct virtqueue *vq),
+ 				     const char *name,
+-				     u32 size,
+ 				     bool ctx,
+ 				     u16 msix_vec)
+ {
+@@ -187,7 +186,7 @@ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned int in
+ 	if (!info)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	vq = vp_dev->setup_vq(vp_dev, info, index, callback, name, size, ctx,
++	vq = vp_dev->setup_vq(vp_dev, info, index, callback, name, ctx,
+ 			      msix_vec);
+ 	if (IS_ERR(vq))
+ 		goto out_info;
+@@ -284,7 +283,7 @@ void vp_del_vqs(struct virtio_device *vdev)
+ 
+ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
+ 		struct virtqueue *vqs[], vq_callback_t *callbacks[],
+-		const char * const names[], u32 sizes[], bool per_vq_vectors,
++		const char * const names[], bool per_vq_vectors,
+ 		const bool *ctx,
+ 		struct irq_affinity *desc)
+ {
+@@ -327,8 +326,8 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
+ 		else
+ 			msix_vec = VP_MSIX_VQ_VECTOR;
+ 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+-				     sizes ? sizes[i] : 0,
+-				     ctx ? ctx[i] : false, msix_vec);
++				     ctx ? ctx[i] : false,
++				     msix_vec);
+ 		if (IS_ERR(vqs[i])) {
+ 			err = PTR_ERR(vqs[i]);
+ 			goto error_find;
+@@ -358,7 +357,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
+ 
+ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned int nvqs,
+ 		struct virtqueue *vqs[], vq_callback_t *callbacks[],
+-		const char * const names[], u32 sizes[], const bool *ctx)
++		const char * const names[], const bool *ctx)
+ {
+ 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+ 	int i, err, queue_idx = 0;
+@@ -380,7 +379,6 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned int nvqs,
+ 			continue;
+ 		}
+ 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+-				     sizes ? sizes[i] : 0,
+ 				     ctx ? ctx[i] : false,
+ 				     VIRTIO_MSI_NO_VECTOR);
+ 		if (IS_ERR(vqs[i])) {
+@@ -404,15 +402,15 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
+ 	int err;
+ 
+ 	/* Try MSI-X with one vector per queue. */
+-	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, sizes, true, ctx, desc);
++	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, true, ctx, desc);
+ 	if (!err)
+ 		return 0;
+ 	/* Fallback: MSI-X with one vector for config, one shared for queues. */
+-	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, sizes, false, ctx, desc);
++	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, false, ctx, desc);
+ 	if (!err)
+ 		return 0;
+ 	/* Finally fall back to regular interrupts. */
+-	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, sizes, ctx);
++	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, ctx);
+ }
+ 
+ const char *vp_bus_name(struct virtio_device *vdev)
+diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
+index c0448378b698..a5ff838b85a5 100644
+--- a/drivers/virtio/virtio_pci_common.h
++++ b/drivers/virtio/virtio_pci_common.h
+@@ -80,7 +80,6 @@ struct virtio_pci_device {
+ 				      unsigned int idx,
+ 				      void (*callback)(struct virtqueue *vq),
+ 				      const char *name,
+-				      u32 size,
+ 				      bool ctx,
+ 				      u16 msix_vec);
+ 	void (*del_vq)(struct virtio_pci_vq_info *info);
+diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+index d75e5c4e637f..2257f1b3d8ae 100644
+--- a/drivers/virtio/virtio_pci_legacy.c
++++ b/drivers/virtio/virtio_pci_legacy.c
+@@ -112,7 +112,6 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 				  unsigned int index,
+ 				  void (*callback)(struct virtqueue *vq),
+ 				  const char *name,
+-				  u32 size,
+ 				  bool ctx,
+ 				  u16 msix_vec)
+ {
+@@ -126,13 +125,10 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	if (!num || vp_legacy_get_queue_enable(&vp_dev->ldev, index))
+ 		return ERR_PTR(-ENOENT);
+ 
+-	if (!size || size > num)
+-		size = num;
+-
+ 	info->msix_vector = msix_vec;
+ 
+ 	/* create the vring */
+-	vq = vring_create_virtqueue(index, size,
++	vq = vring_create_virtqueue(index, num,
+ 				    VIRTIO_PCI_VRING_ALIGN, &vp_dev->vdev,
+ 				    true, false, ctx,
+ 				    vp_notify, callback, name);
+diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+index f7965c5dd36b..be51ec849252 100644
+--- a/drivers/virtio/virtio_pci_modern.c
++++ b/drivers/virtio/virtio_pci_modern.c
+@@ -293,7 +293,6 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 				  unsigned int index,
+ 				  void (*callback)(struct virtqueue *vq),
+ 				  const char *name,
+-				  u32 size,
+ 				  bool ctx,
+ 				  u16 msix_vec)
+ {
+@@ -311,18 +310,15 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	if (!num || vp_modern_get_queue_enable(mdev, index))
+ 		return ERR_PTR(-ENOENT);
+ 
+-	if (!size || size > num)
+-		size = num;
+-
+-	if (size & (size - 1)) {
+-		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", size);
++	if (num & (num - 1)) {
++		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", num);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	info->msix_vector = msix_vec;
+ 
+ 	/* create the vring */
+-	vq = vring_create_virtqueue(index, size,
++	vq = vring_create_virtqueue(index, num,
+ 				    SMP_CACHE_BYTES, &vp_dev->vdev,
+ 				    true, true, ctx,
+ 				    vp_notify, callback, name);
+-- 
+MST
 
-include/asm-generic/bitops/instrumented-atomic.h
-
-So either one doc and the implementation are wrong, or the other doc is
-wrong.
-
->    --- a/include/asm-generic/bitops/atomic.h
->    +++ b/include/asm-generic/bitops/atomic.h
->    @@ -39,9 +39,6 @@ arch_test_and_set_bit(
->         unsigned long mask = BIT_MASK(nr);
-> 
->         p += BIT_WORD(nr);
->    -    if (READ_ONCE(*p) & mask)
->    -            return 1;
->    -
->         old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
->         return !!(old & mask);
->     }
->    @@ -53,9 +50,6 @@ arch_test_and_clear_bit
->         unsigned long mask = BIT_MASK(nr);
-> 
->         p += BIT_WORD(nr);
->    -    if (!(READ_ONCE(*p) & mask))
->    -            return 0;
->    -
->         old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
->         return !!(old & mask);
->     }
-> 
-> but the above is not just whitespace-damaged, it's entirely untested
-> and based purely on me looking at that code.
-
-That does work, I in fact tried that fix first to prove that the
-early-exit was the problem.
-
-I don't have a particularly strong opinion on which way is right here, I
-just saw the implementation matched the docs (that I found) and Will
-commented on the other thread implying this was all deliberate.
-
-- Hector
