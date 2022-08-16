@@ -2,81 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD3AC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D25CC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232167AbiHPM51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S233214AbiHPM5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232550AbiHPM5C (ORCPT
+        with ESMTP id S233481AbiHPM5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:57:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA838979E3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660654589; x=1692190589;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9dmsjCXBkUH6EeoqDGUhnKaCzPvSWsgnyLBDIcgCWsU=;
-  b=TAg/SUxNr8WXB7luDmAqP7atoTWoTzewEFD5JGrNIt5QM0H9JSAla5wM
-   TYdDMFWg1hHjEC8fHQ3SBE9uTuq+f1xEf8h3LhMISzUoIlPwnimtodOLA
-   cwmfp9pRQf826iA4wfAT+MFwjo7IxW/RSO4LNyn694Ef5lZrNWV47pPV8
-   Uxaozlh1jDxXvIAk0RTfafZTrz/HyqXJOtSbNr1LI+hz2ijoauyUOkeOO
-   uK8zqj6yf22cL5x23L2lXrQznduxcybXcbgE4Wq13m6gGbRe8STnPDyHw
-   TBqmIZQzLaJCTFVAHfqTtu5T0A5CpwGAmkPQqztTk4XVTxy1zdaGMIxc/
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293004107"
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="293004107"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:56:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="557686020"
-Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by orsmga003.jf.intel.com with ESMTP; 16 Aug 2022 05:56:27 -0700
-From:   kan.liang@linux.intel.com
-To:     peterz@infradead.org, acme@redhat.com, linux-kernel@vger.kernel.org
-Cc:     eranian@google.com, ak@linux.intel.com, namhyung@kernel.org,
-        irogers@google.com, Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 2/2] perf docs: Update the documentation for the save_type filter
-Date:   Tue, 16 Aug 2022 05:56:12 -0700
-Message-Id: <20220816125612.2042397-2-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220816125612.2042397-1-kan.liang@linux.intel.com>
-References: <20220816125612.2042397-1-kan.liang@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 16 Aug 2022 08:57:11 -0400
+X-Greylist: delayed 9449 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 Aug 2022 05:56:55 PDT
+Received: from ma1-aaemail-dr-lapp03.apple.com (ma1-aaemail-dr-lapp03.apple.com [17.171.2.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC977FE7E;
+        Tue, 16 Aug 2022 05:56:55 -0700 (PDT)
+Received: from pps.filterd (ma1-aaemail-dr-lapp03.apple.com [127.0.0.1])
+        by ma1-aaemail-dr-lapp03.apple.com (8.16.0.42/8.16.0.42) with SMTP id 27G78EXY029011;
+        Tue, 16 Aug 2022 00:30:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=from : content-type :
+ content-transfer-encoding : mime-version : subject : message-id : date :
+ cc : to; s=20180706; bh=kfbzQQ7kGHkA4s318UX6eWWGRUIQVHhzwyFKp7LGS68=;
+ b=XZeg04JzopgRnEAKr7LLyI+eN6PYFiHToju2YKjMu2mDdG/88pgM03OoneTXOXgAnQBk
+ RChDtQFXRFE5iO64sTW1gaAgy/KnTeWDj5ZU5zcj1EbV0kaLpxgAIo6NkGVk4+p97agU
+ 05ZvLx4HLPMZjhZDWy6nexqkl8HUYswFeC0Bmq9B73IKrdv6XhHVkKpF8TSgyOMSO10H
+ pVxHr8ADaD2zmy3U5KSY6bv5Nuq2FpvsHfFTqlahWQp/S5mT/4stUI6aBQ8HBfmwJFMA
+ yGZ4PaAZIPCVZ+zZpskfPiIMcE9VoOVReKPNnouw/DBgVylBTko5QnlRc2CQd6wNnTTv 9w== 
+Received: from sg-mailsvcp-mta-lapp01.asia.apple.com (sg-mailsvcp-mta-lapp01.asia.apple.com [17.84.67.69])
+        by ma1-aaemail-dr-lapp03.apple.com with ESMTP id 3hxaxuvjxj-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Tue, 16 Aug 2022 00:30:13 -0700
+Received: from sg-mailsvcp-mmp-lapp02.asia.apple.com
+ (sg-mailsvcp-mmp-lapp02.asia.apple.com [17.84.71.202])
+ by sg-mailsvcp-mta-lapp01.asia.apple.com
+ (Oracle Communications Messaging Server 8.1.0.18.20220407 64bit (built Apr  7
+ 2022))
+ with ESMTPS id <0RGP00XWR66BOX00@sg-mailsvcp-mta-lapp01.asia.apple.com>; Tue,
+ 16 Aug 2022 15:30:12 +0800 (+08)
+Received: from process_milters-daemon.sg-mailsvcp-mmp-lapp02.asia.apple.com by
+ sg-mailsvcp-mmp-lapp02.asia.apple.com
+ (Oracle Communications Messaging Server 8.1.0.18.20220407 64bit (built Apr  7
+ 2022)) id <0RGP00N0060RHF00@sg-mailsvcp-mmp-lapp02.asia.apple.com>; Tue,
+ 16 Aug 2022 15:30:11 +0800 (+08)
+X-Va-A: 
+X-Va-T-CD: 52f47d0d3a734aeac067923cd2934936
+X-Va-E-CD: a2066982c29c3a93c49ac808e2b7df0d
+X-Va-R-CD: 4618f2fbb1637c7babb5c70608677672
+X-Va-CD: 0
+X-Va-ID: 069cf63d-aaa0-4466-8a02-a5953dc52aa2
+X-V-A:  
+X-V-T-CD: 52f47d0d3a734aeac067923cd2934936
+X-V-E-CD: a2066982c29c3a93c49ac808e2b7df0d
+X-V-R-CD: 4618f2fbb1637c7babb5c70608677672
+X-V-CD: 0
+X-V-ID: d7370bab-5838-4c3e-91a5-e97aaaa09440
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-08-16_06:2022-08-16,2022-08-16 signatures=0
+Received: from smtpclient.apple (unknown [10.106.132.175])
+ by sg-mailsvcp-mmp-lapp02.asia.apple.com
+ (Oracle Communications Messaging Server 8.1.0.18.20220407 64bit (built Apr  7
+ 2022))
+ with ESMTPSA id <0RGP00S2Y6679P00@sg-mailsvcp-mmp-lapp02.asia.apple.com>; Tue,
+ 16 Aug 2022 15:30:11 +0800 (+08)
+From:   Vee Khee Wong <veekhee@apple.com>
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: quoted-printable
+MIME-version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: [net-next 1/1] stmmac: intel: remove unused 'has_crossts' flag
+Message-id: <4C6D4699-3BC3-4F31-86E2-B5CD7410CC0A@apple.com>
+Date:   Tue, 16 Aug 2022 15:30:07 +0800
+Cc:     tee.min.tan@linux.intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-08-16_06:2022-08-16,2022-08-16 signatures=0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
 
-Update the documentation to reflect the kernel changes.
+The 'has_crossts' flag was not used anywhere in the stmmac driver,
+removing it from both header file and dwmac-intel driver.
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Wong Vee Khee <veekhee@apple.com>
 ---
- tools/perf/Documentation/perf-record.txt | 3 +++
- 1 file changed, 3 insertions(+)
+drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 -
+include/linux/stmmac.h                            | 1 -
+2 files changed, 2 deletions(-)
 
-diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
-index 099817ef5150..d5c57ac1ee0a 100644
---- a/tools/perf/Documentation/perf-record.txt
-+++ b/tools/perf/Documentation/perf-record.txt
-@@ -397,6 +397,9 @@ following filters are defined:
- 	- abort_tx: only when the target is a hardware transaction abort
- 	- cond: conditional branches
- 	- save_type: save branch type during sampling in case binary is not available later
-+		     For the platforms with Intel Arch LBR support (12th-Gen+ client or
-+		     4th-Gen Xeon+ server), the save branch type is unconditionally enabled
-+		     when the taken branch stack sampling is enabled.
- 
- +
- The option requires at least one branch type among any, any_call, any_ret, ind_call, cond.
--- 
-2.35.1
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c =
+b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 52f9ed8db9c9..1d96ca96009b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -610,7 +610,6 @@ static int intel_mgbe_common_data(struct pci_dev =
+*pdev,
+	plat->int_snapshot_num =3D AUX_SNAPSHOT1;
+	plat->ext_snapshot_num =3D AUX_SNAPSHOT0;
+
+-	plat->has_crossts =3D true;
+	plat->crosststamp =3D intel_crosststamp;
+	plat->int_snapshot_en =3D 0;
+
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 8df475db88c0..fb2e88614f5d 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -257,7 +257,6 @@ struct plat_stmmacenet_data {
+	u8 vlan_fail_q;
+	unsigned int eee_usecs_rate;
+	struct pci_dev *pdev;
+-	bool has_crossts;
+	int int_snapshot_num;
+	int ext_snapshot_num;
+	bool int_snapshot_en;
+--=20
+2.32.1 (Apple Git-133)
 
