@@ -2,83 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9DFC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30806C32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiHPGvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
+        id S230521AbiHPGxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231128AbiHPGvH (ORCPT
+        with ESMTP id S231157AbiHPGw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:51:07 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D89CA107AFA
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 19:01:40 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxReJ7+vpiKy8CAA--.12277S4;
-        Tue, 16 Aug 2022 10:01:32 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V1 2/2] irqchip/loongson-liointc: Support to set irq type for ACPI path
-Date:   Tue, 16 Aug 2022 10:01:31 +0800
-Message-Id: <1660615291-35409-3-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1660615291-35409-1-git-send-email-lvjianmin@loongson.cn>
-References: <1660615291-35409-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf8DxReJ7+vpiKy8CAA--.12277S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7JrWUCF17WFW5CFy5Zw4UCFg_yoWfKrX_Cr
-        WI93Z3Ga4rZF1xJr97uw1jvryI9FWkW3WkuF45uasIv3y8X347urW7Zw13Ja97Kr10vF93
-        AF4F9rySka42yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kYjsxI4VWkCwAYFVCjjxCrM7CY07I20VC2zVCF04k26cxKx2IY
-        s7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4
-        kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_
-        Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14
-        v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
-        j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
-        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l42xK
-        82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67
-        AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIY
-        rxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14
-        v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU2xR6UU
-        UUU
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Tue, 16 Aug 2022 02:52:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5478721085A;
+        Mon, 15 Aug 2022 20:10:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D650EB815A6;
+        Tue, 16 Aug 2022 03:10:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A399C433D6;
+        Tue, 16 Aug 2022 03:10:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660619439;
+        bh=37qLmVEAM9Iq6CJiDtXaBzISHDDf+Lv6O7mWwx4DaDs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HX9/jnt6tBboR53wnB8Tc025a3lN/PLC6/cqTeZD5wSEyuXQ3jwD5a5+sY+Q+3yMM
+         a1FSJe18P3TcVh/gwVxzlg+K+3Ml+sPyDhICLENgyVjpqIjqCwJBnX33/B+O3QTtdB
+         IewyBAwKqI96HKNdXN1qB7wC8Ir0rdZEgIoPqSKIMPRmcnRQnPUfoLOukRlmmWJay+
+         t3Mopz45sI5X2A30HitdhpZYz+gNSVXfGxPKc1zEY7wHMZVjC8+Z7SKY2z+PEuQnyl
+         9aN/R2hEG3nHn3d3qJSW27j0TCr2hfzpKFNF9cmlYrLW9d7xsP1GGYSHngkk+s58u+
+         BESsDLJj5z8NA==
+Date:   Mon, 15 Aug 2022 20:10:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
+Subject: Re: [PATCH net-next,0/3] cleanup of qdisc offload function
+Message-ID: <20220815201038.4321b77e@kernel.org>
+In-Reply-To: <20220816020423.323820-1-shaozhengchao@huawei.com>
+References: <20220816020423.323820-1-shaozhengchao@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For ACPI path, the xlate callback used IRQ_TYPE_NONE and ignored
-the irq type in intspec[1]. For supporting to set type for
-irqs of the irqdomain, intspec[1] should be used to get irq
-type.
+On Tue, 16 Aug 2022 10:04:20 +0800 Zhengchao Shao wrote:
+> Some qdiscs don't care return value of qdisc offload function, so make 
+> function void.
 
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
----
- drivers/irqchip/irq-loongson-liointc.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+How many of these patches do you have? Is there a goal you're working
+towards? I don't think the pure return value removals are worth the
+noise. They don't even save LoC:
 
-diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
-index c4f3c886a..24755537 100644
---- a/drivers/irqchip/irq-loongson-liointc.c
-+++ b/drivers/irqchip/irq-loongson-liointc.c
-@@ -167,7 +167,12 @@ static int liointc_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
- 	if (WARN_ON(intsize < 1))
- 		return -EINVAL;
- 	*out_hwirq = intspec[0] - GSI_MIN_CPU_IRQ;
--	*out_type = IRQ_TYPE_NONE;
-+
-+	if (intsize > 1)
-+		*out_type = intspec[1] & IRQ_TYPE_SENSE_MASK;
-+	else
-+		*out_type = IRQ_TYPE_NONE;
-+
- 	return 0;
- }
- 
--- 
-1.8.3.1
-
+ 3 files changed, 9 insertions(+), 9 deletions(-)
