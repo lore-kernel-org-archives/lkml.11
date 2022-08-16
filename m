@@ -2,176 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0E8C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1323C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237470AbiHPVvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S237828AbiHPVvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiHPVv0 (ORCPT
+        with ESMTP id S237217AbiHPVva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 17:51:26 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824BD8E0C7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id w197so13529880oie.5
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
+        Tue, 16 Aug 2022 17:51:30 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADA28D3FD
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:28 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso114696pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
-        b=CJvwxuwd+0rt/bo4TkCNqYjlT4SJ6Aesn0zM6uXzP6TCT+LreKW44m+4ak4S4QcpN8
-         Z3emQFWvCmqT6EmdYqBJBiTKDxs25SPIFHJWRc2lCFCaMDG285aPNFHSJURzJUXrItiL
-         Ui0T4+b4CX6rGWwwzQfjXo8/X0Ju4rYSJ9xG3J7ltDjyoURr0U0yWlyr6RXfyYXVOrj/
-         dZni714OJ/a9KGzQWNmYg0CEkelbTwf73pNCb8n0Ac9BiqIv1/rm9RuUiqu/Zp2s8EQx
-         XozhxC5/9Z05RYEinUrW7q9aA6G43Pjq/Ad7nHIMnr1jM1fRLjCBEg6+JP0Ma1IBiniW
-         viLQ==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=V/HBLUGtbrafHDulaBOAprTvFvaFzo8t7Aw95pdiRo4=;
+        b=FR1I6kqyyzfgEPe7rWRaKSh18xY/1LGfk3cjVcbvWKfPteUhAaHpUJbC008d/iCqZx
+         Nb8O+c25QOEO989XAH3yS7KXALbBav/48cXQZATiHgypiOh36KlcpgQPtO8m6bIcFSaX
+         dVdAzk8Qku5a5AZ+6K2eneVmQqTpi8evjyquI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
-        b=S229wJ0rbYk2hXQhUm01k6v60xJkElfcwn4SHSE4I4SJB9TVJ0cN1cVPvThFo0C4N4
-         13n3SgLRh8AXI17y4/TTPee4KgyQmo9AS8HC4sMo45wxnBRASmnHZfN8ugYYT1SC5jT0
-         6xyYZHYhz4HSJzUo6tjjD2NT2vbutjE2ZV/QLRKx6kcRr8DXr4ExjGm0RHzh8VpsIuxq
-         pNftZzWSrcoNub4E9mlBcKHQ9RZ/6UplOQxrIBZecbv5ElPtwgcxqV1omzLsz3DzATh2
-         49ePvhhkZ5Q28UNBUoIyWueb8mNXQmXQCDbu+uZtj/MC3HBcKkFPqDZ1aq0wCqs/piae
-         UGhQ==
-X-Gm-Message-State: ACgBeo2Gt41wPm2FtUN/flKMJiOhbDK6Xk/5LEnU+cX7ZP8vXehrxNAC
-        o1y86T9y3O/j+ZVtG+bBYBsthvWNnQNWU4ohH4Gl
-X-Google-Smtp-Source: AA6agR4ffEEKYkbE47q7/sRZQjQuSsIQ8phb3aTW9UCETN6ndapbDy186fFAcL9M3UIMnxT1iC01UQw6kwBHZYMTE0o=
-X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
- h204-20020acab7d5000000b00343c47891c6mr257896oif.136.1660686682803; Tue, 16
- Aug 2022 14:51:22 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=V/HBLUGtbrafHDulaBOAprTvFvaFzo8t7Aw95pdiRo4=;
+        b=VAhT64H2PfXZBmoMa7ve2YNhDQ9sKkuQ7+/dqufDrTxCoKbhKOOG7zmq1EWap+jVUP
+         9ssACN0szo0xIb/6i0PQwPEZDBAAOdTxlifAt4ZT8errIS+iwvaUxoBhqbzh/JJ2tGoh
+         hVgy2mJYraWLGLjEtP1fgJVrLpZGpAM3ZR4n/mUnHbzVUOj2olS3ntRTJ3kxF9khDgmR
+         zkmareM399xAoZDUcNjA50qjU6X/koG73ML1W1E6GfUVLszqDsRCS1/5evM87vy57sQc
+         CG0C34YYdf5+ptfW9MYQ6Xy+lDFgbU9eVQsSIziljJqg4/+SgZDhdqxnruHmP8ZVBNXQ
+         J5Bw==
+X-Gm-Message-State: ACgBeo2sjGshJPu+Xeclqima51JyDIC80EC/yYlqqt8iH+15TBOyE9tC
+        Gej5HaAioOY7knaXtmnWkJapRv9FLuw7VQ==
+X-Google-Smtp-Source: AA6agR7zQmHstsMNN6y95CEPVGXA2copp9QkGVlEg4zN3irJ5gdVFcpG71l1MNHoPClicMycG1svag==
+X-Received: by 2002:a17:902:aa87:b0:172:689f:106b with SMTP id d7-20020a170902aa8700b00172689f106bmr14026659plr.127.1660686688000;
+        Tue, 16 Aug 2022 14:51:28 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
+        by smtp.gmail.com with ESMTPSA id z5-20020a623305000000b005323a1a9fecsm8916650pfz.101.2022.08.16.14.51.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 14:51:27 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH v6 5/7] platform/chrome: cros_typec_switch: Register mode switches
+Date:   Tue, 16 Aug 2022 21:48:33 +0000
+Message-Id: <20220816214857.2088914-6-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220816214857.2088914-1-pmalani@chromium.org>
+References: <20220816214857.2088914-1-pmalani@chromium.org>
 MIME-Version: 1.0
-References: <20220815162028.926858-1-fred@cloudflare.com>
-In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 16 Aug 2022 17:51:12 -0400
-Message-ID: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
-        tixxdz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 12:20 PM Frederick Lawler <fred@cloudflare.com> wrote:
->
-> While user namespaces do not make the kernel more vulnerable, they are however
-> used to initiate exploits. Some users do not want to block namespace creation
-> for the entirety of the system, which some distributions provide. Instead, we
-> needed a way to have some applications be blocked, and others allowed. This is
-> not possible with those tools. Managing hierarchies also did not fit our case
-> because we're determining which tasks are allowed based on their attributes.
->
-> While exploring a solution, we first leveraged the LSM cred_prepare hook
-> because that is the closest hook to prevent a call to create_user_ns().
->
-> The calls look something like this:
->
->     cred = prepare_creds()
->         security_prepare_creds()
->             call_int_hook(cred_prepare, ...
->     if (cred)
->         create_user_ns(cred)
->
-> We noticed that error codes were not propagated from this hook and
-> introduced a patch [1] to propagate those errors.
->
-> The discussion notes that security_prepare_creds() is not appropriate for
-> MAC policies, and instead the hook is meant for LSM authors to prepare
-> credentials for mutation. [2]
->
-> Additionally, cred_prepare hook is not without problems. Handling the clone3
-> case is a bit more tricky due to the user space pointer passed to it. This
-> makes checking the syscall subject to a possible TOCTTOU attack.
->
-> Ultimately, we concluded that a better course of action is to introduce
-> a new security hook for LSM authors. [3]
->
-> This patch set first introduces a new security_create_user_ns() function
-> and userns_create LSM hook, then marks the hook as sleepable in BPF. The
-> following patches after include a BPF test and a patch for an SELinux
-> implementation.
->
-> We want to encourage use of user namespaces, and also cater the needs
-> of users/administrators to observe and/or control access. There is no
-> expectation of an impact on user space applications because access control
-> is opt-in, and users wishing to observe within a LSM context
->
->
-> Links:
-> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
-> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
-> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->
-> Past discussions:
-> V4: https://lore.kernel.org/all/20220801180146.1157914-1-fred@cloudflare.com/
-> V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
-> V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
-> V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
->
-> Changes since v4:
-> - Update commit description
-> - Update cover letter
-> Changes since v3:
-> - Explicitly set CAP_SYS_ADMIN to test namespace is created given
->   permission
-> - Simplify BPF test to use sleepable hook only
-> - Prefer unshare() over clone() for tests
-> Changes since v2:
-> - Rename create_user_ns hook to userns_create
-> - Use user_namespace as an object opposed to a generic namespace object
-> - s/domB_t/domA_t in commit message
-> Changes since v1:
-> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
-> - Add selinux: Implement create_user_ns hook patch
-> - Change function signature of security_create_user_ns() to only take
->   struct cred
-> - Move security_create_user_ns() call after id mapping check in
->   create_user_ns()
-> - Update documentation to reflect changes
->
-> Frederick Lawler (4):
->   security, lsm: Introduce security_create_user_ns()
->   bpf-lsm: Make bpf_lsm_userns_create() sleepable
->   selftests/bpf: Add tests verifying bpf lsm userns_create hook
->   selinux: Implement userns_create hook
->
->  include/linux/lsm_hook_defs.h                 |   1 +
->  include/linux/lsm_hooks.h                     |   4 +
->  include/linux/security.h                      |   6 ++
->  kernel/bpf/bpf_lsm.c                          |   1 +
->  kernel/user_namespace.c                       |   5 +
->  security/security.c                           |   5 +
->  security/selinux/hooks.c                      |   9 ++
->  security/selinux/include/classmap.h           |   2 +
->  .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
->  .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
->  10 files changed, 168 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
+Register mode switch devices for Type-C connectors, when they are
+specified by firmware. These control Type-C configuration for any USB
+Type-C mode switches (sometimes known as "muxes") which are controlled
+by the ChromeOS EC.
 
-I just merged this into the lsm/next tree, thanks for seeing this
-through Frederick, and thank you to everyone who took the time to
-review the patches and add their tags.
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm.git next
+Changes since v5:
+- Change "Chrome OS" -> "ChromeOS".
+- Change "Type C" -> "Type-C".
+- Use device_property_present instead of fwnode_property_read_bool.
 
+Changes since v4:
+- No changes.
+
+Changes since v3:
+- No changes.
+
+Changes since v2:
+- Fixed missing "static" identifier.
+
+Changes since v1:
+- No changes.
+
+ drivers/platform/chrome/cros_typec_switch.c | 40 +++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
+index dc84cdec8f7f..f85687adb594 100644
+--- a/drivers/platform/chrome/cros_typec_switch.c
++++ b/drivers/platform/chrome/cros_typec_switch.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/usb/typec_altmode.h>
+ #include <linux/usb/typec_dp.h>
++#include <linux/usb/typec_mux.h>
+ #include <linux/usb/typec_retimer.h>
+ 
+ #define DRV_NAME "cros-typec-switch"
+@@ -22,6 +23,7 @@
+ /* Handles and other relevant data required for each port's switches. */
+ struct cros_typec_port {
+ 	int port_num;
++	struct typec_mux_dev *mode_switch;
+ 	struct typec_retimer *retimer;
+ 	struct cros_typec_switch_data *sdata;
+ };
+@@ -143,6 +145,15 @@ static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int po
+ 	return -ETIMEDOUT;
+ }
+ 
++static int cros_typec_mode_switch_set(struct typec_mux_dev *mode_switch,
++				      struct typec_mux_state *state)
++{
++	struct cros_typec_port *port = typec_mux_get_drvdata(mode_switch);
++
++	/* Mode switches have index 0. */
++	return cros_typec_configure_mux(port->sdata, port->port_num, 0, state->mode, state->alt);
++}
++
+ static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
+ {
+ 	struct cros_typec_port *port = typec_retimer_get_drvdata(retimer);
+@@ -159,9 +170,27 @@ static void cros_typec_unregister_switches(struct cros_typec_switch_data *sdata)
+ 		if (!sdata->ports[i])
+ 			continue;
+ 		typec_retimer_unregister(sdata->ports[i]->retimer);
++		typec_mux_unregister(sdata->ports[i]->mode_switch);
+ 	}
+ }
+ 
++static int cros_typec_register_mode_switch(struct cros_typec_port *port,
++					   struct fwnode_handle *fwnode)
++{
++	struct typec_mux_desc mode_switch_desc = {
++		.fwnode = fwnode,
++		.drvdata = port,
++		.name = fwnode_get_name(fwnode),
++		.set = cros_typec_mode_switch_set,
++	};
++
++	port->mode_switch = typec_mux_register(port->sdata->dev, &mode_switch_desc);
++	if (IS_ERR(port->mode_switch))
++		return PTR_ERR(port->mode_switch);
++
++	return 0;
++}
++
+ static int cros_typec_register_retimer(struct cros_typec_port *port, struct fwnode_handle *fwnode)
+ {
+ 	struct typec_retimer_desc retimer_desc = {
+@@ -230,6 +259,17 @@ static int cros_typec_register_switches(struct cros_typec_switch_data *sdata)
+ 		}
+ 
+ 		dev_dbg(dev, "Retimer switch registered for index %llu\n", index);
++
++		if (!device_property_present(fwnode->dev, "mode-switch"))
++			continue;
++
++		ret = cros_typec_register_mode_switch(port, fwnode);
++		if (ret) {
++			dev_err(dev, "Mode switch register failed\n");
++			goto err_switch;
++		}
++
++		dev_dbg(dev, "Mode switch registered for index %llu\n", index);
+ 	}
+ 
+ 	return 0;
 -- 
-paul-moore.com
+2.37.1.595.g718a3a8f04-goog
+
