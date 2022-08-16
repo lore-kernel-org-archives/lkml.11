@@ -2,91 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF3CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE4AC32771
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233836AbiHPJuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
+        id S229845AbiHPJuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbiHPJtd (ORCPT
+        with ESMTP id S234076AbiHPJuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:49:33 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E377BD76E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:22:04 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id a9so14030139lfm.12
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:22:04 -0700 (PDT)
+        Tue, 16 Aug 2022 05:50:23 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E4CDABA4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:29:04 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id 66so9434631vse.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Cc5a/Z1OZQ/Sp4oex9dmkDkQnrPr8Y8hlCBI2uCYHzA=;
-        b=fiDRi2HZhnLH0aZUZxx5zMFYg+kRxqfZ8b/gbzXvdbEOMUSsLkKCvcNynL4hySDQxA
-         m1GK8w5qxNUXZbhnbUOAb/RWoVguEnK7mq6wmLTVFwGDw++AVwE97trf0cZJGRUKHk4B
-         ugdqIQgEN/iEh8C4L4b5JRrnQ/26tifMaIyc4O7HpNoSyICCI3YfXHi6BEJAVxkwfsoC
-         4dXDHxU+eadTKBUHD1fgqE6Zq3Hmseu0E10W0cwd/dRDKo7b7wWBN7zhjkCK4R6N9lSf
-         qRZ/bk+TKFGA2FewRcrhJcWB7mn/MYynRQCArUicMErP3l3KcqAYTACWZ1/r4jHH8EoE
-         HRLA==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=5+JNREwE1A4uHAEmXDcDFaNJYYYR64QtVhTwaoPWxKs=;
+        b=BcZI6X0enB0qHLc2Ct1J/KkDNfJlGhCI8b15E1w1HHolQiPpqeCJ2koir8AliM9dbq
+         HAW/Yk4mnDYIGF/jbmSpSaUCUK56UMbDN9oU3UidOPCWunPcf9Uzwre0g2ywMdwlHAG6
+         Z/qDmDTkkrZ43r30niypHjN6bVu13qjEF4cEz2GbbGeGZlNzQlt80/kUDbBk5z38bHz/
+         +Km70PwltDktN2QcWPlc7KM1BGcx+YYK1hdVAwlVL2bf5R0UxwyJOJ8zc5wowtR9Dc+q
+         qmvpLA39ydXUiOHVE4730u4O6FtjnUYMd+7tdUE0TU9FHuPVQ6bGgjWqKfrYUEcwScxk
+         REAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Cc5a/Z1OZQ/Sp4oex9dmkDkQnrPr8Y8hlCBI2uCYHzA=;
-        b=chCKCB97ZMUYCdTIrWLTPwySSK/BeuoYo/eD97UJl7e0qPqCahLZxe9jtPGqo4M/gp
-         rXXL6bCNc8/K+mQzuadV+GFwG3FBIrmU4ZmwaZGLW9kvCn8iWKdF8Mf4YipPtKxjQNWC
-         i423yHCmpFhrEcK7RtAuxoO0cQLTdFuS36ghpwXnVy4vUQPWC0v5JN54fBGYe4vQbR1d
-         Hid8g3KzbySQBFWweMyBu0AhukC0Ag2QrT1yTEK22S/3sLPpPlM1/8JbVw7hYRZItPFQ
-         Dk2DcLNuA0lSy+zRUMMIi10tKlLq8cgpFZY9Hkf77iyo1v6xsNrPc/Amgysqe4MHGSVI
-         Ai2g==
-X-Gm-Message-State: ACgBeo3Ovhilq7quVJv/PIb0TuhogLFX2MbNSNFuvrPFOVUFKsWM+/C3
-        aOfBm7hHQCES2SknaKgC39jr4A==
-X-Google-Smtp-Source: AA6agR7LFK/9gYrW8u+lnQRIAyItIlW8HzneqHrf3znVQXnPj5MscIKAG/LghM5wSDnWni05dkHGvg==
-X-Received: by 2002:a2e:80da:0:b0:25e:6d34:6169 with SMTP id r26-20020a2e80da000000b0025e6d346169mr6447417ljg.531.1660641722837;
-        Tue, 16 Aug 2022 02:22:02 -0700 (PDT)
-Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id s17-20020a056512215100b0048aea84fa80sm1335691lfr.87.2022.08.16.02.22.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 02:22:02 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     yong.wu@mediatek.com, robin.murphy@arm.com, lee@kernel.org,
-        angelogioacchino.delregno@collabora.com, robh+dt@kernel.org,
-        tinghan.shen@mediatek.com, mandyjh.liu@mediatek.com,
-        will@kernel.org, joro@8bytes.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: (subset) [PATCH v4 02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
-Date:   Tue, 16 Aug 2022 12:21:59 +0300
-Message-Id: <166064169630.37858.3837655509098916044.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220729063208.16799-3-tinghan.shen@mediatek.com>
-References: <20220729063208.16799-1-tinghan.shen@mediatek.com> <20220729063208.16799-3-tinghan.shen@mediatek.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=5+JNREwE1A4uHAEmXDcDFaNJYYYR64QtVhTwaoPWxKs=;
+        b=CqWXDDKJdkj7+ebkigpx4No2xdNKUHtuaqRbxgIzwk96OOmAesI38yKAqWNpa5WC10
+         QrNX5jGGYx1Xhn24+Fc0heXN+s8CFSwSOcJiDEhIW9tumpxV0Tc98yDpIohtWvJIQsxQ
+         gzMCX/tr4BUtNVPfaqs97TB+qgCGPO6d+V7FXeqTQWcHBiiw6vgA61BSFuFs/tzE2xt7
+         T/ZYX6+cCOmGLo/0kmARi8KG4v61qomIHCSgczW3jdj/SPXQDpXUMit8QdmXJblYsZIK
+         EtQbo+ArwY34lXuTcptynXDHHFvqnn3eGgaqpLP9ZDvRJfpG6+rkbgpyalbGwpUkPc6/
+         bdOg==
+X-Gm-Message-State: ACgBeo03nNjiUYHiGEgsCPM0KklTdLVr1u115Lv0KFTqiqqViap1qsuQ
+        C2/yEOV+UcFKII9KnR26xV+ZouCzTIHznWBTHdE=
+X-Google-Smtp-Source: AA6agR5Cv9y0PctSYtKsM3IP6P3qlpaHGkogF2MPKOhbQ8gvEwzSqrOfvt9FFQZQse9Xl+U2A3lTiyJ8IZn/Gmsu44o=
+X-Received: by 2002:a67:d312:0:b0:388:4bb8:1a2e with SMTP id
+ a18-20020a67d312000000b003884bb81a2emr7682696vsj.17.1660638543553; Tue, 16
+ Aug 2022 01:29:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220812055710.357820-1-aneesh.kumar@linux.ibm.com> <20220812055710.357820-2-aneesh.kumar@linux.ibm.com>
+In-Reply-To: <20220812055710.357820-2-aneesh.kumar@linux.ibm.com>
+From:   huang ying <huang.ying.caritas@gmail.com>
+Date:   Tue, 16 Aug 2022 16:28:51 +0800
+Message-ID: <CAC=cRTNDN7mHvHfk=bSN5SDUY864+1EOAOAg6Wd030ENWfY+fg@mail.gmail.com>
+Subject: Re: [PATCH v14 01/10] mm/demotion: Add support for explicit memory tiers
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        Bharata B Rao <bharata@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Jul 2022 14:31:50 +0800, Tinghan Shen wrote:
-> The max clock items for the dts node with compatible
-> 'mediatek,mt8195-smi-sub-common' should be 3.
-> 
-> However, the dtbs_check of such node will get following message,
-> arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0'] is too long
->          From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-> 
-> [...]
+On Fri, Aug 12, 2022 at 1:58 PM Aneesh Kumar K.V
+<aneesh.kumar@linux.ibm.com> wrote:
 
-Applied, thanks!
+[snip]
 
-[02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
-        https://git.kernel.org/krzk/linux-mem-ctrl/c/9f8fb8032febf594914999c33493c682eaf138cb
+> diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
+> new file mode 100644
+> index 000000000000..bc7c1b799bef
+> --- /dev/null
+> +++ b/include/linux/memory-tiers.h
+> @@ -0,0 +1,15 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_MEMORY_TIERS_H
+> +#define _LINUX_MEMORY_TIERS_H
+> +
+> +/*
+> + * Each tier cover a abstrace distance chunk size of 128
+> + */
+> +#define MEMTIER_CHUNK_BITS     7
+> +#define MEMTIER_CHUNK_SIZE     (1 << MEMTIER_CHUNK_BITS)
+> +/*
+> + * Smaller abstract distance value imply faster(higher) memory tiers.
+> + */
+> +#define MEMTIER_ADISTANCE_DRAM (4 * MEMTIER_CHUNK_SIZE)
 
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This will make the abstract distance of DRAM the start of its memory
+tier.  So that any memory type that is slightly slower than DRAM will
+be put in a lower memory tier.  So I think it's better to put the DRAM
+at the middle of its memory tier by default.  For example,
+
+    4 * MEMTIER_CHUNK_SIZE + MEMTIER_CHUNK_SIZE / 2
+
+> +
+> +#endif  /* _LINUX_MEMORY_TIERS_H */
+
+[snip]
+
+Best Regards,
+Huang, Ying
