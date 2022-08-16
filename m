@@ -2,82 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E2FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F12EC28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbiHPNCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S235270AbiHPNCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235288AbiHPNAw (ORCPT
+        with ESMTP id S235303AbiHPNAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:00:52 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CBC696C1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:00:15 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1660654807tkv6gq1o
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 21:00:05 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: ILHsT53NKPiwfveQKIMlSb8uUNjcT61ZAfBArjaWHDMA2e/AYZKCPLqaoxIaV
-        5zms3kfliKaieI0WWHfpZ+sSDdPowLYuurOdn22sOLGELG1/iwa58Qdo+dqgGIZSyn91qZ9
-        v/DB5RsnAsFYICXOWwnl7/3Z8xDKBfaY1an0wi1pKxu2YbeqaPHrvxfm8Ykxbj0MftC734J
-        bXE4kVWNEdoECTeHSK0+rTHalup8+3DzJ+VNWx7Ok5waUXuqXdxk8kYDsGx+XXmGfMr/DKR
-        yyJxE3A2oG2njxFuYYsqOWFyakR3cb1UkoPJPinVrVG6XV908McHBNE/hS9Q151rd4Opqjs
-        iK01MYPhN/qEaDU3Tr5zCph8CTxJ7g7wdqjo31KmfPAIRXD/pmDL1MUby2L9VRRlu2hhfpy
-        3nAonOYC1zM=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] drivers/virtio: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 20:59:59 +0800
-Message-Id: <20220816125959.23737-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 16 Aug 2022 09:00:53 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29D286C06;
+        Tue, 16 Aug 2022 06:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660654825; x=1692190825;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=OMRMQgwvgYeKotw1UaJE5PsArWxM8zmGn3KgUNZ1AW8=;
+  b=ccDZiMJkaNv8+nonaWcXcZNvXxA37orQyHztYH9es780fzGKUHh9AIt0
+   cSBcvAKNkQ4oyiB7RUuk1Oe1vaFlhkNMyeC+tKK1aWpQBcHQ2TctXkYOS
+   YzfuAq/N/gQXau4HkqqBRIg8jCG57nqgk981lFkL9uUuiw0Lp/t32uhwp
+   I=;
+X-IronPort-AV: E=Sophos;i="5.93,241,1654560000"; 
+   d="scan'208";a="230216051"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 13:00:14 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id E12C23002EE;
+        Tue, 16 Aug 2022 13:00:11 +0000 (UTC)
+Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
+ EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 13:00:06 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 13:00:04 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 13:00:03
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id 480FC5AA; Tue, 16 Aug 2022 13:00:02 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <brgl@bgdev.pl>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>
+Subject: [PATCH 2/2] eeprom: at24: add enable gpio support
+Date:   Tue, 16 Aug 2022 13:00:02 +0000
+Message-ID: <20220816130002.41450-3-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816130002.41450-1-farbere@amazon.com>
+References: <20220816130002.41450-1-farbere@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+Add gpio support to enable the eeprom device as part of probe sequence.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+Signed-off-by: Eliav Farber <farbere@amazon.com>
 ---
- drivers/virtio/virtio_mmio.c           | 2 +-
- drivers/virtio/virtio_pci_modern_dev.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/eeprom/at24.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index f9a36bc7ac27..f638142654e6 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -255,7 +255,7 @@ static void vm_set_status(struct virtio_device *vdev, u8 status)
+diff --git a/drivers/misc/eeprom/at24.c b/drivers/misc/eeprom/at24.c
+index dc3537651b80..06535b9e1da5 100644
+--- a/drivers/misc/eeprom/at24.c
++++ b/drivers/misc/eeprom/at24.c
+@@ -623,6 +623,7 @@ static int at24_probe(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 	bool i2c_fn_i2c, i2c_fn_block;
+ 	unsigned int i, num_addresses;
++	struct gpio_desc *enable_gpio;
+ 	struct at24_data *at24;
+ 	struct regmap *regmap;
+ 	size_t at24_size;
+@@ -630,6 +631,10 @@ static int at24_probe(struct i2c_client *client)
+ 	u8 test_byte;
+ 	int err;
  
- 	/*
- 	 * Per memory-barriers.txt, wmb() is not needed to guarantee
--	 * that the the cache coherent memory writes have completed
-+	 * that the cache coherent memory writes have completed
- 	 * before writing to the MMIO region.
- 	 */
- 	writel(status, vm_dev->base + VIRTIO_MMIO_STATUS);
-diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-index a0fa14f28a7f..b790f30b2b56 100644
---- a/drivers/virtio/virtio_pci_modern_dev.c
-+++ b/drivers/virtio/virtio_pci_modern_dev.c
-@@ -469,7 +469,7 @@ void vp_modern_set_status(struct virtio_pci_modern_device *mdev,
- 
- 	/*
- 	 * Per memory-barriers.txt, wmb() is not needed to guarantee
--	 * that the the cache coherent memory writes have completed
-+	 * that the cache coherent memory writes have completed
- 	 * before writing to the MMIO region.
- 	 */
- 	vp_iowrite8(status, &cfg->device_status);
++	enable_gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_HIGH);
++	if (IS_ERR(enable_gpio))
++		return PTR_ERR(enable_gpio);
++
+ 	i2c_fn_i2c = i2c_check_functionality(client->adapter, I2C_FUNC_I2C);
+ 	i2c_fn_block = i2c_check_functionality(client->adapter,
+ 					       I2C_FUNC_SMBUS_WRITE_I2C_BLOCK);
 -- 
-2.36.1
+2.37.1
 
