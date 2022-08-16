@@ -2,88 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C41BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B55BBC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiHPGvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S230509AbiHPGvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231302AbiHPGum (ORCPT
+        with ESMTP id S230516AbiHPGvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:50:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC8E107AE4;
-        Mon, 15 Aug 2022 19:01:26 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6DmV0jmLzXdgr;
-        Tue, 16 Aug 2022 09:57:14 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 16 Aug
- 2022 10:01:24 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,3/3] net: sched: make red_offload() void
-Date:   Tue, 16 Aug 2022 10:04:23 +0800
-Message-ID: <20220816020423.323820-4-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220816020423.323820-1-shaozhengchao@huawei.com>
-References: <20220816020423.323820-1-shaozhengchao@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+        Tue, 16 Aug 2022 02:51:05 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62920107AF4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 19:01:40 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxReJ7+vpiKy8CAA--.12277S2;
+        Tue, 16 Aug 2022 10:01:31 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V1 0/2] irqchip: Support to set irq type for ACPI path
+Date:   Tue, 16 Aug 2022 10:01:29 +0800
+Message-Id: <1660615291-35409-1-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: AQAAf8DxReJ7+vpiKy8CAA--.12277S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYF7k0a2IF6FyUM7kC6x804xWl1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
+        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
+        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr
+        0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVCm-wCF04k2
+        0xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+        UI43ZEXa7IU8fwIDUUUUU==
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of function red_offload is unused, make red_offload()
-void.
+For ACPI path of pch-pic and liointc driver, setting irq
+type is not supported yet, so the patch series add code
+to implement it.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/sched/sch_red.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Jianmin Lv (2):
+  irqchip/loongson-pch-pic: Support to set irq type for ACPI path
+  LoongArch: Support to set irq type for liointc
 
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 40adf1f07a82..8425f4169eed 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -181,7 +181,7 @@ static void red_reset(struct Qdisc *sch)
- 	red_restart(&q->vars);
- }
- 
--static int red_offload(struct Qdisc *sch, bool enable)
-+static void red_offload(struct Qdisc *sch, bool enable)
- {
- 	struct red_sched_data *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
-@@ -191,7 +191,7 @@ static int red_offload(struct Qdisc *sch, bool enable)
- 	};
- 
- 	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
--		return -EOPNOTSUPP;
-+		return;
- 
- 	if (enable) {
- 		opt.command = TC_RED_REPLACE;
-@@ -207,7 +207,7 @@ static int red_offload(struct Qdisc *sch, bool enable)
- 		opt.command = TC_RED_DESTROY;
- 	}
- 
--	return dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_RED, &opt);
-+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_RED, &opt);
- }
- 
- static void red_destroy(struct Qdisc *sch)
+ drivers/acpi/pci_irq.c                 |  3 ++-
+ drivers/irqchip/irq-loongson-liointc.c |  7 ++++++-
+ drivers/irqchip/irq-loongson-pch-pic.c | 10 ++++++----
+ 3 files changed, 14 insertions(+), 6 deletions(-)
+
 -- 
-2.17.1
+1.8.3.1
 
