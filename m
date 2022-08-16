@@ -2,68 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BB7C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C1AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238039AbiHPWj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        id S237477AbiHPWmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiHPWj4 (ORCPT
+        with ESMTP id S230056AbiHPWmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:39:56 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65B37963B;
-        Tue, 16 Aug 2022 15:39:54 -0700 (PDT)
-Received: from rustam-GF63-Thin-9RCX.. (unknown [136.169.224.60])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 0977B40D403E;
-        Tue, 16 Aug 2022 22:39:48 +0000 (UTC)
-From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Subject: [PATCH] net: dsa: sja1105: fix buffer overflow in sja1105_setup_devlink_regions()
-Date:   Wed, 17 Aug 2022 03:38:45 +0300
-Message-Id: <20220817003845.389644-1-subkhankulov@ispras.ru>
-X-Mailer: git-send-email 2.34.1
+        Tue, 16 Aug 2022 18:42:21 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B6A90815;
+        Tue, 16 Aug 2022 15:42:20 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id q19so10572952pfg.8;
+        Tue, 16 Aug 2022 15:42:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=JgdM6PCu4xquExA3dHL+HJQyYf6q82sc1qa9WCQu3gg=;
+        b=ZnzfzCZP/hNebeixm1qHo6YLgGhuGVkdNxUrDCvXage6xxIo8K5aYhuJBElHwXNlGD
+         H7keXWn5xtNUsKJC7oB1DZSN60uAjV9ILO1hz2+KPHr2sHx5qWwJHXgI7wHHT2zkeqHW
+         RiRpchXpmgnqfXD4eL2i64a0Hso7KLbH8dJN218q6cXEjhPb4wObLbDn3rmBxwabtVOm
+         8nOeFT4lj4HIMxMj9Jp65P8fzonyI6PwwFnSvn1dkH7ZNO3JOaiu/8HIOJVtKw+dhMLJ
+         QDhUKcrNUf6IgmCAkR9wz/GM0KLrx3hcKz0Gpr8FvgMKMGYcZqOaBTL3QcDH8uL504d+
+         1tFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=JgdM6PCu4xquExA3dHL+HJQyYf6q82sc1qa9WCQu3gg=;
+        b=qplVCjGsAITLY34AH/Cmh4AroPyz8wq0PrKTKK4pw0bHH3GzvWIlFpcxHxCMPo/elV
+         R9MhZbncl6H5RiFTYn6n+w0hZwQeFdhShHau7kxfxpxakh9r0B+QB8GSPMIxqdvKY+n0
+         7gfwuG4emfQPQq8r+MhBwAe9cTEhh2n+KCq+F8/7k1XXcq8PyAtluynN97lKOQSm7pkT
+         aeV3NNtyjcBcFzbKhBomRXdL61RBhZPVcKtHdNqgzi89O8+z4IHScaV6sMtR1dZy4H4k
+         eZZyx9N18Hi7jzfkMRlIddQELhN7ehH/5GXbsq+J0v+dZN/DB28Ja0vq06K2tnUVgPUi
+         GwEA==
+X-Gm-Message-State: ACgBeo1GrMLkGt6BmlFH/d12btcWpf3+EJ55aUip2OdfGH7BrWYJOC/i
+        N2TJ5ARHO/WRjwhK8nyCBoM=
+X-Google-Smtp-Source: AA6agR7oV11+9KJzqokY0E/MJ+Ti4nqWQcmG7NQZdyHrFhYegwzn8YN4NXJNs8GuY6k9mwbRJ1loTA==
+X-Received: by 2002:a63:1857:0:b0:41c:4217:426e with SMTP id 23-20020a631857000000b0041c4217426emr19565486pgy.285.1660689740295;
+        Tue, 16 Aug 2022 15:42:20 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:7229])
+        by smtp.gmail.com with ESMTPSA id m13-20020a170902db0d00b0016c46ff9741sm9656054plx.67.2022.08.16.15.42.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 15:42:19 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 16 Aug 2022 12:42:18 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [RESEND PATCH 4/5] kernfs: Replace per-fs rwsem with hashed
+ rwsems.
+Message-ID: <YvwdShstDCK+uQ+R@slm.duckdns.org>
+References: <20220810111017.2267160-1-imran.f.khan@oracle.com>
+ <20220810111017.2267160-5-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810111017.2267160-5-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If an error occurs in dsa_devlink_region_create(), then 'priv->regions'
-array will be accessed by negative index '-1'.
+Hello,
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+I'm bandwidth constrained right now and can't really shepherd this patchset,
+so I'm not gonna ack or nack the series. That said, here are my thoughts
+after glancing through it:
 
-Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Fixes: bf425b82059e ("net: dsa: sja1105: expose static config as devlink region")
----
- drivers/net/dsa/sja1105/sja1105_devlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+* I find the returning-with-rwsem-held interface and usage odd. We return
+  with locks held all the time, so that part in itself is fine but how it's
+  used in the proposed patch is pretty alien.
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_devlink.c b/drivers/net/dsa/sja1105/sja1105_devlink.c
-index 0569ff066634..10c6fea1227f 100644
---- a/drivers/net/dsa/sja1105/sja1105_devlink.c
-+++ b/drivers/net/dsa/sja1105/sja1105_devlink.c
-@@ -93,7 +93,7 @@ static int sja1105_setup_devlink_regions(struct dsa_switch *ds)
- 
- 		region = dsa_devlink_region_create(ds, ops, 1, size);
- 		if (IS_ERR(region)) {
--			while (i-- >= 0)
-+			while (--i >= 0)
- 				dsa_devlink_region_destroy(priv->regions[i]);
- 			return PTR_ERR(region);
- 		}
+* I don't understand why the topo_mutex is needed. What is its relationship
+  with rename_lock?
+
+* Can't the double/triple lock helpers loop over the sorted list instead of
+  if'ing each case?
+
+Thanks.
+
 -- 
-2.34.1
-
+tejun
