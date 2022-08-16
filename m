@@ -2,146 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA94DC32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DB9C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237898AbiHPWQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
+        id S237911AbiHPWSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237958AbiHPWQv (ORCPT
+        with ESMTP id S237999AbiHPWRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:16:51 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07EF78BCD
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:16:50 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id u10so8889049qvp.12
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:16:50 -0700 (PDT)
+        Tue, 16 Aug 2022 18:17:53 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7296A901B7;
+        Tue, 16 Aug 2022 15:17:51 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id l64so10482704pge.0;
+        Tue, 16 Aug 2022 15:17:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=zAVoK2y0IblTkUtCF2+DJlXYzSXXXw12A5petDOhN5E=;
-        b=IP+BohMQzQjIx2VjirAenZa/lMePA7zPokS9BlYFTRN8m/nGjLgAQ/rTpaE9elClY7
-         LeObnzazdZXAcQxZ+7mv03rgF3EcrZsMotDhbdt4jZQ4KtN3R6y57tuD8Cy3ZbBotVZh
-         GrBeWl3KTeEfYXH606jCLEHMaBIYhCD6+bi2duKLThctxnxDArlUqsAV2s2IRzoJA514
-         5l0EOsva/nmhAYKFZdRuXIEZeGB90/CTD/gGDevfLJ/ymkbVc0dUR6DnN/BaNX6zZo59
-         BLMxOxTSp3Uqccmqb3QyNVBDXliGREWGBITeNloI4zvjEj0ZmJXkIL1/xqUMdZC6/ogh
-         Rrwg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=84gL6qYXoIL91eAhUH7dgvAezoFgyrY4+iuV6650YZc=;
+        b=cYK3wI6YLLfLwF08C0BXRx0SjLpb5jVdFgPwFiFNGD7iqYTo8GOVDvWG7Jmb/7WXKj
+         LZqDhlcFpn1xH3Rt+OkY8yAesdoU+LiRMTqkoFuxLQ3RqgA/b9Yk/uzjHTId2jQ9OOWR
+         0CAzm282cGgT6on95ZFkONfXjLnxT2yWLDFx+0JrPUQjyFIE9wrMllZel1FMDJVV+yVF
+         NmDUSrT/6W04x3S5qm5drBTu/mXHtmn65n5P1J4kKVufEF2Xrvgr4rH1DZ04QUdkZi/n
+         EkiovqyPY+bDGmO41dlaUlvTJreyii310HhegiZDWOUHyZnWSVM8qyCr0/lS8GQyXald
+         Smew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=zAVoK2y0IblTkUtCF2+DJlXYzSXXXw12A5petDOhN5E=;
-        b=TERMNA8AymWwlBWrqsEwER5V5xFieceUs6IGJ/lqqfs0TiRlAGiUVV1SQoaWIPYbkr
-         jHsXXTQzs5uoS/a029ddYlX23a0NqJ3Ixq8zBqbE6m4rgsUcvsoGCW7+qnGKKhRHAR9S
-         epX+nyC0VH1CfvI2/phN6twWIEq7UOVGx4HpkirI70InOlXRxym9lZUHcZtHxmzGSszh
-         7Fstii0ANCga1Zz8lv8HYkzCVyJqOFtySRn2yrcaNBGX4wfJt1pQQv0Kv9O9SQidg0HB
-         WdTJBN/SFFsLM+NqOfNgqqM59xae6VnSvBVUPyph3XhucqBIzC9WQeu3eBQysBLP0wYR
-         EeRw==
-X-Gm-Message-State: ACgBeo3woizP9SkKLH8B595am4w+3PYkQN/kW5tEirZXQUKmPnqPBe3D
-        wmGRqoeW5b9Ou3QfHS3U3lhoqUM0aqFaYiYWlLxCFQ==
-X-Google-Smtp-Source: AA6agR4rcZ3y0cSZ5tIp/Q/Gtnd8PqnUBfvhciEjwRRV0JFXzi+SKPnM81czOBZvk96BaLNcdiEFk8k8DislOFP+L+8=
-X-Received: by 2002:a05:6214:20a8:b0:477:1882:3e7 with SMTP id
- 8-20020a05621420a800b00477188203e7mr19871631qvd.44.1660688209597; Tue, 16 Aug
- 2022 15:16:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220816214945.742924-1-haoluo@google.com> <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
-In-Reply-To: <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 16 Aug 2022 15:16:38 -0700
-Message-ID: <CA+khW7hHGL1DAMSOjbJSj21wJYY=j4VrRJcFB1zv52Db20_MGA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: allow disabling auto attach
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=84gL6qYXoIL91eAhUH7dgvAezoFgyrY4+iuV6650YZc=;
+        b=vBVjC4V9sEmJ/RMcSvNbv7dil+988uamzcKJFJKpkktrXqDlSyNN6ltIvGjwsye05A
+         yhM5usYh964xje0vMAN/S2NCtGgckanrOYQzNdCsLdh3bimvdszO1Ub3tksor88F/Qmz
+         ivW61qmtHCyGTDymdjA39BdsPE3OIlGGjn3G3MKRifNh97TVknW3ewiX4iOvffIaoeOY
+         2TXW48mb1Or/6N79DD7yozA+tF+JJHLVRxjWnzoPrnw1xPSs55o7H6akwB+BudNH8ZpV
+         57cSTekNegynBwFoCggng825sO93pU+aO0JI/qNTpfa2IQQfkSpQawhyVKTHMM2tXwP4
+         9AKg==
+X-Gm-Message-State: ACgBeo2CIO9xXShY/vQaIzX5RHj1IAaikFCdPTK3QxxuxT3Jnv/Aw9Ca
+        BZ5Ia+jMUdz9AR1EGtZzc/U=
+X-Google-Smtp-Source: AA6agR65u1hPTOpZiganCVlM6hJi4TdQ8cu//l+GzkFJSC517cP01lba9WOpusrLCNOakdJIhLZdHQ==
+X-Received: by 2002:a05:6a00:1a4f:b0:52e:33bf:f3d with SMTP id h15-20020a056a001a4f00b0052e33bf0f3dmr22914951pfv.61.1660688270902;
+        Tue, 16 Aug 2022 15:17:50 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:d539:e967:9fd8:5c81])
+        by smtp.gmail.com with ESMTPSA id 3-20020a620603000000b0052b7f0ff197sm8965943pfg.49.2022.08.16.15.17.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 15:17:50 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 1/4] tools headers UAPI: Sync linux/perf_event.h with the kernel sources
+Date:   Tue, 16 Aug 2022 15:17:44 -0700
+Message-Id: <20220816221747.275828-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220816221747.275828-1-namhyung@kernel.org>
+References: <20220816221747.275828-1-namhyung@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 3:01 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 16, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > Add libbpf APIs for disabling auto-attach for individual functions.
-> > This is motivated by the use case of cgroup iter [1]. Some iter
-> > types require their parameters to be non-zero, therefore applying
-> > auto-attach on them will fail. With these two new APIs, Users who
-> > want to use auto-attach and these types of iters can disable
-> > auto-attach for them and perform manual attach.
-> >
-> > [1] https://lore.kernel.org/bpf/CAEf4BzZ+a2uDo_t6kGBziqdz--m2gh2_EUwkGLDtMd65uwxUjA@mail.gmail.com/
-> >
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 16 ++++++++++++++++
-> >  tools/lib/bpf/libbpf.h |  2 ++
-> >  2 files changed, 18 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index aa05a99b913d..25f654d25b46 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-[...]
-> >  const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog)
-> >  {
-> >         return prog->insns;
-> > @@ -12349,6 +12362,9 @@ int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
-> >                 if (!prog->autoload)
-> >                         continue;
-> >
-> > +               if (!prog->autoattach)
-> > +                       continue;
-> > +
->
-> nit: I'd combine as if (!prog->autoload || !prog->autoattach), they
-> are very coupled in this sense
->
+To pick the trivial change in:
 
-Sure.
+  119a784c8127 ("perf/core: Add a new read format to get a number of lost samples")
 
-> >                 /* auto-attaching not supported for this program */
-> >                 if (!prog->sec_def || !prog->sec_def->prog_attach_fn)
-> >                         continue;
-> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > index 61493c4cddac..88a1ac34b12a 100644
-> > --- a/tools/lib/bpf/libbpf.h
-> > +++ b/tools/lib/bpf/libbpf.h
-> > @@ -260,6 +260,8 @@ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
-> >  LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
-> >  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
-> >  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-> > +LIBBPF_API bool bpf_program__autoattach(const struct bpf_program *prog);
-> > +LIBBPF_API void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach);
->
-> please add these APIs to libbpf.map as well
->
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/include/uapi/linux/perf_event.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Ok. Which section? LIBBPF_1.0.0? Do the items in each section have a
-particular order?
+diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+index e2b77fbca91e..581ed4bdc062 100644
+--- a/tools/include/uapi/linux/perf_event.h
++++ b/tools/include/uapi/linux/perf_event.h
+@@ -301,6 +301,7 @@ enum {
+  *	  { u64		time_enabled; } && PERF_FORMAT_TOTAL_TIME_ENABLED
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		id;           } && PERF_FORMAT_ID
++ *	  { u64		lost;         } && PERF_FORMAT_LOST
+  *	} && !PERF_FORMAT_GROUP
+  *
+  *	{ u64		nr;
+@@ -308,6 +309,7 @@ enum {
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		value;
+  *	    { u64	id;           } && PERF_FORMAT_ID
++ *	    { u64	lost;         } && PERF_FORMAT_LOST
+  *	  }		cntr[nr];
+  *	} && PERF_FORMAT_GROUP
+  * };
+@@ -317,8 +319,9 @@ enum perf_event_read_format {
+ 	PERF_FORMAT_TOTAL_TIME_RUNNING		= 1U << 1,
+ 	PERF_FORMAT_ID				= 1U << 2,
+ 	PERF_FORMAT_GROUP			= 1U << 3,
++	PERF_FORMAT_LOST			= 1U << 4,
+ 
+-	PERF_FORMAT_MAX = 1U << 4,		/* non-ABI */
++	PERF_FORMAT_MAX = 1U << 5,		/* non-ABI */
+ };
+ 
+ #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
+-- 
+2.37.1.595.g718a3a8f04-goog
 
-> it would be also nice to have a simple test validating that skeleton's
-> auto-attach doesn't attach program (no link will be created) if
-> bpf_program__set_autoattach(false) is called before. Can you please
-> add that as well?
->
-
-Ok. Will add a test and send v2.
-
-> >
-> >  struct bpf_insn;
-> >
-> > --
-> > 2.37.1.595.g718a3a8f04-goog
-> >
