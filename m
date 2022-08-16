@@ -2,90 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97487C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A3DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237859AbiHPWIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        id S237415AbiHPWJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237847AbiHPWIZ (ORCPT
+        with ESMTP id S237848AbiHPWIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:08:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F2613E2F
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660687703; x=1692223703;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rgDFuZeQwMuGSnBvzmdq3JP1KTVaVWKnFt+ZWxja3wk=;
-  b=MFRsP/kj1La/JW+NeG4OFjtO4vnqeQZWCR9DsPbJuPrFkuiar0uysfdw
-   IiSfLS7lZr+rzkBBzledpfYx5Vlz7y4pET1ELMeFVelUcGhX8Ko3GSIzF
-   wAk9mP2PFQlDvy/mpeqBK5HP5NqYj1rBDsIZtw2okbbvBThjPaMO7j75Z
-   aWXBkDtxHwd5QqxTWO8OKSclxVxYQm+PLoAjXTI72jM6lV3vl4pc1L7wi
-   fkKeuJikZeM8fBO4v4smenkbq/IzT6DhWg9A75C3ef/LFix20rzOBixAi
-   5tbQuOH5eEpBPPR9Kx5MS+zKkytV5zuBG7sua77dGdAVMzZtC0BvT1KNd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="356339154"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="356339154"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 15:08:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="640205516"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 16 Aug 2022 15:08:02 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oO4jC-0000Gi-0d;
-        Tue, 16 Aug 2022 22:08:02 +0000
-Date:   Wed, 17 Aug 2022 06:07:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>
-Subject: [intel-tdx:kvm-upstream-workaround 49/308]
- ./usr/include/asm/kvm.h:606:22: warning: field 'cpuid' with variable sized
- type 'struct kvm_cpuid2' not at the end of a struct or class is a GNU
- extension
-Message-ID: <202208170516.hBUfXo8O-lkp@intel.com>
+        Tue, 16 Aug 2022 18:08:55 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925CC4BA55
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:08:49 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo134065pjd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:08:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=Xy5yxh/I32wlGw5oKAxZXq3yjkNZl4S3110U7/IRHRY=;
+        b=kL9Tid3TvpH+rvEDopq2GJcBPo8qrV7hNo7JG77jrEcvwdGudFYB8+z1TZ81V1TX+j
+         RODXvkYxbAiaWw8s1uwBvSsXfTp4X7kzSkmYtCjZHtVDmJfcKC0RNN/4lZ88tZOxKmfE
+         oWapAVbTPGJ1OtVcFq22cy3xJY/jSQwqNgWLU352COjHBqm50FT7EKABMiRG6ndRMrsB
+         0i4Q+MM5uI7UA2KasjwFXn4qyULzsKEcECxU1BC3kCUP+do8KYF1xh2hs5XjBhTieIrg
+         7+119ejQNEfntNvQxGYWqYDNA9whMwQUPAKyoeo99zWcBZMZZTnSqPJsclEAnjf1JELe
+         /QEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=Xy5yxh/I32wlGw5oKAxZXq3yjkNZl4S3110U7/IRHRY=;
+        b=cffmr7IfxR0WzYRi6KfN1ylJuQ6g0fTabYguyyst7SwR10qWTu07BgRCuVof5UGEUX
+         mK99FlvEYbqp2h7iOfJMpCWKO9+wXq/6DcAjhGrAmgkduvILQFFvF1k5mIwc8BAviIgh
+         bgW3njXgAWfdFybPNRjNjEHuZqbKB/3JFQk5R3kaRZ5Aw3A2LxN73uA2MkusLLOA9DZx
+         jMR4nQi+j3NrUUhxZ6tukPz/ZJsNTqr8WEmKB1szWBiLJUq9ixO7IuBWdVKUpEDMowsM
+         0kZWFaoK85dhlALYjw1OGCLejvhpuRrsc586jbWit8wX35OZgOyEHZfOczR5YbS4mHWx
+         qawQ==
+X-Gm-Message-State: ACgBeo3/SjGhTlMrR2sQ86n2FKwi3CkI0azVu54Q5x7kBV/1zLZbJwXW
+        1eHmQbWE86nY57zVE28zjAIFiHX3tf4=
+X-Google-Smtp-Source: AA6agR5oJ2beRfAmE3GdnMupoip3Pb+4B+NTLasW6h8cXAAHKVCZBAJTbMdE7bJJmeql+qxvPLCp2w==
+X-Received: by 2002:a17:902:d2c8:b0:16e:ea4e:36e0 with SMTP id n8-20020a170902d2c800b0016eea4e36e0mr23994315plc.37.1660687727814;
+        Tue, 16 Aug 2022 15:08:47 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:7229])
+        by smtp.gmail.com with ESMTPSA id fh23-20020a17090b035700b001fab11cbc5esm29469pjb.43.2022.08.16.15.08.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 15:08:46 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 16 Aug 2022 12:08:45 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: Re: [RFC PATCH 7/8] workqueue: Remove the outer loop in
+ maybe_create_worker()
+Message-ID: <YvwVbWfoV/bkFb6e@slm.duckdns.org>
+References: <20220804084135.92425-1-jiangshanlai@gmail.com>
+ <20220804084135.92425-8-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220804084135.92425-8-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   85c097fdd1667a842a9e75d8f658fc16bd72981a
-commit: b20b2fef887cd148f6997b362c235f72ee971052 [49/308] KVM: TDX: initialize VM with TDX specific parameters
-config: x86_64-randconfig-a011-20220815 (https://download.01.org/0day-ci/archive/20220817/202208170516.hBUfXo8O-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/b20b2fef887cd148f6997b362c235f72ee971052
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout b20b2fef887cd148f6997b362c235f72ee971052
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Thu, Aug 04, 2022 at 04:41:34PM +0800, Lai Jiangshan wrote:
+> worker_thread() always does the recheck after getting the manager role,
+> so the recheck in the maybe_create_worker() is unneeded and is removed.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+So, before if multiple workers need to be created, a single manager would
+create them all. After, we'd end up daisy chaining, right? One manager
+creates one worker and goes to process one work item. The new worker wakes
+up and becomes the manager and creates another worker and so on. That
+doesn't seem like a desirable behavior.
 
-All warnings (new ones prefixed by >>):
-
-   In file included from <built-in>:1:
->> ./usr/include/asm/kvm.h:606:22: warning: field 'cpuid' with variable sized type 'struct kvm_cpuid2' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
-                           struct kvm_cpuid2 cpuid;
-                                             ^
-   1 warning generated.
+Thanks.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+tejun
