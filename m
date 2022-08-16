@@ -2,72 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEF8C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A421C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:19:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234372AbiHPKSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S234299AbiHPKTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233386AbiHPKRw (ORCPT
+        with ESMTP id S234409AbiHPKSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:17:52 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401151A05A;
-        Tue, 16 Aug 2022 01:26:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cPJaW2xNn/yDTjrJigRQCIHe05jeFSkKn2MM46dKM5E=; b=rBh97mMKFKdKhEHk1XRKoVzQSl
-        VI6XhdyrcrXj8l5sw7dnz71HqVm9wIR9D/pcaacpx0G94JDYlbxXHPJ3sabDcoMAcChgY4VVtjS1J
-        0JJB6SscnBDyYaR/NhS1mSATM9tfPgdD8V0a9nm2FdhZ1GEy2IcQzC7MBnXV4Od27kgoRPl4Fu8x2
-        Oen1u4lY8W9BnGp0iq2KVW5u1LugL593i5maWV78yYkuOhW4wZW7TZ2q9lrhcXEBCC4rPtoBq22zK
-        /H3pnQPRW50TLDBBNodKjNa8M0D8M4fopXRf/XmSdL/UC3CS7wzQ5+6vOO6QRscnc5VONjtV1JS3j
-        KKxh7agA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNru9-006iZ7-IE; Tue, 16 Aug 2022 08:26:29 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id CC7D0980264; Tue, 16 Aug 2022 10:26:27 +0200 (CEST)
-Date:   Tue, 16 Aug 2022 10:26:27 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Zhang Rui <rui.zhang@intel.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        corbet@lwn.net, fenghua.yu@intel.com, jdelvare@suse.com,
-        linux@roeck-us.net, len.brown@intel.com
-Subject: Re: [PATCH 7/7] perf/x86/intel/P4: Fix smp_num_siblings usage
-Message-ID: <YvtUs4o00xYV8BGD@worktop.programming.kicks-ass.net>
-References: <20220812164144.30829-1-rui.zhang@intel.com>
- <20220812164144.30829-8-rui.zhang@intel.com>
- <YvoN2DTABnRZiJhf@worktop.programming.kicks-ass.net>
- <66dfcffec12b3558c36007eacec8f91fb91ca04b.camel@intel.com>
+        Tue, 16 Aug 2022 06:18:39 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E39CC924B;
+        Tue, 16 Aug 2022 02:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660642008; x=1692178008;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8HF+5UT3D592ZRbt9FJmWfjH1gmggwNA5LXwxEgCON4=;
+  b=BTy7LNmtDeTunrJmp+U7HNYanEWMjzhpKALeiZnRKo7cU5ee9qta+pqu
+   a8gNOgr4NUDYZxWfKuqoT5tC89f3xj1NtVwFN0RTtk0UpJ1gcZg2fv3c2
+   3BdFER/lC5k7jNx6OB0n/08mQX5J8AP5q5kpB1psa1qUSSPq0rn242jzm
+   Bf/TC2prmFwiOrNf6igPL1ZzprQF61jiMIvrQmNgJf/TUCKoWwVTVdray
+   aFqorlOHqTt6iDud/LP6F0F2rK/ZKD7KscUdHTAG9kOa+dJnhdnX7vbDh
+   MVLLxmoM7WHpS3eGoXRHFTwsRXssnAYYaD+eMpKwc/4S9A+GkQVMVxUzp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="378462008"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="378462008"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:26:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="635819663"
+Received: from xpf.sh.intel.com ([10.239.182.112])
+  by orsmga008.jf.intel.com with ESMTP; 16 Aug 2022 02:26:43 -0700
+From:   Pengfei Xu <pengfei.xu@intel.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Pengfei Xu <pengfei.xu@intel.com>, Heng Su <heng.su@intel.com>,
+        Hansen Dave <dave.hansen@intel.com>,
+        Luck Tony <tony.luck@intel.com>,
+        Mehta Sohil <sohil.mehta@intel.com>,
+        Chen Yu C <yu.c.chen@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bae Chang Seok <chang.seok.bae@intel.com>
+Subject: [PATCH v12 0/2] Introduce XSAVE feature self-test
+Date:   Tue, 16 Aug 2022 17:26:42 +0800
+Message-Id: <cover.1660618469.git.pengfei.xu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66dfcffec12b3558c36007eacec8f91fb91ca04b.camel@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 10:26:19AM +0800, Zhang Rui wrote:
-> On Mon, 2022-08-15 at 11:11 +0200, Peter Zijlstra wrote:
-> > On Sat, Aug 13, 2022 at 12:41:44AM +0800, Zhang Rui wrote:
-> > > smp_num_siblings can be larger than 2.
-> > 
-> > Not on a P4 it can't ;-)
-> 
-> Kernel code doesn't prevent this from happening, so it just depends on
-> how SMT ID is encoded in APICID.
+The XSAVE feature set supports the saving and restoring of xstate components.
+XSAVE feature has been used for process context switching. XSAVE components
+include x87 state for FP execution environment, SSE state, AVX state and so on.
 
-No P4 ever encountered had it different and since no P4 will ever be
-made again (I sincerely hope) we have a complete case.
+In order to ensure that XSAVE works correctly, add XSAVE most basic test for
+XSAVE architecture functionality.
 
-> Checking for smp_num_sibling > 1 is the right logic to detect HT
-> support, which is followed by all other kernel code except this one. :)
+This patch tests "FP, SSE(XMM), AVX2(YMM), AVX512_OPMASK/AVX512_ZMM_Hi256/
+AVX512_Hi16_ZMM and PKRU parts" xstates with following cases:
+1. The contents of these xstates in the process should not change after the
+   signal handling.
+2. The contents of these xstates in the child process should be the same as
+   the contents of the xstate in the parent process after the fork syscall.
+3. The contents of xstates in the parent process should not change after
+   the context switch.
 
-I'm fine with making it consistent, I'm arguing with the subject calling
-this a fix, it is not, it's a functional no-op.
+Because xstate like XMM will not be preserved across function calls, fork() and
+raise() are implemented and inlined.
+To prevent GCC from generating any FP/SSE(XMM)/AVX/PKRU code, add
+"-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler arguments. stdlib.h
+can not be used because of the "-mno-sse" option.
+Thanks Dave, Hansen for the above suggestion!
+Thanks Chen Yu; Shuah Khan; Chatre Reinette and Tony Luck's comments!
+Thanks to Bae, Chang Seok for a bunch of comments!
+
+========
+- Change from v11 to v12
+  - Remove useless rbx register stuffing in assembly syscall functions.
+    (Zhang, Li)
+
+- Change from v10 to v11
+  - Remove the small function like cpu_has_pkru(), get_xstate_size() and so
+    on. (Shuah Khan)
+  - Unify xfeature_num type to uint32_t.
+
+- Change from v9 to v10
+  - Remove the small function if the function will be called once and there
+    is no good reason. (Shuah Khan)
+
+- Change from v8 to v9
+  - Use function pointers to make it more structured. (Hansen, Dave)
+  - Improve the function name: xstate_tested -> xstate_in_test. (Chang S. Bae)
+  - Break this test up into two pieces: keep the xstate key test steps with
+    "-mno-sse" and no stdlib.h, keep others in xstate.c file. (Hansen, Dave)
+  - Use kselftest infrastructure for xstate.c file. (Hansen, Dave)
+  - Use instruction back to populate fp xstate buffer. (Hansen, Dave)
+  - Will skip the test if cpu could not support xsave. (Chang S. Bae)
+  - Use __cpuid_count() helper in kselftest.h. (Reinette, Chatre)
+
+- Change from v7 to v8
+  Many thanks to Bae, Chang Seok for a bunch of comments as follow:
+  - Use the filling buffer way to prepare the xstate buffer, and use xrstor
+    instruction way to load the tested xstates.
+  - Remove useless dump_buffer, compare_buffer functions.
+  - Improve the struct of xstate_info.
+  - Added AVX512_ZMM_Hi256 and AVX512_Hi16_ZMM components in xstate test.
+  - Remove redundant xstate_info.xstate_mask, xstate_flag[], and
+    xfeature_test_mask, use xstate_info.mask instead.
+  - Check if xfeature is supported outside of fill_xstate_buf() , this change
+    is easier to read and understand.
+  - Remove useless wrpkru, only use filling all tested xstate buffer in
+    fill_xstates_buf().
+  - Improve a bunch of function names and variable names.
+  - Improve test steps flow for readability.
+
+- Change from v6 to v7:
+  - Added the error number and error description of the reason for the
+    failure, thanks Shuah Khan's suggestion.
+  - Added a description of what these tests are doing in the head comments.
+  - Added changes update in the head comments.
+  - Added description of the purpose of the function. thanks Shuah Khan.
+
+- Change from v5 to v6:
+  - In order to prevent GCC from generating any FP code by mistake,
+    "-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler parameter was
+    added, it's referred to the parameters for compiling the x86 kernel. Thanks
+    Dave Hansen's suggestion.
+  - Removed the use of "kselftest.h", because kselftest.h included <stdlib.h>,
+    and "stdlib.h" would use sse instructions in it's libc, and this *XSAVE*
+    test needed to be compiled without libc sse instructions(-mno-sse).
+  - Improved the description in commit header, thanks Chen Yu's suggestion.
+  - Becasue test code could not use buildin xsave64 in libc without sse, added
+    xsave function by instruction way.
+  - Every key test action would not use libc(like printf) except syscall until
+    it's failed or done. If it's failed, then it would print the failed reason.
+  - Used __cpuid_count() instead of native_cpuid(), becasue __cpuid_count()
+    was a macro definition function with one instruction in libc and did not
+    change xstate. Thanks Chatre Reinette, Shuah Khan.
+    https://lore.kernel.org/linux-sgx/8b7c98f4-f050-bc1c-5699-fa598ecc66a2@linuxfoundation.org/
+
+- Change from v4 to v5:
+  - Moved code files into tools/testing/selftests/x86.
+  - Delete xsave instruction test, becaue it's not related to kernel.
+  - Improved case description.
+  - Added AVX512 opmask change and related XSAVE content verification.
+  - Added PKRU part xstate test into instruction and signal handling test.
+  - Added XSAVE process swich test for FPU, AVX2, AVX512 opmask and PKRU part.
+
+- Change from v3 to v4:
+  - Improve the comment in patch 1.
+
+- Change from v2 to v3:
+  - Improve the description of patch 2 git log.
+
+- Change from v1 to v2:
+  - Improve the cover-letter. Thanks Dave Hansen's suggestion.
+
+Pengfei Xu (2):
+  selftests/x86/xstate: Add xstate signal handling test for XSAVE
+    feature
+  selftests/x86/xstate: Add xstate fork test for XSAVE feature
+
+ tools/testing/selftests/x86/.gitignore       |   1 +
+ tools/testing/selftests/x86/Makefile         |  11 +-
+ tools/testing/selftests/x86/xstate.c         | 215 +++++++++++++++++
+ tools/testing/selftests/x86/xstate.h         | 228 +++++++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.c | 209 +++++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.h |   9 +
+ 6 files changed, 671 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/x86/xstate.c
+ create mode 100644 tools/testing/selftests/x86/xstate.h
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.c
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.h
+
+-- 
+2.31.1
 
