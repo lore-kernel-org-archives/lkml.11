@@ -2,95 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48348C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9739CC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234644AbiHPMpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
+        id S234111AbiHPMpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235557AbiHPMom (ORCPT
+        with ESMTP id S235561AbiHPMom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 08:44:42 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9C22ED67;
-        Tue, 16 Aug 2022 05:43:58 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1660653833tkn0wenr
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 20:43:51 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: C2zsvWT0ctUUwBTBZPqlbH2YxAWGYKRGbcRcTe7+wjtMFZSHyaU4yD0a4qFSw
-        flWEoH6V6knmm0lpzVmWKqOe/dJmBMb6h7NY0ZtK19vaveYPgCfPeiZ7EX/1X8pKV9A/L1C
-        jwOyOehVyyR174jm2v5DI6r2rC0YoHzh4WlALHCFGFXuFdKj1Y72OyhguIHKFTg929Uiqa1
-        hsoEOfR3wGCEwCFrZjojZvCvp2b+vgDalXrGmFgS/ZtMkZLdog/nKFRu6+V1r04QJfBJI2F
-        Rk+Ac7rmGMcuZ3FDXzssET5pLnBYOlIp/M7fS/2cvGu6LNLio7JE3ec+3Nu8ffZAFmHkbWl
-        Np7Q4jQqJo5S3j6XMWxYa0wYrtl417o22EtLNHBEyrjHJvcrzrzBL3QE446y4xU5+2GyuQm
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] drivers/watchdog: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 20:43:44 +0800
-Message-Id: <20220816124344.16004-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329073340E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:44:03 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id a9so14722581lfm.12
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
+        b=dZqAsC4XhmDGuivuJcwZM7XD6vsmSzcY0u4o8BuY6kIwGsvI6j05G+i7ZngVXzhyt3
+         0+zhxwe+OpM9q3PkrseisLeE+hZs9AmQhAPvAGf79ksMxYi7TezPrZF5RvvF4N/4H7ps
+         s6j2nlWSf+mnm5lw+I5OqKCqtSUEOmsEP3L4F2LR1D3Tw3Qo4s4dTdpRh9ZQe+dzDOQd
+         ZsgPxCHQZndYyn1puvJ9uDMb1G1drtDUPT5MWl4ZSF0dw1QkhHRdcCZc3k/HR9cJR/Ab
+         1/FKLJk66XuLQZZJmMq+crAjRH2GMFwlQIx5BaLcCY6gHf70h9FVgDJpvcF6sOOjVin6
+         Barw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
+        b=DauNrkQWpNrOvF3xWDkzCiVqeTYsW2KKYHqMEwCMeaqgL/sM8AxN7MAMqPRbyL0XAs
+         g49AdTjkVF2qRUbLyhGcW15T3YFXnECEJIBXiVxthDLkJ2bq1lG1z+mb8L/Qzld1Gbd0
+         SO0hHGLOPhMpvdKNkdKzBbx3QLN+7lJnS0JfHIqR0Izt67CW669DHkfDKUf7rr6tzXX8
+         IGnMz+Vkhg/fyEDOwDLavQCbhcQOcTuErFuFKeZfZ2WasWrdL+/4kzgVBb4kkyBlkb8O
+         8HYiFdJPBRd3rGFL/o1q13B5OZMhcszdE+jH2LBqxJWDzNFhHa7L+P5iAm0pbceMIQfX
+         U6pA==
+X-Gm-Message-State: ACgBeo3J5mZ5Sd0nBRum7ku/9aqnV4EzaE+Wl4DqJIR6Y2shdrR6t83H
+        Mu3RxyIdtOpQmBBPCdZRgOYmqA==
+X-Google-Smtp-Source: AA6agR6mLRrkmmfsWWDpLPe2t3pnsuvb7LjZmhWGTARYqtxu2V3K4lbwTakD8q/5jl7F2/IulI5udw==
+X-Received: by 2002:a19:434d:0:b0:48c:fe67:5e83 with SMTP id m13-20020a19434d000000b0048cfe675e83mr7430482lfj.630.1660653836368;
+        Tue, 16 Aug 2022 05:43:56 -0700 (PDT)
+Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id k14-20020ac257ce000000b0048ae4cf8a2csm1374331lfo.258.2022.08.16.05.43.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 05:43:55 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stankus <lucas.p.stankus@gmail.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Patrick Vasseur <patrick.vasseur@c-s.fr>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Andrew Davis <afd@ti.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Phil Reid <preid@electromag.com.au>,
+        Michael Welling <mwelling@ieee.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Chris Coffey <cmc@babblebit.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Sankar Velliangiri <navin@linumiz.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 08/10] dt-bindings: iio: potentiometer: use spi-peripheral-props.yaml
+Date:   Tue, 16 Aug 2022 15:43:19 +0300
+Message-Id: <20220816124321.67817-9-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220816124321.67817-1-krzysztof.kozlowski@linaro.org>
+References: <20220816124321.67817-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'we'.
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
+
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/watchdog/pc87413_wdt.c | 2 +-
- drivers/watchdog/w83977f_wdt.c | 2 +-
- drivers/watchdog/wdt977.c      | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ .../bindings/iio/potentiometer/microchip,mcp41010.yaml   | 9 +++++----
+ .../bindings/iio/potentiometer/microchip,mcp4131.yaml    | 9 +++++----
+ 2 files changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/watchdog/pc87413_wdt.c b/drivers/watchdog/pc87413_wdt.c
-index 9f9a340427fc..14f37b3b903f 100644
---- a/drivers/watchdog/pc87413_wdt.c
-+++ b/drivers/watchdog/pc87413_wdt.c
-@@ -333,7 +333,7 @@ static int pc87413_status(void)
-  *	@ppos: pointer to the position to write. No seeks allowed
-  *
-  *	A write to a watchdog device is defined as a keepalive signal. Any
-- *	write of data will do, as we we don't define content meaning.
-+ *	write of data will do, as we don't define content meaning.
-  */
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
+index 567697d996ec..87e88f2a9908 100644
+--- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
++++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
+@@ -25,14 +25,15 @@ properties:
+   reg:
+     maxItems: 1
  
- static ssize_t pc87413_write(struct file *file, const char __user *data,
-diff --git a/drivers/watchdog/w83977f_wdt.c b/drivers/watchdog/w83977f_wdt.c
-index fd64ae77780a..31bf21ceaf48 100644
---- a/drivers/watchdog/w83977f_wdt.c
-+++ b/drivers/watchdog/w83977f_wdt.c
-@@ -321,7 +321,7 @@ static int wdt_release(struct inode *inode, struct file *file)
-  *      @ppos: pointer to the position to write. No seeks allowed
-  *
-  *      A write to a watchdog device is defined as a keepalive signal. Any
-- *      write of data will do, as we we don't define content meaning.
-+ *      write of data will do, as we don't define content meaning.
-  */
+-  spi-max-frequency: true
+-
+-additionalProperties: false
+-
+ required:
+   - compatible
+   - reg
  
- static ssize_t wdt_write(struct file *file, const char __user *buf,
-diff --git a/drivers/watchdog/wdt977.c b/drivers/watchdog/wdt977.c
-index c9b8e863f70f..cd623c6da1fa 100644
---- a/drivers/watchdog/wdt977.c
-+++ b/drivers/watchdog/wdt977.c
-@@ -298,7 +298,7 @@ static int wdt977_release(struct inode *inode, struct file *file)
-  *      @ppos: pointer to the position to write. No seeks allowed
-  *
-  *      A write to a watchdog device is defined as a keepalive signal. Any
-- *      write of data will do, as we we don't define content meaning.
-+ *      write of data will do, as we don't define content meaning.
-  */
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     spi {
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+index 32e92bced81f..896fe0b5edcc 100644
+--- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
++++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+@@ -80,14 +80,15 @@ properties:
+   reg:
+     maxItems: 1
  
- static ssize_t wdt977_write(struct file *file, const char __user *buf,
+-  spi-max-frequency: true
+-
+-additionalProperties: false
+-
+ required:
+   - compatible
+   - reg
+ 
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     spi {
 -- 
-2.36.1
+2.34.1
 
