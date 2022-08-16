@@ -2,173 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C53C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1451FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234863AbiHPKhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S234678AbiHPKha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234849AbiHPKg3 (ORCPT
+        with ESMTP id S234657AbiHPKgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:36:29 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFF815735
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:00:50 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id c28so9893730lfh.3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:00:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ragnatech-se.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=043hWz8b615XDyOIXdxEzBsstB56mnVvGPAwgZ+APrg=;
-        b=ZNsA5ND0kulqzso1yZe07rJLhJJrheK1Y1tL145gnSD8myu6YkhRoukYh42/mX4caY
-         JNL9L3JXWjTSWqPruD/4kGN/FObUaDuDPSIS+N/rX1wD0ZvfNjprVGqltcPjenh8ki+T
-         naMWYCRU2R5+3SdswZnTZCCkH0+Aw3EEp3cEM/Lq198dXdqInZWFYDTixh0rLOmvuGSu
-         nBzu1YPEO8+M5I+gCKvyW9wqOHj9O2X/o7zlbhx7rRAFiATN/aOQVT0/D2Y/U8R+94Hp
-         BMIOcASdRwo510/5QPpbVqbaQjnLVa3dzXY45dthe2kbbA2JI0GQshdby8vJlyNZoSPu
-         k5gw==
+        Tue, 16 Aug 2022 06:36:31 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F35122DBB
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id z30-20020a05660217de00b00688bd42dc1dso408653iox.15
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=043hWz8b615XDyOIXdxEzBsstB56mnVvGPAwgZ+APrg=;
-        b=szDXRc1AOlZYtpEo+7HLecvkjypu1edFZXFqtE1lhfv8AewUYgebQzTSaPOiusegLJ
-         V0hllBuhBcwwsvUniqcQZGbEWYK5KHffnmU9QH7roz0Vk1ZZdVvMGokiB8aJKvTq6P1+
-         /MVUTL+sWE5XvKTAF8VAkzv815urjnxDuyaSPcAC7ey+F9oyFIF630KmQbeiLtEK5T3d
-         viaFAHRkLiYdFJaMZSIOLjKf2ygKZ7ixA75JLGOnGelju54riycqCbVdeV7DgQYkrOZJ
-         Cg73euoXBVlP25DCEsH/YOBW5LPCzlWJtrToXv3Yd+hrR0AOJdoHYylIY8Ug/qVv2jP1
-         yiJA==
-X-Gm-Message-State: ACgBeo1NIDRG1Dl2tTUbQZTK3aeIL9mg9UrdTiOXpV3aCmrZ3HEQLGvE
-        DooJz1aq3z6E1paSkx74PZ/vmQ==
-X-Google-Smtp-Source: AA6agR58GGqmd5KxhxWS4m9evkdUo6IfYO5ez03h86oGM7Y+w5L89kpSjzRxzfI/XeBoSG0VVyhsbA==
-X-Received: by 2002:ac2:4562:0:b0:48b:2a91:e59 with SMTP id k2-20020ac24562000000b0048b2a910e59mr6621305lfm.91.1660640448810;
-        Tue, 16 Aug 2022 02:00:48 -0700 (PDT)
-Received: from localhost (h-46-59-89-207.A463.priv.bahnhof.se. [46.59.89.207])
-        by smtp.gmail.com with ESMTPSA id d2-20020a056512368200b0048afbe9d0fasm1329817lfs.45.2022.08.16.02.00.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 02:00:48 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 11:00:47 +0200
-From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v2 08/26] thermal/drivers/rcar: Use generic
- thermal_zone_get_trip() function
-Message-ID: <YvtcvzhQwJdtGXYP@oden.dyn.berto.se>
-References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
- <20220809220436.711020-9-daniel.lezcano@linaro.org>
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=/TvWfojdg9EbJcM9R4DzjHXxk7wBLSZkN23d1l8mhpM=;
+        b=rfA0xS8Bwto2WwaSlygkTaVBlcLxWSQuQsNY4ATqQiF2fhfUEt2HXu0zpgLMuQ0MoN
+         DcLsS3bw+TB+AgtRuuJDYeJ5Lu580+a3eQYzF/4wYg+J+HAliPbP7DIFyil/p5F/QdNw
+         nGLvtJfHsQJt+ozYabHG1SaPIF6DncPUFclaBN383F7rAQHmnXP4ABXuXbStUchrxmHd
+         ADlOHlVf5obvVTFFrYkW0TlgLQUbS6vugTjIow43O6R8I9TlOJWm6/kyuyHG+an4xM3T
+         1W1ykC1LUdfVjMeEf8svNrh4L3o6c6Gi2zI7E1ehAwcvypJ9d9LNWV6II+VuS2xp5GXd
+         0t7A==
+X-Gm-Message-State: ACgBeo0F8PTiHZDyLUqDAWnkFFCw3Rp3xUaPwoTQNQEoJx+WMmKth0xP
+        nFEX5jQEfxGYFopWU3l0or5lReE4IjLYpcWZm2xbA72LVCe7
+X-Google-Smtp-Source: AA6agR6qHad8EMda4pdSgrU8WKZFd4mpY7XdCpIDbMZDRON+uB6opHgTVle7nt7pGWjdYJQVsKFpePM1excI1f3QfRGQPbSoRKcK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220809220436.711020-9-daniel.lezcano@linaro.org>
+X-Received: by 2002:a05:6e02:1b83:b0:2e5:b254:69e5 with SMTP id
+ h3-20020a056e021b8300b002e5b25469e5mr4366807ili.292.1660638984171; Tue, 16
+ Aug 2022 01:36:24 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:36:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c0770c05e657a49b@google.com>
+Subject: [syzbot] upstream boot error: general protection fault in rcu_core
+From:   syzbot <syzbot+855b67e6ad52c740948a@syzkaller.appspotmail.com>
+To:     Henry.Wang@arm.com, bigeasy@linutronix.de,
+        linux-kernel@vger.kernel.org, longpeng2@huawei.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vschneid@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Hello,
 
-Thanks for your work.
+syzbot found the following issue on:
 
-On 2022-08-10 00:04:18 +0200, Daniel Lezcano wrote:
-> The thermal framework gives the possibility to register the trip
-> points with the thermal zone. When that is done, no get_trip_* ops are
-> needed and they can be removed.
-> 
-> Convert ops content logic into generic trip points and register them with the
-> thermal zone.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+HEAD commit:    5d6a0f4da927 Merge tag 'for-linus-6.0-rc1b-tag' of git://g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10bc4467080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f83c035536d7b2e3
+dashboard link: https://syzkaller.appspot.com/bug?extid=855b67e6ad52c740948a
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+855b67e6ad52c740948a@syzkaller.appspotmail.com
 
-> ---
->  drivers/thermal/rcar_thermal.c | 49 +++++-----------------------------
->  1 file changed, 6 insertions(+), 43 deletions(-)
-> 
-> diff --git a/drivers/thermal/rcar_thermal.c b/drivers/thermal/rcar_thermal.c
-> index 4df42d70d867..003457810072 100644
-> --- a/drivers/thermal/rcar_thermal.c
-> +++ b/drivers/thermal/rcar_thermal.c
-> @@ -278,52 +278,16 @@ static int rcar_thermal_get_temp(struct thermal_zone_device *zone, int *temp)
->  	return rcar_thermal_get_current_temp(priv, temp);
->  }
->  
-> -static int rcar_thermal_get_trip_type(struct thermal_zone_device *zone,
-> -				      int trip, enum thermal_trip_type *type)
-> -{
-> -	struct rcar_thermal_priv *priv = rcar_zone_to_priv(zone);
-> -	struct device *dev = rcar_priv_to_dev(priv);
-> -
-> -	/* see rcar_thermal_get_temp() */
-> -	switch (trip) {
-> -	case 0: /* +90 <= temp */
-> -		*type = THERMAL_TRIP_CRITICAL;
-> -		break;
-> -	default:
-> -		dev_err(dev, "rcar driver trip error\n");
-> -		return -EINVAL;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -static int rcar_thermal_get_trip_temp(struct thermal_zone_device *zone,
-> -				      int trip, int *temp)
-> -{
-> -	struct rcar_thermal_priv *priv = rcar_zone_to_priv(zone);
-> -	struct device *dev = rcar_priv_to_dev(priv);
-> -
-> -	/* see rcar_thermal_get_temp() */
-> -	switch (trip) {
-> -	case 0: /* +90 <= temp */
-> -		*temp = MCELSIUS(90);
-> -		break;
-> -	default:
-> -		dev_err(dev, "rcar driver trip error\n");
-> -		return -EINVAL;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
->  static struct thermal_zone_device_ops rcar_thermal_zone_of_ops = {
->  	.get_temp	= rcar_thermal_get_temp,
->  };
->  
->  static struct thermal_zone_device_ops rcar_thermal_zone_ops = {
->  	.get_temp	= rcar_thermal_get_temp,
-> -	.get_trip_type	= rcar_thermal_get_trip_type,
-> -	.get_trip_temp	= rcar_thermal_get_trip_temp,
-> +};
-> +
-> +static struct thermal_trip trips[] = {
-> +	{ .type = THERMAL_TRIP_CRITICAL, .temperature = 90000 }
->  };
->  
->  /*
-> @@ -531,9 +495,8 @@ static int rcar_thermal_probe(struct platform_device *pdev)
->  						dev, i, priv,
->  						&rcar_thermal_zone_of_ops);
->  		} else {
-> -			priv->zone = thermal_zone_device_register(
-> -						"rcar_thermal",
-> -						1, 0, priv,
-> +			priv->zone = thermal_zone_device_register_with_trips(
-> +				"rcar_thermal", trips, ARRAY_SIZE(trips), 0, priv,
->  						&rcar_thermal_zone_ops, NULL, 0,
->  						idle);
->  
-> -- 
-> 2.34.1
-> 
+general protection fault, probably for non-canonical address 0xffff000000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: maybe wild-memory-access in range [0xfff8200000000000-0xfff8200000000007]
+CPU: 1 PID: 21 Comm: ksoftirqd/1 Not tainted 5.19.0-syzkaller-14374-g5d6a0f4da927 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:rcu_do_batch kernel/rcu/tree.c:2245 [inline]
+RIP: 0010:rcu_core+0xa5e/0x1710 kernel/rcu/tree.c:2505
+Code: 22 69 00 4d 8b 3c 24 48 b8 00 00 00 00 00 fc ff df 80 3c 03 00 74 08 4c 89 e7 e8 6d 22 69 00 49 c7 46 08 00 00 00 00 4c 89 f7 <41> ff d7 48 c7 c7 60 08 d2 8c e8 e3 0c 00 00 65 8b 05 64 5f 8e 7e
+RSP: 0000:ffffc900001b7aa0 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 1ffff11004137a06 RCX: ffff888012eb27f0
+RDX: dffffc0000000000 RSI: ffffffff8aad87c0 RDI: ffff8880209bd028
+RBP: ffffc900001b7cb0 R08: dffffc0000000000 R09: fffffbfff1ff3a0c
+R10: fffffbfff1ff3a0c R11: 1ffffffff1ff3a0b R12: ffff8880209bd030
+R13: ffff888012eb1d80 R14: ffff8880209bd028 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __do_softirq+0x382/0x793 kernel/softirq.c:571
+ run_ksoftirqd+0xc1/0x120 kernel/softirq.c:934
+ smpboot_thread_fn+0x533/0x9d0 kernel/smpboot.c:164
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+Modules linked in:
+vkms_vblank_simulate: vblank timer overrun
+---[ end trace 0000000000000000 ]---
+RIP: 0010:rcu_do_batch kernel/rcu/tree.c:2245 [inline]
+RIP: 0010:rcu_core+0xa5e/0x1710 kernel/rcu/tree.c:2505
+Code: 22 69 00 4d 8b 3c 24 48 b8 00 00 00 00 00 fc ff df 80 3c 03 00 74 08 4c 89 e7 e8 6d 22 69 00 49 c7 46 08 00 00 00 00 4c 89 f7 <41> ff d7 48 c7 c7 60 08 d2 8c e8 e3 0c 00 00 65 8b 05 64 5f 8e 7e
+RSP: 0000:ffffc900001b7aa0 EFLAGS: 00010246
 
--- 
-Kind Regards,
-Niklas Söderlund
+RAX: dffffc0000000000 RBX: 1ffff11004137a06 RCX: ffff888012eb27f0
+RDX: dffffc0000000000 RSI: ffffffff8aad87c0 RDI: ffff8880209bd028
+RBP: ffffc900001b7cb0 R08: dffffc0000000000 R09: fffffbfff1ff3a0c
+R10: fffffbfff1ff3a0c R11: 1ffffffff1ff3a0b R12: ffff8880209bd030
+R13: ffff888012eb1d80 R14: ffff8880209bd028 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	22 69 00             	and    0x0(%rcx),%ch
+   3:	4d 8b 3c 24          	mov    (%r12),%r15
+   7:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+   e:	fc ff df
+  11:	80 3c 03 00          	cmpb   $0x0,(%rbx,%rax,1)
+  15:	74 08                	je     0x1f
+  17:	4c 89 e7             	mov    %r12,%rdi
+  1a:	e8 6d 22 69 00       	callq  0x69228c
+  1f:	49 c7 46 08 00 00 00 	movq   $0x0,0x8(%r14)
+  26:	00
+  27:	4c 89 f7             	mov    %r14,%rdi
+* 2a:	41 ff d7             	callq  *%r15 <-- trapping instruction
+  2d:	48 c7 c7 60 08 d2 8c 	mov    $0xffffffff8cd20860,%rdi
+  34:	e8 e3 0c 00 00       	callq  0xd1c
+  39:	65 8b 05 64 5f 8e 7e 	mov    %gs:0x7e8e5f64(%rip),%eax        # 0x7e8e5fa4
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
