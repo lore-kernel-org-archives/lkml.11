@@ -2,90 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A19C32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FC1C32789
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236749AbiHPSFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
+        id S236843AbiHPSFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbiHPSE4 (ORCPT
+        with ESMTP id S236872AbiHPSFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:04:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F146B662
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:04:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660673093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Vj3cIZcCBDULA4NmxKYoWknQPWn37X5VQr3izicvJT0=;
-        b=Kn2yFmZOhgaPWWWLWI3O1oJXHbgzzm7uL9uaE2t6Ka0A4L59GkGJYdsacbkgzyeZZtism9
-        HGpK9/ehWU1jd8+87gLWs4GLDw7KXh04E/EfW5cAFQ5AfK4W8kzDeHetgm6csdOGNdVt0m
-        QGO9EkpSh/FiPSIK6guAny6zGWuYGtA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-581-u0BbiRwkPXOE-jIn54ZHFw-1; Tue, 16 Aug 2022 14:04:48 -0400
-X-MC-Unique: u0BbiRwkPXOE-jIn54ZHFw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 29ED31019C96;
-        Tue, 16 Aug 2022 18:04:48 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.16.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A5D41121314;
-        Tue, 16 Aug 2022 18:04:47 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     nouveau@lists.freedesktop.org
-Cc:     stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR NVIDIA
-        GEFORCE/QUADRO GPUS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/nouveau/kms/nv140-: Disable interlacing
-Date:   Tue, 16 Aug 2022 14:04:36 -0400
-Message-Id: <20220816180436.156310-1-lyude@redhat.com>
+        Tue, 16 Aug 2022 14:05:09 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3078F6F547;
+        Tue, 16 Aug 2022 11:05:08 -0700 (PDT)
+X-QQ-mid: bizesmtp77t1660673091torkwan0
+Received: from harry-jrlc.. ( [182.148.12.144])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 17 Aug 2022 02:04:39 +0800 (CST)
+X-QQ-SSF: 0100000000000060D000B00A0000020
+X-QQ-FEAT: xqT8U4SkSpjAjVG76KbLvDD5cIIcr9xQkN252TAQvbnthflc8upl4tvZZXqNY
+        o2sd2HLh3srsWNxNvuNTmQnG4Nz/+VHGMwTuUaW/5J8KkRSozrR9rIJ42sxT+gUNAJZnEOY
+        KFSZLYt4xZUDSUE7CU3+BQmwhmu30zVktSKS+ag4jObH8/+Nmmm89UOOYBRhm62J6OjndTF
+        4PoxZzG/Kr3s2PyOYulXSnFBveQRERz+kSk/laiFIEiioWe3J4Ie0v6/K5Pz82QCugnIjg2
+        sWwRXKVFVBtjGA3iOmq4Lmw7VWcvO50Rxgdr80BTXfBJUrmVUtFf2IAfBMbJwe78d8/dNBB
+        8itEJxGLmIQmFlqTxSayYo0HYGuhxwXsUPDqrmWPoMtwBGYIu69xTMTHRsDFA==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     dhowells@redhat.com, jarkko@kernel.org
+Cc:     jmorris@namei.org, serge@hallyn.com, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] keys: Variable type completion
+Date:   Wed, 17 Aug 2022 02:04:38 +0800
+Message-Id: <20220816180438.8807-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As it turns out: while Nvidia does actually have interlacing knobs on their
-GPU still pretty much no current GPUs since Volta actually support it.
-Trying interlacing on these GPUs will result in NVDisplay being quite
-unhappy like so:
+'unsigned int' is better than 'unsigned'.
 
-nouveau 0000:1f:00.0: disp: chid 0 stat 00004802 reason 4 [INVALID_ARG] mthd 2008 data 00000001 code 00080000
-nouveau 0000:1f:00.0: disp: chid 0 stat 10005080 reason 5 [INVALID_STATE] mthd 0200 data 00000001 code 00000001
-
-So let's fix this by following the same behavior Nvidia's driver does and
-disable interlacing entirely.
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 ---
- drivers/gpu/drm/nouveau/nouveau_connector.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/keys/gc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
-index 43a9d1e1cf71..8100c75ee731 100644
---- a/drivers/gpu/drm/nouveau/nouveau_connector.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
-@@ -504,7 +504,8 @@ nouveau_connector_set_encoder(struct drm_connector *connector,
- 			connector->interlace_allowed =
- 				nv_encoder->caps.dp_interlace;
- 		else
--			connector->interlace_allowed = true;
-+			connector->interlace_allowed =
-+				drm->client.device.info.family < NV_DEVICE_INFO_V0_VOLTA;
- 		connector->doublescan_allowed = true;
- 	} else
- 	if (nv_encoder->dcb->type == DCB_OUTPUT_LVDS ||
+diff --git a/security/keys/gc.c b/security/keys/gc.c
+index 3c90807476eb..433a96e26930 100644
+--- a/security/keys/gc.c
++++ b/security/keys/gc.c
+@@ -13,7 +13,7 @@
+ /*
+  * Delay between key revocation/expiry in seconds
+  */
+-unsigned key_gc_delay = 5 * 60;
++unsigned int key_gc_delay = 5 * 60;
+ 
+ /*
+  * Reaper for unused keys.
 -- 
-2.37.1
+2.30.2
 
