@@ -2,98 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112C8C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F99C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 20:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237269AbiHPUtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 16:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
+        id S236978AbiHPUuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 16:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237097AbiHPUtP (ORCPT
+        with ESMTP id S237097AbiHPUui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 16:49:15 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550AD5E67A;
-        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id b142so6287683iof.10;
-        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
+        Tue, 16 Aug 2022 16:50:38 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A0F8991A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:50:36 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id e15so16549225lfs.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 13:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=y+6u1zkk8J60+XTRv+ei7xljXugjN0ECqEpbeFFmEfA=;
+        b=LJcYKMe5iWHcfHmSZpZoCaFDjr5mpiGlraMtQHx3ch5EIMtpY4nD/31iklrJkCiV2f
+         Ot+HThfEdOwyOUT1AzSzwFLC6Moo8zCRFCtLiXRdIEainTex+QF8ZDTV0tAkAa57Th72
+         wJyKWRfs7sWxcen/0oLPyG1oU8pzVnydIv48dEHG6eBJqx1A5uOiYHL3OUbiEK9rUCi4
+         J44F0txCiaNezLImiMBrEnqf3WtfqsA6Z9QVmezHvzVcWedfECorX7sgOEmGFl0wbUnY
+         XhOGXvhpAGDKPFZZb9S/ik7n48UBPLCWQnEW5DVAc22hy9O5V2y/ENXKF2q/HCvy7ovN
+         +mlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=Igzpe2dfFh072dG7M9af7EwnEZkHHQlF9Pf46jZtejY=;
-        b=PqEGG3q64rKWeyKsEbJNiL3pY5X5LW7lCo1WACA46+Oe5m6JfwodqHOwqvsbtsoYPZ
-         JoZ1eU58aEm0crqWqRvxdlYlE3ddcz13NQxDM65t04ESBuHa7XmyDupBejzEB+800hct
-         BYYsK+bbxexiW0xU0i6S4BeYoJZjrKnvsCMT4DilH59YzLLbJbwqDfmxofGlnbyf7DXQ
-         1n9VcSoBMsmEmPrdDWDONthBL2xq7kW0NyQde3eP7yLCDYVFKm6xrg/bByGKGSXeQ7wi
-         iOV7rpiyjXgIPCGjabzbgJPb4cxZ+ZRKXhX6Ahi17VfQci4vEbES4eImgGLL4eEbsVoA
-         n6yw==
-X-Gm-Message-State: ACgBeo0y0bHH5a5QvS25JVX+WokbLaCQg82dlVJ25haRKOMvcM7+SiIL
-        Y0W5Xuy9GMWsPEe1h3MW3w==
-X-Google-Smtp-Source: AA6agR4JUMnAxe73i4k/USANa7oT8A2bvPIyHs4SYiN3MfNVQoRaN9YqHKUNH74CBK0dcaCnelKJeg==
-X-Received: by 2002:a5d:94d6:0:b0:67c:55f9:f355 with SMTP id y22-20020a5d94d6000000b0067c55f9f355mr9749658ior.133.1660682952543;
-        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id z25-20020a056602081900b00688b30a7812sm1312208iow.42.2022.08.16.13.49.09
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=y+6u1zkk8J60+XTRv+ei7xljXugjN0ECqEpbeFFmEfA=;
+        b=DUFdCt0Fm0facHqU61lddFFUYGLXKWd8vYdLFbcJvkCDeUcZXjQkx71uti+l/+gFog
+         6iAZkbiaW6IJQppqJTeAASTFjSFJHtnbmVAM9fBsomKxgdW6dkQpvjY7ZuQLLEQi7S8F
+         7YKb8NYJd8NjUvdmUjjyU3eRuRlVOmdyk69qBxr0GP9jTeKxE6JBzD1JSvEP92rx05c8
+         6a7YRmzK73NlJbm2WFQ7eSHn9W/3A0EsdjWiL7k7XUqs30gsSqPwv99yxogiGHWXwmXy
+         Xp2COrv5/FZ+pPgxqmu51PoDfLZVWCpeJCeTzzhQIgnRdwm3SGQb60CABtRgqloUyMJg
+         WEag==
+X-Gm-Message-State: ACgBeo3bSmMTPU04g4ujFbk5z4pRwYHlwwqNzrL5ViaABvZasKOrgdaB
+        tv4CxR7QSBTT+BRWJhsDZeJM24qT3wfT1w==
+X-Google-Smtp-Source: AA6agR4uCZsrNOegrcDDazEbUGS5UKX9TAzteIQktxMO9Mof1GUAalGDbzBvR8OHExnRmPQmyTQsbQ==
+X-Received: by 2002:ac2:58d6:0:b0:48b:2ef5:18c7 with SMTP id u22-20020ac258d6000000b0048b2ef518c7mr7372202lfo.605.1660683034707;
+        Tue, 16 Aug 2022 13:50:34 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id s4-20020a2e83c4000000b002618fbebbbcsm670816ljh.47.2022.08.16.13.50.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
-Received: (nullmailer pid 2709183 invoked by uid 1000);
-        Tue, 16 Aug 2022 20:49:08 -0000
-Date:   Tue, 16 Aug 2022 14:49:08 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        devicetree@vger.kernel.org, erkin.bozoglu@xeront.com,
-        Eric Dumazet <edumazet@google.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: make
- trivial changes
-Message-ID: <20220816204908.GA2709132-robh@kernel.org>
-References: <20220813154415.349091-1-arinc.unal@arinc9.com>
- <20220813154415.349091-2-arinc.unal@arinc9.com>
+        Tue, 16 Aug 2022 13:50:34 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 1/2 v5] regmap: Support accelerated noinc operations
+Date:   Tue, 16 Aug 2022 22:48:31 +0200
+Message-Id: <20220816204832.265837-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220813154415.349091-2-arinc.unal@arinc9.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 13 Aug 2022 18:44:09 +0300, Arınç ÜNAL wrote:
-> Make trivial changes on the binding.
-> 
-> - Update title to include MT7531 switch.
-> - Add me as a maintainer. List maintainers in alphabetical order by first
-> name.
-> - Add description to compatible strings.
-> - Stretch descriptions up to the 80 character limit.
-> - Remove quotes from $ref: "dsa.yaml#".
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
->  1 file changed, 24 insertions(+), 12 deletions(-)
-> 
+Several architectures have accelerated operations for MMIO
+operations writing to a single register, such as writesb, writesw,
+writesl, writesq, readsb, readsw, readsl and readsq but regmap
+currently cannot use them because we have no hooks for providing
+an accelerated noinc back-end for MMIO.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Solve this by providing reg_[read/write]_noinc callbacks for
+the bus abstraction, so that the regmap-mmio bus can use this.
+
+Currently I do not see a need to support this for custom regmaps
+so it is only added to the bus.
+
+Callbacks are passed a void * with the array of values and a
+count which is the number of items of the byte chunk size for
+the specific register width.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v4->v5:
+- Repost with the other patch as it was discovered that the
+  Hexagon needs fixing to support writesb/readsb.
+ChangeLog v3->v4:
+- Rebase on regmap for-next
+ChangeLog v2->v3:
+- Rebase on kernel v6.0-rc1
+ChangeLog v1->v2:
+- Factor out and reuse the code to format and read or write a
+  buffer of data to a noinc register at the cost of dropping
+  const from the buffer pointer in the write call. This is a
+  deadly sin in Rust and therefore impossible, but hey, this is
+  C, and dropping a const is a lesser evil than not being
+  able to reuse code.
+---
+ drivers/base/regmap/regmap.c | 123 ++++++++++++++++++++++++++++++++++-
+ include/linux/regmap.h       |   8 +++
+ 2 files changed, 128 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index e371acea7e0e..41ff9f18b6a3 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -2129,6 +2129,99 @@ int regmap_raw_write(struct regmap *map, unsigned int reg,
+ }
+ EXPORT_SYMBOL_GPL(regmap_raw_write);
+ 
++static int regmap_noinc_readwrite(struct regmap *map, unsigned int reg,
++				  void *val, unsigned int val_len, bool write)
++{
++	size_t val_bytes = map->format.val_bytes;
++	size_t val_count = val_len / val_bytes;
++	unsigned int lastval;
++	u8 *u8p;
++	u16 *u16p;
++	u32 *u32p;
++#ifdef CONFIG_64BIT
++	u64 *u64p;
++#endif
++	int ret;
++	int i;
++
++	switch (val_bytes) {
++	case 1:
++		u8p = val;
++		if (write)
++			lastval = (unsigned int)u8p[val_count - 1];
++		break;
++	case 2:
++		u16p = val;
++		if (write)
++			lastval = (unsigned int)u16p[val_count - 1];
++		break;
++	case 4:
++		u32p = val;
++		if (write)
++			lastval = (unsigned int)u32p[val_count - 1];
++		break;
++#ifdef CONFIG_64BIT
++	case 8:
++		u64p = val;
++		if (write)
++			lastval = (unsigned int)u64p[val_count - 1];
++		break;
++#endif
++	default:
++		return -EINVAL;
++	}
++
++	/*
++	 * Update the cache with the last value we write, the rest is just
++	 * gone down in the hardware FIFO. We can't cache FIFOs. This makes
++	 * sure a single read from the cache will work.
++	 */
++	if (write) {
++		if (!map->cache_bypass && !map->defer_caching) {
++			ret = regcache_write(map, reg, lastval);
++			if (ret != 0)
++				return ret;
++			if (map->cache_only) {
++				map->cache_dirty = true;
++				return 0;
++			}
++		}
++		ret = map->bus->reg_noinc_write(map->bus_context, reg, val, val_count);
++	} else {
++		ret = map->bus->reg_noinc_read(map->bus_context, reg, val, val_count);
++	}
++
++	if (!ret && regmap_should_log(map)) {
++		dev_info(map->dev, "%x %s [", reg, write ? "<=" : "=>");
++		for (i = 0; i < val_len; i++) {
++			switch (val_bytes) {
++			case 1:
++				pr_cont("%x", u8p[i]);
++				break;
++			case 2:
++				pr_cont("%x", u16p[i]);
++				break;
++			case 4:
++				pr_cont("%x", u32p[i]);
++				break;
++#ifdef CONFIG_64BIT
++			case 8:
++				pr_cont("%llx", u64p[i]);
++				break;
++#endif
++			default:
++				break;
++			}
++			if (i == (val_len - 1))
++				pr_cont("]\n");
++			else
++				pr_cont(",");
++		}
++	}
++
++	return 0;
++}
++
+ /**
+  * regmap_noinc_write(): Write data from a register without incrementing the
+  *			register number
+@@ -2156,9 +2249,8 @@ int regmap_noinc_write(struct regmap *map, unsigned int reg,
+ 	size_t write_len;
+ 	int ret;
+ 
+-	if (!map->write)
+-		return -ENOTSUPP;
+-
++	if (!map->write && !(map->bus && map->bus->reg_noinc_write))
++		return -EINVAL;
+ 	if (val_len % map->format.val_bytes)
+ 		return -EINVAL;
+ 	if (!IS_ALIGNED(reg, map->reg_stride))
+@@ -2173,6 +2265,15 @@ int regmap_noinc_write(struct regmap *map, unsigned int reg,
+ 		goto out_unlock;
+ 	}
+ 
++	/*
++	 * Use the accelerated operation if we can. The val drops the const
++	 * typing in order to facilitate code reuse in regmap_noinc_readwrite().
++	 */
++	if (map->bus->reg_noinc_write) {
++		ret = regmap_noinc_readwrite(map, reg, (void *)val, val_len, true);
++		goto out_unlock;
++	}
++
+ 	while (val_len) {
+ 		if (map->max_raw_write && map->max_raw_write < val_len)
+ 			write_len = map->max_raw_write;
+@@ -2943,6 +3044,22 @@ int regmap_noinc_read(struct regmap *map, unsigned int reg,
+ 		goto out_unlock;
+ 	}
+ 
++	/* Use the accelerated operation if we can */
++	if (map->bus->reg_noinc_read) {
++		/*
++		 * We have not defined the FIFO semantics for cache, as the
++		 * cache is just one value deep. Should we return the last
++		 * written value? Just avoid this by always reading the FIFO
++		 * even when using cache. Cache only will not work.
++		 */
++		if (map->cache_only) {
++			ret = -EBUSY;
++			goto out_unlock;
++		}
++		ret = regmap_noinc_readwrite(map, reg, val, val_len, false);
++		goto out_unlock;
++	}
++
+ 	while (val_len) {
+ 		if (map->max_raw_read && map->max_raw_read < val_len)
+ 			read_len = map->max_raw_read;
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 8cccc247cd37..ca3434dca3a0 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -492,8 +492,12 @@ typedef int (*regmap_hw_read)(void *context,
+ 			      void *val_buf, size_t val_size);
+ typedef int (*regmap_hw_reg_read)(void *context, unsigned int reg,
+ 				  unsigned int *val);
++typedef int (*regmap_hw_reg_noinc_read)(void *context, unsigned int reg,
++					void *val, size_t val_count);
+ typedef int (*regmap_hw_reg_write)(void *context, unsigned int reg,
+ 				   unsigned int val);
++typedef int (*regmap_hw_reg_noinc_write)(void *context, unsigned int reg,
++					 const void *val, size_t val_count);
+ typedef int (*regmap_hw_reg_update_bits)(void *context, unsigned int reg,
+ 					 unsigned int mask, unsigned int val);
+ typedef struct regmap_async *(*regmap_hw_async_alloc)(void);
+@@ -514,6 +518,8 @@ typedef void (*regmap_hw_free_context)(void *context);
+  *               must serialise with respect to non-async I/O.
+  * @reg_write: Write a single register value to the given register address. This
+  *             write operation has to complete when returning from the function.
++ * @reg_write_noinc: Write multiple register value to the same register. This
++ *             write operation has to complete when returning from the function.
+  * @reg_update_bits: Update bits operation to be used against volatile
+  *                   registers, intended for devices supporting some mechanism
+  *                   for setting clearing bits without having to
+@@ -541,9 +547,11 @@ struct regmap_bus {
+ 	regmap_hw_gather_write gather_write;
+ 	regmap_hw_async_write async_write;
+ 	regmap_hw_reg_write reg_write;
++	regmap_hw_reg_noinc_write reg_noinc_write;
+ 	regmap_hw_reg_update_bits reg_update_bits;
+ 	regmap_hw_read read;
+ 	regmap_hw_reg_read reg_read;
++	regmap_hw_reg_noinc_read reg_noinc_read;
+ 	regmap_hw_free_context free_context;
+ 	regmap_hw_async_alloc async_alloc;
+ 	u8 read_flag_mask;
+-- 
+2.37.2
+
