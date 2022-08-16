@@ -2,152 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2549DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7E2C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236587AbiHPSuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44296 "EHLO
+        id S236056AbiHPSwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiHPSuM (ORCPT
+        with ESMTP id S235205AbiHPSwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:50:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A77880B77
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660675810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AkK5XVOSKnldgDxtfSJhIQ0VryUaBistREPEqG430YQ=;
-        b=JOcvcCtlCsv2esMbSV0YocJZqb2bMVhSNn+vSucXSmOpZX8h145QVQ/FPbarCsEYUarBp5
-        0Of93DcsYnmVZJjItIXnaWZFUf4HgZW+qgHFqXi14/ojB1Rgoa0UZUdQmMqQeSGGRTrfQD
-        m686cBUhgtM2QbITWgPtVfnD3xEtUic=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-250-fgM9JszUNQGKQjquwrLOeA-1; Tue, 16 Aug 2022 14:50:09 -0400
-X-MC-Unique: fgM9JszUNQGKQjquwrLOeA-1
-Received: by mail-qt1-f198.google.com with SMTP id bz20-20020a05622a1e9400b003436a76c6e6so8901184qtb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:50:09 -0700 (PDT)
+        Tue, 16 Aug 2022 14:52:38 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CB785FE6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:52:36 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-334dc616f86so1665207b3.8
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:52:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=OqCx5/xCl6tw3i280dCLBLdpEzPrO+4Ppd9zzQXnvR4=;
+        b=EAtl/HpJc7VUakyS2l7F7l5WxouXonrEy4tRWTKdcqphZcO/6j0KYh4oMPHn4LDqx3
+         Nvfd9NHuPBg0Mrgp8z4wPpczL+amquWmEHQO1Vn///bnqnOcob55OGlvHsE7mJx5lzEq
+         Nk07nvDuJvdoYUla/x+tPkAc3zvO6LFrE1NsLL1F8E9Mf0Be6iaPkyn6pwan4Zayp/Cm
+         LTHo7T+52U8qLtITmXWY8f48Scl0Zf9WBzdQSPlH3z8UfmHxfnEW3L76YMWBBTq0k/vS
+         yP2B2ZZckNH0p9MMZ0FIio/iwUTNTlhAGtkm5nERfTvotBYkCYweTDI43lqD4US+zhjQ
+         0Y0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=AkK5XVOSKnldgDxtfSJhIQ0VryUaBistREPEqG430YQ=;
-        b=YTdJ93tgZuGdYKZYbacy/dzexGdRTDrk5PgC4hny+FJWtvkMqNksvzWiMQQYovGQF3
-         F5+Uh5mdQwG/ekHHIojwOYSQg2g7y09ek1nKfR5iAdciRoP2gkCsmvQBJpUhu/MSLOa9
-         GcJnwH/IOLHGYEmYXsLyrjv9c8Wf+lZqIl9uovxEQgVgeG7b6YroQqiVhqGkil2Plajl
-         AdEZkrvsmT9QHSfmOT1lipOU7OACL8Pwb+4RYFBIa9o5brh4/EZjExuVlPpTJ4JFu+fe
-         b7eJwNGScjuow2otv0KYnVOQD8hACgRHVFGOEee7EAPt13t99vakPsjy+snw9ELTXaSh
-         cO8Q==
-X-Gm-Message-State: ACgBeo15eSmspzFZ+yDnhpdckp0140XLhOcWifZpc7L8f+riugwPz7Pj
-        yYcc/FHrB01zwcTguyTDeDnaHdtOaTwGxjPbb//EB5e0R59z4Ed3keACt+UIzePDKAdRZnUAeZ+
-        65wNVijorUiTKyod5mFP16RduCVIWZXInMxxmYG+L
-X-Received: by 2002:a05:620a:2444:b0:6bb:3397:556b with SMTP id h4-20020a05620a244400b006bb3397556bmr7441194qkn.336.1660675809311;
-        Tue, 16 Aug 2022 11:50:09 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5dUXuiPf2SvaQ6qdoG4GXaAVy4hA4WC5ASn4P0jVmQCPTsYvEx5t9BOulk4AEAIjwyNZlyUh+bojKePuTiVL4=
-X-Received: by 2002:a05:620a:2444:b0:6bb:3397:556b with SMTP id
- h4-20020a05620a244400b006bb3397556bmr7441175qkn.336.1660675809065; Tue, 16
- Aug 2022 11:50:09 -0700 (PDT)
+        bh=OqCx5/xCl6tw3i280dCLBLdpEzPrO+4Ppd9zzQXnvR4=;
+        b=O+zkBv/sv3+kJXBL6gsMX3PPNadmXPBhwjHjHmPrjo7zkGv71weHNAHeyyDLmLTcLn
+         cnncu7DA5w0P2qAO0V9yiTzLUduaPmZNwK9FEZFCehsmOzWzTOk932e9RlHXtz0IRJg6
+         ixrHjRiasyCQpJ5Dv9IUNxSykJu+W2NR3QZOCa20mcra2QfPTTEocdJdbgDyeuaKWcU8
+         RHqhwlwKlDd4coYbAXTINutDbRbqS/cHhVHauIMHDgHVAbXvhwy0QWg8pH6L/H+LwhEp
+         hUBuZI6qYCyh83iggoBtRcfAMEdrPVn03WdxH0BQQtQe3CvUlBgOsjeyKHTulN4sf9f0
+         Hbzg==
+X-Gm-Message-State: ACgBeo3/6/LLATzr+ILBb6H2RTwm+XQNoPUbOY4mFms4znJK3lovEhQx
+        /gHncWnrj51c/0JvJNYXb3Q86CHMnZ2vkXoLThBpNA==
+X-Google-Smtp-Source: AA6agR6J9TNMQ9jspfYwg5KJAH6/4SjoX34GYoyO2fv483iqNZrR2zcvNvroKG2SEh9Xzh/thAi1bP5yxRi8XjdbSUQ=
+X-Received: by 2002:a81:50d4:0:b0:31f:5f85:566a with SMTP id
+ e203-20020a8150d4000000b0031f5f85566amr18183057ywb.218.1660675955611; Tue, 16
+ Aug 2022 11:52:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220816025217.618181-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220816025217.618181-1-kai.heng.feng@canonical.com>
-From:   Karol Herbst <kherbst@redhat.com>
-Date:   Tue, 16 Aug 2022 20:49:58 +0200
-Message-ID: <CACO55tt=Op=0E94kK+1M8cDXNCk5Tkc=FMR8=OQFc5ohehjwaw@mail.gmail.com>
-Subject: Re: [PATCH] drm/i915: Switch TGL-H DP-IN to dGFX when it's supported
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+References: <20220810060040.321697-1-saravanak@google.com> <CAGETcx_tSndU0xerz=DF9JQxYFRC2aaxyOE-bR2JpM0L0ht=sw@mail.gmail.com>
+ <CAGETcx-JUV1nj8wBJrTPfyvM7=Mre5j_vkVmZojeiumUGG6QZQ@mail.gmail.com> <8296964.NyiUUSuA9g@steina-w>
+In-Reply-To: <8296964.NyiUUSuA9g@steina-w>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 16 Aug 2022 11:51:59 -0700
+Message-ID: <CAGETcx882GejPk4cPhSRzruUYvPZLHDyORWz2i7xP9uw6eAmzg@mail.gmail.com>
+Subject: Re: [PATCH v1 0/9] fw_devlink improvements
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Zenghui Yu <yuzenghui@huawei.com>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, Abel Vesa <abel.vesa@linaro.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        John Stultz <jstultz@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-acpi@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 4:53 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
+On Tue, Aug 16, 2022 at 12:17 AM Alexander Stein
+<alexander.stein@ew.tq-group.com> wrote:
 >
-> On mobile workstations like HP ZBook Fury G8, iGFX's DP-IN can switch to
-> dGFX so external monitors are routed to dGFX, and more monitors can be
-> supported as result.
+> Hello Saravana,
 >
-> To switch the DP-IN to dGFX, the driver needs to invoke _DSM function 20
-> on intel_dsm_guid2. This method is described in Intel document 632107.
+> Am Montag, 15. August 2022, 22:56:07 CEST schrieb Saravana Kannan:
+> > On Mon, Aug 15, 2022 at 12:17 PM Saravana Kannan <saravanak@google.com>
+> wrote:
+> > > On Mon, Aug 15, 2022 at 5:39 AM Alexander Stein
+> > >
+> > > <alexander.stein@ew.tq-group.com> wrote:
+> > > > Hello Saravana,
+> > > >
+> > > > Am Mittwoch, 10. August 2022, 08:00:29 CEST schrieb Saravana Kannan:
+> > > > > Alexander,
+> > > > >
+> > > > > This should fix your issue where the power domain device not having a
+> > > > > compatible property. Can you give it a shot please?
+> > > >
+> > > > thanks for the update. Unfortunately this does not work:
+> > > > > [    0.774838] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@0
+> > > >
+> > > > > [    0.775100] imx-pgc imx-pgc-domain.1: __genpd_dev_pm_attach()
+> > > > > failed to
+> > > >
+> > > > find PM domain: -2
+> > > >
+> > > > > [    0.775324] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@2
+> > > >
+> > > > > [    0.775601] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@3
+> > > >
+> > > > > [    0.775842] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@4
+> > > >
+> > > > > [    0.776642] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@7
+> > > >
+> > > > > [    0.776897] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@8
+> > > >
+> > > > > [    0.777158] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@9
+> > > >
+> > > > > [    0.777405] PM: Added domain provider from /soc@0/bus@30000000/
+> > > >
+> > > > gpc@303a0000/pgc/power-domain@a
+> > > >
+> > > > > [    0.779342] genpd genpd:0:38320000.blk-ctrl:
+> > > > > __genpd_dev_pm_attach()
+> > > >
+> > > > failed to find PM domain: -2
+> > > >
+> > > > > [    0.779422] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed
+> > > > > to
+> > > >
+> > > > attach power domain "bus"
+> > > >
+> > > > > [    0.848785] etnaviv-gpu 38000000.gpu: __genpd_dev_pm_attach()
+> > > > > failed to
+> > > >
+> > > > find PM domain: -2
+> > > >
+> > > > > [    1.114220] pfuze100-regulator 0-0008: Full layer: 2, Metal layer:
+> > > > > 1
+> > > > > [    1.122267] pfuze100-regulator 0-0008: FAB: 0, FIN: 0
+> > > > > [    1.132970] pfuze100-regulator 0-0008: pfuze100 found.
+> > > > > [    1.157011] imx-gpcv2 303a0000.gpc: Failed to create device link
+> > > > > with
+> > > >
+> > > > 0-0008
+> > > >
+> > > > > [    1.164094] imx-gpcv2 303a0000.gpc: Failed to create device link
+> > > > > with
+> > > >
+> > > > 0-0008
+> > > >
+> > > > The required power-supply for the power domains is still not yet
+> > > > available.
+> > > > Does this series require some other patches as well?
+> > >
+> > > Ah sorry, yeah, this needs additional patches. The one I gave in the
+> > > other thread when I debugged this and I also noticed another issue.
+> > > Here's the combined diff of what's needed. Can you add this on top of
+> > > the series and test it?
+> > >
+> > > diff --git a/drivers/irqchip/irq-imx-gpcv2.c
+> > > b/drivers/irqchip/irq-imx-gpcv2.c index b9c22f764b4d..8a0e82067924 100644
+> > > --- a/drivers/irqchip/irq-imx-gpcv2.c
+> > > +++ b/drivers/irqchip/irq-imx-gpcv2.c
+> > > @@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
+> > > device_node *node,
+> > >
+> > >          * later the GPC power domain driver will not be skipped.
+> > >          */
+> > >
+> > >         of_node_clear_flag(node, OF_POPULATED);
+> > >
+> > > +       fwnode_dev_initialized(domain->fwnode, false);
+> > >
+> > >         return 0;
+> > >
+> > >  }
+> > >
+> > > diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+> > > index 6383a4edc360..181fbfe5bd4d 100644
+> > > --- a/drivers/soc/imx/gpcv2.c
+> > > +++ b/drivers/soc/imx/gpcv2.c
+> > > @@ -1513,6 +1513,7 @@ static int imx_gpcv2_probe(struct platform_device
+> > > *pdev)>
+> > >                 pd_pdev->dev.parent = dev;
+> > >                 pd_pdev->dev.of_node = np;
+> > >
+> > > +               pd_pdev->dev.fwnode = of_fwnode_handle(np);
+> > >
+> > >                 ret = platform_device_add(pd_pdev);
+> > >                 if (ret) {
+> > >
+> > > With this patch, I'd really expect the power domain dependency to be
+> > > handled correctly.
+> > >
+> > > > Whats worse, starting with commit 9/9 [of: property: Simplify
+> > > > of_link_to_phandle()], other drivers fail to probe waiting for pinctrl
+> > > > to be available.
+> > >
+> > > Heh, Patch 9/9 and all its other dependencies in this series was to
+> > > fix your use case. Ironic that it's causing you more issues.
+> > >
+> > > > > $ cat /sys/kernel/debug/devices_deferred
+> > > > > gpio-leds       platform: wait for supplier gpioledgrp
+> > > > > extcon-usbotg0  platform: wait for supplier usb0congrp
+> > > > > gpio-keys       platform: wait for supplier gpiobuttongrp
+> > > > > regulator-otg-vbus      platform: wait for supplier reggotgvbusgrp
+> > > > > regulator-vdd-arm       platform: wait for supplier dvfsgrp
+> > > >
+> > > > Apparently for some reason they are not probed again, once the pinctrl
+> > > > driver probed.
+> > >
+> > > I'm hoping that this is just some issue due to the missing patch
+> > > above, but doesn't sound like it if you say that the pinctrl ended up
+> > > probing eventually.
+> > >
+> > > So when device_links_driver_bound() calls
+> > > __fw_devlink_pickup_dangling_consumers(), it should have picked up the
+> > > consumers of node like gpiobuttongrp and moved it to the pinctrl
+> > > device. And right after that we call __fw_devlink_link_to_consumers()
+> > > that would have created the device links. And then right after that,
+> > > we go through all the consumers and add them to the deferred probe
+> > > list. After that deferred probe should have run... either because it's
+> > > enabled at late_initcall() or because a new device probed
+> > > successfully.
+> > >
+> > > Can you check which one of my expectations isn't true in your case?
+> >
+> > Actually I have a hypothesis on what might be happening. It could be a
+> > case of the consumer device getting added after the supplier has been
+> > initialized.
+> >
+> > If the patch above doesn't fix everything, can you add this diff on
+> > top of the patch above and see if that fixes everything? If it fixes
+> > the pinctrl issue, can you check my hypothesis be checking in what
+> > order the devices get added and get probed?
+> >
+> > diff --git a/drivers/base/core.c b/drivers/base/core.c
+> > index 2f012e826986..866755d8ad95 100644
+> > --- a/drivers/base/core.c
+> > +++ b/drivers/base/core.c
+> > @@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device
+> > *con, device_links_write_unlock();
+> >         }
+> >
+> > -       sup_dev = get_dev_from_fwnode(sup_handle);
+> > +       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
+> > +               sup_dev = fwnode_get_next_parent_dev(sup_handle);
+> > +       else
+> > +               sup_dev = get_dev_from_fwnode(sup_handle);
+> > +
+> >         if (sup_dev) {
+> >                 /*
+> >                  * If it's one of those drivers that don't actually bind to
+> >
 >
+> And with this change my pinctrl probing is fixed as well!
 
-Can we please not do things like this just because?
+Thanks for testing these! I'll roll these into v2 of the series.
 
-It forces the discrete GPU to be on leading to higher thermal pressure
-and power consumption of the system. Lower battery runtime or higher
-fan noise is the result. Not everybody wants to use an AC simply just
-because they attach an external display.
+Glad to see I've fixed all the issues I set out to fix. Now to figure
+out what other corner cases I've missed.
 
-If the problem is "we run out of displays" then can we have something
-more dynamic, where we are doing this only and only if we run out of
-resources to drive as that many displays.
-
-Most users will be fine with ports being driven by the iGPU. Why hurt
-most users, because of some weird special case with mostly only
-drawbacks?
-
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/gpu/drm/i915/display/intel_acpi.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_acpi.c b/drivers/gpu/drm/i915/display/intel_acpi.c
-> index e78430001f077..3bd5930e2769b 100644
-> --- a/drivers/gpu/drm/i915/display/intel_acpi.c
-> +++ b/drivers/gpu/drm/i915/display/intel_acpi.c
-> @@ -20,6 +20,7 @@ static const guid_t intel_dsm_guid =
->                   0xa8, 0x54, 0x0f, 0x13, 0x17, 0xb0, 0x1c, 0x2c);
->
->  #define INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED 0 /* No args */
-> +#define INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX 20 /* No args */
->
->  static const guid_t intel_dsm_guid2 =
->         GUID_INIT(0x3e5b41c6, 0xeb1d, 0x4260,
-> @@ -187,6 +188,7 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
->         struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
->         acpi_handle dhandle;
->         union acpi_object *obj;
-> +       int supported = 0;
->
->         dhandle = ACPI_HANDLE(&pdev->dev);
->         if (!dhandle)
-> @@ -194,8 +196,22 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
->
->         obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2, INTEL_DSM_REVISION_ID,
->                                 INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED, NULL);
-> -       if (obj)
-> +       if (obj) {
-> +               if (obj->type == ACPI_TYPE_INTEGER)
-> +                       supported = obj->integer.value;
-> +
->                 ACPI_FREE(obj);
-> +       }
-> +
-> +       /* Tiger Lake H DP-IN Boot Time Switching from iGfx to dGfx */
-> +       if (supported & BIT(20)) {
-> +               obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2,
-> +                                       INTEL_DSM_REVISION_ID,
-> +                                       INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX,
-> +                                       NULL);
-> +               if (obj)
-> +                       ACPI_FREE(obj);
-> +       }
->  }
->
->  /*
-> --
-> 2.36.1
->
-
+-Saravana
