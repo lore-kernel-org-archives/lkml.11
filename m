@@ -2,118 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C33EC32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B28C9C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbiHPMWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
+        id S231944AbiHPMWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiHPMWF (ORCPT
+        with ESMTP id S231776AbiHPMWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:22:05 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4CA25C68;
-        Tue, 16 Aug 2022 05:22:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660652525; x=1692188525;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=B3uUd/yG6wpuTb/aR5iTfAme30Qm6tQlD5VU32Fh/CI=;
-  b=Tifp/ISUfjpNRaPP/CY94u94leOZ91YRfJkuv3BDszBornbMs5Q6XRQ7
-   Ixcw0xfxSGlJ1Jg0hiYU0p5uFCXRilB6YP1Oef6lmkw0edqQbDB88Z1Zk
-   92hPzlG/ufTn1JT3E+1Bor79jl97sbJHqhdZcxEGuqk0Z1IAVbJxaAgBF
-   8TkLB0HHACBU+bOr/uWseGqjadJawZfkVjkgEF0OV/8Hm9kAqrgBq7FeF
-   TucuT2O8paNDEBJxQExyYRDVCGdFPd1jsimk54wcpS0qKHTZDzhCHAQ47
-   lhhOfV7Q2m5H6OH4cSsSeil9POTww0F/BnV3p9UUmF5ySbm27HvydlkBK
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="289773234"
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="289773234"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:22:03 -0700
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="675194031"
-Received: from damianos-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.252.40.45])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:21:54 -0700
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 4FB31104A4E; Tue, 16 Aug 2022 15:24:57 +0300 (+03)
-Date:   Tue, 16 Aug 2022 15:24:57 +0300
-From:   "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     Chao Peng <chao.p.peng@linux.intel.com>,
-        "Nikunj A. Dadhania" <nikunj@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
-        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
-        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>, bharata@amd.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220816122457.2fjyd4uz5hp5cani@box.shutemov.name>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <b21f41e5-0322-bbfb-b9c2-db102488592d@amd.com>
- <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
- <9dc91ce8-4cb6-37e6-4c25-27a72dc11dd0@amd.com>
- <422b9f97-fdf5-54bf-6c56-3c45eff5e174@amd.com>
- <1407c70c-0c0b-6955-10bb-d44c5928f2d9@amd.com>
- <1136925c-2e37-6af4-acac-be8bed9f6ed5@amd.com>
- <1b02db9d-f2f1-94dd-6f37-59481525abff@amd.com>
- <20220815130411.GA1073443@chaop.bj.intel.com>
- <f0094f31-9669-47b5-eb52-6754a13ce757@amd.com>
+        Tue, 16 Aug 2022 08:22:08 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B561217065;
+        Tue, 16 Aug 2022 05:22:07 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4C37837345;
+        Tue, 16 Aug 2022 12:22:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660652526; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1YZdKJUujIVhtSIXvaGEXXbp4ZWZrHyQ4cBO+Ol5Uzc=;
+        b=jR/qir+F1KvQkprGo27HCBr/wg+RgDRjFlUcYrQpq0in+tS2B9OYkys3SX01TXNf104tpd
+        /b7YMDFrE0stbEzgGS7Y/LKHseiM7PdSdXhr4YtNarFcIV7kg6WUIVIIzMu6qBJtb/IaBG
+        weR4np2ArM4V5RHr4xxQV3Kmptm7xks=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 292381345B;
+        Tue, 16 Aug 2022 12:22:06 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id /Q6iCO6L+2KjSgAAMHmgww
+        (envelope-from <jgross@suse.com>); Tue, 16 Aug 2022 12:22:06 +0000
+Message-ID: <6ded15cd-381d-24f2-ab0f-bae31117bbc5@suse.com>
+Date:   Tue, 16 Aug 2022 14:22:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f0094f31-9669-47b5-eb52-6754a13ce757@amd.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] block: fix repeated words in comments
+Content-Language: en-US
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220816120952.56713-1-yuanjilin@cdjrlc.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <20220816120952.56713-1-yuanjilin@cdjrlc.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------9TcQLo8nP9HQ5Mkv0SO1vvUj"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 01:33:00PM +0200, Gupta, Pankaj wrote:
-> Hi Chao,
-> 
-> > 
-> > Actually the current version allows you to delay the allocation to a
-> > later time (e.g. page fault time) if you don't call fallocate() on the
-> > private fd. fallocate() is necessary in previous versions because we
-> > treat the existense in the fd as 'private' but in this version we track
-> > private/shared info in KVM so we don't rely on that fact from memory
-> > backstores.
-> 
-> Does this also mean reservation of guest physical memory with secure
-> processor (both for SEV-SNP & TDX) will also happen at page fault time?
-> 
-> Do we plan to keep it this way?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------9TcQLo8nP9HQ5Mkv0SO1vvUj
+Content-Type: multipart/mixed; boundary="------------cSoRuB31Eb67XX0KMBZ92bgR";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Jilin Yuan <yuanjilin@cdjrlc.com>, axboe@kernel.dk
+Cc: linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <6ded15cd-381d-24f2-ab0f-bae31117bbc5@suse.com>
+Subject: Re: [PATCH] block: fix repeated words in comments
+References: <20220816120952.56713-1-yuanjilin@cdjrlc.com>
+In-Reply-To: <20220816120952.56713-1-yuanjilin@cdjrlc.com>
 
-If you are talking about accepting memory by the guest, it is initiated by
-the guest and has nothing to do with page fault time vs fallocate()
-allocation of host memory. I mean acceptance happens after host memory
-allocation but they are not in lockstep, acceptance can happen much later.
+--------------cSoRuB31Eb67XX0KMBZ92bgR
+Content-Type: multipart/mixed; boundary="------------0vTlOk0UD9WPngsIONQ8xbHp"
 
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+--------------0vTlOk0UD9WPngsIONQ8xbHp
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+T24gMTYuMDguMjIgMTQ6MDksIEppbGluIFl1YW4gd3JvdGU6DQo+ICAgRGVsZXRlIHRoZSBy
+ZWR1bmRhbnQgd29yZCAnY2FuJy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEppbGluIFl1YW4g
+PHl1YW5qaWxpbkBjZGpybGMuY29tPg0KPiAtLS0NCj4gICBibG9jay9iaW8uYyB8IDIgKy0N
+Cj4gICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4g
+DQo+IGRpZmYgLS1naXQgYS9ibG9jay9iaW8uYyBiL2Jsb2NrL2Jpby5jDQo+IGluZGV4IGY5
+MmQwMjIzMjQ3Yi4uYzg4M2Y4OTYzYzE0IDEwMDY0NA0KPiAtLS0gYS9ibG9jay9iaW8uYw0K
+PiArKysgYi9ibG9jay9iaW8uYw0KPiBAQCAtNTY3LDcgKzU2Nyw3IEBAIEVYUE9SVF9TWU1C
+T0woYmlvX2FsbG9jX2Jpb3NldCk7DQo+ICAgICogYmUgcmV1c2VkIGJ5IGNhbGxpbmcgYmlv
+X3VuaW5pdCgpIGJlZm9yZSBjYWxsaW5nIGJpb19pbml0KCkgYWdhaW4uDQo+ICAgICoNCj4g
+ICAgKiBOb3RlIHRoYXQgdW5saWtlIGJpb19hbGxvYygpIG9yIGJpb19hbGxvY19iaW9zZXQo
+KSBhbGxvY2F0aW9ucyBmcm9tIHRoaXMNCj4gLSAqIGZ1bmN0aW9uIGFyZSBub3QgYmFja2Vk
+IGJ5IGEgbWVtcG9vbCBjYW4gY2FuIGZhaWwuICBEbyBub3QgdXNlIHRoaXMgZnVuY3Rpb24N
+Cj4gKyAqIGZ1bmN0aW9uIGFyZSBub3QgYmFja2VkIGJ5IGEgbWVtcG9vbCBjYW4gZmFpbC4g
+IERvIG5vdCB1c2UgdGhpcyBmdW5jdGlvbg0KDQpUaGlzIHNlbnRlbmNlIGlzIHN0aWxsIG5v
+dCBjb3JyZWN0LiBJIGd1ZXNzIHRoZSBmaXJzdCAiY2FuIiBzaG91bGQgYmUgcmVwbGFjZWQN
+CndpdGggImFuZCIuDQoNCg0KSnVlcmdlbg0K
+--------------0vTlOk0UD9WPngsIONQ8xbHp
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------0vTlOk0UD9WPngsIONQ8xbHp--
+
+--------------cSoRuB31Eb67XX0KMBZ92bgR--
+
+--------------9TcQLo8nP9HQ5Mkv0SO1vvUj
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmL7i+0FAwAAAAAACgkQsN6d1ii/Ey8k
+LggAgZc3cEIadhgiZZHfY8EMvIFJiPwY2h0WMqyNt2D/Hii0QEa7cl60yU0AVOMD06CdnAu/oQOf
+zFo3LH5uPU8XO6t8g0n9WCwwDQWvievfcfgOMea+9fWICpZbuDJ4UwD4dUQKMnLYRDvSABpEMRVA
+vsvp0t7/Q7hlgnMsGKtWXbEYCIzpIatj0EFzKRn3tw9U17ClAnnD7VyngGLjgypevPINMXU3g7TX
+POSbGQsFQOPyUITVsNx8HGtRQy+vmuT8MAif3YAq8F6sO3QR0372lm87ZqhaGb9j/Yobdop7buHJ
+crbJivkDK29iDyMMOiga1VkN/4bWTs3EekM/GzfWkA==
+=UwQO
+-----END PGP SIGNATURE-----
+
+--------------9TcQLo8nP9HQ5Mkv0SO1vvUj--
