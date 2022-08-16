@@ -2,131 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D18ABC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A713C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbiHPKu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        id S234093AbiHPKv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235183AbiHPKu2 (ORCPT
+        with ESMTP id S233821AbiHPKvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:50:28 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0C59D8F4;
-        Tue, 16 Aug 2022 03:35:16 -0700 (PDT)
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6SBg6djFz67bbZ;
-        Tue, 16 Aug 2022 18:32:11 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 12:35:13 +0200
-Received: from [10.48.156.171] (10.48.156.171) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 11:35:12 +0100
-Message-ID: <aabf7ed8-8d4d-dc68-1b8b-c91653701def@huawei.com>
-Date:   Tue, 16 Aug 2022 11:35:11 +0100
+        Tue, 16 Aug 2022 06:51:36 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7FC47EFD2;
+        Tue, 16 Aug 2022 03:23:47 -0700 (PDT)
+Received: from pwmachine.localnet (85-170-37-153.rev.numericable.fr [85.170.37.153])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 08AD8210DA5E;
+        Tue, 16 Aug 2022 03:23:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 08AD8210DA5E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1660645427;
+        bh=YfkkOGSQxA2OzjWDewpNMpQo+oxj7eu+1OSnrSeEK4Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cmrKoiJeQ8xbvJW9ziVMLBaonuTZpJk6d2MfbsVZv0S9trKuNx1i/J1TAv0fcuPTo
+         C6PRgeNl7F48RhkKDnG/hStuNX33PpJcL1UnY9jIVFShckPYpDhF4TyjCNgbFokBOd
+         yHHrU4m7su454KWkXbuqn2UydG56HtdOEBjcnUUI=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Hengqi Chen <hengqi.chen@gmail.com>
+Subject: Re: [RFC PATCH v1 1/3] bpf: Make ring buffer overwritable.
+Date:   Tue, 16 Aug 2022 12:23:41 +0200
+Message-ID: <1735233.VLH7GnMWUR@pwmachine>
+In-Reply-To: <CAEf4BzYex03T7aYjLnbkfHb8vUsCHhj_DiMU6KbK29F+DyhXyA@mail.gmail.com>
+References: <20220810171702.74932-1-flaniel@linux.microsoft.com> <20220810171702.74932-2-flaniel@linux.microsoft.com> <CAEf4BzYex03T7aYjLnbkfHb8vUsCHhj_DiMU6KbK29F+DyhXyA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From:   John Garry <john.garry@huawei.com>
-Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0%
- regression
-To:     Oliver Sang <oliver.sang@intel.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-CC:     Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Linux Memory Management List" <linux-mm@kvack.org>,
-        <linux-ide@vger.kernel.org>, <lkp@lists.01.org>, <lkp@intel.com>,
-        <ying.huang@intel.com>, <feng.tang@intel.com>,
-        <zhengjun.xing@linux.intel.com>, <fengwei.yin@intel.com>
-References: <YuzPMMnnY739Tnit@xsang-OptiPlex-9020>
- <1f498d4a-f93f-ceb4-b713-753196e5e08d@opensource.wdc.com>
- <3451fa5a-6229-073f-ae18-0c232cd48ed5@huawei.com>
- <e4106ffa-3842-45c0-9756-5226cfcfa17d@opensource.wdc.com>
- <YvXeuCAK780OuJPz@xsang-OptiPlex-9020>
- <2e9cf5a6-c043-5ccf-e363-097c6c941891@huawei.com>
- <f1c3d717-339d-ba2b-9775-fc0e00f57ae3@huawei.com>
- <Yvs/w93KUkgD9f7/@xsang-OptiPlex-9020>
-In-Reply-To: <Yvs/w93KUkgD9f7/@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.48.156.171]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 07:57, Oliver Sang wrote:
->>> For me, a complete kernel log may help.
->> and since only 1HDD, the output of the following would be helpful:
->>
->> /sys/block/sda/queue/max_sectors_kb
->> /sys/block/sda/queue/max_hw_sectors_kb
->>
->> And for 5.19, if possible.
-> for commit
-> 0568e61225 ("ata: libata-scsi: cap ata_device->max_sectors according to shost->max_sectors")
-> 
-> root@lkp-icl-2sp1 ~# cat /sys/block/sda/queue/max_sectors_kb
-> 512
-> root@lkp-icl-2sp1 ~# cat /sys/block/sda/queue/max_hw_sectors_kb
-> 512
-> 
-> for both commit
-> 4cbfca5f77 ("scsi: scsi_transport_sas: cap shost opt_sectors according to DMA optimal limit")
-> and v5.19
-> 
-> root@lkp-icl-2sp1 ~# cat /sys/block/sda/queue/max_sectors_kb
-> 1280
-> root@lkp-icl-2sp1 ~# cat /sys/block/sda/queue/max_hw_sectors_kb
-> 32767
-> 
-
-thanks, I appreciate this.
-
- From the dmesg, I see 2x SATA disks - I was under the impression that 
-the system only has 1x.
-
-Anyway, both drives show LBA48, which means the large max hw sectors at 
-32767KB:
-[   31.129629][ T1146] ata6.00: 1562824368 sectors, multi 1: LBA48 NCQ 
-(depth 32)
-
-So this is what I suspected: we are capped from the default shost max 
-sectors (1024 sectors).
-
-This seems like the simplest fix for you:
-
---- a/include/linux/libata.h
-+++ b/include/linux/libata.h
-@@ -1382,7 +1382,8 @@ extern const struct attribute_group 
-*ata_common_sdev_groups[];
-        .proc_name              = drv_name,                     \
-        .slave_destroy          = ata_scsi_slave_destroy,       \
-        .bios_param             = ata_std_bios_param,           \
--       .unlock_native_capacity = ata_scsi_unlock_native_capacity
-+       .unlock_native_capacity = ata_scsi_unlock_native_capacity,\
-+       .max_sectors = ATA_MAX_SECTORS_LBA48
+Hi.
 
 
-A concern is that other drivers which use libata may have similar 
-issues, as they use default in SCSI_DEFAULT_MAX_SECTORS for max_sectors:
-hisi_sas
-pm8001
-aic9xxx
-mvsas
-isci
+Le lundi 15 ao=FBt 2022, 23:52:22 CEST Andrii Nakryiko a =E9crit :
+> On Wed, Aug 10, 2022 at 10:18 AM Francis Laniel
+>=20
+> <flaniel@linux.microsoft.com> wrote:
+> > By default, BPF ring buffer are size bounded, when producers already
+> > filled the buffer, they need to wait for the consumer to get those data
+> > before adding new ones.
+> > In terms of API, bpf_ringbuf_reserve() returns NULL if the buffer is fu=
+ll.
+> >=20
+> > This patch permits making BPF ring buffer overwritable.
+> > When producers already wrote as many data as the buffer size, they will
+> > begin to over write existing data, so the oldest will be replaced.
+> > As a result, bpf_ringbuf_reserve() never returns NULL.
+>=20
+> Part of BPF ringbuf record (first 8 bytes) stores information like
+> record size and offset in pages to the beginning of ringbuf map
+> metadata. This is used by consumer to know how much data belongs to
+> data record, but also for making sure that
+> bpf_ringbuf_reserve()/bpf_ringbuf_submit() work correctly and don't
+> corrupt kernel memory.
+>=20
+> If we simply allow overwriting this information (and no, spinlock
+> doesn't protect from that, you can have multiple producers writing to
+> different parts of ringbuf data area in parallel after "reserving"
+> their respective records), it completely breaks any sort of
+> correctness, both for user-space consumer and kernel-side producers.
 
-So they may be needlessly hobbled for some SATA disks. However I have a 
-system with hisi_sas controller and attached LBA48 disk. I tested 
-performance for v5.19 vs 6.0 and it was about the same for fio rw=read @ 
-~120K IOPS. I can test this further.
+Thank you for your answer.
+My current implementation is indeed wrong as I based it on the wrong=20
+assumption than BPF ring buffer could only store data of the same size...
+With data of different size, we can have the troubles you described.
 
-Thanks,
-John
+I will rework my patches and send a new version once polished but I=20
+cannot give an ETA.
+
+> > Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
+> > ---
+> >=20
+> >  include/uapi/linux/bpf.h |  3 +++
+> >  kernel/bpf/ringbuf.c     | 51 +++++++++++++++++++++++++++++++---------
+> >  2 files changed, 43 insertions(+), 11 deletions(-)
+>=20
+> [...]
+
+
+Best regards.
+
+
