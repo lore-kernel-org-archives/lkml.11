@@ -2,173 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DB3C38145
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F1FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236904AbiHPSG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
+        id S236854AbiHPSHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236883AbiHPSGB (ORCPT
+        with ESMTP id S236880AbiHPSG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:06:01 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DF18305C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660673160; x=1692209160;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=49X/CqJK7o6r57TgsFbBXqQA3rnCet0L8eUbTEs6Z7U=;
-  b=cKF5lZceKVOQl/sSkvBa7vr9kU08YUAZRQRY8B4IJyMzXW+G2W5MFgTA
-   RVQfc6Z13wUwRdRsGrZQedP01J6R3dpvLy+7RV4wFoStxpOEqy6olk2JD
-   fx5P/9QsprM+vOWqp2DVgarj0815io36VhfELZXRnhN1HN4i4xsKbYEQR
-   o6lC56wY/1ZtnPo0sEIDiDg7HdiHd3nbX8PlwDavEXnjmpt629NyV3W0e
-   /mklZGJ3VmyQuuxLCAht2Y6JX+flthrNWWLQH+9TusWH69vQ9/E1ePnV1
-   TUqLFhNcFukiiyvPvH+H5tAhrbK2AapdsgIng8fKMeCK5miGQgJ4iSrvI
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272060926"
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="272060926"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 11:06:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="935019876"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Aug 2022 11:05:58 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oO0ww-00007Y-11;
-        Tue, 16 Aug 2022 18:05:58 +0000
-Date:   Wed, 17 Aug 2022 02:05:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/090-spi-hid 17/22]
- drivers/hid/dockchannel-hid/dockchannel-hid.c:303:21: error: call to
- undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit
- function declarations
-Message-ID: <202208170255.mWeqUzWX-lkp@intel.com>
+        Tue, 16 Aug 2022 14:06:57 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681DF83BF5;
+        Tue, 16 Aug 2022 11:06:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=HYrSjDexLZuaY6KZpPQGrH8t3/nuoIDhow/JmeJOWVE=; b=3Z6z5jPiwh6pSRWHVjfxlxLvrT
+        +ESrUTpoy1MDAQgtnVLzHpNuFKGfQqGC2uBuKEMmDf4yNsd/zchOqqUJaX9j8ouW/fbUKyzBU+IUe
+        v3b8dIvDgdWK3eoTERHwN+KurAgt4xOXfS57aBToScDpErZBwmM4tx4Jp+1P3KHRZ2LVlMgNxrzZD
+        4sWlLLvUHSH6/EPrBTCA1T8UdMXCS8SMgyjLchE463Lc4Sr2WKBdnnWAJYVWnjgYm/R9rSNhs4TBa
+        CaTyLuTAOY4cMhLlAKvnrWdWCJatvfwf3jVD7CZ2ibA9tC1XlDrPcBzXf+NClR9KxBrTyRWy+Mozr
+        XRBG8+uQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oO0xr-005fBW-Se; Tue, 16 Aug 2022 18:06:55 +0000
+Message-ID: <06f4a949-e105-519e-3dbf-7d8f3684ed1e@infradead.org>
+Date:   Tue, 16 Aug 2022 11:06:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] vfio-pci/zdev: require KVM to be built-in
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220814215154.32112-1-rdunlap@infradead.org>
+ <663c7595-1c18-043e-5f12-b0ce880b84bf@linux.ibm.com>
+ <5530ed1f-90ec-ce84-2348-80e484fa48cb@infradead.org>
+ <47cfc72d-62f6-2bd3-db91-99f91591fc30@linux.ibm.com>
+ <fa1e62d7-30c3-693e-e31a-352dde8c339f@linux.ibm.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <fa1e62d7-30c3-693e-e31a-352dde8c339f@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   480924e97dddd088c4ed360eb12ecf92a30f19b1
-commit: 1d801ad9c4b08a5675701e82f600d9f462211a79 [17/22] hid: Add Apple DockChannel HID transport driver
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220817/202208170255.mWeqUzWX-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc cross compiling tool for clang build
-        # apt-get install binutils-powerpc-linux-gnu
-        # https://github.com/AsahiLinux/linux/commit/1d801ad9c4b08a5675701e82f600d9f462211a79
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout 1d801ad9c4b08a5675701e82f600d9f462211a79
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/hid/dockchannel-hid/ drivers/platform/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:303:21: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
-                              ^
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:569:62: warning: format specifies type 'long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-                   dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-                                                                      ~~~     ^~~~~~
-                                                                      %zu
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:825:13: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           int type = FIELD_GET(FLAGS_GROUP, shdr->flags);
-                      ^
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:830:18: warning: format specifies type 'long' but the argument has type 'unsigned int' [-Wformat]
-                           shdr->length, work->hdr.length - sizeof(*shdr));
-                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:856:18: warning: format specifies type 'long' but the argument has type 'unsigned int' [-Wformat]
-                           shdr->length, hdr->length - sizeof(*shdr));
-                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:975:7: warning: variable 'defer' set but not used [-Wunused-but-set-variable]
-           bool defer = false;
-                ^
-   4 warnings and 2 errors generated.
 
 
-vim +/FIELD_PREP +303 drivers/hid/dockchannel-hid/dockchannel-hid.c
+On 8/16/22 06:47, Pierre Morel wrote:
+> Randy,
+> 
+> I need to provide the correction patch rapidly.
+> Without answer I will propose the patch.
+> 
+> Regards,
+> Pierre
 
-   292	
-   293	static int dchid_cmd(struct dchid_iface *iface, u32 type, u32 req,
-   294			     void *data, size_t size, void *resp_buf, size_t resp_size)
-   295	{
-   296		int ret;
-   297		int report_id = *(u8*)data;
-   298	
-   299		mutex_lock(&iface->out_mutex);
-   300	
-   301		WARN_ON(iface->out_report != -1);
-   302		iface->out_report = report_id;
- > 303		iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
-   304		iface->resp_buf = resp_buf;
-   305		iface->resp_size = resp_size;
-   306		reinit_completion(&iface->out_complete);
-   307	
-   308		ret = dchid_send(iface, iface->out_flags, data, size);
-   309		if (ret < 0)
-   310			goto done;
-   311	
-   312		if (!wait_for_completion_timeout(&iface->out_complete, msecs_to_jiffies(1000))) {
-   313			dev_err(iface->dchid->dev, "output report 0x%x to iface  %d (%s) timed out\n",
-   314				report_id, iface->index, iface->name);
-   315			ret = -ETIMEDOUT;
-   316			goto done;
-   317		}
-   318	
-   319		ret = iface->resp_size;
-   320		if (iface->retcode) {
-   321			dev_err(iface->dchid->dev,
-   322				"output report 0x%x to iface %d (%s) failed with err 0x%x\n",
-   323				report_id, iface->index, iface->name, iface->retcode);
-   324			ret = -EIO;
-   325		}
-   326	
-   327	done:
-   328		iface->tx_seq++;
-   329		iface->out_report = -1;
-   330		iface->out_flags = 0;
-   331		iface->resp_buf = NULL;
-   332		iface->resp_size = 0;
-   333		mutex_unlock(&iface->out_mutex);
-   334		return ret;
-   335	}
-   336	
+Please go ahead with it.
+Thanks.
+
+> 
+> On 8/16/22 09:55, Pierre Morel wrote:
+>>
+>>
+>> On 8/16/22 08:04, Randy Dunlap wrote:
+>>> Hi--
+>>>
+>>> On 8/15/22 02:43, Pierre Morel wrote:
+>>>> Thank you Randy for this good catch.
+>>>> However forcing KVM to be include statically in the kernel when using VFIO_PCI extensions is not a good solution for us I think.
+>>>>
+>>>> I suggest we better do something like:
+>>>>
+>>>> ----
+>>>>
+>>>> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+>>>> index 6287a843e8bc..1733339cc4eb 100644
+>>>> --- a/arch/s390/include/asm/kvm_host.h
+>>>> +++ b/arch/s390/include/asm/kvm_host.h
+>>>> @@ -1038,7 +1038,7 @@ static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
+>>>>   #define __KVM_HAVE_ARCH_VM_FREE
+>>>>   void kvm_arch_free_vm(struct kvm *kvm);
+>>>>
+>>>> -#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+>>>> +#if defined(CONFIG_VFIO_PCI_ZDEV_KVM) || defined(CONFIG_VFIO_PCI_ZDEV_KVM_MODULE)
+>>>
+>>> This all looks good except for the line above.
+>>> It should be:
+>>>
+>>> #if IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM)
+>>>
+>>> Thanks.
+>>
+>> Yes, better, thanks.
+>> How do we do? Should I repost it with reported-by you or do you want to post it?
+>>
+>> Pierre
+>>
+>>
+>>>
+>>>
+>>>>   int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
+>>>>   void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
+>>>>   #else
+>>>> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+>>>> index f9d0c908e738..bbc375b028ef 100644
+>>>> --- a/drivers/vfio/pci/Kconfig
+>>>> +++ b/drivers/vfio/pci/Kconfig
+>>>> @@ -45,9 +45,9 @@ config VFIO_PCI_IGD
+>>>>   endif
+>>>>
+>>>>   config VFIO_PCI_ZDEV_KVM
+>>>> -       bool "VFIO PCI extensions for s390x KVM passthrough"
+>>>> +       def_tristate y
+>>>> +       prompt "VFIO PCI extensions for s390x KVM passthrough"
+>>>>          depends on S390 && KVM
+>>>> -       default y
+>>>>          help
+>>>>            Support s390x-specific extensions to enable support for enhancements
+>>>>            to KVM passthrough capabilities, such as interpretive execution of
+>>>>
+>>>> ----
+>>>>
+>>>> What do you think? It seems to me it solves the problem, what do you think?
+>>>>
+>>>> Regards,
+>>>> Pierre
+>>>
+>>>
+>>
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+~Randy
