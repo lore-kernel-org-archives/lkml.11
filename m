@@ -2,73 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DDEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4A9C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236980AbiHPSNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S236927AbiHPSOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236996AbiHPSNL (ORCPT
+        with ESMTP id S229541AbiHPSOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:13:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5713196;
-        Tue, 16 Aug 2022 11:13:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA9560F0E;
-        Tue, 16 Aug 2022 18:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38308C433D6;
-        Tue, 16 Aug 2022 18:13:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660673586;
-        bh=XbAc7JtDFaqil7L7oXl65af6y1FHgq7Wjx4yuQUnwHM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KtZ0iolpEQnjcW68XqPt21LF5emDFaAIJyZfIQlqnA47PPWa5U4Pezhwfv6A08k2p
-         AnlnoTD86/pPVn9O+e3A5c/++uolriqnOBXLY3qb9H4y1TMmSSdEVFiaGRoa4mKTqU
-         TFuAqsxIGOSBuYmDw9OEoFokpD6tuWjN+WjGBDKGr3fHLOVDXYzLeCjvZAVi5KOgG7
-         uDOXeOzW2URSliuUpFTnvlf+7ANCFNnkWU5YN0f8dfLBoAZY74CUn948aaIvrs7n/w
-         k78khjKE2A7kohMdmMX1A2+w3j/YPpN2mAsu/cc3fA5JXTmcyDLKrETN7DKtghhbVY
-         RAUXLpB0eooJA==
-Date:   Tue, 16 Aug 2022 11:13:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-Subject: Re: [PATCH net-next,0/3] cleanup of qdisc offload function
-Message-ID: <20220816111305.4851a510@kernel.org>
-In-Reply-To: <694f07e3-d5ad-1bc5-1cdb-ae814b1a12f7@huawei.com>
-References: <20220816020423.323820-1-shaozhengchao@huawei.com>
-        <20220815201038.4321b77e@kernel.org>
-        <694f07e3-d5ad-1bc5-1cdb-ae814b1a12f7@huawei.com>
+        Tue, 16 Aug 2022 14:14:40 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C111830F63;
+        Tue, 16 Aug 2022 11:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=NQKadt4IGOnVF9gAUaxkJtHM05nptXAHtJbvAVHhV6c=; b=R9JhU6r4tJm3iGfQfHYFx51MS/
+        e3gej3Ta7IBKe12/T8m0kPZ2LGTRqULTcn6KiqgbQYtCs//laj7TfaP8cxaTZhIkrRUUtOPfUN4Is
+        19aFaSpZtjF+H3YGoUfjKDbFaGnM1IEVyakJkqjy2sMSt0RhO1D2J1Q43EH5X+aeqvQ5hRjAvRGwg
+        yf9WuY+qP11DFLFUiGo6LmNnUO3qK+5mJzOY9cVZ6z8cgWJUfXD92A2fLWTZNXYfvAsQjVdQAy6eh
+        lYZq82PVhU/w9dNMeeCL0F4ZRczJcTilnD/GTc27RP9GgRxyhStmFF1x58zUi4YCe2ptk+kGTvtgh
+        8MxrCw3w==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oO155-0058cr-Pv;
+        Tue, 16 Aug 2022 18:14:24 +0000
+Date:   Tue, 16 Aug 2022 19:14:23 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Xin Gao <gaoxin@cdjrlc.com>
+Cc:     dhowells@redhat.com, jarkko@kernel.org, jmorris@namei.org,
+        serge@hallyn.com, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KEYS: Variable type completion
+Message-ID: <Yvvef4vCFaYhMjMq@ZenIV>
+References: <20220816180110.8625-1-gaoxin@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816180110.8625-1-gaoxin@cdjrlc.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 11:32:03 +0800 shaozhengchao wrote:
-> On 2022/8/16 11:10, Jakub Kicinski wrote:
-> > On Tue, 16 Aug 2022 10:04:20 +0800 Zhengchao Shao wrote:  
-> >> Some qdiscs don't care return value of qdisc offload function, so make
-> >> function void.  
-> > 
-> > How many of these patches do you have? Is there a goal you're working
-> > towards? I don't think the pure return value removals are worth the
-> > noise. They don't even save LoC:
-> > 
-> >   3 files changed, 9 insertions(+), 9 deletions(-)  
->
-> 	Thank you for your reply. Recently I've been studying the kernel code 
-> related to qdisc, and my goal is to understand how qdisc works. If the 
-> code can be optimized, I do what I can to modify the optimization. Is it 
-> more appropriate to add warning to the offload return value? I look 
-> forward to your reply. Thank you.
+On Wed, Aug 17, 2022 at 02:01:10AM +0800, Xin Gao wrote:
+> 'unsigned int' is better than 'unsigned'.
 
-Understood. Please stop sending the cleanups removing return values
-unless the patches materially improve the code.
+Explain.
+
+You keep sending rather pointless patches with declarative
+commit messages instead of explanations.  Why is 'unsigned
+int' better than 'unsigned'?  Demonstrate understanding -
+simple reference to checkpatch.pl does *NOT* count.
