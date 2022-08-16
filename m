@@ -2,71 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B8BC32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52616C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233522AbiHPJaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S233514AbiHPJaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233435AbiHPJ3V (ORCPT
+        with ESMTP id S233499AbiHPJ3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:29:21 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F4DA0616;
-        Tue, 16 Aug 2022 00:48:32 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oNrIu-00BXvH-6U; Tue, 16 Aug 2022 17:48:01 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 16 Aug 2022 15:48:00 +0800
-Date:   Tue, 16 Aug 2022 15:48:00 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Will Deacon <will@kernel.org>, Tejun Heo <tj@kernel.org>,
-        peterz@infradead.org, jirislaby@kernel.org, maz@kernel.org,
-        mark.rutland@arm.com, boqun.feng@gmail.com,
-        catalin.marinas@arm.com, oneukum@suse.com,
-        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
-Message-ID: <YvtLsNZEUUytdx+i@gondor.apana.org.au>
-References: <YvqaK3hxix9AaQBO@slm.duckdns.org>
- <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
- <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
- <cd51b422-89f3-1856-5d3b-d6e5b0029085@marcan.st>
- <CAHk-=wjfLT7nL8pV8RWATpjgm0zDtUwT8UMtroqnGcXRjN8tgw@mail.gmail.com>
- <24c88c4f-aea5-1fb7-0ead-95c88629d72b@marcan.st>
+        Tue, 16 Aug 2022 05:29:36 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B50D5EAF
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:49:03 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id v2so13718463lfi.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:49:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=OWzEWZaxyxOuDUG77wk5x1RGXvDnyDigjIAWDCcNa50=;
+        b=CP1SJ1WCfBQTbSs+JNdpd5uWIIWOz8Jb8vnE7FWAWuSq59Yw/w37A5RWLfljFndIHa
+         Jl47Lr1GQqwc3pA2UdAQ4ay+qnswguoef8YolXVncCvnkoXLNFB/5Ijivs1e/muPp/Ts
+         FCihLDDNgWHjyAmzkqZJQTNOGemyzQvEzBiv4KBeXlYMJT86Ea5DPH6LSTk4Puy2nINh
+         1ozyypJj1CJzGB+SYAnzAi4ZgC9H8dJ50YeLgqA3d33XqLJpLgPaNOlzAOI57xySfZFa
+         YN0HkZygzsBdpF2VLkj/XULURUhlJrtHaywC3ZAhXs+px9HZh+v2sYeN4b/qwZI6QtZE
+         Vxuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=OWzEWZaxyxOuDUG77wk5x1RGXvDnyDigjIAWDCcNa50=;
+        b=wb6y+o6tzF97AGyqK9KbqsNbNtvbgvD6Gb/YGKKHkoEJg9ONRiX5rYa/2oGNMJXetv
+         7AUzvZCz54r8L3eFZZYJIczdO8m3K/u9HXVRTN+D9/WAKdyT4ncEZo7C4i+TTHQQXU1M
+         53RqdD3C0pSVRg4W9p5FUN2snUedfqKikweYsahr8qq5oVKcDJmTouNtTnhrLJD5J7IH
+         P4TXSnRfj++CvujqZtQKHoKnjN5viBRMBsY/9+dx8WBCG5g8j8KBWHWf6/A3/5pLojdx
+         +tNLNP4FKQaXoxiYzuLwGEqztNRypiUHVXw3ZEe+fVS4kPODmu9Pm7fhN369unDNgC9d
+         os6Q==
+X-Gm-Message-State: ACgBeo1Ntv1IyOcTJMmssrsQdbS3hdFzUBtEPpTjEItOYniFdqcOcq5M
+        KSTrvZ9meBByPW7LsMZuRWgXKA==
+X-Google-Smtp-Source: AA6agR5ql1UCM6jh0XKUGnlAiHiqXduAtZTrJfQZ4cfHKMl6uCLp6yMnP9THXPVGKy4dJsgFSps1eQ==
+X-Received: by 2002:a05:6512:15a7:b0:492:85af:e9f7 with SMTP id bp39-20020a05651215a700b0049285afe9f7mr3727101lfb.1.1660636142100;
+        Tue, 16 Aug 2022 00:49:02 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id z13-20020a05651c11cd00b0025e4fcadc72sm1692159ljo.92.2022.08.16.00.49.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 00:49:01 -0700 (PDT)
+Message-ID: <8c970e9d-3179-6fe9-3773-ce9d58d80be4@linaro.org>
+Date:   Tue, 16 Aug 2022 10:48:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <24c88c4f-aea5-1fb7-0ead-95c88629d72b@marcan.st>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/7] dt-bindings: dmaengine: qcom: gpi: add compatible for
+ SM6115
+Content-Language: en-US
+To:     Adam Skladowski <a39.skl@gmail.com>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Emma Anholt <emma@anholt.net>,
+        Rob Clark <robdclark@chromium.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        linux-mmc@vger.kernel.org, linux-pm@vger.kernel.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sibi Sankar <sibis@codeaurora.org>
+References: <20220815100952.23795-1-a39.skl@gmail.com>
+ <20220815100952.23795-2-a39.skl@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220815100952.23795-2-a39.skl@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 03:28:50PM +0900, Hector Martin wrote:
->
-> This is the same reason I argued queue_work() itself needs to have a
-> similar guarantee, even when it doesn't queue work (and I updated the
-> doc to match). If test_and_set_bit() is used in this kind of context
-> often in the kernel, clearly the current implementation/doc clashes with
-> that.
+On 15/08/2022 13:09, Adam Skladowski wrote:
+> Document the compatible for GPI DMA controller on SM6115 SoC.
+> 
+> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
 
-Kernel code all over the place rely on the fact that test_and_set_bit
-provides a memory barrier.  So this bug that you've discovered is
-not at all isolated to the workqeueue system.  It'll break the kernel
-in lots of places in exactly the same way.
 
-> As I said, I don't have any particular beef in this fight, but this is
-> horribly broken on M1/2 right now, so I'll send a patch to change the
-> bitops instead and you all can fight it out over which way is correct :)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Please do.
 
-Thanks,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Best regards,
+Krzysztof
