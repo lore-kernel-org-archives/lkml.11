@@ -2,110 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2255C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEC8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbiHPLPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        id S233890AbiHPLP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235406AbiHPLP1 (ORCPT
+        with ESMTP id S235282AbiHPLPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:15:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E03974E11;
-        Tue, 16 Aug 2022 03:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660644992; x=1692180992;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6zUPqg/E6WJ3Fq2O6W3oFh9h+ZOs8adLY8vipG0PDk0=;
-  b=jyva4G3NI+lIsqimwh2EBMfSVs57p9C/NLr0alaoz39fAxsZuG59BEEI
-   76b9qlJcfkysP89FXVWyb3s4HJoSXL72pGff/bmh581gz4mJQa5t0Aik1
-   7pQdtExqNen1eyQ5Zvzsk4oSfoE6I/gqyIWeVtUIrGbj+lbDKOpxJs6wf
-   hbL3YLyu94kfsxdynkUV+kx2AqN9XkpF6onCg1bYIa4VKk0tzBvdk77o9
-   1OEbV3NJIlUINe6c6Gk5E/PEpKxVM/bNH0J2WybdYXNMltI2YJ5XRb+O9
-   FwNsD26Wv2g7EHubpQSPpFIQ42FAJJXzkVKaI3/CS+yaVZz8H+f/LDBrF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279141273"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="279141273"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 03:16:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="749260771"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Aug 2022 03:16:24 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Utkarsh Patel <utkarsh.h.patel@intel.com>, rajmohan.mani@intel.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH 3/6] ACPI: resource: Add helper function acpi_dev_get_memory_resources()
-Date:   Tue, 16 Aug 2022 13:16:26 +0300
-Message-Id: <20220816101629.69054-4-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
-References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
+        Tue, 16 Aug 2022 07:15:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D88753AE;
+        Tue, 16 Aug 2022 02:41:02 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C7E361F88D;
+        Tue, 16 Aug 2022 09:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1660642860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NO7OSX/4HeQXrrq1SbypK9zder6O5DG47D3stDUZzvo=;
+        b=ukcTxtZu5gDDQRYJTBXdr3oFHSGBot0i+hVn8pNG1NFoifldH1q3oeLDuwLGWw4L5GsAEt
+        e4UjtqMkCyfNLFz1bKTgKveVfukjpwbrZvYzbdXMHqp38O2vDLpP9f8gqGjHJxHRl9ABmz
+        M5hO0ScGiPd4Et1Q2RK3oiiwFQ9tAJA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1660642860;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NO7OSX/4HeQXrrq1SbypK9zder6O5DG47D3stDUZzvo=;
+        b=lqT3K1HpwDKkFJgMvCIcaQQ4s9Nv5on5dZsLLtXZw3hrfrNqoehAsdrrrNg8NkevOlPhQT
+        4uVpxSoxvGi6TwAw==
+Received: from suse.de (unknown [10.163.43.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 38A872C143;
+        Tue, 16 Aug 2022 09:40:58 +0000 (UTC)
+Date:   Tue, 16 Aug 2022 10:40:56 +0100
+From:   Mel Gorman <mgorman@suse.de>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v2] sched/all: Change all BUG_ON() instances in the
+ scheduler to WARN_ON_ONCE()
+Message-ID: <20220816094056.x4ldzednboaln3ag@suse.de>
+References: <20220808073232.8808-1-david@redhat.com>
+ <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
+ <1a48d71d-41ee-bf39-80d2-0102f4fe9ccb@redhat.com>
+ <CAHk-=wg40EAZofO16Eviaj7mfqDhZ2gVEbvfsMf6gYzspRjYvw@mail.gmail.com>
+ <YvSsKcAXISmshtHo@gmail.com>
+ <CAHk-=wgqW6zQcAW4i-ARJ8KNZZjw6tP3nn0QimyTWO=j+ZKsLA@mail.gmail.com>
+ <YvYdbn2GtTlCaand@gmail.com>
+ <20220815144143.zjsiamw5y22bvgki@suse.de>
+ <cbb3697c-f310-ae91-1322-fea5794ebf30@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <cbb3697c-f310-ae91-1322-fea5794ebf30@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrapper function that finds all memory type resources by
-using acpi_dev_get_resources(). It removes the need for the
-drivers to check the resource data type separately.
+On Mon, Aug 15, 2022 at 03:12:19PM -0700, John Hubbard wrote:
+> On 8/15/22 07:41, Mel Gorman wrote:
+> > For the rest, I didn't see obvious recovery paths that would allow the
+> > system to run predictably. Any of them firing will have unpredictable
+> > consequences (e.g. move_queued_task firing would be fun if it was a per-cpu
+> > kthread). Depending on which warning triggers, the remaining life of the
+> > system may be very short but maybe long enough to be logged even if system
+> > locks up shortly afterwards.
+> 
+> Hi Mel,
+> 
+> Are you basically saying, "WARN_ON*() seems acceptable in mm/, because
+> we can at least get the problem logged before it locks up, probably"?
+> 
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/acpi/resource.c | 17 +++++++++++++++++
- include/linux/acpi.h    |  1 +
- 2 files changed, 18 insertions(+)
+I don't consider this to be a subsystem-specific guideline and I am certainly
+not suggesting that mm/ is the gold standard but my understanding was
+"If a warning is recoverable in a sensible fashion then do so". A warning
+is always bad, but it may be possible for the system to continue long
+enough for the warning to be logged or an admin to schedule a reboot at
+a controlled time. I think Ingo is doing the right thing with this patch
+to avoid an unnecessary panic but for at least some of them, a partial
+recovery is possible so why not do it seeing as it's been changed anyway?
 
-diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-index e644e90d18847..8032d50ca9441 100644
---- a/drivers/acpi/resource.c
-+++ b/drivers/acpi/resource.c
-@@ -721,6 +721,23 @@ int acpi_dev_get_dma_resources(struct acpi_device *adev, struct list_head *list)
- }
- EXPORT_SYMBOL_GPL(acpi_dev_get_dma_resources);
- 
-+/**
-+ * acpi_dev_get_memory_resources - Get current memory resources of a device.
-+ * @adev: ACPI device node to get the resources for.
-+ * @list: Head of the resultant list of resources (must be empty).
-+ *
-+ * This is a helper function that locates all memory type resources of @adev
-+ * with acpi_dev_get_resources().
-+ *
-+ * The number of resources in the output list is returned on success, an error
-+ * code reflecting the error condition is returned otherwise.
-+ */
-+int acpi_dev_get_memory_resources(struct acpi_device *adev, struct list_head *list)
-+{
-+	return acpi_dev_get_resources(adev, list, is_memory, NULL);
-+}
-+EXPORT_SYMBOL_GPL(acpi_dev_get_memory_resources);
-+
- /**
-  * acpi_dev_filter_resource_type - Filter ACPI resource according to resource
-  *				   types
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 6f64b2f3dc547..ed4aa395cc49b 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -506,6 +506,7 @@ int acpi_dev_get_resources(struct acpi_device *adev, struct list_head *list,
- 			   void *preproc_data);
- int acpi_dev_get_dma_resources(struct acpi_device *adev,
- 			       struct list_head *list);
-+int acpi_dev_get_memory_resources(struct acpi_device *adev, struct list_head *list);
- int acpi_dev_filter_resource_type(struct acpi_resource *ares,
- 				  unsigned long types);
- 
+The outcome of a warning is very variable, it might be a coding error where
+state is unexpected but it can be reset to a known state, maybe some data
+is leaked that if it persists we eventually OOM, maybe a particular feature
+will no longer work as expected (e.g. load balancing doesn't balance load
+due to a warning) or maybe the whole system will fail completely in the
+near future, possibly before an error can be logged. In the scheduler
+side, a warning may mean that a task never runs again and another means
+that a task is in the wrong scheduling class which means ... no idea,
+but it's not good if it's a deadline task that gets manipulated by the
+normal scheduling class instead.
+
+For mm/, take three examples
+
+1. compaction.c warning. PFN ranges are unexpected, reset them.
+   Compaction is less effective and opportunities were missed but the system
+   will not blow up. Maybe at worst a hugetlb allocation would fail when it
+   might otherwise have succeeded or maybe SLUB degrades because it can't
+   use a high-order page for a cache that could reside in an order-0 page
+   instead. It varies.
+
+2. Warning in in filemap_unaccount_folio -- possible loss of unwritten
+   data on normal filesystems. Bad, might cause inconsistency for state but
+   maybe it'll be dirtied again and it'll recover eventually.  It's certainly
+   not good if that data got lost forever.
+
+3. The warning in isolate_movable_page is bad, page flags state is
+   either corrupted by a driver or maybe there was a bit flip error but a
+   page may be migrated unexpectedly leading to Who Knows What, corruption
+   of a page that gets freed and reused by another process? It's much worse
+   than compaction restoring its internal state of where it is scanning
+   but maybe not a complete disaster.
+
+> Or are you implying that we should instead introduce and use some new
+> PANIC_ON() or VM_PANIC_ON() set of macros that would allow proper "log
+> then reboot" behavior?
+> 
+
+No, not as a general rule. VM_PANIC_ON would suggest it's under DEBUG_VM
+which is not always set and I do not see how either PANIC_ON or VM_PANIC_ON
+could be coded in such a way that it always gets logged because it depends
+on the context the bad condition occurred.
+
+I also don't think the kernel could conditionally warn or panic for a
+specific instance because if an admin wants a panic on a warning (can be
+very useful for a crash dump), then panic_on_warn is available.
+
+Either way, PANIC_ON or VM_PANIC_ON is outside the scope of this patch.
+
+My understanding was that a panic() should only be used in the case where the
+kernel is screwed and if tries to continue, the outcome will be much worse
+or it's early in boot and the error condition means it'll be impossible
+to boot anyway.
+
 -- 
-2.35.1
-
+Mel Gorman
+SUSE Labs
