@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB7DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C154C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235262AbiHPLJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        id S235327AbiHPLJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiHPLIk (ORCPT
+        with ESMTP id S235188AbiHPLJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:08:40 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752DBD398E;
-        Tue, 16 Aug 2022 03:16:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660644997; x=1692180997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=EtlYtiwteZxWDMzq7m+ATAtdiv2Skwb0e3zLFg2zc58=;
-  b=bMo8Xr+kIfXW+5F6mupDnNVk8P8Wy2KWATOdiKWlvf9r+W+bgzwbtfeV
-   SRDVfv62gmt8MiUPymnvvswcp+1B4eSnzLs4I26JbCrrLrP5n6/xM0k9O
-   fIJyyXmwig+pWbsOdcqPsnvQDSQ2UHSQ08HdS9+01j22Je6XIv1YRCapT
-   dtBZJlR7I9ilczx5aWzUcDzqOLAr9ZWPKSbC5ldAYwISi+7UAUGm5oAin
-   3yJjVgjpHgAHcaODYTIh6Oc1Cppc9/dhF01AarbHDx/MM8fEUFSA0EV3J
-   JbdKt484r6Lz475NFCgbLrKkgKbbRxaBazoSWYVBDeIVCirU1Jrd+9mNe
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279141302"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="279141302"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 03:16:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="749260795"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Aug 2022 03:16:31 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Utkarsh Patel <utkarsh.h.patel@intel.com>, rajmohan.mani@intel.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH 6/6] usb: typec: intel_pmc_mux: Use the helper acpi_dev_get_memory_resources()
-Date:   Tue, 16 Aug 2022 13:16:29 +0300
-Message-Id: <20220816101629.69054-7-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
-References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
+        Tue, 16 Aug 2022 07:09:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AD9100946
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:36:21 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id kb8so18132593ejc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:36:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=bI7Y225GCpQ4NdJRGg8+FzYb7W08NKsY6HOs76y3GX8=;
+        b=5pvZMceVU+vt/halR4ASWruqRlsrJFiGvHKGtnsoWzFkwgfV4vnNUJh2p3QtpY9xr1
+         8Zxx5WK/YSwesSB4IgIX9mGPRIJoVpRDIWhJOi0iZSRxEIoNcYdW5s5q3u3QQKidVkrS
+         IXIh3BTy5OdIHU5JffTMASUOV7XuPLqeT70DB7exqRFB/teb7ucp1/bEjEo2EGD7GaSY
+         a8ZbMxx9Y4zUB/VuFs1TJPMeHtkaeHHa+nZY6PvZrsTsw8E+UBaxNpMNdbofHyHF6jlg
+         DVk4+zHzEEjF2oFaF7U4oTWrTr+YcXnM9TsvLqURCLRIwSNchDKaT6efN6ibCKh/WBhX
+         yJqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=bI7Y225GCpQ4NdJRGg8+FzYb7W08NKsY6HOs76y3GX8=;
+        b=md6NELj5G2usCgJR3VWaAtA0hL3NLYJ2GAbq7/0wxMq1pk1mAx259gAHLgRqDydcR+
+         lzq7AnLAn+0cm6XG6fFgRa8ObVjJHXbTXqUBTyqY7jq7yhrf35+YXL4qEZTFPUF+xF7Q
+         FrilySmxxS3+CkfCqPh4PVT3CeNbgi4R3WTpS78MvZe4B35L3yq4uogp3y8ryaDcLftM
+         ZYCy1XJjykC/VwBtBCnDJBSeQ8P3QMJzqgqAyrROWus4ZDvtaM3V1ds2YvKaz7hD71MG
+         wF7gT5gcEL5URs/AVINXGsL51NkG6/ifTzw+c4GpTbVgfeW9kQwgLp7x57uXPBYCmG4T
+         UeEQ==
+X-Gm-Message-State: ACgBeo1kdyqNGyOVwLHmRHWRWumjFMjPri6Cj543gxmS/CUuCsYKKvVn
+        9VJ/+O3CPVhaHFQ93087NBTw5w==
+X-Google-Smtp-Source: AA6agR56VBuI9frf3ORaTQsmlP25dS59QhJ5fbrC1X4vbMonLouSSlVNSuudiw3lYIiJYzAiVXCI4A==
+X-Received: by 2002:a17:907:1611:b0:733:636:5686 with SMTP id hb17-20020a170907161100b0073306365686mr13181883ejc.226.1660646179611;
+        Tue, 16 Aug 2022 03:36:19 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpe-94-253-165-78.zg.cable.xnet.hr. [94.253.165.78])
+        by smtp.googlemail.com with ESMTPSA id o24-20020aa7dd58000000b0043d742104efsm8175945edw.19.2022.08.16.03.36.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:36:19 -0700 (PDT)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     luka.perkov@sartura.hr, Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH] arm64: dts: microchip: use "okay" instead of "ok"
+Date:   Tue, 16 Aug 2022 12:36:13 +0200
+Message-Id: <20220816103613.22806-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It removes the need to check the resource data type
-separately.
+DT specification only allows "okay", and for projects like U-boot
+status = "ok" won't enable the device at all.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 ---
- drivers/usb/typec/mux/intel_pmc_mux.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi | 2 +-
+ arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/typec/mux/intel_pmc_mux.c b/drivers/usb/typec/mux/intel_pmc_mux.c
-index a8e273fe204ab..e1f4df7238bf4 100644
---- a/drivers/usb/typec/mux/intel_pmc_mux.c
-+++ b/drivers/usb/typec/mux/intel_pmc_mux.c
-@@ -569,15 +569,6 @@ static int pmc_usb_register_port(struct pmc_usb *pmc, int index,
- 	return ret;
- }
+diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
+index 4d55ae868b50..80217d5f3f66 100644
+--- a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
++++ b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
+@@ -529,7 +529,7 @@ i2c_sfp20: i2c_sfp20 {
+ };
  
--static int is_memory(struct acpi_resource *res, void *data)
--{
--	struct resource_win win = {};
--	struct resource *r = &win.res;
--
--	return !(acpi_dev_resource_memory(res, r) ||
--		 acpi_dev_resource_address_space(res, &win));
--}
--
- /* IOM ACPI IDs and IOM_PORT_STATUS_OFFSET */
- static const struct acpi_device_id iom_acpi_ids[] = {
- 	/* TigerLake */
-@@ -611,7 +602,7 @@ static int pmc_usb_probe_iom(struct pmc_usb *pmc)
- 		return -ENODEV;
+ &mdio3 {
+-	status = "ok";
++	status = "okay";
+ 	phy64: ethernet-phy@64 {
+ 		reg = <28>;
+ 	};
+diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
+index ec90bda7ed6a..0760cf2e48bc 100644
+--- a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
++++ b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
+@@ -208,7 +208,7 @@ sfp_eth63: sfp-eth63 {
+ };
  
- 	INIT_LIST_HEAD(&resource_list);
--	ret = acpi_dev_get_resources(adev, &resource_list, is_memory, NULL);
-+	ret = acpi_dev_get_memory_resources(adev, &resource_list);
- 	if (ret < 0)
- 		return ret;
+ &mdio0 {
+-	status = "ok";
++	status = "okay";
+ 	phy0: ethernet-phy@0 {
+ 		reg = <0>;
+ 	};
+@@ -284,7 +284,7 @@ phy23: ethernet-phy@23 {
+ };
  
+ &mdio1 {
+-	status = "ok";
++	status = "okay";
+ 	phy24: ethernet-phy@24 {
+ 		reg = <0>;
+ 	};
+@@ -360,7 +360,7 @@ phy47: ethernet-phy@47 {
+ };
+ 
+ &mdio3 {
+-	status = "ok";
++	status = "okay";
+ 	phy64: ethernet-phy@64 {
+ 		reg = <28>;
+ 	};
 -- 
-2.35.1
+2.37.2
 
