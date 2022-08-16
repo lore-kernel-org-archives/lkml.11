@@ -2,320 +2,453 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C147C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7F0C48BE4
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237922AbiHPWSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
+        id S237908AbiHPWSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237897AbiHPWSC (ORCPT
+        with ESMTP id S237893AbiHPWSC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 18:18:02 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757B4901A9;
-        Tue, 16 Aug 2022 15:18:00 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id n12so6064505iod.3;
-        Tue, 16 Aug 2022 15:18:00 -0700 (PDT)
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D30A901AB;
+        Tue, 16 Aug 2022 15:17:55 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id w11-20020a17090a380b00b001f73f75a1feso168416pjb.2;
+        Tue, 16 Aug 2022 15:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=YxrdumqftQLuRvBgXAJJEgX9wQwha5D/4zqqNT0e1YQ=;
-        b=QjZzfuK0Zlo4t04FKNLTefuSQnZ9+HZ3DwKYubYesaUySBjgCRIAgpB2/k6doilgNW
-         oimpktTtdI+MjpvnMmpb7SIKa+YtonjR64laPdMvNWrAMbFR4ytDX9RkmYr/HLSYCCsk
-         a2W1iU1LUEIgBmycSKNu06se+qCb/ul7uYqJlhCjN74guTSwusnuWG5qd7yQKLam4pP9
-         afIkc+HqaDzr2VGl8RaoTpPc8JyCt61BSk16Jtv/OsZ+q4ogwrc0ky1pY3PXk9p0usv0
-         dNiNclJUS5QpdITT1zO279vbdx8nVMyRxP9TPda0l71ZeaqfQdSkVuZqvk4DZC++kVwl
-         Ht4g==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=eGwWLAV+VmdnzL2DzlRl4cqZkvkUk0pyXNIXElL51oM=;
+        b=e5KS+WSqyv1FUewEscpcVWTtwcL5j+IZ6oKh2O6aug8w69jX7WFp+7hSZ9qvjwV8nO
+         AqMK0cnG6OAYc8eTG+D0CHzpWRBz5DyRInMMgK/K0BbJnCJI/57N4dGjRdsqXlRngE6B
+         hxIG32e3L3294LfrhWqQIazAr6DuBjnqu2ocETR2EUt7der1Fhltx4e83k0qFQ/x7yUz
+         O1qmtl+L5lJMijwp6QZkVgg5zuP3prRkDI5esWf3T4vlhf3+/7biRjPYaOk/vXt0MdiJ
+         W1cdu8CPYW/FFaHtIwUkArjwmS2AUC830s0F5h9THwVPX6RdhR+BUpTQ8TFSD3RbcGAp
+         knIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=YxrdumqftQLuRvBgXAJJEgX9wQwha5D/4zqqNT0e1YQ=;
-        b=UgDEdG6FlkmWRVgPrz/CcKlImzj3L5gWRRmr1bqWTsD/mKPEEL4CeS6aG6QwFAr0QK
-         H3q1lO8nshZSVl2aTkrGCSWDkDd1W52xBYy+gJrZuyFB7yXrek9ztby9HoNrgd9zEQ86
-         BksQAZirtgUWnuqqRWfM5CNL3TkWsaHIDUSrQ/sco5OrzXZgQeWXtPi6OUj4ZIYx4xZN
-         EBdX29fUNDQRCLWwo4/zC7ncBkli2PdA5VFgcyEz5225UGk53/AMRDU8dZHyGuyUj2NB
-         KS8gMTgMHAdHLdmUY7Tc2I8w/0HXzEB8IBB+jhLoiU/akpuMiOquWAuKOKPhYPBCcq4t
-         n4ow==
-X-Gm-Message-State: ACgBeo09/IU1GDLEr2wxv8G8AKfvdktJ0lFDWVwe1X4ZLIAa080K4Z6q
-        5365urz1HXE5mpyOWJMT6rydF0O8IQ+JTA/TDos=
-X-Google-Smtp-Source: AA6agR4pb56KxC9qGZLF8Hd47U5KQrzKaP5h2spSlahS8WFzewStJOWVSsWoWPfpCXdSLGYIvet+nPfW4JcViJyo+eI=
-X-Received: by 2002:a05:6602:26c7:b0:67b:72ef:b87b with SMTP id
- g7-20020a05660226c700b0067b72efb87bmr9900643ioo.175.1660688279329; Tue, 16
- Aug 2022 15:17:59 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=eGwWLAV+VmdnzL2DzlRl4cqZkvkUk0pyXNIXElL51oM=;
+        b=myuCsbrqDPYwgdwwlfAjgW/xyp2pzY0sLy9FHmPkRAADqui+iPlsJOtQgrBo3hB39k
+         Rd/48cBZ3dRsos9CG2ohTexJt1DkA4nIhp+R0HjZjJNKsQvVQot7unWFKhzpSau3XjTi
+         soalryvhZKHP/RrFwjOBTSd5GFW57zkw6n2Up6nQjVt3SWxS4tcOVzSUX9C7rsAijAv2
+         8Vfsiw9TRAIZD18npZPtrhQOgkfj2U6c1U4Hx69Njwvrzi/buqU5fGflKxaCZ8ch0CJN
+         o6RD28mtbS5nvnM53kZFNhXEMtZ2tXn7gwQ8oZi05/+3jOJg/wtWi5gNuhEKggRCX81n
+         dlfQ==
+X-Gm-Message-State: ACgBeo19Rvi7KVAxFqghabKE7yvnZ0WaMnKzHu6R//BS7eo9nX1pEKr2
+        m98qohj0DZLs/SwxrpmpgD0=
+X-Google-Smtp-Source: AA6agR4ZoWsg5l7OBXdSw2ObCkzYygR1O06rsL9Ov91xW5kvssXPo2iwupGrQvfKfHiwYSMbgi4ELw==
+X-Received: by 2002:a17:90b:4f44:b0:1f5:1310:9e7f with SMTP id pj4-20020a17090b4f4400b001f513109e7fmr656706pjb.235.1660688274472;
+        Tue, 16 Aug 2022 15:17:54 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:d539:e967:9fd8:5c81])
+        by smtp.gmail.com with ESMTPSA id 3-20020a620603000000b0052b7f0ff197sm8965943pfg.49.2022.08.16.15.17.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 15:17:53 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 4/4] perf tools: Support reading PERF_FORMAT_LOST
+Date:   Tue, 16 Aug 2022 15:17:47 -0700
+Message-Id: <20220816221747.275828-5-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220816221747.275828-1-namhyung@kernel.org>
+References: <20220816221747.275828-1-namhyung@kernel.org>
 MIME-Version: 1.0
-References: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
- <20220701090240.1896131-3-dmitry.osipenko@collabora.com> <2bb95e80-b60a-36c0-76c8-a06833032c77@amd.com>
- <CAF6AEGtqPeF1DjmBKgzWK39Yi81YiNjTjDNn85TKx7uwicFTSA@mail.gmail.com>
- <2a646ce4-c2ec-3b11-77a0-cc720afd6fe1@collabora.com> <YvOav/vF2awVWIu0@phenom.ffwll.local>
- <CAF6AEGvfAJgwBe4+sK0gAkZ++MwH9x4=698C8XSnmfYNMFZqfA@mail.gmail.com>
- <9674d00e-c0d6-ceba-feab-5dc475bda694@collabora.com> <CAF6AEGv1cVC9ZNMwpwFOki5CrwD3kSAHM9EUFZGWY-y5zcQsCg@mail.gmail.com>
- <fc019528-7ec7-9e5b-1b6d-c44da14346cf@collabora.com> <CAF6AEGv8zSd0fEYB9hd2QOyTt53gFSQoL8JdZtCvtCdYfMfB2Q@mail.gmail.com>
- <73b51dde-689f-64ce-a1c8-0d7c84a2ed66@collabora.com> <CAF6AEGuR1cRQYaQBYGnMBzy=XJUcN2o2gzabZaGO2Dj62Uq1DA@mail.gmail.com>
- <CAF6AEGvvR1NUd_GKP=Bxp3VTDMBYT+OwTkkgOWxgYFijZaVVEQ@mail.gmail.com> <5f118e10-db7a-a128-1e87-c9dddb65b2ac@collabora.com>
-In-Reply-To: <5f118e10-db7a-a128-1e87-c9dddb65b2ac@collabora.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Tue, 16 Aug 2022 15:18:31 -0700
-Message-ID: <CAF6AEGs4oQ-E30Uha0-So0t7qoZ6mQg-0suLBfSqoGm+VnHiWw@mail.gmail.com>
-Subject: Re: [PATCH v8 2/2] drm/gem: Don't map imported GEMs
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas_os@shipmail.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        kernel@collabora.com, Daniel Vetter <daniel@ffwll.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 4:45 AM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
->
-> On 8/12/22 18:01, Rob Clark wrote:
-> > On Fri, Aug 12, 2022 at 7:57 AM Rob Clark <robdclark@gmail.com> wrote:
-> >>
-> >> On Fri, Aug 12, 2022 at 4:26 AM Dmitry Osipenko
-> >> <dmitry.osipenko@collabora.com> wrote:
-> >>>
-> >>> On 8/11/22 02:19, Rob Clark wrote:
-> >>>> On Wed, Aug 10, 2022 at 3:23 PM Dmitry Osipenko
-> >>>> <dmitry.osipenko@collabora.com> wrote:
-> >>>>>
-> >>>>> On 8/11/22 01:03, Rob Clark wrote:
-> >>>>>> On Wed, Aug 10, 2022 at 12:26 PM Dmitry Osipenko
-> >>>>>> <dmitry.osipenko@collabora.com> wrote:
-> >>>>>>>
-> >>>>>>> On 8/10/22 18:08, Rob Clark wrote:
-> >>>>>>>> On Wed, Aug 10, 2022 at 4:47 AM Daniel Vetter <daniel@ffwll.ch> =
-wrote:
-> >>>>>>>>>
-> >>>>>>>>> On Wed, Jul 06, 2022 at 10:02:07AM +0300, Dmitry Osipenko wrote=
-:
-> >>>>>>>>>> On 7/6/22 00:48, Rob Clark wrote:
-> >>>>>>>>>>> On Tue, Jul 5, 2022 at 4:51 AM Christian K=C3=B6nig <christia=
-n.koenig@amd.com> wrote:
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> Am 01.07.22 um 11:02 schrieb Dmitry Osipenko:
-> >>>>>>>>>>>>> Drivers that use drm_gem_mmap() and drm_gem_mmap_obj() help=
-ers don't
-> >>>>>>>>>>>>> handle imported dma-bufs properly, which results in mapping=
- of something
-> >>>>>>>>>>>>> else than the imported dma-buf. On NVIDIA Tegra we get a ha=
-rd lockup when
-> >>>>>>>>>>>>> userspace writes to the memory mapping of a dma-buf that wa=
-s imported into
-> >>>>>>>>>>>>> Tegra's DRM GEM.
-> >>>>>>>>>>>>>
-> >>>>>>>>>>>>> Majority of DRM drivers prohibit mapping of the imported GE=
-M objects.
-> >>>>>>>>>>>>> Mapping of imported GEMs require special care from userspac=
-e since it
-> >>>>>>>>>>>>> should sync dma-buf because mapping coherency of the export=
-er device may
-> >>>>>>>>>>>>> not match the DRM device. Let's prohibit the mapping for al=
-l DRM drivers
-> >>>>>>>>>>>>> for consistency.
-> >>>>>>>>>>>>>
-> >>>>>>>>>>>>> Suggested-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux=
-.intel.com>
-> >>>>>>>>>>>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.c=
-om>
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> I'm pretty sure that this is the right approach, but it's ce=
-rtainly more
-> >>>>>>>>>>>> than possible that somebody abused this already.
-> >>>>>>>>>>>
-> >>>>>>>>>>> I suspect that this is abused if you run deqp cts on android.=
-. ie. all
-> >>>>>>>>>>> winsys buffers are dma-buf imports from gralloc.  And then wh=
-en you
-> >>>>>>>>>>> hit readpix...
-> >>>>>>>>>>>
-> >>>>>>>>>>> You might only hit this in scenarios with separate gpu and di=
-splay (or
-> >>>>>>>>>>> dGPU+iGPU) because self-imports are handled differently in
-> >>>>>>>>>>> drm_gem_prime_import_dev().. and maybe not in cases where you=
- end up
-> >>>>>>>>>>> with a blit from tiled/compressed to linear.. maybe that narr=
-ows the
-> >>>>>>>>>>> scope enough to just fix it in userspace?
-> >>>>>>>>>>
-> >>>>>>>>>> Given that that only drivers which use DRM-SHMEM potentially c=
-ould've
-> >>>>>>>>>> map imported dma-bufs (Panfrost, Lima) and they already don't =
-allow to
-> >>>>>>>>>> do that, I think we're good.
-> >>>>>>>>>
-> >>>>>>>>> So can I have an ack from Rob here or are there still questions=
- that this
-> >>>>>>>>> might go boom?
-> >>>>>>>>>
-> >>>>>>>>> Dmitry, since you have a bunch of patches merged now I think wo=
-uld also be
-> >>>>>>>>> good to get commit rights so you can drive this more yourself. =
-I've asked
-> >>>>>>>>> Daniel Stone to help you out with getting that.
-> >>>>>>>>
-> >>>>>>>> I *think* we'd be ok with this on msm, mostly just by dumb luck.
-> >>>>>>>> Because the dma-buf's we import will be self-import.  I'm less s=
-ure
-> >>>>>>>> about panfrost (src/panfrost/lib/pan_bo.c doesn't seem to have a
-> >>>>>>>> special path for imported dma-bufs either, and in that case they=
- won't
-> >>>>>>>> be self-imports.. but I guess no one has tried to run android ct=
-s on
-> >>>>>>>> panfrost).
-> >>>>>>>
-> >>>>>>> The last time I tried to mmap dma-buf imported to Panfrost didn't=
- work
-> >>>>>>> because Panfrost didn't implement something needed for that. I'll=
- need
-> >>>>>>> to take a look again because can't recall what it was.
-> >>> Upd: I re-checked Panfrost using today's linux-next and mapping of
-> >>> imported dma-buf works, I mapped imported buf from video decoder.
-> >>> Apparently previously I had some local kernel change that broke the m=
-apping.
-> >>>
-> >>>>>>>> What about something less drastic to start, like (apologies for
-> >>>>>>>> hand-edited patch):
-> >>>>>>>>
-> >>>>>>>> diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem=
-.c
-> >>>>>>>> index 86d670c71286..fc9ec42fa0ab 100644
-> >>>>>>>> --- a/drivers/gpu/drm/drm_gem.c
-> >>>>>>>> +++ b/drivers/gpu/drm/drm_gem.c
-> >>>>>>>> @@ -1034,6 +1034,10 @@ int drm_gem_mmap_obj(struct drm_gem_objec=
-t
-> >>>>>>>> *obj, unsigned long obj_size,
-> >>>>>>>>  {
-> >>>>>>>>         int ret;
-> >>>>>>>>
-> >>>>>>>> +       WARN_ON_ONCE(obj->import_attach);
-> >>>>>>>
-> >>>>>>> This will hang NVIDIA Tegra, which is what this patch fixed initi=
-ally.
-> >>>>>>> If neither of upstream DRM drivers need to map imported dma-bufs =
-and
-> >>>>>>> never needed, then why do we need this?
-> >>>>>>
-> >>>>>> oh, tegra isn't using shmem helpers?  I assumed it was.  Well my p=
-oint
-> >>>>>> was to make a more targeted fail on tegra, and a WARN_ON for every=
-one
-> >>>>>> else to make it clear that what they are doing is undefined behavi=
-or.
-> >>>>>> Because so far existing userspace (or well, panfrost and freedreno=
- at
-> >>>>>> least, those are the two I know or checked) don't make special cas=
-es
-> >>>>>> for mmap'ing against the dmabuf fd against the dmabuf fd instead o=
-f
-> >>>>>> the drm device fd.
-> >>>>>
-> >>>>> It's not clear to me what bad Android does form yours comments. Doe=
-s it
-> >>>>> export dma-buf from GPU and then import it to GPU? If yes, then DRM=
- core
-> >>>>> has a check for the self-importing [1].
-> >>>>>
-> >>>>> [1]
-> >>>>> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/drm_=
-prime.c#L918
-> >>>>>
-> >>>>> If you're meaning something else, then please explain in a more det=
-ails.
-> >>>>
-> >>>> So, android/gralloc allocates buffers externally to the driver and
-> >>>> imports them into driver.  (And that seems to not just be window
-> >>>> surfaces, but in cases random textures, etc)
-> >>>>
-> >>>> In the normal case these should be allocated from drm/msm so it shou=
-ld
-> >>>> hit [1].. this is the "dumb luck" I mentioned earlier.  But I'm not
-> >>>> confident enough to say that there is no other case.
-> >>>>
-> >>>>>
-> >>>>>> I *think* it should work out that we don't hit this path with
-> >>>>>> freedreno but on android I can't really guarantee or prove it.  So
-> >>>>>> your patch would potentially break existing working userspace.  Ma=
-ybe
-> >>>>>> it is userspace that isn't portable (but OTOH it isn't like you ar=
-e
-> >>>>>> going to be using freedreno on tegra).  So why don't you go for a =
-more
-> >>>>>> targeted fix that only returns an error on hw where this is
-> >>>>>> problematic?
-> >>>>>
-> >>>>> That's what the first versions of the patch did and Christian sugge=
-sted
-> >>>>> that it's not a good approach. In fact it should be not only Tegra =
-that
-> >>>>> has a broken dma-buf mapping, but apparently OMAP driver too.
-> >>>>
-> >>>> Hmm, I guess I'm a bit more conservative when it comes to potentiall=
-y
-> >>>> breaking userspace.
-> >>>
-> >>> If such userspace exists, then of course the mapping should continue =
-to
-> >>> work. Still will be great to know what that userpsace is.
-> >>
-> >> Definitely existing mesa does not have a special mmap path for
-> >> imported dma-bufs (both in the case of panfrost and freedreno, I
-> >> didn't check any others).  The only question is whether there is a
-> >> case where some app/test/etc imports a foreign dma-buf fd and then
-> >> does something that would trigger mmap'ing, like readpix.
-> >
-> > The other complication I noticed is that we don't seem to keep around
-> > the fd after importing to a GEM handle.  And I could imagine that
-> > doing so could cause issues with too many fd's.  So I guess the best
-> > thing is to keep the status quo and let drivers that cannot mmap
-> > imported buffers just fail mmap?
->
-> That actually should be all the drivers excluding those that use
-> DRM-SHMEM because only DRM-SHMEM uses dma_buf_mmap(), that's why it
-> works for Panfrost. I'm pretty sure mmaping of imported GEMs doesn't
-> work for the MSM driver, isn't it?
+The recent kernel added lost count can be read from either read(2) or
+ring buffer data with PERF_SAMPLE_READ.  As it's a variable length data
+we need to access it according to the format info.
 
-Hmm, I would have expected it to work, at least prior to the mangling
-debug thing danvet added.
+But for perf tools use cases, PERF_FORMAT_ID is always set.  So we can
+only check PERF_FORMAT_LOST bit to determine the data format.
 
-Actually, I suspect with the mangling enabled, all sorts of things
-would fall apart, I'm not seeing how things like sg_phys() continue to
-work.  But not sure if we have that enabled in anything that is
-getting android CTS run on it.
+Add sample_read_value_size() and next_sample_read_value() helpers to
+make it a bit easier to access.  Use them in all places where it reads
+the struct sample_read_value.
 
-BR,
--R
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/perf/tests/sample-parsing.c             | 14 +++++---
+ tools/perf/util/event.h                       | 18 +++++++++-
+ tools/perf/util/evsel.c                       | 33 +++++++++++++-----
+ .../scripting-engines/trace-event-python.c    | 16 ++++++---
+ tools/perf/util/session.c                     | 32 +++++++++++------
+ tools/perf/util/synthetic-events.c            | 34 +++++++++++++++----
+ 6 files changed, 112 insertions(+), 35 deletions(-)
 
-> Intel and AMD drivers don't allow to map the imported dma-bufs. Both
-> refuse to do the mapping.
->
-> Although, AMDGPU "succeeds" to do the mapping using
-> AMDGPU_GEM_DOMAIN_GTT, but then touching the mapping causes bus fault,
-> hence mapping actually fails. I think it might be the AMDGPU
-> driver/libdrm bug, haven't checked yet.
->
-> So we're back to the point that neither of DRM drivers need to map
-> imported dma-bufs and this was never tested. In this case this patch is
-> valid, IMO.
->
-> --
-> Best regards,
-> Dmitry
+diff --git a/tools/perf/tests/sample-parsing.c b/tools/perf/tests/sample-parsing.c
+index 07f2411b0ad4..20930dd48ee0 100644
+--- a/tools/perf/tests/sample-parsing.c
++++ b/tools/perf/tests/sample-parsing.c
+@@ -86,10 +86,15 @@ static bool samples_same(const struct perf_sample *s1,
+ 			COMP(read.time_running);
+ 		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+ 		if (read_format & PERF_FORMAT_GROUP) {
+-			for (i = 0; i < s1->read.group.nr; i++)
+-				MCOMP(read.group.values[i]);
++			for (i = 0; i < s1->read.group.nr; i++) {
++				/* FIXME: check values without LOST */
++				if (read_format & PERF_FORMAT_LOST)
++					MCOMP(read.group.values[i]);
++			}
+ 		} else {
+ 			COMP(read.one.id);
++			if (read_format & PERF_FORMAT_LOST)
++				COMP(read.one.lost);
+ 		}
+ 	}
+ 
+@@ -263,7 +268,7 @@ static int do_test(u64 sample_type, u64 sample_regs, u64 read_format)
+ 			.data	= (void *)aux_data,
+ 		},
+ 	};
+-	struct sample_read_value values[] = {{1, 5}, {9, 3}, {2, 7}, {6, 4},};
++	struct sample_read_value values[] = {{1, 5, 0}, {9, 3, 0}, {2, 7, 0}, {6, 4, 1},};
+ 	struct perf_sample sample_out, sample_out_endian;
+ 	size_t i, sz, bufsz;
+ 	int err, ret = -1;
+@@ -286,6 +291,7 @@ static int do_test(u64 sample_type, u64 sample_regs, u64 read_format)
+ 	} else {
+ 		sample.read.one.value = 0x08789faeb786aa87ULL;
+ 		sample.read.one.id    = 99;
++		sample.read.one.lost  = 1;
+ 	}
+ 
+ 	sz = perf_event__sample_event_size(&sample, sample_type, read_format);
+@@ -370,7 +376,7 @@ static int do_test(u64 sample_type, u64 sample_regs, u64 read_format)
+  */
+ static int test__sample_parsing(struct test_suite *test __maybe_unused, int subtest __maybe_unused)
+ {
+-	const u64 rf[] = {4, 5, 6, 7, 12, 13, 14, 15};
++	const u64 rf[] = {4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 28, 29, 30, 31};
+ 	u64 sample_type;
+ 	u64 sample_regs;
+ 	size_t i;
+diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+index a7b0931d5137..7753368d70d6 100644
+--- a/tools/perf/util/event.h
++++ b/tools/perf/util/event.h
+@@ -65,7 +65,8 @@ struct stack_dump {
+ 
+ struct sample_read_value {
+ 	u64 value;
+-	u64 id;
++	u64 id;   /* only if PERF_FORMAT_ID */
++	u64 lost; /* only if PERF_FORMAT_LOST */
+ };
+ 
+ struct sample_read {
+@@ -80,6 +81,21 @@ struct sample_read {
+ 	};
+ };
+ 
++static inline size_t sample_read_value_size(u64 read_format)
++{
++	/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
++	if (read_format & PERF_FORMAT_LOST)
++		return sizeof(struct sample_read_value);
++	else
++		return offsetof(struct sample_read_value, lost);
++}
++
++static inline struct sample_read_value *
++next_sample_read_value(struct sample_read_value *v, u64 read_format)
++{
++	return (void *)v + sample_read_value_size(read_format);
++}
++
+ struct ip_callchain {
+ 	u64 nr;
+ 	u64 ips[];
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index 4852089e1d79..781367ccdb84 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -1541,7 +1541,7 @@ static int evsel__read_one(struct evsel *evsel, int cpu_map_idx, int thread)
+ }
+ 
+ static void evsel__set_count(struct evsel *counter, int cpu_map_idx, int thread,
+-			     u64 val, u64 ena, u64 run)
++			     u64 val, u64 ena, u64 run, u64 lost)
+ {
+ 	struct perf_counts_values *count;
+ 
+@@ -1550,6 +1550,7 @@ static void evsel__set_count(struct evsel *counter, int cpu_map_idx, int thread,
+ 	count->val    = val;
+ 	count->ena    = ena;
+ 	count->run    = run;
++	count->lost   = lost;
+ 
+ 	perf_counts__set_loaded(counter->counts, cpu_map_idx, thread, true);
+ }
+@@ -1558,7 +1559,7 @@ static int evsel__process_group_data(struct evsel *leader, int cpu_map_idx, int
+ {
+ 	u64 read_format = leader->core.attr.read_format;
+ 	struct sample_read_value *v;
+-	u64 nr, ena = 0, run = 0, i;
++	u64 nr, ena = 0, run = 0, lost = 0, i;
+ 
+ 	nr = *data++;
+ 
+@@ -1573,16 +1574,25 @@ static int evsel__process_group_data(struct evsel *leader, int cpu_map_idx, int
+ 
+ 	v = (struct sample_read_value *) data;
+ 
+-	evsel__set_count(leader, cpu_map_idx, thread, v[0].value, ena, run);
++	if (read_format & PERF_FORMAT_LOST)
++		lost = v->lost;
++
++	evsel__set_count(leader, cpu_map_idx, thread, v[0].value, ena, run, lost);
++
++	v = next_sample_read_value(v, read_format);
+ 
+ 	for (i = 1; i < nr; i++) {
+ 		struct evsel *counter;
+ 
+-		counter = evlist__id2evsel(leader->evlist, v[i].id);
++		counter = evlist__id2evsel(leader->evlist, v->id);
+ 		if (!counter)
+ 			return -EINVAL;
+ 
+-		evsel__set_count(counter, cpu_map_idx, thread, v[i].value, ena, run);
++		if (read_format & PERF_FORMAT_LOST)
++			lost = v->lost;
++
++		evsel__set_count(counter, cpu_map_idx, thread, v->value, ena, run, lost);
++		v = next_sample_read_value(v, read_format);
+ 	}
+ 
+ 	return 0;
+@@ -2475,16 +2485,21 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
+ 
+ 			if (data->read.group.nr > max_group_nr)
+ 				return -EFAULT;
+-			sz = data->read.group.nr *
+-			     sizeof(struct sample_read_value);
++
++			sz = data->read.group.nr * sample_read_value_size(read_format);
+ 			OVERFLOW_CHECK(array, sz, max_size);
+-			data->read.group.values =
+-					(struct sample_read_value *)array;
++			data->read.group.values = (void *)array;
+ 			array = (void *)array + sz;
+ 		} else {
+ 			OVERFLOW_CHECK_u64(array);
+ 			data->read.one.id = *array;
+ 			array++;
++
++			if (read_format & PERF_FORMAT_LOST) {
++				OVERFLOW_CHECK_u64(array);
++				data->read.one.lost = *array;
++				array++;
++			}
+ 		}
+ 	}
+ 
+diff --git a/tools/perf/util/scripting-engines/trace-event-python.c b/tools/perf/util/scripting-engines/trace-event-python.c
+index 9ef2406e0ede..7e15e64f311b 100644
+--- a/tools/perf/util/scripting-engines/trace-event-python.c
++++ b/tools/perf/util/scripting-engines/trace-event-python.c
+@@ -642,15 +642,19 @@ static PyObject *python_process_brstacksym(struct perf_sample *sample,
+ 	return pylist;
+ }
+ 
+-static PyObject *get_sample_value_as_tuple(struct sample_read_value *value)
++static PyObject *get_sample_value_as_tuple(struct sample_read_value *value,
++					   u64 read_format)
+ {
+ 	PyObject *t;
+ 
+-	t = PyTuple_New(2);
++	t = PyTuple_New(3);
+ 	if (!t)
+ 		Py_FatalError("couldn't create Python tuple");
+ 	PyTuple_SetItem(t, 0, PyLong_FromUnsignedLongLong(value->id));
+ 	PyTuple_SetItem(t, 1, PyLong_FromUnsignedLongLong(value->value));
++	if (read_format & PERF_FORMAT_LOST)
++		PyTuple_SetItem(t, 2, PyLong_FromUnsignedLongLong(value->lost));
++
+ 	return t;
+ }
+ 
+@@ -681,12 +685,16 @@ static void set_sample_read_in_dict(PyObject *dict_sample,
+ 		Py_FatalError("couldn't create Python list");
+ 
+ 	if (read_format & PERF_FORMAT_GROUP) {
++		struct sample_read_value *v = sample->read.group.values;
++
+ 		for (i = 0; i < sample->read.group.nr; i++) {
+-			PyObject *t = get_sample_value_as_tuple(&sample->read.group.values[i]);
++			PyObject *t = get_sample_value_as_tuple(v, read_format);
+ 			PyList_SET_ITEM(values, i, t);
++			v = next_sample_read_value(v, read_format);
+ 		}
+ 	} else {
+-		PyObject *t = get_sample_value_as_tuple(&sample->read.one);
++		PyObject *t = get_sample_value_as_tuple(&sample->read.one,
++							read_format);
+ 		PyList_SET_ITEM(values, 0, t);
+ 	}
+ 	pydict_set_item_string_decref(dict_sample, "values", values);
+diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+index 98e16659a149..dd818764bd4d 100644
+--- a/tools/perf/util/session.c
++++ b/tools/perf/util/session.c
+@@ -1284,20 +1284,26 @@ static void sample_read__printf(struct perf_sample *sample, u64 read_format)
+ 
+ 	if (read_format & PERF_FORMAT_GROUP) {
+ 		u64 i;
++		struct sample_read_value *value = sample->read.group.values;
+ 
+ 		printf(".... group nr %" PRIu64 "\n", sample->read.group.nr);
+ 
+ 		for (i = 0; i < sample->read.group.nr; i++) {
+-			struct sample_read_value *value;
+-
+-			value = &sample->read.group.values[i];
+ 			printf("..... id %016" PRIx64
+-			       ", value %016" PRIx64 "\n",
++			       ", value %016" PRIx64,
+ 			       value->id, value->value);
++			if (read_format & PERF_FORMAT_LOST)
++				printf(", lost %" PRIu64, value->lost);
++			printf("\n");
++			value = next_sample_read_value(value, read_format);
+ 		}
+-	} else
+-		printf("..... id %016" PRIx64 ", value %016" PRIx64 "\n",
++	} else {
++		printf("..... id %016" PRIx64 ", value %016" PRIx64,
+ 			sample->read.one.id, sample->read.one.value);
++		if (read_format & PERF_FORMAT_LOST)
++			printf(", lost %" PRIu64, sample->read.one.lost);
++		printf("\n");
++	}
+ }
+ 
+ static void dump_event(struct evlist *evlist, union perf_event *event,
+@@ -1411,6 +1417,9 @@ static void dump_read(struct evsel *evsel, union perf_event *event)
+ 
+ 	if (read_format & PERF_FORMAT_ID)
+ 		printf("... id           : %" PRI_lu64 "\n", read_event->id);
++
++	if (read_format & PERF_FORMAT_LOST)
++		printf("... lost         : %" PRI_lu64 "\n", read_event->lost);
+ }
+ 
+ static struct machine *machines__find_for_cpumode(struct machines *machines,
+@@ -1479,17 +1488,20 @@ static int deliver_sample_group(struct evlist *evlist,
+ 				struct perf_tool *tool,
+ 				union  perf_event *event,
+ 				struct perf_sample *sample,
+-				struct machine *machine)
++				struct machine *machine,
++				u64 read_format)
+ {
+ 	int ret = -EINVAL;
+ 	u64 i;
++	struct sample_read_value *v = sample->read.group.values;
+ 
+ 	for (i = 0; i < sample->read.group.nr; i++) {
+-		ret = deliver_sample_value(evlist, tool, event, sample,
+-					   &sample->read.group.values[i],
++		ret = deliver_sample_value(evlist, tool, event, sample, v,
+ 					   machine);
+ 		if (ret)
+ 			break;
++
++		v = next_sample_read_value(v, read_format);
+ 	}
+ 
+ 	return ret;
+@@ -1510,7 +1522,7 @@ static int evlist__deliver_sample(struct evlist *evlist, struct perf_tool *tool,
+ 	/* For PERF_SAMPLE_READ we have either single or group mode. */
+ 	if (read_format & PERF_FORMAT_GROUP)
+ 		return deliver_sample_group(evlist, tool, event, sample,
+-					    machine);
++					    machine, read_format);
+ 	else
+ 		return deliver_sample_value(evlist, tool, event, sample,
+ 					    &sample->read.one, machine);
+diff --git a/tools/perf/util/synthetic-events.c b/tools/perf/util/synthetic-events.c
+index 2ae59c03ae77..9b8dc7633a02 100644
+--- a/tools/perf/util/synthetic-events.c
++++ b/tools/perf/util/synthetic-events.c
+@@ -1432,11 +1432,12 @@ size_t perf_event__sample_event_size(const struct perf_sample *sample, u64 type,
+ 			result += sizeof(u64);
+ 		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+ 		if (read_format & PERF_FORMAT_GROUP) {
+-			sz = sample->read.group.nr *
+-			     sizeof(struct sample_read_value);
+-			result += sz;
++			sz = sample_read_value_size(read_format);
++			result += sz * sample->read.group.nr;
+ 		} else {
+ 			result += sizeof(u64);
++			if (read_format & PERF_FORMAT_LOST)
++				result += sizeof(u64);
+ 		}
+ 	}
+ 
+@@ -1521,6 +1522,22 @@ void __weak arch_perf_synthesize_sample_weight(const struct perf_sample *data,
+ 	*array = data->weight;
+ }
+ 
++static __u64 *copy_read_group_values(__u64 *array, __u64 read_format,
++				     const struct perf_sample *sample)
++{
++	size_t i, sz;
++	void *data = sample->read.group.values;
++
++	sz = sample_read_value_size(read_format);
++	for (i = 0; i < sample->read.group.nr; i++) {
++		memcpy(array, data, sz);
++
++		data += sz;
++		array = (void *)array + sz;
++	}
++	return array;
++}
++
+ int perf_event__synthesize_sample(union perf_event *event, u64 type, u64 read_format,
+ 				  const struct perf_sample *sample)
+ {
+@@ -1602,13 +1619,16 @@ int perf_event__synthesize_sample(union perf_event *event, u64 type, u64 read_fo
+ 
+ 		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+ 		if (read_format & PERF_FORMAT_GROUP) {
+-			sz = sample->read.group.nr *
+-			     sizeof(struct sample_read_value);
+-			memcpy(array, sample->read.group.values, sz);
+-			array = (void *)array + sz;
++			array = copy_read_group_values(array, read_format,
++						       sample);
+ 		} else {
+ 			*array = sample->read.one.id;
+ 			array++;
++
++			if (read_format & PERF_FORMAT_LOST) {
++				*array = sample->read.one.lost;
++				array++;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.37.1.595.g718a3a8f04-goog
+
