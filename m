@@ -2,186 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43F0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA73C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbiHPNmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
+        id S234155AbiHPNnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233925AbiHPNmI (ORCPT
+        with ESMTP id S233563AbiHPNnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:42:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D53A76446;
-        Tue, 16 Aug 2022 06:42:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A888B819FD;
-        Tue, 16 Aug 2022 13:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2356C433D6;
-        Tue, 16 Aug 2022 13:42:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660657324;
-        bh=Qq7Od/WKrPNgJutT+rQAJ/KGqHp84OSZZFvuxh53vfs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Uxm4xm+ALMb01rM4sXSeb76GPtpquhJHUuGAQPan5hjPTY2PG2/VVJT+yzlSqJSp4
-         gbuO20i7MQ/V7LbXJBKi1Kv09HDlPEiykqQMiYrWfUuyR+4RMtgbrS/pNK3Ld1tEBz
-         iIteDr8uwY6qNZQEt56Qo4uW7G8/lP+qi52hqjEEwFQkOg6aDn23w+NX3EvCN1bG8/
-         BHbwbkZnhyPnYs2uzf/FiTBySdqnGim674TWzDv0o2cWLgMBBhZT84l3ZuxIHs2LhU
-         0MFGrARz8A7GOsadQ1/ZmP+BWv6OdePO4izMwZkkb0oCjNAyEJ2dXzgtG2zHhN6Vzo
-         71xzl9WdEbD4w==
-Date:   Tue, 16 Aug 2022 14:41:57 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Tejun Heo <tj@kernel.org>, marcan@marcan.st,
-        peterz@infradead.org, jirislaby@kernel.org, maz@kernel.org,
-        mark.rutland@arm.com, boqun.feng@gmail.com,
-        catalin.marinas@arm.com, oneukum@suse.com,
-        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
-Message-ID: <20220816134156.GB11202@willie-the-truck>
-References: <YvqaK3hxix9AaQBO@slm.duckdns.org>
- <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
- <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
+        Tue, 16 Aug 2022 09:43:04 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493E785FAF;
+        Tue, 16 Aug 2022 06:43:03 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GCTXOU020589;
+        Tue, 16 Aug 2022 13:42:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=qSmCgUkiKFSPrl9wRss/YSlSfXGLPxBQcr0ruFYm4TE=;
+ b=ER6q5huXcrTsYzUPijasmL27sSuPjshBhmQsYo+U9SmdxAVNlF6RHvB9LMAApVCZWA6R
+ HeG/YWUcvIQjOcFlzdWdIosUtnIeqyMBx6fKBSCZ8omvqjeAakE6UpvLjn9WcwzFqQo7
+ DcjXximE/aRhvoj1pWXvVKcjtJ/MqEMTReib2FU+XzByQ2MV6cJLnrWRCuIvDPBw31+7
+ jyzyMhPIlEBtUy6O+9xjw8AnkSbqRBTpHY3Sy4T6TG3xDlVdI9UKxs1ZUzwDx9q2xlOo
+ EttsI4FG3ZbotnX1TgqoEwVmyb0eOHfy1NNTfhtI2VyJC3v+14SQaYkxWPNXTULhHnsG eQ== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j0b9t27rw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 13:42:52 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27GDM51B005646;
+        Tue, 16 Aug 2022 13:42:50 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3hx37jba7b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 13:42:50 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27GDh6lP27394522
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Aug 2022 13:43:06 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 57D945204E;
+        Tue, 16 Aug 2022 13:42:47 +0000 (GMT)
+Received: from [9.171.18.167] (unknown [9.171.18.167])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id E43315204F;
+        Tue, 16 Aug 2022 13:42:46 +0000 (GMT)
+Message-ID: <fa1e62d7-30c3-693e-e31a-352dde8c339f@linux.ibm.com>
+Date:   Tue, 16 Aug 2022 15:47:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] vfio-pci/zdev: require KVM to be built-in
+Content-Language: en-US
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220814215154.32112-1-rdunlap@infradead.org>
+ <663c7595-1c18-043e-5f12-b0ce880b84bf@linux.ibm.com>
+ <5530ed1f-90ec-ce84-2348-80e484fa48cb@infradead.org>
+ <47cfc72d-62f6-2bd3-db91-99f91591fc30@linux.ibm.com>
+In-Reply-To: <47cfc72d-62f6-2bd3-db91-99f91591fc30@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: SbCic7_lFjCT3UETxpFroWyQ5mpcuhQf
+X-Proofpoint-GUID: SbCic7_lFjCT3UETxpFroWyQ5mpcuhQf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 clxscore=1015
+ mlxlogscore=999 bulkscore=0 spamscore=0 mlxscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208160051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:27:10PM -0700, Linus Torvalds wrote:
-> On Mon, Aug 15, 2022 at 9:15 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> >
-> > Please revert this as test_and_set_bit was always supposed to be
-> > a full memory barrier.  This is an arch bug.
-> 
-> Yes, the bitops are kind of strange for various legacy reasons:
-> 
->  - set/clear_bit is atomic, but without a memory barrier, and need a
-> "smp_mb__before_atomic()" or similar for barriers
-> 
->  - test_and_set/clear_bit() are atomic, _and_ are memory barriers
-> 
->  - test_and_set_bit_lock and test_and_clear_bit_unlock are atomic and
-> _weaker_ than full memory barriers, but sufficient for locking (ie
-> acquire/release)
-> 
-> Does any of this make any sense at all? No. But those are the
-> documented semantics exactly because people were worried about
-> test_and_set_bit being used for locking, since on x86 all the atomics
-> are also memory barriers.
-> 
-> From looking at it, the asm-generic implementation is a bit
-> questionable, though. In particular, it does
-> 
->         if (READ_ONCE(*p) & mask)
->                 return 1;
-> 
-> so it's *entirely* unordered for the "bit was already set" case.
-> 
-> That looks very wrong to me, since it basically means that the
-> test_and_set_bit() can return "bit was already set" based on an old
-> value - not a memory barrier at all.
-> 
-> So if you use "test_and_set_bit()" as some kind of "I've done my work,
-> now I am going to set the bit to tell people to pick it up", then that
-> early "bit was already set" code completely breaks it.
-> 
-> Now, arguably our atomic bitop semantics are very very odd, and it
-> might be time to revisit them. But that code looks very very buggy to
-> me.
-> 
-> The bug seems to go back to commit e986a0d6cb36 ("locking/atomics,
-> asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs"), and the
-> fix looks to be as simple as just removing that early READ_ONCE return
-> case (test_and_clear has the same bug).
-> 
-> Will?
+Randy,
 
-Right, this looks like it's all my fault, so sorry about that.
+I need to provide the correction patch rapidly.
+Without answer I will propose the patch.
 
-In an effort to replace the spinlock-based atomic bitops with a version
-based on atomic instructions in e986a0d6cb36, I inadvertently added this
-READ_ONCE() shortcut to test_and_set_bit() because at the time that's
-what we had (incorrectly) documented in our attempts at cleaning things
-up in this area. I confess that I have never been comfortable with the
-comment for test_and_set_bit() prior to my problematic patch:
+Regards,
+Pierre
 
-/**
- * test_and_set_bit - Set a bit and return its old value
- * @nr: Bit to set
- * @addr: Address to count from
- *
- * This operation is atomic and cannot be reordered.
- * It may be reordered on other architectures than x86.
- * It also implies a memory barrier.
- */
-
-so while Peter and I were trying to improve the documentation for
-atomics and memory barriers we clearly ended up making the wrong call
-trying to treat this like e.g. a cmpxchg() (which has the
-unordered-on-failure semantics).
-
-It's worth noting that with the spinlock-based implementation (i.e.
-prior to e986a0d6cb36) then we would have the same problem on
-architectures that implement spinlocks with acquire/release semantics;
-accesses from outside of the critical section can drift in and reorder
-with each other there, so the conversion looked legitimate to me in
-isolation and I vaguely remember going through callers looking for
-potential issues. Alas, I obviously missed this case.
-
-So it looks to me like we need to:
-
-  1. Upgrade test_and_{set,clear}_bit() to have a full memory barrier
-     regardless of the value which is read from memory. The lock/unlock
-     flavours can remain as-is.
-
-  2. Fix the documentation
-
-  3. Figure out what to do about architectures building atomics out of
-     spinlocks (probably ok as lock+unlock == full barrier there?)
-
-  4. Accept my sincerest apologies for the mess!
-
-> IOW, the proper fix for this should, I think, look something like this
-> (whitespace mangled) thing:
+On 8/16/22 09:55, Pierre Morel wrote:
 > 
->    --- a/include/asm-generic/bitops/atomic.h
->    +++ b/include/asm-generic/bitops/atomic.h
->    @@ -39,9 +39,6 @@ arch_test_and_set_bit(
->         unsigned long mask = BIT_MASK(nr);
 > 
->         p += BIT_WORD(nr);
->    -    if (READ_ONCE(*p) & mask)
->    -            return 1;
->    -
->         old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
->         return !!(old & mask);
->     }
->    @@ -53,9 +50,6 @@ arch_test_and_clear_bit
->         unsigned long mask = BIT_MASK(nr);
+> On 8/16/22 08:04, Randy Dunlap wrote:
+>> Hi--
+>>
+>> On 8/15/22 02:43, Pierre Morel wrote:
+>>> Thank you Randy for this good catch.
+>>> However forcing KVM to be include statically in the kernel when using 
+>>> VFIO_PCI extensions is not a good solution for us I think.
+>>>
+>>> I suggest we better do something like:
+>>>
+>>> ----
+>>>
+>>> diff --git a/arch/s390/include/asm/kvm_host.h 
+>>> b/arch/s390/include/asm/kvm_host.h
+>>> index 6287a843e8bc..1733339cc4eb 100644
+>>> --- a/arch/s390/include/asm/kvm_host.h
+>>> +++ b/arch/s390/include/asm/kvm_host.h
+>>> @@ -1038,7 +1038,7 @@ static inline void 
+>>> kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
+>>>   #define __KVM_HAVE_ARCH_VM_FREE
+>>>   void kvm_arch_free_vm(struct kvm *kvm);
+>>>
+>>> -#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+>>> +#if defined(CONFIG_VFIO_PCI_ZDEV_KVM) || 
+>>> defined(CONFIG_VFIO_PCI_ZDEV_KVM_MODULE)
+>>
+>> This all looks good except for the line above.
+>> It should be:
+>>
+>> #if IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM)
+>>
+>> Thanks.
 > 
->         p += BIT_WORD(nr);
->    -    if (!(READ_ONCE(*p) & mask))
->    -            return 0;
->    -
->         old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
->         return !!(old & mask);
->     }
+> Yes, better, thanks.
+> How do we do? Should I repost it with reported-by you or do you want to 
+> post it?
 > 
-> but the above is not just whitespace-damaged, it's entirely untested
-> and based purely on me looking at that code.
+> Pierre
+> 
+> 
+>>
+>>
+>>>   int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
+>>>   void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
+>>>   #else
+>>> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+>>> index f9d0c908e738..bbc375b028ef 100644
+>>> --- a/drivers/vfio/pci/Kconfig
+>>> +++ b/drivers/vfio/pci/Kconfig
+>>> @@ -45,9 +45,9 @@ config VFIO_PCI_IGD
+>>>   endif
+>>>
+>>>   config VFIO_PCI_ZDEV_KVM
+>>> -       bool "VFIO PCI extensions for s390x KVM passthrough"
+>>> +       def_tristate y
+>>> +       prompt "VFIO PCI extensions for s390x KVM passthrough"
+>>>          depends on S390 && KVM
+>>> -       default y
+>>>          help
+>>>            Support s390x-specific extensions to enable support for 
+>>> enhancements
+>>>            to KVM passthrough capabilities, such as interpretive 
+>>> execution of
+>>>
+>>> ----
+>>>
+>>> What do you think? It seems to me it solves the problem, what do you 
+>>> think?
+>>>
+>>> Regards,
+>>> Pierre
+>>
+>>
+> 
 
-Yes, I think that's step 1, thanks! I'm a bit worried about the perf
-numbers on the other thread, but we can get to the bottom of that
-separately.
-
-Will
+-- 
+Pierre Morel
+IBM Lab Boeblingen
