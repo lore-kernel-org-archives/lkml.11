@@ -2,316 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF45C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF57AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233353AbiHPKDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
+        id S234291AbiHPKEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbiHPKDD (ORCPT
+        with ESMTP id S233160AbiHPKDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:03:03 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02896D277A;
-        Tue, 16 Aug 2022 01:28:21 -0700 (PDT)
+        Tue, 16 Aug 2022 06:03:45 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82746582
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:18:14 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id uj29so17838147ejc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660638502; x=1692174502;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zvOwVCJSLyiuRpdF+7TMgXPF/k1shU8+iEjRQRTM8LI=;
-  b=HhWlzLeNRJEpvGCLqdzkV2PweoaeaMe6Q3fSHrBgHBfbKIRoFLnABV6T
-   aGE5eJER049YHb7ZgV9JS03RQ/6YrF05/BEN++1S7JwVJinQupXlZeiRU
-   e9y3DSI2ckeyCzNh0Yz+RVQzx7vnLzI8hX2Ss63W54rufrGQZyQ7USLnv
-   U=;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="1044708731"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:20 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com (Postfix) with ESMTPS id 56DFA80AF8;
-        Tue, 16 Aug 2022 08:28:18 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:02 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:02 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:28:01
- +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 600D34C07; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
-        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
-        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
-        <rtanwar@maxlinear.com>
-Subject: [PATCH 16/16] hwmon: (mr75203) add debugfs to read and write temperature coefficients
-Date:   Tue, 16 Aug 2022 08:27:57 +0000
-Message-ID: <20220816082757.11990-17-farbere@amazon.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=yLyhAxfPhn0pjsjApPHzY96ofvWjLk6KVM/XSWQZNcE=;
+        b=XeUBH7pD9sd+emsMQ8BQj5AHludj77Hauad0yCJlXdQK5LNP+K2+zXP+z3BuDEnNCC
+         bisNrg7iu8xIksLwVOTZfxukO6ohn+sNyxeUlls5rwF4JoCKq4EhYOExVdzz6v+ZlUqw
+         mixDreL62nawWpDRMU/ZKe6ToA2LJNCZusj9I3GnZieE7vSAcUZyIcOui6RSe45m//hy
+         96kTIhq71OBsDYbunG/J4u/hw2AXIiTPMPtA0pITLv7sAUPFy7Q2/sB7Lcv/sY3guzky
+         tsh2K/LPe+s/88GS3PxU4noDUdc69zguvHRVyyJ1swyMCinuS8ifyb2nn1KA0XScGvzA
+         FfoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=yLyhAxfPhn0pjsjApPHzY96ofvWjLk6KVM/XSWQZNcE=;
+        b=RtfxVDo1gK4kxJ70cYfaV5cRldphVLfGQB5x30peB1muuBqO895sfxbrmMQmrjLkxs
+         uJzyQJrvcWS4Q5f/NpcJV1f7SqfUwyhda5mqXQ1cHtODAxSZYPWnu8LESZMp4NjuZub2
+         iuiTgET3wza58VeY6CXO32KZtE5hx9zJyUVtMczGZBHfqigxbNW/a6xNwHr0tNu/HLF9
+         6di899Y8dynqx9BayLJJDTGBcBjfTxMfHZ8FRlUxghnKhNlRap7iheG9dn/ceXHQ9tt7
+         z4N5324c1GvjcvyKtIeIXTLJ7A0vqFclObopHd+JKR2Jg6e9eQQqm4RAFd9VjTnuYG/7
+         p0Jg==
+X-Gm-Message-State: ACgBeo3a7rRs1uJUz56NtTljStwnRbHBX1hGLPWGfQoW8/HDXrk7jMk/
+        PfSf6Bg+sa7X17EPDS6L7yE=
+X-Google-Smtp-Source: AA6agR4cZoBrTh/lM0Bv9U1JS89LH/ywlYdoYDA/KcQc/eSjr7a6JwypWEb7gCtc0PIfqJhjBUffqA==
+X-Received: by 2002:a17:906:9be1:b0:730:957f:34a3 with SMTP id de33-20020a1709069be100b00730957f34a3mr12846754ejc.47.1660641493317;
+        Tue, 16 Aug 2022 02:18:13 -0700 (PDT)
+Received: from localhost.localdomain (host-95-250-231-56.retail.telecomitalia.it. [95.250.231.56])
+        by smtp.gmail.com with ESMTPSA id hy1-20020a1709068a6100b00726298147b1sm5005980ejc.161.2022.08.16.02.18.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 02:18:11 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: [RFC PATCH] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
+Date:   Tue, 16 Aug 2022 11:18:08 +0200
+Message-Id: <20220816091808.23236-1-fmdefrancesco@gmail.com>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
-References: <20220816082757.11990-1-farbere@amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change adds debugfs to read and write TS coefficients - g, h, j and
-cal5.
+kmap() is being deprecated in favor of kmap_local_page().
 
-The coefficients can vary between product and product, so to calibrate
-them it can be very useful to to be able to modify them on the fly.
+There are two main problems with kmap(): (1) It comes with an overhead as
+mapping space is restricted and protected by a global lock for
+synchronization and (2) it also requires global TLB invalidation when the
+kmap’s pool wraps and it might block when the mapping space is fully
+utilized until a slot becomes available.
 
-e.g.
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+the tasks can be preempted and, when they are scheduled to run again, the
+kernel virtual addresses are restored and are still valid.
 
-cat /sys/kernel/debug/940f23d0000.pvt/ts_coeff_cal5
-4096
+However, there is a huge constraint which might block some conversions
+to kmap_local_page(): the kernel virtual address cannot be handed across
+different threads. Ira made me notice that the kmap() and kunmap() in this
+driver happen in two different workqueues. Therefore, kunmap_local() will
+try to unmap an invalid address.
 
-echo 83000 > sys/kernel/debug/940f23d0000.pvt/ts_coeff_g
+Let me explain why I'm sending an RFC. When I hit the above mentioned
+issues I tried to refactor the code in ways where mapping and unmapping
+happen in a single thread (to not break the rules of threads locality).
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
+However, while reading this code again I think I noticed an important
+prerequisite which may lead to a simpler solution... If I'm not wrong, it
+looks like the pages are allocated in nvmet_tcp_map_data(), using the
+GFP_KERNEL flag.
+
+This would assure that those pages _cannot_ come from HIGHMEM. If I'm not
+missing something (again!), a plain page_address() could replace the kmap()
+of sg_page(sg); furthermore, we shouldn't need the unmappings any longer.
+
+Unfortunately, I don't know this protocol and I'm not so experienced with
+kernel development to be able to understand this code properly.
+
+Therefore, I have two questions: am I right about thinking that the pages
+mapped in nvmet_tcp_map_pdu_iovec() are allocated with GFP_KERNEL? If so,
+can anyone with more knowledge than mine please say if my changes make any
+sense?
+
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- drivers/hwmon/mr75203.c | 196 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 196 insertions(+)
+ drivers/nvme/target/tcp.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
 
-diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-index 2777feca1c11..04a702830987 100644
---- a/drivers/hwmon/mr75203.c
-+++ b/drivers/hwmon/mr75203.c
-@@ -9,6 +9,7 @@
-  */
- #include <linux/bits.h>
- #include <linux/clk.h>
-+#include <linux/debugfs.h>
- #include <linux/hwmon.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-@@ -125,6 +126,7 @@ struct pvt_device {
- 	struct clk		*clk;
- 	struct reset_control	*rst;
- 	struct voltage_device	*vd;
-+	struct dentry		*dbgfs_dir;
- 	u32			t_num;
- 	u32			p_num;
- 	u32			v_num;
-@@ -137,6 +139,198 @@ struct pvt_device {
- 	u8			vm_ch_total;
- };
+diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
+index dc3b4dc8fe08..affba6d862fc 100644
+--- a/drivers/nvme/target/tcp.c
++++ b/drivers/nvme/target/tcp.c
+@@ -167,7 +167,6 @@ static const struct nvmet_fabrics_ops nvmet_tcp_ops;
+ static void nvmet_tcp_free_cmd(struct nvmet_tcp_cmd *c);
+ static void nvmet_tcp_finish_cmd(struct nvmet_tcp_cmd *cmd);
+ static void nvmet_tcp_free_cmd_buffers(struct nvmet_tcp_cmd *cmd);
+-static void nvmet_tcp_unmap_pdu_iovec(struct nvmet_tcp_cmd *cmd);
  
-+static ssize_t pvt_ts_coeff_h_read(struct file *file,
-+				   char __user *user_buf,
-+				   size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	char buf[16];
-+	unsigned int len;
-+
-+	len = sprintf(buf, "%u\n", pvt->ts_coeff_h);
-+
-+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
-+}
-+
-+static ssize_t pvt_ts_coeff_h_write(struct file *file,
-+				    const char __user *user_buf,
-+				    size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	int ret;
-+	u32 coeff;
-+
-+	ret = kstrtou32_from_user(user_buf, count, 0, &coeff);
-+	if (ret)
-+		return ret;
-+
-+	pvt->ts_coeff_h = coeff;
-+
-+	return count;
-+}
-+
-+static const struct file_operations pvt_ts_coeff_h_fops = {
-+	.read = pvt_ts_coeff_h_read,
-+	.write = pvt_ts_coeff_h_write,
-+	.open = simple_open,
-+	.owner = THIS_MODULE,
-+	.llseek = default_llseek,
-+};
-+
-+static ssize_t pvt_ts_coeff_g_read(struct file *file,
-+				   char __user *user_buf,
-+				   size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	char buf[16];
-+	unsigned int len;
-+
-+	len = sprintf(buf, "%u\n", pvt->ts_coeff_g);
-+
-+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
-+}
-+
-+static ssize_t pvt_ts_coeff_g_write(struct file *file,
-+				    const char __user *user_buf,
-+				    size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	int ret;
-+	u32 coeff;
-+
-+	ret = kstrtou32_from_user(user_buf, count, 0, &coeff);
-+	if (ret)
-+		return ret;
-+
-+	pvt->ts_coeff_g = coeff;
-+
-+	return count;
-+}
-+
-+static const struct file_operations pvt_ts_coeff_g_fops = {
-+	.read = pvt_ts_coeff_g_read,
-+	.write = pvt_ts_coeff_g_write,
-+	.open = simple_open,
-+	.owner = THIS_MODULE,
-+	.llseek = default_llseek,
-+};
-+
-+static ssize_t pvt_ts_coeff_j_read(struct file *file,
-+				   char __user *user_buf,
-+				   size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	char buf[16];
-+	unsigned int len;
-+
-+	len = sprintf(buf, "%d\n", pvt->ts_coeff_j);
-+
-+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
-+}
-+
-+static ssize_t pvt_ts_coeff_j_write(struct file *file,
-+				    const char __user *user_buf,
-+				    size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	int ret;
-+	s32 coeff;
-+
-+	ret = kstrtos32_from_user(user_buf, count, 0, &coeff);
-+	if (ret)
-+		return ret;
-+
-+	pvt->ts_coeff_j = coeff;
-+
-+	return count;
-+}
-+
-+static const struct file_operations pvt_ts_coeff_j_fops = {
-+	.read = pvt_ts_coeff_j_read,
-+	.write = pvt_ts_coeff_j_write,
-+	.open = simple_open,
-+	.owner = THIS_MODULE,
-+	.llseek = default_llseek,
-+};
-+
-+static ssize_t pvt_ts_coeff_cal5_read(struct file *file,
-+				      char __user *user_buf,
-+				      size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	char buf[16];
-+	unsigned int len;
-+
-+	len = sprintf(buf, "%u\n", pvt->ts_coeff_cal5);
-+
-+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
-+}
-+
-+static ssize_t pvt_ts_coeff_cal5_write(struct file *file,
-+				       const char __user *user_buf,
-+				       size_t count, loff_t *ppos)
-+{
-+	struct pvt_device *pvt = file->private_data;
-+	int ret;
-+	u32 coeff;
-+
-+	ret = kstrtou32_from_user(user_buf, count, 0, &coeff);
-+	if (ret)
-+		return ret;
-+
-+	if (coeff == 0)
-+		return -EINVAL;
-+
-+	pvt->ts_coeff_cal5 = coeff;
-+
-+	return count;
-+}
-+
-+static const struct file_operations pvt_ts_coeff_cal5_fops = {
-+	.read = pvt_ts_coeff_cal5_read,
-+	.write = pvt_ts_coeff_cal5_write,
-+	.open = simple_open,
-+	.owner = THIS_MODULE,
-+	.llseek = default_llseek,
-+};
-+
-+static void devm_pvt_ts_dbgfs_remove(void *data)
-+{
-+	struct pvt_device *pvt = (struct pvt_device *)data;
-+
-+	debugfs_remove_recursive(pvt->dbgfs_dir);
-+	pvt->dbgfs_dir = NULL;
-+}
-+
-+static int pvt_ts_dbgfs_create(struct pvt_device *pvt, struct device *dev)
-+{
-+	int ret;
-+
-+	pvt->dbgfs_dir = debugfs_create_dir(dev_name(dev), NULL);
-+	if (!pvt->dbgfs_dir) {
-+		dev_err(dev, "Failed to create dbgfs_dir\n");
-+		return -EINVAL;
-+	}
-+
-+	debugfs_create_file("ts_coeff_h", 0644, pvt->dbgfs_dir, pvt,
-+			    &pvt_ts_coeff_h_fops);
-+	debugfs_create_file("ts_coeff_g", 0644, pvt->dbgfs_dir, pvt,
-+			    &pvt_ts_coeff_g_fops);
-+	debugfs_create_file("ts_coeff_j", 0644, pvt->dbgfs_dir, pvt,
-+			    &pvt_ts_coeff_j_fops);
-+	debugfs_create_file("ts_coeff_cal5", 0644, pvt->dbgfs_dir,  pvt,
-+			    &pvt_ts_coeff_cal5_fops);
-+
-+	ret = devm_add_action_or_reset(dev, devm_pvt_ts_dbgfs_remove, pvt);
-+	if (ret) {
-+		dev_err(dev, "failed to add action to remove pvt dbgfs (%d)\n",
-+			ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static umode_t pvt_is_visible(const void *data, enum hwmon_sensor_types type,
- 			      u32 attr, int channel)
+ static inline u16 nvmet_tcp_cmd_tag(struct nvmet_tcp_queue *queue,
+ 		struct nvmet_tcp_cmd *cmd)
+@@ -309,19 +308,6 @@ static void nvmet_tcp_free_cmd_buffers(struct nvmet_tcp_cmd *cmd)
+ 	cmd->req.sg = NULL;
+ }
+ 
+-static void nvmet_tcp_unmap_pdu_iovec(struct nvmet_tcp_cmd *cmd)
+-{
+-	struct scatterlist *sg;
+-	int i;
+-
+-	sg = &cmd->req.sg[cmd->sg_idx];
+-
+-	for (i = 0; i < cmd->nr_mapped; i++)
+-		kunmap(sg_page(&sg[i]));
+-
+-	cmd->nr_mapped = 0;
+-}
+-
+ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
  {
-@@ -653,6 +847,8 @@ static int mr75203_probe(struct platform_device *pdev)
- 		dev_dbg(dev, "ts-coeff: h = %u, g = %u, j = %d, cal5 = %u\n",
- 			pvt->ts_coeff_h, pvt->ts_coeff_g, pvt->ts_coeff_j,
- 			pvt->ts_coeff_cal5);
-+
-+		pvt_ts_dbgfs_create(pvt, dev);
+ 	struct kvec *iov = cmd->iov;
+@@ -338,7 +324,7 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
+ 	while (length) {
+ 		u32 iov_len = min_t(u32, length, sg->length - sg_offset);
+ 
+-		iov->iov_base = kmap(sg_page(sg)) + sg->offset + sg_offset;
++		iov->iov_base = page_address(sg_page(sg)) + sg->offset + sg_offset;
+ 		iov->iov_len = iov_len;
+ 
+ 		length -= iov_len;
+@@ -1141,7 +1127,6 @@ static int nvmet_tcp_try_recv_data(struct nvmet_tcp_queue *queue)
+ 		cmd->rbytes_done += ret;
  	}
  
- 	if (pd_num) {
+-	nvmet_tcp_unmap_pdu_iovec(cmd);
+ 	if (queue->data_digest) {
+ 		nvmet_tcp_prep_recv_ddgst(cmd);
+ 		return 0;
+@@ -1411,7 +1396,6 @@ static void nvmet_tcp_restore_socket_callbacks(struct nvmet_tcp_queue *queue)
+ static void nvmet_tcp_finish_cmd(struct nvmet_tcp_cmd *cmd)
+ {
+ 	nvmet_req_uninit(&cmd->req);
+-	nvmet_tcp_unmap_pdu_iovec(cmd);
+ 	nvmet_tcp_free_cmd_buffers(cmd);
+ }
+ 
+@@ -1424,7 +1408,6 @@ static void nvmet_tcp_uninit_data_in_cmds(struct nvmet_tcp_queue *queue)
+ 		if (nvmet_tcp_need_data_in(cmd))
+ 			nvmet_req_uninit(&cmd->req);
+ 
+-		nvmet_tcp_unmap_pdu_iovec(cmd);
+ 		nvmet_tcp_free_cmd_buffers(cmd);
+ 	}
+ 
 -- 
 2.37.1
 
