@@ -2,86 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9677C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D48C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234112AbiHPK16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:27:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
+        id S234544AbiHPK2J convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234480AbiHPK1X (ORCPT
+        with ESMTP id S234451AbiHPK11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:27:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A1140399
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:27:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 365CC61029
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F213C433D7;
-        Tue, 16 Aug 2022 08:27:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660638436;
-        bh=nd7XrfWW5VTyg8CmThVCU5gCXi7zDbey5kxwNLdc4iY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v2CzO7q9yAZpDeAAYd+SubkFwrskEPUWhivezYekuhFXWRFLZ/LP/qsydSsdYeSj/
-         FDra6jnB9tXexpEd2rue2hm3mBQvJoV3VwzOLVgeFO28G+12S0bsaaSFfo7UJ+jo0e
-         SFhERawMb8Vb3E5wSnBJpl8zI6jax1Bfv0yJ3vCE=
-Date:   Tue, 16 Aug 2022 09:15:18 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     mawupeng <mawupeng1@huawei.com>
-Cc:     rppt@linux.vnet.ibm.com, hughd@google.com, aarcange@redhat.com,
-        hannes@cmpxchg.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, wangkefeng.wang@huawei.com,
-        willy@infradead.org
-Subject: Re: [PATCH stable 4.14,4.19 1/1] mm: Fix page counter mismatch in
- shmem_mfill_atomic_pte
-Message-ID: <YvtEBv35OUEtDsAj@kroah.com>
-References: <20220802013251.3022141-1-mawupeng1@huawei.com>
- <09129cd3-7363-3079-bd57-dde9c73684f1@huawei.com>
- <YvsruBZBP+KpEBdb@kroah.com>
- <b7468bcc-4b75-1190-5eae-9796d35b048c@huawei.com>
+        Tue, 16 Aug 2022 06:27:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F5A4C605;
+        Tue, 16 Aug 2022 02:15:47 -0700 (PDT)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M6QQd51zkz1M8yg;
+        Tue, 16 Aug 2022 17:12:25 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 17:15:44 +0800
+Received: from dggpemm500006.china.huawei.com ([7.185.36.236]) by
+ dggpemm500006.china.huawei.com ([7.185.36.236]) with mapi id 15.01.2375.024;
+ Tue, 16 Aug 2022 17:15:44 +0800
+From:   "Gonglei (Arei)" <arei.gonglei@huawei.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Lei He <helei.sig11@bytedance.com>
+CC:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "pizhenwei@bytedance.com" <pizhenwei@bytedance.com>
+Subject: RE: [PATCH] crypto-virtio: fix memory-leak
+Thread-Topic: [PATCH] crypto-virtio: fix memory-leak
+Thread-Index: AQHYsUY0nKlBM3YWoEWBnWo9iL/j1q2wr84AgACNxNA=
+Date:   Tue, 16 Aug 2022 09:15:44 +0000
+Message-ID: <0a675c21c1dc4e699d542c2f4f92f729@huawei.com>
+References: <20220816075916.23651-1-helei.sig11@bytedance.com>
+ <20220816044118-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220816044118-mutt-send-email-mst@kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.149.11]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b7468bcc-4b75-1190-5eae-9796d35b048c@huawei.com>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 03:04:08PM +0800, mawupeng wrote:
-> 
-> 
-> On 2022/8/16 13:31, Greg KH wrote:
-> > On Tue, Aug 16, 2022 at 11:27:08AM +0800, mawupeng wrote:
-> >> Cc Greg
-> > 
-> > Cc Greg for what?  I have no context here at all as to what you want me
-> > to do..
-> 
-> We found a bug related to memory cgroup counter in stable 4.14/4.19.
-> shmem_mfill_atomic_pte() wrongly called mem_cgroup_cancel_charge() in "success"
-> path, it should mem_cgroup_uncharge() to dec memory counter instead.
-> mem_cgroup_cancel_charge() should only be used if this transaction is
-> unsuccessful and mem_cgroup_uncharge() is used to do this if this transaction
-> succeed.
-> 
-> Commit 3fea5a499d57 ("mm: memcontrol: convert page cache to a new mem_cgroup_charge() API")
-> in v5.8-rc1 change is charge/uncharge/cancel logic so don't have this
-> problem.
-> 
-> This counter will underflow to negative maximum value and trigger oom to kill all
-> process include sshd and leave system unaccessible.
-> 
-> The reason cc you is that we want to merge this bugfix into stable 4.14/4.19.
 
-<formletter>
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+> -----Original Message-----
+> From: Michael S. Tsirkin [mailto:mst@redhat.com]
+> Sent: Tuesday, August 16, 2022 4:43 PM
+> To: Lei He <helei.sig11@bytedance.com>
+> Cc: Gonglei (Arei) <arei.gonglei@huawei.com>;
+> herbert@gondor.apana.org.au; virtualization@lists.linux-foundation.org;
+> linux-crypto@vger.kernel.org; linux-kernel@vger.kernel.org;
+> pizhenwei@bytedance.com
+> Subject: Re: [PATCH] crypto-virtio: fix memory-leak
+> 
 
-</formletter>
+Pls 's/crypto-virtio/virtio-crypto' in order to keep consistency.
+
+Reviewed-by: Gonglei <arei.gonglei@huawei.com>
+
+Regards,
+-Gonglei
+
+> On Tue, Aug 16, 2022 at 03:59:16PM +0800, Lei He wrote:
+> > From: lei he <helei.sig11@bytedance.com>
+> >
+> > Fix memory-leak for virtio-crypto akcipher request, this problem is
+> > introduced by 59ca6c93387d3(virtio-crypto: implement RSA algorithm).
+> > The leak can be reproduced and tested with the following script inside
+> > virtual machine:
+> >
+> > #!/bin/bash
+> >
+> > LOOP_TIMES=10000
+> >
+> > # required module: pkcs8_key_parser, virtio_crypto modprobe
+> > pkcs8_key_parser # if CONFIG_PKCS8_PRIVATE_KEY_PARSER=m modprobe
+> > virtio_crypto # if CONFIG_CRYPTO_DEV_VIRTIO=m rm -rf /tmp/data dd
+> > if=/dev/random of=/tmp/data count=1 bs=230
+> >
+> > # generate private key and self-signed cert openssl req -nodes -x509
+> > -newkey rsa:2048 -keyout key.pem \
+> > 		-outform der -out cert.der  \
+> > 		-subj
+> "/C=CN/ST=GD/L=SZ/O=vihoo/OU=dev/CN=always.com/emailAddress=yy@
+> always.com"
+> > # convert private key from pem to der
+> > openssl pkcs8 -in key.pem -topk8 -nocrypt -outform DER -out key.der
+> >
+> > # add key
+> > PRIV_KEY_ID=`cat key.der | keyctl padd asymmetric test_priv_key @s`
+> > echo "priv key id = "$PRIV_KEY_ID PUB_KEY_ID=`cat cert.der | keyctl
+> > padd asymmetric test_pub_key @s` echo "pub key id = "$PUB_KEY_ID
+> >
+> > # query key
+> > keyctl pkey_query $PRIV_KEY_ID 0
+> > keyctl pkey_query $PUB_KEY_ID 0
+> >
+> > # here we only run pkey_encrypt becasuse it is the fastest interface
+> > function bench_pub() {
+> > 	keyctl pkey_encrypt $PUB_KEY_ID 0 /tmp/data
+> enc=pkcs1 >/tmp/enc.pub }
+> >
+> > # do bench_pub in loop to obtain the memory leak for (( i = 0; i <
+> > ${LOOP_TIMES}; ++i )); do
+> > 	bench_pub
+> > done
+> >
+> > Signed-off-by: lei he <helei.sig11@bytedance.com>
+> 
+> trash below pls drop.
+> 
+> 
+> > # Please enter the commit message for your changes. Lines starting #
+> > with '#' will be kept; you may remove them yourself if you want to.
+> > # An empty message aborts the commit.
+> > #
+> > # Date:      Tue Aug 16 11:53:30 2022 +0800
+> > #
+> > # On branch master
+> > # Your branch is ahead of 'origin/master' by 1 commit.
+> > #   (use "git push" to publish your local commits)
+> > #
+> > # Changes to be committed:
+> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > #
+> > # Untracked files:
+> > #	cert.der
+> > #	key.der
+> > #	key.pem
+> > #
+> >
+> > # Please enter the commit message for your changes. Lines starting #
+> > with '#' will be kept; you may remove them yourself if you want to.
+> > # An empty message aborts the commit.
+> > #
+> > # Date:      Tue Aug 16 11:53:30 2022 +0800
+> > #
+> > # On branch master
+> > # Your branch is ahead of 'origin/master' by 1 commit.
+> > #   (use "git push" to publish your local commits)
+> > #
+> > # Changes to be committed:
+> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > #
+> > # Untracked files:
+> > #	cert.der
+> > #	key.der
+> > #	key.pem
+> > #
+> >
+> > # Please enter the commit message for your changes. Lines starting #
+> > with '#' will be kept; you may remove them yourself if you want to.
+> > # An empty message aborts the commit.
+> > #
+> > # Date:      Tue Aug 16 11:53:30 2022 +0800
+> > #
+> > # On branch master
+> > # Your branch is ahead of 'origin/master' by 1 commit.
+> > #   (use "git push" to publish your local commits)
+> > #
+> > # Changes to be committed:
+> > #	modified:   drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > #
+> > # Untracked files:
+> > #	cert.der
+> > #	key.der
+> > #	key.pem
+> > #
+> > ---
+> 
+> with commit log fixed:
+> 
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+> 
+> >  drivers/crypto/virtio/virtio_crypto_akcipher_algs.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > index 2a60d0525cde..168195672e2e 100644
+> > --- a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > +++ b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+> > @@ -56,6 +56,10 @@ static void virtio_crypto_akcipher_finalize_req(
+> >  	struct virtio_crypto_akcipher_request *vc_akcipher_req,
+> >  	struct akcipher_request *req, int err)  {
+> > +	kfree(vc_akcipher_req->src_buf);
+> > +	kfree(vc_akcipher_req->dst_buf);
+> > +	vc_akcipher_req->src_buf = NULL;
+> > +	vc_akcipher_req->dst_buf = NULL;
+> >  	virtcrypto_clear_request(&vc_akcipher_req->base);
+> >
+> >
+> > crypto_finalize_akcipher_request(vc_akcipher_req->base.dataq->engine,
+> > req, err);
+> > --
+> > 2.20.1
+
