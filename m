@@ -2,149 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E87C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D88C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235214AbiHPLEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S235223AbiHPLEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235081AbiHPLDq (ORCPT
+        with ESMTP id S235079AbiHPLDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 07:03:46 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444FB9F0EA
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:13:23 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id v10so10025432ljh.9
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:13:23 -0700 (PDT)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75A481690
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:16 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id p12-20020a7bcc8c000000b003a5360f218fso9124215wma.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=I5SqP35XC1263ityEmHuahEtnvYD9OPIC1kK87SGfRw=;
-        b=GG76BEFFH8QopWBCiOBntKXwcAX7YWOUOgmNyASJ6GEoYLq58DYf15P+iP97FxOg4B
-         KjDaJEUrkA70ApHUjT+FWRX9DVIm1N4FveTnXJsj1bwwKg9k/nWwYY4N2FBwYTs1pST7
-         3snLlHdooPCoOILcUKxpsXT0nUuhOwVLBgLcwzaAMLwsqBwfwsUxFWrvl63bMa8wO6+b
-         P/tlXSY/kMnb3qOxP/UoznLJeEBju5oWeVLMNlmxpnkaOeJKxiiiBYqeVsYoKc84HnBY
-         7/U4xiutBBix58jCLqHm+QqRUeNvFfvsoqfQdQXr78xeD6wjWdbxc+OJkB4BuTKOZVqm
-         fxmg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=ZUx34QkHnBswCsUg5dOcBaoezDJ6gfWumxiIbYHCirs=;
+        b=iNJTjNTrsT+WogTYPkEAEhy9SRvgJoM0IwoK9HllLm5bRoE/UsSQi9ijHQE9b1MCLb
+         fjEu5WK399K8xPkUwnOfprDq5JfgJVZB5pCJfXqgWND3NuePAvnNxdTSffr3esCV6qan
+         o7mJUbSkrDjNZOJnEtHMVUVsJCgLxjZx1n7imAv8lIk4GSFnq3fRSWiJRDepn/Kynn26
+         jPY0bJ67ZLEIFOn34quychCwurRDo2DzV+EnDxdEyZo/+WM01IJ/iqgAKldJdixIqrWD
+         lwDrTYkT6J+vqSR5Kp8+REV8TPmB/ChCFek2dzfC3lhKt1szDPOY4W+87Dr0ncsLn1TO
+         x+2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=I5SqP35XC1263ityEmHuahEtnvYD9OPIC1kK87SGfRw=;
-        b=wkzMcan/UAT8E9qNaryr/5VhkP+9qDyz6a8Dejm5YArpD05hIWlhOu78iFzP2XMNXJ
-         14H+EjB6e/+zwfaP3T+UycCxDlqfbcUL+7DtQNGcUPT8RQvdlAHdqq1uIeL6/CIcp/EB
-         p3OTHiI4m3aWuhQbi9j5Erh84rwU9g+bshCxURlx7e8l2CrWnVKtQ0llXsD0103fGI7Z
-         ZCPn5M2OKQD5LZiaMV1ElhOW3k/eG8lokOODdn4i30QW93/qle/ITh0IZJ5OzyLxvGke
-         sdMbL3tVdFMJeUCSMlaDnGGXsm8pJB/jFO7NvIxzKeY4Cu2c1QvWoOlxjom7sZUSdPu2
-         ZJ9w==
-X-Gm-Message-State: ACgBeo3A8hvAi2hkf5SfLqHrmPMRlnQDSbzykcmqwCSpd1IpZ4ie5hU+
-        EMdwL44qMPz+hB7XzZcwmSnhxQ==
-X-Google-Smtp-Source: AA6agR5wmREWNPb3k9paLeHs0ydehrKgaXqxM99gOCR/RBa1rBjr/Xk5erS1nX4K3zaQu/5OsWNJBw==
-X-Received: by 2002:a05:651c:244:b0:253:ecad:a4ee with SMTP id x4-20020a05651c024400b00253ecada4eemr5833229ljn.21.1660644802065;
-        Tue, 16 Aug 2022 03:13:22 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id d21-20020ac244d5000000b0048afccdd6e8sm1339250lfm.105.2022.08.16.03.13.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 03:13:21 -0700 (PDT)
-Message-ID: <488ccf2a-5058-d3c6-43ad-8ec2b541fb86@linaro.org>
-Date:   Tue, 16 Aug 2022 13:13:20 +0300
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=ZUx34QkHnBswCsUg5dOcBaoezDJ6gfWumxiIbYHCirs=;
+        b=l00MaszXg0E7vfmslBxzBENcKeYiXFCQCFjezb7JONVQuEldO4VS0s+Yvok49S3G+w
+         6kC/XfK9iuYqE9RZ9Iaj3DxoE388ou3VNvoFPB7WBT5VPlAIO0a53g+Sy6sQgy+0qwZt
+         GwTHPdKkVeNYO8ZS7FC69MOJlhOzXqTHpRTc62beNWxJGzeyrtyMd/j2dzx8LqEUnmiN
+         z29U71w3Q6E/OKODGRzN/JMi7dupsY5XiXtHma94N6zBVNCbUSnfUITwVbE9m9BXrzaY
+         bMPczgaxmP3MW7exTVRxXQkJB6COmB4WlNxlWz1JK8z+M/QwRA0vi5+/f3IPoAOplvku
+         cUdw==
+X-Gm-Message-State: ACgBeo1hJUyHHISFs1+65j3AJuD47/lmmac9IxrTwqS9kWrNHmeLNg0/
+        9f28YiHy501QzK9FijAF2Ec=
+X-Google-Smtp-Source: AA6agR5iHzQVr37Imsp8vtLPGEI0c14MbmGxjtQYWSuBdSpxix+OPsAN07NhKDaJU7WiPHcoHA4NgQ==
+X-Received: by 2002:a05:600c:3ba0:b0:3a5:b73a:8773 with SMTP id n32-20020a05600c3ba000b003a5b73a8773mr16993312wms.64.1660645754524;
+        Tue, 16 Aug 2022 03:29:14 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.32.249])
+        by smtp.gmail.com with ESMTPSA id m9-20020adffe49000000b002251639bfd0sm1668407wrs.59.2022.08.16.03.29.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 03:29:14 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
+        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, geert@linux-m68k.org,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 2/3] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_xrgb2101010()
+Date:   Tue, 16 Aug 2022 12:29:02 +0200
+Message-Id: <20220816102903.276879-3-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220816102903.276879-1-jose.exposito89@gmail.com>
+References: <20220816102903.276879-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: power: supply: Add Richtek RT9471
- battery charger
-Content-Language: en-US
-To:     cy_huang <u0084500@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, sre@kernel.org
-Cc:     alina_yu@richtek.com, cy_huang@richtek.com, alinayu829@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1660548852-6222-1-git-send-email-u0084500@gmail.com>
- <1660548852-6222-2-git-send-email-u0084500@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1660548852-6222-2-git-send-email-u0084500@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/08/2022 10:34, cy_huang wrote:
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add bindings for the Richtek RT9471 I2C controlled battery charger.
-> 
-> Co-developed-by: Alina Yu <alina_yu@richtek.com>
-> Signed-off-by: Alina Yu <alina_yu@richtek.com>
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> ---
-> Since v2
-> - Remove the properties for interrupt controller things in the binding documentation.
-> - Fix dtc error for typo, it's 'regulator-name', not 'regulator-compatible'.
-> - Add regulator min/max microamp to allow otg vbus current adjustable in example.
-> - Specify the active-level for charge-enable-gpios in binding example.
-> 
-> ---
->  .../bindings/power/supply/richtek,rt9471.yaml      | 73 ++++++++++++++++++++++
->  1 file changed, 73 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml b/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
-> new file mode 100644
-> index 00000000..9286b82
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/power/supply/richtek,rt9471.yaml
-> @@ -0,0 +1,73 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/power/supply/richtek,rt9471.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Richtek RT9471 3A Single Cell Switching Battery charger
-> +
-> +maintainers:
-> +  - Alina Yu <alina_yu@richtek.com>
-> +  - ChiYuan Huang <cy_huang@richtek.com>
-> +
-> +description: |
-> +  RT9471 is a switch-mode single cell Li-Ion/Li-Polymer battery charger for
-> +  portable applications. It supports USB BC1.2 port detection, current and
-> +  voltage regulations in both charging and boost mode.
-> +
-> +  Datasheet is available at
-> +  https://www.richtek.com/assets/product_file/RT9471=RT9471D/DS9471D-02.pdf
-> +
-> +properties:
-> +  compatible:
-> +    const: richtek,rt9471
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  charge-enable-gpios:
-> +    description: GPIO used to turn on and off charging.
-> +    maxItems: 1
-> +
-> +  wakeup-source: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  usb-otg-vbus-regulator:
-> +    type: object
-> +    unevaluatedProperties: false
-> +    $ref: /schemas/regulator/regulator.yaml#
+Extend the existing test cases to test the conversion from XRGB8888 to
+XRGB2101010.
 
-ref goes before unevaluatedProperties (so one line up)
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+---
+ .../gpu/drm/tests/drm_format_helper_test.c    | 63 +++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-with above:
+diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
+index 08d08e7ab19a..d8536db4de1e 100644
+--- a/drivers/gpu/drm/tests/drm_format_helper_test.c
++++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
+@@ -32,6 +32,11 @@ struct convert_to_rgb888_result {
+ 	const u8 expected[TEST_BUF_SIZE];
+ };
+ 
++struct convert_to_xrgb2101010_result {
++	unsigned int dst_pitch;
++	const u32 expected[TEST_BUF_SIZE];
++};
++
+ struct convert_xrgb8888_case {
+ 	const char *name;
+ 	unsigned int pitch;
+@@ -40,6 +45,7 @@ struct convert_xrgb8888_case {
+ 	struct convert_to_rgb332_result rgb332_result;
+ 	struct convert_to_rgb565_result rgb565_result;
+ 	struct convert_to_rgb888_result rgb888_result;
++	struct convert_to_xrgb2101010_result xrgb2101010_result;
+ };
+ 
+ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+@@ -61,6 +67,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.dst_pitch = 0,
+ 			.expected = { 0x00, 0x00, 0xFF },
+ 		},
++		.xrgb2101010_result = {
++			.dst_pitch = 0,
++			.expected = { 0x3FF00000 },
++		},
+ 	},
+ 	{
+ 		.name = "single_pixel_clip_rectangle",
+@@ -83,6 +93,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 			.dst_pitch = 0,
+ 			.expected = { 0x00, 0x00, 0xFF },
+ 		},
++		.xrgb2101010_result = {
++			.dst_pitch = 0,
++			.expected = { 0x3FF00000 },
++		},
+ 	},
+ 	{
+ 		/* Well known colors: White, black, red, green, blue, magenta,
+@@ -132,6 +146,15 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+ 			},
+ 		},
++		.xrgb2101010_result = {
++			.dst_pitch = 0,
++			.expected = {
++				0x3FFFFFFF, 0x00000000,
++				0x3FF00000, 0x000FFC00,
++				0x000003FF, 0x3FF003FF,
++				0x3FFFFC00, 0x000FFFFF,
++			},
++		},
+ 	},
+ 	{
+ 		/* Randomly picked colors. Full buffer within the clip area. */
+@@ -175,6 +198,14 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
+ 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 			},
+ 		},
++		.xrgb2101010_result = {
++			.dst_pitch = 20,
++			.expected = {
++				0x03844672, 0x0444D414, 0x2A20300C, 0x00000000, 0x00000000,
++				0x1B1705CD, 0x03844672, 0x0444D414, 0x00000000, 0x00000000,
++				0x2A20300C, 0x1B1705CD, 0x03844672, 0x00000000, 0x00000000,
++			},
++		},
+ 	},
+ };
+ 
+@@ -319,10 +350,42 @@ static void xrgb8888_to_rgb888_test(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
+ }
+ 
++static void xrgb8888_to_xrgb2101010_test(struct kunit *test)
++{
++	const struct convert_xrgb8888_case *params = test->param_value;
++	const struct convert_to_xrgb2101010_result *result = &params->xrgb2101010_result;
++	size_t dst_size;
++	__u32 *buf = NULL;
++	__u32 *xrgb8888 = NULL;
++	struct iosys_map dst, src;
++
++	struct drm_framebuffer fb = {
++		.format = drm_format_info(DRM_FORMAT_XRGB8888),
++		.pitches = { params->pitch, 0, 0 },
++	};
++
++	dst_size = conversion_buf_size(DRM_FORMAT_XRGB2101010,
++				       result->dst_pitch, &params->clip);
++	KUNIT_ASSERT_GT(test, dst_size, 0);
++
++	buf = kunit_kzalloc(test, dst_size, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	iosys_map_set_vaddr(&dst, buf);
++
++	xrgb8888 = le32buf_to_cpu(test, params->xrgb8888, TEST_BUF_SIZE);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, xrgb8888);
++	iosys_map_set_vaddr(&src, xrgb8888);
++
++	drm_fb_xrgb8888_to_xrgb2101010(&dst, &result->dst_pitch, &src, &fb, &params->clip);
++	buf = le32buf_to_cpu(test, buf, TEST_BUF_SIZE);
++	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
++}
++
+ static struct kunit_case drm_format_helper_test_cases[] = {
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb332_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb565_test, convert_xrgb8888_gen_params),
+ 	KUNIT_CASE_PARAM(xrgb8888_to_rgb888_test, convert_xrgb8888_gen_params),
++	KUNIT_CASE_PARAM(xrgb8888_to_xrgb2101010_test, convert_xrgb8888_gen_params),
+ 	{}
+ };
+ 
+-- 
+2.25.1
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
