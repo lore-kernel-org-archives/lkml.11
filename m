@@ -2,110 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E070C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD16C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240142AbiHQR2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
+        id S241181AbiHQR3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 13:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiHQR2A (ORCPT
+        with ESMTP id S241106AbiHQR3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:28:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84FA0A1D24
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:27:58 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2BD711063;
-        Wed, 17 Aug 2022 10:27:59 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9159A3F66F;
-        Wed, 17 Aug 2022 10:27:57 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, cristian.marussi@arm.com
-Subject: [PATCH 6/6] [RFC] firmware: arm_scmi: Add SCMI PM driver remove routine
-Date:   Wed, 17 Aug 2022 18:27:31 +0100
-Message-Id: <20220817172731.1185305-7-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220817172731.1185305-1-cristian.marussi@arm.com>
-References: <20220817172731.1185305-1-cristian.marussi@arm.com>
+        Wed, 17 Aug 2022 13:29:32 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA5130;
+        Wed, 17 Aug 2022 10:29:32 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo2444640pjd.3;
+        Wed, 17 Aug 2022 10:29:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=aM3wrL4Fp4MEnHsKbqc+hHkzDolBQyAgPj8hCdYOSxg=;
+        b=Rhxe4k4xHun8nsdmCVCBrJmiv1l4fwnoMler6GOgLSgZz205jK5YZ/0nhz9K9Q27Gq
+         lHlRqEMXVGqq1eW0XXb46wbt7WWByYxxk9oPLrHAYwRGoCA9u80k5T2Yof6Euj9UupmT
+         oBy/pcebDpgXE657jRwmVGCJJL2dPEQh3jH6Btdz0fC6aKVEmkcIUTmSZxuu+WkoVg/n
+         HZC5ckQ/fB5V9tdRPDYlqbt4EhsN0ZQwxhR0j5R9e11bMHUwA2NIbRuT2fNqX2bNaWHc
+         UcTmZEri35uQf1op67DuNSUl3No4SAegUxO3t6ubxjH6AXLmUDew/F3g3xomqhpyXMT1
+         6+jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=aM3wrL4Fp4MEnHsKbqc+hHkzDolBQyAgPj8hCdYOSxg=;
+        b=0ClJKoLVCQWTInE85q0xx3yNeFFWImEo7IMzNm7gJBQjxC48F2vcYT9kO765Jw0Ork
+         EZ2uVxj5UK1uALz0uDSLPJaX8BzzMYWZPnLZ7GluJJ9mx1DRVJdJUgK0dpmGThPxGfRY
+         Q32YaPjA4uxV0ZDNG/LcWfQYqp32i3XaUvgfaf5jjKf0niptPNu69xIOgfWIMhNHEbOS
+         p57v2UpgwT7KKiL9wfpEb5RBQrg817gPpkhBbRrbqBQLvNd7NBC8aA6jx/PFkMca/RjO
+         rrbJ0Ab4jJEJ2Zx9r9JTO3cQMQ+xsViaGr0QdaxTv3D05vojJDY/EWhm130u06cy9xTI
+         w/hQ==
+X-Gm-Message-State: ACgBeo0qTeExYI1Ma51Y2SZRmDpzIxJJHyeZqZH3I5kQTOe0M5xTZQqB
+        u8qkN6hvbuN9hcK8EYtJi2I=
+X-Google-Smtp-Source: AA6agR63sQa3hgQVIDCnk8BJZi1Azr3oDTU0znMG3TzLEJCrYfTIX+5H+FG+ik/fWHtXQGSIQY3dRg==
+X-Received: by 2002:a17:90b:380b:b0:1fa:b6a7:87d7 with SMTP id mq11-20020a17090b380b00b001fab6a787d7mr3628620pjb.111.1660757371866;
+        Wed, 17 Aug 2022 10:29:31 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id c7-20020aa79527000000b0052dd7d0ad02sm10747149pfp.162.2022.08.17.10.29.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 10:29:31 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 11:08:26 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <Yvt6nxUYMfDrLd/A@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <20220817025250-mutt-send-email-mst@kernel.org>
+ <YvtmYpMieMFb80qR@bullseye>
+ <20220817130044-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817130044-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, when removing the SCMI PM driver not all the resources
-registered with GenPD subsystem are currently properly de-registered.
+On Wed, Aug 17, 2022 at 01:02:52PM -0400, Michael S. Tsirkin wrote:
+> On Tue, Aug 16, 2022 at 09:42:51AM +0000, Bobby Eshleman wrote:
+> > > The basic question to answer then is this: with a net device qdisc
+> > > etc in the picture, how is this different from virtio net then?
+> > > Why do you still want to use vsock?
+> > > 
+> > 
+> > When using virtio-net, users looking for inter-VM communication are
+> > required to setup bridges, TAPs, allocate IP addresses or setup DNS,
+> > etc... and then finally when you have a network, you can open a socket
+> > on an IP address and port. This is the configuration that vsock avoids.
+> > For vsock, we just need a CID and a port, but no network configuration.
+> 
+> Surely when you mention DNS you are going overboard? vsock doesn't
+> remove the need for DNS as much as it does not support it.
+> 
 
-As a side effect of this after a driver unload/load cycle you get a splat
-with a few warnings like this:
-
-debugfs: Directory 'BIG_CPU0' with parent 'pm_genpd' already present!
-debugfs: Directory 'BIG_CPU1' with parent 'pm_genpd' already present!
-debugfs: Directory 'LITTLE_CPU0' with parent 'pm_genpd' already present!
-debugfs: Directory 'LITTLE_CPU1' with parent 'pm_genpd' already present!
-debugfs: Directory 'LITTLE_CPU2' with parent 'pm_genpd' already present!
-debugfs: Directory 'LITTLE_CPU3' with parent 'pm_genpd' already present!
-debugfs: Directory 'BIG_SSTOP' with parent 'pm_genpd' already present!
-debugfs: Directory 'LITTLE_SSTOP' with parent 'pm_genpd' already present!
-debugfs: Directory 'DBGSYS' with parent 'pm_genpd' already present!
-debugfs: Directory 'GPUTOP' with parent 'pm_genpd' already present!
-
-Add a proper scmi_pm_domain_remove callback to the driver in order to
-take care of all the needed cleanups not handled already by devres.
-
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
-The patch is marked as RFC since this solution can be controversial: what
-about any 3rd party consumer of the above unregistered genpd domain ?
-Should we even ever allow a PM driver like to be unloaded ?
----
- drivers/firmware/arm_scmi/scmi_pm_domain.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/firmware/arm_scmi/scmi_pm_domain.c b/drivers/firmware/arm_scmi/scmi_pm_domain.c
-index 581d34c95769..4e27c3d66a83 100644
---- a/drivers/firmware/arm_scmi/scmi_pm_domain.c
-+++ b/drivers/firmware/arm_scmi/scmi_pm_domain.c
-@@ -138,9 +138,28 @@ static int scmi_pm_domain_probe(struct scmi_device *sdev)
- 	scmi_pd_data->domains = domains;
- 	scmi_pd_data->num_domains = num_domains;
- 
-+	dev_set_drvdata(dev, scmi_pd_data);
-+
- 	return of_genpd_add_provider_onecell(np, scmi_pd_data);
- }
- 
-+static void scmi_pm_domain_remove(struct scmi_device *sdev)
-+{
-+	int i;
-+	struct genpd_onecell_data *scmi_pd_data;
-+	struct device *dev = &sdev->dev;
-+	struct device_node *np = dev->of_node;
-+
-+	of_genpd_del_provider(np);
-+
-+	scmi_pd_data = dev_get_drvdata(dev);
-+	for (i = 0; i < scmi_pd_data->num_domains; i++) {
-+		if (!scmi_pd_data->domains[i])
-+			continue;
-+		pm_genpd_remove(scmi_pd_data->domains[i]);
-+	}
-+}
-+
- static const struct scmi_device_id scmi_id_table[] = {
- 	{ SCMI_PROTOCOL_POWER, "genpd" },
- 	{ },
-@@ -150,6 +169,7 @@ MODULE_DEVICE_TABLE(scmi, scmi_id_table);
- static struct scmi_driver scmi_power_domain_driver = {
- 	.name = "scmi-power-domain",
- 	.probe = scmi_pm_domain_probe,
-+	.remove = scmi_pm_domain_remove,
- 	.id_table = scmi_id_table,
- };
- module_scmi_driver(scmi_power_domain_driver);
--- 
-2.32.0
-
+Oops, s/DNS/dhcp.
