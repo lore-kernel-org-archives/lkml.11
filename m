@@ -2,129 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FE3C32773
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EA8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235342AbiHPL6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S235339AbiHPMAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235228AbiHPL6f (ORCPT
+        with ESMTP id S235248AbiHPL7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:58:35 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB67463FA;
-        Tue, 16 Aug 2022 04:41:25 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id o3so8965054ple.5;
-        Tue, 16 Aug 2022 04:41:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=le3D/RH71t/xaxQ2Z6ZJvv8lT0hPbLZVdlFrqGmRQGg=;
-        b=YnZbjN1RZaXqUIf35wPu+I84CN3S2qMtNQp+qYVDDPJi+hiHZsKhpi+8DNbLIpYQ/U
-         iLZqr4qOGXIbRx3clw5Sz3lRSPDZeVpmRlOw7r6Ps7hEZ9NKJi0bKUFpJEKHp6qiVb49
-         axzMSn1yjFTyTBkOdc2+UVTk5Gz92mWCnld/YL5u4vKyzYtkRVPNhNr9UzUkvIN7Ycqq
-         ISDPd3H5PRH73JD8rYVifp3jUwMwynp4EatOiyPX92/eU03i+3sLgPA8OcVQNgEgxJAO
-         DeaKhYiE4vodkvHYnokp/nd2fgG2yJ5+0q+AxLEyKWCMeoAvbJQ9slN5Y8y9mtniDfML
-         1fog==
+        Tue, 16 Aug 2022 07:59:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB1F8D3CF
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660650294;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fQ9c/pAyzSt4qpyyd5v9AYo0Di39q7g2yKh2Xw+LqgM=;
+        b=PrWzTD7brl3qR4pOu8l3l9S+yCeKm5bjRUWq16wajjcZ5eHbrAtCEOI/UQzAxQ8sid+s5N
+        aXrxgcXYQ8f1oZXofvSYuHLET5INgExQZ0tONnElwOtdZ2BHHZFDZ3jutrndPQoY6w69zU
+        a6qi9Yks+5wsAf1ycih6Vzfl9J01cfo=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-607-X3Cfs1kSNzy0ZWwHP9Ge_g-1; Tue, 16 Aug 2022 07:44:53 -0400
+X-MC-Unique: X3Cfs1kSNzy0ZWwHP9Ge_g-1
+Received: by mail-qt1-f198.google.com with SMTP id v13-20020a05622a188d00b00343794bd1daso8248588qtc.23
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:44:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=le3D/RH71t/xaxQ2Z6ZJvv8lT0hPbLZVdlFrqGmRQGg=;
-        b=lIGP3t18wIpv0otvTutwHMHL/CaV9RmswPgxThz8vCnQrPKUL4RLUVUReglRryIN4M
-         efZNmIHANycfzJqR6v8tfHJejsk9qqkf8bNrFDRYr60sh9dOyxh89JXz+ubf90vorBsn
-         cNC4vdfgYdVNUtbWO8xHF3O2nfIX8KGIV7+ul+ORl/HR3pBhsFrLmztg8IJZUAj7hrP4
-         IUwi3v+3Co/9Ht99WtGVN/5fozEsAEt+SpSKKP5+vRQAeQRIjwkc/lD3wO2Czm6kGbxg
-         vWH3PQyLF59xTtPcUctI0Nat4mmHnShUx3A27hQPc9OCHdV7w7zL3YoQAlv/NWS+pFBv
-         nDDQ==
-X-Gm-Message-State: ACgBeo3YcptmC/p3GY7TL1057S84vo6S/2frR1DjcFi5JW7x7hQUQ7k5
-        ZUm3DZFf48mDlKmnp8vk6hg=
-X-Google-Smtp-Source: AA6agR4CDVeIyuKHv7tHJzl91RfqSAn9IDnoWiEbo2XkapmFReGZW1dm49IDKOe1xagDOwPpCAgruw==
-X-Received: by 2002:a17:903:18a:b0:16f:e43:efdf with SMTP id z10-20020a170903018a00b0016f0e43efdfmr21243764plg.157.1660650085312;
-        Tue, 16 Aug 2022 04:41:25 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id im9-20020a170902bb0900b001725a63746dsm6648688plb.186.2022.08.16.04.41.17
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=fQ9c/pAyzSt4qpyyd5v9AYo0Di39q7g2yKh2Xw+LqgM=;
+        b=es41EOw+Fm7whCXWvhfwcs3m3t4sF7E7UfQuH03I64lvA4qIwubh7DJ4NESIpowVU+
+         KFHiOV9BNjn3VuvYFELudJCm8Qrhr0Kf0SiuuWVLU9Nw7WGPdONkZ+9bz1TxfT0j6T3u
+         T4KlVBYE1MpsvshvjVQtv2uV1HuUo3AqjggNYhyV0XRVzt8OBQ8Lht54pr3ABrxPIUmC
+         VtrFckoDUEDs1ZYqRrW4ZJboQJgzyPjaweblOB12eprTGPmjB2lnbJX4wWV7w6CyXrPy
+         un330oRTyWbWC6Ymi787bTAxJC90sY8ugjygGt5vYXZOjsQl322v5kNibbBcHRb73VDd
+         kUig==
+X-Gm-Message-State: ACgBeo1qGRg3F8Mw4nRMmNMvi/2a8XUu+6rG68dRvDAclTeQVsbwR7me
+        bw8lJBmwL0vYhZE0hnioeZAyQeO42w61wAe48epcXi74MS2E5Y5BimOyThlSkUhEvHzRN9bOrm8
+        5kAfIXnJ1j8HeQaisE4juYgQT
+X-Received: by 2002:a05:6214:21e2:b0:494:6076:123c with SMTP id p2-20020a05621421e200b004946076123cmr2297500qvj.104.1660650292234;
+        Tue, 16 Aug 2022 04:44:52 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6Kt/qyNZF6Bq4BTj6XTzy+BD4XG/UT+zur69lk4/rmyVzpi62jIFxDy1PeFaQrLE+KMaM8MA==
+X-Received: by 2002:a05:6214:21e2:b0:494:6076:123c with SMTP id p2-20020a05621421e200b004946076123cmr2297486qvj.104.1660650291968;
+        Tue, 16 Aug 2022 04:44:51 -0700 (PDT)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id bs18-20020a05620a471200b006b5905999easm7361880qkb.121.2022.08.16.04.44.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 04:41:24 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Kan Liang <kan.liang@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, x86@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] perf/x86/core: Set pebs_capable and PMU_FL_PEBS_ALL for the Baseline
-Date:   Tue, 16 Aug 2022 19:40:57 +0800
-Message-Id: <20220816114057.51307-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.37.2
+        Tue, 16 Aug 2022 04:44:51 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 07:44:48 -0400
+From:   Brian Foster <bfoster@redhat.com>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] proc: save LOC in vsyscall test
+Message-ID: <YvuDMGHcNtjhhMuq@bfoster>
+References: <YvoWzAn5dlhF75xa@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvoWzAn5dlhF75xa@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+On Mon, Aug 15, 2022 at 12:50:04PM +0300, Alexey Dobriyan wrote:
+> From: Brian Foster <bfoster@redhat.com>
+> 
+> Do one fork in vsyscall detection code and let SIGSEGV handler exit and
+> carry information to the parent saving LOC.
+> 
+> 	[
+> 		redo original patch,
+> 		delete unnecessary variables,
+> 		minimise code changes.
+> 					--adobriyan
+> 	]
+> 
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> ---
 
-The SDM explicitly states that PEBS Baseline implies Extended PEBS.
-For cpu model forward compatibility (e.g. on ICX, SPR, ADL), it's
-safe to stop doing FMS table thing such as setting pebs_capable and
-PMU_FL_PEBS_ALL since it's already set in the intel_ds_init().
+LGTM and passes my quick tests, thanks!
 
-The Goldmont Plus is the only platform which supports extended PEBS
-but doesn't have Baseline. Keep the status quo.
+FWIW:
 
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Reported-by: Like Xu <likexu@tencent.com>
-Signed-off-by: Peter Zijlstra <peterz@infradead.org>
----
- arch/x86/events/intel/core.c | 4 ----
- arch/x86/events/intel/ds.c   | 1 +
- 2 files changed, 1 insertion(+), 4 deletions(-)
+Reviewed-by: Brian Foster <bfoster@redhat.com>
 
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 2db93498ff71..cb98a05ee743 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6291,10 +6291,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.pebs_aliases = NULL;
- 		x86_pmu.pebs_prec_dist = true;
- 		x86_pmu.pebs_block = true;
--		x86_pmu.pebs_capable = ~0ULL;
- 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
- 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
--		x86_pmu.flags |= PMU_FL_PEBS_ALL;
- 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
- 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
- 
-@@ -6337,10 +6335,8 @@ __init int intel_pmu_init(void)
- 		x86_pmu.pebs_aliases = NULL;
- 		x86_pmu.pebs_prec_dist = true;
- 		x86_pmu.pebs_block = true;
--		x86_pmu.pebs_capable = ~0ULL;
- 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
- 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
--		x86_pmu.flags |= PMU_FL_PEBS_ALL;
- 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
- 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
- 		x86_pmu.lbr_pt_coexist = true;
-diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index ba60427caa6d..ac6dd4c96dbc 100644
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -2262,6 +2262,7 @@ void __init intel_ds_init(void)
- 					PERF_SAMPLE_BRANCH_STACK |
- 					PERF_SAMPLE_TIME;
- 				x86_pmu.flags |= PMU_FL_PEBS_ALL;
-+				x86_pmu.pebs_capable = ~0ULL;
- 				pebs_qual = "-baseline";
- 				x86_get_pmu(smp_processor_id())->capabilities |= PERF_PMU_CAP_EXTENDED_REGS;
- 			} else {
--- 
-2.37.2
+> 
+>  tools/testing/selftests/proc/proc-pid-vm.c |   56 ++++++++---------------------
+>  1 file changed, 16 insertions(+), 40 deletions(-)
+> 
+> --- a/tools/testing/selftests/proc/proc-pid-vm.c
+> +++ b/tools/testing/selftests/proc/proc-pid-vm.c
+> @@ -213,22 +213,22 @@ static int make_exe(const uint8_t *payload, size_t len)
+>  
+>  /*
+>   * 0: vsyscall VMA doesn't exist	vsyscall=none
+> - * 1: vsyscall VMA is r-xp		vsyscall=emulate
+> - * 2: vsyscall VMA is --xp		vsyscall=xonly
+> + * 1: vsyscall VMA is --xp		vsyscall=xonly
+> + * 2: vsyscall VMA is r-xp		vsyscall=emulate
+>   */
+> -static int g_vsyscall;
+> +static volatile int g_vsyscall;
+>  static const char *str_vsyscall;
+>  
+>  static const char str_vsyscall_0[] = "";
+>  static const char str_vsyscall_1[] =
+> -"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n";
+> -static const char str_vsyscall_2[] =
+>  "ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]\n";
+> +static const char str_vsyscall_2[] =
+> +"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n";
+>  
+>  #ifdef __x86_64__
+>  static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
+>  {
+> -	_exit(1);
+> +	_exit(g_vsyscall);
+>  }
+>  
+>  /*
+> @@ -255,6 +255,7 @@ static void vsyscall(void)
+>  		act.sa_sigaction = sigaction_SIGSEGV;
+>  		(void)sigaction(SIGSEGV, &act, NULL);
+>  
+> +		g_vsyscall = 0;
+>  		/* gettimeofday(NULL, NULL); */
+>  		asm volatile (
+>  			"call %P0"
+> @@ -262,45 +263,20 @@ static void vsyscall(void)
+>  			: "i" (0xffffffffff600000), "D" (NULL), "S" (NULL)
+>  			: "rax", "rcx", "r11"
+>  		);
+> -		exit(0);
+> -	}
+> -	waitpid(pid, &wstatus, 0);
+> -	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
+> -		/* vsyscall page exists and is executable. */
+> -	} else {
+> -		/* vsyscall page doesn't exist. */
+> -		g_vsyscall = 0;
+> -		return;
+> -	}
+> -
+> -	pid = fork();
+> -	if (pid < 0) {
+> -		fprintf(stderr, "fork, errno %d\n", errno);
+> -		exit(1);
+> -	}
+> -	if (pid == 0) {
+> -		struct rlimit rlim = {0, 0};
+> -		(void)setrlimit(RLIMIT_CORE, &rlim);
+> -
+> -		/* Hide "segfault at ffffffffff600000" messages. */
+> -		struct sigaction act;
+> -		memset(&act, 0, sizeof(struct sigaction));
+> -		act.sa_flags = SA_SIGINFO;
+> -		act.sa_sigaction = sigaction_SIGSEGV;
+> -		(void)sigaction(SIGSEGV, &act, NULL);
+>  
+> +		g_vsyscall = 1;
+>  		*(volatile int *)0xffffffffff600000UL;
+> -		exit(0);
+> +
+> +		g_vsyscall = 2;
+> +		exit(g_vsyscall);
+>  	}
+>  	waitpid(pid, &wstatus, 0);
+> -	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
+> -		/* vsyscall page is readable and executable. */
+> -		g_vsyscall = 1;
+> -		return;
+> +	if (WIFEXITED(wstatus)) {
+> +		g_vsyscall = WEXITSTATUS(wstatus);
+> +	} else {
+> +		fprintf(stderr, "error: wstatus %08x\n", wstatus);
+> +		exit(1);
+>  	}
+> -
+> -	/* vsyscall page is executable but unreadable. */
+> -	g_vsyscall = 2;
+>  }
+>  
+>  int main(void)
+> 
 
