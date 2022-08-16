@@ -2,147 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92052C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 169E0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235357AbiHPMGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
+        id S234031AbiHPMHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235386AbiHPMF4 (ORCPT
+        with ESMTP id S235428AbiHPMGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:05:56 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2040.outbound.protection.outlook.com [40.107.93.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CD53AB0D;
-        Tue, 16 Aug 2022 04:55:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XEFvWkS1LB+QmpTCq7ckSIF4fFx3HYiYPyN4s/aRdIX3zRA34FYX1extdF61LKXPSy4+JO4BR5ORt3t5YX3UfpS9uKIkqIqzmsmVd0tY5UyP3bNjQUR0Eqv+FMiWUw2DyMj4DDt81cFBSFDDx5R3ZRXjgOAxOJgmFutkXVdD7j78Mnkuw/qU/HakbHtmUq9B52j0VXid9nQHB1VIDHaq+ejgLIMvrrlQrkqx2+MrqFkqsz2cT7g6sQGHGc/QoN37WaZEK4ofvsPeYRd0FlnEbPr5ubEBjtmmPKoocLWTBN0kDXwl4X0+vOlLFeIOj7SrIoTgzXrMZftSD9V4mmwufQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bn5tMllLEJap3DJ5krVzBZpmh/y+vz987PbXvJqPy1A=;
- b=jN8WOAu+OnW7MBVF5UAYkAk6B461uMnGVFxA8pJyMjB27FiZQA0ndIwZe4q3tYwo+0aPa3AwZ2H9OPOzUY8HdVVUfdb8TZC80R6wRsQdsXWWge16UijgjUQ2e/PtiazarmSR7LZzChlyxTqh9AzO2EqgdrWV7srnNhTsQGZ2cUREhyGUSY7KT7e1hdubdHr7XGfPZ6y90Qlf5ZGShw1J8feuxeJgdcUeViE9KXjdTpQMJd+lP7lnY+es6gZpRGS9Qu15ugF8JirEzzK7xVD8WaC1VKH8Zu0y4sL1Hca/VhR3AXVPRWlFRgCcdB7MHVYLKU53RTRXEOLf32OrVL9YnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bn5tMllLEJap3DJ5krVzBZpmh/y+vz987PbXvJqPy1A=;
- b=HLaZF0/yfjj6DvikU9Q7L0fyiqWUNYShuKkA3STWvPkVz8foHCp06TZtiBjOYqpuOtBGu6HSQfHkgM9R306gYIgeurOv+DeWk+A9aKS4CoZDOnYrRWw7veeduyXnXTHBIx3rOuvEEZzuobarxH5TGOzfTYZZAdT9SxGOMe4CSas=
-Received: from MW4PR03CA0052.namprd03.prod.outlook.com (2603:10b6:303:8e::27)
- by DM6PR12MB2780.namprd12.prod.outlook.com (2603:10b6:5:4e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Tue, 16 Aug
- 2022 11:55:42 +0000
-Received: from CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::8c) by MW4PR03CA0052.outlook.office365.com
- (2603:10b6:303:8e::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
- Transport; Tue, 16 Aug 2022 11:55:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT113.mail.protection.outlook.com (10.13.174.180) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5546.7 via Frontend Transport; Tue, 16 Aug 2022 11:55:41 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 16 Aug
- 2022 06:55:36 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 16 Aug
- 2022 04:55:17 -0700
-Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 16 Aug 2022 06:55:12 -0500
-From:   Harini Katakam <harini.katakam@amd.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
-        <andrei.pistirica@microchip.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@xilinx.com>, <michal.simek@amd.com>,
-        <harini.katakam@amd.com>, <radhey.shyam.pandey@amd.com>
-Subject: [RESEND PATCH 2/2] net: macb: Optimize reading HW timestamp
-Date:   Tue, 16 Aug 2022 17:25:00 +0530
-Message-ID: <20220816115500.353-3-harini.katakam@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220816115500.353-1-harini.katakam@amd.com>
-References: <20220816115500.353-1-harini.katakam@amd.com>
+        Tue, 16 Aug 2022 08:06:01 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE3543E5C;
+        Tue, 16 Aug 2022 04:55:57 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-33365a01f29so46412917b3.2;
+        Tue, 16 Aug 2022 04:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=K+jKTxBtB34dJbEeQDbAxdx9y/8BOn6K6NiBKXkNSVQ=;
+        b=o9+6ql53h7uy/TYpb8mAW8Nhsf6CLUGjMKHyid3Bqdn4TDFlc0VpOY/d1KYEEnJ22a
+         Tgm6xuvgbllhDhcvLDN+ekMf8v15llZcO5/joI0N1Mqtgr6eHuwfTgUzvSBV4OPeU8lN
+         Xlv6m3+v7/aqDBzQA+vQY0XQUoShw/pX9wTy+cgFj+01FuaG579QdXKP8s8A4hlb86MH
+         MjHJiuOjiXhY4ZjRbjwr/CNYohLyUZZ8NSPssGtVl/OuNhSSG903A5g/f/0zkNyDLOXM
+         SUhjncRSMZ2ycNinknzSGAZoaSJrpXUDw6ekexqfZrNxrQJ8sniadn61y0YncElPyno0
+         SqeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=K+jKTxBtB34dJbEeQDbAxdx9y/8BOn6K6NiBKXkNSVQ=;
+        b=u7QJiGCoEfGk9bppB++QnziC6wkrb2j8Syr8ACrEy/mNoHQOLGOL84dgx44iHBvJPZ
+         xjWg603Oi9zx9hS+XPXmA7VcXXEIe7gxWZ0BF+koPBk3TwwRzOgUSNjdp6LMbMi/4/ZN
+         a5izSYstF9OHzaWlf5hHUQAP+oLukG9wWtmWDbbLmzjtmGhGVh4E+x7/e/Zoefa8oCDE
+         DyBwzWfi+jge+ttlf4q8q1hR2kFfRFicDIwWYdB7HC/brBekyY8XkgABD+hc5WwjcOIG
+         zw94DE+/A0r/rUqYID/h+RcDskRYb//drQyHe6U/GDPqiqEyHo6hMS7zxroy3CMPamUk
+         KF2A==
+X-Gm-Message-State: ACgBeo2/cv+BmTs0zfDuIsPp9pQjFKLH/DjdVydRi4C/mrgLygyVfAbe
+        pLr4Gvnf1OfKe1FUPFgl9GozxUspaCJ82hQeClY=
+X-Google-Smtp-Source: AA6agR42kEOgRrV4vDCgdX8LJvJQNFONTnVrlZf/JvUgdjBz5PMSCW22zmNspocNMjZS+tPUfL0VJqTar/NpKOsQMcs=
+X-Received: by 2002:a5b:845:0:b0:683:6ed7:b3b6 with SMTP id
+ v5-20020a5b0845000000b006836ed7b3b6mr13278868ybq.183.1660650956514; Tue, 16
+ Aug 2022 04:55:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5a1abbe3-5902-4e39-610d-08da7f7e3eb0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2780:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: liA/lHzjktWRNe1esJqHkgT5/NKKBBmJyKR5lCKPmJpFOzVFHq2baYLUMciNCoeNcRox6piKjpXZ/GB6udH9oq1q4UF23coHEbQnXJHRCEyR/NMCuACTvwk43bYcGBO1OLimhUeJX6QU6utH8yKg33DTzzZIlBExH4B+N+uD/C0dPM2qLwZxrsJeIm3vrIL/zlcZnAJwAoaGOelFv7Jf9ppP6D0grIKcdAnacsnzjATwrXDVTZmUKkJbPProIRkR5+ZkceFR6xAN1uRPhSkwJDCzSogD5HJPu6PUCc3Tv/CLQ1Qfv41XL3EieQqwGWs7LJug6VueJt28WmjIsfnKN8TRSG+PilKH1Jm69Yfb1vAtmaAlP04Np4OOLD1PsxScecou4QtiLrmMVGt9t66asBnX7CCGtHjLd3a/pHc/sfBKq+Tzr1pzfdvdX2eBSnFOGu4N2rfGDW4477rvU1p6LViNcfidC7N+lNqumgCWE4GDC+82c+fwQneP2Gid3tKemYcsTmMG1hSO8RDyXDWpkASW6x7SrYpAACGXnTcozUBfac8nps24azA03twxIYJq6oWYco3fzhNtwieyfV14FG3yyqkhyi+0vJJtB85DH+1yJBgkqjl5YfKizHEWCICWDUInG8Dm4nEPldGgRZQnCQxayRxP2NXJXsteXByM1Y1tPRlnagXxtWpTgBv3BG9Tto869HqgY2kBNqcvs8SDrYdPh5makk0qmw7r9nRf6iSPW2dy2UtgRpTSzN+FvPZOUYlwMrDbyoKN+ZL3HPjMl79HktLlU36wWc0f5xV4Z1gwNPvNz7x4uyEz2nSw460nlgaF95JmWdWbxd6m/946hQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(396003)(46966006)(36840700001)(40470700004)(110136005)(54906003)(26005)(426003)(41300700001)(1076003)(6666004)(83380400001)(8936002)(316002)(36756003)(336012)(70586007)(70206006)(4326008)(8676002)(186003)(2906002)(82310400005)(356005)(40480700001)(7416002)(40460700003)(82740400003)(36860700001)(44832011)(5660300002)(47076005)(2616005)(478600001)(86362001)(81166007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 11:55:41.8981
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a1abbe3-5902-4e39-610d-08da7f7e3eb0
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2780
+References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Tue, 16 Aug 2022 12:55:20 +0100
+Message-ID: <CADVatmMw55_ZsfYbyrZL9vdfkCLsmkVS2+gZ1Ljp8BmVz7u4DA@mail.gmail.com>
+Subject: Re: [PATCH 5.18 0000/1095] 5.18.18-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harini Katakam <harini.katakam@xilinx.com>
+Hi Greg,
 
-The seconds input from BD (6 bits) just needs to be ORed with the
-upper bits from timer in this function. Avoid +/- operations every
-single time. Check for seconds rollover at BIT 5 and subtract the
-overhead only in that case.
+On Mon, Aug 15, 2022 at 7:55 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.18.18 release.
+> There are 1095 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> Anything received after that time might be too late.
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
- drivers/net/ethernet/cadence/macb_ptp.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Both v5.18.18-rc1 and v5.15.61-rc1 has hung task in RPI4B causing a
+huge delay in bootup.
 
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index e6cb20aaa76a..674002661366 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -247,6 +247,7 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 			    u32 dma_desc_ts_2, struct timespec64 *ts)
- {
- 	struct timespec64 tsu;
-+	bool sec_rollover = false;
- 
- 	ts->tv_sec = (GEM_BFEXT(DMA_SECH, dma_desc_ts_2) << GEM_DMA_SECL_SIZE) |
- 			GEM_BFEXT(DMA_SECL, dma_desc_ts_1);
-@@ -264,9 +265,12 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 	 */
- 	if ((ts->tv_sec & (GEM_DMA_SEC_TOP >> 1)) &&
- 	    !(tsu.tv_sec & (GEM_DMA_SEC_TOP >> 1)))
--		ts->tv_sec -= GEM_DMA_SEC_TOP;
-+		sec_rollover = true;
-+
-+	ts->tv_sec |= ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
- 
--	ts->tv_sec += ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
-+	if (sec_rollover)
-+		ts->tv_sec -= GEM_DMA_SEC_TOP;
- 
- 	return 0;
- }
+This is from  v5.18.18-rc1.
+[  846.815074] INFO: task systemd-udevd:192 blocked for more than 724 seconds.
+[  846.822452]       Tainted: G        WC        5.18.18-rc1 #1
+[  846.828961] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+disables this message.
+[  846.837557] task:systemd-udevd   state:D stack:    0 pid:  192
+ppid:   177 flags:0x00000009
+[  846.837582] Call trace:
+[  846.837589]  __switch_to+0xf8/0x150
+[  846.837611]  __schedule+0x3cc/0xa0c
+[  846.837623]  schedule+0x68/0x104
+[  846.837634]  schedule_preempt_disabled+0x30/0x4c
+[  846.837646]  __mutex_lock.constprop.0+0x168/0x55c
+[  846.837658]  __mutex_lock_slowpath+0x1c/0x30
+[  846.837669]  mutex_lock+0x50/0x60
+[  846.837680]  usb_udc_uevent+0x58/0xf0 [udc_core]
+[  846.837718]  dev_uevent+0x134/0x2e0
+[  846.837732]  kobject_uevent_env+0x298/0x764
+[  846.837744]  kobject_uevent+0x14/0x20
+[  846.837753]  device_add+0x398/0x8a0
+[  846.837764]  usb_add_gadget+0x110/0x1bc [udc_core]
+[  846.837791]  usb_add_gadget_udc+0x7c/0xc0 [udc_core]
+[  846.837817]  dwc2_driver_probe+0x5e0/0x7a0 [dwc2]
+[  846.837869]  platform_probe+0x74/0xd0
+[  846.837880]  really_probe+0x180/0x3cc
+[  846.837893]  __driver_probe_device+0x11c/0x190
+[  846.837905]  driver_probe_device+0x44/0xf4
+[  846.837917]  __driver_attach+0xd8/0x1b0
+[  846.837930]  bus_for_each_dev+0x7c/0xe0
+[  846.837941]  driver_attach+0x30/0x40
+[  846.837953]  bus_add_driver+0x154/0x240
+[  846.837964]  driver_register+0x84/0x140
+[  846.837977]  __platform_driver_register+0x34/0x40
+[  846.837987]  dwc2_platform_driver_init+0x2c/0x1000 [dwc2]
+[  846.838035]  do_one_initcall+0x50/0x2c0
+[  846.838047]  do_init_module+0x50/0x260
+[  846.838061]  load_module+0x2298/0x2720
+[  846.838074]  __do_sys_finit_module+0xac/0x12c
+[  846.838087]  __arm64_sys_finit_module+0x2c/0x40
+[  846.838099]  invoke_syscall+0x50/0x120
+[  846.838113]  el0_svc_common.constprop.0+0x6c/0x1a0
+[  846.838126]  do_el0_svc+0x30/0x90
+[  846.838138]  el0_svc+0x30/0xd0
+[  846.838147]  el0t_64_sync_handler+0x10c/0x140
+[  846.838158]  el0t_64_sync+0x1a0/0x1a4
+[  846.838179] INFO: task udevadm:964 blocked for more than 362 seconds.
+[  846.845473]       Tainted: G        WC        5.18.18-rc1 #1
+[  846.851891] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+disables this message.
+[  846.860543] task:udevadm         state:D stack:    0 pid:  964
+ppid:     1 flags:0x00000000
+[  846.860555] Call trace:
+[  846.860560]  __switch_to+0xf8/0x150
+[  846.860569]  __schedule+0x3cc/0xa0c
+[  846.860576]  schedule+0x68/0x104
+[  846.860582]  schedule_preempt_disabled+0x30/0x4c
+[  846.860589]  __mutex_lock.constprop.0+0x168/0x55c
+[  846.860596]  __mutex_lock_slowpath+0x1c/0x30
+[  846.860603]  mutex_lock+0x50/0x60
+[  846.860610]  usb_udc_uevent+0x58/0xf0 [udc_core]
+[  846.860629]  dev_uevent+0x134/0x2e0
+[  846.860637]  uevent_show+0x98/0x124
+[  846.860643]  dev_attr_show+0x2c/0x6c
+[  846.860649]  sysfs_kf_seq_show+0x98/0x110
+[  846.860656]  kernfs_seq_show+0x38/0x44
+[  846.860664]  seq_read_iter+0x170/0x48c
+[  846.860674]  kernfs_fop_read_iter+0x198/0x1d4
+[  846.860681]  new_sync_read+0xd8/0x15c
+[  846.860689]  vfs_read+0x19c/0x1e4
+[  846.860697]  ksys_read+0x78/0x110
+[  846.860704]  __arm64_sys_read+0x28/0x34
+[  846.860711]  invoke_syscall+0x50/0x120
+[  846.860719]  el0_svc_common.constprop.0+0x6c/0x1a0
+[  846.860727]  do_el0_svc+0x30/0x90
+[  846.860734]  el0_svc+0x30/0xd0
+[  846.860740]  el0t_64_sync_handler+0x10c/0x140
+[  846.860746]  el0t_64_sync+0x1a0/0x1a4
+
+Apart from the call trace from the hung task I can also see another warning.
+
+[   14.841402] ------------[ cut here ]------------
+[   14.845855] Bluetooth: HCI UART protocol ATH3K registered
+[   14.851200] WARNING: CPU: 0 PID: 184 at
+drivers/gpu/drm/vc4/vc4_hdmi_regs.h:450 vc5_hdmi_reset+0x1f4/0x234
+[vc4]
+[   14.867061] Bluetooth: HCI UART protocol Three-wire (H5) registered
+[   14.876900] Modules linked in: brcmfmac(+) hci_uart(+) brcmutil
+btqca bcm2835_v4l2(C) btrtl btbcm btintel bcm2835_mmal_vchiq(C)
+videobuf2_vmalloc vc4(+) raspberrypi_hwmon cfg80211 cec
+videobuf2_memops videobuf2_v4l2 drm_cma_helper videobuf2_common
+bluetooth xhci_pci(+) drm_kms_helper drm dwc2(+) udc_core ecdh_generic
+snd_soc_core snd_bcm2835(C) i2c_brcmstb roles videodev ecc ac97_bus
+snd_pcm_dmaengine snd_pcm pwm_bcm2835 mc snd_timer xhci_pci_renesas
+snd fb_sys_fops syscopyarea sysfillrect crct10dif_ce phy_generic
+uio_pdrv_genirq sysimgblt uio aes_neon_bs aes_neon_blk
+[   14.934380] CPU: 0 PID: 184 Comm: systemd-udevd Tainted: G
+C        5.18.18-rc1 #1
+[   14.942761] Hardware name: Raspberry Pi 4 Model B (DT)
+[   14.947969] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   14.955031] pc : vc5_hdmi_reset+0x1f4/0x234 [vc4]
+[   14.959837] lr : vc5_hdmi_reset+0x38/0x234 [vc4]
+[   14.964548] sp : ffff80000a7b3640
+[   14.967902] x29: ffff80000a7b3640 x28: 0000000000000000 x27: ffff000056c35080
+[   14.975140] x26: ffff80000136db78 x25: ffff80000136e078 x24: 0000000000000000
+[   14.976233] Bluetooth: HCI UART protocol Intel registered
+[   14.982376] x23: ffff000058479000 x22: ffff0000fb836da0 x21: ffff000056c35c90
+[   14.982383] x20: 0000000000000000 x19: ffff000056c35080 x18: 0000000000000014
+[   14.982389] x17: 00000000f19a3ea9 x16: 00000000b24d2d64 x15: 000000006490e735
+[   14.982396] x14: 0000000000000000 x13: 00000000d43c985e x12: 00000000f1020f23
+[   14.982402] x11: 00000000d1b738e5 x10: ffff8400035fbc7f x9 : ffff800001357768
+[   14.982408] x8 : 0101010101010101 x7 : 0000000000000000 x6 : ffff000055ade180
+[   14.982414] x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
+[   14.982420] x2 : 0000000000000001 x1 : 0000000000000002 x0 : ffff80000136f7f0
+[   15.026130] Bluetooth: HCI UART protocol Broadcom registered
+[   15.031261]
+[   15.031263] Call trace:
+[   15.031265]  vc5_hdmi_reset+0x1f4/0x234 [vc4]
+[   15.041432] Bluetooth: HCI UART protocol QCA registered
+[   15.045761]  vc4_hdmi_runtime_resume+0x74/0x2d0 [vc4]
+[   15.045798]  vc4_hdmi_bind+0x244/0xa60 [vc4]
+[   15.074641]  component_bind_all+0x114/0x26c
+[   15.078887]  vc4_drm_bind+0x1d8/0x2c0 [vc4]
+[   15.083159]  try_to_bring_up_aggregate_device+0x200/0x2d4
+[   15.085085] Bluetooth: HCI UART protocol AG6XX registered
+[   15.088635]  component_master_add_with_match+0xcc/0x110
+[   15.088639]  vc4_platform_drm_probe+0xc8/0x100 [vc4]
+[   15.104457]  platform_probe+0x74/0xd0
+[   15.108169]  really_probe+0x180/0x3cc
+[   15.111881]  __driver_probe_device+0x11c/0x190
+[   15.114311] Bluetooth: HCI UART protocol Marvell registered
+[   15.116384]  driver_probe_device+0x44/0xf4
+[   15.116390]  __driver_attach+0xd8/0x1b0
+[   15.116396]  bus_for_each_dev+0x7c/0xe0
+[   15.116401]  driver_attach+0x30/0x40
+[   15.116406]  bus_add_driver+0x154/0x240
+[   15.116410]  driver_register+0x84/0x140
+[   15.116416]  __platform_driver_register+0x34/0x40
+[   15.116419]  vc4_drm_register+0x60/0x1000 [vc4]
+[   15.154701]  do_one_initcall+0x50/0x2c0
+[   15.158590]  do_init_module+0x50/0x260
+[   15.162391]  load_module+0x2298/0x2720
+[   15.166189]  __do_sys_finit_module+0xac/0x12c
+[   15.170604]  __arm64_sys_finit_module+0x2c/0x40
+[   15.175196]  invoke_syscall+0x50/0x120
+[   15.178995]  el0_svc_common.constprop.0+0x6c/0x1a0
+[   15.183851]  do_el0_svc+0x30/0x90
+[   15.187208]  el0_svc+0x30/0xd0
+[   15.190301]  el0t_64_sync_handler+0x10c/0x140
+[   15.194715]  el0t_64_sync+0x1a0/0x1a4
+[   15.198424] ---[ end trace 0000000000000000 ]---
+[   15.203150] ------------[ cut here ]------------
+
+I can see similar trace with hung task of systemd-udevd in
+v5.15.61-rc1 also, but not the other warning.
+
+I am on holiday, might not be able to bisect to find the offending commit.
+
+
 -- 
-2.17.1
-
+Regards
+Sudip
