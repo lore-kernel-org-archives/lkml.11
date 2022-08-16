@@ -2,160 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EF9C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B48C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234318AbiHPKVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S234427AbiHPKWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234075AbiHPKU4 (ORCPT
+        with ESMTP id S234476AbiHPKWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:20:56 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D562052097;
-        Tue, 16 Aug 2022 02:36:08 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4A308346EC;
-        Tue, 16 Aug 2022 09:34:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660642463; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iEdYfa1M4GgGzZG+RuOCPAb/W8L0e/bqVBO0WbncbEE=;
-        b=pBpO8XTXlRzfr9XHY2EY5XFEQIVO6s1UiN7LVjuYTNaMxZ1PC+GyuKrmKnORBcGFydH69W
-        CnwM9Nb68o57IONPf+0uX7J958FobhMNbGv/VNAWtKCxykUsWfcMZPwYgZZKLSDI6+2qzn
-        RfQVriyqAxiodJYgcae2V5FcNO57/cQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660642463;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iEdYfa1M4GgGzZG+RuOCPAb/W8L0e/bqVBO0WbncbEE=;
-        b=34FB+9QK0NXSIgtZkv3faxX4+8s2JgaMoRYkRu/il6P0qmVqGJ2OQE0yPWlt+IeVyDZPd1
-        p2RTyT8AIQphYQDQ==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 221792C143;
-        Tue, 16 Aug 2022 09:34:23 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id CC041A066C; Tue, 16 Aug 2022 11:34:21 +0200 (CEST)
-Date:   Tue, 16 Aug 2022 11:34:21 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Jan Kara <jack@suse.cz>, linux-ext4@vger.kernel.org,
-        Ojaswin Mujoo <ojaswin@linux.ibm.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geetika.Moolchandani1@ibm.com, regressions@lists.linux.dev,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [Regression] ext4: changes to mb_optimize_scan cause issues on
- Raspberry Pi
-Message-ID: <20220816093421.ok26tcyvf6bm3ngy@quack3>
-References: <0d81a7c2-46b7-6010-62a4-3e6cfc1628d6@i2se.com>
- <20220728100055.efbvaudwp3ofolpi@quack3>
- <64b7899f-d84d-93de-f9c5-49538bd080d0@i2se.com>
+        Tue, 16 Aug 2022 06:22:14 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCAE11DD45;
+        Tue, 16 Aug 2022 01:28:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660638502; x=1692174502;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LT+uQKQYay0NpQ9akz1XWeAUd+sCergcYHUcmH9Mcb4=;
+  b=NU3F5EARCxaO+empSVoMZXjc/FDnf8g4zVyS2iFQeVWCwsdU+qOBxTVO
+   1TuhD5wWx7KQOhJUaEs4irsFsJ6Nr6UVvOVDfsgzKaDe6QjrU0jhBDs+1
+   uDdmlWwjqi8CueGFOlGlMyK4yOYUaI8BgKlYncSNow90qN5yC9fOfyrpB
+   o=;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
+   d="scan'208";a="1044708734"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:21 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id BDFF4853FB;
+        Tue, 16 Aug 2022 08:28:18 +0000 (UTC)
+Received: from EX19D013UWA003.ant.amazon.com (10.13.138.202) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX19D013UWA003.ant.amazon.com (10.13.138.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 16 Aug 2022 08:27:58 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:58
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id 5954C4C10; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
+        <rtanwar@maxlinear.com>
+Subject: [PATCH 08/16] hwmon: (mr75203) add VM active channel support
+Date:   Tue, 16 Aug 2022 08:27:49 +0000
+Message-ID: <20220816082757.11990-9-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
+References: <20220816082757.11990-1-farbere@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <64b7899f-d84d-93de-f9c5-49538bd080d0@i2se.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stefan!
+Add active channel support per VM, which is useful when not all VM
+channels are used.
+Number of active channel is read from device-tree.
+When absent in device-tree, all channels are assumed to be used.
+Setting number of active channels to 0, means that entire VM sesnor is
+not used (this can partially replace the "intel,vm-map" functionality).
 
-On Sat 06-08-22 11:50:28, Stefan Wahren wrote:
-> Am 28.07.22 um 12:00 schrieb Jan Kara:
-> > Hello!
-> > 
-> > On Mon 18-07-22 15:29:47, Stefan Wahren wrote:
-> > > i noticed that since Linux 5.18 (Linux 5.19-rc6 is still affected) i'm
-> > > unable to run "rpi-update" without massive performance regression on my
-> > > Raspberry Pi 4 (multi_v7_defconfig + CONFIG_ARM_LPAE). Using Linux 5.17 this
-> > > tool successfully downloads the latest firmware (> 100 MB) on my development
-> > > micro SD card (Kingston 16 GB Industrial) with a ext4 filesystem within ~ 1
-> > > min. The same scenario on Linux 5.18 shows the following symptoms:
-> > Thanks for report and the bisection!
-> > > - download takes endlessly much time and leads to an abort by userspace in
-> > > most cases because of the poor performance
-> > > - massive system load during download even after download has been aborted
-> > > (heartbeat LED goes wild)
-> > OK, is it that the CPU is busy or are we waiting on the storage card?
-> > Observing top(1) for a while should be enough to get the idea.  (sorry, I'm
-> > not very familiar with RPi so I'm not sure what heartbeat LED shows).
-> 
-> My description wasn't precise. I mean the green ACT LED, which uses the LED
-> heartbeat trigger:
-> 
-> "This allows LEDs to be controlled by a CPU load average. The flash
-> frequency is a hyperbolic function of the 1-minute load average."
-> 
-> I'm not sure if it's CPU or IO driven load, here the top output in bad case:
-> 
-> top - 08:44:17 up 43 min,  2 users,  load average: 5,02, 5,45, 5,17
-> Tasks: 142 total,   1 running, 141 sleeping,   0 stopped,   0 zombie
-> %Cpu(s):  0,4 us,  0,4 sy,  0,0 ni, 49,0 id, 50,2 wa,  0,0 hi, 0,0 si,  0,0
-> st
-> MiB Mem :   7941,7 total,   4563,1 free,    312,7 used,   3066,0 buff/cache
-> MiB Swap:    100,0 total,    100,0 free,      0,0 used.   7359,6 avail Mem
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+---
+ drivers/hwmon/mr75203.c | 92 +++++++++++++++++++++++++++++++----------
+ 1 file changed, 70 insertions(+), 22 deletions(-)
 
-OK, there's plenty of memory available, CPUs are mostly idle, the load is
-likely created by tasks waiting for IO (which also contribute to load
-despite not consuming CPU). Not much surprising here.
-
-> > Can you run "iostat -x 1" while the download is running so that we can see
-> > roughly how the IO pattern looks?
-> > 
-> Here the output during download:
-> 
-> Device            r/s     w/s     rkB/s     wkB/s   rrqm/s wrqm/s  %rrqm 
-> %wrqm r_await w_await aqu-sz rareq-sz wareq-sz svctm  %util
-> mmcblk1          0,00    2,00      0,00     36,00     0,00 0,00   0,00  
-> 0,00    0,00 23189,50  46,38     0,00    18,00 500,00 100,00
-> 
-> avg-cpu:  %user   %nice %system %iowait  %steal   %idle
->            0,25    0,00    0,00   49,62    0,00   50,13
-> 
-> Device            r/s     w/s     rkB/s     wkB/s   rrqm/s wrqm/s  %rrqm 
-> %wrqm r_await w_await aqu-sz rareq-sz wareq-sz svctm  %util
-> mmcblk1          0,00    2,00      0,00     76,00     0,00 0,00   0,00  
-> 0,00    0,00 46208,50  92,42     0,00    38,00 500,00 100,00
-> 
-> avg-cpu:  %user   %nice %system %iowait  %steal   %idle
->            0,25    0,00    0,00   49,62    0,00   50,13
-> 
-> Device            r/s     w/s     rkB/s     wkB/s   rrqm/s wrqm/s  %rrqm 
-> %wrqm r_await w_await aqu-sz rareq-sz wareq-sz svctm  %util
-> mmcblk1          0,00    3,00      0,00     76,00     0,00 0,00   0,00  
-> 0,00    0,00 48521,67 145,56     0,00    25,33 333,33 100,00
-> 
-> avg-cpu:  %user   %nice %system %iowait  %steal   %idle
->            0,25    0,00    0,00   49,62    0,00   50,13
-
-So this is interesting. We can see the card is 100% busy. The IO submitted
-to the card is formed by small requests - 18-38 KB per request - and each
-request takes 0.3-0.5s to complete. So the resulting throughput is horrible
-- only tens of KB/s. Also we can see there are many IOs queued for the
-device in parallel (aqu-sz columnt). This does not look like load I would
-expect to be generated by download of a large file from the web.
-
-You have mentioned in previous emails that with dd(1) you can do couple
-MB/s writing to this card which is far more than these tens of KB/s. So the
-file download must be doing something which really destroys the IO pattern
-(and with mb_optimize_scan=0 ext4 happened to be better dealing with it and
-generating better IO pattern). Can you perhaps strace the process doing the
-download (or perhaps strace -f the whole rpi-update process) so that we can
-see how does the load generated on the filesystem look like? Thanks!
-
-								Honza
+diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+index 4419e481d47c..9b45fd089fcf 100644
+--- a/drivers/hwmon/mr75203.c
++++ b/drivers/hwmon/mr75203.c
+@@ -107,6 +107,11 @@
+ #define PVT_N_CONST		90
+ #define PVT_R_CONST		245805
+ 
++struct voltage_device {
++	u8 vm_map;
++	u8 ch_map;
++};
++
+ struct pvt_device {
+ 	struct regmap		*c_map;
+ 	struct regmap		*t_map;
+@@ -114,12 +119,13 @@ struct pvt_device {
+ 	struct regmap		*v_map;
+ 	struct clk		*clk;
+ 	struct reset_control	*rst;
++	struct voltage_device	*vd;
+ 	u32			t_num;
+ 	u32			p_num;
+ 	u32			v_num;
+-	u32			c_num;
+ 	u32			ip_freq;
+-	u8			*vm_idx;
++	u8			vm_ch_max;
++	u8			vm_ch_total;
+ };
+ 
+ static umode_t pvt_is_visible(const void *data, enum hwmon_sensor_types type,
+@@ -186,11 +192,11 @@ static int pvt_read_in(struct device *dev, u32 attr, int channel, long *val)
+ 	u8 ch_idx;
+ 	int ret;
+ 
+-	if (channel >= pvt->v_num * pvt->c_num)
++	if (channel >= pvt->vm_ch_total)
+ 		return -EINVAL;
+ 
+-	vm_idx = pvt->vm_idx[channel / pvt->c_num];
+-	ch_idx = channel % pvt->c_num;
++	vm_idx = pvt->vd[channel].vm_map;
++	ch_idx = pvt->vd[channel].ch_map;
+ 
+ 	switch (attr) {
+ 	case hwmon_in_input:
+@@ -390,7 +396,7 @@ static int pvt_init(struct pvt_device *pvt)
+ 		if (ret)
+ 			return ret;
+ 
+-		val = GENMASK(pvt->c_num - 1, 0) | VM_CH_INIT |
++		val = GENMASK(pvt->vm_ch_max - 1, 0) | VM_CH_INIT |
+ 		      IP_POLL << SDIF_ADDR_SFT |
+ 		      SDIF_WRN_W | SDIF_PROG;
+ 		ret = regmap_write(v_map, SDIF_W, val);
+@@ -519,7 +525,7 @@ static int pvt_reset_control_deassert(struct device *dev, struct pvt_device *pvt
+ static int mr75203_probe(struct platform_device *pdev)
+ {
+ 	const struct hwmon_channel_info **pvt_info;
+-	u32 ts_num, vm_num, pd_num, ch_num, val, index, i;
++	u32 ts_num, vm_num, pd_num, ch_num, val, index, i, j, k;
+ 	struct device *dev = &pdev->dev;
+ 	u32 *temp_config, *in_config;
+ 	struct device *hwmon_dev;
+@@ -569,7 +575,6 @@ static int mr75203_probe(struct platform_device *pdev)
+ 	pvt->t_num = ts_num;
+ 	pvt->p_num = pd_num;
+ 	pvt->v_num = vm_num;
+-	pvt->c_num = ch_num;
+ 	val = 0;
+ 	if (ts_num)
+ 		val++;
+@@ -606,43 +611,86 @@ static int mr75203_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (vm_num) {
+-		u32 total_ch = ch_num * vm_num;
++		u8 vm_idx[vm_num];
++		u8 vm_active_ch[vm_num];
+ 
+ 		ret = pvt_get_regmap(pdev, "vm", pvt);
+ 		if (ret)
+ 			return ret;
+ 
+-		pvt->vm_idx = devm_kcalloc(dev, vm_num, sizeof(*pvt->vm_idx),
+-					   GFP_KERNEL);
+-		if (!pvt->vm_idx)
+-			return -ENOMEM;
+-
+-		ret = device_property_read_u8_array(dev, "intel,vm-map",
+-						    pvt->vm_idx, vm_num);
++		ret = device_property_read_u8_array(dev, "intel,vm-map", vm_idx,
++						    vm_num);
+ 		if (ret) {
+ 			/*
+ 			 * Incase intel,vm-map property is not defined, we
+ 			 * assume incremental channel numbers.
+ 			 */
+ 			for (i = 0; i < vm_num; i++)
+-				pvt->vm_idx[i] = i;
++				vm_idx[i] = i;
+ 		} else {
+ 			for (i = 0; i < vm_num; i++)
+-				if (pvt->vm_idx[i] >= vm_num ||
+-				    pvt->vm_idx[i] == 0xff)
++				if (vm_idx[i] >= vm_num || vm_idx[i] == 0xff)
+ 					break;
+ 
+ 			vm_num = i;
+ 			pvt->v_num = i;
+ 		}
+ 
+-		in_config = devm_kcalloc(dev, total_ch + 1,
++		ret = device_property_read_u8_array(dev, "vm-active-channels",
++						    vm_active_ch, vm_num);
++		if (ret) {
++			/*
++			 * Incase vm-active-channels property is not defined,
++			 * we assume each VM sensor has all of its channels
++			 * active.
++			 */
++			for (i = 0; i < vm_num; i++)
++				vm_active_ch[i] = ch_num;
++
++			pvt->vm_ch_max = ch_num;
++			pvt->vm_ch_total = ch_num * vm_num;
++		} else {
++			for (i = 0; i < vm_num; i++) {
++				if (vm_active_ch[i] > ch_num) {
++					dev_err(dev,
++						"invalid active channels: %u\n",
++						vm_active_ch[i]);
++					return -EINVAL;
++				}
++
++				pvt->vm_ch_total += vm_active_ch[i];
++
++				if (vm_active_ch[i] > pvt->vm_ch_max)
++					pvt->vm_ch_max = vm_active_ch[i];
++			}
++		}
++
++		/*
++		 * Map between the channel-number to VM-index and channel-index.
++		 * Example - 3 VMs, vm_active_ch = [05 02 04]:
++		 * vm_map = [0 0 0 0 0 1 1 2 2 2 2]
++		 * ch_map = [0 1 2 3 4 0 1 0 1 2 3]
++		 */
++		pvt->vd = devm_kcalloc(dev, pvt->vm_ch_total, sizeof(*pvt->vd),
++				       GFP_KERNEL);
++		if (!pvt->vd)
++			return -ENOMEM;
++
++		k = 0;
++		for (i = 0; i < vm_num; i++)
++			for (j = 0; j < vm_active_ch[i]; j++) {
++				pvt->vd[k].vm_map = vm_idx[i];
++				pvt->vd[k].ch_map = j;
++				k++;
++			}
++
++		in_config = devm_kcalloc(dev, pvt->vm_ch_total + 1,
+ 					 sizeof(*in_config), GFP_KERNEL);
+ 		if (!in_config)
+ 			return -ENOMEM;
+ 
+-		memset32(in_config, HWMON_I_INPUT, total_ch);
+-		in_config[total_ch] = 0;
++		memset32(in_config, HWMON_I_INPUT, pvt->vm_ch_total);
++		in_config[pvt->vm_ch_total] = 0;
+ 		pvt_in.config = in_config;
+ 
+ 		pvt_info[index++] = &pvt_in;
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.37.1
+
