@@ -2,174 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4597FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C105C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236515AbiHPQhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        id S236128AbiHPQhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236501AbiHPQhT (ORCPT
+        with ESMTP id S236516AbiHPQhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:37:19 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150080.outbound.protection.outlook.com [40.107.15.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9071780B51;
-        Tue, 16 Aug 2022 09:37:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gAK7a+d/SQv7PJniARy8O1kJkCCjd9aXc2wZIeI1vXgC8Q7twv7r05fTtQYMcdSk8g9bw4KhnESvr09uYfUGVbsgbrJJx5qgIxi0me0ATxzaX225K8gVPThmOjlCbiwxKBqzPykaXwAFI8uB8W2Cr8jN3AVaGAFHOSBXd2nLipt4VgJNj0+zvjvktps8WvzmgeErKc0SmkiBOLZZZCDVDtUAMzJJUQmRp5uUiibCEpj80PDZE0qy0pwVKv4bfdxpSsI/tOIaAEOYt/Y3mXljlgileX9X5MmvpD8s/wwtVGXwapI117DNod7lxkmjy4NPZ0pcK1/w/EcM1G6jLn5N4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7eA01Fxk1yEmtTWc14VxM5mRczbXp92HhdZMlJhkfp0=;
- b=jbQBCLvJX84FQcJ5xe3ef3mEweT9sPoK49UbTlqCUdEmd5YuPHPyG7LfUfDZ1H/NLVvVm3vbZUNiRMGG5rkyErqifAGLwROJE0At2zvAysmYjQOl99XXpuiKBOKa7Xg4BTfYIJ+kYN42xZnnZpeuY50AAowmSPXSMxysT0nJVWqHILiKcRFZifX+3WUigQAbW7P0ZXZsoBi5WLEnJZkIBxmiF3c/MbzFofXRJHkQEnNNp2H87me80ezHstBp2084rJKtgFy6YO7sP+xBQujjUEN2Lv90nwstV0KaIN1PP/PjaH4KwxGaMbYmDMB5HBijet23BTrdPgS6lZ39bNILVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7eA01Fxk1yEmtTWc14VxM5mRczbXp92HhdZMlJhkfp0=;
- b=yXBcJLNd3vdZHd+5hFJhcONP17zmxsgHkLoXDDGkRxsjo48k/pJgpvpGZRaRf9loHbyWY5ryDkxnKAJdltpEKYDWPjol09l6JCkZV095mOwhEDdsdQDuE3LpxNFnpv9jylal9PUtD+0X9gNXbk0bCsCge0OgSmPLVk0rgHOW0z/0iL5zGVUxKpQ6+aiq2QmcASSywAFUVXcAGz6JE7UYbqOSVJZZ9TlvWj8RoYKOp3tDFwkKbjtZaHhH2Yu+Xuy0i8G8QCNQ7V7a0weZhlQAPMtZQxzF8AUWKO3wLBYNIJpZ31i/y5dvtR3JJJfWESnCkwGo99DsHDQ4nR/Z2DiPDw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by AM6PR0302MB3288.eurprd03.prod.outlook.com (2603:10a6:209:22::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
- 2022 16:37:14 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Tue, 16 Aug 2022
- 16:37:14 +0000
-From:   Sean Anderson <sean.anderson@seco.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net] net: phy: Warn if phy is attached when removing
-Date:   Tue, 16 Aug 2022 12:37:01 -0400
-Message-Id: <20220816163701.1578850-1-sean.anderson@seco.com>
-X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH2PR11CA0018.namprd11.prod.outlook.com
- (2603:10b6:610:54::28) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e725b9ae-452a-4202-a585-08da7fa59327
-X-MS-TrafficTypeDiagnostic: AM6PR0302MB3288:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z6klGkI0AMmq/DAyKvWPOfq4rbRso75UIt4RLi3e2XaG0FV2HhwO8QgckvLW+qP/RfM1e4FE2gswlfQcFBkLkK/M1+a3NpIYfBvwwG37UjU61nXbQIZijZrdOVrumqPxXSZz5Sexe3k7lybCL6vUAz8kcPQnczCCqrMY9uWEqtcLG4bZVqcPZmPEq/GrufHEGZVTBD24WLOZvMTzvU/yPoIsIpJ4PflPnsrp+fZ+l5cpKlmeey3yJW238KxB7CyyCgjQuUcrAN9GXfAa8P1U/kerxnrsoDNc9C6uzwbMZ9iErXtF+v/JjjG0cXRUk5h1DicLAD4LSVet/cC2wRLABq9FRN9Go6XmjvjEz/kuiXvoc7xrZesHBMEsYw8djDgiGc+GJqP5EYREP/zNg4ESSqmNsHBtTshI+1lkmc2ORJKQB7nFjSenvp5MSBmsufdrEBxx3gL8JFU7N13Z4GUx+iiJeBOqjpeSZi4DijoYh3PzTLf4yZ6P0DsD7se1nTsAykPU5YdKRF24rST9JpFKSZtSWhJeNRIINZlNwksRngj97SnTaY0DU41aSrUFrflQX3tMDo4cBJNgb3Jon+tDg+6JrHYj305vwdtwlHjFwyzvQicK7BgVJSivcHCj6/IDgmH3TaGz64oQFB9St2rEHIO/43AHHrc6WMckHYxx8qltRkFYiaagEgnRhLDjNCdF9D80/J9MPl6BIOHLJ3r49ttmF5XT0KY9Eoqbp4DIqM5lSsrYXy/i79xmJ26j73KUtnDAeFQVJgbLObd7d18u8gQGBAjmlDDuYs1ecU+txMA0IsEDBfmbXp9dB7AXr5VmMQRujGCcdpsnktyNOD35Ew==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(136003)(396003)(346002)(39850400004)(86362001)(186003)(36756003)(107886003)(2616005)(52116002)(83380400001)(6512007)(1076003)(6506007)(6666004)(316002)(54906003)(478600001)(38350700002)(966005)(41300700001)(44832011)(8936002)(66946007)(110136005)(7416002)(8676002)(2906002)(26005)(5660300002)(66476007)(66556008)(38100700002)(4326008)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FymRWuW5RoJ9jttvNcDnhuzU4JWxXJ13o+ochrgIe6CTjeGo5B1Tf6BIte5J?=
- =?us-ascii?Q?GNt1s37T+40LC+aAm6/jy1WCuwTWmowzgql0X7WsJAuqIe6kVBJvxeL1/lBv?=
- =?us-ascii?Q?/+usCcwjJ8PO2Vm17KmIQzyUoJ9B43GB3F1qRxWJZySTBBKidwaFe1U6J+iB?=
- =?us-ascii?Q?AM8wKrQsvkg5DGfqwJVeoAPULnOAAvAHk2fvSO4XBVYe69AJVvK5EOEWvFMC?=
- =?us-ascii?Q?bjwKlGlK8wrZel+8Lbyqbr6iII6NQKClXu4gm7pM/DbEBfsuNxXLZbiGPb6S?=
- =?us-ascii?Q?Kmqf4GFGuKz2WOZiYELXXXyA+rJcLyFtS1hVY7g17o5EwhHR9sAECwpLSMBL?=
- =?us-ascii?Q?IglN0bW/OYGrEu2PxQcTxzpuTn+PcyHYM1NFZ2/7IV2q2aOCb3+gC8CXfyoL?=
- =?us-ascii?Q?pstJNcrf58gbx6axjXFKrs+FKtesQqOCL9k1/M+HnXS3TNc72iDa22apVks0?=
- =?us-ascii?Q?xQjWIA+cyK9OnQK9M14YTZHu7AieA/sqM0mez6RB3BD1+37LIuB566YDcTnj?=
- =?us-ascii?Q?hXVd27ugj6vQhyuPTzRYFKTkXj4AjVWbBf3vfXxV8N6OIhX4NGdf4MJ98dsv?=
- =?us-ascii?Q?xHFbKq0iAJZPHU+CkKMQsFaxq2Th8tSC58N1OjpCg8yf2N8RHAqPyHNFdBe4?=
- =?us-ascii?Q?gWKcGPnUKXtTH7r47nBx24TrMh3JB5Gq8WzkuRI9REso077W4EtxmTspJntP?=
- =?us-ascii?Q?Rlicno16hIQjP2x3+aXur01Whhd+ZjlognC78WXreX0rJEduB+ksef3zDaoU?=
- =?us-ascii?Q?becULEQyeu2LMsO2Y8h4py8FhABd40/C8FT4ZH8gwTxqXyyVgWu0Rc17VQun?=
- =?us-ascii?Q?GayDs7QFdyquCFiXhwwT0VTvX3gPReMXPC7UrOxCjSCH4e9Q/HJ2rZz14sYZ?=
- =?us-ascii?Q?LNKdOofOmtnc5k1fUzfygf3+D5mBcx1rhYY1+NB5gLm+z2nevB/77RyuSj8L?=
- =?us-ascii?Q?NoJ/T2zhPBpPVZXbhd+++B4+BHK0puRkUlk6tly/eK70Z4rsMb5ak9//a8pV?=
- =?us-ascii?Q?s1q0IrCNqu07DvdSOG0QMPVWjPbhTSt0x2FRD4xzsmT4CpBBQhWo9JUdpIhj?=
- =?us-ascii?Q?F1uZxTGgaiUHmbo01n/wTWd8UrM4Bm0x5/KpQwmHIM13E0yB08vtmynkeXDn?=
- =?us-ascii?Q?atF5L7hw4scb85+/6TnO8we52g1Xq+45FTrI2rtnWi3NYJCuXvtVFAy1n0Q8?=
- =?us-ascii?Q?xWFEd2qzG7Tfknxz/C8+808AfBafqaJOU2Wmmykc4gH6C3eE+MIG4q41mk1R?=
- =?us-ascii?Q?n8PNdLgnUvF1UukRHxRNGaCe2G4p83FMuMSoIGIZMklBNNG0y+pXINIjlIU8?=
- =?us-ascii?Q?U2KadPiUghiuTVrTug3e9YOZd7fDvlsb/g3u2E22kv0t1ZAJO98z1wDXMJag?=
- =?us-ascii?Q?aPPuqkC2hL9vPOiGPKNyML8OeeaaRVzfHqVla55v+IxhSgkcJV0r8knKEDRB?=
- =?us-ascii?Q?VuoVaHR9hCDboJ1Fx8PZkQ7bzzKIcK992ca0V4kMUUtlgLTfFFIcHi8rlRyo?=
- =?us-ascii?Q?gIxhV55aTRypU74bKnTgvv3sBRYgzQAxFTixyCxESc0CPIZVEhQt6wF88rfY?=
- =?us-ascii?Q?g7yztm14ciJVcqatb83lLXJG7siU3EcgMaFYX7UCXGus0IBcc/vpDKHZSIWO?=
- =?us-ascii?Q?/g=3D=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e725b9ae-452a-4202-a585-08da7fa59327
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 16:37:14.6839
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rbbpYox9+uu8/VjkAAKlAf9uJoMERocNFvexG35boa8WETwF8sywG4gvLcGlNatwIrmxMXnDTiMxwq7j/pKX1w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0302MB3288
+        Tue, 16 Aug 2022 12:37:39 -0400
+Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF03980536
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:37:37 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id hp22-20020a1709073e1600b007309edc4089so2002325ejc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:37:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=Bt86ycU5TqIe5DWAivAOKuWY2/WSOfZm/1Ale3yOGtg=;
+        b=qLBFcuLAhlDwJfDACSf2gt/J+hZ5HtnFVGcb/nrGUjJCkIsoRyLc6pgG87MjjR8KIQ
+         5Iz1bYpH9D6l6+a2yXEoF1qmbqsfO3LSbDkEQeRvX5ucEx2BqTk5HTxQmnGstdvJ2/Z2
+         YzWpn4+XRNNACYVTttlB2gPuTIQYUoVVf38GfoZerRGl9jB1RxdEpsDA2NaNBgqtb4Vj
+         BnblFZJWuEkSo0udCHh6tFwqzcPKu6LI4BbFd2cQnQWmcEuRRgSoT6yiJLCOQU55+jP9
+         aiutqycGzt4DBlwwmbrM9c1zKuDLUCGppvkHPVvSSLp/Pgkw/eKflRRZhpcxWOYy3qMo
+         fFBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=Bt86ycU5TqIe5DWAivAOKuWY2/WSOfZm/1Ale3yOGtg=;
+        b=dFs2cUankmaN49hcZJyIiKRQogncoMZGKfjp7YRj46XezKtFLW9wnpDfONwoY2CEFT
+         EwNObj1GnvzYxDEopL4j9GtMrwGIm5oTOxXqXB16m2KmJMMzS5usg+0RGDWFQw1VWwow
+         fFC9JSxrEWQbzNgaRsV3HyNOqM+NZLf2reUO0E/0maWwFVO8V37Y5P+FhGpoyKQPQKGV
+         5zoOeRpeaF2Or33lSh5HA7UXAnPxbRsBiI1YnOlC3ooCmFENGXEJ1Vupp609Jyb99+ZZ
+         0PugK25OkgifkMFt0a9z70fVDgNLS4edfZ5R+u65uAs1MIa+DIFFcApOMIjczq2VlPcI
+         pdIA==
+X-Gm-Message-State: ACgBeo0E4eaZnzxtvmxrbwAqnur+LSQ49mF6JeFPgjUSkz3acGRDGW4/
+        hJnIhcr/kkPhPk9jQadp7pr20u4YuA==
+X-Google-Smtp-Source: AA6agR7puhx9qSi+R3MTquY9NGN8yzzazt4EdG1n9Sdj8HxHiF3+944McfTa/YkTSASAVUo0d2GXJFjQsg==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:b8f6:52b8:6a74:6073])
+ (user=elver job=sendgmr) by 2002:a05:6402:4282:b0:43e:612c:fcf7 with SMTP id
+ g2-20020a056402428200b0043e612cfcf7mr18989740edc.242.1660667856291; Tue, 16
+ Aug 2022 09:37:36 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 18:36:41 +0200
+Message-Id: <20220816163641.2359996-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH 5.19.y] Revert "mm: kfence: apply kmemleak_ignore_phys on
+ early allocated pool"
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Yee Lee <yee.lee@mediatek.com>,
+        Max Schulze <max.schulze@online.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-netdevs using phylib can be oopsed from userspace in the following
-manner:
+This reverts commit 07313a2b29ed1079eaa7722624544b97b3ead84b.
 
-$ ip link set $iface up
-$ echo $(basename $(readlink /sys/class/net/$iface/phydev)) > \
-      /sys/class/net/$iface/phydev/driver/unbind
-$ ip link set $iface down
+Commit 0c24e061196c21d5 ("mm: kmemleak: add rbtree and store physical
+address for objects allocated with PA") is not yet in 5.19 (but appears
+in 6.0). Without 0c24e061196c21d5, kmemleak still stores phys objects
+and non-phys objects in the same tree, and ignoring (instead of freeing)
+will cause insertions into the kmemleak object tree by the slab
+post-alloc hook to conflict with the pool object (see comment).
 
-However, the traceback provided is a bit too late, since it does not
-capture the root of the problem (unbinding the driver). It's also
-possible that the memory has been reallocated if sufficient time passes
-between when the phy is detached and when the netdev touches the phy
-(which could result in silent memory corruption). Add a warning at the
-source of the problem. A future patch could make this more robust by
-calling dev_close.
+Reports such as the following would appear on boot, and effectively
+disable kmemleak:
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+ | kmemleak: Cannot insert 0xffffff806e24f000 into the object search tree (overlaps existing)
+ | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-v8-0815+ #5
+ | Hardware name: Raspberry Pi Compute Module 4 Rev 1.0 (DT)
+ | Call trace:
+ |  dump_backtrace.part.0+0x1dc/0x1ec
+ |  show_stack+0x24/0x80
+ |  dump_stack_lvl+0x8c/0xb8
+ |  dump_stack+0x1c/0x38
+ |  create_object.isra.0+0x490/0x4b0
+ |  kmemleak_alloc+0x3c/0x50
+ |  kmem_cache_alloc+0x2f8/0x450
+ |  __proc_create+0x18c/0x400
+ |  proc_create_reg+0x54/0xd0
+ |  proc_create_seq_private+0x94/0x120
+ |  init_mm_internals+0x1d8/0x248
+ |  kernel_init_freeable+0x188/0x388
+ |  kernel_init+0x30/0x150
+ |  ret_from_fork+0x10/0x20
+ | kmemleak: Kernel memory leak detector disabled
+ | kmemleak: Object 0xffffff806e24d000 (size 2097152):
+ | kmemleak:   comm "swapper", pid 0, jiffies 4294892296
+ | kmemleak:   min_count = -1
+ | kmemleak:   count = 0
+ | kmemleak:   flags = 0x5
+ | kmemleak:   checksum = 0
+ | kmemleak:   backtrace:
+ |      kmemleak_alloc_phys+0x94/0xb0
+ |      memblock_alloc_range_nid+0x1c0/0x20c
+ |      memblock_alloc_internal+0x88/0x100
+ |      memblock_alloc_try_nid+0x148/0x1ac
+ |      kfence_alloc_pool+0x44/0x6c
+ |      mm_init+0x28/0x98
+ |      start_kernel+0x178/0x3e8
+ |      __primary_switched+0xc4/0xcc
+
+Reported-by: Max Schulze <max.schulze@online.de>
+Signed-off-by: Marco Elver <elver@google.com>
 ---
-This is a result of discussion around my attempt to make PCS devices
-proper devices [1]. Russell pointed out [2] that someone could unbind
-the PCS at any time. However, the same issue applies to ethernet phys,
-as well as serdes phys. Both of these can be unbound at any time, yet
-no precautions are taken to avoid dereferencing a stale pointer.
+ mm/kfence/core.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-As I discussed [3], we have (in general) four ways to approach this
-
-- Just warn and accept that we are going to oops later on
-- Create devlinks between the consumer/supplier
-- Create a composite device composed of the consumer and its suppliers
-- Add a callback (such as dev_close) and call it when the consumer goes
-  away
-
-It is (of course) also possible to rewrite phylib so that devices are
-not used (preventing the phy from being unbound). However, I suspect
-that this is quite undesirable.
-
-This patch implements the first option, which, while fixing nothing, at
-least provides some better debug information.
-
-[1] https://lore.kernel.org/netdev/20220711160519.741990-1-sean.anderson@seco.com/
-[2] https://lore.kernel.org/netdev/YsyPGMOiIGktUlqD@shell.armlinux.org.uk/
-[3] https://lore.kernel.org/netdev/9747f8ef-66b3-0870-cbc0-c1783896b30d@seco.com/
-
- drivers/net/phy/phy_device.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 0c6efd792690..d75ca97f74d4 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3119,6 +3119,8 @@ static int phy_remove(struct device *dev)
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 6aff49f6b79e..4b5e5a3d3a63 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -603,6 +603,14 @@ static unsigned long kfence_init_pool(void)
+ 		addr += 2 * PAGE_SIZE;
+ 	}
  
- 	cancel_delayed_work_sync(&phydev->state_queue);
- 
-+	WARN_ON(phydev->attached_dev);
++	/*
++	 * The pool is live and will never be deallocated from this point on.
++	 * Remove the pool object from the kmemleak object tree, as it would
++	 * otherwise overlap with allocations returned by kfence_alloc(), which
++	 * are registered with kmemleak through the slab post-alloc hook.
++	 */
++	kmemleak_free(__kfence_pool);
 +
- 	mutex_lock(&phydev->lock);
- 	phydev->state = PHY_DOWN;
- 	mutex_unlock(&phydev->lock);
+ 	return 0;
+ }
+ 
+@@ -615,16 +623,8 @@ static bool __init kfence_init_pool_early(void)
+ 
+ 	addr = kfence_init_pool();
+ 
+-	if (!addr) {
+-		/*
+-		 * The pool is live and will never be deallocated from this point on.
+-		 * Ignore the pool object from the kmemleak phys object tree, as it would
+-		 * otherwise overlap with allocations returned by kfence_alloc(), which
+-		 * are registered with kmemleak through the slab post-alloc hook.
+-		 */
+-		kmemleak_ignore_phys(__pa(__kfence_pool));
++	if (!addr)
+ 		return true;
+-	}
+ 
+ 	/*
+ 	 * Only release unprotected pages, and do not try to go back and change
 -- 
-2.35.1.1320.gc452695387.dirty
+2.37.1.595.g718a3a8f04-goog
 
