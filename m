@@ -2,146 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B34C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E097C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbiHPILJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
+        id S231603AbiHPILM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiHPIKZ (ORCPT
+        with ESMTP id S232512AbiHPIKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:10:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE96BDB7F7
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660628191;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=WjKAhjhunNiMNkU3Od6M/0vKjOdgqMSNXwPsu3GbYh8=;
-        b=BfLosuyE3EfJ8H1LyR9ZkY1bPXcfX9HQWK+MSPIQbH0ggePlUvwiHgjnIhqJdHiq2gAJ4E
-        k52NIjbgUu+HNeN4Ly1E2dvh1EbalsY7wdMJgOuh3rQ7jPOAuLFI0gfOlVnstLWkxsymtu
-        7CRVZcCG2nd5gYNZ9QyjQH0DW6FcukM=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-649-DRHP9e2eN_WWD42-CJxISQ-1; Tue, 16 Aug 2022 01:36:25 -0400
-X-MC-Unique: DRHP9e2eN_WWD42-CJxISQ-1
-Received: by mail-wm1-f69.google.com with SMTP id c189-20020a1c35c6000000b003a4bfb16d86so4469110wma.3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 22:36:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=WjKAhjhunNiMNkU3Od6M/0vKjOdgqMSNXwPsu3GbYh8=;
-        b=t46LBppyIY2hYwRcbUf5+4l8aomO10j6SllnrNiDS9u5th3p/lSwWSQLREOVlw4o/A
-         do17rewnhzXKx/qJLCGR2wL+zy99dtURJmRv6K5M1B3Ow9UVYSFABaqGfBSsUnMd+fwu
-         z1QUlwHMSaBj+Ni5BtYcaCe98rWf98bVFvi8JXRJOf0pobRrp9UePoL44lyNOLnBAj2D
-         RE8wHONhIboTesAfZnzTSQ3VOv9qTR96VG1tjZnaUB0v/XLIYTzApQACPtrhzWF3K8Ua
-         k3+Nns3apiRWGKdYMGXQ/YzYf4r1zECsTXn9RQfPse+wuD5Cp7tGnUjbcKsExmzSIHtu
-         wRhg==
-X-Gm-Message-State: ACgBeo3vxs1B6GEptKdk06dqRp90kEiJ/8LydBqhqD7cm1S8YHJm0eXl
-        A43DLDinOlTDnB6IM9sAGPr27xQyXA0Sdd9Kx1n+oe/K75sDJGK7M8+dFn0yNy4JigxPHLOkven
-        pNCqjm9PLXVE7ukJTKGLzAMKTRTcTaCH6IAEWPtkqc4g7fr5mRkY9vsr6cMAbd4f/1Fhhug==
-X-Received: by 2002:a05:600c:5023:b0:3a6:3f9:a031 with SMTP id n35-20020a05600c502300b003a603f9a031mr1681819wmr.131.1660628183766;
-        Mon, 15 Aug 2022 22:36:23 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7Ytdoo+ffEU/Wth88pKDtXl7fYx4Itdz9p5tt4Lf/IjatyzTa6AA/SXcS7E/UC3HmlhH/8rQ==
-X-Received: by 2002:a05:600c:5023:b0:3a6:3f9:a031 with SMTP id n35-20020a05600c502300b003a603f9a031mr1681790wmr.131.1660628183420;
-        Mon, 15 Aug 2022 22:36:23 -0700 (PDT)
-Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id v17-20020a5d43d1000000b0021eed2414c9sm8763232wrr.40.2022.08.15.22.36.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 22:36:22 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:36:18 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH v4 0/6] virtio: drop sizing vqs during init
-Message-ID: <20220816053602.173815-1-mst@redhat.com>
+        Tue, 16 Aug 2022 04:10:36 -0400
+X-Greylist: delayed 41899 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 22:36:40 PDT
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE1C67C84;
+        Mon, 15 Aug 2022 22:36:40 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 9D5EB447D6;
+        Tue, 16 Aug 2022 05:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1660628198; bh=LDV8KEPCOtRgxMbfux9/6KsJjkeggvwXB+aHn8IlWLI=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=EcSu5BD6o5VrpBFcpBXJIz6I/+WaBA0jWNVC8P/rW4gyyZncMVpPk1bJgjIK5ksTW
+         fHqtXhFxFgAWCzs7stoll3p0mS2G/dTkmwoCCbvyqO+CLva3jPNvavrtR5GWCKtDli
+         2k45NWTqBLW3zOpP83gvbLc9/hQ2RrjzZv/xWgOqK670RCY5oY2mihSGfXOoFOM3Pd
+         L1Wj81O5ZhAmR99xY6Jvce2M6GvxekL6bBHrcL2OfG1ByMfu2plrwW032Fj67Egexc
+         mfSW4St7Shka/buVYsWjsTV1EW/c0OevIMBwJszNcv7hVP4nQrWtm7gfo+wKuHymKc
+         WhbfgvKJgpG0Q==
+Message-ID: <cd51b422-89f3-1856-5d3b-d6e5b0029085@marcan.st>
+Date:   Tue, 16 Aug 2022 14:36:31 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: es-ES
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Will Deacon <will@kernel.org>
+Cc:     Tejun Heo <tj@kernel.org>, peterz@infradead.org,
+        jirislaby@kernel.org, maz@kernel.org, mark.rutland@arm.com,
+        boqun.feng@gmail.com, catalin.marinas@arm.com, oneukum@suse.com,
+        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <YvqaK3hxix9AaQBO@slm.duckdns.org>
+ <YvsZ6vObgLaDeSZk@gondor.apana.org.au>
+ <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
+In-Reply-To: <CAHk-=wgSNiT5qJX53RHtWECsUiFq6d6VWYNAvu71ViOEan07yw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 16/08/2022 14.27, Linus Torvalds wrote:
+> On Mon, Aug 15, 2022 at 9:15 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>>
+>> Please revert this as test_and_set_bit was always supposed to be
+>> a full memory barrier.  This is an arch bug.
+> 
+<snip>
+> From looking at it, the asm-generic implementation is a bit
+> questionable, though. In particular, it does
+> 
+>         if (READ_ONCE(*p) & mask)
+>                 return 1;
+> 
+> so it's *entirely* unordered for the "bit was already set" case.
 
+These ops are documented in Documentation/atomic_bitops.txt as being
+unordered in the failure ("bit was already set" case), and that matches
+the generic implementation (which arm64 uses).
 
-Supplying size during init does not work for all transports.
-In fact for legacy pci doing that causes a memory
-corruption which was reported on Google Cloud.
+On the other hand, Twitter just pointed out that contradicting
+documentation exists (I believe this was the source of the third party
+doc I found that claimed it's always a barrier):
 
-We might get away with changing size to size_hint so it's
-safe to ignore and then fixing legacy to ignore the hint.
+include/asm-generic/bitops/instrumented-atomic.h
 
-But the benefit is unclear in any case, so let's revert for now.
-Any new version will have to come with
-- documentation of performance gains
-- performance testing showing existing workflows
-  are not harmed materially. especially ones with
-  bursty traffic
-- report of testing on legacy devices
+So either one doc and the implementation are wrong, or the other doc is
+wrong.
 
+>    --- a/include/asm-generic/bitops/atomic.h
+>    +++ b/include/asm-generic/bitops/atomic.h
+>    @@ -39,9 +39,6 @@ arch_test_and_set_bit(
+>         unsigned long mask = BIT_MASK(nr);
+> 
+>         p += BIT_WORD(nr);
+>    -    if (READ_ONCE(*p) & mask)
+>    -            return 1;
+>    -
+>         old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
+>         return !!(old & mask);
+>     }
+>    @@ -53,9 +50,6 @@ arch_test_and_clear_bit
+>         unsigned long mask = BIT_MASK(nr);
+> 
+>         p += BIT_WORD(nr);
+>    -    if (!(READ_ONCE(*p) & mask))
+>    -            return 0;
+>    -
+>         old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
+>         return !!(old & mask);
+>     }
+> 
+> but the above is not just whitespace-damaged, it's entirely untested
+> and based purely on me looking at that code.
 
-Huge shout out to Andres Freund for the effort spent reproducing and
-debugging!  Thanks to Guenter Roeck for help with testing!
+That does work, I in fact tried that fix first to prove that the
+early-exit was the problem.
 
+I don't have a particularly strong opinion on which way is right here, I
+just saw the implementation matched the docs (that I found) and Will
+commented on the other thread implying this was all deliberate.
 
-changes from v3
-	added a vdpa revert
-changes from v2
-	drop unrelated patches
-changes from v1
-	revert the ring size api, it's unused now
-
-Michael S. Tsirkin (5):
-  virtio_net: Revert "virtio_net: set the default max ring size by
-    find_vqs()"
-
-
-Michael S. Tsirkin (6):
-  virtio_net: Revert "virtio_net: set the default max ring size by
-    find_vqs()"
-
-
-Michael S. Tsirkin (6):
-  virtio_net: Revert "virtio_net: set the default max ring size by
-    find_vqs()"
-  virtio: Revert "virtio: add helper virtio_find_vqs_ctx_size()"
-  virtio-mmio: Revert "virtio_mmio: support the arg sizes of find_vqs()"
-  virtio_pci: Revert "virtio_pci: support the arg sizes of find_vqs()"
-  virtio_vdpa: Revert "virtio_vdpa: support the arg sizes of find_vqs()"
-  virtio: Revert "virtio: find_vqs() add arg sizes"
-
- arch/um/drivers/virtio_uml.c             |  2 +-
- drivers/net/virtio_net.c                 | 42 +++---------------------
- drivers/platform/mellanox/mlxbf-tmfifo.c |  1 -
- drivers/remoteproc/remoteproc_virtio.c   |  1 -
- drivers/s390/virtio/virtio_ccw.c         |  1 -
- drivers/virtio/virtio_mmio.c             |  9 ++---
- drivers/virtio/virtio_pci_common.c       | 20 +++++------
- drivers/virtio/virtio_pci_common.h       |  3 +-
- drivers/virtio/virtio_pci_legacy.c       |  6 +---
- drivers/virtio/virtio_pci_modern.c       | 17 +++-------
- drivers/virtio/virtio_vdpa.c             | 16 ++++-----
- include/linux/virtio_config.h            | 26 +++------------
- 12 files changed, 34 insertions(+), 110 deletions(-)
-
--- 
-MST
-
+- Hector
