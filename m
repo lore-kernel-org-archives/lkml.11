@@ -2,121 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C154C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A7AC28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235327AbiHPLJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        id S235265AbiHPLK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235188AbiHPLJ3 (ORCPT
+        with ESMTP id S235488AbiHPLKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:09:29 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AD9100946
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:36:21 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id kb8so18132593ejc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:36:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=bI7Y225GCpQ4NdJRGg8+FzYb7W08NKsY6HOs76y3GX8=;
-        b=5pvZMceVU+vt/halR4ASWruqRlsrJFiGvHKGtnsoWzFkwgfV4vnNUJh2p3QtpY9xr1
-         8Zxx5WK/YSwesSB4IgIX9mGPRIJoVpRDIWhJOi0iZSRxEIoNcYdW5s5q3u3QQKidVkrS
-         IXIh3BTy5OdIHU5JffTMASUOV7XuPLqeT70DB7exqRFB/teb7ucp1/bEjEo2EGD7GaSY
-         a8ZbMxx9Y4zUB/VuFs1TJPMeHtkaeHHa+nZY6PvZrsTsw8E+UBaxNpMNdbofHyHF6jlg
-         DVk4+zHzEEjF2oFaF7U4oTWrTr+YcXnM9TsvLqURCLRIwSNchDKaT6efN6ibCKh/WBhX
-         yJqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=bI7Y225GCpQ4NdJRGg8+FzYb7W08NKsY6HOs76y3GX8=;
-        b=md6NELj5G2usCgJR3VWaAtA0hL3NLYJ2GAbq7/0wxMq1pk1mAx259gAHLgRqDydcR+
-         lzq7AnLAn+0cm6XG6fFgRa8ObVjJHXbTXqUBTyqY7jq7yhrf35+YXL4qEZTFPUF+xF7Q
-         FrilySmxxS3+CkfCqPh4PVT3CeNbgi4R3WTpS78MvZe4B35L3yq4uogp3y8ryaDcLftM
-         ZYCy1XJjykC/VwBtBCnDJBSeQ8P3QMJzqgqAyrROWus4ZDvtaM3V1ds2YvKaz7hD71MG
-         wF7gT5gcEL5URs/AVINXGsL51NkG6/ifTzw+c4GpTbVgfeW9kQwgLp7x57uXPBYCmG4T
-         UeEQ==
-X-Gm-Message-State: ACgBeo1kdyqNGyOVwLHmRHWRWumjFMjPri6Cj543gxmS/CUuCsYKKvVn
-        9VJ/+O3CPVhaHFQ93087NBTw5w==
-X-Google-Smtp-Source: AA6agR56VBuI9frf3ORaTQsmlP25dS59QhJ5fbrC1X4vbMonLouSSlVNSuudiw3lYIiJYzAiVXCI4A==
-X-Received: by 2002:a17:907:1611:b0:733:636:5686 with SMTP id hb17-20020a170907161100b0073306365686mr13181883ejc.226.1660646179611;
-        Tue, 16 Aug 2022 03:36:19 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpe-94-253-165-78.zg.cable.xnet.hr. [94.253.165.78])
-        by smtp.googlemail.com with ESMTPSA id o24-20020aa7dd58000000b0043d742104efsm8175945edw.19.2022.08.16.03.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 03:36:19 -0700 (PDT)
-From:   Robert Marko <robert.marko@sartura.hr>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     luka.perkov@sartura.hr, Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH] arm64: dts: microchip: use "okay" instead of "ok"
-Date:   Tue, 16 Aug 2022 12:36:13 +0200
-Message-Id: <20220816103613.22806-1-robert.marko@sartura.hr>
-X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 16 Aug 2022 07:10:36 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A2FDBAE;
+        Tue, 16 Aug 2022 01:38:52 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.93,240,1654527600"; 
+   d="scan'208";a="131561635"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 16 Aug 2022 17:38:52 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 109B6405E379;
+        Tue, 16 Aug 2022 17:38:48 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] dt-bindings: spi: renesas,sh-msiof: Fix 'unevaluatedProperties' warnings
+Date:   Tue, 16 Aug 2022 09:38:42 +0100
+Message-Id: <20220816083842.25925-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DT specification only allows "okay", and for projects like U-boot
-status = "ok" won't enable the device at all.
+With 'unevaluatedProperties' support implemented, there's a number of
+warnings when running dtbs_check:
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+arch/arm64/boot/dts/renesas/r8a77951-ulcb-kf.dtb: spi@e6e90000: Unevaluated properties are not allowed ('power-domains', 'resets' were unexpected)
+	From schema: Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
+
+The main problem is that SoC DTSI's include power-domains and resets
+property, whereas the renesas,sh-msiof.yaml has 'unevaluatedProperties:
+false'. So just add optional power-domains and resets properties.
+
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi | 2 +-
- arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-index 4d55ae868b50..80217d5f3f66 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-@@ -529,7 +529,7 @@ i2c_sfp20: i2c_sfp20 {
- };
+diff --git a/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml b/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
+index 5de710adfa63..7bd86cf876f1 100644
+--- a/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
++++ b/Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
+@@ -69,6 +69,10 @@ properties:
+   clocks:
+     maxItems: 1
  
- &mdio3 {
--	status = "ok";
-+	status = "okay";
- 	phy64: ethernet-phy@64 {
- 		reg = <28>;
- 	};
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-index ec90bda7ed6a..0760cf2e48bc 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-@@ -208,7 +208,7 @@ sfp_eth63: sfp-eth63 {
- };
- 
- &mdio0 {
--	status = "ok";
-+	status = "okay";
- 	phy0: ethernet-phy@0 {
- 		reg = <0>;
- 	};
-@@ -284,7 +284,7 @@ phy23: ethernet-phy@23 {
- };
- 
- &mdio1 {
--	status = "ok";
-+	status = "okay";
- 	phy24: ethernet-phy@24 {
- 		reg = <0>;
- 	};
-@@ -360,7 +360,7 @@ phy47: ethernet-phy@47 {
- };
- 
- &mdio3 {
--	status = "ok";
-+	status = "okay";
- 	phy64: ethernet-phy@64 {
- 		reg = <28>;
- 	};
++  power-domains: true
++
++  resets: true
++
+   num-cs:
+     description: |
+       Total number of chip selects (default is 1).
 -- 
-2.37.2
+2.25.1
 
