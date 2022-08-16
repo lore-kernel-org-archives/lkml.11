@@ -2,369 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 164BBC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24067C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbiHPQOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        id S235708AbiHPQOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiHPQNz (ORCPT
+        with ESMTP id S235053AbiHPQO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:13:55 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E38266F;
-        Tue, 16 Aug 2022 09:13:53 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 18:13:50 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660666431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c44hSdTbwLK3ivSGIQsUqegZa6QypIYnbAeGw7ck58I=;
-        b=WyjLtm+gBudSl4+l1M/7ltOdixtgesnxbySVszLQNHkulu69xA/lY/KFRA82osQPWDOHBs
-        4UAC0cm19+/qRdzQdy06QcwX226jKpwEJ932+nO3z+SkuypQoEnWC7Hx/phjwcaBiRGe27
-        wfjs6EKYqLcyYAFuhWTHOlgaK6wgf18=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Andrew Jones <andrew.jones@linux.dev>
-To:     Peter Gonda <pgonda@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcorr@google.com, seanjc@google.com, michael.roth@amd.com,
-        thomas.lendacky@amd.com, joro@8bytes.org, mizhang@google.com,
-        pbonzini@redhat.com, vannapurve@google.com
-Subject: Re: [V3 10/11] KVM: selftests: Add ucall pool based implementation
-Message-ID: <20220816161350.b7x5brnyz5pyi7te@kamzik>
-References: <20220810152033.946942-1-pgonda@google.com>
- <20220810152033.946942-11-pgonda@google.com>
+        Tue, 16 Aug 2022 12:14:27 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC954F6B5;
+        Tue, 16 Aug 2022 09:14:24 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GBpgKO027136;
+        Tue, 16 Aug 2022 18:14:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=qovgCI/rHlWBP9Q7xRWBKX4sBON8udJGHElHZMj6Q8E=;
+ b=nhO+bbRjGYuE8kYQa0uljXnx+xRPm92mF9hC5ELZ6SP8iy86oCWsdEZsgIGLN/OvnIEQ
+ +brmaf9iE1wy3r63JbaKo977JeNgC3aRwuYYOzfXqsA2H6cWtk2BL+i6Aw78VMWR8Gsg
+ GL+xUpnbYEh2AVqk+JgK+RbTb3qH161sxDVr3WmU/r/vBnmi5S+YEmfIiKxrA6AsyQGy
+ hVoYSYhJmiU5h5wT5XfeK5mu6ZwLCboTNotjwX7Izsnxf//NhupXxszDe51KkARRpvCQ
+ 844/OX0687yzlDvXj5MDK+LhmPvV8d9OmTVlHNUrYF/DLSx7YzoZbPQ11N5LbgTWRYBk 1w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hx13ar1ky-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 18:14:03 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1E066100034;
+        Tue, 16 Aug 2022 18:14:03 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1753723BE1C;
+        Tue, 16 Aug 2022 18:14:03 +0200 (CEST)
+Received: from localhost (10.75.127.118) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 16 Aug
+ 2022 18:14:02 +0200
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>
+Subject: [PATCH v3 1/2] ARM: dts: stm32: Create separate pinmux for qspi cs pin in stm32mp15-pinctrl.dtsi
+Date:   Tue, 16 Aug 2022 18:13:43 +0200
+Message-ID: <20220816161344.2599908-2-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220816161344.2599908-1-patrice.chotard@foss.st.com>
+References: <20220816161344.2599908-1-patrice.chotard@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810152033.946942-11-pgonda@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.118]
+X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 08:20:32AM -0700, Peter Gonda wrote:
-> To add support for encrypted, SEV, guests in the ucall framework
-> introduce a new "ucall pool" implementation. This was suggested in
-> the thread on "[RFC PATCH 00/10] KVM: selftests: Add support for
-> test-selectable ucall implementations". Using a listed as suggested
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-s/listed/list/
+Create a separate pinmux for qspi chip select in stm32mp15-pinctrl.dtsi.
+In the case we want to use transfer_one() API to communicate with a SPI
+device, chip select signal must be driven individually.
 
-> there doesn't work well because the list is setup using HVAs not GVAs
-> so use a bitmap + array solution instead to get the same pool of ucall
-> structs result.
-> 
-> This allows for guests with encryption enabled set up a pool of ucall
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+---
+ arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 50 ++++++++++++++++--------
+ arch/arm/boot/dts/stm32mp157c-ev1.dts    | 12 +++++-
+ 2 files changed, 43 insertions(+), 19 deletions(-)
 
-to set up
+diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+index 6052243ad81c..ade4fab45f14 100644
+--- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+@@ -1189,7 +1189,7 @@ pins {
+ 	};
+ 
+ 	qspi_bk1_pins_a: qspi-bk1-0 {
+-		pins1 {
++		pins {
+ 			pinmux = <STM32_PINMUX('F', 8, AF10)>, /* QSPI_BK1_IO0 */
+ 				 <STM32_PINMUX('F', 9, AF10)>, /* QSPI_BK1_IO1 */
+ 				 <STM32_PINMUX('F', 7, AF9)>, /* QSPI_BK1_IO2 */
+@@ -1198,12 +1198,6 @@ pins1 {
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+-		pins2 {
+-			pinmux = <STM32_PINMUX('B', 6, AF10)>; /* QSPI_BK1_NCS */
+-			bias-pull-up;
+-			drive-push-pull;
+-			slew-rate = <1>;
+-		};
+ 	};
+ 
+ 	qspi_bk1_sleep_pins_a: qspi-bk1-sleep-0 {
+@@ -1211,13 +1205,12 @@ pins {
+ 			pinmux = <STM32_PINMUX('F', 8, ANALOG)>, /* QSPI_BK1_IO0 */
+ 				 <STM32_PINMUX('F', 9, ANALOG)>, /* QSPI_BK1_IO1 */
+ 				 <STM32_PINMUX('F', 7, ANALOG)>, /* QSPI_BK1_IO2 */
+-				 <STM32_PINMUX('F', 6, ANALOG)>, /* QSPI_BK1_IO3 */
+-				 <STM32_PINMUX('B', 6, ANALOG)>; /* QSPI_BK1_NCS */
++				 <STM32_PINMUX('F', 6, ANALOG)>; /* QSPI_BK1_IO3 */
+ 		};
+ 	};
+ 
+ 	qspi_bk2_pins_a: qspi-bk2-0 {
+-		pins1 {
++		pins {
+ 			pinmux = <STM32_PINMUX('H', 2, AF9)>, /* QSPI_BK2_IO0 */
+ 				 <STM32_PINMUX('H', 3, AF9)>, /* QSPI_BK2_IO1 */
+ 				 <STM32_PINMUX('G', 10, AF11)>, /* QSPI_BK2_IO2 */
+@@ -1226,7 +1219,34 @@ pins1 {
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+-		pins2 {
++	};
++
++	qspi_bk2_sleep_pins_a: qspi-bk2-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX('H', 2, ANALOG)>, /* QSPI_BK2_IO0 */
++				 <STM32_PINMUX('H', 3, ANALOG)>, /* QSPI_BK2_IO1 */
++				 <STM32_PINMUX('G', 10, ANALOG)>, /* QSPI_BK2_IO2 */
++				 <STM32_PINMUX('G', 7, ANALOG)>; /* QSPI_BK2_IO3 */
++		};
++	};
++
++	qspi_cs1_pins_a: qspi-cs1-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 6, AF10)>; /* QSPI_BK1_NCS */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++	};
++
++	qspi_cs1_sleep_pins_a: qspi-cs1-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 6, ANALOG)>; /* QSPI_BK1_NCS */
++		};
++	};
++
++	qspi_cs2_pins_a: qspi-cs2-0 {
++		pins {
+ 			pinmux = <STM32_PINMUX('C', 0, AF10)>; /* QSPI_BK2_NCS */
+ 			bias-pull-up;
+ 			drive-push-pull;
+@@ -1234,13 +1254,9 @@ pins2 {
+ 		};
+ 	};
+ 
+-	qspi_bk2_sleep_pins_a: qspi-bk2-sleep-0 {
++	qspi_cs2_sleep_pins_a: qspi-cs2-sleep-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('H', 2, ANALOG)>, /* QSPI_BK2_IO0 */
+-				 <STM32_PINMUX('H', 3, ANALOG)>, /* QSPI_BK2_IO1 */
+-				 <STM32_PINMUX('G', 10, ANALOG)>, /* QSPI_BK2_IO2 */
+-				 <STM32_PINMUX('G', 7, ANALOG)>, /* QSPI_BK2_IO3 */
+-				 <STM32_PINMUX('C', 0, ANALOG)>; /* QSPI_BK2_NCS */
++			pinmux = <STM32_PINMUX('C', 0, ANALOG)>; /* QSPI_BK2_NCS */
+ 		};
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stm32mp157c-ev1.dts b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+index d142dd30e16b..050c3c27a420 100644
+--- a/arch/arm/boot/dts/stm32mp157c-ev1.dts
++++ b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+@@ -255,8 +255,16 @@ &m_can1 {
+ 
+ &qspi {
+ 	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&qspi_clk_pins_a &qspi_bk1_pins_a &qspi_bk2_pins_a>;
+-	pinctrl-1 = <&qspi_clk_sleep_pins_a &qspi_bk1_sleep_pins_a &qspi_bk2_sleep_pins_a>;
++	pinctrl-0 = <&qspi_clk_pins_a
++		     &qspi_bk1_pins_a
++		     &qspi_cs1_pins_a
++		     &qspi_bk2_pins_a
++		     &qspi_cs2_pins_a>;
++	pinctrl-1 = <&qspi_clk_sleep_pins_a
++		     &qspi_bk1_sleep_pins_a
++		     &qspi_cs1_sleep_pins_a
++		     &qspi_bk2_sleep_pins_a
++		     &qspi_cs2_sleep_pins_a>;
+ 	reg = <0x58003000 0x1000>, <0x70000000 0x4000000>;
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+-- 
+2.25.1
 
-> structs in the guest's shared memory region.
-> 
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Peter Gonda <pgonda@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |   2 +
->  .../selftests/kvm/include/ucall_common.h      |  13 +--
->  .../testing/selftests/kvm/lib/aarch64/ucall.c |  10 +-
->  tools/testing/selftests/kvm/lib/riscv/ucall.c |   5 +-
->  tools/testing/selftests/kvm/lib/s390x/ucall.c |   5 +-
->  .../testing/selftests/kvm/lib/ucall_common.c  | 108 +++++++++++++++++-
->  .../testing/selftests/kvm/lib/x86_64/ucall.c  |   6 +-
->  7 files changed, 131 insertions(+), 18 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 1a84d2d1d85b..baede0d118c5 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -103,6 +103,8 @@ struct kvm_vm {
->  	int stats_fd;
->  	struct kvm_stats_header stats_header;
->  	struct kvm_stats_desc *stats_desc;
-> +
-> +	bool use_ucall_pool;
->  };
->  
->  
-> diff --git a/tools/testing/selftests/kvm/include/ucall_common.h b/tools/testing/selftests/kvm/include/ucall_common.h
-> index 63bfc60be995..002a22e1cd1d 100644
-> --- a/tools/testing/selftests/kvm/include/ucall_common.h
-> +++ b/tools/testing/selftests/kvm/include/ucall_common.h
-> @@ -22,6 +22,9 @@ enum {
->  struct ucall {
->  	uint64_t cmd;
->  	uint64_t args[UCALL_MAX_ARGS];
-> +
-> +	/* For ucall pool usage. */
-> +	struct ucall *hva;
->  };
->  
->  void ucall_arch_init(struct kvm_vm *vm, void *arg);
-> @@ -32,15 +35,9 @@ void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu);
->  void ucall(uint64_t cmd, int nargs, ...);
->  uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
->  
-> -static inline void ucall_init(struct kvm_vm *vm, void *arg)
-> -{
-> -	ucall_arch_init(vm, arg);
-> -}
-> +void ucall_init(struct kvm_vm *vm, void *arg);
->  
-> -static inline void ucall_uninit(struct kvm_vm *vm)
-> -{
-> -	ucall_arch_uninit(vm);
-> -}
-> +void ucall_uninit(struct kvm_vm *vm);
->  
->  #define GUEST_SYNC_ARGS(stage, arg1, arg2, arg3, arg4)	\
->  				ucall(UCALL_SYNC, 6, "hello", stage, arg1, arg2, arg3, arg4)
-> diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> index 132c0e98bf49..ee70531e8e51 100644
-> --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> @@ -81,12 +81,16 @@ void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
->  
->  	if (run->exit_reason == KVM_EXIT_MMIO &&
->  	    run->mmio.phys_addr == (uint64_t)ucall_exit_mmio_addr) {
-> -		vm_vaddr_t gva;
-> +		uint64_t ucall_addr;
-
-Why change this vm_vaddr_t to a uint64_t? We shouldn't, because...
-
->  
->  		TEST_ASSERT(run->mmio.is_write && run->mmio.len == 8,
->  			    "Unexpected ucall exit mmio address access");
-> -		memcpy(&gva, run->mmio.data, sizeof(gva));
-> -		return addr_gva2hva(vcpu->vm, gva);
-> +		memcpy(&ucall_addr, run->mmio.data, sizeof(ucall_addr));
-
-...here we assume it's a vm_vaddr_t and only...
-
-> +
-> +		if (vcpu->vm->use_ucall_pool)
-> +			return (void *)ucall_addr;
-
-...here do we know otherwise. So only here should be any casting.
-
-Also, I think here and in all the ucall_arch_get_ucall() functions we
-should add a comment explaining a host-shared address is used, which
-is why we don't need addr_gva2hva()
-
-> +		else
-> +			return addr_gva2hva(vcpu->vm, ucall_addr);
->  	}
->  
->  	return NULL;
-> diff --git a/tools/testing/selftests/kvm/lib/riscv/ucall.c b/tools/testing/selftests/kvm/lib/riscv/ucall.c
-> index 37e091d4366e..4bb5616df29f 100644
-> --- a/tools/testing/selftests/kvm/lib/riscv/ucall.c
-> +++ b/tools/testing/selftests/kvm/lib/riscv/ucall.c
-> @@ -59,7 +59,10 @@ void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
->  	    run->riscv_sbi.extension_id == KVM_RISCV_SELFTESTS_SBI_EXT) {
->  		switch (run->riscv_sbi.function_id) {
->  		case KVM_RISCV_SELFTESTS_SBI_UCALL:
-> -			return addr_gva2hva(vcpu->vm, run->riscv_sbi.args[0]);
-> +			if (vcpu->vm->use_ucall_pool)
-> +				return (void *)run->riscv_sbi.args[0];
-> +			else
-> +				return addr_gva2hva(vcpu->vm, run->riscv_sbi.args[0]);
-
-Using vm_vaddr_t gva variable for run->riscv_sbi.args[0] like aarch64 does
-for it's address would look a bit nicer.
-
->  		case KVM_RISCV_SELFTESTS_SBI_UNEXP:
->  			vcpu_dump(stderr, vcpu, 2);
->  			TEST_ASSERT(0, "Unexpected trap taken by guest");
-> diff --git a/tools/testing/selftests/kvm/lib/s390x/ucall.c b/tools/testing/selftests/kvm/lib/s390x/ucall.c
-> index 0f695a031d35..b24c6649877a 100644
-> --- a/tools/testing/selftests/kvm/lib/s390x/ucall.c
-> +++ b/tools/testing/selftests/kvm/lib/s390x/ucall.c
-> @@ -30,7 +30,10 @@ void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
->  	    (run->s390_sieic.ipb >> 16) == 0x501) {
->  		int reg = run->s390_sieic.ipa & 0xf;
->  
-> -		return addr_gva2hva(vcpu->vm, run->s.regs.gprs[reg]);
-> +		if (vcpu->vm->use_ucall_pool)
-> +			return (void *)run->s.regs.gprs[reg];
-> +		else
-> +			return addr_gva2hva(vcpu->vm, run->s.regs.gprs[reg]);
-
-Same comment as for riscv.
-
->  	}
->  	return NULL;
->  }
-> diff --git a/tools/testing/selftests/kvm/lib/ucall_common.c b/tools/testing/selftests/kvm/lib/ucall_common.c
-> index ced480860746..b6502a9420c4 100644
-> --- a/tools/testing/selftests/kvm/lib/ucall_common.c
-> +++ b/tools/testing/selftests/kvm/lib/ucall_common.c
-> @@ -1,22 +1,122 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  #include "kvm_util.h"
-> +#include "linux/types.h"
-> +#include "linux/bitmap.h"
-> +#include "linux/atomic.h"
-> +
-> +struct ucall_header {
-> +	DECLARE_BITMAP(in_use, KVM_MAX_VCPUS);
-> +	struct ucall ucalls[KVM_MAX_VCPUS];
-> +};
-> +
-> +static bool use_ucall_pool;
-
-I don't think we need this boolean. It will always be true when ucall_pool
-is non-null and always false with ucall_pool is null. So we can just test
-ucall_pool.
-
-> +static struct ucall_header *ucall_pool;
-> +
-> +void ucall_init(struct kvm_vm *vm, void *arg)
-> +{
-> +	struct ucall *uc;
-> +	struct ucall_header *hdr;
-> +	vm_vaddr_t vaddr;
-> +	int i;
-> +
-> +	use_ucall_pool = vm->use_ucall_pool;
-> +	sync_global_to_guest(vm, use_ucall_pool);
-> +	if (!use_ucall_pool)
-> +		goto out;
-> +
-> +	TEST_ASSERT(!ucall_pool, "Only a single encrypted guest at a time for ucalls.");
-
-"Only a single VM may use a ucall pool at a time"
-
-> +	vaddr = vm_vaddr_alloc_shared(vm, sizeof(*hdr), vm->page_size);
-> +	hdr = (struct ucall_header *)addr_gva2hva(vm, vaddr);
-> +	memset(hdr, 0, sizeof(*hdr));
-> +
-> +	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
-> +		uc = &hdr->ucalls[i];
-> +		uc->hva = uc;
-> +	}
-> +
-> +	ucall_pool = (struct ucall_header *)vaddr;
-> +	sync_global_to_guest(vm, ucall_pool);
-> +
-> +out:
-> +	ucall_arch_init(vm, arg);
-> +}
-> +
-> +void ucall_uninit(struct kvm_vm *vm)
-> +{
-> +	use_ucall_pool = false;
-> +	ucall_pool = NULL;
-> +
-> +	if (!vm->memcrypt.encrypted) {
-
-Why is this condition here?
-
-> +		sync_global_to_guest(vm, use_ucall_pool);
-> +		sync_global_to_guest(vm, ucall_pool);
-> +	}
-> +
-> +	ucall_arch_uninit(vm);
-> +}
-> +
-> +static struct ucall *ucall_alloc(void)
-> +{
-> +	struct ucall *uc = NULL;
-> +	int i;
-> +
-> +	if (!use_ucall_pool)
-> +		goto out;
-> +
-> +	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
-> +		if (!atomic_test_and_set_bit(i, ucall_pool->in_use)) {
-> +			uc = &ucall_pool->ucalls[i];
-> +			memset(uc->args, 0, sizeof(uc->args));
-
-Do we need to zero uc? If so, what about uc->cmd?
-
-> +			break;
-> +		}
-> +	}
-
-Need a blank line here
-
-> +out:
-> +	return uc;
-> +}
-> +
-> +static inline size_t uc_pool_idx(struct ucall *uc)
-> +{
-> +	return uc->hva - ucall_pool->ucalls;
-> +}
-> +
-> +static void ucall_free(struct ucall *uc)
-> +{
-> +	if (!use_ucall_pool)
-> +		return;
-> +
-> +	clear_bit(uc_pool_idx(uc), ucall_pool->in_use);
-> +}
->  
->  void ucall(uint64_t cmd, int nargs, ...)
->  {
-> -	struct ucall uc = {};
-> +	struct ucall *uc;
-> +	struct ucall tmp = {};
->  	va_list va;
->  	int i;
->  
-> -	WRITE_ONCE(uc.cmd, cmd);
-> +	uc = ucall_alloc();
-> +	if (!uc)
-> +		uc = &tmp;
-> +
-> +	WRITE_ONCE(uc->cmd, cmd);
->  
->  	nargs = min(nargs, UCALL_MAX_ARGS);
->  
->  	va_start(va, nargs);
->  	for (i = 0; i < nargs; ++i)
-> -		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
-> +		WRITE_ONCE(uc->args[i], va_arg(va, uint64_t));
->  	va_end(va);
->  
-> -	ucall_arch_do_ucall((vm_vaddr_t)&uc);
-> +	/*
-> +	 * When using the ucall pool implementation the @hva member of the ucall
-> +	 * structs in the pool has been initialized to the hva of the ucall
-> +	 * object.
-> +	 */
-> +	if (use_ucall_pool)
-> +		ucall_arch_do_ucall((vm_vaddr_t)uc->hva);
-> +	else
-> +		ucall_arch_do_ucall((vm_vaddr_t)uc);
-> +
-> +	ucall_free(uc);
->  }
->  
->  uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
-> diff --git a/tools/testing/selftests/kvm/lib/x86_64/ucall.c b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
-> index ead9946399ab..07c1bc41fa5c 100644
-> --- a/tools/testing/selftests/kvm/lib/x86_64/ucall.c
-> +++ b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
-> @@ -30,7 +30,11 @@ void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
->  		struct kvm_regs regs;
->  
->  		vcpu_regs_get(vcpu, &regs);
-> -		return addr_gva2hva(vcpu->vm, regs.rdi);
-> +
-> +		if (vcpu->vm->use_ucall_pool)
-> +			return (void *)regs.rdi;
-> +		else
-> +			return addr_gva2hva(vcpu->vm, regs.rdi);
->  	}
->  	return NULL;
->  }
-> -- 
-> 2.37.1.559.g78731f0fdb-goog
->
-
-Thanks,
-drew
