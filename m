@@ -2,104 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F53C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C33EC32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiHPMV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S231702AbiHPMWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiHPMVX (ORCPT
+        with ESMTP id S230007AbiHPMWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:21:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672A917E02;
-        Tue, 16 Aug 2022 05:21:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEBED61199;
-        Tue, 16 Aug 2022 12:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9308C433D6;
-        Tue, 16 Aug 2022 12:21:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660652480;
-        bh=nCo2keX/vyktzHEJfYoLil0f7n5O9MU+p9hriBKmC5s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yZ5MGtCcdgbtb9ZSlur+uIBmF1K2Fu41wGpSbGxUumldS4WPhpUY6m6JZpI5DfD3j
-         J4FNVYdmcPyaAxwKkBpaIKLq1Ms/ht5SeBieCZ/2bBwJoWJD6xjFk7+ZknRnErkyWn
-         /t4O1sQxQGL8W4kU9mCHtj6mfEloD1Uy03n8w894=
-Date:   Tue, 16 Aug 2022 14:21:17 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 5.15 000/779] 5.15.61-rc1 review
-Message-ID: <YvuLvVXks7JnGPSo@kroah.com>
-References: <20220815180337.130757997@linuxfoundation.org>
- <CA+G9fYuXHvYQkWnDac6T8s9XnP_jctCbV=yEx3Z9EhWko2dPPg@mail.gmail.com>
- <20220816084703.nbciiu63x4dgulwc@pali>
+        Tue, 16 Aug 2022 08:22:05 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4CA25C68;
+        Tue, 16 Aug 2022 05:22:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660652525; x=1692188525;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=B3uUd/yG6wpuTb/aR5iTfAme30Qm6tQlD5VU32Fh/CI=;
+  b=Tifp/ISUfjpNRaPP/CY94u94leOZ91YRfJkuv3BDszBornbMs5Q6XRQ7
+   Ixcw0xfxSGlJ1Jg0hiYU0p5uFCXRilB6YP1Oef6lmkw0edqQbDB88Z1Zk
+   92hPzlG/ufTn1JT3E+1Bor79jl97sbJHqhdZcxEGuqk0Z1IAVbJxaAgBF
+   8TkLB0HHACBU+bOr/uWseGqjadJawZfkVjkgEF0OV/8Hm9kAqrgBq7FeF
+   TucuT2O8paNDEBJxQExyYRDVCGdFPd1jsimk54wcpS0qKHTZDzhCHAQ47
+   lhhOfV7Q2m5H6OH4cSsSeil9POTww0F/BnV3p9UUmF5ySbm27HvydlkBK
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="289773234"
+X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
+   d="scan'208";a="289773234"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:22:03 -0700
+X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
+   d="scan'208";a="675194031"
+Received: from damianos-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.252.40.45])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:21:54 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 4FB31104A4E; Tue, 16 Aug 2022 15:24:57 +0300 (+03)
+Date:   Tue, 16 Aug 2022 15:24:57 +0300
+From:   "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     Chao Peng <chao.p.peng@linux.intel.com>,
+        "Nikunj A. Dadhania" <nikunj@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
+        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
+        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>, bharata@amd.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220816122457.2fjyd4uz5hp5cani@box.shutemov.name>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <b21f41e5-0322-bbfb-b9c2-db102488592d@amd.com>
+ <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
+ <9dc91ce8-4cb6-37e6-4c25-27a72dc11dd0@amd.com>
+ <422b9f97-fdf5-54bf-6c56-3c45eff5e174@amd.com>
+ <1407c70c-0c0b-6955-10bb-d44c5928f2d9@amd.com>
+ <1136925c-2e37-6af4-acac-be8bed9f6ed5@amd.com>
+ <1b02db9d-f2f1-94dd-6f37-59481525abff@amd.com>
+ <20220815130411.GA1073443@chaop.bj.intel.com>
+ <f0094f31-9669-47b5-eb52-6754a13ce757@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220816084703.nbciiu63x4dgulwc@pali>
+In-Reply-To: <f0094f31-9669-47b5-eb52-6754a13ce757@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 10:47:03AM +0200, Pali Rohár wrote:
-> On Tuesday 16 August 2022 14:11:45 Naresh Kamboju wrote:
-> > On Mon, 15 Aug 2022 at 23:44, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > This is the start of the stable review cycle for the 5.15.61 release.
-> > > There are 779 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> > > The whole patch series can be found in one patch at:
-> > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.61-rc1.gz
-> > > or in the git tree and branch at:
-> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> > > and the diffstat can be found below.
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> > 
-> > The powerpc defconfig failed on stable-rc 5.15.
-> > 
-> > * powerpc, build
-> >   - gcc-10-ppc6xx_defconfig
-> >   - gcc-11-ppc6xx_defconfig
-> >   - gcc-8-ppc6xx_defconfig
-> >   - gcc-9-ppc6xx_defconfig
-> > 
-> > arch/powerpc/sysdev/fsl_pci.c: In function 'fsl_add_bridge':
-> > arch/powerpc/sysdev/fsl_pci.c:601:39: error:
-> > 'PCI_CLASS_BRIDGE_PCI_NORMAL' undeclared (first use in this function);
-> > did you mean 'PCI_CLASS_BRIDGE_PCI'?
-> >   601 |                         class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-> >       |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >       |                                       PCI_CLASS_BRIDGE_PCI
-> > arch/powerpc/sysdev/fsl_pci.c:601:39: note: each undeclared identifier
-> > is reported only once for each function it appears in
-> > make[3]: *** [scripts/Makefile.build:289: arch/powerpc/sysdev/fsl_pci.o] Error 1
+On Tue, Aug 16, 2022 at 01:33:00PM +0200, Gupta, Pankaj wrote:
+> Hi Chao,
 > 
-> Hello, this is probably because of missing PCI_CLASS_BRIDGE_PCI_NORMAL
-> define which was added in this change:
+> > 
+> > Actually the current version allows you to delay the allocation to a
+> > later time (e.g. page fault time) if you don't call fallocate() on the
+> > private fd. fallocate() is necessary in previous versions because we
+> > treat the existense in the fd as 'private' but in this version we track
+> > private/shared info in KVM so we don't rely on that fact from memory
+> > backstores.
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/diff/include/linux/pci_ids.h?id=904b10fb189cc15376e9bfce1ef0282e68b0b004
+> Does this also mean reservation of guest physical memory with secure
+> processor (both for SEV-SNP & TDX) will also happen at page fault time?
+> 
+> Do we plan to keep it this way?
 
-I've taken that portion of the commit in the tree now, thanks.
+If you are talking about accepting memory by the guest, it is initiated by
+the guest and has nothing to do with page fault time vs fallocate()
+allocation of host memory. I mean acceptance happens after host memory
+allocation but they are not in lockstep, acceptance can happen much later.
 
-greg k-h
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
