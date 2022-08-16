@@ -2,109 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D1CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D43C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232116AbiHPHaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 03:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
+        id S232172AbiHPHcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231977AbiHPH3q (ORCPT
+        with ESMTP id S232225AbiHPHbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 03:29:46 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B97D31F7;
-        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so16256949pjm.3;
-        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=XXFxUvBcCEQW6aq/xzjSaHd+5yvV496WeWx3Xhu7LQ4=;
-        b=XIVhEq81zbCHt7kzA+a/fmmn4Q6sYPYZs9RFIBiRYHoUh54jOPqD50z5+U61aUGf0u
-         V9ePXU1R7/PQCiMqxoxQ7PjqsEb0D/n8JEHu+Vp+tB0Mcyi8zpTTphTB3hIY9IY2LVM/
-         LTZJAfn5gJkiXK0pdD0jxaAtUkLf2khm+KugO0BCNtg+M6zpjAA7EhLRYfh/eVSX7qrw
-         h05ajRZ1OARHjwYDaMuJ74WLyvgro3hC4/CbGyDQUN8fscFlGmaWslxtOBIloCqEmcVg
-         1YhPsLaMAUx2YKjqzJTXUy96lmKpMvxqzaAE5jB4afUU+23KwbBx/F/bORycui8zZtP2
-         A1nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=XXFxUvBcCEQW6aq/xzjSaHd+5yvV496WeWx3Xhu7LQ4=;
-        b=IqgtDBpeX7aKkHHqwdXIXpi/nZWhQIFuHxjusjihzI28tP3otfB6HJCEy1OZqd4I47
-         DN6voWMBaCzHhy5DofsB7AWuFG+wxjt1zu4+xLQiC0LNpEKR9y7Hu6+FWeOr251vtaEv
-         eBj2vXB5esodqRiFUM76VvyxyjqPJwGyX3pcvfTIrAxf98Hsn8VDdapQ7lFKxYDz5J56
-         0Jv9ej04no7BCfJ0TtlVijwW+ShB12+oG8xwtbhl/e3+UEC5sT/Ohyy05vt5Shp3E0dS
-         JCh1D1B3lzB52f5o7TE6BppsNmS3tty7dBBQhjnp8PN81xFJkzStzlqHmKdv+C1L35vx
-         YD0A==
-X-Gm-Message-State: ACgBeo1a+4jF8aSfI0CtcTU8mOYVrgusVlpEE67eXVuRlQ0flYuUXaV0
-        SEtDqaFo+iLGKzCVbjmtaSc6fRQVqXQ=
-X-Google-Smtp-Source: AA6agR6Gf51589WorFB0MTsn1nnGC1HAgAfVmEvLPxicT5nqTJMQdPocSM4o92aLNGMjG6+CvSK2gA==
-X-Received: by 2002:a17:902:e805:b0:16f:4a25:b5bd with SMTP id u5-20020a170902e80500b0016f4a25b5bdmr19876672plg.85.1660622730176;
-        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id x17-20020a1709027c1100b00172751a2fa4sm1687195pll.80.2022.08.15.21.05.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 21:05:29 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 15 Aug 2022 21:05:27 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Badhri Jagan Sridharan <badhri@google.com>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kyle Tso <kyletso@google.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v1] usb: typec: tcpm: Return ENOTSUPP for power supply
- prop writes
-Message-ID: <20220816040527.GA1108868@roeck-us.net>
-References: <20220816033355.1259400-1-badhri@google.com>
+        Tue, 16 Aug 2022 03:31:45 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCD518B8AF
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 21:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660622987; x=1692158987;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=IzQEN72TmBDMzkJL4xzg5eFSIZtKllar5ZCeHaEg3wo=;
+  b=B45YLX81hN11Vv1vakI1LEkM21X416UK6p3K0t+HHfhs8+GrR+bLQKWR
+   xslw3HIiKDTj3aDYnGEoCjDoewWivyil86ZhfFx7a06HLo4dz+KJRtTnr
+   18sRz4LarWBtHPFMyFpaYZnglebbc5VGVXaHkejbsQV/MXzzJ4tPhBV4V
+   w9BTN1TVqr52rTsC30esh1zBbIdaDxnVbxrSMcYnAsQi9cmJiSpS8lYP6
+   JhgTaU1coc/cu1JYONThtFDpLUYxhlvTbEd+yddlCzcknzFtj5io981kO
+   HuABjJy8GMKKiwkzaFJlJqGgwQOOKcYsHp1Z5qFccGKYtAj28jba81XKx
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292915366"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="292915366"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 21:09:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="934733071"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 15 Aug 2022 21:09:45 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNntg-0001RR-31;
+        Tue, 16 Aug 2022 04:09:44 +0000
+Date:   Tue, 16 Aug 2022 12:09:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/110-smc 4/17]
+ drivers/platform/apple/smc_core.c:210:26: sparse: sparse: cast to restricted
+ __be32
+Message-ID: <202208161228.iyoLmbTO-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220816033355.1259400-1-badhri@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 08:33:55PM -0700, Badhri Jagan Sridharan wrote:
-> When the port does not support USB PD, prevent transition to PD
-> only states when power supply property is written. In this case,
-> TCPM transitions to SNK_NEGOTIATE_CAPABILITIES
-> which should not be the case given that the port is not pd_capable.
-> 
-> [   84.308251] state change SNK_READY -> SNK_NEGOTIATE_CAPABILITIES [rev3 NONE_AMS]
-> [   84.308335] Setting usb_comm capable false
-> [   84.323367] set_auto_vbus_discharge_threshold mode:3 pps_active:n vbus:5000 ret:0
-> [   84.323376] state change SNK_NEGOTIATE_CAPABILITIES -> SNK_WAIT_CAPABILITIES [rev3 NONE_AMS]
-> 
-> Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
+tree:   https://github.com/AsahiLinux/linux bits/110-smc
+head:   85225bbe01a2a74102db8d75e316b4e46f1cb07f
+commit: 59000ffdca0f77c3f45fe7610510b17382fc8974 [4/17] platform/apple: Add new Apple Mac SMC driver
+config: arm64-randconfig-s053-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161228.iyoLmbTO-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/AsahiLinux/linux/commit/59000ffdca0f77c3f45fe7610510b17382fc8974
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/110-smc
+        git checkout 59000ffdca0f77c3f45fe7610510b17382fc8974
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/platform/apple/
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
->  drivers/usb/typec/tcpm/tcpm.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
-> index ea5a917c51b1..904c7b4ce2f0 100644
-> --- a/drivers/usb/typec/tcpm/tcpm.c
-> +++ b/drivers/usb/typec/tcpm/tcpm.c
-> @@ -6320,6 +6320,13 @@ static int tcpm_psy_set_prop(struct power_supply *psy,
->  	struct tcpm_port *port = power_supply_get_drvdata(psy);
->  	int ret;
->  
-> +	/*
-> +	 * All the properties below are related to USB PD. The check needs to be
-> +	 * property specific when a non-pd related property is added.
-> +	 */
-> +	if (!port->pd_supported)
-> +		return -EOPNOTSUPP;
-> +
->  	switch (psp) {
->  	case POWER_SUPPLY_PROP_ONLINE:
->  		ret = tcpm_psy_set_online(port, val);
-> -- 
-> 2.37.1.595.g718a3a8f04-goog
-> 
+sparse warnings: (new ones prefixed by >>)
+>> drivers/platform/apple/smc_core.c:210:26: sparse: sparse: cast to restricted __be32
+
+vim +210 drivers/platform/apple/smc_core.c
+
+   190	
+   191	struct apple_smc *apple_smc_probe(struct device *dev, const struct apple_smc_backend_ops *ops, void *cookie)
+   192	{
+   193		struct apple_smc *smc;
+   194		u32 count;
+   195		int ret;
+   196	
+   197		smc = devm_kzalloc(dev, sizeof(*smc), GFP_KERNEL);
+   198		if (!smc)
+   199			return ERR_PTR(-ENOMEM);
+   200	
+   201		smc->dev = dev;
+   202		smc->be_cookie = cookie;
+   203		smc->be = ops;
+   204		mutex_init(&smc->mutex);
+   205		BLOCKING_INIT_NOTIFIER_HEAD(&smc->event_handlers);
+   206	
+   207		ret = apple_smc_read_u32(smc, SMC_KEY(#KEY), &count);
+   208		if (ret)
+   209			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get key count"));
+ > 210		smc->key_count = be32_to_cpu(count);
+   211	
+   212		ret = apple_smc_get_key_by_index(smc, 0, &smc->first_key);
+   213		if (ret)
+   214			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get first key"));
+   215	
+   216		ret = apple_smc_get_key_by_index(smc, smc->key_count - 1, &smc->last_key);
+   217		if (ret)
+   218			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get last key"));
+   219	
+   220		/* Enable notifications */
+   221		apple_smc_write_flag(smc, SMC_KEY(NTAP), 1);
+   222	
+   223		dev_info(dev, "Initialized (%d keys %p4ch..%p4ch)\n",
+   224			 smc->key_count, &smc->first_key, &smc->last_key);
+   225	
+   226		dev_set_drvdata(dev, smc);
+   227	
+   228		ret = mfd_add_devices(dev, -1, apple_smc_devs, ARRAY_SIZE(apple_smc_devs), NULL, 0, NULL);
+   229		if (ret)
+   230			return ERR_PTR(dev_err_probe(dev, ret, "Subdevice initialization failed"));
+   231	
+   232		return smc;
+   233	}
+   234	EXPORT_SYMBOL(apple_smc_probe);
+   235	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
