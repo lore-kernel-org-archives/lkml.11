@@ -2,100 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C5FC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F398C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236166AbiHPRw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        id S231324AbiHPRxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbiHPRwz (ORCPT
+        with ESMTP id S236267AbiHPRxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:52:55 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADE28276B;
-        Tue, 16 Aug 2022 10:52:54 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id w14so9869897plp.9;
-        Tue, 16 Aug 2022 10:52:54 -0700 (PDT)
+        Tue, 16 Aug 2022 13:53:20 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9C957E1F;
+        Tue, 16 Aug 2022 10:53:18 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id pm17so10367229pjb.3;
+        Tue, 16 Aug 2022 10:53:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=eQ2NahsvhVwzDF3w07e6eihKRt+nAgyrGOVPsy4ALjQ=;
-        b=btGDKJUPdlCBMrCw0W7r+qRR0ygNQM+t19v7X/E8232ZCf5d1iJ5myUaogZDT0bQ+r
-         P5HD4RaRb+zs7sWXrIcFBQgiYQhl6Bs2UEdFxTX+cFRiu0qaH2dYUfWBHTXgbym5bfRB
-         SslXBcZNrxU0Ff9BRXgujiqqE48oYo2NT3XmBYEnPWfBl8Fcgl+WJkFxK0Iv8L+CSD4P
-         18THZJfa0IDp2ZfwOX1m7OoctLlK1IG2qEjwVhqxtefmHCkjDAW71MdQO70B2pHpqI5A
-         9989hu8AEup2dHvUaz2KIjm2pi5wAFxPdjK66SV6P6+d6KAcGKs9VUrYlOL+tzoZo8RC
-         bOyQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=vqWu9nIMNs2OYllxNa/lgOV5pa8uiLhr0uktPZgpEhc=;
+        b=JJCfNmBZtK7Rg0LXuekIXzocFyEbiUou4havkGQOMvUoSdfxVx8XppTLKJTOFqUZx5
+         hta/gDv8tA7m2h/EMpdDQjY/WBac8uFD2WO8SklWF4kOI0kf2SQCzx7txtv3r2gE83u9
+         r324iX+CFT0tepJ2GssUIre+HbXMmMh5tO6NODLP4obrp9z7fdBzbpA6465pvcUBO5DC
+         ByknkvBBsLQh4zIdTwXT0OEHCt9ZiQ2srmS8ChuKTITaTBE/jBiXatN+/xfGvnEVOl+q
+         uC40CwHcJ2i7TBvHjRD+vMrN1gNxcFfEJX0Mh8wFWqgJJn6xvbeN0VnyzqxL4qx0tnVV
+         pI9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=eQ2NahsvhVwzDF3w07e6eihKRt+nAgyrGOVPsy4ALjQ=;
-        b=lJINZVF5n5vdDnjq0XnU6+0oi6geT4dOKY9XVEp1vIl0pHMM8256qCDwOd/GnGVcv3
-         hhbM+q2+68YYBSYq3JZz2fZS3OEAYp+d1xLpnDYZ1bQKDG3E9gX83YQL8GFvL8c9DP9J
-         8Li+5xo7wN0SU192TIZGLK1O6qYGAmogNvvnSEHTA1+IvUaF7roA8FFF6wuUVL9szhei
-         tmPNWv4f+BlxbbUOrzoFjmtvruJZjWm7qKAsbtzSr1DIgl4fiIk2jdPNelRxihgAl+0u
-         zI/kJFUUscbckZuLo8FZNYHSYHiSzIDLJ/+OnYOyZKHmTWuuwmjxSwPvUcFaOeS7E8wP
-         2HZQ==
-X-Gm-Message-State: ACgBeo3cwMTFO45cbgHBQLMefa/YfrW5yf5ttbdDjl6LkqSz2VJHKB5K
-        gEvkMdM+5pyZTW8QDB+03mM=
-X-Google-Smtp-Source: AA6agR6suTxg0+380p9y19bYi3P4d4Cc09btoXZfIQnGg/9fGAdD/xAXirdyO5Gpq83J5m5fAWY/ZQ==
-X-Received: by 2002:a17:90b:350e:b0:1f5:1c63:b563 with SMTP id ls14-20020a17090b350e00b001f51c63b563mr25357476pjb.24.1660672373573;
-        Tue, 16 Aug 2022 10:52:53 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:7229])
-        by smtp.gmail.com with ESMTPSA id ix15-20020a170902f80f00b00171311470eesm9369665plb.8.2022.08.16.10.52.52
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=vqWu9nIMNs2OYllxNa/lgOV5pa8uiLhr0uktPZgpEhc=;
+        b=grhNIMja8eUfTHG5t8BsvzE8NvAaBryCld7vF2dwW6jEOVUa70UPiR006UBKadvX6+
+         BAJ94HmWxBYyQtSfFanTm7aWIyRNW6uFjxoX/stOnwarsfICvOtr47y0j/uQjr/kSyoB
+         UIZ1ya486kSUG1rZoYS806K1sh3hRpw+lglnXXyzUY0qRnKMCRUuSNdlY9v0DnBj6L+f
+         XT8NIszd+Wr6ZjhF/87sK+vdgKgsh2EHIWQB6x/g0zIuCEJU7IW2S4ZW6FXVc6/ZKz/I
+         eGdBZDDJzPGF+QJDBEtYQafDrsx2cgFk74/W2MI/YCJl43CVUsICHRY5YsOxCAPhpTIb
+         ygmg==
+X-Gm-Message-State: ACgBeo3gUTadX4IWnGSCb3FwR/jbKbU8n5uUVOhqzH5pc7cCgdAfvmDp
+        lJHDo0XGOgxVyXRN91LaVuoctYh3C0Nhwhhg
+X-Google-Smtp-Source: AA6agR4pvPuZRyprK3AmV9QelTNUf6H+/44KZsWrd1lsqcvOp2zgHzbSdnacVOmXxYl32Vqqvvnecg==
+X-Received: by 2002:a17:902:c1c4:b0:171:38ab:e761 with SMTP id c4-20020a170902c1c400b0017138abe761mr23726924plc.65.1660672398038;
+        Tue, 16 Aug 2022 10:53:18 -0700 (PDT)
+Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
+        by smtp.googlemail.com with ESMTPSA id mi4-20020a17090b4b4400b001f52fa1704csm3379963pjb.3.2022.08.16.10.53.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 10:52:53 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 16 Aug 2022 07:52:51 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v4 3/3] cgroup/cpuset: Keep user set cpus affinity
-Message-ID: <YvvZc7KgZT/bRoKl@slm.duckdns.org>
-References: <20220816151119.29534-1-longman@redhat.com>
- <20220816151119.29534-4-longman@redhat.com>
- <YvvR2Sa6LxZLwXsJ@slm.duckdns.org>
- <349849aa-937d-8b08-a836-7c5c70168139@redhat.com>
+        Tue, 16 Aug 2022 10:53:17 -0700 (PDT)
+From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+Subject: [PATCH v2 0/7] Convert to filemap_get_folios_contig()
+Date:   Tue, 16 Aug 2022 10:52:39 -0700
+Message-Id: <20220816175246.42401-1-vishal.moola@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <349849aa-937d-8b08-a836-7c5c70168139@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This patch series replaces find_get_pages_contig() with
+filemap_get_folios_contig(). I've run xfstests on btrfs. I've also
+tested the ramfs changes. I ran some xfstests on nilfs2, and its
+seemingly fine although more testing may be beneficial.
+---
 
-On Tue, Aug 16, 2022 at 01:38:17PM -0400, Waiman Long wrote:
-> Yes, a race like this is possible. To completely eliminate the race may
-> require taking task_rq_lock() and then calling
-> __set_cpus_allowed_ptr_locked() which is internal to kernel/sched/core.c.
-> 
-> Alternatively, we can check user_cpus_ptr again after the scond
-> set_cpus_allowed_ptr() and retry it with the other path if set. That will
-> probably address your concern. Please let me know if you are OK with that.
+v2:
+  - Removed an unused label in nilfs2
 
-I think this would look better if structured the other way around - make the
-scheduler side call out to cpuset to query the current restrictions and
-apply it atomically.
+Vishal Moola (Oracle) (7):
+  filemap: Add filemap_get_folios_contig()
+  btrfs: Convert __process_pages_contig() to use
+    filemap_get_folios_contig()
+  btrfs: Convert end_compressed_writeback() to use filemap_get_folios()
+  btrfs: Convert process_page_range() to use filemap_get_folios_contig()
+  nilfs2: Convert nilfs_find_uncommited_extent() to use
+    filemap_get_folios_contig()
+  ramfs: Convert ramfs_nommu_get_unmapped_area() to use
+    filemap_get_folios_contig()
+  filemap: Remove find_get_pages_contig()
 
-Thanks.
+ fs/btrfs/compression.c           | 26 ++++++------
+ fs/btrfs/extent_io.c             | 33 +++++++--------
+ fs/btrfs/subpage.c               |  2 +-
+ fs/btrfs/tests/extent-io-tests.c | 31 +++++++-------
+ fs/nilfs2/page.c                 | 39 ++++++++----------
+ fs/ramfs/file-nommu.c            | 50 ++++++++++++----------
+ include/linux/pagemap.h          |  4 +-
+ mm/filemap.c                     | 71 +++++++++++++++++++-------------
+ 8 files changed, 134 insertions(+), 122 deletions(-)
 
 -- 
-tejun
+2.36.1
+
