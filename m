@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D459C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C4FC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232408AbiHPJIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
+        id S230420AbiHPJI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbiHPJHo (ORCPT
+        with ESMTP id S232891AbiHPJHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:07:44 -0400
+        Tue, 16 Aug 2022 05:07:53 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B404C889D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:25:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC4BA7DF7F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:25:20 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 20A201D70;
-        Tue, 16 Aug 2022 00:25:16 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 59D021DB5;
+        Tue, 16 Aug 2022 00:25:20 -0700 (PDT)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 83B323F70D;
-        Tue, 16 Aug 2022 00:25:13 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BDD443F70D;
+        Tue, 16 Aug 2022 00:25:17 -0700 (PDT)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
@@ -29,9 +29,9 @@ Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
         souvik.chakravarty@arm.com, wleavitt@marvell.com,
         peter.hilber@opensynergy.com, nicola.mazzucato@arm.com,
         tarek.el-sherbiny@arm.com, cristian.marussi@arm.com
-Subject: [RFC PATCH 4/6] firmware: arm_scmi: Move errors defs and code to common.h
-Date:   Tue, 16 Aug 2022 08:24:48 +0100
-Message-Id: <20220816072450.3120959-5-cristian.marussi@arm.com>
+Subject: [RFC PATCH 6/6] firmware: arm_scmi: Call Raw mode hooks from the core stack
+Date:   Tue, 16 Aug 2022 08:24:50 +0100
+Message-Id: <20220816072450.3120959-7-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220816072450.3120959-1-cristian.marussi@arm.com>
 References: <20220816072450.3120959-1-cristian.marussi@arm.com>
@@ -41,133 +41,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move SCMI error codes definitions and helper to the common.h header
-together with the delayed response timeout define.
-
-No functional change.
+Add a few call sites where, if SCMI Raw mode access had been enabled in
+Kconfig, the needed SCMI Raw initialization and hooks are called.
 
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- drivers/firmware/arm_scmi/common.h | 40 ++++++++++++++++++++++++++++++
- drivers/firmware/arm_scmi/driver.c | 40 ------------------------------
- 2 files changed, 40 insertions(+), 40 deletions(-)
+ drivers/firmware/arm_scmi/driver.c | 32 ++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/firmware/arm_scmi/common.h b/drivers/firmware/arm_scmi/common.h
-index 3316bf9eb98a..5ed64bfe9054 100644
---- a/drivers/firmware/arm_scmi/common.h
-+++ b/drivers/firmware/arm_scmi/common.h
-@@ -27,6 +27,46 @@
- #include "protocols.h"
- #include "notify.h"
- 
-+#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
-+
-+enum scmi_error_codes {
-+	SCMI_SUCCESS = 0,	/* Success */
-+	SCMI_ERR_SUPPORT = -1,	/* Not supported */
-+	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
-+	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
-+	SCMI_ERR_ENTRY = -4,	/* Not found */
-+	SCMI_ERR_RANGE = -5,	/* Value out of range */
-+	SCMI_ERR_BUSY = -6,	/* Device busy */
-+	SCMI_ERR_COMMS = -7,	/* Communication Error */
-+	SCMI_ERR_GENERIC = -8,	/* Generic Error */
-+	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
-+	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
-+};
-+
-+static const int scmi_linux_errmap[] = {
-+	/* better than switch case as long as return value is continuous */
-+	0,			/* SCMI_SUCCESS */
-+	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
-+	-EINVAL,		/* SCMI_ERR_PARAM */
-+	-EACCES,		/* SCMI_ERR_ACCESS */
-+	-ENOENT,		/* SCMI_ERR_ENTRY */
-+	-ERANGE,		/* SCMI_ERR_RANGE */
-+	-EBUSY,			/* SCMI_ERR_BUSY */
-+	-ECOMM,			/* SCMI_ERR_COMMS */
-+	-EIO,			/* SCMI_ERR_GENERIC */
-+	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
-+	-EPROTO,		/* SCMI_ERR_PROTOCOL */
-+};
-+
-+static inline int scmi_to_linux_errno(int errno)
-+{
-+	int err_idx = -errno;
-+
-+	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
-+		return scmi_linux_errmap[err_idx];
-+	return -EIO;
-+}
-+
- #define MSG_ID_MASK		GENMASK(7, 0)
- #define MSG_XTRACT_ID(hdr)	FIELD_GET(MSG_ID_MASK, (hdr))
- #define MSG_TYPE_MASK		GENMASK(9, 8)
 diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index 797826237776..141a140792a5 100644
+index 141a140792a5..0068a2ec3b4d 100644
 --- a/drivers/firmware/arm_scmi/driver.c
 +++ b/drivers/firmware/arm_scmi/driver.c
-@@ -37,20 +37,6 @@
+@@ -23,10 +23,12 @@
+ #include <linux/kernel.h>
+ #include <linux/ktime.h>
+ #include <linux/hashtable.h>
++#include <linux/fs.h>
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
++#include <linux/poll.h>
+ #include <linux/processor.h>
+ #include <linux/refcount.h>
+ #include <linux/slab.h>
+@@ -34,6 +36,8 @@
+ #include "common.h"
+ #include "notify.h"
+ 
++#include "raw_mode.h"
++
  #define CREATE_TRACE_POINTS
  #include <trace/events/scmi.h>
  
--enum scmi_error_codes {
--	SCMI_SUCCESS = 0,	/* Success */
--	SCMI_ERR_SUPPORT = -1,	/* Not supported */
--	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
--	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
--	SCMI_ERR_ENTRY = -4,	/* Not found */
--	SCMI_ERR_RANGE = -5,	/* Value out of range */
--	SCMI_ERR_BUSY = -6,	/* Device busy */
--	SCMI_ERR_COMMS = -7,	/* Communication Error */
--	SCMI_ERR_GENERIC = -8,	/* Generic Error */
--	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
--	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
--};
--
- /* List of all SCMI devices active in system */
- static LIST_HEAD(scmi_list);
- /* Protection for the entire list */
-@@ -170,30 +156,6 @@ struct scmi_info {
+@@ -133,6 +137,7 @@ struct scmi_protocol_instance {
+  * @notify_priv: Pointer to private data structure specific to notifications.
+  * @node: List head
+  * @users: Number of users of this instance
++ * @raw: An opaque reference handle used by SCMI Raw mode.
+  */
+ struct scmi_info {
+ 	struct device *dev;
+@@ -152,6 +157,7 @@ struct scmi_info {
+ 	void *notify_priv;
+ 	struct list_head node;
+ 	int users;
++	void *raw;
+ };
  
  #define handle_to_scmi_info(h)	container_of(h, struct scmi_info, handle)
- 
--static const int scmi_linux_errmap[] = {
--	/* better than switch case as long as return value is continuous */
--	0,			/* SCMI_SUCCESS */
--	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
--	-EINVAL,		/* SCMI_ERR_PARAM */
--	-EACCES,		/* SCMI_ERR_ACCESS */
--	-ENOENT,		/* SCMI_ERR_ENTRY */
--	-ERANGE,		/* SCMI_ERR_RANGE */
--	-EBUSY,			/* SCMI_ERR_BUSY */
--	-ECOMM,			/* SCMI_ERR_COMMS */
--	-EIO,			/* SCMI_ERR_GENERIC */
--	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
--	-EPROTO,		/* SCMI_ERR_PROTOCOL */
--};
--
--static inline int scmi_to_linux_errno(int errno)
--{
--	int err_idx = -errno;
--
--	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
--		return scmi_linux_errmap[err_idx];
--	return -EIO;
--}
--
- void scmi_notification_instance_data_set(const struct scmi_handle *handle,
- 					 void *priv)
+@@ -678,6 +684,9 @@ scmi_xfer_command_acquire(struct scmi_chan_info *cinfo, u32 msg_hdr)
+ static inline void scmi_xfer_command_release(struct scmi_info *info,
+ 					     struct scmi_xfer *xfer)
  {
-@@ -1056,8 +1018,6 @@ static void reset_rx_to_maxsz(const struct scmi_protocol_handle *ph,
- 	xfer->rx.len = info->desc->max_msg_size;
++	if (IS_ENABLED(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT))
++		scmi_raw_message_report(info->raw, xfer, SCMI_RAW_REPLY_QUEUE);
++
+ 	atomic_set(&xfer->busy, SCMI_XFER_FREE);
+ 	__scmi_xfer_put(&info->tx_minfo, xfer);
  }
+@@ -744,6 +753,11 @@ static void scmi_handle_notification(struct scmi_chan_info *cinfo,
+ 			   xfer->hdr.protocol_id, xfer->hdr.seq,
+ 			   MSG_TYPE_NOTIFICATION);
  
--#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
--
- /**
-  * do_xfer_with_response() - Do one transfer and wait until the delayed
-  *	response is received
++	if (IS_ENABLED(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT)) {
++		xfer->hdr.seq = MSG_XTRACT_TOKEN(msg_hdr);
++		scmi_raw_message_report(info->raw, xfer, SCMI_RAW_NOTIF_QUEUE);
++	}
++
+ 	__scmi_xfer_put(minfo, xfer);
+ 
+ 	scmi_clear_channel(info, cinfo);
+@@ -757,6 +771,9 @@ static void scmi_handle_response(struct scmi_chan_info *cinfo,
+ 
+ 	xfer = scmi_xfer_command_acquire(cinfo, msg_hdr);
+ 	if (IS_ERR(xfer)) {
++		if (IS_ENABLED(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT))
++			scmi_raw_error_report(info->raw, msg_hdr, priv);
++
+ 		if (MSG_XTRACT_TYPE(msg_hdr) == MSG_TYPE_DELAYED_RESP)
+ 			scmi_clear_channel(info, cinfo);
+ 		return;
+@@ -2486,6 +2503,18 @@ static int scmi_probe(struct platform_device *pdev)
+ 		dev_err(dev,
+ 			"Transport is not polling capable. Atomic mode not supported.\n");
+ 
++	if (IS_ENABLED(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT)) {
++		struct scmi_chan_info *cinfo;
++
++		cinfo = idr_find(&info->tx_idr, SCMI_PROTOCOL_BASE);
++		info->raw = scmi_raw_mode_init(cinfo, info->desc,
++					       info->tx_minfo.max_msg);
++		if (IS_ERR(info->raw)) {
++			dev_err(dev, "Failed to initialize SCMI RAW Mode !\n");
++			info->raw = NULL;
++		}
++	}
++
+ 	/*
+ 	 * Trigger SCMI Base protocol initialization.
+ 	 * It's mandatory and won't be ever released/deinit until the
+@@ -2552,6 +2581,9 @@ static int scmi_remove(struct platform_device *pdev)
+ 	struct scmi_info *info = platform_get_drvdata(pdev);
+ 	struct device_node *child;
+ 
++	if (IS_ENABLED(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT))
++		scmi_raw_mode_cleanup(info->raw);
++
+ 	mutex_lock(&scmi_list_mutex);
+ 	if (info->users)
+ 		ret = -EBUSY;
 -- 
 2.32.0
 
