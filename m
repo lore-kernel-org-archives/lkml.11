@@ -2,78 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA9AC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECB6C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbiHPIRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
+        id S229772AbiHPISI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232503AbiHPIQd (ORCPT
+        with ESMTP id S231458AbiHPIRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:16:33 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826004B493;
-        Mon, 15 Aug 2022 22:37:40 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 8F51B447D8;
-        Tue, 16 Aug 2022 05:37:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1660628259; bh=klFJScQtPdSGYcjCrTuLd0vmp+BxBQY7IprafXE1WXI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=UYrY0eQvg03ffFpSW8MPibeWDmSlQ/yIUpjNy0a6r8M5yYDkXuuY2mgbvXGRIvUKV
-         GKz0u6P8fP347aqNjdqhKCYZ0hFw97bxhf4/fNsEOEsk0hKwi3mcerFSmxESOJtObT
-         ehE5TDjXiRASB0Tulir8a5ysB6oWfFiNPMGbPFaEHIkqpw3cbHaGwhpgxXXTL8zzPZ
-         Rk7YU9AniJOpzHeMzqoGsi2OYvQ/6Rcogj3a4cY18e2p+OdyQYoMJRUkxaqMCUj3Q8
-         sR2f1ZuFZuhOHeN4Zq5QAjXQLlzT+m6x0uN6nV8Fbd17jp7/ETXkceDCDFThJLdMRQ
-         HVN0NlTWFLFlw==
-Message-ID: <923f9638-d443-cb8e-104f-41a7f34fa25c@marcan.st>
-Date:   Tue, 16 Aug 2022 14:37:33 +0900
+        Tue, 16 Aug 2022 04:17:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F72118DD9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660630370; x=1692166370;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OCTurReto08p/Yn/8a5qxxlFZM8SnUJ15m3nnDnfQIc=;
+  b=L3Omw0Anz9TjUKqLKkKvTimpUILsANCgFBnPRyMUxZGqsLZ8/+gfxdQv
+   rUY72/weQ53GstGe6RP3xCD/04n0bwGX+br04SQ/fi1Hw/LPM7BGbmcYc
+   pjJSqatD3ItaByBUmSYPxOZ9P4KRSMkXeufjHW5rBsGY1Sj6UEkyMlvr/
+   0ho50eQqw3Q/mbIU1h6OgNdOpcPjpSSTfuWPrEqHyfJfUYdkaN4MFFUyn
+   S3gVgt6Pp7xFS+aGqqt4TYCtmOLf5dXu0sXckIkfBnNzcE5OlFEHA0Qrm
+   Nwubwa4zf+jHKQWBEF2jyUr9eH4D8kE47EOUFcQ51NS3UT05gFXgSYBwC
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292131839"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="292131839"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 23:12:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="639909154"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2022 23:12:48 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNpol-0001YP-2v;
+        Tue, 16 Aug 2022 06:12:47 +0000
+Date:   Tue, 16 Aug 2022 14:12:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jianpeng Ma <jianpeng.ma@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Coly Li <colyli@suse.de>, Qiaowei Ren <qiaowei.ren@intel.com>
+Subject: [colyli-bcache:nvdimm-meta 2/16]
+ drivers/md/bcache/nvmpg_format.h:132:19: warning: 'bch_nvmpg_recs_magic'
+ defined but not used
+Message-ID: <202208161410.TIsjGMiZ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] workqueue: Fix memory ordering race in queue_work*()
-Content-Language: es-ES
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     tj@kernel.org, will@kernel.org, peterz@infradead.org,
-        jirislaby@kernel.org, maz@kernel.org, mark.rutland@arm.com,
-        boqun.feng@gmail.com, catalin.marinas@arm.com, oneukum@suse.com,
-        roman.penyaev@profitbricks.com, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <YvsZvwxACuGw3KIt@gondor.apana.org.au>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <YvsZvwxACuGw3KIt@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/08/2022 13.14, Herbert Xu wrote:
-> Hector Martin <marcan@marcan.st> wrote:
->>
->> This has been broken since the dawn of time, and it was incompletely
->> fixed by 346c09f80459, which added the necessary barriers in the work
->> execution path but failed to account for the missing barrier in the
->> test_and_set_bit() failure case. Fix it by switching to
->> atomic_long_fetch_or(), which does have unconditional barrier semantics
->> regardless of whether the bit was already set or not (this is actually
->> just test_and_set_bit() minus the early exit path).
-> 
-> test_and_set_bit is supposed to contain a full memory barrier.
-> If it doesn't then your arch is broken and needs to be fixed.
-> 
-> Changing this one spot is pointless because such assumptions
-> are all over the kernel.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git nvdimm-meta
+head:   b3a2634cd2ac86de5e7ac607104db6866b1b9f6b
+commit: 08ce6a36470047a30ac9db26714a566280adddde [2/16] bcache: initialize the nvm pages allocator
+config: i386-randconfig-a003-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161410.TIsjGMiZ-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git/commit/?id=08ce6a36470047a30ac9db26714a566280adddde
+        git remote add colyli-bcache https://git.kernel.org/pub/scm/linux/kernel/git/colyli/linux-bcache.git
+        git fetch --no-tags colyli-bcache nvdimm-meta
+        git checkout 08ce6a36470047a30ac9db26714a566280adddde
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/md/
 
-Documentation/atomic_bitops.txt and the asm-generic implementaton
-disagree with you, so this isn't quite as simple as "your arch is
-broken" :-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-- Hector
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/md/bcache/nvmpg.h:8,
+                    from drivers/md/bcache/super.c:17:
+>> drivers/md/bcache/nvmpg_format.h:132:19: warning: 'bch_nvmpg_recs_magic' defined but not used [-Wunused-const-variable=]
+     132 | static const __u8 bch_nvmpg_recs_magic[] = {
+         |                   ^~~~~~~~~~~~~~~~~~~~
+>> drivers/md/bcache/nvmpg_format.h:129:19: warning: 'bch_nvmpg_magic' defined but not used [-Wunused-const-variable=]
+     129 | static const __u8 bch_nvmpg_magic[] = {
+         |                   ^~~~~~~~~~~~~~~
+
+
+vim +/bch_nvmpg_recs_magic +132 drivers/md/bcache/nvmpg_format.h
+
+e9147021c67818 Coly Li 2021-07-26  128  
+e9147021c67818 Coly Li 2021-07-26 @129  static const __u8 bch_nvmpg_magic[] = {
+e9147021c67818 Coly Li 2021-07-26  130  	0x17, 0xbd, 0x53, 0x7f, 0x1b, 0x23, 0xd6, 0x83,
+e9147021c67818 Coly Li 2021-07-26  131  	0x46, 0xa4, 0xf8, 0x28, 0x17, 0xda, 0xec, 0xa9 };
+e9147021c67818 Coly Li 2021-07-26 @132  static const __u8 bch_nvmpg_recs_magic[] = {
+e9147021c67818 Coly Li 2021-07-26  133  	0x39, 0x25, 0x3f, 0xf7, 0x27, 0x17, 0xd0, 0xb9,
+e9147021c67818 Coly Li 2021-07-26  134  	0x10, 0xe6, 0xd2, 0xda, 0x38, 0x68, 0x26, 0xae };
+e9147021c67818 Coly Li 2021-07-26  135  
+
+:::::: The code at line 132 was first introduced by commit
+:::::: e9147021c678184512de1776d163b5a994a209a3 bcache: add initial data structures for nvm pages
+
+:::::: TO: Coly Li <colyli@suse.de>
+:::::: CC: Coly Li <colyli@suse.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
