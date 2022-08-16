@@ -2,124 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8763C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8EBC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233626AbiHPJcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
+        id S233680AbiHPJfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233602AbiHPJcP (ORCPT
+        with ESMTP id S233677AbiHPJem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:32:15 -0400
+        Tue, 16 Aug 2022 05:34:42 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF0A543CF
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:54:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD8032DB5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:57:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660636492; x=1692172492;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TLEuY2/U4pQUDEP/zjo9Z2OPr/WgpzE2RoPctNCb/wQ=;
-  b=cIlyonEMoGa+/u9t7cY7fTcz0cSpdgSFnzi18HdYlZ/h0TyxFR+YgAgh
-   slk8bkZVHWC7A8IhXa0jL3p6lLYZigq0Aet3kCNlxKxD41rNO1G2moIHN
-   cB1lPtlPqSm/k7L5EPaYdoloYb92NeZPFg0dSM2AYQA8KIKVPXTCm2Irh
-   rKGdZE59dBn3HARz3Skv03Mwj4BCj7WznKQJXPQ3f2D5TsOjClJEMkqQX
-   nvXpICKwuw73XtzV6UpFdWd/lqzYZwNQf3wB/+mOqAnAS8y5GKjxkbWn9
-   8dHdSRsNdylt5srOKr2XeCDetpI34itGGhmMp1L2a4yfd7DmJAXeJEMqp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279114878"
+  t=1660636672; x=1692172672;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZvWB4M8eR4Jbi7It4IXOF+CNiV2Jq8cf+MKyrs3C74M=;
+  b=mkurmNIBxQzX/GyJebA64y+jnyisTf97Fm/M84J1kySzbROAnfCvZUt5
+   Uj5AS/6a8t+qWHZxQW4WAH16NY4KedERkvDnsZixclXD+Y55EepIYH0q7
+   IdA2ChTpaLwH00RRf+q+BYXeduUNyrT3KxcJQYI09E6vgxflm9bflAv3L
+   fdQnctslvBLcnJebHqFTHhpWBNy9yPyapk06MXNazzzzXGNA6rgTL1r7m
+   h3niYaphz/nbnyoFZiusNFDesl6nvrEGE3eGPYvHBMj4wk+e4WKxTlSYQ
+   bx9B+RnRf27fSrGKp60mfEVOH8DiCpXzBexp33dI5uP8ZzIHzAwUdcVvx
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279115522"
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="279114878"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 00:54:52 -0700
+   d="scan'208";a="279115522"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 00:57:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="934801940"
+   d="scan'208";a="675121778"
 Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Aug 2022 00:54:50 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2022 00:57:50 -0700
 Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oNrPV-0001bt-34;
-        Tue, 16 Aug 2022 07:54:49 +0000
-Date:   Tue, 16 Aug 2022 15:54:47 +0800
+        id 1oNrSQ-0001cB-0F;
+        Tue, 16 Aug 2022 07:57:50 +0000
+Date:   Tue, 16 Aug 2022 15:57:37 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>
-Subject: [linux-stable-rc:queue/5.10 199/544]
- drivers/gpu/drm/vc4/vc4_dsi.c:617:35: warning: unused variable 'dsi0_regs'
-Message-ID: <202208161526.UJs2840c-lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/microcode] BUILD SUCCESS
+ 71da8a554f25713964a919311c324e5a32f08239
+Message-ID: <62fb4df1.f2njs2LrTsRtYYfW%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.10
-head:   b1f7647ff950714d3eb2ef0f32c7f84050dd6192
-commit: 8402723ecfe0a2b2f8d4934794a45b1132689255 [199/544] drm/vc4: dsi: Introduce a variant structure
-config: arm64-randconfig-r022-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161526.UJs2840c-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 6afcc4a459ead8809a0d6d9b4bf7b64bcc13582b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=8402723ecfe0a2b2f8d4934794a45b1132689255
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/5.10
-        git checkout 8402723ecfe0a2b2f8d4934794a45b1132689255
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/vc4/
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/microcode
+branch HEAD: 71da8a554f25713964a919311c324e5a32f08239  x86/microcode/AMD: Attempt applying on every logical thread
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Unverified Warning (likely false positive, please contact us if interested):
 
-All warnings (new ones prefixed by >>):
+Documentation/admin-guide/tainted-kernels.rst:143: WARNING: Block quote ends without a blank line; unexpected unindent.
 
->> drivers/gpu/drm/vc4/vc4_dsi.c:617:35: warning: unused variable 'dsi0_regs' [-Wunused-const-variable]
-   static const struct debugfs_reg32 dsi0_regs[] = {
-                                     ^
-   1 warning generated.
+Warning ids grouped by kconfigs:
 
+gcc_recent_errors
+`-- x86_64-allnoconfig
+    `-- Documentation-admin-guide-tainted-kernels.rst:WARNING:Block-quote-ends-without-a-blank-line-unexpected-unindent.
 
-vim +/dsi0_regs +617 drivers/gpu/drm/vc4/vc4_dsi.c
+elapsed time: 709m
 
-4078f575714423 Eric Anholt 2017-01-31  616  
-3051719af11eb4 Eric Anholt 2019-02-20 @617  static const struct debugfs_reg32 dsi0_regs[] = {
-3051719af11eb4 Eric Anholt 2019-02-20  618  	VC4_REG32(DSI0_CTRL),
-3051719af11eb4 Eric Anholt 2019-02-20  619  	VC4_REG32(DSI0_STAT),
-3051719af11eb4 Eric Anholt 2019-02-20  620  	VC4_REG32(DSI0_HSTX_TO_CNT),
-3051719af11eb4 Eric Anholt 2019-02-20  621  	VC4_REG32(DSI0_LPRX_TO_CNT),
-3051719af11eb4 Eric Anholt 2019-02-20  622  	VC4_REG32(DSI0_TA_TO_CNT),
-3051719af11eb4 Eric Anholt 2019-02-20  623  	VC4_REG32(DSI0_PR_TO_CNT),
-3051719af11eb4 Eric Anholt 2019-02-20  624  	VC4_REG32(DSI0_DISP0_CTRL),
-3051719af11eb4 Eric Anholt 2019-02-20  625  	VC4_REG32(DSI0_DISP1_CTRL),
-3051719af11eb4 Eric Anholt 2019-02-20  626  	VC4_REG32(DSI0_INT_STAT),
-3051719af11eb4 Eric Anholt 2019-02-20  627  	VC4_REG32(DSI0_INT_EN),
-3051719af11eb4 Eric Anholt 2019-02-20  628  	VC4_REG32(DSI0_PHYC),
-3051719af11eb4 Eric Anholt 2019-02-20  629  	VC4_REG32(DSI0_HS_CLT0),
-3051719af11eb4 Eric Anholt 2019-02-20  630  	VC4_REG32(DSI0_HS_CLT1),
-3051719af11eb4 Eric Anholt 2019-02-20  631  	VC4_REG32(DSI0_HS_CLT2),
-3051719af11eb4 Eric Anholt 2019-02-20  632  	VC4_REG32(DSI0_HS_DLT3),
-3051719af11eb4 Eric Anholt 2019-02-20  633  	VC4_REG32(DSI0_HS_DLT4),
-3051719af11eb4 Eric Anholt 2019-02-20  634  	VC4_REG32(DSI0_HS_DLT5),
-3051719af11eb4 Eric Anholt 2019-02-20  635  	VC4_REG32(DSI0_HS_DLT6),
-3051719af11eb4 Eric Anholt 2019-02-20  636  	VC4_REG32(DSI0_HS_DLT7),
-3051719af11eb4 Eric Anholt 2019-02-20  637  	VC4_REG32(DSI0_PHY_AFEC0),
-3051719af11eb4 Eric Anholt 2019-02-20  638  	VC4_REG32(DSI0_PHY_AFEC1),
-3051719af11eb4 Eric Anholt 2019-02-20  639  	VC4_REG32(DSI0_ID),
-4078f575714423 Eric Anholt 2017-01-31  640  };
-4078f575714423 Eric Anholt 2017-01-31  641  
+configs tested: 110
+configs skipped: 3
 
-:::::: The code at line 617 was first introduced by commit
-:::::: 3051719af11eb48dc8947826cfb66dbe0f281c7d drm/vc4: Use drm_print_regset32() for our debug register dumping.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-:::::: TO: Eric Anholt <eric@anholt.net>
-:::::: CC: Eric Anholt <eric@anholt.net>
+gcc tested configs:
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+i386                             allyesconfig
+i386                                defconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+arm                      integrator_defconfig
+sh                            shmin_defconfig
+xtensa                              defconfig
+arm                         at91_dt_defconfig
+m68k                        m5307c3_defconfig
+i386                 randconfig-a001-20220815
+i386                 randconfig-a005-20220815
+i386                 randconfig-a004-20220815
+i386                 randconfig-a006-20220815
+i386                 randconfig-a003-20220815
+i386                 randconfig-a002-20220815
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+x86_64               randconfig-a006-20220815
+x86_64               randconfig-a003-20220815
+x86_64               randconfig-a005-20220815
+x86_64               randconfig-a004-20220815
+x86_64               randconfig-a001-20220815
+x86_64               randconfig-a002-20220815
+x86_64                           rhel-8.3-kvm
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+i386                 randconfig-c001-20220815
+sh                            hp6xx_defconfig
+powerpc                   currituck_defconfig
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+s390                       zfcpdump_defconfig
+m68k                             allyesconfig
+powerpc                 mpc8540_ads_defconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+xtensa                  nommu_kc705_defconfig
+riscv                    nommu_k210_defconfig
+mips                         bigsur_defconfig
+powerpc                      chrp32_defconfig
+arm                           h3600_defconfig
+powerpc                     redwood_defconfig
+powerpc                     sequoia_defconfig
+ia64                      gensparse_defconfig
+arm                           corgi_defconfig
+sh                        sh7785lcr_defconfig
+arm                      footbridge_defconfig
+powerpc                     stx_gp3_defconfig
+nios2                               defconfig
+arm                         vf610m4_defconfig
+i386                          debian-10.3-kvm
+i386                        debian-10.3-kunit
+i386                         debian-10.3-func
+powerpc              randconfig-c003-20220815
+m68k                            q40_defconfig
+arm                         s3c6400_defconfig
+powerpc                      makalu_defconfig
+arc                            hsdk_defconfig
+powerpc                    klondike_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+s390                                defconfig
+s390                             allmodconfig
+arc                                 defconfig
+alpha                               defconfig
+s390                             allyesconfig
+xtensa                         virt_defconfig
+powerpc                       eiger_defconfig
+arm                          iop32x_defconfig
+m68k                       m5208evb_defconfig
+m68k                         amcore_defconfig
+arc                           tb10x_defconfig
+
+clang tested configs:
+riscv                randconfig-r042-20220815
+s390                 randconfig-r044-20220815
+hexagon              randconfig-r045-20220815
+hexagon              randconfig-r041-20220815
+x86_64               randconfig-a016-20220815
+x86_64               randconfig-a013-20220815
+x86_64               randconfig-a015-20220815
+x86_64               randconfig-a014-20220815
+x86_64               randconfig-a012-20220815
+i386                 randconfig-a011-20220815
+i386                 randconfig-a012-20220815
+i386                 randconfig-a014-20220815
+i386                 randconfig-a016-20220815
+i386                 randconfig-a015-20220815
+i386                 randconfig-a013-20220815
+x86_64               randconfig-a011-20220815
+arm                        multi_v5_defconfig
+arm                          collie_defconfig
+x86_64               randconfig-k001-20220815
+powerpc                          g5_defconfig
+powerpc                          allmodconfig
+powerpc                 mpc836x_mds_defconfig
 
 -- 
 0-DAY CI Kernel Test Service
