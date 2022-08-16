@@ -2,159 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E77C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8B1C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiHPRKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S236231AbiHPRNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236776AbiHPRKq (ORCPT
+        with ESMTP id S236160AbiHPRNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:10:46 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE6E659EE;
-        Tue, 16 Aug 2022 10:10:44 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 8F2006C1B90;
-        Tue, 16 Aug 2022 17:10:43 +0000 (UTC)
-Received: from pdx1-sub0-mail-a225.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id AEDA46C1977;
-        Tue, 16 Aug 2022 17:10:42 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1660669843; a=rsa-sha256;
-        cv=none;
-        b=IbHFQs+XHp4MZI3X6oCtUbIZS0/XG+6TYvsn8I5KVkcFEbRthAx3z/u/xMqP+fReeDCFai
-        Z3Y7WnvekUrlkotbQKRIqZVWFgdrrXMgehf/6yQUmYjzOl8xBbMagixZ0erABnsQYjWcm+
-        JXD/9n8ut9ePLNRvhrcKAUcp8ZC/vH4YAsV2VwJVJwBEbzuc1QPmsE1boSkHKGdr/J31fL
-        Iq5QQEWGKvX97E1u4DZk4jgAyZapMVF1ISnAtI1AVZ4Gw4qHn1u7N6IBi5OCHODClQGWU/
-        FA54Vv7PV/UOmG8URN5smUid4VNZu8h+qKGchGJwvx0W5Ji6TYigj2n5XmzrUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1660669843;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=OHBgu+nCXZPgIF8SF+iAlqU9/Ri3M1yE/jeNQa9OyJ8=;
-        b=sqUdMlhmauBvWpJJdPaZzAT9WJQcj7oPOrs5e1+DYWIQHYeXAUylZOB2solv/r9cDy4MJa
-        /Vn3kxQN0o1V2pc6VaMxXb88kR/ZiDFiYLRmPuI11kR9aszKtpUjMKNYM/4F7cz3RecL1z
-        8T9Q9/mY5GmHeVupSd9kbFjdaikGdRO8ein1Uu+MFsmSM+SeE74oJpIHJHrpk+prTKUswz
-        VyQMe+ZZ7wU50z9sFwzbGEIVg9KikGf4n+Xr1q+eBcrLLZjZuDANeO3A8jXyC+OiuGlHjS
-        5/gv+xlxCkjhhzr+h8GTRvWr2eB2GqDFrulFkRwsNTVFrd7xIl598YkiyGsD+g==
-ARC-Authentication-Results: i=1;
-        rspamd-7697cc766f-vpvlp;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Bitter-Robust: 2ac89aff49f3d01c_1660669843343_3379587907
-X-MC-Loop-Signature: 1660669843343:2764178874
-X-MC-Ingress-Time: 1660669843343
-Received: from pdx1-sub0-mail-a225.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.124.238.93 (trex/6.7.1);
-        Tue, 16 Aug 2022 17:10:43 +0000
-Received: from offworld (unknown [104.36.25.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a225.dreamhost.com (Postfix) with ESMTPSA id 4M6d2T1Wsvz2V;
-        Tue, 16 Aug 2022 10:10:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1660669842;
-        bh=OHBgu+nCXZPgIF8SF+iAlqU9/Ri3M1yE/jeNQa9OyJ8=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=NJfSoY0zDKVG3Yq23Z8ww/mW+b8bq82/EFoJqrDMz2sdpQW5WWBb0SZ0gcH+gSaMD
-         MJfmttLaOMlcKx8nIPtmIKcf7pp+9DH39izVmSbD8+KrK5N0jC7pfDMriq8eKC1rE4
-         x3T/C2ADWt7uoU0nXrG/msbyzT0Jh3J/A/i3/AU2I26hh4VIsQOVGsLDMpCSG/wSc7
-         EpSyHLLUskSnCFYWzK7LZL2SvbpwVswJ+si6XS2laX1HTGXQlkZCiDeOiYc7WPyDxU
-         Yh5DfgfPlkFc/Rm7xvoU5lukELPTcMwYHhOvBwT4bBQ4nEV/YicmNKprHd/Flrq+hk
-         W9i5FRKQDlcBg==
-Date:   Tue, 16 Aug 2022 09:53:01 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
-        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
-        alison.schofield@intel.com, a.manzanares@samsung.com,
-        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, bp@alien8.de, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arch/cacheflush: Introduce flush_all_caches()
-Message-ID: <20220816165301.4m4w6zsse62z4hxz@offworld>
-References: <165791937063.2491387.15277418618265930924.stgit@djiang5-desk3.ch.intel.com>
- <20220718053039.5whjdcxynukildlo@offworld>
- <4bedc81d-62fa-7091-029e-a2e56b4f8f7a@intel.com>
- <20220803183729.00002183@huawei.com>
- <9f3705e1-de21-0f3c-12af-fd011b6d613d@intel.com>
- <YvO8pP7NUOdH17MM@FVFF77S0Q05N>
- <62f40fba338af_3ce6829466@dwillia2-xfh.jf.intel.com.notmuch>
- <20220815160706.tqd42dv24tgb7x7y@offworld>
- <Yvtc2u1J/qip8za9@worktop.programming.kicks-ass.net>
- <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch>
+        Tue, 16 Aug 2022 13:13:38 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789D7FD3A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:13:34 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id o3so9791481ple.5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:13:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=nCnzPY6Zh9VdSsRKwhjox/WjI1k8bZC9jPf83kIBEEk=;
+        b=HTfIRePpzriHYdTea6DPwsWvn5y7QXMY8OVfQqwJlLpcZ+tVonA1BaB3HbImWENSah
+         reUGQ3FY4VDi/URRoQFsKIJYDFXa7LtbZKpLNEMks8xGJ+BdmWV94LfdJ/9q9aCFR1EZ
+         VDkGtT6lwdjDVih7UFgGzSCOzZORYGs0DgvhwXa2zLSXz4J1PccV8OcenqD6PSPsF0nd
+         zTO/Q3gmzfQz6U576HV6fOyurzdW4TMSx7r6cDpJpNmW3+JcO2pYtkoGR+3Q4KSzGH+y
+         1J4rISS3nLnG5Y6eKv7HRSVhzDYiZj+8YkeKB4D3s8jdh1VS2r7QDkWQotQAptmi8cKn
+         V5lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=nCnzPY6Zh9VdSsRKwhjox/WjI1k8bZC9jPf83kIBEEk=;
+        b=Nly+EDsmZfX2X93NCXlE1c4Yen4/Hj4WvkFe0AzJjti2dSar0QYCzXXjUNRkpttHf2
+         Aqkbyd4eLKVx239eKynuDp7e2C8dFUJsbEL6jqb4ei+TvrfY8v/jBDL6I09knyo4/z/6
+         goiCP95qMZPUgJD52FIMUsu9O3qkeQl3toQSeduQiVbGD+07KDpTwgsoRQAT3CclOjTE
+         p2UTSLDVhttKlnP7q+013ZjW/oQIez4VpxnvDuk5OtW1WYvqQAybsAPv8aLv6VK1a4l4
+         Dik5dOe1mWcTSWZCvtJU5SrP8cuYEBkD5JPCo02RX5j3mvyd7oauTTpjvKSvT5XCqKVU
+         zBVQ==
+X-Gm-Message-State: ACgBeo0UKhzAMZp43y0vionLqqVzktEfih3mWnpzHMNic49Duvq8zuLM
+        VLEU6tI9IlT//Bf4DDPvvHqGFQ==
+X-Google-Smtp-Source: AA6agR5L/kCG6++/8HFb3cejkYGUqynoOmOraywNSR1IjQL8jDmOhtSQz5ZOi6O2lTVdIfpucPzXww==
+X-Received: by 2002:a17:90a:4801:b0:1fa:98ec:fa2 with SMTP id a1-20020a17090a480100b001fa98ec0fa2mr3521502pjh.41.1660670013710;
+        Tue, 16 Aug 2022 10:13:33 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:df29:644b:8119:e30a])
+        by smtp.gmail.com with ESMTPSA id n11-20020a170902d2cb00b0016e808dbe55sm9401312plc.96.2022.08.16.10.13.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 10:13:33 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 10:13:28 -0700
+From:   Isaac Manjarres <isaacmanjarres@google.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
+Message-ID: <YvvQOBk9T3J1uX8k@google.com>
+References: <20220815211919.2028890-1-isaacmanjarres@google.com>
+ <20220816042507.GB1108868@roeck-us.net>
+ <YvsoYzIhOtX9DOi2@google.com>
+ <20220816111311.GC1108868@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220816111311.GC1108868@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022, Dan Williams wrote:
+On Tue, Aug 16, 2022 at 04:13:11AM -0700, Guenter Roeck wrote:
+> On Mon, Aug 15, 2022 at 10:17:23PM -0700, Isaac Manjarres wrote:
+> > On Mon, Aug 15, 2022 at 09:25:07PM -0700, Guenter Roeck wrote:
+> > > > v1 -> v2:
+> > > > - Fixed the logic in __driver_attach() to allow a driver to continue
+> > > >   attempting to match and bind with devices in case of any error, not
+> > > >   just probe deferral.
+> > > > 
+> > > > Guenter,
+> > > > 
+> > > > Can you please give test this patch to make sure it still works for you?
+> > > > 
+> > > 
+> > > Not as well as v1. I still see the clk crash with versatileab, and imx25-pdk
+> > > emulations now stall during boot when trying to boot from usb.
+> > > 
+> > > Guenter
+> > Thanks for trying the patch out. This patch isn't meant to fix the clk
+> > crash that you mentioned on another thread. I had made the following patch for
+> > that: https://lore.kernel.org/lkml/YvqTvuqSll30Rv2k@google.com/. Have
+> > you been able to give that a shot yet? If not can you please test with the
+> > patch in this e-mail and that patch?
+> > 
+> 
+> No, sorry, I missed that one. It does not apply, though - it is whitespace
+> corrupted. I tried to fix it up, but that failed.
 
->Peter Zijlstra wrote:
->> On Mon, Aug 15, 2022 at 09:07:06AM -0700, Davidlohr Bueso wrote:
->> > diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
->> > index b192d917a6d0..ce2ec9556093 100644
->> > --- a/arch/x86/include/asm/cacheflush.h
->> > +++ b/arch/x86/include/asm/cacheflush.h
->> > @@ -10,4 +10,7 @@
->> >
->> >  void clflush_cache_range(void *addr, unsigned int size);
->> >
->> > +#define flush_all_caches() \
->> > +	do { wbinvd_on_all_cpus(); } while(0)
->> > +
->>
->> This is horrific... we've done our utmost best to remove all WBINVD
->> usage and here you're adding it back in the most horrible form possible
->> ?!?
->>
->> Please don't do this, do *NOT* use WBINVD.
->
->Unfortunately there are a few good options here, and the changelog did
->not make clear that this is continuing legacy [1], not adding new wbinvd
->usage.
-
-While I was hoping that it was obvious from the intel.c changes that this
-was not a new wbinvd, I can certainly improve the changelog with the below.
+When applying the patch, can you please try with
+git apply --ignore-whitespace ? That worked for me.
+> 
+> > Did you test imx25-pdk emulations with just v1 of this patch previously?
+> > 
+> 
+> I am quite sure I did because it is a single setup.
+> 
+That's odd. Is this something that I can try out on qemu? If so, can you
+please share the qemu commandline so I can take a look?
 
 Thanks,
-Davidlohr
-
->
->The functionality this is enabling is to be able to instantaneously
->secure erase potentially terabytes of memory at once and the kernel
->needs to be sure that none of the data from before the secure is still
->present in the cache. It is also used when unlocking a memory device
->where speculative reads and firmware accesses could have cached poison
->from before the device was unlocked.
->
->This capability is typically only used once per-boot (for unlock), or
->once per bare metal provisioning event (secure erase), like when handing
->off the system to another tenant. That small scope plus the fact that
->none of this is available to a VM limits the potential damage. So,
->similar to the mitigation we did in [2] that did not kill off wbinvd
->completely, this is limited to specific scenarios and should be disabled
->in any scenario where wbinvd is painful / forbidden.
->
->[1]: 4c6926a23b76 ("acpi/nfit, libnvdimm: Add unlock of nvdimm support for Intel DIMMs")
->[2]: e2efb6359e62 ("ACPICA: Avoid cache flush inside virtual machines")
+Isaac
