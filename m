@@ -2,69 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77AFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F76C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 08:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233270AbiHPIlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 04:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        id S230231AbiHPImc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 04:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbiHPIkh (ORCPT
+        with ESMTP id S232657AbiHPImB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 04:40:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB7D102A
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 23:45:26 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6M490cYmzXdgF;
-        Tue, 16 Aug 2022 14:41:13 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 16 Aug
- 2022 14:45:23 +0800
-From:   Zhang Zekun <zhangzekun11@huawei.com>
-To:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
-        <robert.foss@linaro.org>, <Laurent.pinchart@ideasonboard.com>,
-        <jonas@kwiboo.se>, <jernej.skrabec@gmail.com>, <airlied@linux.ie>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <briannorris@chromium.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <xuqiang36@huawei.com>
-Subject: [PATCH -next] drm/bridge: Add missing clk_disable_unprepare() in analogix_dp_resume()
-Date:   Tue, 16 Aug 2022 06:42:31 +0000
-Message-ID: <20220816064231.60473-1-zhangzekun11@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 16 Aug 2022 04:42:01 -0400
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5CA120B2;
+        Mon, 15 Aug 2022 23:46:38 -0700 (PDT)
+Received: by mail-qv1-f49.google.com with SMTP id mn10so2503639qvb.10;
+        Mon, 15 Aug 2022 23:46:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=mQKxHhlVCpHcdp8dQEIScJFQsrh06tzn535mwalxKj0=;
+        b=7FbR1r7n2I5aPAq7Hg56T1pgoMtTwe1Yj5gkKrFH99WJJUndpXTPtMJGMoSRTSKCSP
+         mQQsnDwqnqybhIBq5/YP8NIgB1Mn36TWofUhtAeYeQWA4YWAKDIq1xQ01+urVyINAuYw
+         MNxADnkakoxLLrVWOeewcTdcO2FUDKgmYkYjfN6W1H3Z2Scj94wewwLzwfMYOaQ/VNs3
+         6cG4PsWUsevJdJ/OcgQXDJpR6jN190NfnLXVw/L6p9JyGz+NbQojxU/W+o0EhGrRrJ8S
+         bt6GDMRVlzhfxHsDqimaqjsBz9lDSyy6/8nExqBIif8I3HH58cniPij4eshv/DPpIwoi
+         IDMQ==
+X-Gm-Message-State: ACgBeo3nlekMkqpHUiB9cT8Vzf83NJlD10MA6/JJDwYuXKQvIQv+7M/R
+        u7jXW7EekRFOVYYYwLoUh7TBKjWxp5imSw==
+X-Google-Smtp-Source: AA6agR6MvS0/rMglc3x2FMGmqy58aKJ19CD3Kda50Do7FFQCLDgjn6VdqlH4O4wHUVpoAP/Ve1UoQA==
+X-Received: by 2002:a0c:a992:0:b0:492:b5b8:faad with SMTP id a18-20020a0ca992000000b00492b5b8faadmr5702649qvb.33.1660632397006;
+        Mon, 15 Aug 2022 23:46:37 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id h5-20020a05620a284500b006b9a24dc9d7sm10377617qkp.7.2022.08.15.23.46.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 23:46:34 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-32194238c77so127605097b3.4;
+        Mon, 15 Aug 2022 23:46:31 -0700 (PDT)
+X-Received: by 2002:a05:6902:100a:b0:676:ed53:25b0 with SMTP id
+ w10-20020a056902100a00b00676ed5325b0mr13356288ybt.365.1660632391068; Mon, 15
+ Aug 2022 23:46:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+References: <20220815143959.1511278-1-zi.yan@sent.com>
+In-Reply-To: <20220815143959.1511278-1-zi.yan@sent.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 16 Aug 2022 08:46:19 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWohdUZxi3A=H1wqY4rYrLD-ME6mmhWb6Z-udovd=1BhQ@mail.gmail.com>
+Message-ID: <CAMuHMdWohdUZxi3A=H1wqY4rYrLD-ME6mmhWb6Z-udovd=1BhQ@mail.gmail.com>
+Subject: Re: [PATCH] arch: mm: rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER
+To:     Zi Yan <ziy@nvidia.com>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        David Rientjes <rientjes@google.com>,
+        James Houghton <jthoughton@google.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Qin Jian <qinjian@cqplus1.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Guo Ren <guoren@kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        "David S. Miller" <davem@davemloft.net>,
+        Chris Zankel <chris@zankel.net>, Arnd Bergmann <arnd@arndb.de>,
+        Ley Foon Tan <ley.foon.tan@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        arcml <linux-snps-arc@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-oxnas@groups.io, linux-csky@vger.kernel.org,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        loongarch@lists.linux.dev,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing clk_disable_unprepare() before return from
-analogix_dp_resume() in the error handling case.
+On Mon, Aug 15, 2022 at 4:40 PM Zi Yan <zi.yan@sent.com> wrote:
+> From: Zi Yan <ziy@nvidia.com>
+>
+> This Kconfig option is used by individual arch to set its desired
+> MAX_ORDER. Rename it to reflect its actual use.
+>
+> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
 
-Fixes: 211f276ed3d9 ("drm: bridge: analogix/dp: add panel prepare/unprepare in suspend/resume time")
-Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
----
- drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 1 +
- 1 file changed, 1 insertion(+)
+>  arch/m68k/Kconfig.cpu                        | 2 +-
 
-diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-index 8aadcc0aa90b..a0fd652547f5 100644
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1887,6 +1887,7 @@ int analogix_dp_resume(struct analogix_dp_device *dp)
- 	if (dp->plat_data->panel) {
- 		if (drm_panel_prepare(dp->plat_data->panel)) {
- 			DRM_ERROR("failed to setup the panel\n");
-+			clk_disable_unprepare(dp->clock);
- 			return -EBUSY;
- 		}
- 	}
--- 
-2.17.1
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
