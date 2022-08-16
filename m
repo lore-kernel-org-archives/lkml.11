@@ -2,213 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0333BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B69C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234233AbiHPKC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
+        id S234242AbiHPKCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234053AbiHPKCE (ORCPT
+        with ESMTP id S232084AbiHPKCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:02:04 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8407913D8DB
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:26:56 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id z20so12502821edb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=QDEve6J+FvXDoisqTMwo0p9DvKs3kysq/xhm5KZN/F8=;
-        b=x4ZT5feLMaQ/Wgubwh3Hh3K6rOaF0UpMyoMCMsyXRfALVt3fukFYV+LUVN6RHT+xvq
-         m+bvgD40p+GdrNbsmiAFwUnNF45m8BefjVWh5rFYs4sYghVcojRrHKbt6xnsFP4uR9s7
-         zBGNFPk0IRSVVUHqKkQWeXn8hWJeeT3PLXt84DqBo4V9PYzyqmnittq/BuOxY5nP2Zi7
-         XH1vgqDIMD3efS2lg16k2VP8dWtr1pUxTmlR/+CyrnzfSbN+XCHkwMRZqK/OI40x1ud+
-         bssuky03t4h6u280TM3PF9/mO/K+YNuzS75HiT/SGo5SppwUlc3GHmDDrnQOJ7Br5xFx
-         O0Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QDEve6J+FvXDoisqTMwo0p9DvKs3kysq/xhm5KZN/F8=;
-        b=LDp7q1tfETbtJDqmL91+QdabIwuXx2ycYhKJ2EEULAb9tN+mJbARVY9FuqP3doo+LN
-         KYB1ycVnPPGWoS1783rpkpFa0+wH7hsvk0TL5R/56QaFtKkK7g+tEVy8CCY6mxBMvz3e
-         DFDP36HrzQXZRp/FXaNso++TnPPd6BHhusK6khQPtC7egfbnjRCL47UhM3s0vxWBZdJl
-         df2UlSnTmfoLtbg9yR4JhtfRhS6Wr6uWprgvJPe4zXKFoGv+QaZVQOWTfqlPZb6xLzPo
-         qpWkXRlo98T3pHY5h8M+j99eOl6hwtAtMolFzMGmRPSiRpmJlB8yVNmX7jnVHE8kLa3z
-         M9/Q==
-X-Gm-Message-State: ACgBeo0DgBxKSxhJ9plTePhP+mdu4+XWHUrWLoL2GQPnfpb13K2pNYe5
-        KSBb6CpQuL+HcKS6G3rQ1xAksA==
-X-Google-Smtp-Source: AA6agR67zf10EbPitdqUQl3FsEBWXIw/eieDrOVQ5oSnllulorwU6g/JwdIB55zfcvWNvkr+S7Q5pw==
-X-Received: by 2002:a05:6402:448b:b0:43b:5ec6:8863 with SMTP id er11-20020a056402448b00b0043b5ec68863mr17413054edb.377.1660638414930;
-        Tue, 16 Aug 2022 01:26:54 -0700 (PDT)
-Received: from [192.168.1.69] (120.205.87.79.rev.sfr.net. [79.87.205.120])
-        by smtp.gmail.com with ESMTPSA id 5-20020a170906328500b00731219a2797sm4929454ejw.210.2022.08.16.01.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 01:26:54 -0700 (PDT)
-Message-ID: <47fdb798-b66e-3d30-dcbe-a3d15dc45619@baylibre.com>
-Date:   Tue, 16 Aug 2022 10:26:53 +0200
+        Tue, 16 Aug 2022 06:02:06 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF1FC877A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:02:41 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220816080235euoutp0144f491b0d112eddf954beab6ab8e5d5b~LxIMq31ck0597405974euoutp01e
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:02:35 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220816080235euoutp0144f491b0d112eddf954beab6ab8e5d5b~LxIMq31ck0597405974euoutp01e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1660636955;
+        bh=w+UeNKFPkWuzxd2gXXq4NTrE0Bz4wmcfIlzmDBOFbwQ=;
+        h=Date:Subject:To:CC:From:In-Reply-To:References:From;
+        b=RAR1wRHu/BOFrAZmorCEpSM25V699cyBQtLPd69h0FXvshEQxlSaKx/gjdVWQ20Cp
+         +FQPly9vQ/mSkIcOax1fsW3h7PmR3/oPsL7/pbrf0qte37ScWjYTmwxnWdDAFtt+oF
+         4yrusIBitn8qORdscYpwxOjswQhyn8Onn0Fp09Y8=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220816080234eucas1p1944800b3870bef434c619543e727f2d8~LxIMQJt2H0475004750eucas1p1F;
+        Tue, 16 Aug 2022 08:02:34 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id DE.46.09580.A1F4BF26; Tue, 16
+        Aug 2022 09:02:34 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220816080234eucas1p2ec04f60bad4888c708d7c57f5aab5d47~LxIL0Fflp2135521355eucas1p2u;
+        Tue, 16 Aug 2022 08:02:34 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220816080234eusmtrp2222f44d8dffbb9c0cbd291bd2fceb90b~LxILy-Wxp1663716637eusmtrp2D;
+        Tue, 16 Aug 2022 08:02:34 +0000 (GMT)
+X-AuditID: cbfec7f5-9c3ff7000000256c-80-62fb4f1a8245
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id D8.4F.09095.A1F4BF26; Tue, 16
+        Aug 2022 09:02:34 +0100 (BST)
+Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220816080234eusmtip2b83e83d28d6f473c7506bda77a4da005~LxILlzw4B1996419964eusmtip2c;
+        Tue, 16 Aug 2022 08:02:34 +0000 (GMT)
+Received: from [192.168.8.130] (106.210.248.18) by CAMSVWEXC01.scsc.local
+        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+        Tue, 16 Aug 2022 09:02:31 +0100
+Message-ID: <dfb3bb5d-404c-90d9-5fa5-ee62639057bf@samsung.com>
+Date:   Tue, 16 Aug 2022 10:02:29 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH v4 0/3] ECAP support on TI AM62x SoC
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+        Thunderbird/91.11.0
+Subject: Re: [PATCH v10 13/13] dm: add power-of-2 target for zoned devices
+ with non power-of-2 zone sizes
 Content-Language: en-US
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     robh+dt@kernel.org, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        mranostay@ti.com
-References: <20220810140724.182389-1-jpanis@baylibre.com>
- <Yvk4OijjBj+Wa7fT@fedora>
-From:   Julien Panis <jpanis@baylibre.com>
-In-Reply-To: <Yvk4OijjBj+Wa7fT@fedora>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <snitzer@kernel.org>, <axboe@kernel.dk>, <hch@lst.de>,
+        <agk@redhat.com>
+CC:     <linux-block@vger.kernel.org>, <Johannes.Thumshirn@wdc.com>,
+        <bvanassche@acm.org>, <matias.bjorling@wdc.com>, <hare@suse.de>,
+        <gost.dev@samsung.com>, <linux-nvme@lists.infradead.org>,
+        <jaegeuk@kernel.org>, <pankydev8@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <dm-devel@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Joel Granados <j.granados@samsung.com>
+From:   Pankaj Raghav <p.raghav@samsung.com>
+In-Reply-To: <d4735d9e-31b6-0872-82a7-acbbd0cb5af5@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [106.210.248.18]
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrKKsWRmVeSWpSXmKPExsWy7djP87pS/r+TDJ4s0rVYf+oYs8Xqu/1s
+        FtM+/GS2+H32PLNFa/s3Jou972azWuxZNInJYuXqo0wWT9bPYrb423UPKHFL2+LyrjlsFvOX
+        PWW3mND2ldlizc2nLBYnbkk7CHhcvuLtsXPWXXaPy2dLPTat6mTz2Lyk3mP3zQY2j52t91k9
+        3u+7ChQ6Xe3xeZOcR/uBbqYA7igum5TUnMyy1CJ9uwSujEendzEX3OGqeN1zjLmB8TtbFyMn
+        h4SAicSbMz2MXYxcHEICKxglXu89wwLhfGGU+Ny5FSrzmVFi44oTzDAtu5YuYoJILGeUmPPi
+        ODtc1enD3cwQzi6gzIYORpAWXgE7ies/noO1swioSmw7/oYJIi4ocXLmExYQW1QgUmLN7rNA
+        kzg4hAWyJSZ22ICEmQXEJW49mQ+2TUSggVFi+v4tYA6zwA8miS2fpjGBNLAJaEk0doL1cgq4
+        SXxeEg/RqynRuv03O4QtL7H97RyoD5QkFrbdgQZArcTaY2fAHpAQeMYpsaJnE1TCRWLr7RNQ
+        trDEq+Nb2CFsGYn/O+czQdjVEk9v/GaGaG5hlOjfuZ4N5AgJAWuJvjM5EDWOQD/eggrzSdx4
+        KwhxD5/EpG3TmScwqs5CColZSF6eheSFWUheWMDIsopRPLW0ODc9tdg4L7Vcrzgxt7g0L10v
+        OT93EyMwJZ7+d/zrDsYVrz7qHWJk4mA8xCjBwawkwiv44keSEG9KYmVValF+fFFpTmrxIUZp
+        DhYlcd7kzA2JQgLpiSWp2ampBalFMFkmDk6pBqZi6+OqnsE5F3y+qb/Xzxc7Ybyg0vGo2uoS
+        n2tHXkQpfLCY95+9XfZC3znWBvGKF1XS4vsjjr41e2zKs2HSv3krpnhNzcjNOXXt85vJaaG7
+        1Bn2vmCW3flZ26WlgmmOalz886X6p/W6du77ucm83WOGTtZzgasntLa9WnJP79rFxABBP5/a
+        ALakXG3XHH+7Td2MP9wyJjRerfIvf6X7r+DFa2PbR8+Y7Wayp+beVPe++mnNv//OUe2/a11M
+        tkjlLnyaEs3mWJywUTB24vLNWjtq5kYceVwwbfpuz03HHrUwyxpnFjX3zfvYtl7l+4qLO4/d
+        /tSlKCh8+cQfri2317+5dLy910z2wXpth4TJP28osRRnJBpqMRcVJwIABKxREvgDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprBKsWRmVeSWpSXmKPExsVy+t/xe7pS/r+TDHpfclusP3WM2WL13X42
+        i2kffjJb/D57ntmitf0bk8Xed7NZLfYsmsRksXL1USaLJ+tnMVv87boHlLilbXF51xw2i/nL
+        nrJbTGj7ymyx5uZTFosTt6QdBDwuX/H22DnrLrvH5bOlHptWdbJ5bF5S77H7ZgObx87W+6we
+        7/ddBQqdrvb4vEnOo/1AN1MAd5SeTVF+aUmqQkZ+cYmtUrShhZGeoaWFnpGJpZ6hsXmslZGp
+        kr6dTUpqTmZZapG+XYJexqPTu5gL7nBVvO45xtzA+J2ti5GTQ0LARGLX0kVMXYxcHEICSxkl
+        Zj39zgyRkJH4dOUjO4QtLPHnWhdYg5DAR0aJWwvdIRp2MUqsunsPrIFXwE7i+o/nYDaLgKrE
+        tuNvmCDighInZz5hAbFFBSIlHi5rAopzcAgLZEtM7LABCTMLiEvcejIf7AgRgQZGien7t4A5
+        zAI/mCS2fJrGBLH5LZNE74p0kGY2AS2Jxk52EJNTwE3i85J4iDmaEq3bf7ND2PIS29/OgfpF
+        SWJh2x2oh2slXt3fzTiBUXQWkutmITljFpJRs5CMWsDIsopRJLW0ODc9t9hQrzgxt7g0L10v
+        OT93EyMwiWw79nPzDsZ5rz7qHWJk4mA8xCjBwawkwiv44keSEG9KYmVValF+fFFpTmrxIUZT
+        YBBNZJYSTc4HprG8knhDMwNTQxMzSwNTSzNjJXFez4KORCGB9MSS1OzU1ILUIpg+Jg5OqQam
+        ksR3Gy/v4Yy4Ivb65+78ouD3rY9SjepzNr5YckT9DktxhGi63AEODsHvPUs1/9v/NL1rrye1
+        UScw8P8Ssd+3ZT9tmehls8RBj8dqttwiVzlJRfva5eZuU+/khwuvcDv99dKhRbsO1cSvqTYQ
+        FHlQEPe/kPP72iLNEM5TKd5387vmdv2+F8jypObkbbcyvlWLUj7PW2i5IuDTWYGqd7vdn9h3
+        /fjMcqL++C6Rn1MMNum6ve6awvP5wj2JGydl303/XLt/TsVmx9xK57PPO+t/L72ZvfHK7PO2
+        6x7f78hawlPvxv1xyjpBC/fy6CPy29rvTnb5VXFIbtPdjTyfTh9a0eW7Nncql+Bttmrtvedu
+        rlBiKc5INNRiLipOBACnkEk0qwMAAA==
+X-CMS-MailID: 20220816080234eucas1p2ec04f60bad4888c708d7c57f5aab5d47
+X-Msg-Generator: CA
+X-RootMTR: 20220811143058eucas1p247291685ffff7a75186947fd30b5c13f
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220811143058eucas1p247291685ffff7a75186947fd30b5c13f
+References: <20220811143043.126029-1-p.raghav@samsung.com>
+        <CGME20220811143058eucas1p247291685ffff7a75186947fd30b5c13f@eucas1p2.samsung.com>
+        <20220811143043.126029-14-p.raghav@samsung.com>
+        <bb4ab1f2-7e16-15a7-58b1-d37f6f3822fd@opensource.wdc.com>
+        <b98ab80d-1bc0-a378-d438-09ef8b375836@samsung.com>
+        <d4735d9e-31b6-0872-82a7-acbbd0cb5af5@opensource.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 14/08/2022 20:00, William Breathitt Gray wrote:
-> On Wed, Aug 10, 2022 at 04:07:21PM +0200, Julien Panis wrote:
->> The Enhanced Capture (ECAP) module can be used to timestamp events
->> detected on signal input pin. It can be used for time measurements
->> of pulse train signals.
->>
->> ECAP module includes 4 timestamp capture registers. For all 4 sequenced
->> timestamp capture events (1->2->3->4->1->...), edge polarity (falling/rising
->> edge) can be selected.
->>
->> This driver leverages counter subsystem to :
->> - select edge polarity for all 4 capture events (event mode)
->> - log timestamps for each capture event
->> Event polarity, and CAP1/2/3/4 timestamps give all the information
->> about the input pulse train. Further information can easily be computed :
->> period and/or duty cycle if frequency is constant, elapsed time between
->> pulses, etc...
->>
->> Modifications since v3:
->> 	- Migrate driver from IIO to Counter subsystem
->> 	- Minor modification in yaml ($id) to match Counter subsystem
->> 	- Add ABI documentation
->>
->> Userspace commands :
->> 	### SIGNAL ###
->> 	cd /sys/bus/counter/devices/counter0/signal0
->>
->> 	# Get available polarities for each capture event
->> 	cat polarity1_available
->> 	cat polarity2_available
->> 	cat polarity3_available
->> 	cat polarity4_available
->>
->> 	# Get polarity for each capture event
->> 	cat polarity1
->> 	cat polarity2
->> 	cat polarity3
->> 	cat polarity4
->>
->> 	# Set polarity for each capture event
->> 	echo rising > polarity1
->> 	echo falling > polarity2
->> 	echo rising > polarity3
->> 	echo falling > polarity4
->>
->> 	### COUNT ###
->> 	cd /sys/bus/counter/devices/counter0/count0
->>
->> 	# Run ECAP
->> 	echo 1 > enable
->>
->> 	# Get current timebase counter value
->> 	cat count
->>
->> 	# Get captured timestamps
->> 	cat capture1
->> 	cat capture2
->> 	cat capture3
->> 	cat capture4
->>
->> 	# Note that counter watches can also be used to get
->> 	# data from userspace application
->> 	# -> see tools/counter/counter_example.c
->>
->> 	# Stop ECAP
->> 	echo 0 > enable
->>
->> Julien Panis (3):
->>    dt-binding: counter: add ti,am62-ecap-capture.yaml
->>    Documentation: ABI: add sysfs-bus-counter-ecap
->>    counter: capture-tiecap: capture driver support for ECAP
->>
->>   .../ABI/testing/sysfs-bus-counter-ecap        |  64 ++
->>   .../counter/ti,am62-ecap-capture.yaml         |  61 ++
->>   drivers/counter/Kconfig                       |  14 +
->>   drivers/counter/Makefile                      |   1 +
->>   drivers/counter/capture-tiecap.c              | 634 ++++++++++++++++++
->>   include/uapi/linux/counter.h                  |   2 +
->>   6 files changed, 776 insertions(+)
->>   create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ecap
->>   create mode 100644 Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
->>   create mode 100644 drivers/counter/capture-tiecap.c
->>
->> -- 
->> 2.25.1
-> Something that has become apparent to me is the code repetition in this
-> driver in order to support the capture buffer. Buffers are common
-> components in devices, so it'll be good for us to standardize some of
-> what we're exploring here into an interface that other drivers can also
-> use. We have two ABIs to consider: the driver interface and the sysfs
-> interface.
->
-> For the sysfs interface, I think we'll have to expose each element
-> individually (e.g. capture1, capture2, etc.) because sysfs attributes
-> are suppose to expose only a single datum for any given attribute.
->
-> For the driver side, we might want to introduce a new Counter component
-> type for buffers and respective macros to streamline some of the code
-> for driver authors. For example, a new COUNTER_COMP_BUFFER_U64 enum
-> counter_comp_type constant could be introduced to represent a u64 buffer
-> element; respective struct counter_comp read callbacks could be
-> introduced::
->
->      int (*count_buffer_u64_read)(struct counter_device *counter,
->                                   struct counter_count *count,
-> 				 size_t index, u64 *val);
->
-> So a driver author can use the "index" parameter to locate the buffer
-> element and pass back its value via the "val" parameter.To define the
-> buffer, maybe helper macros like this could be introduced::
->
->      COUNTER_COMP_COUNT_BUFFER_U64("capture", ecap_cnt_cap_read, 4)
->
-> This would define four u64 buffer elements each named prefixed with
-> "capture" and with their read callbacks set to ecap_cnt_cap_read().
-
-Somehow, this "index" parameter would make things much easier for driver 
-author.
-Besides, defining all these similar functions (cap1_read, ..., 
-cap4_read) does not really
-make sense for ECAP driver.
-So, accessing this index parameter through callback and having the 
-possibility to use
-the same function (cap_read) for several attributes would be great for 
-my driver,
-and probably for future ones.
-
->
-> One problem however is that I'm not sure if the C preprocessor would be
-> able to unroll the COUNTER_COMP_COUNT_BUFFER_U64 to a dynamic number of
-> elements based on a macro parameter (maybe there is a GCC extension).
->
-> I'm just throwing out ideas, so I'd like to hear some comments and
-> suggestions from others about how we should add buffer support to the
-> Counter subsystem.
->
-> William Breathitt Gray
-
+> 
+> I think this is way better. But I would still reorganize this like this:
+> 
+> static int dm_po2z_map(struct dm_target *ti, struct bio *bio)
+> {
+>         struct dm_po2z_target *dmh = ti->private;
+>         int split_io_pos;
+> 
+>         bio_set_dev(bio, dmh->dev->bdev);
+> 
+>         if (op_is_zone_mgmt(bio_op(bio)))
+>                 return dm_po2z_remap_sector(dmh, bio);
+> 
+>         if (!bio_sectors(bio))
+>                 return DM_MAPIO_REMAPPED;
+> 
+>         /*
+>          * Read operation on the emulated zone area (between zone capacity
+>          * and zone size) will fill the bio with zeroes. Any other operation
+>          * in the emulated area should return an error.
+>          */
+>         if (!bio_in_emulated_zone_area(dmh, bio, &split_io_pos))
+>                 return dm_po2z_remap_sector(dmh, bio);
+> 
+>         if (bio_op(bio) == REQ_OP_READ) {
+>                 if (split_io_pos > 0) {
+>                         dm_accept_partial_bio(bio, split_io_pos);
+>                         return dm_po2z_remap_sector(dmh, bio);
+>                 }
+>                 return dm_po2z_read_zeroes(bio);
+>         }
+> 
+>         return DM_MAPIO_KILL;
+> }
+> 
+> I find the code easier to follow this way.
+> 
+I agree. It is definitely easier to follow. I will make these changes
+and send the next version soon.
+> 
+> 
