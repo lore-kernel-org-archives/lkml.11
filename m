@@ -2,77 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0380BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 650FFC32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiHPGla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
+        id S229869AbiHPGlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbiHPGlN (ORCPT
+        with ESMTP id S229852AbiHPGl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:41:13 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5AAEF006;
-        Mon, 15 Aug 2022 18:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=NVN4uwSN5xK75F6bLKWQ82Ovaszr6e9wWheX/v4qcL4=; b=ryon4aRuQD606z3gOUxtGJRVHr
-        i7YyhHop9K+PfcDcnkNh0NMJlG/BVCon0e1Kw9kWiSvLTCYVXlI6bJcWeCjnlL+pY0NhnPqaPf+ko
-        tk725qT4dy7W6kvbMXOK2KiVuH4FfSM05jWYZ1OOoMBh1yMe43cVY7hNtcBKu3Da2Xp6BAfzXeyJ3
-        YAkDYsMbMenpdbT5urXwBIiN2k02Sd6zlq/B9csg24FCaa3wqj0DVZ5GePZ63CBrL6z4XOAC/aBlq
-        kRq3idDtBnLNFnovleTMoa/iMKewf1muOi//Aq5kpQNRPZ3Kjx8naL9N9MBy+eMJk1dyV2RhsJuTs
-        s7Bfukag==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNlLx-008cPV-JF; Tue, 16 Aug 2022 01:26:46 +0000
-Message-ID: <0d836243-6a02-e031-961e-1e334dfd167d@infradead.org>
-Date:   Mon, 15 Aug 2022 18:26:43 -0700
+        Tue, 16 Aug 2022 02:41:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31245722F;
+        Mon, 15 Aug 2022 18:27:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60F55B81236;
+        Tue, 16 Aug 2022 01:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7627C433D6;
+        Tue, 16 Aug 2022 01:27:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660613228;
+        bh=/mGseJZgdyPhe4TH7J2aYC+EJppAEfiwBjSFQw9INt8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=J8eswGHY/mdK84n3nQJ3tGDW86TCcvnDcZ0H51QoTkk0DMWnOFN4aLX+MXCXkhMOt
+         izzVootNZbADGtoDgczSj2Fvy2XmdnVpemma1gGufx2Kw0P3vGpxfqvUdZ6uIFuyhl
+         6dqPU/Y+KOgJSHe/m0YgsKP06zD2r+ts6bp3tpm85lQe/o5fMBY2m4jITN96uAIF7j
+         fURLJV3NQQNJrDahX+ms1FnzhyMShNss7znOQfN6qsSJsRnBLtc1QE1NwJSjCKONQm
+         rII+kIh1Ak1snp4OWUdLNqZhYH8KTsvfdMMzzVD6rYtA8i3BzJUmSp3nOrRvgpHZ6J
+         Jgfu0h0fZq1qQ==
+From:   guoren@kernel.org
+To:     xianting.tian@linux.alibaba.com, palmer@dabbelt.com,
+        heiko@sntech.de
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, liaochang1@huawei.com,
+        mick@ics.forth.gr, jszhang@kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: [PATCH 0/2] riscv: kexec: Support crash_save percpu and machine_kexec_mask_interrupts
+Date:   Mon, 15 Aug 2022 21:26:59 -0400
+Message-Id: <20220816012701.561435-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: linux-next: Tree for Aug 15 (input/misc/ibm-panel.c)
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Eddie James <eajames@linux.ibm.com>,
-        linux-input@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-References: <20220815122926.7fd3ac58@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220815122926.7fd3ac58@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Guo Ren <guoren@linux.alibaba.com>
 
+Current riscv kexec can't crash_save percpu states and disable
+interrupts properly. The patch series fix them.
 
-On 8/14/22 19:29, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20220812:
-> 
+Guo Ren (2):
+  riscv: kexec: EOI active and mask all interrupts in kexec crash path
+  riscv: kexec: Implement crash_smp_send_stop with percpu crash_save_cpu
 
-on x86_64:
-
-when CONFIG_I2C=m and CONFIG_I2C_SLAVE=y:
-
-ld: drivers/input/misc/ibm-panel.o: in function `ibm_panel_remove':
-ibm-panel.c:(.text+0x16): undefined reference to `i2c_slave_unregister'
-ld: drivers/input/misc/ibm-panel.o: in function `ibm_panel_probe':
-ibm-panel.c:(.text+0x3e3): undefined reference to `i2c_slave_register'
-ld: drivers/input/misc/ibm-panel.o: in function `ibm_panel_driver_init':
-ibm-panel.c:(.init.text+0x18): undefined reference to `i2c_register_driver'
-ld: drivers/input/misc/ibm-panel.o: in function `ibm_panel_driver_exit':
-ibm-panel.c:(.exit.text+0x11): undefined reference to `i2c_del_driver'
-
-
+ arch/riscv/include/asm/smp.h      |  6 +++
+ arch/riscv/kernel/machine_kexec.c | 44 +++++++++++----
+ arch/riscv/kernel/smp.c           | 89 ++++++++++++++++++++++++++++++-
+ 3 files changed, 126 insertions(+), 13 deletions(-)
 
 -- 
-~Randy
+2.36.1
+
