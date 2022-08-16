@@ -2,203 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B54C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0E8C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 21:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237782AbiHPVvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S237470AbiHPVvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiHPVvC (ORCPT
+        with ESMTP id S237719AbiHPVv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 17:51:02 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B08D3ED
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:01 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d16so10377342pll.11
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:01 -0700 (PDT)
+        Tue, 16 Aug 2022 17:51:26 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824BD8E0C7
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id w197so13529880oie.5
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=tjMBMSeLf47Dl9twMgr77h09YFRDoxykrXGPZHBAccY=;
-        b=MbZdnqhDu3qlh1Cy6jJRu1PFT0mgvRF/UzbWWvdiCnSbqwBAcPduwys9Yt977aNLAR
-         t8FY7+27CjCn906Nnnt+DEXHYIYioH9+Wq0L54MGDpk95ih6PHETpfmhZ5dSi40pxART
-         3QauOv9pmCCfcr6Gv1gtFLfjKqgKt46BW9VkY=
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
+        b=CJvwxuwd+0rt/bo4TkCNqYjlT4SJ6Aesn0zM6uXzP6TCT+LreKW44m+4ak4S4QcpN8
+         Z3emQFWvCmqT6EmdYqBJBiTKDxs25SPIFHJWRc2lCFCaMDG285aPNFHSJURzJUXrItiL
+         Ui0T4+b4CX6rGWwwzQfjXo8/X0Ju4rYSJ9xG3J7ltDjyoURr0U0yWlyr6RXfyYXVOrj/
+         dZni714OJ/a9KGzQWNmYg0CEkelbTwf73pNCb8n0Ac9BiqIv1/rm9RuUiqu/Zp2s8EQx
+         XozhxC5/9Z05RYEinUrW7q9aA6G43Pjq/Ad7nHIMnr1jM1fRLjCBEg6+JP0Ma1IBiniW
+         viLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=tjMBMSeLf47Dl9twMgr77h09YFRDoxykrXGPZHBAccY=;
-        b=6sa5t5vVc8jT3fXnfu9YXw2PjiaXBz6Tpkw2gWfro2i7mb+i/Yj5Gi/i9xWc1OZqX/
-         Z2HJ06UC4RNaUkI4Hd56Txrk5xvlhm34aaTGcsMC784Y4myDmcg/FWJaqcO8Ma+W5uku
-         tz1v4nwL9Ju6/EcItEVFnl1oxf3ddACovSxwOkSorjFhFM4imONTVhoNlGtUy0PXJest
-         Ct1WXW8gp53NBC6zQfEn6rj8sRKa4YN+6IlHFWpdNFQ/o5PQAP7OZs959ky3w8eQl2rq
-         +LkcAKD7fafqEk57bEdQDhLyR4BShFwQ+pIuZnYBhx5l5apQ6bJyWqfdJmFVMqdgaokI
-         vqjQ==
-X-Gm-Message-State: ACgBeo2Oiq5VJJ7vbkNQEXyE4m96PE+kIxMN85t9CjbogycEjJzJNvk+
-        v9e6tbYZacUuIRuTxwMojK7gnDpNlKY65Q==
-X-Google-Smtp-Source: AA6agR4vBYgz2zHsn0+x4VIXE126q6rD9Mi4i/Y2ISPSXNn4+YYi9wPEDAkrdZ0LoEcwyduFjRNWgQ==
-X-Received: by 2002:a17:90b:1bd0:b0:1f3:396f:9942 with SMTP id oa16-20020a17090b1bd000b001f3396f9942mr573956pjb.220.1660686660978;
-        Tue, 16 Aug 2022 14:51:00 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
-        by smtp.gmail.com with ESMTPSA id z5-20020a623305000000b005323a1a9fecsm8916650pfz.101.2022.08.16.14.51.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:51:00 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
-Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v6 4/7] platform/chrome: cros_typec_switch: Add event check
-Date:   Tue, 16 Aug 2022 21:48:32 +0000
-Message-Id: <20220816214857.2088914-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-In-Reply-To: <20220816214857.2088914-1-pmalani@chromium.org>
-References: <20220816214857.2088914-1-pmalani@chromium.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
+        b=S229wJ0rbYk2hXQhUm01k6v60xJkElfcwn4SHSE4I4SJB9TVJ0cN1cVPvThFo0C4N4
+         13n3SgLRh8AXI17y4/TTPee4KgyQmo9AS8HC4sMo45wxnBRASmnHZfN8ugYYT1SC5jT0
+         6xyYZHYhz4HSJzUo6tjjD2NT2vbutjE2ZV/QLRKx6kcRr8DXr4ExjGm0RHzh8VpsIuxq
+         pNftZzWSrcoNub4E9mlBcKHQ9RZ/6UplOQxrIBZecbv5ElPtwgcxqV1omzLsz3DzATh2
+         49ePvhhkZ5Q28UNBUoIyWueb8mNXQmXQCDbu+uZtj/MC3HBcKkFPqDZ1aq0wCqs/piae
+         UGhQ==
+X-Gm-Message-State: ACgBeo2Gt41wPm2FtUN/flKMJiOhbDK6Xk/5LEnU+cX7ZP8vXehrxNAC
+        o1y86T9y3O/j+ZVtG+bBYBsthvWNnQNWU4ohH4Gl
+X-Google-Smtp-Source: AA6agR4ffEEKYkbE47q7/sRZQjQuSsIQ8phb3aTW9UCETN6ndapbDy186fFAcL9M3UIMnxT1iC01UQw6kwBHZYMTE0o=
+X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
+ h204-20020acab7d5000000b00343c47891c6mr257896oif.136.1660686682803; Tue, 16
+ Aug 2022 14:51:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220815162028.926858-1-fred@cloudflare.com>
+In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 16 Aug 2022 17:51:12 -0400
+Message-ID: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
+        tixxdz@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ChromeOS EC updates Type-C status events when mux set requests from
-the Application Processor (AP) are completed. Add a check to the
-flow of configuring muxes to look for this status done bit, so that
-the driver is aware that the mux set completed successfully or not.
+On Mon, Aug 15, 2022 at 12:20 PM Frederick Lawler <fred@cloudflare.com> wrote:
+>
+> While user namespaces do not make the kernel more vulnerable, they are however
+> used to initiate exploits. Some users do not want to block namespace creation
+> for the entirety of the system, which some distributions provide. Instead, we
+> needed a way to have some applications be blocked, and others allowed. This is
+> not possible with those tools. Managing hierarchies also did not fit our case
+> because we're determining which tasks are allowed based on their attributes.
+>
+> While exploring a solution, we first leveraged the LSM cred_prepare hook
+> because that is the closest hook to prevent a call to create_user_ns().
+>
+> The calls look something like this:
+>
+>     cred = prepare_creds()
+>         security_prepare_creds()
+>             call_int_hook(cred_prepare, ...
+>     if (cred)
+>         create_user_ns(cred)
+>
+> We noticed that error codes were not propagated from this hook and
+> introduced a patch [1] to propagate those errors.
+>
+> The discussion notes that security_prepare_creds() is not appropriate for
+> MAC policies, and instead the hook is meant for LSM authors to prepare
+> credentials for mutation. [2]
+>
+> Additionally, cred_prepare hook is not without problems. Handling the clone3
+> case is a bit more tricky due to the user space pointer passed to it. This
+> makes checking the syscall subject to a possible TOCTTOU attack.
+>
+> Ultimately, we concluded that a better course of action is to introduce
+> a new security hook for LSM authors. [3]
+>
+> This patch set first introduces a new security_create_user_ns() function
+> and userns_create LSM hook, then marks the hook as sleepable in BPF. The
+> following patches after include a BPF test and a patch for an SELinux
+> implementation.
+>
+> We want to encourage use of user namespaces, and also cater the needs
+> of users/administrators to observe and/or control access. There is no
+> expectation of an impact on user space applications because access control
+> is opt-in, and users wishing to observe within a LSM context
+>
+>
+> Links:
+> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+>
+> Past discussions:
+> V4: https://lore.kernel.org/all/20220801180146.1157914-1-fred@cloudflare.com/
+> V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
+> V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
+> V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+>
+> Changes since v4:
+> - Update commit description
+> - Update cover letter
+> Changes since v3:
+> - Explicitly set CAP_SYS_ADMIN to test namespace is created given
+>   permission
+> - Simplify BPF test to use sleepable hook only
+> - Prefer unshare() over clone() for tests
+> Changes since v2:
+> - Rename create_user_ns hook to userns_create
+> - Use user_namespace as an object opposed to a generic namespace object
+> - s/domB_t/domA_t in commit message
+> Changes since v1:
+> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
+> - Add selinux: Implement create_user_ns hook patch
+> - Change function signature of security_create_user_ns() to only take
+>   struct cred
+> - Move security_create_user_ns() call after id mapping check in
+>   create_user_ns()
+> - Update documentation to reflect changes
+>
+> Frederick Lawler (4):
+>   security, lsm: Introduce security_create_user_ns()
+>   bpf-lsm: Make bpf_lsm_userns_create() sleepable
+>   selftests/bpf: Add tests verifying bpf lsm userns_create hook
+>   selinux: Implement userns_create hook
+>
+>  include/linux/lsm_hook_defs.h                 |   1 +
+>  include/linux/lsm_hooks.h                     |   4 +
+>  include/linux/security.h                      |   6 ++
+>  kernel/bpf/bpf_lsm.c                          |   1 +
+>  kernel/user_namespace.c                       |   5 +
+>  security/security.c                           |   5 +
+>  security/selinux/hooks.c                      |   9 ++
+>  security/selinux/include/classmap.h           |   2 +
+>  .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
+>  10 files changed, 168 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+I just merged this into the lsm/next tree, thanks for seeing this
+through Frederick, and thank you to everyone who took the time to
+review the patches and add their tags.
 
-Changes since v5:
-- Change "Chrome OS" -> "ChromeOS".
-- Make cros_ec_cmd() invocation fit on 1 line.
+  git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm.git next
 
-Changes since v4:
-- Update cros_ec_command() to cros_ec_cmd().
-- Dropped unnecessary Reported-by tag (since this patch is not a
-  bug fix).
-
-Changes since v3:
-- No changes.
-
-Changes since v2:
-- Fixed missing "static" identifier.
-
-Changes since v1:
-- No changes.
-
- drivers/platform/chrome/cros_typec_switch.c | 71 ++++++++++++++++++++-
- 1 file changed, 69 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform/chrome/cros_typec_switch.c
-index eae7d26416aa..dc84cdec8f7f 100644
---- a/drivers/platform/chrome/cros_typec_switch.c
-+++ b/drivers/platform/chrome/cros_typec_switch.c
-@@ -7,6 +7,8 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/jiffies.h>
- #include <linux/module.h>
- #include <linux/platform_data/cros_ec_commands.h>
- #include <linux/platform_data/cros_ec_proto.h>
-@@ -60,6 +62,39 @@ static int cros_typec_get_mux_state(unsigned long mode, struct typec_altmode *al
- 	return ret;
- }
- 
-+static int cros_typec_send_clear_event(struct cros_typec_switch_data *sdata, int port_num,
-+				       u32 events_mask)
-+{
-+	struct ec_params_typec_control req = {
-+		.port = port_num,
-+		.command = TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
-+		.clear_events_mask = events_mask,
-+	};
-+
-+	return cros_ec_cmd(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req, sizeof(req), NULL, 0);
-+}
-+
-+static bool cros_typec_check_event(struct cros_typec_switch_data *sdata, int port_num, u32 mask)
-+{
-+	struct ec_response_typec_status resp;
-+	struct ec_params_typec_status req = {
-+		.port = port_num,
-+	};
-+	int ret;
-+
-+	ret = cros_ec_cmd(sdata->ec, 0, EC_CMD_TYPEC_STATUS, &req, sizeof(req),
-+			  &resp, sizeof(resp));
-+	if (ret < 0) {
-+		dev_warn(sdata->dev, "EC_CMD_TYPEC_STATUS failed for port: %d\n", port_num);
-+		return false;
-+	}
-+
-+	if (resp.events & mask)
-+		return true;
-+
-+	return false;
-+}
-+
- /*
-  * The ChromeOS EC treats both mode-switches and retimers as "muxes" for the purposes of the
-  * host command API. This common function configures and verifies the retimer/mode-switch
-@@ -68,12 +103,44 @@ static int cros_typec_get_mux_state(unsigned long mode, struct typec_altmode *al
- static int cros_typec_configure_mux(struct cros_typec_switch_data *sdata, int port_num, int index,
- 				    unsigned long mode, struct typec_altmode *alt)
- {
--	int ret = cros_typec_get_mux_state(mode, alt);
-+	unsigned long end;
-+	u32 event_mask;
-+	u8 mux_state;
-+	int ret;
-+
-+	ret = cros_typec_get_mux_state(mode, alt);
-+	if (ret < 0)
-+		return ret;
-+	mux_state = (u8)ret;
-+
-+	/* Clear any old mux set done event. */
-+	if (index == 0)
-+		event_mask = PD_STATUS_EVENT_MUX_0_SET_DONE;
-+	else
-+		event_mask = PD_STATUS_EVENT_MUX_1_SET_DONE;
- 
-+	ret = cros_typec_send_clear_event(sdata, port_num, event_mask);
- 	if (ret < 0)
- 		return ret;
- 
--	return cros_typec_cmd_mux_set(sdata, port_num, index, (u8)ret);
-+	/* Send the set command. */
-+	ret = cros_typec_cmd_mux_set(sdata, port_num, index, mux_state);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Check for the mux set done event. */
-+	end = jiffies + msecs_to_jiffies(1000);
-+	do {
-+		if (cros_typec_check_event(sdata, port_num, event_mask))
-+			return 0;
-+
-+		usleep_range(500, 1000);
-+	} while (time_before(jiffies, end));
-+
-+	dev_err(sdata->dev, "Timed out waiting for mux set done on index: %d, state: %d\n",
-+		index, mux_state);
-+
-+	return -ETIMEDOUT;
- }
- 
- static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state)
 -- 
-2.37.1.595.g718a3a8f04-goog
-
+paul-moore.com
