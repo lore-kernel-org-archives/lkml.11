@@ -2,95 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83165C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B6FC28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235199AbiHPLDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        id S235209AbiHPLEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234904AbiHPLDS (ORCPT
+        with ESMTP id S234931AbiHPLDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:03:18 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4D4167F0;
-        Tue, 16 Aug 2022 03:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660644993; x=1692180993;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mxszK3Uza1MCMV3HzBQlULox8ga77e1nNvJrjaRmYY4=;
-  b=lR/md7d8cJeq4rKvovu+Y/XN1TmS8NlzIolo/wY6wqduLe7TqhxG6/60
-   5e631+NOSfnQ2Ljo2vgMAy6P/6JdAXE6P2FI8ktInxEIJZxm0Dqz8S1cl
-   Jq7Ch2uVugr9EZ21oLN3cullSpJhp5j4gs8KBgJq1FvQAdv89ak1DbhmC
-   s5CDa7GIsM5DNXGwamoL08tlMAy+4r3vzUnSN4OXpt5dnljGcY44yr5gj
-   lSp4xOqnC3yIyiV34BRIstCwXuufcJQ7SAbwtw0wgANTXxYXNSQAkr3Wp
-   X4s8t2lLmU7oZsEnZSb35Hjfgn5i8WmP4UY05WAElBmH0MAd7oIIVrokh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="279141282"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="279141282"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 03:16:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="749260778"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Aug 2022 03:16:26 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Utkarsh Patel <utkarsh.h.patel@intel.com>, rajmohan.mani@intel.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH 4/6] ACPI: APD: Use the helper acpi_dev_get_memory_resources()
-Date:   Tue, 16 Aug 2022 13:16:27 +0300
-Message-Id: <20220816101629.69054-5-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
-References: <20220816101629.69054-1-heikki.krogerus@linux.intel.com>
+        Tue, 16 Aug 2022 07:03:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81CB7C3F62;
+        Tue, 16 Aug 2022 03:16:32 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A2785113E;
+        Tue, 16 Aug 2022 03:16:32 -0700 (PDT)
+Received: from [10.57.14.225] (unknown [10.57.14.225])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0785A3F70D;
+        Tue, 16 Aug 2022 03:16:30 -0700 (PDT)
+Message-ID: <04a18937-bb11-736f-2cb3-0cb76a25bcc7@arm.com>
+Date:   Tue, 16 Aug 2022 11:16:29 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] cpufreq: check only freq_table in __resolve_freq()
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220811165408.23027-1-lukasz.luba@arm.com>
+ <20220812040545.gcmyjjpqfup3bo5u@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220812040545.gcmyjjpqfup3bo5u@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It removes the need to check the resource data type
-separately.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/acpi/acpi_apd.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-index ad245bbd965ec..3bbe2276cac76 100644
---- a/drivers/acpi/acpi_apd.c
-+++ b/drivers/acpi/acpi_apd.c
-@@ -60,12 +60,6 @@ static int acpi_apd_setup(struct apd_private_data *pdata)
- }
- 
- #ifdef CONFIG_X86_AMD_PLATFORM_DEVICE
--static int misc_check_res(struct acpi_resource *ares, void *data)
--{
--	struct resource res;
--
--	return !acpi_dev_resource_memory(ares, &res);
--}
- 
- static int fch_misc_setup(struct apd_private_data *pdata)
- {
-@@ -82,8 +76,7 @@ static int fch_misc_setup(struct apd_private_data *pdata)
- 		return -ENOMEM;
- 
- 	INIT_LIST_HEAD(&resource_list);
--	ret = acpi_dev_get_resources(adev, &resource_list, misc_check_res,
--				     NULL);
-+	ret = acpi_dev_get_memory_resources(adev, &resource_list);
- 	if (ret < 0)
- 		return -ENOENT;
- 
--- 
-2.35.1
+On 8/12/22 05:05, Viresh Kumar wrote:
+> On 11-08-22, 17:54, Lukasz Luba wrote:
+>> The there is no need to check if the cpufreq driver implements callback
+> 
+> s/The there/There/
+> 
+>> cpufreq_driver::target_index. The logic in the __resolve_freq uses
+>> the frequency table available in the policy. It doesn't matter if the
+>> driver provides 'target_index' or 'target' callback. It just has to
+>> populate the 'policy->freq_table'.
+>>
+>> Thus, check only frequency table during the frequency resolving call.
+>>
+>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+>> ---
+>>   drivers/cpufreq/cpufreq.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+>> index 7820c4e74289..69b3d61852ac 100644
+>> --- a/drivers/cpufreq/cpufreq.c
+>> +++ b/drivers/cpufreq/cpufreq.c
+>> @@ -532,7 +532,7 @@ static unsigned int __resolve_freq(struct cpufreq_policy *policy,
+>>   
+>>   	target_freq = clamp_val(target_freq, policy->min, policy->max);
+>>   
+>> -	if (!cpufreq_driver->target_index)
+>> +	if (!policy->freq_table)
+>>   		return target_freq;
+>>   
+>>   	idx = cpufreq_frequency_table_target(policy, target_freq, relation);
+> 
+> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+> 
 
+Thanks Viresh! I'll resend this patch w/ fixed description and your ACK
