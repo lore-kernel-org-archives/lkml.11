@@ -2,135 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F14E1C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D1CC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 07:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232112AbiHPH2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 03:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S232116AbiHPHaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiHPH2N (ORCPT
+        with ESMTP id S231977AbiHPH3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 03:28:13 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2062b.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78218384635;
-        Mon, 15 Aug 2022 21:38:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Og98N8rZ9ZzAw4Z0HoZ6228nZjCQd32MqNR5/Tgit8J5GYhBq+ztpFeUCNe908pH/Hpe1mDACaZoes5scvY0dy7s5SoHTuLJR1AOGmL57U2bW0OnpdMOrgwq0F8q98IiSH4NjWmkGtWGKcuuJejEpaxL/eiFeFhSCFqT0lZMSyLcTEW/mmaYot4COFtk+nZWWRslPEwKVfjrtCdKWUdAVS61Yjf3COK1NE6B1hjhErWOPvROgwmCDM4qtlWHuhTkoVd9LGCVwUzXe5DM1J3yWtVCOAyqmTCBeQ+ig1WBs2T3tq42X2phBaza6TQbfKLskBr2KhP7dRA8vRKBo40/uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Iy54CTR9mAV0idWsKdj/dYNIpkKAR16Oyj4Cr4kSiDI=;
- b=c7bIpVhQTciWZ9AlMEh9/b/u72xxSEWMd8YDdUnJGX97JLOMuf6W4D/SS3LIrVpYoyBbfMxqmMj/ymSXj7pz8s1DXvuUk1hfz9msX0BZkCPb92IGWtDN0aEi2xdKxBSuD3G4GdB8nQSn4bf28qZ7EPvm+mOYWsHmZSP08EQW/hBBIK7+mONbQoq6MbYjHggEV0ofmA2pK3epyqbLpKwdaimGJlXr1ywPOkcyGiUriUETLRvTWSC2sBGk9h2+OwmEZbDDP+26pj+SomuezNzwVzRrT12F/9Rsy1J6VKr1ebtXdvM+YotLZZcKfq4/HPRmJEP0aWu/6Q3X/K3VkIto4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iy54CTR9mAV0idWsKdj/dYNIpkKAR16Oyj4Cr4kSiDI=;
- b=lnAobDIFu+MnwdGZe8pMM+HJMZp4BDPfswNOD9bjeMAnJQ1zgGDDRIJaQ6arWtNQ8QVlI/nU6yGpwxH1w8g8s5Xf3MEFxwlwbFVuVRr1hGqH2sdTI+MazFvQrK1HxiXoBPIDnHzdcYv5o+yz4jV647dd0WBez5GtHP/HvwapxxE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
- by DB8PR04MB7036.eurprd04.prod.outlook.com (2603:10a6:10:12f::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Tue, 16 Aug
- 2022 04:38:08 +0000
-Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
- ([fe80::6cd5:f11c:4e5c:d79c]) by AM6PR04MB6053.eurprd04.prod.outlook.com
- ([fe80::6cd5:f11c:4e5c:d79c%3]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
- 04:38:08 +0000
-From:   "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-To:     wim@linux-watchdog.org, linux@roeck-us.net, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, festevam@gmail.com
-Cc:     kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/7] watchdog: imx7ulp_wdt: update i.MX7ULP WDOG timer driver
-Date:   Tue, 16 Aug 2022 12:36:36 +0800
-Message-Id: <20220816043643.26569-1-alice.guo@oss.nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0015.apcprd02.prod.outlook.com
- (2603:1096:3:17::27) To AM6PR04MB6053.eurprd04.prod.outlook.com
- (2603:10a6:20b:b9::10)
+        Tue, 16 Aug 2022 03:29:46 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B97D31F7;
+        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so16256949pjm.3;
+        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=XXFxUvBcCEQW6aq/xzjSaHd+5yvV496WeWx3Xhu7LQ4=;
+        b=XIVhEq81zbCHt7kzA+a/fmmn4Q6sYPYZs9RFIBiRYHoUh54jOPqD50z5+U61aUGf0u
+         V9ePXU1R7/PQCiMqxoxQ7PjqsEb0D/n8JEHu+Vp+tB0Mcyi8zpTTphTB3hIY9IY2LVM/
+         LTZJAfn5gJkiXK0pdD0jxaAtUkLf2khm+KugO0BCNtg+M6zpjAA7EhLRYfh/eVSX7qrw
+         h05ajRZ1OARHjwYDaMuJ74WLyvgro3hC4/CbGyDQUN8fscFlGmaWslxtOBIloCqEmcVg
+         1YhPsLaMAUx2YKjqzJTXUy96lmKpMvxqzaAE5jB4afUU+23KwbBx/F/bORycui8zZtP2
+         A1nA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=XXFxUvBcCEQW6aq/xzjSaHd+5yvV496WeWx3Xhu7LQ4=;
+        b=IqgtDBpeX7aKkHHqwdXIXpi/nZWhQIFuHxjusjihzI28tP3otfB6HJCEy1OZqd4I47
+         DN6voWMBaCzHhy5DofsB7AWuFG+wxjt1zu4+xLQiC0LNpEKR9y7Hu6+FWeOr251vtaEv
+         eBj2vXB5esodqRiFUM76VvyxyjqPJwGyX3pcvfTIrAxf98Hsn8VDdapQ7lFKxYDz5J56
+         0Jv9ej04no7BCfJ0TtlVijwW+ShB12+oG8xwtbhl/e3+UEC5sT/Ohyy05vt5Shp3E0dS
+         JCh1D1B3lzB52f5o7TE6BppsNmS3tty7dBBQhjnp8PN81xFJkzStzlqHmKdv+C1L35vx
+         YD0A==
+X-Gm-Message-State: ACgBeo1a+4jF8aSfI0CtcTU8mOYVrgusVlpEE67eXVuRlQ0flYuUXaV0
+        SEtDqaFo+iLGKzCVbjmtaSc6fRQVqXQ=
+X-Google-Smtp-Source: AA6agR6Gf51589WorFB0MTsn1nnGC1HAgAfVmEvLPxicT5nqTJMQdPocSM4o92aLNGMjG6+CvSK2gA==
+X-Received: by 2002:a17:902:e805:b0:16f:4a25:b5bd with SMTP id u5-20020a170902e80500b0016f4a25b5bdmr19876672plg.85.1660622730176;
+        Mon, 15 Aug 2022 21:05:30 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id x17-20020a1709027c1100b00172751a2fa4sm1687195pll.80.2022.08.15.21.05.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 21:05:29 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 15 Aug 2022 21:05:27 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Badhri Jagan Sridharan <badhri@google.com>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kyle Tso <kyletso@google.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v1] usb: typec: tcpm: Return ENOTSUPP for power supply
+ prop writes
+Message-ID: <20220816040527.GA1108868@roeck-us.net>
+References: <20220816033355.1259400-1-badhri@google.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d69241b1-a11a-4a89-0ba4-08da7f411dde
-X-MS-TrafficTypeDiagnostic: DB8PR04MB7036:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 72w5oWvHhl5b6Qx8KjL4LZh3sOsnBZsMd+YhbQb1FBWylhrmmc+7SrRFnMwVSqdfwA0m9eOlTfN3AN6LsPOWvWzxgLAwJQ0UCJdpCzu+fNEyMlNJ9bB42wX3tHkWhcmPxw+yoMLmuVIeu/3fvuWXhyJ90Er9spBX9lqxToFHhyzP1zF7CkveoEoX/RghggbB++4Kc5bJFd0+Cuk+yg/M1wHo8vDMq7IY+jmb9JayzRzG9POIyQEwsY4U5Vn1s+VrwWJGHNyA4LnWaLsJoi4OQO5vUpg5FQ4CMa3BQJOmn4XYW+SHV/8yDaWs9dZpFeYyDAumZUKdAdxL7fNKTWTeyi96AnSDp/XuJjT2omWgWIHUVg5jzAnCGb/TVzoK/dbG0SoNWpN2GySz4qcRQ1gYps4aq/4TSxxa5Vhs89E0vuyg4MpJgMfbhDtLUgoyFdhRn30EWhwaCyiofCaAooAd+S5WwZgpGOJ8394BbYsKjTprwr50+EAPH/XmEahlswCF+jQDU30p6FV90yaBIiw5z+4u+8G7cg0LSIjZVqA845v3SDsJPz3XQECyPELSAWVssR2kP3OHBgfiVUgejTGEBxuLVBdqaVJrHD7JooE+fNKgBMYZkQqbH+Zrkpvxb5V6hCrw6QyBk3bsCA7X4NKPgHuqKCr6FIOZmWArfksYtyw8OZ0NKMA4QkATRrxMyQ0bw74mkjSNwKPbsayHUNDLrch+yywaOuJz8fRPfhmZs2X4T8wGpB2IdJ+qMk3pUFPOlvTmn+XFuIoDCRy3C2H8mfm2kjQr90vv2NlzoFga2q6Hgn925NoupoW2XVkqk0ej
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(39860400002)(376002)(136003)(83380400001)(38350700002)(86362001)(38100700002)(4326008)(8676002)(66556008)(66946007)(66476007)(316002)(2906002)(8936002)(5660300002)(6512007)(6506007)(4744005)(26005)(15650500001)(1076003)(41300700001)(2616005)(186003)(52116002)(6666004)(6486002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rz4VrT77G0aYwwL9OdS6hw8uzenW3aCZK8u8x+OFFM1/g+HUdMcTfhAEww2n?=
- =?us-ascii?Q?0fBvDI7D8Vskjt7YcdEpU153SOF7VVGzUSQ+Vcf8pHa/Brwaep2cUY2zqqhg?=
- =?us-ascii?Q?yOaI5HLMQTvxGuHXJifB6LPcD0AvYu+kdKfIqEISUstMnuzQ2x7qwX+7AsQG?=
- =?us-ascii?Q?KVqrDVfW6jdh8Jf668x4nWpp6+VtMA8s8jSrQdE248KN7WpW2ZuhUt2+1fGZ?=
- =?us-ascii?Q?j9hImiSia4zGpixNXiUG+y8FIdRZEXw7ugIXxm6tLObbsbSOeu2dpgeh9/jk?=
- =?us-ascii?Q?LPK2I1cjM9E/ZfmT60wthITVPAqKLA80dvGK2R7ceB7ijjxSyhUzMVnBuPjh?=
- =?us-ascii?Q?0TEqH0yRJ0rewU7my5rz7cOELpAvfVzvRAGpKa5p5LG1Cuwer7w3eiq1DbCQ?=
- =?us-ascii?Q?TBc9+RmgwzsSdWrQT9PUQqbd1qq7kXn7sbQUXl/2q9FWKvSafuLWhFTJRara?=
- =?us-ascii?Q?yyqkF//xaE9UzgVvFUS83t2CgAROqO3NVSOXW3gfLIrA34a5OJ1OxQrKErSI?=
- =?us-ascii?Q?Q+O/DeJnt7vQAShyFuCkr0dTWCWXZQreXITMJUkSuO7BOCbQA5bVrbn1HesK?=
- =?us-ascii?Q?tPeGZKOJK8eRfrGKFtcNZ7mDsBRYFMVXtgxRSi7PCZWxo08zUteh/39w0cNv?=
- =?us-ascii?Q?da5YAoAKBvy85EIIrRxbWwdn0ZiKDHXME88WMtWJ4OhzdWJ8VshzPy9nIJwu?=
- =?us-ascii?Q?5/snMFcjTGOSDXR1x4QYe0lACr/FAo0w6i3EemF4HcoWy1AYscMkfnOozMrd?=
- =?us-ascii?Q?hDcqQcKOgLlH5aboO2OD4C6hb/uzzJcsnYLxdZlsNoV+z0Pfajh7AJjBWb5D?=
- =?us-ascii?Q?7DR5dRPYdW+4evYzLQOuTj2viZCfVjHXm3lWb2DCWHwQiW+1hH5Ndsmx/K9j?=
- =?us-ascii?Q?zZjvjtYjaPrBpfNFG11sGYGyTzxE6Xh0lJ2V8BeJYGdIV0Vz1bi4KNjUA/0y?=
- =?us-ascii?Q?PfDvaFHW/pAhQk07yRejXk8sNUTyzF65V1nzaSY+K1GVmZ+akTe93JVKoqaD?=
- =?us-ascii?Q?uvyegttOI/nFXIwuVgxRiISgZai8eOkfSprdg4saKuEFttw+MIvNkgVj6n4U?=
- =?us-ascii?Q?6Snr9ShDWWD1jCCCCpoQgN3P6QW8eZgJrSCXUxeD7buULzbsyJWn0vB+k1FU?=
- =?us-ascii?Q?yTkUQvhdwMrBGdPJLe8J6xNTzSyR1tAWG8NYZN7k33dDVTTkMYG992WhhVVR?=
- =?us-ascii?Q?asAQ9vhRYoTvIR1utqbBdBGALz58GmYjNhPnohy1xwK//6lfmdRAFW3NFLR1?=
- =?us-ascii?Q?a/qtWUYwO8qQIvykXi8AV1CE+nL6tP2uo7fsBA0v0CIENlH6OGRgjj2xA3IM?=
- =?us-ascii?Q?JJeFuUOykP3+IqNtngbVTmZZ/Jbzvr/WQI+2uK1/4hyvk4RGEuR++OxraDbc?=
- =?us-ascii?Q?/K9SQp14E6boxo1DkRirRXw+cvGwHduq6n62c5oJl67jk2Nqh+Uq2F74X13z?=
- =?us-ascii?Q?Rnqt9leXvb4gppccjJkVwWrWpvMdIb/vhOt/6lmg38EA6NNtKdJqwPPYj5UD?=
- =?us-ascii?Q?k6e4drefS/HXnw+oPFr7E4sSV09xFMgWynoIAzeTFZCXFu40ueQnc0/4JT5D?=
- =?us-ascii?Q?ahWEhraf3FQxB52H5LTXEr6RQ5UbhFs5hL1SqwKQ?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d69241b1-a11a-4a89-0ba4-08da7f411dde
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 04:38:08.2195
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UAPTxtTgPbRKSOCf5roYpwHr5sRLbXB0o9n41+osLEp5vFAj/u4pxQCzd4jbaXkeJ3kJM2O1tsagViEJ2jNk/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7036
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816033355.1259400-1-badhri@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alice Guo <alice.guo@nxp.com>
+On Mon, Aug 15, 2022 at 08:33:55PM -0700, Badhri Jagan Sridharan wrote:
+> When the port does not support USB PD, prevent transition to PD
+> only states when power supply property is written. In this case,
+> TCPM transitions to SNK_NEGOTIATE_CAPABILITIES
+> which should not be the case given that the port is not pd_capable.
+> 
+> [   84.308251] state change SNK_READY -> SNK_NEGOTIATE_CAPABILITIES [rev3 NONE_AMS]
+> [   84.308335] Setting usb_comm capable false
+> [   84.323367] set_auto_vbus_discharge_threshold mode:3 pps_active:n vbus:5000 ret:0
+> [   84.323376] state change SNK_NEGOTIATE_CAPABILITIES -> SNK_WAIT_CAPABILITIES [rev3 NONE_AMS]
+> 
+> Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
 
-Alice Guo (1):
-  watchdog: imx93: add watchdog timer on imx93
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-Anson Huang (1):
-  watchdog: imx7ulp: Move suspend/resume to noirq phase
-
-Jacky Bai (1):
-  watchdog: imx7ulp: Add explict memory barrier for unlock sequence
-
-Jason Liu (1):
-  watchdog: imx7ulp_wdt: init wdog when it was active
-
-Ye Li (3):
-  watchdog: imx7ulp_wdt: Check CMD32EN in wdog init
-  watchdog: imx7ulp_wdt: Fix RCS timeout issue
-  watchdog: imx7ulp_wdt: Handle wdog reconfigure failure
-
- drivers/watchdog/imx7ulp_wdt.c | 212 ++++++++++++++++++++++++++-------
- 1 file changed, 168 insertions(+), 44 deletions(-)
-
--- 
-2.17.1
-
+> ---
+>  drivers/usb/typec/tcpm/tcpm.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+> index ea5a917c51b1..904c7b4ce2f0 100644
+> --- a/drivers/usb/typec/tcpm/tcpm.c
+> +++ b/drivers/usb/typec/tcpm/tcpm.c
+> @@ -6320,6 +6320,13 @@ static int tcpm_psy_set_prop(struct power_supply *psy,
+>  	struct tcpm_port *port = power_supply_get_drvdata(psy);
+>  	int ret;
+>  
+> +	/*
+> +	 * All the properties below are related to USB PD. The check needs to be
+> +	 * property specific when a non-pd related property is added.
+> +	 */
+> +	if (!port->pd_supported)
+> +		return -EOPNOTSUPP;
+> +
+>  	switch (psp) {
+>  	case POWER_SUPPLY_PROP_ONLINE:
+>  		ret = tcpm_psy_set_online(port, val);
+> -- 
+> 2.37.1.595.g718a3a8f04-goog
+> 
