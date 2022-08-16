@@ -2,82 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C96C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7660EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiHPMWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S230237AbiHPMWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232412AbiHPMW0 (ORCPT
+        with ESMTP id S232412AbiHPMWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:22:26 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6103130F4D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:22:21 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1660652523tm3jfi3j
-Received: from localhost.localdomain ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 16 Aug 2022 20:22:02 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: znfcQSa1hKYowTww0p/VVWTvue5+lI/HhL65loV0AfLRhNqdD+rDan9bknwz7
-        SO2dU1AsH2Fe7UuGyd/nNxOz45ml9YkotMrq0E/zIzhhr/zFBisJlFjYM6YkS8MPk9+th/z
-        k0vsF3onuKo/HGn9q0JJZTEbgVBl2gWP5SNZELO6EO1DRXstdfF2byD6PID8/YCn5Ekc4SU
-        g1njnL2hbzG6D7/yWQA1NJY3JpUKiZ32mWRrjVHb8tLQ+1pxGFdZpmgB1Je3ZAIbuM89dhr
-        xFS4LQ1YA2aFqGMVpdTFxsfQ3NvdGJxKKqlW8CJ5J3bjrlreGqNdW+Wom5QrhY1m0sWw03v
-        CWIzkUsBUAhANUPNWjPCdhlXRmY+NmqCcu0CGIMn/1oMqLWP7XBjXEIrHcag9nQRUVKw5ez
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     dhowells@redhat.com, marc.dionne@auristor.com
-Cc:     linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] fs/afs: fix repeated words in comments
-Date:   Tue, 16 Aug 2022 20:21:55 +0800
-Message-Id: <20220816122155.770-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 16 Aug 2022 08:22:40 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3798357D9
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:22:37 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id bu15so3919924wrb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=K+gdbXGX7sTipYoI1hbcvxGCF62qNZJxUQfUKALJAPQ=;
+        b=653mtiOz+xhTjJvQu/Z8561OQZ/7yZgXascR7WHeo+CK7dRlhjy+Pq3wT3ZBDFJ21i
+         oJKNjxmxmUdqt6mrGY8kvub3ZiKfNcp/lmuGeAxR7lihOi9dguTy8jHRrzinw44OVbnc
+         CMs0onKkiB1dxcEIDMPewbFr5Q/sDl/Klvh0M9AGoiosBAzQSwblc7Y+XDsGdVbw0R4+
+         RyQsMOhjiajyRExT1KhuTZG4x9qG5dGUHGptj2Tapqp1Iw+LBbJuZjn//AN3cOcfvtAV
+         HDvCGQqRYvG+Y/Qff57TRjaY6Rn3dntmPB6ef9s7uLxe8v+zEGAf9ibCq/TMkJW5YDte
+         LYfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=K+gdbXGX7sTipYoI1hbcvxGCF62qNZJxUQfUKALJAPQ=;
+        b=WaltuE3Ad3hhiOaTFcZ8x5GfVWhVCQo2b/7M7Qx886fLjOdRvlGjJe6NhGv5t9XnOz
+         34TQV0GaR715NWOlrWtAAsAW3ZflbJRMLP6HMypi7dMAZ5HcWAPqTap1ANcT3vwMbUm9
+         ZcdhGDpXxXzaebLfGWr+cUV8XYE938KsfAB3xzPXq8VPCSCzFDXFhhZdSgagsfodGyJz
+         Vh3ibeZo+WrQD5ty8cZgZzaPal4IuC6QcyDTKzXximBk+rdZ8Ln5i7kRZgiShCDCxXKL
+         trt5VIS0wcJU9KeSICFUBXGnWQSTzX9VHAnMTrFrJqyePBOsSLtv/QqKeKNP3bHEmiqw
+         pBsQ==
+X-Gm-Message-State: ACgBeo0dbx8PSlwksSdBqYikC0Loq8DmCCegRu7GJ6mtMOL0VYizKZuo
+        vCTIm3J8YKqj2PJ666mznmoDOu6kk/5+NQ==
+X-Google-Smtp-Source: AA6agR4mWwoCuQHHvTE6vn6N3LqhAmKu+A7J3AQ88Wt275PoY4JM7vCv03znTgErhkDwLb2BpzYjcQ==
+X-Received: by 2002:a5d:6f08:0:b0:21e:cfc7:bfd1 with SMTP id ay8-20020a5d6f08000000b0021ecfc7bfd1mr11687835wrb.329.1660652556367;
+        Tue, 16 Aug 2022 05:22:36 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:982:cbb0:ef0b:d58b:b15c:96e6])
+        by smtp.gmail.com with ESMTPSA id n21-20020a05600c4f9500b003a5f3f5883dsm7990873wmq.17.2022.08.16.05.22.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 05:22:35 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     Vyacheslav Bocharov <adeep@lexina.in>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH 0/2] arm64: meson: add support for JetHome JetHub D1p (j110)
+Date:   Tue, 16 Aug 2022 14:22:34 +0200
+Message-Id: <166065254995.976383.683359500915068130.b4-ty@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220811103113.3097868-1-adeep@lexina.in>
+References: <20220811103113.3097868-1-adeep@lexina.in>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'that'.
- Delete the redundant word 'the'.
+Hi,
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- fs/afs/cell.c  | 2 +-
- fs/afs/flock.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On Thu, 11 Aug 2022 13:31:11 +0300, Vyacheslav Bocharov wrote:
+> - add support for JetHome JetHub D1p (https://jethome.ru/d1p) is a home
+> automation controller with the following features:
+>   - DIN Rail Mounting
+>   - Amlogic A113X (ARM Cortex-A53) quad-core up to 1.5GHz
+>   - no video out
+>   - 1/2/4GB LPDDR4
+>   - 8/16/32GB eMMC flash
+>   - 1 x USB 2.0
+>   - 1 x 10/100Mbps ethernet
+>   - WiFi / Bluetooth Realtek 8822CS or similar IEEE 802.11a/b/g/n/ac
+>   - TI CC2652P1 Zigbee Wireless Module with up to 20dBm output power
+>     and Zigbee 3.0 support.
+>   - 2 x gpio LEDS
+>   - GPIO user Button
+>   - 1 x 1-Wire
+>   - 2 x RS-485
+>   - 4 x dry contact digital GPIO inputs
+>   - 3 x relay GPIO outputs
+>   - DC source with a voltage of 9 to 56 V / Active POE
+> 
+> [...]
 
-diff --git a/fs/afs/cell.c b/fs/afs/cell.c
-index 07ad744eef77..a7b94208cce5 100644
---- a/fs/afs/cell.c
-+++ b/fs/afs/cell.c
-@@ -227,7 +227,7 @@ static struct afs_cell *afs_alloc_cell(struct afs_net *net,
-  * @excl:	T if an error should be given if the cell name already exists.
-  *
-  * Look up a cell record by name and query the DNS for VL server addresses if
-- * needed.  Note that that actual DNS query is punted off to the manager thread
-+ * needed.  Note that actual DNS query is punted off to the manager thread
-  * so that this function can return immediately if interrupted whilst allowing
-  * cell records to be shared even if not yet fully constructed.
-  */
-diff --git a/fs/afs/flock.c b/fs/afs/flock.c
-index c4210a3964d8..801fe305878f 100644
---- a/fs/afs/flock.c
-+++ b/fs/afs/flock.c
-@@ -152,7 +152,7 @@ static void afs_next_locker(struct afs_vnode *vnode, int error)
- }
- 
- /*
-- * Kill off all waiters in the the pending lock queue due to the vnode being
-+ * Kill off all waiters in the pending lock queue due to the vnode being
-  * deleted.
-  */
- static void afs_kill_lockers_enoent(struct afs_vnode *vnode)
+Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v6.1/dt64)
+
+[1/2] arm64: dts: meson-axg: add support for JetHub D1p (j110)
+      https://git.kernel.org/amlogic/c/59ec069d50550273a83180ea6c950d382d7bf8e3
+[2/2] dt-bindings: arm: amlogic: add bindings for Jethub D1p (j110)
+      https://git.kernel.org/amlogic/c/a80c60359a42cf146872b9442cf847e7c2452a23
+
+These changes has been applied on the intermediate git tree [1].
+
+The v6.1/dt64 branch will then be sent via a formal Pull Request to the Linux SoC maintainers
+for inclusion in their intermediate git branches in order to be sent to Linus during
+the next merge window, or sooner if it's a set of fixes.
+
+In the cases of fixes, those will be merged in the current release candidate
+kernel and as soon they appear on the Linux master branch they will be
+backported to the previous Stable and Long-Stable kernels [2].
+
+The intermediate git branches are merged daily in the linux-next tree [3],
+people are encouraged testing these pre-release kernels and report issues on the
+relevant mailing-lists.
+
+If problems are discovered on those changes, please submit a signed-off-by revert
+patch followed by a corrective changeset.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+[3] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+
 -- 
-2.36.1
-
+Neil
