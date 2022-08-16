@@ -2,92 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA690C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71267C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbiHPGmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47868 "EHLO
+        id S229729AbiHPGm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230142AbiHPGmh (ORCPT
+        with ESMTP id S230155AbiHPGmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:42:37 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F1214EBBA
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 18:31:23 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id u3so12864288lfk.8
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 18:31:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=7TyoM62NCZIF/E5AFBSvac1IoKHCKnc+Y34dVW1eFns=;
-        b=52twqYpswvNn+4ufPoVuXYwtbANQzS3ciJHHysFqnHecqsLdTFoUN61U2QnWgSOr/i
-         TQXgO1Kgv9T1Y5tejanZLTzhnIOUEsj5CMpDvBvcmdPa8Ln6VeZXc+jRILGAocJ6E8RW
-         7y08HcEa1rce+7Swcc0KuD+qTjLsrwqbtFz126x5RHIN/0PddL+W1xRRoH7AH1YRe/Rp
-         CXDOW5VF9sZxW9yiFOQMjwzFnMIDKsAw/XyYbFvxPA2rDgUt1AgEnHLi0I5dZKVeURfk
-         ZP4BOyrrJzorHKeWyI48/PMOKhIAdiBwuCr9OkfvKfwMUdHgOk+7ncSIvuE5Zpd605x2
-         Q6eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=7TyoM62NCZIF/E5AFBSvac1IoKHCKnc+Y34dVW1eFns=;
-        b=2fqKHj8O+uGTgUXADLBTkvxowXA1gMILYhnV03feVVsHgkOaBLW3NlSgAQr6113ksO
-         TNmG57h3L9IPMg0JxNEK0FD5Lby25Ja5UM7VwELjLtYiCSuNu8l6LAfr3ctNI8WNYZFk
-         ZArQstyKcxX0Nat0AR7n3DCotKgeWKn2xlRyEOsB59kk3HklgcMffRETfLkYR3aL/eez
-         rljeOC+coH2VqTDolAgZxOgfoFd+R4zc3fejc9TkGmGD2z5b1ExFiKEM2/R0HSnqgnXo
-         Du29CaEy96oW+5DPmyQgMCO6hxxDmKhlQQxJEVNijRr1jcieMbWJVQ4JNO4LJ9tDkQOa
-         8Ifw==
-X-Gm-Message-State: ACgBeo3m5a6mE6vDWKzZCULi3axRMYjecYA1rnDiXp6Ymws6VadXIGT3
-        up+LLAXyR+LGdnPKybEAzZHR7muSRydycgl/ebVol131JbkRgA==
-X-Google-Smtp-Source: AA6agR49I5XQ54GRFcSaPPrWeKWJQ1VX4qlPtuaRTyVtiXCjCJXwKQDjJPBmvzfPhHNye0mxtkh2JKlWpGWhbwfbcxg=
-X-Received: by 2002:ac2:563b:0:b0:492:8f3a:44fc with SMTP id
- b27-20020ac2563b000000b004928f3a44fcmr1878799lff.645.1660613482321; Mon, 15
- Aug 2022 18:31:22 -0700 (PDT)
+        Tue, 16 Aug 2022 02:42:40 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5541100E;
+        Mon, 15 Aug 2022 18:31:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=k8axr
+        /Aep0d+9tnwrwx2dH9IRoVDFQvDb+3T8DBTfYY=; b=SYrbCR1ChEwP7KDSYp3bn
+        0nlavgADJkGGdcCxQsNf5V+iGBa9qjRmlRqrPZ6hR6Hzo+YnCA5drFe/7L0jqlYL
+        xwd0DHBCWU+w/Vi1/QIEToRRJCsYp0caqKZT9mKOYSKu9ZTTQyFVbSekABoXxfwB
+        hT0yLk8C1SO011B15V0MAg=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp4 (Coremail) with SMTP id HNxpCgCXJsDL7_pipFLJVQ--.14169S2;
+        Tue, 16 Aug 2022 09:15:56 +0800 (CST)
+From:   Jiangshan Yi <13667453960@163.com>
+To:     tytso@mit.edu, adilger.kernel@dilger.ca
+Cc:     lczerner@redhat.com, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiangshan Yi <yijiangshan@kylinos.cn>
+Subject: [PATCH v3] fs/ext4: replace ternary operator with min()/max() and min_t()
+Date:   Tue, 16 Aug 2022 09:15:53 +0800
+Message-Id: <20220816011553.2912926-1-13667453960@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CANXvt5osmx+iFdVXYQhGcdBiz5VsA60jzdKXg42c_zSDuxoHxg@mail.gmail.com>
- <20220815183920.GA1960006@bhelgaas>
-In-Reply-To: <20220815183920.GA1960006@bhelgaas>
-From:   Shunsuke Mie <mie@igel.co.jp>
-Date:   Tue, 16 Aug 2022 10:31:11 +0900
-Message-ID: <CANXvt5oOZfPZp6gMjS7AL=NPjUuKTXW6Co-o9w+-X3hyM0k+aQ@mail.gmail.com>
-Subject: Re: [PATCH] PCI: endpoint: fix Kconfig indent style
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Jon Mason <jdmason@kudzu.us>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Ren Zhijie <renzhijie2@huawei.com>, linux-pci@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgCXJsDL7_pipFLJVQ--.14169S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGFWxCw4xury5CF45JFy3CFg_yoW5WFWfpF
+        n3AF18GFWru348uayIgr4UZ3W5W3WkG3y7XryY9r1UWFZIqFyxtrn8Kr1jvF1FgrWkZ34j
+        qFW0kr1UJwnIkFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UuuWJUUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbivgpe+1ZceYnPBQACsj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjom,
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
 
-2022=E5=B9=B48=E6=9C=8816=E6=97=A5(=E7=81=AB) 3:39 Bjorn Helgaas <helgaas@k=
-ernel.org>:
->
-> On Mon, Aug 15, 2022 at 12:00:23PM +0900, Shunsuke Mie wrote:
-> > I have a question, not related to the patch. Could you please tell me
-> > why the ntb related patches are managed outside the pci branch,
-> > Helgaas's branch? It confused me a little to find the ntb branch.
->
-> My understanding is that the recent drivers/pci/endpoint/functions/*ntb.c
-> patches were merged by Jon because they had dependencies on other
-> patches in his tree.
-That makes sense.
+Fix the following coccicheck warning:
 
-> In the future, I think most NTB-related patches in drivers/pci/ will
-> be merged via my PCI tree.
->
-> Bjorn
+fs/ext4/inline.c:183: WARNING opportunity for min().
+fs/ext4/extents.c:2631: WARNING opportunity for max().
+fs/ext4/extents.c:2632: WARNING opportunity for min().
+fs/ext4/extents.c:5559: WARNING opportunity for max().
+fs/ext4/super.c:6908: WARNING opportunity for min().
 
-Thanks,
-Shunsuke
+min()/max() and min_t() macro is defined in include/linux/minmax.h.
+It avoids multiple evaluations of the arguments when non-constant and
+performs strict type-checking.
+
+Suggested-by: Lukas Czerner <lczerner@redhat.com>
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+---
+ fs/ext4/extents.c | 8 +++-----
+ fs/ext4/inline.c  | 3 +--
+ fs/ext4/super.c   | 3 +--
+ 3 files changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index c148bb97b527..37321aecd878 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -2628,9 +2628,8 @@ ext4_ext_rm_leaf(handle_t *handle, struct inode *inode,
+ 			  unwritten, ex_ee_len);
+ 		path[depth].p_ext = ex;
+ 
+-		a = ex_ee_block > start ? ex_ee_block : start;
+-		b = ex_ee_block+ex_ee_len - 1 < end ?
+-			ex_ee_block+ex_ee_len - 1 : end;
++		a = max(ex_ee_block, start);
++		b = min(ex_ee_block + ex_ee_len - 1, end);
+ 
+ 		ext_debug(inode, "  border %u:%u\n", a, b);
+ 
+@@ -5557,8 +5556,7 @@ static int ext4_insert_range(struct file *file, loff_t offset, loff_t len)
+ 	 * ee_start_lblk to shift extents
+ 	 */
+ 	ret = ext4_ext_shift_extents(inode, handle,
+-		ee_start_lblk > offset_lblk ? ee_start_lblk : offset_lblk,
+-		len_lblk, SHIFT_RIGHT);
++		max(ee_start_lblk, offset_lblk), len_lblk, SHIFT_RIGHT);
+ 
+ 	up_write(&EXT4_I(inode)->i_data_sem);
+ 	if (IS_SYNC(inode))
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index a4fbe825694b..2b42ececa46d 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -180,8 +180,7 @@ static int ext4_read_inline_data(struct inode *inode, void *buffer,
+ 
+ 	BUG_ON(len > EXT4_I(inode)->i_inline_size);
+ 
+-	cp_len = len < EXT4_MIN_INLINE_DATA_SIZE ?
+-			len : EXT4_MIN_INLINE_DATA_SIZE;
++	cp_len = min_t(unsigned int, len, EXT4_MIN_INLINE_DATA_SIZE);
+ 
+ 	raw_inode = ext4_raw_inode(iloc);
+ 	memcpy(buffer, (void *)(raw_inode->i_block), cp_len);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 9a66abcca1a8..5615bf7ab15d 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6905,8 +6905,7 @@ static ssize_t ext4_quota_read(struct super_block *sb, int type, char *data,
+ 		len = i_size-off;
+ 	toread = len;
+ 	while (toread > 0) {
+-		tocopy = sb->s_blocksize - offset < toread ?
+-				sb->s_blocksize - offset : toread;
++		tocopy = min(sb->s_blocksize - offset, toread);
+ 		bh = ext4_bread(NULL, inode, blk, 0);
+ 		if (IS_ERR(bh))
+ 			return PTR_ERR(bh);
+-- 
+2.25.1
+
