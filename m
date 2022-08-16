@@ -2,154 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CFEC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE474C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234144AbiHPKPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
+        id S233005AbiHPKPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234365AbiHPKO2 (ORCPT
+        with ESMTP id S234337AbiHPKPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:14:28 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE53D6B86
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660642666; x=1692178666;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YbTZ5iIy9piEvqt+t49zjJcJD4S60yZwdImbMwTaINQ=;
-  b=LzBVBZ1i9ynbky0ifrIIeD2XlLNxy7Q9eNNAgAGbyQP+qkZHSzCB8la6
-   GBMGFK/GFdYNNVuiGXKFgltEXrE4x++K336BFoUQg1Jeu1lpXc8rYZNRG
-   9L84Bk+pdK1CiVkcinnyMCGAcPS3zFfbvS4vPfvsgC1tUw5GN0mNdKE+I
-   P54pjZYEpVkyCK24+b5YXlABNts6NdR0UdYz2u9YjxCaDdT97uYyDgLU0
-   rjGjPn2orrAXUjbkJjigeOMuD82BIz47MccJsmFVj5v7B7SSNv3CVixEI
-   +BsfbFwzs/Af9S9VoIxm1GxKuM3nA+iUeXcC5IOffIynBPNjcE9bi16v2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293446823"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="293446823"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:58 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="733231051"
-Received: from clbarnes-mobl.amr.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.7.166])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:35:55 -0700
-From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-To:     intel-gfx@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        mchehab@kernel.org, chris@chris-wilson.co.uk,
-        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
-        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
-        daniel@ffwll.ch, andi.shyti@linux.intel.com,
-        andrzej.hajda@intel.com
-Subject: [PATCH v7 5/8] drm/i915: Check for integer truncation on the configuration of ttm place
-Date:   Tue, 16 Aug 2022 18:35:22 +0900
-Message-Id: <20220816093525.184940-6-gwan-gyeong.mun@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
-References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+        Tue, 16 Aug 2022 06:15:15 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7292FD599B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:19 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id a22so8296786pfg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=EGNQJRIPLumZf7DqKjclfQvb9o3UYOp5ZwZhQHSQQ/I=;
+        b=Ak9otAjwzHCu40bRgga78Z1a/w5XmFv4rBlwJlUtFg21GblJ0oBlpOoIa+9J4T7eFR
+         kC6Isx7q0xBXJ5Nm4ZOWpzGeTFEdUYaRPDGZJow7Dv69qW8L4r/kgxKCw2DRLjz1no0/
+         AU68paDW/UbjTlkOTEy/PxeF32eDVKqjUFUB0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=EGNQJRIPLumZf7DqKjclfQvb9o3UYOp5ZwZhQHSQQ/I=;
+        b=HC1s0gpqc8qYijOsTKPkZRZo05jcMp43VWWMJ3AW1x9dw7xRPUYyN1pyRUT3rZWuxc
+         Bz4hmGoB3lMcPda9JDu8p+P7IFcuHo62Kfjjf/Q1WZXdZFSdyuYAsfioEXOQm7ugMTHd
+         w7ua3XBkWDpD4wrERZi71CoHxWoebeSRuvHQCv3dyfuRLVheBySi7bjB2copIq8Yg8KY
+         z3zumpcCFprcy55Xb7zLuqHybydvXl6y413AskvQWWKDvdDiBLklhLNtGFP66LwJsdsT
+         5e4AnvKNs5wvxFPTgdUhJVhyebu8JiLss8Vqdayjy9SOtFKNoVgq6pRgw2k7Kv2womZT
+         KvJA==
+X-Gm-Message-State: ACgBeo3vXTQ+eA/pmeWnFeR1cmNKF3VX2GB3ej6MsqRsB5Nv4goYTWUR
+        m5ak3Bvrp+Tje32X8YFPrjJFFw==
+X-Google-Smtp-Source: AA6agR5RMR7nwdxfCdO/lQPIYn1JC1RLaj1gHqEjp0p04k8mcgVG7ekoDRkJ8cxSAYn85WAIO+AcgA==
+X-Received: by 2002:a05:6a00:1588:b0:52f:a5bb:b992 with SMTP id u8-20020a056a00158800b0052fa5bbb992mr19821980pfk.38.1660642612935;
+        Tue, 16 Aug 2022 02:36:52 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
+        by smtp.gmail.com with ESMTPSA id i3-20020aa796e3000000b0052e26b8f610sm7924788pfq.89.2022.08.16.02.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 02:36:52 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v2] arm64: dts: qcom: sc7280: Use "PP1800_L2C" as the DMIC power source.
+Date:   Tue, 16 Aug 2022 09:36:44 +0000
+Message-Id: <20220816093644.764259-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is an impedance mismatch between the first/last valid page
-frame number of ttm place in unsigned and our memory/page accounting in
-unsigned long.
-As the object size is under the control of userspace, we have to be prudent
-and catch the conversion errors.
-To catch the implicit truncation as we switch from unsigned long to
-unsigned, we use overflows_type check and report E2BIG or overflow_type
-prior to the operation.
+Use "PP1800_L2C" as the DMIC power source to match the hardware
+schematic.
+It fixes the DMIC no sound issue of villager-r1.
 
-v3: Not to change execution inside a macro. (Mauro)
-    Add safe_conversion_gem_bug_on() macro and remove temporal
-    SAFE_CONVERSION() macro.
-v4: Fix unhandled GEM_BUG_ON() macro call from safe_conversion_gem_bug_on()
-v6: Fix to follow general use case for GEM_BUG_ON(). (Jani)
-v7: Fix to use WARN_ON() macro where GEM_BUG_ON() macro was used. (Jani)
 
-Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Matthew Auld <matthew.auld@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Nirmoy Das <nirmoy.das@intel.com> (v2)
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org> (v3)
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com> (v5)
+Co-developed-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c |  6 +++---
- drivers/gpu/drm/i915/intel_region_ttm.c | 17 ++++++++++++++---
- 2 files changed, 17 insertions(+), 6 deletions(-)
+Changes since V1:
+    -- Update the commit message.
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 9f2be1892b6c..69805cbe850c 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -140,14 +140,14 @@ i915_ttm_place_from_region(const struct intel_memory_region *mr,
- 	if (flags & I915_BO_ALLOC_CONTIGUOUS)
- 		place->flags |= TTM_PL_FLAG_CONTIGUOUS;
- 	if (offset != I915_BO_INVALID_OFFSET) {
--		place->fpfn = offset >> PAGE_SHIFT;
--		place->lpfn = place->fpfn + (size >> PAGE_SHIFT);
-+		WARN_ON(!safe_conversion(&place->fpfn, offset >> PAGE_SHIFT));
-+		WARN_ON(!safe_conversion(&place->lpfn, place->fpfn + (size >> PAGE_SHIFT)));
- 	} else if (mr->io_size && mr->io_size < mr->total) {
- 		if (flags & I915_BO_ALLOC_GPU_ONLY) {
- 			place->flags |= TTM_PL_FLAG_TOPDOWN;
- 		} else {
- 			place->fpfn = 0;
--			place->lpfn = mr->io_size >> PAGE_SHIFT;
-+			WARN_ON(!safe_conversion(&place->lpfn, mr->io_size >> PAGE_SHIFT));
- 		}
- 	}
- }
-diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
-index 575d67bc6ffe..c8c6c2e22e01 100644
---- a/drivers/gpu/drm/i915/intel_region_ttm.c
-+++ b/drivers/gpu/drm/i915/intel_region_ttm.c
-@@ -209,14 +209,23 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
- 	if (flags & I915_BO_ALLOC_CONTIGUOUS)
- 		place.flags |= TTM_PL_FLAG_CONTIGUOUS;
- 	if (offset != I915_BO_INVALID_OFFSET) {
--		place.fpfn = offset >> PAGE_SHIFT;
--		place.lpfn = place.fpfn + (size >> PAGE_SHIFT);
-+		if (WARN_ON(!safe_conversion(&place.fpfn, offset >> PAGE_SHIFT))) {
-+			ret = -E2BIG;
-+			goto out;
-+		}
-+		if (WARN_ON(!safe_conversion(&place.lpfn, place.fpfn + (size >> PAGE_SHIFT)))) {
-+			ret = -E2BIG;
-+			goto out;
-+		}
- 	} else if (mem->io_size && mem->io_size < mem->total) {
- 		if (flags & I915_BO_ALLOC_GPU_ONLY) {
- 			place.flags |= TTM_PL_FLAG_TOPDOWN;
- 		} else {
- 			place.fpfn = 0;
--			place.lpfn = mem->io_size >> PAGE_SHIFT;
-+			if (WARN_ON(!safe_conversion(&place.lpfn, mem->io_size >> PAGE_SHIFT))) {
-+				ret = -E2BIG;
-+				goto out;
-+			}
- 		}
- 	}
- 
-@@ -224,6 +233,8 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
- 	mock_bo.bdev = &mem->i915->bdev;
- 
- 	ret = man->func->alloc(man, &mock_bo, &place, &res);
+
+This patch depends on:
+arm64: dts: qcom: sc7280: Add herobrine-villager-r1. [1]
+
+[1]
+https://patchwork.kernel.org/patch/12926099/
+
+
+ .../dts/qcom/sc7280-herobrine-villager-r1.dts | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+index c03b3ae4de50..983defa7c76d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+@@ -12,3 +12,31 @@ / {
+ 	model = "Google Villager (rev1+)";
+ 	compatible = "google,villager", "qcom,sc7280";
+ };
 +
-+out:
- 	if (ret == -ENOSPC)
- 		ret = -ENXIO;
- 	if (!ret)
++&lpass_va_macro {
++	vdd-micb-supply = <&pp1800_l2c>;
++};
++
++&sound {
++	audio-routing =
++			"IN1_HPHL", "HPHL_OUT",
++			"IN2_HPHR", "HPHR_OUT",
++			"AMIC1", "MIC BIAS1",
++			"AMIC2", "MIC BIAS2",
++			"VA DMIC0", "vdd-micb",
++			"VA DMIC1", "vdd-micb",
++			"VA DMIC2", "vdd-micb",
++			"VA DMIC3", "vdd-micb",
++			"TX SWR_ADC0", "ADC1_OUTPUT",
++			"TX SWR_ADC1", "ADC2_OUTPUT",
++			"TX SWR_ADC2", "ADC3_OUTPUT",
++			"TX SWR_DMIC0", "DMIC1_OUTPUT",
++			"TX SWR_DMIC1", "DMIC2_OUTPUT",
++			"TX SWR_DMIC2", "DMIC3_OUTPUT",
++			"TX SWR_DMIC3", "DMIC4_OUTPUT",
++			"TX SWR_DMIC4", "DMIC5_OUTPUT",
++			"TX SWR_DMIC5", "DMIC6_OUTPUT",
++			"TX SWR_DMIC6", "DMIC7_OUTPUT",
++			"TX SWR_DMIC7", "DMIC8_OUTPUT";
++
++};
 -- 
-2.37.1
+2.31.0
 
