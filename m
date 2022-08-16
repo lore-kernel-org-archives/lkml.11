@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21742C49EC1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AB4C49EC2
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234751AbiHPMIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        id S234168AbiHPMIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiHPMHp (ORCPT
+        with ESMTP id S235201AbiHPMHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:07:45 -0400
+        Tue, 16 Aug 2022 08:07:36 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1C4D62;
-        Tue, 16 Aug 2022 04:58:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F688D77;
+        Tue, 16 Aug 2022 04:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660651092; x=1692187092;
+  t=1660651075; x=1692187075;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jViNROObNO3h6Uyd+viPlFHM6zP9PKpgfEeghIlk4cw=;
-  b=F/B58Oud4Dt7w9NvXdipCymfhxan2EoWMKT34l041LL1XZWLWVNVo+Ut
-   ZMSlTCEXC9xYrWkBgNFNucRshMQGYNgbKFZdb7dkw4QGqTBlgQgTyGUqG
-   Y/3h4JAQLig1uVQXad6IkKNGf7o2iHXnFLXwAt9Lb48UOGyS1LxSk6BkE
-   41/3iHdPt5SXeEoP7fpVp5cFsGXnXwlSLWYGtZozQQrLzeiOav0rh52rM
-   e4gbFk8DrGSSgaZMnCWS5FwefchtgFhmcY28VKcxzG79aE9J7h3k/npw8
-   CAOpDSi58206mkLOPzOmGXxmUWMyM8IWtVUGVji9ZwmWoWXL/Vth0HYu1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199344"
+  bh=ZdhDcPEQO9N7iMBRBYrkWL0Jpl5hwBrBwkkMZmGHxgc=;
+  b=MzdrNB8z3cHIno655baQhEeTRl8H15/SHK2nxVSQ5YLGwmkKVfKxXNma
+   +iGLt5Ba2uKE44boRktUxk/CJ/52HSjEEIQ6lZm58FeyCJpM7rMQn1mPj
+   OAU6yZSt8e8slShGpoi2Ve9VfMcusw5XR1C0TvS7xSKSek7QiHVDG6AeB
+   Gh85MgdVFj6jgU+UAjo2YUtuS5TZzhic11n/PltKcCrtKSoi14ZAP/qhX
+   v2UbjN0TsajqLcIYJAv8GuGToMwyLgn0HyTBe6EalpNpTPY4wHZLbQAP9
+   Gq9MplnMosiQ6kE3AN4jjFWVI6cSBfCqe1tL8Z0jmtgw4G15AUtwcRiOY
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199305"
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="356199344"
+   d="scan'208";a="356199305"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:11 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:57:54 -0700
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="667080819"
+   d="scan'208";a="667080780"
 Received: from tturcu-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.51.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:09 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:57:51 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -45,9 +45,9 @@ To:     linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Johan Hovold <johan@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5/8] tty: Make ldisc ->set_termios() old ktermios const
-Date:   Tue, 16 Aug 2022 14:57:36 +0300
-Message-Id: <20220816115739.10928-6-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 1/8] tty: Remove baudrate dead code & make ktermios params const
+Date:   Tue, 16 Aug 2022 14:57:32 +0300
+Message-Id: <20220816115739.10928-2-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
 References: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
@@ -58,50 +58,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There should be no reason to adjust old ktermios which is going to get
-discarded anyway.
+With the architectures currently in-tree, either:
+  1) CBAUDEX is zero
+  2) The earlier BOTHER if check covers cbaud < 1 case
+  3) All CBAUD bits are covered by the baud_table
+
+Thus, the check for cbaud being out-of-range for CBAUDEX case cannot
+ever be true.
+
+The ktermios parameters can now be made const.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/n_tty.c       | 2 +-
- include/linux/tty_ldisc.h | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/tty.h          |  2 +-
+ drivers/tty/tty_baudrate.c | 24 ++++++++----------------
+ include/linux/tty.h        |  2 +-
+ 3 files changed, 10 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 3afdd9033a9c..597019690ae6 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1758,7 +1758,7 @@ static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
+diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
+index f310a8274df1..1c08c9b67b16 100644
+--- a/drivers/tty/tty.h
++++ b/drivers/tty/tty.h
+@@ -73,7 +73,7 @@ void tty_buffer_set_lock_subclass(struct tty_port *port);
+ bool tty_buffer_restart_work(struct tty_port *port);
+ bool tty_buffer_cancel_work(struct tty_port *port);
+ void tty_buffer_flush_work(struct tty_port *port);
+-speed_t tty_termios_input_baud_rate(struct ktermios *termios);
++speed_t tty_termios_input_baud_rate(const struct ktermios *termios);
+ void tty_ldisc_hangup(struct tty_struct *tty, bool reset);
+ int tty_ldisc_reinit(struct tty_struct *tty, int disc);
+ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
+diff --git a/drivers/tty/tty_baudrate.c b/drivers/tty/tty_baudrate.c
+index 3cd99ed7c710..4e3fd756dfc7 100644
+--- a/drivers/tty/tty_baudrate.c
++++ b/drivers/tty/tty_baudrate.c
+@@ -49,13 +49,13 @@ static int n_baud_table = ARRAY_SIZE(baud_table);
   *
-  * Locking: Caller holds @tty->termios_rwsem
+  *	Convert termios baud rate data into a speed. This should be called
+  *	with the termios lock held if this termios is a terminal termios
+- *	structure. May change the termios data. Device drivers can call this
+- *	function but should use ->c_[io]speed directly as they are updated.
++ *	structure. Device drivers can call this function but should use
++ *	->c_[io]speed directly as they are updated.
+  *
+  *	Locking: none
   */
--static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
-+static void n_tty_set_termios(struct tty_struct *tty, const struct ktermios *old)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
  
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index ede6f2157f32..dcb61ec11424 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -130,7 +130,7 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
-  *	a pointer to wordsize-sensitive structure belongs here, but most of
-  *	ldiscs will happily leave it %NULL.
+-speed_t tty_termios_baud_rate(struct ktermios *termios)
++speed_t tty_termios_baud_rate(const struct ktermios *termios)
+ {
+ 	unsigned int cbaud;
+ 
+@@ -67,11 +67,7 @@ speed_t tty_termios_baud_rate(struct ktermios *termios)
+ 
+ 	if (cbaud & CBAUDEX) {
+ 		cbaud &= ~CBAUDEX;
+-
+-		if (cbaud < 1 || cbaud + 15 > n_baud_table)
+-			termios->c_cflag &= ~CBAUDEX;
+-		else
+-			cbaud += 15;
++		cbaud += 15;
+ 	}
+ 	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+ }
+@@ -83,13 +79,13 @@ EXPORT_SYMBOL(tty_termios_baud_rate);
   *
-- * @set_termios: [TTY] ``void ()(struct tty_struct *tty, struct ktermios *old)``
-+ * @set_termios: [TTY] ``void ()(struct tty_struct *tty, const struct ktermios *old)``
+  *	Convert termios baud rate data into a speed. This should be called
+  *	with the termios lock held if this termios is a terminal termios
+- *	structure. May change the termios data. Device drivers can call this
+- *	function but should use ->c_[io]speed directly as they are updated.
++ *	structure. Device drivers can call this function but should use
++ *	->c_[io]speed directly as they are updated.
   *
-  *	This function notifies the line discpline that a change has been made
-  *	to the termios structure.
-@@ -227,7 +227,7 @@ struct tty_ldisc_ops {
- 			unsigned long arg);
- 	int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
- 			unsigned long arg);
--	void	(*set_termios)(struct tty_struct *tty, struct ktermios *old);
-+	void	(*set_termios)(struct tty_struct *tty, const struct ktermios *old);
- 	__poll_t (*poll)(struct tty_struct *tty, struct file *file,
- 			     struct poll_table_struct *wait);
- 	void	(*hangup)(struct tty_struct *tty);
+  *	Locking: none
+  */
+ 
+-speed_t tty_termios_input_baud_rate(struct ktermios *termios)
++speed_t tty_termios_input_baud_rate(const struct ktermios *termios)
+ {
+ 	unsigned int cbaud = (termios->c_cflag >> IBSHIFT) & CBAUD;
+ 
+@@ -102,11 +98,7 @@ speed_t tty_termios_input_baud_rate(struct ktermios *termios)
+ 
+ 	if (cbaud & CBAUDEX) {
+ 		cbaud &= ~CBAUDEX;
+-
+-		if (cbaud < 1 || cbaud + 15 > n_baud_table)
+-			termios->c_cflag &= ~(CBAUDEX << IBSHIFT);
+-		else
+-			cbaud += 15;
++		cbaud += 15;
+ 	}
+ 	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+ }
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 7b0a5d478ef6..cf5ab26de73d 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -434,7 +434,7 @@ int tty_hung_up_p(struct file *filp);
+ void do_SAK(struct tty_struct *tty);
+ void __do_SAK(struct tty_struct *tty);
+ void no_tty(void);
+-speed_t tty_termios_baud_rate(struct ktermios *termios);
++speed_t tty_termios_baud_rate(const struct ktermios *termios);
+ void tty_termios_encode_baud_rate(struct ktermios *termios, speed_t ibaud,
+ 		speed_t obaud);
+ void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
 -- 
 2.30.2
 
