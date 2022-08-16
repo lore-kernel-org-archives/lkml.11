@@ -2,89 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F40AC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E160C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234225AbiHPSH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
+        id S236991AbiHPSIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236912AbiHPSHl (ORCPT
+        with ESMTP id S236906AbiHPSHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:07:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FD185A82;
-        Tue, 16 Aug 2022 11:07:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B644861384;
-        Tue, 16 Aug 2022 18:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8882BC433D7;
-        Tue, 16 Aug 2022 18:07:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660673239;
-        bh=wdC60JNH+NYxDVMOzJ91ehWnODXNaR5QzNelPAKX9ls=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sIAWpl0S9Dol1xjrzZ7uMx84IAHw9Eqgp40WK17hroEzpOME8bkRYBTNWdBPkZKx/
-         7J3H3tYgB4ycNm0VV7DA3PEWa7ULBhg9DOfdzY62rcOo9yNi71dbxNFM5bpONFI8OX
-         /pTJnNg2PwZuGyQrWhp4XhYxBqSf+i4KBwAJjH8kumxLzpIqU5dIQTWP3zx1VLM3by
-         EVBmvQGvARPfgLcdX5A6ebghntShyq4uF/t9Mp+MNW9i9TZFJugpZfrGfzmxiFSwKc
-         L2/gB7+7b/3DcIeWOBQOjYG09UUKH724ulP97ljfJ6T752ShJ7qzYN+nBFu95tXOk3
-         lWRYS97zVVaxQ==
-Date:   Tue, 16 Aug 2022 11:07:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        Tue, 16 Aug 2022 14:07:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DE885F99
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:07:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660673261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vH2jTlmzQIwOMeKUkJzPFxzEVFleWwYuNxRt4X4XvAY=;
+        b=cmMQF5MV4d1o0o7Kx/cto+FCxnjN5y5SzJR+UXTMchLIrzS9WKgRjIOdMsM9S7kzSGCkBS
+        0cRRt8cmORFN451TVgb0FX1O/0aC6DhBdewwexfC1TAgSXgXq4aiAuRevTyAW5/HqlW0Jj
+        OE+F+4axd2QB7ACrgikbFDNgOAXYrm8=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-48-R3ghcE0UM4Obhp3W9NjidA-1; Tue, 16 Aug 2022 14:07:40 -0400
+X-MC-Unique: R3ghcE0UM4Obhp3W9NjidA-1
+Received: by mail-wm1-f70.google.com with SMTP id a17-20020a05600c349100b003a545125f6eso10552983wmq.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:07:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=vH2jTlmzQIwOMeKUkJzPFxzEVFleWwYuNxRt4X4XvAY=;
+        b=ebnCaflHtaFr8lmC9EDT837dRnGScu0LpReSgvx85KBr23EDUbIfbYkoXino32crYf
+         vHW1oBUW+x13bYaVswcAj47FT7WQ3hOUx26W3KEkU81AEum8tRNIBazOcu+/1m2j6oSU
+         bTS9pbsYQ5ikeFnMDbPchOn6824+QfcmuAmz81UEMUCTcuTcLbpvAH/BnMvgxsC9SNUB
+         4U+Oa0FM1PAPS4rN+duLStKv9vPRn+YU0ga4L1oeCdW9x1JkZPFxc/iLjpMNayLx75tS
+         lIso1liZ4IWBpQMmQ55NmuUFRj3b0bw5s43L2gOhYJcESjwHRhRZjeJnFgMEf2SLS+/1
+         JRgg==
+X-Gm-Message-State: ACgBeo0u2othLhV/dTf4kSd83Z0M3zPG5pM7kV8SlWUodX9S8G81ys9e
+        1W2e995R76nqvBzhZjLqqvke/7Ck3lLtnN9jk4HAw1kEl4kOaReq5/o5DAx5JgYc9P+wD8BXmX9
+        niHWgSwYLESBJTSq/lFUHgik5
+X-Received: by 2002:a05:600c:4fcf:b0:3a5:b7f7:3127 with SMTP id o15-20020a05600c4fcf00b003a5b7f73127mr14638611wmq.160.1660673259512;
+        Tue, 16 Aug 2022 11:07:39 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6Ozt5n5rw1n8vb1yr16M5RH2dEqwc/tjFIJhySTHC/leYqLbNjdSwNueyR8yo+3ivUTDnsZQ==
+X-Received: by 2002:a05:600c:4fcf:b0:3a5:b7f7:3127 with SMTP id o15-20020a05600c4fcf00b003a5b7f73127mr14638594wmq.160.1660673259334;
+        Tue, 16 Aug 2022 11:07:39 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id o8-20020a05600c4fc800b003a319bd3278sm14694961wmq.40.2022.08.16.11.07.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 11:07:38 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Message-ID: <20220816110717.5422e976@kernel.org>
-In-Reply-To: <20220816123701-mutt-send-email-mst@kernel.org>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
-        <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
-        <20220816123701-mutt-send-email-mst@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH 2/5] cpumask: Introduce for_each_cpu_andnot()
+Date:   Tue, 16 Aug 2022 19:07:24 +0100
+Message-Id: <20220816180727.387807-3-vschneid@redhat.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220816180727.387807-1-vschneid@redhat.com>
+References: <20220816180727.387807-1-vschneid@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 16 Aug 2022 12:38:52 -0400 Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
-> > In order to support usage of qdisc on vsock traffic, this commit
-> > introduces a struct net_device to vhost and virtio vsock.
-> >=20
-> > Two new devices are created, vhost-vsock for vhost and virtio-vsock
-> > for virtio. The devices are attached to the respective transports.
-> >=20
-> > To bypass the usage of the device, the user may "down" the associated
-> > network interface using common tools. For example, "ip link set dev
-> > virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
-> > simply using the FIFO logic of the prior implementation. =20
->=20
-> Ugh. That's quite a hack. Mark my words, at some point we will decide to
-> have down mean "down".  Besides, multiple net devices with link up tend
-> to confuse userspace. So might want to keep it down at all times
-> even short term.
+for_each_cpu_and() is very convenient as it saves having to allocate a
+temporary cpumask to store the result of cpumask_and(). The same issue
+applies to cpumask_andnot() which doesn't actually need temporary storage
+for iteration purposes.
 
-Agreed!
+Following what has been done for for_each_cpu_and(), introduce
+for_each_cpu_andnot().
 
-=46rom a cursory look (and Documentation/ would be nice..) it feels
-very wrong to me. Do you know of any uses of a netdev which would=20
-be semantically similar to what you're doing? Treating netdevs as
-buildings blocks for arbitrary message passing solutions is something=20
-I dislike quite strongly.
+Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+---
+ include/linux/cpumask.h | 32 ++++++++++++++++++++++++++++++++
+ lib/cpumask.c           | 19 +++++++++++++++++++
+ 2 files changed, 51 insertions(+)
 
-Could you recommend where I can learn more about vsocks?
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index fe29ac7cc469..a8b2ca160e57 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -157,6 +157,13 @@ static inline unsigned int cpumask_next_and(int n,
+ 	return n+1;
+ }
+ 
++static inline unsigned int cpumask_next_andnot(int n,
++					    const struct cpumask *srcp,
++					    const struct cpumask *andp)
++{
++	return n+1;
++}
++
+ static inline unsigned int cpumask_next_wrap(int n, const struct cpumask *mask,
+ 					     int start, bool wrap)
+ {
+@@ -194,6 +201,8 @@ static inline int cpumask_any_distribute(const struct cpumask *srcp)
+ 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)(start))
+ #define for_each_cpu_and(cpu, mask1, mask2)	\
+ 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask1, (void)mask2)
++#define for_each_cpu_andnot(cpu, mask1, mask2)	\
++	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask1, (void)mask2)
+ #else
+ /**
+  * cpumask_first - get the first cpu in a cpumask
+@@ -259,6 +268,9 @@ static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
+ }
+ 
+ int __pure cpumask_next_and(int n, const struct cpumask *, const struct cpumask *);
++int __pure cpumask_next_andnot(int n,
++			       const struct cpumask *src1p,
++			       const struct cpumask *src2p);
+ int __pure cpumask_any_but(const struct cpumask *mask, unsigned int cpu);
+ unsigned int cpumask_local_spread(unsigned int i, int node);
+ int cpumask_any_and_distribute(const struct cpumask *src1p,
+@@ -324,6 +336,26 @@ extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool
+ 	for ((cpu) = -1;						\
+ 		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
+ 		(cpu) < nr_cpu_ids;)
++
++/**
++ * for_each_cpu_andnot - iterate over every cpu in one mask but not in another
++ * @cpu: the (optionally unsigned) integer iterator
++ * @mask1: the first cpumask pointer
++ * @mask2: the second cpumask pointer
++ *
++ * This saves a temporary CPU mask in many places.  It is equivalent to:
++ *	struct cpumask tmp;
++ *	cpumask_andnot(&tmp, &mask1, &mask2);
++ *	for_each_cpu(cpu, &tmp)
++ *		...
++ *
++ * After the loop, cpu is >= nr_cpu_ids.
++ */
++#define for_each_cpu_andnot(cpu, mask1, mask2)				\
++	for ((cpu) = -1;						\
++		(cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)),	\
++		(cpu) < nr_cpu_ids;)
++
+ #endif /* SMP */
+ 
+ #define CPU_BITS_NONE						\
+diff --git a/lib/cpumask.c b/lib/cpumask.c
+index a971a82d2f43..6896ff4a08fd 100644
+--- a/lib/cpumask.c
++++ b/lib/cpumask.c
+@@ -42,6 +42,25 @@ int cpumask_next_and(int n, const struct cpumask *src1p,
+ }
+ EXPORT_SYMBOL(cpumask_next_and);
+ 
++/**
++ * cpumask_next_andnot - get the next cpu in *src1p & ~*src2p
++ * @n: the cpu prior to the place to search (ie. return will be > @n)
++ * @src1p: the first cpumask pointer
++ * @src2p: the second cpumask pointer
++ *
++ * Returns >= nr_cpu_ids if no further cpus set in *src1p & ~*src2p.
++ */
++int cpumask_next_andnot(int n, const struct cpumask *src1p,
++		     const struct cpumask *src2p)
++{
++	/* -1 is a legal arg here. */
++	if (n != -1)
++		cpumask_check(n);
++	return find_next_andnot_bit(cpumask_bits(src1p), cpumask_bits(src2p),
++		nr_cpumask_bits, n + 1);
++}
++EXPORT_SYMBOL(cpumask_next_andnot);
++
+ /**
+  * cpumask_any_but - return a "random" in a cpumask, but not this one.
+  * @mask: the cpumask to search
+-- 
+2.31.1
+
