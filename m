@@ -2,68 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E170AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AF3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 17:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236434AbiHPRmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 13:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S236519AbiHPRmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 13:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233537AbiHPRl7 (ORCPT
+        with ESMTP id S233537AbiHPRmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 13:41:59 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE7121801;
-        Tue, 16 Aug 2022 10:41:56 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1660671681t74hx3op
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 17 Aug 2022 01:41:10 +0800 (CST)
-X-QQ-SSF: 0100000000200060D000B00A0000020
-X-QQ-FEAT: xqT8U4SkSphTDDkaSJLIDDA0iAQssCISAKJJgZfRA+41rXHjtp7pGpTT5XDCA
-        Oy4Ru9qCP6Zxy3KLFLLS9UC9X34WUPH3XKUX5tiQRKmZq+ebGodM453X6Lseqy90l4iRQO6
-        yqq4m/u9Z5kRe0VIeztMVCOGnGrUN9sSTn27a8HaO5PSVsgaPog3oDEd9YAYSSvUDQ2dI9R
-        2inrCrImq8zdgkkVcLb1d2+N8ZubCtcXqkPukmCx0BrXNxPZ47Aa2ZddjiJJLVbdjsY5EMw
-        drU6V524n/edUtubIgEBJduZ7grHyxyH104O2Fw1JRK8LhQ1ij1apjvTeuhRvKFOKdG8JZ0
-        gIrXY3mBYqZ1vHyezdl5oQOlWAUUDwJx6Tka/J6DAIdtT4iFzAFf9HXcRDzeg==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org
-Cc:     namhyung@kernel.org, irogers@google.com, ak@linux.intel.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] perf parse-events: Variable type completion
-Date:   Wed, 17 Aug 2022 01:41:09 +0800
-Message-Id: <20220816174109.7718-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 16 Aug 2022 13:42:15 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A487F27F;
+        Tue, 16 Aug 2022 10:42:14 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id y11so8390963qvn.3;
+        Tue, 16 Aug 2022 10:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=mHfKkxNjbITw4skw37Ngnw7bVj0soW59COm/Sw6u77c=;
+        b=y3xGmeSUZxDqUkyWTVXFfEDhbbeBuwDOCNUZwWnaenxIsbYHqA/ITWdaEnaaSyazcp
+         xn9Ii2y79NbGsYuM6jJHonumMthgbK+MFhWF0SG/gTHdEA8Yb1tWwUbThajEG/+RQKIl
+         zGTDbuAQgBGPUn+ig5uIZBIM/y1SaMJJkPgEjlxuRyFOVkJAcmDjWNaZv33U+6bGhexM
+         n9GMzP4uoBxYNgdNuN7s7+rJBzDN4A6aanmLBh9wsm3GXSwPAcMxyftABOiUEP1NgqfB
+         K8Fq22xcamHwR9l2BBrrEIGAInJWG/QyBZ9dnKzXaAw9SnU/qlcDWeQxMOtC7OAzDSFn
+         tWiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=mHfKkxNjbITw4skw37Ngnw7bVj0soW59COm/Sw6u77c=;
+        b=65Wr/Slxgbzktu79merW2A1OEhswFVPZIswBMWpBm1PnZxChipJRIuALfiacqRD1Uj
+         8JjGvgIUwZmxZNs4C1R7xw77yIPwoHZbMFz4cKx6O+ROVLgnBGQmJcWmmmv2k9E4UWGh
+         LhvjV/38jB4TtYY5gxpuahBChnse1WIhDNOoOFK6naTAxxYNYgM2UbFDddge/fJ2GI58
+         nTogllpWNc9XlfA1vMUg2dS5yh4bkBlKwz0vIjSjpyUbiyFBHyw8EVJu5lNPeMmYWTzm
+         U1sT+OVdnMTKFAfVUHUge09JuVMhzDOFyLn3+IYTD4hzV6Pgo80z4DcD+l0K0rEjMo5G
+         dcQA==
+X-Gm-Message-State: ACgBeo2ZS62+r8WVbzc8+Az5Vuhf2JL0caeWDbyjM3JyXjZUMht6al1p
+        HOsB5zsjFI9f89QKGiUhBMEZt9wApaGZ3N35BT4=
+X-Google-Smtp-Source: AA6agR7QnNx6w1nlDNLmCWs2O72rXsie4l2PUkDtlHCQtpflTwqqtV9/XXqd/Tl17j5Fq91jcXe9zzIc0+Wwsds2hz4=
+X-Received: by 2002:a0c:c684:0:b0:494:d65c:f495 with SMTP id
+ d4-20020a0cc684000000b00494d65cf495mr2814466qvj.24.1660671733904; Tue, 16 Aug
+ 2022 10:42:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+References: <165791937063.2491387.15277418618265930924.stgit@djiang5-desk3.ch.intel.com>
+ <20220718053039.5whjdcxynukildlo@offworld> <4bedc81d-62fa-7091-029e-a2e56b4f8f7a@intel.com>
+ <20220803183729.00002183@huawei.com> <9f3705e1-de21-0f3c-12af-fd011b6d613d@intel.com>
+ <YvO8pP7NUOdH17MM@FVFF77S0Q05N> <62f40fba338af_3ce6829466@dwillia2-xfh.jf.intel.com.notmuch>
+ <20220815160706.tqd42dv24tgb7x7y@offworld> <Yvtc2u1J/qip8za9@worktop.programming.kicks-ass.net>
+ <62fbcae511ec1_dfbc129453@dwillia2-xfh.jf.intel.com.notmuch> <20220816165301.4m4w6zsse62z4hxz@offworld>
+In-Reply-To: <20220816165301.4m4w6zsse62z4hxz@offworld>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 16 Aug 2022 10:42:03 -0700
+Message-ID: <CAA9_cmfBubQe6EGk5+wjotvofZavfjFud-JMPW13Au0gpAcWog@mail.gmail.com>
+Subject: Re: [PATCH] arch/cacheflush: Introduce flush_all_caches()
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
+        alison.schofield@intel.com, a.manzanares@samsung.com,
+        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, bp@alien8.de, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'unsigned int' is better than 'unsigned'.
+On Tue, Aug 16, 2022 at 10:30 AM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>
+> On Tue, 16 Aug 2022, Dan Williams wrote:
+>
+> >Peter Zijlstra wrote:
+> >> On Mon, Aug 15, 2022 at 09:07:06AM -0700, Davidlohr Bueso wrote:
+> >> > diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
+> >> > index b192d917a6d0..ce2ec9556093 100644
+> >> > --- a/arch/x86/include/asm/cacheflush.h
+> >> > +++ b/arch/x86/include/asm/cacheflush.h
+> >> > @@ -10,4 +10,7 @@
+> >> >
+> >> >  void clflush_cache_range(void *addr, unsigned int size);
+> >> >
+> >> > +#define flush_all_caches() \
+> >> > +  do { wbinvd_on_all_cpus(); } while(0)
+> >> > +
+> >>
+> >> This is horrific... we've done our utmost best to remove all WBINVD
+> >> usage and here you're adding it back in the most horrible form possible
+> >> ?!?
+> >>
+> >> Please don't do this, do *NOT* use WBINVD.
+> >
+> >Unfortunately there are a few good options here, and the changelog did
+> >not make clear that this is continuing legacy [1], not adding new wbinvd
+> >usage.
+>
+> While I was hoping that it was obvious from the intel.c changes that this
+> was not a new wbinvd, I can certainly improve the changelog with the below.
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- tools/perf/util/pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
-index f516d3821d28..bc1230f68341 100644
---- a/tools/perf/util/pmu.c
-+++ b/tools/perf/util/pmu.c
-@@ -1225,7 +1225,7 @@ static char *pmu_formats_string(struct list_head *formats)
- 	struct perf_pmu_format *format;
- 	char *str = NULL;
- 	struct strbuf buf = STRBUF_INIT;
--	unsigned i = 0;
-+	unsigned int i = 0;
- 
- 	if (!formats)
- 		return NULL;
--- 
-2.30.2
-
+I also think this cache_flush_region() API wants a prominent comment
+clarifying the limited applicability of this API. I.e. that it is not
+for general purpose usage, not for VMs, and only for select bare metal
+scenarios that instantaneously invalidate wide swaths of memory.
+Otherwise, I can now see how this looks like a potentially scary
+expansion of the usage of wbinvd.
