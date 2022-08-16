@@ -2,111 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 223F1C32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1155FC32789
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237951AbiHPWSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        id S237944AbiHPWSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237953AbiHPWRl (ORCPT
+        with ESMTP id S238000AbiHPWRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:17:41 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213099081A
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:17:37 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id u133so10517047pfc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:17:36 -0700 (PDT)
+        Tue, 16 Aug 2022 18:17:53 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA838901AD;
+        Tue, 16 Aug 2022 15:17:52 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id 17so10473340pli.0;
+        Tue, 16 Aug 2022 15:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=x8S/E0PtG8sPm0KWAXrWqz0p4VFvR6HOroPcaO7G+0g=;
-        b=PQZPGnkmcVJmDrzwsKCHAwq9rz9mheWDEXixV0dP60Di6iQR/xt3hIUTrr6gRyfG8a
-         4ES5yPaT+3QJmSyuOikwMRYsnsmD1ZTrexxWs2AYFWvjLqADgXFE2NqiUHOf8lKYpYTI
-         2bSwd+OUzjDYZ+hXWcDTU+l/Kw19XfCQroI5IuVvtCvMHZqDEYeHxWo0MGmhSgLlY+Wx
-         2fv8CN9CUzEUpkpldCNtCsLSDMWg8Jkd4VETtuNzYQdJl4KzmJbzslbjKxnVW5OoSq8p
-         k3BjEakAQE0AY5pGbnU1V8slfYBUWkE0vTkfaruaThYLJLrnqpjLWoFLmoVNZ/2dqyMD
-         whCA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=JozqI5HGaTqIqUqt2jBuKrvzFFJykmSG4D6AZASqs+k=;
+        b=VtebnvoeSwqIJoYSMWLDIqk72k0WBw9KRGwVuMkxBTV+kVJbz382YZcC1Bh4PeJKDi
+         jVGpjeDqA+UN/hY57cSxT9cV94aByX0LSqfjKGkRG0D+E+RaC2eXi89mO6wzmkBLXlCp
+         b+/4p7ixrkyj9alGoPisGY3uDxAUC7MMy5ZDrbXZtMM9Zqd3Fh+ymQjX/aZzywr2EmrC
+         n78P/0Eo/xnGZubCBZ2k5KxoQgrh5kNPZm/fBd+pABXr721HKEPYfPRk1kmH7VjiP02V
+         JhBrNxF1I7RKLY26Q6M5tjtBCW6eU5IY4k3ZmQiydKqQ7JA92nSxMt57cALmYDB1pq0/
+         dLEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=x8S/E0PtG8sPm0KWAXrWqz0p4VFvR6HOroPcaO7G+0g=;
-        b=zBNte1ukfjce1Cvb0yp0ZH87fEgxQavF2LQICeCfHN9LSO2zvPexKsQzxBGpsJQG2c
-         cnxBtkdeCgI5j3+rw3NM6p8cJDmr52gSp1R+bhhLNIQ8slq9P2sdOwO7uGqmHjQv896e
-         TGfgIjXAgUlDfBiI1piA3L2gkcOIAm/2xyX8nTZ6d0VGr9p+VXPa84io1iGfxExpu+4+
-         DdTwuglU/w3VJ4VMzIUNdHm3Gj5RIbIeY4bQoaEy2pV56bfxwfFIgr89GyLZfzfqQYZE
-         GE1hL/HCjuSW4n9oFdoey+laX6Jsa3MZBPDfHRRgMGmoE6GKb6cWxzMtw1JHuYR7uDK2
-         NuQg==
-X-Gm-Message-State: ACgBeo2xv2HUmK65dYH1JVDA3RclvipS6dGXECBVeMNISwAkaj4qhkhU
-        9hK1rgffkGSqVg0QZ3D83pnudg==
-X-Google-Smtp-Source: AA6agR46pneYPQRgITUM5bPRGS4+667SguLEnVClkb9qEnDOHs8epukpakvDd5snTJp24ycbhCquJA==
-X-Received: by 2002:a05:6a00:4193:b0:535:2aea:ea55 with SMTP id ca19-20020a056a00419300b005352aeaea55mr5726810pfb.63.1660688255865;
-        Tue, 16 Aug 2022 15:17:35 -0700 (PDT)
-Received: from google.com (201.215.168.34.bc.googleusercontent.com. [34.168.215.201])
-        by smtp.gmail.com with ESMTPSA id x12-20020aa7940c000000b00528f9597fb3sm8887970pfo.197.2022.08.16.15.17.35
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=JozqI5HGaTqIqUqt2jBuKrvzFFJykmSG4D6AZASqs+k=;
+        b=X8INFlMme+ccvZIXQc/wopQRlacSL11jUY2QoRaz0P1LO4zp80te040ompZhNo5szq
+         jXRGef0AGdEH+57MWulC3QSOBrfx1EEaPXQdEUcSd0P9frRLgWaYCsybVJxrox1gh3DN
+         pSL9Zm2dowQSzdYXulAXvXi9oS7qXxqjuxD36ebDUvbhlntoTHSeQvXh4r8wvluxXi8+
+         +5voS+noj6smcs0dFLTmgT7sZSElA06sVyhSYicNDcNgbM+JXGGbp1eBLXlgTT4q64cZ
+         URQ6PHRMuNMWn64Hvgo6mkkfoLqP9XqTydW0EjwOJwIpR6MpY8bFF3M0EMqFJrYZyqu8
+         89hQ==
+X-Gm-Message-State: ACgBeo1UlzAMuS5iuWZS64+8dgzk6J3gUBw9927UVhQrE4VWBKW+Z3X9
+        dqzGDlIGrLwaidlPhirGNc8=
+X-Google-Smtp-Source: AA6agR4+XvQZ7aOAhSU041b+KS5YR/g0e4WbsOo9eIXerUgE/wmCqsWxyvnBw57wAivJWNsE+n2YoA==
+X-Received: by 2002:a17:90b:4a06:b0:1f4:e4fc:91ed with SMTP id kk6-20020a17090b4a0600b001f4e4fc91edmr720840pjb.152.1660688272055;
+        Tue, 16 Aug 2022 15:17:52 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:d539:e967:9fd8:5c81])
+        by smtp.gmail.com with ESMTPSA id 3-20020a620603000000b0052b7f0ff197sm8965943pfg.49.2022.08.16.15.17.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 15:17:35 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 22:17:31 +0000
-From:   William McVicker <willmcvicker@google.com>
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, kernel-team@android.com,
-        Sajid Dalvi <sdalvi@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] PCI/PM: Switch D3Hot delay to use usleep_range
-Message-ID: <YvwXe1k6uRSTFuKR@google.com>
-References: <20220811184001.2512121-1-willmcvicker@google.com>
- <YvwGvmWPrIQ557C+@google.com>
+        Tue, 16 Aug 2022 15:17:51 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 2/4] tools lib perf: Handle read format in perf_evsel__read()
+Date:   Tue, 16 Aug 2022 15:17:45 -0700
+Message-Id: <20220816221747.275828-3-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220816221747.275828-1-namhyung@kernel.org>
+References: <20220816221747.275828-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvwGvmWPrIQ557C+@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/16/2022, Matthias Kaehlcke wrote:
-> On Thu, Aug 11, 2022 at 06:40:01PM +0000, Will McVicker wrote:
-> > From: Sajid Dalvi <sdalvi@google.com>
-> > 
-> > Since the PCI spec requires a 10ms D3Hot delay (defined by
-> > PCI_PM_D3HOT_WAIT) and a few of the PCI quirks update the D3Hot delay up
-> > to 20ms, let's switch from msleep to usleep_range to improve the delay
-> > accuracy.
-> > 
-> > This patch came from Sajid Dalvi <sdalvi@google.com> in the Pixel 6
-> > kernel tree [1]. Testing on a Pixel 6, found that the 10ms delay for
-> > the Exynos PCIe device was on average delaying for 19ms when the spec
-> > requires 10ms. Switching from msleep to uslseep_delay therefore
-> > decreases the resume time on a Pixel 6 on average by 9ms.
-> > 
-> > [1] https://android.googlesource.com/kernel/gs/+/18a8cad68d8e6d50f339a716a18295e6d987cee3
-> > 
-> > Signed-off-by: Sajid Dalvi <sdalvi@google.com>
-> > Signed-off-by: Will McVicker <willmcvicker@google.com>
-> > ---
-> >  drivers/pci/pci.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index 95bc329e74c0..5ae5b3c4dc9b 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -72,7 +72,8 @@ static void pci_dev_d3_sleep(struct pci_dev *dev)
-> >  		delay = pci_pm_d3hot_delay;
-> >  
-> >  	if (delay)
-> > -		msleep(delay);
-> > +		usleep_range(delay * USEC_PER_MSEC,
-> > +			     (delay + 2) * USEC_PER_MSEC);
-> 
-> You could also use fsleep(), which ends up calling usleep_range()
-> for (usecs > 10 && usecs <= 20000).
+The perf_counts_values should be increased to read the new lost data.
+Also adjust values after read according the read format.
 
-Thanks for the suggestion. I see fsleep() uses 2 * usec for the upper range
-which I think is a bit much for this optimization. The documentation says
-in the worse case an interrupt will be triggered for the upper bound, but
-I'm not entirely sure how often that'd be. Thoughts?
+This supports PERF_FORMAT_GROUP which has a different data format but
+it's only available for leader events.  Currently it doesn't have an API
+to read sibling (member) events in the group.  But users may read the
+sibling event directly.
 
---Will
+Also reading from mmap would be disabled when the read format has ID or
+LOST bit as it's not exposed via mmap.
+
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/lib/perf/evsel.c              | 79 ++++++++++++++++++++++++++++-
+ tools/lib/perf/include/perf/event.h |  3 +-
+ tools/lib/perf/include/perf/evsel.h |  4 +-
+ 3 files changed, 83 insertions(+), 3 deletions(-)
+
+diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
+index 952f3520d5c2..8ce5bbd09666 100644
+--- a/tools/lib/perf/evsel.c
++++ b/tools/lib/perf/evsel.c
+@@ -305,6 +305,9 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
+ 	if (read_format & PERF_FORMAT_ID)
+ 		entry += sizeof(u64);
+ 
++	if (read_format & PERF_FORMAT_LOST)
++		entry += sizeof(u64);
++
+ 	if (read_format & PERF_FORMAT_GROUP) {
+ 		nr = evsel->nr_members;
+ 		size += sizeof(u64);
+@@ -314,24 +317,98 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
+ 	return size;
+ }
+ 
++/* This only reads values for the leader */
++static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
++				  int thread, struct perf_counts_values *count)
++{
++	size_t size = perf_evsel__read_size(evsel);
++	int *fd = FD(evsel, cpu_map_idx, thread);
++	u64 read_format = evsel->attr.read_format;
++	u64 *data;
++	int idx = 1;
++
++	if (fd == NULL || *fd < 0)
++		return -EINVAL;
++
++	data = calloc(1, size);
++	if (data == NULL)
++		return -ENOMEM;
++
++	if (readn(*fd, data, size) <= 0) {
++		free(data);
++		return -errno;
++	}
++
++	/*
++	 * This reads only the leader event intentionally since we don't have
++	 * perf counts values for sibling events.
++	 */
++	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)
++		count->ena = data[idx++];
++	if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
++		count->run = data[idx++];
++
++	/* value is always available */
++	count->val = data[idx++];
++	if (read_format & PERF_FORMAT_ID)
++		count->id = data[idx++];
++	if (read_format & PERF_FORMAT_LOST)
++		count->lost = data[idx++];
++
++	free(data);
++	return 0;
++}
++
++/*
++ * The perf read format is very flexible.  It needs to set the proper
++ * values according to the read format.
++ */
++static void perf_evsel__adjust_values(struct perf_evsel *evsel, u64 *buf,
++				      struct perf_counts_values *count)
++{
++	u64 read_format = evsel->attr.read_format;
++	int n = 0;
++
++	count->val = buf[n++];
++
++	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)
++		count->ena = buf[n++];
++
++	if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
++		count->run = buf[n++];
++
++	if (read_format & PERF_FORMAT_ID)
++		count->id = buf[n++];
++
++	if (read_format & PERF_FORMAT_LOST)
++		count->lost = buf[n++];
++}
++
+ int perf_evsel__read(struct perf_evsel *evsel, int cpu_map_idx, int thread,
+ 		     struct perf_counts_values *count)
+ {
+ 	size_t size = perf_evsel__read_size(evsel);
+ 	int *fd = FD(evsel, cpu_map_idx, thread);
++	u64 read_format = evsel->attr.read_format;
++	struct perf_counts_values buf;
+ 
+ 	memset(count, 0, sizeof(*count));
+ 
+ 	if (fd == NULL || *fd < 0)
+ 		return -EINVAL;
+ 
++	if (read_format & PERF_FORMAT_GROUP)
++		return perf_evsel__read_group(evsel, cpu_map_idx, thread, count);
++
+ 	if (MMAP(evsel, cpu_map_idx, thread) &&
++	    !(read_format & (PERF_FORMAT_ID | PERF_FORMAT_LOST)) &&
+ 	    !perf_mmap__read_self(MMAP(evsel, cpu_map_idx, thread), count))
+ 		return 0;
+ 
+-	if (readn(*fd, count->values, size) <= 0)
++	if (readn(*fd, buf.values, size) <= 0)
+ 		return -errno;
+ 
++	perf_evsel__adjust_values(evsel, buf.values, count);
+ 	return 0;
+ }
+ 
+diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+index 556bb06798f2..38dd35cbca71 100644
+--- a/tools/lib/perf/include/perf/event.h
++++ b/tools/lib/perf/include/perf/event.h
+@@ -76,7 +76,7 @@ struct perf_record_lost_samples {
+ };
+ 
+ /*
+- * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID
++ * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID | PERF_FORMAT_LOST
+  */
+ struct perf_record_read {
+ 	struct perf_event_header header;
+@@ -85,6 +85,7 @@ struct perf_record_read {
+ 	__u64			 time_enabled;
+ 	__u64			 time_running;
+ 	__u64			 id;
++	__u64			 lost;
+ };
+ 
+ struct perf_record_throttle {
+diff --git a/tools/lib/perf/include/perf/evsel.h b/tools/lib/perf/include/perf/evsel.h
+index 699c0ed97d34..6f92204075c2 100644
+--- a/tools/lib/perf/include/perf/evsel.h
++++ b/tools/lib/perf/include/perf/evsel.h
+@@ -18,8 +18,10 @@ struct perf_counts_values {
+ 			uint64_t val;
+ 			uint64_t ena;
+ 			uint64_t run;
++			uint64_t id;
++			uint64_t lost;
+ 		};
+-		uint64_t values[3];
++		uint64_t values[5];
+ 	};
+ };
+ 
+-- 
+2.37.1.595.g718a3a8f04-goog
+
