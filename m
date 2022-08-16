@@ -2,99 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF225C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEACC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 18:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236659AbiHPSBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 14:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        id S236552AbiHPSBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 14:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236824AbiHPSAU (ORCPT
+        with ESMTP id S236280AbiHPSBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 14:00:20 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345638284C
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:00:18 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id h8so8421700qvs.6
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 11:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=GYxezpsc09PkMg1yRZL6Qrt9K3TjB/V6kS8MJoiT59E=;
-        b=Axt9l35MzkACLBrGkfzvprvs2Owh/z7HYRcR7XfTbhXuu84pCwAB2fIpRvlwwlGi1W
-         cw7R9Cx/UZ4PAZXtVrcQEbNd4BKQMsvegIQZP4muprBfv/jywBTAmWv6Vzumx17Bjc/I
-         z6BqCSYGwfcES/yfqezjRary7Z47VMYlQHjoYkjscTjwkOqaYxTltHbE/OyhEokdfAXS
-         5xZ2UmJZPBjV8rpOcubDtgDBNWdStjm46GnjD0LJDr9ONzg2pygwzHiqgXB2gVb7mM4Y
-         +zKiK6ntnx09vW1vC+dHCRyf+0JYzF1fKRJ5ZMIjAX0jXPZ7vT6UFW32CKdNGgSBeeaR
-         Jmog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=GYxezpsc09PkMg1yRZL6Qrt9K3TjB/V6kS8MJoiT59E=;
-        b=3wOaI+d6cAaMPhfJzz7Z8q2g1KUfjXlu33QeWCfMY1mHc19Il0Lb4z+KocKeRmQsy3
-         5dZ27JboXa88GYTxuLipu31+iKO5t+LVIzx+MCVI39hWsKwhSMKEeEIYs+qXVKQcRT27
-         Qf24jG78ROAEm7NPS8xZoZFFOeRivvkIkF/hrVHGflI173dI7jZPwKnHPv4cAGmhoqrL
-         r/iWQi7ta+9VxnKiyo9iFawaOfKLci5stxmIV8oYXlfy/Er6diTztdao/aiq5VA4FrlA
-         1ii4mnBNSlEYoHsxDA8hN25hMTGCAkMzOl+M5ZGuNuyrqjppVgSKW+co/5hPoTZ4tOdV
-         DECQ==
-X-Gm-Message-State: ACgBeo284DHyVW+nkeMolMZtZp20IrYavQVtFXVEULyzQ+7Bhntcyu6W
-        He1j1OW/xmhMrnEByIM9/MCmWvIVHtm2fw==
-X-Google-Smtp-Source: AA6agR6eOHlHzAKCTUoJyzxwdEiIcodoi2/BTF8ITfd35MOwEJR9OQ1F05B4YWSnM1XcpAI2/D6thw==
-X-Received: by 2002:a17:902:ec91:b0:16f:176f:ec98 with SMTP id x17-20020a170902ec9100b0016f176fec98mr22045569plg.141.1660672806609;
-        Tue, 16 Aug 2022 11:00:06 -0700 (PDT)
-Received: from fedora.. ([103.159.189.148])
-        by smtp.gmail.com with ESMTPSA id js20-20020a17090b149400b001faaafcdaa0sm516249pjb.31.2022.08.16.11.00.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 11:00:06 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Khalid Masum <khalid.masum.92@gmail.com>
-Subject: [PATCH v2 linux-next] Remove Unnecessary TODO
-Date:   Tue, 16 Aug 2022 23:59:54 +0600
-Message-Id: <20220816175954.5259-1-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 16 Aug 2022 14:01:48 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9189A832F2;
+        Tue, 16 Aug 2022 11:01:45 -0700 (PDT)
+X-QQ-mid: bizesmtp88t1660672884t597l1k2
+Received: from harry-jrlc.. ( [182.148.12.144])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 17 Aug 2022 02:01:12 +0800 (CST)
+X-QQ-SSF: 0100000000000060D000B00A0000020
+X-QQ-FEAT: 7L1V3dHhUFMh2NTXhq053RQm9at6l8q/2ycR4yxNdMJftm3mj9Jly9K7yivRd
+        iLJ4k/eq41tID1yIYaDqUkPq1CF+Jdj8bKua422fur/yXFDPRcPFn3BX5HXdetF7Rma2hUH
+        wgG9yN84vniTqaiyoHkztEuwaB87xgazBbdNzykhv2hzo2QX6Verh5mJc5S2mCePHGyH9w6
+        mp+8KwZYolp2BLbJ/y2X0W8VCAFar+mw1eaME5OThSckJTAFmFM39aNTcEb/oTuRSVA47R3
+        VEukSayidimeSO1eRDE9aDPzwb5ckR4DTAxUi/PMEvUKJwVwaeJN0ZUKUzbgdW3/3p1ltsU
+        Ygvo6aCHr3WtgK/DNgfUM1ae+F1qg6r67hqDCRYuMB6t6nq/L4QJ/5tEd1qag==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     dhowells@redhat.com, jarkko@kernel.org
+Cc:     jmorris@namei.org, serge@hallyn.com, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] KEYS: Variable type completion
+Date:   Wed, 17 Aug 2022 02:01:10 +0800
+Message-Id: <20220816180110.8625-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The capabilities enabled for multi-link are required as part of the
-programming sequences, even when a stream uses a single link we still
-use the syncArm/syncGo sequences. Therefore the TODO is no longer
-necessary.
+'unsigned int' is better than 'unsigned'.
 
-Suggested-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 ---
-Previous discussions:
-- v1 Link: https://lore.kernel.org/lkml/20220814080416.7531-1-khalid.masum.92@gmail.com/
+ security/keys/keyctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes since v1:
-- Remove the todo, leave rest of the code as is
-- Update commit message
-
- drivers/soundwire/bus.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-index 8d4000664fa3..18158825a6d8 100644
---- a/drivers/soundwire/bus.c
-+++ b/drivers/soundwire/bus.c
-@@ -75,7 +75,6 @@ int sdw_bus_master_add(struct sdw_bus *bus, struct device *parent,
+diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
+index 96a92a645216..4564505e7594 100644
+--- a/security/keys/keyctl.c
++++ b/security/keys/keyctl.c
+@@ -44,7 +44,7 @@ static const unsigned char keyrings_capabilities[2] = {
  
- 	/*
- 	 * Initialize multi_link flag
--	 * TODO: populate this flag by reading property from FW node
- 	 */
- 	bus->multi_link = false;
- 	if (bus->ops->read_prop) {
+ static int key_get_type_from_user(char *type,
+ 				  const char __user *_type,
+-				  unsigned len)
++				  unsigned int len)
+ {
+ 	int ret;
+ 
 -- 
-2.37.1
+2.30.2
 
