@@ -2,102 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0540BC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8A1C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234775AbiHPKei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S234435AbiHPKes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234772AbiHPKdx (ORCPT
+        with ESMTP id S234629AbiHPKeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:33:53 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656771394FC;
-        Tue, 16 Aug 2022 01:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660638501; x=1692174501;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Y+K+ejUZbidNdp7fNJrcGWpO2dwpzC63OfGNy7Tg6HU=;
-  b=tFp9P8UBnrsEy8IR1Nt7lPX29/pIfPkXVhvTmB1Qdz/VbtPXanOBwNgU
-   bLFHEKRQoBupD5zPcdXS8f7/eIccdJXrgU8rx2lMoFYMrIxcvbfqNe7Ck
-   TE/nk4THH7XfKl3AzNg0O7i/8ZGsHHoO8A6dnq8E54ULxcICTiz792Tc1
-   8=;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="119633964"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:04 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com (Postfix) with ESMTPS id 0D5CF8130A;
-        Tue, 16 Aug 2022 08:28:00 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.96) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:27:58 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:58
- +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 5BF784C4B; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
-        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
-        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
-        <rtanwar@maxlinear.com>
-Subject: [PATCH 04/16] hwmon: (mr75203) add Moortec PVT controller reset-control-skip property
-Date:   Tue, 16 Aug 2022 08:27:45 +0000
-Message-ID: <20220816082757.11990-5-farbere@amazon.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
-References: <20220816082757.11990-1-farbere@amazon.com>
+        Tue, 16 Aug 2022 06:34:10 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27545246B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id g22-20020a056602249600b0067caba4f24bso5605060ioe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=NgcNh9hGYMMKhnfBIfJrWbvhBMoFkUA+1l4p5wBQ3DU=;
+        b=7itfVTy4Y09Jdx9FWaaW7a2N3LX6S0ADB5jhJ3zWhO4wSkd5e3BKl0tGTSWvmJDszD
+         BNMoI6hcCr862xg0lXbjcAhzkScurlP2fGdtFX9q/jlmQRNTI9VDmv8RD16wvlfFpg0f
+         iKBk7dLm+w973B6RQ2bowlpsIFaaHoAhoTZGWgKQOKWg16qyx+A3toUw8bxi5nb/u+0r
+         bktWGWmPplFyHsMsFWaDIwISb5N3nKGw/XHZ8Br3SAl+Mx2eYXcHQh93mrYq1bNj4LuZ
+         1AlDxBafaxLNPrp4fKXm1GXcaE/XaVyY0P59VYF7Na0KxPQvNQ83cAaDz4rD84yltdbW
+         omQw==
+X-Gm-Message-State: ACgBeo0ogbA9cUWwkEH7YIdz/OqbOwhQIe99hQBMEPwQAFIe77VIyl+0
+        kbHP3xt33tcoi6VGPk6EikyTiqqOmQjfQwlpPYT/8qZVK7jq
+X-Google-Smtp-Source: AA6agR56TxC88eTs+iGMTx7PQOgSBTljyVxXWhZNcSU23UjwkVpaJ7zKU3LdEG4fjb/KSq+5/Nm6cIEzXO4NV3UTU3fEfIchPS+4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Received: by 2002:a05:6638:3047:b0:341:de2b:e489 with SMTP id
+ u7-20020a056638304700b00341de2be489mr9333112jak.273.1660638930094; Tue, 16
+ Aug 2022 01:35:30 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:35:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000087559605e657a1fc@google.com>
+Subject: [syzbot] upstream boot error: kernel BUG in __phys_addr
+From:   syzbot <syzbot+ec21a071f40cfb3fb6b5@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding a "reset-control-skip" bool property to the mr75203 node will
-avoid looking up and obtaining a reference to a reset controller.
+Hello,
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
+syzbot found the following issue on:
+
+HEAD commit:    568035b01cfb Linux 6.0-rc1
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=145ae2d3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e706e91b2a433db
+dashboard link: https://syzkaller.appspot.com/bug?extid=ec21a071f40cfb3fb6b5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ec21a071f40cfb3fb6b5@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kernel BUG at arch/x86/mm/physaddr.c:28!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 2983 Comm: udevd Not tainted 6.0.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:__phys_addr+0xd3/0x140 arch/x86/mm/physaddr.c:28
+Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 f6 50 44 00 48 85 db 75 0f e8 0c 54 44 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 fd 53 44 00 <0f> 0b e8 f6 53 44 00 48 c7 c0 10 50 cb 8b 48 ba 00 00 00 00 00 fc
+RSP: 0018:ffffc90003127dc8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff000000000000 RCX: 0000000000000000
+RDX: ffff888078d58100 RSI: ffffffff8136e1a3 RDI: 0000000000000006
+RBP: ffff000080000000 R08: 0000000000000006 R09: ffff000080000000
+R10: ffff778000000000 R11: 0000000000000000 R12: ffff778000000000
+R13: ffff888020ba8000 R14: ffff888020ba8000 R15: 0000000000000000
+FS:  00007f11282be840(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000560bd6dbe018 CR3: 0000000078ea0000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ virt_to_folio include/linux/mm.h:856 [inline]
+ virt_to_slab mm/kasan/../slab.h:175 [inline]
+ qlink_to_cache mm/kasan/quarantine.c:131 [inline]
+ qlist_free_all+0x102/0x1b0 mm/kasan/quarantine.c:184
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0x97/0xb0 mm/kasan/common.c:447
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:727 [inline]
+ slab_alloc mm/slab.c:3294 [inline]
+ __kmem_cache_alloc_lru mm/slab.c:3471 [inline]
+ kmem_cache_alloc+0x214/0x520 mm/slab.c:3491
+ getname_flags.part.0+0x50/0x4f0 fs/namei.c:139
+ getname_flags include/linux/audit.h:320 [inline]
+ getname fs/namei.c:218 [inline]
+ __do_sys_unlink fs/namei.c:4345 [inline]
+ __se_sys_unlink fs/namei.c:4343 [inline]
+ __x64_sys_unlink+0xb1/0x110 fs/namei.c:4343
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f1127f272d7
+Code: f0 ff ff 73 01 c3 48 8b 0d 9e db 0c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 57 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 71 db 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007fff542a8478 EFLAGS: 00000246 ORIG_RAX: 0000000000000057
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f1127f272d7
+RDX: 0000000000000000 RSI: 0000560bd6dd3fbf RDI: 00007fff542a8498
+RBP: 0000560bd6dd3540 R08: 0000000000000000 R09: 0000560bd6dd0d10
+R10: 00007f1127fb4fc0 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff542a8498 R14: 0000560bd6dd3fb0 R15: 0000560bd53c6160
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__phys_addr+0xd3/0x140 arch/x86/mm/physaddr.c:28
+Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 f6 50 44 00 48 85 db 75 0f e8 0c 54 44 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 fd 53 44 00 <0f> 0b e8 f6 53 44 00 48 c7 c0 10 50 cb 8b 48 ba 00 00 00 00 00 fc
+RSP: 0018:ffffc90003127dc8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff000000000000 RCX: 0000000000000000
+RDX: ffff888078d58100 RSI: ffffffff8136e1a3 RDI: 0000000000000006
+RBP: ffff000080000000 R08: 0000000000000006 R09: ffff000080000000
+R10: ffff778000000000 R11: 0000000000000000 R12: ffff778000000000
+R13: ffff888020ba8000 R14: ffff888020ba8000 R15: 0000000000000000
+FS:  00007f11282be840(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000560bd6dbe018 CR3: 0000000078ea0000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
 ---
- .../devicetree/bindings/hwmon/moortec,mr75203.yaml          | 6 ++++++
- 1 file changed, 6 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-index f9e849cc73e0..da9c3cdcb6f0 100644
---- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-+++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-@@ -44,6 +44,11 @@ properties:
-   "#thermal-sensor-cells":
-     const: 1
- 
-+  reset-control-skip:
-+    description:
-+      reset-control-skip bool property defines if obtaining a
-+      reference to a reset controller should be skipped.
-+
- required:
-   - compatible
-   - reg
-@@ -54,6 +59,7 @@ required:
- 
- additionalProperties:
-   - intel,vm-map
-+  - reset-control-skip
- 
- examples:
-   - |
--- 
-2.37.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
