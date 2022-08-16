@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1451FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B886C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234678AbiHPKha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        id S234723AbiHPKhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234657AbiHPKgb (ORCPT
+        with ESMTP id S234697AbiHPKgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:36:31 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F35122DBB
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id z30-20020a05660217de00b00688bd42dc1dso408653iox.15
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:36:24 -0700 (PDT)
+        Tue, 16 Aug 2022 06:36:33 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4BCDB7D2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id a13-20020a921a0d000000b002e5f544ee47so1599574ila.9
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=/TvWfojdg9EbJcM9R4DzjHXxk7wBLSZkN23d1l8mhpM=;
-        b=rfA0xS8Bwto2WwaSlygkTaVBlcLxWSQuQsNY4ATqQiF2fhfUEt2HXu0zpgLMuQ0MoN
-         DcLsS3bw+TB+AgtRuuJDYeJ5Lu580+a3eQYzF/4wYg+J+HAliPbP7DIFyil/p5F/QdNw
-         nGLvtJfHsQJt+ozYabHG1SaPIF6DncPUFclaBN383F7rAQHmnXP4ABXuXbStUchrxmHd
-         ADlOHlVf5obvVTFFrYkW0TlgLQUbS6vugTjIow43O6R8I9TlOJWm6/kyuyHG+an4xM3T
-         1W1ykC1LUdfVjMeEf8svNrh4L3o6c6Gi2zI7E1ehAwcvypJ9d9LNWV6II+VuS2xp5GXd
-         0t7A==
-X-Gm-Message-State: ACgBeo0F8PTiHZDyLUqDAWnkFFCw3Rp3xUaPwoTQNQEoJx+WMmKth0xP
-        nFEX5jQEfxGYFopWU3l0or5lReE4IjLYpcWZm2xbA72LVCe7
-X-Google-Smtp-Source: AA6agR6qHad8EMda4pdSgrU8WKZFd4mpY7XdCpIDbMZDRON+uB6opHgTVle7nt7pGWjdYJQVsKFpePM1excI1f3QfRGQPbSoRKcK
+        bh=QoJU5GGMy8v8yEZNFxM99bTCjQW1eFlhk+iiG3fJdLI=;
+        b=gyQTv/ikgE7AyLCZdzHIOhaYSjH85SYEgmMPnCFhahCbuK6snhVojpekqYzzVgIKVO
+         wZuWDUt/GnTdLE6DzceTdY3SBQCKtmZmPw6M+jCYwXJqkDeUBIbcJLyTHQVFB6xvSazv
+         LoBRI2Kblll4c6+R2kV8iyLjRVoz0eiiqv2yeTPmqLrESW/mljmaq35kkjDiMVZ93yhX
+         gC4U7ryyuTWzBsU9r6XdwPsofS+R1xMQ2qOl9uOgnN31B+meJU99j3TuwBojHgzLgBy0
+         VVKLpcNM2FQJwz5cA9XZCQ14zR/x17MJRsrcPY27cnrfw0aB1LCBA3VYq03VetYqVI5f
+         /Jnw==
+X-Gm-Message-State: ACgBeo0QaAYpK4/zMSzlkTyTwU9ccw1t3sIWOlyp52kIdb+MDJVcZv70
+        cJrPFbyPUL6qLQ0rK2RfcZudRbTAYwiqYS/zda0POykMMo/O
+X-Google-Smtp-Source: AA6agR72pfTFc5Nk70AuqknQizPu6jLKL7iJFFPqgDk7a5kQ7izKd/NlV+VSVv6WZrRf/Lm1ZySMpdIMRZk6PsLGPasFpCgAOzQH
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1b83:b0:2e5:b254:69e5 with SMTP id
- h3-20020a056e021b8300b002e5b25469e5mr4366807ili.292.1660638984171; Tue, 16
- Aug 2022 01:36:24 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:36:24 -0700
+X-Received: by 2002:a05:6e02:2145:b0:2e4:b2f3:d6fb with SMTP id
+ d5-20020a056e02214500b002e4b2f3d6fbmr7270506ilv.163.1660639294552; Tue, 16
+ Aug 2022 01:41:34 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:41:34 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c0770c05e657a49b@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in rcu_core
-From:   syzbot <syzbot+855b67e6ad52c740948a@syzkaller.appspotmail.com>
-To:     Henry.Wang@arm.com, bigeasy@linutronix.de,
-        linux-kernel@vger.kernel.org, longpeng2@huawei.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vschneid@redhat.com
+Message-ID: <00000000000040801b05e657b77f@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
+ request in __rhashtable_lookup
+From:   syzbot <syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, harshit.m.mogalapalli@oracle.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,77 +55,103 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    5d6a0f4da927 Merge tag 'for-linus-6.0-rc1b-tag' of git://g..
+HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10bc4467080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f83c035536d7b2e3
-dashboard link: https://syzkaller.appspot.com/bug?extid=855b67e6ad52c740948a
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+console output: https://syzkaller.appspot.com/x/log.txt?x=16259e35080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d647c9572405910
+dashboard link: https://syzkaller.appspot.com/bug?extid=6fccf62d7c237e1b4c85
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+855b67e6ad52c740948a@syzkaller.appspotmail.com
+Reported-by: syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xffff000000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200000000000-0xfff8200000000007]
-CPU: 1 PID: 21 Comm: ksoftirqd/1 Not tainted 5.19.0-syzkaller-14374-g5d6a0f4da927 #0
+8021q: adding VLAN 0 to HW filter on device bond0
+eql: remember to turn off Van-Jacobson compression on your slave devices
+BUG: unable to handle page fault for address: ffffdbffffffffc8
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11825067 P4D 11825067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 3187 Comm: dhcpcd Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:rcu_do_batch kernel/rcu/tree.c:2245 [inline]
-RIP: 0010:rcu_core+0xa5e/0x1710 kernel/rcu/tree.c:2505
-Code: 22 69 00 4d 8b 3c 24 48 b8 00 00 00 00 00 fc ff df 80 3c 03 00 74 08 4c 89 e7 e8 6d 22 69 00 49 c7 46 08 00 00 00 00 4c 89 f7 <41> ff d7 48 c7 c7 60 08 d2 8c e8 e3 0c 00 00 65 8b 05 64 5f 8e 7e
-RSP: 0000:ffffc900001b7aa0 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 1ffff11004137a06 RCX: ffff888012eb27f0
-RDX: dffffc0000000000 RSI: ffffffff8aad87c0 RDI: ffff8880209bd028
-RBP: ffffc900001b7cb0 R08: dffffc0000000000 R09: fffffbfff1ff3a0c
-R10: fffffbfff1ff3a0c R11: 1ffffffff1ff3a0b R12: ffff8880209bd030
-R13: ffff888012eb1d80 R14: ffff8880209bd028 R15: ffff000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
+RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
+Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
+RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
+RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
+RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
+R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
+FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- __do_softirq+0x382/0x793 kernel/softirq.c:571
- run_ksoftirqd+0xc1/0x120 kernel/softirq.c:934
- smpboot_thread_fn+0x533/0x9d0 kernel/smpboot.c:164
- kthread+0x266/0x300 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+ rhashtable_lookup include/linux/rhashtable.h:638 [inline]
+ rhashtable_lookup_fast include/linux/rhashtable.h:664 [inline]
+ __netlink_lookup net/netlink/af_netlink.c:518 [inline]
+ netlink_lookup+0x130/0x470 net/netlink/af_netlink.c:538
+ netlink_getsockbyportid net/netlink/af_netlink.c:1154 [inline]
+ netlink_unicast+0x244/0x7f0 net/netlink/af_netlink.c:1339
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fbe245ad163
+Code: 64 89 02 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 89 54 24 1c 48
+RSP: 002b:00007ffd4a7738f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fbe244b56c8 RCX: 00007fbe245ad163
+RDX: 0000000000000000 RSI: 00007ffd4a787aa8 RDI: 0000000000000005
+RBP: 0000000000000005 R08: 0000000000000000 R09: 00007ffd4a787aa8
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 00007ffd4a787aa8 R14: 0000000000000030 R15: 0000000000000001
  </TASK>
 Modules linked in:
-vkms_vblank_simulate: vblank timer overrun
+CR2: ffffdbffffffffc8
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:rcu_do_batch kernel/rcu/tree.c:2245 [inline]
-RIP: 0010:rcu_core+0xa5e/0x1710 kernel/rcu/tree.c:2505
-Code: 22 69 00 4d 8b 3c 24 48 b8 00 00 00 00 00 fc ff df 80 3c 03 00 74 08 4c 89 e7 e8 6d 22 69 00 49 c7 46 08 00 00 00 00 4c 89 f7 <41> ff d7 48 c7 c7 60 08 d2 8c e8 e3 0c 00 00 65 8b 05 64 5f 8e 7e
-RSP: 0000:ffffc900001b7aa0 EFLAGS: 00010246
-
-RAX: dffffc0000000000 RBX: 1ffff11004137a06 RCX: ffff888012eb27f0
-RDX: dffffc0000000000 RSI: ffffffff8aad87c0 RDI: ffff8880209bd028
-RBP: ffffc900001b7cb0 R08: dffffc0000000000 R09: fffffbfff1ff3a0c
-R10: fffffbfff1ff3a0c R11: 1ffffffff1ff3a0b R12: ffff8880209bd030
-R13: ffff888012eb1d80 R14: ffff8880209bd028 R15: ffff000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
+RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
+Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
+RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
+RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
+RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
+R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
+FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	22 69 00             	and    0x0(%rcx),%ch
-   3:	4d 8b 3c 24          	mov    (%r12),%r15
-   7:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-   e:	fc ff df
-  11:	80 3c 03 00          	cmpb   $0x0,(%rbx,%rax,1)
-  15:	74 08                	je     0x1f
-  17:	4c 89 e7             	mov    %r12,%rdi
-  1a:	e8 6d 22 69 00       	callq  0x69228c
-  1f:	49 c7 46 08 00 00 00 	movq   $0x0,0x8(%r14)
-  26:	00
-  27:	4c 89 f7             	mov    %r14,%rdi
-* 2a:	41 ff d7             	callq  *%r15 <-- trapping instruction
-  2d:	48 c7 c7 60 08 d2 8c 	mov    $0xffffffff8cd20860,%rdi
-  34:	e8 e3 0c 00 00       	callq  0xd1c
-  39:	65 8b 05 64 5f 8e 7e 	mov    %gs:0x7e8e5f64(%rip),%eax        # 0x7e8e5fa4
+   0:	01 44 89 e6          	add    %eax,-0x1a(%rcx,%rcx,4)
+   4:	e8 83 19 e8 f9       	callq  0xf9e8198c
+   9:	45 84 e4             	test   %r12b,%r12b
+   c:	0f 85 8f 01 00 00    	jne    0x1a1
+  12:	e8 f5 1c e8 f9       	callq  0xf9e81d0c
+  17:	4d 8d 24 1f          	lea    (%r15,%rbx,1),%r12
+  1b:	49 8d bc 24 00 05 00 	lea    0x500(%r12),%rdi
+  22:	00
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	74 08                	je     0x3b
+  33:	3c 03                	cmp    $0x3,%al
+  35:	0f 8e 9c 02 00 00    	jle    0x2d7
+  3b:	45                   	rex.RB
+  3c:	8b                   	.byte 0x8b
+  3d:	ac                   	lods   %ds:(%rsi),%al
+  3e:	24 00                	and    $0x0,%al
 
 
 ---
