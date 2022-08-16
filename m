@@ -2,135 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 184EAC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF3EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbiHPKRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
+        id S233146AbiHPKR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234397AbiHPKQg (ORCPT
+        with ESMTP id S234316AbiHPKLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:16:36 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3548DF0B3;
-        Tue, 16 Aug 2022 01:28:20 -0700 (PDT)
+        Tue, 16 Aug 2022 06:11:15 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8989E5F109;
+        Tue, 16 Aug 2022 01:53:30 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id x5so7626257qtv.9;
+        Tue, 16 Aug 2022 01:53:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660638501; x=1692174501;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ULkqAHITNyNY+nb/F2KUcwZfWxaEdjYhDYRpVxQWyfI=;
-  b=vZF3rZuQuo4YNJXjDkVRkT9o0m6qo8vDPkO3XxIGS/qT3SAelrx6VY8k
-   1gVd89lxvtmr2KxQ+r+Ll8HtSPn7jvSngY/rJOHNkEzp4jegBvZzBZR3S
-   +e5v+XBZXhAvPB0Xkk0Mcs+l/WE6HiXbUhtEfUWnLcp9W7NJy4TTvg4TK
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="233486642"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:20 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 9A42C8705F;
-        Tue, 16 Aug 2022 08:28:20 +0000 (UTC)
-Received: from EX19D013UWA004.ant.amazon.com (10.13.138.207) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 08:28:00 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX19D013UWA004.ant.amazon.com (10.13.138.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 16 Aug 2022 08:27:59 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
- Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:59
- +0000
-Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 61ACF4C09; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
-From:   Eliav Farber <farbere@amazon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
-        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
-        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
-        <rtanwar@maxlinear.com>
-Subject: [PATCH 01/16] hwmon: (mr75203) fix VM sensor allocation when "intel,vm-map" not defined
-Date:   Tue, 16 Aug 2022 08:27:42 +0000
-Message-ID: <20220816082757.11990-2-farbere@amazon.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
-References: <20220816082757.11990-1-farbere@amazon.com>
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YnCIkno40KJuX3QeZtwItBffPailmAuhu9f01rahfzw=;
+        b=U+Xv3VUkbFZ75ATgYioKHUob55py8E0A8kpBjpKS5iy//nEaZbMprXx3p85fUAHykX
+         Y06ZTFC/cze5VAe4+1s6hPaXtQrCDPlSTKV4wFA4TPjUBR0tP3iFKTaAL6kt3XT/C3C2
+         fBrk2d/kIYDlZg1SrUwqoRC/YchA5SWC/3bbm5dEGPzCcsCq2bQk0wJ8zypR3Ax343Kh
+         gHaR95PbSmdDuRgWlEYUzButDm/lxQA7hAQGAHLvu1tas1c9iU1uKVaQpIwNliugV37P
+         zm1X4DXj0RuZc5vRssIL/DGXzRr9qfxD4XTKfT/6oA9JQW1m3aCU9ryKEoQnazGQMM58
+         BvuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YnCIkno40KJuX3QeZtwItBffPailmAuhu9f01rahfzw=;
+        b=kqy1gqvhI7wtOysotJtohIvqmCUUiI+KbKeB85urvqczfN/GOkceXSVo9wD3/Bj6d1
+         /tn9eBaXHoHiCa8xL7IHiHKl+QQDdVHzUPgKJFDo4aegc93nct6GlBGYZLeyaHlo469M
+         /+b5rBWAfzsR5oyoXHcE4FclDWSy386Dzxc9ZzVMOZRDLCTUe88YPjvUMGem2cbkO6n9
+         FYBsirB9Lz3v/vECUJM0J8bZb4NQVx7lYynMpLGMafevmdjfhej2NQIGmQNc8v69IqFg
+         8ZnRfV0zCQsJxZR/+vCbPduTQtzZ07CXGWZsmZ6ShJmHFoLJy5Aw+z4LStl6pWiwHUp+
+         QXKA==
+X-Gm-Message-State: ACgBeo0VNtis+jDJU0Yr7qtnlqZ0T2ZTks2GgpniNmpVuZGzCy8dLkiG
+        8WlZm+78fp6OyVcUTNM0LOsMVsbmbtuZI2RtfJg=
+X-Google-Smtp-Source: AA6agR69jEnG5Q0HBokBpcx/vkcvs7eeRrblCm1xMMS1Xgn0nvLpVip0jrGSheJsUrCS6jhxsdmujrIhlAyv9RZF0VY=
+X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
+ v6-20020ac85786000000b003433051170dmr17083982qta.429.1660640009425; Tue, 16
+ Aug 2022 01:53:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220815005553.1450359-1-colin.foster@in-advantage.com>
+ <20220815005553.1450359-9-colin.foster@in-advantage.com> <YvpV4cvwE0IQOax7@euler>
+ <YvpZoIN+5htY9Z1o@shredder>
+In-Reply-To: <YvpZoIN+5htY9Z1o@shredder>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 16 Aug 2022 11:52:53 +0300
+Message-ID: <CAHp75VeH_Gx4t+FSqH4LrTHNcwqGxDxRUF26kj3A=CopS=XkgQ@mail.gmail.com>
+Subject: Re: [PATCH v16 mfd 8/8] mfd: ocelot: add support for the vsc7512 chip
+ via spi
+To:     Ido Schimmel <idosch@idosch.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@debian.org>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        katie.morris@in-advantage.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Lee Jones <lee@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a bug that in case "intel,vm-map" is missing 'num' is set to 0,
-and no voltage channel infos are allocated.
+On Mon, Aug 15, 2022 at 5:35 PM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Mon, Aug 15, 2022 at 07:19:13AM -0700, Colin Foster wrote:
+> > Something is going on that I don't fully understand with <asm/byteorder.h>.
+> > I don't quite see how ocelot-core is throwing all sorts of errors in x86
+> > builds now:
+> >
+> > https://patchwork.hopto.org/static/nipa/667471/12942993/build_allmodconfig_warn/stderr
+> >
+> > Snippet from there:
+> >
+> > /home/nipa/nipa/tests/patch/build_32bit/build_32bit.sh: line 21: ccache gcc: command not found
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+> > ../arch/x86/include/asm/bitops.h:66:1: warning: unreplaced symbol 'return'
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+> > ../include/asm-generic/bitops/generic-non-atomic.h:29:9: warning: unreplaced symbol 'mask'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:30:9: warning: unreplaced symbol 'p'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:32:10: warning: unreplaced symbol 'p'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:32:16: warning: unreplaced symbol 'mask'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:27:1: warning: unreplaced symbol 'return'
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../arch/x86/include/asm/bitops.h, ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ...):
+> > ../include/asm-generic/bitops/instrumented-non-atomic.h:26:1: warning: unreplaced symbol 'return'
+> >
+> >
+> > <asm/byteorder.h> was included in both drivers/mfd/ocelot-spi.c and
+> > drivers/mfd/ocelot.h previously, though Andy pointed out there didn't
+> > seem to be any users... and I didn't either. I'm sure there's something
+> > I must be missing.
+>
+> I got similar errors in our internal CI yesterday. Fixed by compiling
+> sparse from git:
+> https://git.kernel.org/pub/scm/devel/sparse/sparse.git/commit/?id=0e1aae55e49cad7ea43848af5b58ff0f57e7af99
+>
+> The update is also available in the "testing" repo in case you are
+> running Fedora 35 / 36:
+> https://bodhi.fedoraproject.org/updates/FEDORA-2022-c58b53730f
+> https://bodhi.fedoraproject.org/updates/FEDORA-2022-2bc333ccac
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
----
- drivers/hwmon/mr75203.c | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+Debian still produces the same errors which makes sparse useless.
 
-diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-index 046523d47c29..0e29877a1a9c 100644
---- a/drivers/hwmon/mr75203.c
-+++ b/drivers/hwmon/mr75203.c
-@@ -580,8 +580,6 @@ static int mr75203_probe(struct platform_device *pdev)
- 	}
- 
- 	if (vm_num) {
--		u32 num = vm_num;
--
- 		ret = pvt_get_regmap(pdev, "vm", pvt);
- 		if (ret)
- 			return ret;
-@@ -594,30 +592,28 @@ static int mr75203_probe(struct platform_device *pdev)
- 		ret = device_property_read_u8_array(dev, "intel,vm-map",
- 						    pvt->vm_idx, vm_num);
- 		if (ret) {
--			num = 0;
-+			/*
-+			 * Incase intel,vm-map property is not defined, we
-+			 * assume incremental channel numbers.
-+			 */
-+			for (i = 0; i < vm_num; i++)
-+				pvt->vm_idx[i] = i;
- 		} else {
- 			for (i = 0; i < vm_num; i++)
- 				if (pvt->vm_idx[i] >= vm_num ||
--				    pvt->vm_idx[i] == 0xff) {
--					num = i;
-+				    pvt->vm_idx[i] == 0xff)
- 					break;
--				}
--		}
- 
--		/*
--		 * Incase intel,vm-map property is not defined, we assume
--		 * incremental channel numbers.
--		 */
--		for (i = num; i < vm_num; i++)
--			pvt->vm_idx[i] = i;
-+			vm_num = i;
-+		}
- 
--		in_config = devm_kcalloc(dev, num + 1,
-+		in_config = devm_kcalloc(dev, vm_num + 1,
- 					 sizeof(*in_config), GFP_KERNEL);
- 		if (!in_config)
- 			return -ENOMEM;
- 
--		memset32(in_config, HWMON_I_INPUT, num);
--		in_config[num] = 0;
-+		memset32(in_config, HWMON_I_INPUT, vm_num);
-+		in_config[vm_num] = 0;
- 		pvt_in.config = in_config;
- 
- 		pvt_info[index++] = &pvt_in;
 -- 
-2.37.1
-
+With Best Regards,
+Andy Shevchenko
