@@ -2,112 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E03C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4350BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234218AbiHPKC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43468 "EHLO
+        id S234183AbiHPKDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234206AbiHPKCM (ORCPT
+        with ESMTP id S234151AbiHPKCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:02:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFC097D4D;
-        Tue, 16 Aug 2022 01:21:20 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 08:21:17 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660638078;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1Y1v2IK8+LOJMwik9pqNv5XiNJf0jxVXzKJnsprp5tU=;
-        b=vTH6ldSS/xARxGEdfDvF0G19q14tquMuzr35bAR8PpAqWIOUObp9bshs05iNsC9VCCTTrI
-        nkPem8jEHUNaCtgZJUajAA2ik3ohKPvDHBEt6Easu9FbPzBZFU38wft0SRTe5czBmFdS4X
-        RrWFnbxc+mOpIrb1sgG1iBLd5KSg+utkhM4kRLLPGMxJrlT556BDyQwzhVnCwn8WwMu8YV
-        sU9kik8mXQbVUhbgFhS6G3Caw4kJPiPokNcwaKC6JeMfFi8z3TqppManDbhrWIMjeVVL5d
-        j5YiptesoXSKN5C11pPcfiKy1qmC26bLzN7A9JqDn+18viTXOncMAtaI+RWSpQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660638078;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1Y1v2IK8+LOJMwik9pqNv5XiNJf0jxVXzKJnsprp5tU=;
-        b=W8+W82bpnAiXRMuyyQP3S3y3C19BQ9xo7m+yuVVvLCo1L2OIsKkClPO/UmEWmTUXCxXJ3+
-        t7BEZQYzSm98pMBg==
-From:   "tip-bot2 for Juergen Gross" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/entry: Fix entry_INT80_compat for Xen PV guests
-Cc:     Juergen Gross <jgross@suse.com>, Borislav Petkov <bp@suse.de>,
-        Jan Beulich <jbeulich@suse.com>, <stable@vger.kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220816071137.4893-1-jgross@suse.com>
-References: <20220816071137.4893-1-jgross@suse.com>
+        Tue, 16 Aug 2022 06:02:52 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133936151
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=74WdhM3RJ8Wo5N9OpOLYgg9V2/ybAAKlqBWdhxmgksg=; b=AsnPzLPKeK/V4Mg8Pbq1zEuEFY
+        xUYgJ2YkpkTbS5is5va44wYbcCZJyiCw2wY/ttAc1s7dcHppDr9dY8h0eqi+8VrWiclazgSzYTBwy
+        UYYEWpNxOOe+rIC40hTe/11h3r7n/CS2qRssPt3/F4QV9pKrxWJD7UP5At0zkqS3nKrqWlWJFDiuJ
+        iiSAbcTiHkqu9hqJoXY9a2zIbp9JMiRCp8XTQhNv3qokl8wy0KkCb1lChYglFCaW+SBs6wU68NyqS
+        HUFUY+9FUKlONhPp+uJQb2nLbQ9D/8xGEJmfyTxUlOfWyREq8uC8fSW6tYgr9lLlLnRSiqNfqD2Xr
+        MtKtGn/w==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNsi7-002uob-38; Tue, 16 Aug 2022 09:18:09 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id AE98F980163; Tue, 16 Aug 2022 11:18:03 +0200 (CEST)
+Date:   Tue, 16 Aug 2022 11:18:03 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Tuo Cao <91tuocao@gmail.com>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched: core: remove access_ok() before copy_to_user()
+Message-ID: <YvtgyxoZ/RmtfOs/@worktop.programming.kicks-ass.net>
+References: <20220815142137.29982-1-91tuocao@gmail.com>
 MIME-Version: 1.0
-Message-ID: <166063807735.401.8176366519215058221.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815142137.29982-1-91tuocao@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On Mon, Aug 15, 2022 at 10:21:37PM +0800, Tuo Cao wrote:
+> If usize > ksize, usize may be not valid and if(!access_ok()) will return
+> -EFAULT. But ksize may be valid, copy_to_user() should be executed.And
+> also, copy_to_user() will calls access_ok() to test whether a block of
+> memory is a valid user space address.
 
-Commit-ID:     5b9f0c4df1c1152403c738373fb063e9ffdac0a1
-Gitweb:        https://git.kernel.org/tip/5b9f0c4df1c1152403c738373fb063e9ffdac0a1
-Author:        Juergen Gross <jgross@suse.com>
-AuthorDate:    Tue, 16 Aug 2022 09:11:37 +02:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 16 Aug 2022 10:02:52 +02:00
-
-x86/entry: Fix entry_INT80_compat for Xen PV guests
-
-Commit
-
-  c89191ce67ef ("x86/entry: Convert SWAPGS to swapgs and remove the definition of SWAPGS")
-
-missed one use case of SWAPGS in entry_INT80_compat(). Removing of
-the SWAPGS macro led to asm just using "swapgs", as it is accepting
-instructions in capital letters, too.
-
-This in turn leads to splats in Xen PV guests like:
-
-  [   36.145223] general protection fault, maybe for address 0x2d: 0000 [#1] PREEMPT SMP NOPTI
-  [   36.145794] CPU: 2 PID: 1847 Comm: ld-linux.so.2 Not tainted 5.19.1-1-default #1 \
-	  openSUSE Tumbleweed f3b44bfb672cdb9f235aff53b57724eba8b9411b
-  [   36.146608] Hardware name: HP ProLiant ML350p Gen8, BIOS P72 11/14/2013
-  [   36.148126] RIP: e030:entry_INT80_compat+0x3/0xa3
-
-Fix that by open coding this single instance of the SWAPGS macro.
-
-Fixes: c89191ce67ef ("x86/entry: Convert SWAPGS to swapgs and remove the definition of SWAPGS")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Cc: <stable@vger.kernel.org> # 5.19
-Link: https://lore.kernel.org/r/20220816071137.4893-1-jgross@suse.com
----
- arch/x86/entry/entry_64_compat.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-index 682338e..4dd1981 100644
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -311,7 +311,7 @@ SYM_CODE_START(entry_INT80_compat)
- 	 * Interrupts are off on entry.
- 	 */
- 	ASM_CLAC			/* Do this early to minimize exposure */
--	SWAPGS
-+	ALTERNATIVE "swapgs", "", X86_FEATURE_XENPV
- 
- 	/*
- 	 * User tracing code (ptrace or signal handlers) might assume that
+I don't follow, why do you want this to continue if the user provided
+garbage input?
