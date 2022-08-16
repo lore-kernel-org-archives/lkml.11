@@ -2,162 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0CFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0540BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234699AbiHPKdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        id S234775AbiHPKei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234761AbiHPKdW (ORCPT
+        with ESMTP id S234772AbiHPKdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:33:22 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1787AE75
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:25 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id j5-20020a056e02218500b002de1cf2347bso6580062ila.2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=dwmvJf4EgEnwBidyybsf7yv6kRRFLPIA27vvnskiIhE=;
-        b=v2x40I1526x3EEGN9sYxvZx2ctdFSKbj2/65kWVs96Vs2dB7fIkmZ8oaDYYErAaTJX
-         /WjZat4ZlahLNjCii1syF5Ey8oHES9/yxHWO/yqF58w0yIqXV0C1Dz13h6L7PbYz1KR0
-         q40pFpModLre7V7TqF9VldmgGJvy6GZI9Tg3s7Ix1nseFHCBzfIZ7BfMkUK7n2VIEMhX
-         Z2zU9oabXWWgPhkuAIio2HHob0RucTqas3jd9XW0Of4sAcBB70Nz6vhtvvDWPtiwsW1t
-         rXMCwkbjzF53FeM6PRRurbypYXO6xiYD2LwSlfAwimDgt/lgePu1LhtdiIU03DzoWjWY
-         E9cQ==
-X-Gm-Message-State: ACgBeo2k8DYUgdMzPxjDrGAGaTgw7Xz/AkH1I4sh43Yyp6d8/mj+rkZl
-        Kv56XmCoRVCX1o/bdsKWKA+c8nXRfcTffp9Cndj+qZvm10jb
-X-Google-Smtp-Source: AA6agR7jjDPJUdk8sEqPjPKRJSOyW1xg7jn+o/f7DD5m8Uygk+/FhA9SCsaoa1U29c8HQCuwChnNG5hcmwnyle411BwKHzZ3dmgL
+        Tue, 16 Aug 2022 06:33:53 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656771394FC;
+        Tue, 16 Aug 2022 01:28:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660638501; x=1692174501;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Y+K+ejUZbidNdp7fNJrcGWpO2dwpzC63OfGNy7Tg6HU=;
+  b=tFp9P8UBnrsEy8IR1Nt7lPX29/pIfPkXVhvTmB1Qdz/VbtPXanOBwNgU
+   bLFHEKRQoBupD5zPcdXS8f7/eIccdJXrgU8rx2lMoFYMrIxcvbfqNe7Ck
+   TE/nk4THH7XfKl3AzNg0O7i/8ZGsHHoO8A6dnq8E54ULxcICTiz792Tc1
+   8=;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
+   d="scan'208";a="119633964"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 08:28:04 +0000
+Received: from EX13MTAUEB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com (Postfix) with ESMTPS id 0D5CF8130A;
+        Tue, 16 Aug 2022 08:28:00 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+ EX13MTAUEB001.ant.amazon.com (10.43.60.96) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:59 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 08:27:58 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.38 via Frontend Transport; Tue, 16 Aug 2022 08:27:58
+ +0000
+Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
+        id 5BF784C4B; Tue, 16 Aug 2022 08:27:57 +0000 (UTC)
+From:   Eliav Farber <farbere@amazon.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <farbere@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
+        <jonnyc@amazon.com>, <hanochu@amazon.com>, <ronenk@amazon.com>,
+        <itamark@amazon.com>, <shellykz@amazon.com>, <shorer@amazon.com>,
+        <amitlavi@amazon.com>, <almogbs@amazon.com>, <dwmw@amazon.co.uk>,
+        <rtanwar@maxlinear.com>
+Subject: [PATCH 04/16] hwmon: (mr75203) add Moortec PVT controller reset-control-skip property
+Date:   Tue, 16 Aug 2022 08:27:45 +0000
+Message-ID: <20220816082757.11990-5-farbere@amazon.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220816082757.11990-1-farbere@amazon.com>
+References: <20220816082757.11990-1-farbere@amazon.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c984:0:b0:2dd:eacf:da3c with SMTP id
- y4-20020a92c984000000b002ddeacfda3cmr8907868iln.245.1660639345372; Tue, 16
- Aug 2022 01:42:25 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:42:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000047f3c405e657bae5@google.com>
-Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
- request in ext4_get_group_desc
-From:   syzbot <syzbot+5a9aafd202006e109827@syzkaller.appspotmail.com>
-To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Adding a "reset-control-skip" bool property to the mr75203 node will
+avoid looking up and obtaining a reference to a reset controller.
 
-syzbot found the following issue on:
-
-HEAD commit:    6c833c0581f1 Merge tag 'devicetree-fixes-for-6.0-1' of git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=114179dd080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ffbab52ef9fab60
-dashboard link: https://syzkaller.appspot.com/bug?extid=5a9aafd202006e109827
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5a9aafd202006e109827@syzkaller.appspotmail.com
-
-BUG: unable to handle page fault for address: ffffdc0000000005
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 11826067 P4D 11826067 PUD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 3268 Comm: S50sshd Not tainted 5.19.0-syzkaller-14135-g6c833c0581f1 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:ext4_get_group_desc+0x231/0x500 fs/ext4/balloc.c:299
-Code: 8b e8 e3 12 4d ff 4d 85 e4 0f 84 3d 02 00 00 e8 35 ab 69 ff 49 8d 7c 24 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 86 02 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89
-RSP: 0018:ffffc900033ff4d8 EFLAGS: 00010a06
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 1fffe00000000005 RSI: ffffffff82118a8b RDI: ffff000000000028
-RBP: ffff88801dd4c000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff000000000000
-R13: 0000000000000000 R14: ffff88801dd4c678 R15: 0000000000000001
-FS:  00007f116a35e800(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000005 CR3: 0000000020f64000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __ext4_get_inode_loc+0x1c9/0x11a0 fs/ext4/inode.c:4459
- ext4_get_inode_loc+0xba/0x160 fs/ext4/inode.c:4600
- ext4_xattr_ibody_get+0xe4/0x4a0 fs/ext4/xattr.c:602
- ext4_xattr_get+0x166/0x740 fs/ext4/xattr.c:666
- vfs_getxattr_alloc+0x1bc/0x350 fs/xattr.c:384
- ima_read_xattr+0x31/0x70 security/integrity/ima/ima_appraise.c:228
- process_measurement+0xca2/0x18b0 security/integrity/ima/ima_main.c:319
- ima_bprm_check+0xd0/0x220 security/integrity/ima/ima_main.c:492
- security_bprm_check+0x7d/0xa0 security/security.c:870
- search_binary_handler fs/exec.c:1719 [inline]
- exec_binprm fs/exec.c:1772 [inline]
- bprm_execve fs/exec.c:1841 [inline]
- bprm_execve+0x732/0x1960 fs/exec.c:1803
- do_execveat_common+0x727/0x890 fs/exec.c:1946
- do_execve fs/exec.c:2020 [inline]
- __do_sys_execve fs/exec.c:2096 [inline]
- __se_sys_execve fs/exec.c:2091 [inline]
- __x64_sys_execve+0x8f/0xc0 fs/exec.c:2091
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f116a4c8337
-Code: ff ff 76 e7 f7 d8 64 41 89 00 eb df 0f 1f 80 00 00 00 00 f7 d8 64 41 89 00 eb dc 0f 1f 84 00 00 00 00 00 b8 3b 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 11 1b 0f 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffe54ebe008 EFLAGS: 00000206 ORIG_RAX: 000000000000003b
-RAX: ffffffffffffffda RBX: 0000564f4f1c5e70 RCX: 00007f116a4c8337
-RDX: 0000564f4f1c5e88 RSI: 0000564f4f1c5e70 RDI: 0000564f4f1c5e28
-RBP: 0000564f4f1c5e28 R08: 0000564f4f1c5e88 R09: 0000000000000000
-R10: 0000000000000008 R11: 0000000000000206 R12: 0000564f4f1c5e88
-R13: 00007f116a66dff4 R14: 0000564f4f1c5e88 R15: 0000000000000000
- </TASK>
-Modules linked in:
-CR2: ffffdc0000000005
----[ end trace 0000000000000000 ]---
-RIP: 0010:ext4_get_group_desc+0x231/0x500 fs/ext4/balloc.c:299
-Code: 8b e8 e3 12 4d ff 4d 85 e4 0f 84 3d 02 00 00 e8 35 ab 69 ff 49 8d 7c 24 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 86 02 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89
-RSP: 0018:ffffc900033ff4d8 EFLAGS: 00010a06
-
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 1fffe00000000005 RSI: ffffffff82118a8b RDI: ffff000000000028
-RBP: ffff88801dd4c000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff000000000000
-R13: 0000000000000000 R14: ffff88801dd4c678 R15: 0000000000000001
-FS:  00007f116a35e800(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000005 CR3: 0000000020f64000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	8b e8                	mov    %eax,%ebp
-   2:	e3 12                	jrcxz  0x16
-   4:	4d ff 4d 85          	rex.WRB decq -0x7b(%r13)
-   8:	e4 0f                	in     $0xf,%al
-   a:	84 3d 02 00 00 e8    	test   %bh,-0x17fffffe(%rip)        # 0xe8000012
-  10:	35 ab 69 ff 49       	xor    $0x49ff69ab,%eax
-  15:	8d 7c 24 28          	lea    0x28(%rsp),%edi
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 86 02 00 00    	jne    0x2ba
-  34:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  3b:	fc ff df
-  3e:	4c                   	rex.WR
-  3f:	89                   	.byte 0x89
-
-
+Signed-off-by: Eliav Farber <farbere@amazon.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../devicetree/bindings/hwmon/moortec,mr75203.yaml          | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+index f9e849cc73e0..da9c3cdcb6f0 100644
+--- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
++++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+@@ -44,6 +44,11 @@ properties:
+   "#thermal-sensor-cells":
+     const: 1
+ 
++  reset-control-skip:
++    description:
++      reset-control-skip bool property defines if obtaining a
++      reference to a reset controller should be skipped.
++
+ required:
+   - compatible
+   - reg
+@@ -54,6 +59,7 @@ required:
+ 
+ additionalProperties:
+   - intel,vm-map
++  - reset-control-skip
+ 
+ examples:
+   - |
+-- 
+2.37.1
+
