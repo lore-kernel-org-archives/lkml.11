@@ -2,189 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A421C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF9EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234299AbiHPKTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
+        id S234424AbiHPKUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbiHPKSj (ORCPT
+        with ESMTP id S233539AbiHPKTn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:18:39 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E39CC924B;
-        Tue, 16 Aug 2022 02:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660642008; x=1692178008;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8HF+5UT3D592ZRbt9FJmWfjH1gmggwNA5LXwxEgCON4=;
-  b=BTy7LNmtDeTunrJmp+U7HNYanEWMjzhpKALeiZnRKo7cU5ee9qta+pqu
-   a8gNOgr4NUDYZxWfKuqoT5tC89f3xj1NtVwFN0RTtk0UpJ1gcZg2fv3c2
-   3BdFER/lC5k7jNx6OB0n/08mQX5J8AP5q5kpB1psa1qUSSPq0rn242jzm
-   Bf/TC2prmFwiOrNf6igPL1ZzprQF61jiMIvrQmNgJf/TUCKoWwVTVdray
-   aFqorlOHqTt6iDud/LP6F0F2rK/ZKD7KscUdHTAG9kOa+dJnhdnX7vbDh
-   MVLLxmoM7WHpS3eGoXRHFTwsRXssnAYYaD+eMpKwc/4S9A+GkQVMVxUzp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="378462008"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="378462008"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:26:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="635819663"
-Received: from xpf.sh.intel.com ([10.239.182.112])
-  by orsmga008.jf.intel.com with ESMTP; 16 Aug 2022 02:26:43 -0700
-From:   Pengfei Xu <pengfei.xu@intel.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kselftest <linux-kselftest@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Cc:     Pengfei Xu <pengfei.xu@intel.com>, Heng Su <heng.su@intel.com>,
-        Hansen Dave <dave.hansen@intel.com>,
-        Luck Tony <tony.luck@intel.com>,
-        Mehta Sohil <sohil.mehta@intel.com>,
-        Chen Yu C <yu.c.chen@intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bae Chang Seok <chang.seok.bae@intel.com>
-Subject: [PATCH v12 0/2] Introduce XSAVE feature self-test
-Date:   Tue, 16 Aug 2022 17:26:42 +0800
-Message-Id: <cover.1660618469.git.pengfei.xu@intel.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 16 Aug 2022 06:19:43 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411164B4A2
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:20:56 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id f65so8720649pgc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=synaptics-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=NYMVGkKHTI2397pZiPkc6thZcKXJkTNnoZ83oivJ0hA=;
+        b=3MdnH6Wu+h0/6p9F+Sgw7j7Zn84mdhKm9pp478xVH+Xp2ZCl4a+WzmIBdqHbo0hWVS
+         6CT6RuTe7l0wSqvznHsR955Z8o4RcpaTM1bNCQ0NM/xZC8tEn5ayEFQYRaH3yzHw8aq5
+         wejBHEBpZyJyzxqZd5g6JjhDkqTqYnu9ajHalVYW1tUS7aVIBck3/VZvpKLzJu8WIjR1
+         hpab0KlgWt9FeRf+0C8e/AvO1AVSOAADFn4FjJ4bgTVFjUhKc93YThSznAaKAhmsL/mU
+         4qyXi3Fyq6uMJoRiP6trVc8oA0bxZyhAgmXKhQ0gbq0DS4vP7EQcIj+mSqkpknux86hK
+         Fx/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=NYMVGkKHTI2397pZiPkc6thZcKXJkTNnoZ83oivJ0hA=;
+        b=vK+6hNPzkb8xiw+kJ+Lq9o1PbKe26UDHHHbMJ5qnxnsFruHNAAHPkEoiMdMy87pyMX
+         wk4zwgU+a82p19HL4q2GS0FtMn8zjVKO6jhUEmFf/pCeQuQ04Nd8ryIEAJ9rBnTjxi82
+         F+QI0fHZwX3Ums6etbLLM0R9o3qNEMzscCHlaYhh7BzB4sRc/ilEPQZHp8tRMFhcuo8k
+         37BQ/aCnic5WO33Xi1hDHiYzNXr0p/cYS11BzxWoWm2pPHEaD05JaMwwIepqD++dTmoN
+         02G2o176iWx5hH6Tqsio2Cko8to7XzPH+GgqGWF8M5hzZuIvHqjVh7N7TG4VyGZfnfgm
+         OWhg==
+X-Gm-Message-State: ACgBeo2IRMt6m+aLilq949Ok8uWWXvYrgqjGl1AWf0o4r/oBwatcZW7D
+        s02lIxrEe83q3cPVcqbBUMSrmYBfpnbh0CLJ
+X-Google-Smtp-Source: AA6agR4ycWJjwl2rFgkoYIo9fC0Cg8flQ7zt65qwLV9hxmhCn9wMJd8m0S2RL9ct/jVoxEkqZs0PSw==
+X-Received: by 2002:a63:6587:0:b0:41b:dacc:1826 with SMTP id z129-20020a636587000000b0041bdacc1826mr16835970pgb.142.1660641655741;
+        Tue, 16 Aug 2022 02:20:55 -0700 (PDT)
+Received: from margeyang-ThinkPad-T440.synaptics-inc.local ([63.222.17.37])
+        by smtp.gmail.com with ESMTPSA id i14-20020a056a00004e00b0052db5872d7esm7963897pfk.22.2022.08.16.02.20.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Aug 2022 02:20:55 -0700 (PDT)
+From:   margeyang <marge.yang@synaptics.corp-partner.google.com>
+To:     dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hdegoede@redhat.com,
+        benjamin.tissoires@redhat.com
+Cc:     marge.yang@tw.synaptics.com, derek.cheng@tw.synaptics.com,
+        vincent.huang@tw.synaptics.com,
+        Marge Yang <marge.yang@synaptics.corp-partner.google.com>
+Subject: [PATCH V4] Input: synaptics-rmi4 - filter incomplete relative packet.
+Date:   Tue, 16 Aug 2022 17:20:49 +0800
+Message-Id: <1660641649-11929-1-git-send-email-marge.yang@synaptics.corp-partner.google.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The XSAVE feature set supports the saving and restoring of xstate components.
-XSAVE feature has been used for process context switching. XSAVE components
-include x87 state for FP execution environment, SSE state, AVX state and so on.
+From: Marge Yang <marge.yang@synaptics.corp-partner.google.com>
 
-In order to ensure that XSAVE works correctly, add XSAVE most basic test for
-XSAVE architecture functionality.
+RMI4 F03 supports the Stick function,
+it's designed to support relative packet.
+This patch supports the following case.
+When relative packet can't be reported completely,
+it may miss one byte or two byte.
+New Synaptics firmware will report PARITY error.
+When timeout error or parity error happens,
+RMI4 driver will sends 0xFE command and
+ask FW to Re-send stick packet again.
 
-This patch tests "FP, SSE(XMM), AVX2(YMM), AVX512_OPMASK/AVX512_ZMM_Hi256/
-AVX512_Hi16_ZMM and PKRU parts" xstates with following cases:
-1. The contents of these xstates in the process should not change after the
-   signal handling.
-2. The contents of these xstates in the child process should be the same as
-   the contents of the xstate in the parent process after the fork syscall.
-3. The contents of xstates in the parent process should not change after
-   the context switch.
+Signed-off-by: Marge Yang<marge.yang@synaptics.corp-partner.google.com>
+---
+ drivers/input/rmi4/rmi_f03.c | 74 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 
-Because xstate like XMM will not be preserved across function calls, fork() and
-raise() are implemented and inlined.
-To prevent GCC from generating any FP/SSE(XMM)/AVX/PKRU code, add
-"-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler arguments. stdlib.h
-can not be used because of the "-mno-sse" option.
-Thanks Dave, Hansen for the above suggestion!
-Thanks Chen Yu; Shuah Khan; Chatre Reinette and Tony Luck's comments!
-Thanks to Bae, Chang Seok for a bunch of comments!
-
-========
-- Change from v11 to v12
-  - Remove useless rbx register stuffing in assembly syscall functions.
-    (Zhang, Li)
-
-- Change from v10 to v11
-  - Remove the small function like cpu_has_pkru(), get_xstate_size() and so
-    on. (Shuah Khan)
-  - Unify xfeature_num type to uint32_t.
-
-- Change from v9 to v10
-  - Remove the small function if the function will be called once and there
-    is no good reason. (Shuah Khan)
-
-- Change from v8 to v9
-  - Use function pointers to make it more structured. (Hansen, Dave)
-  - Improve the function name: xstate_tested -> xstate_in_test. (Chang S. Bae)
-  - Break this test up into two pieces: keep the xstate key test steps with
-    "-mno-sse" and no stdlib.h, keep others in xstate.c file. (Hansen, Dave)
-  - Use kselftest infrastructure for xstate.c file. (Hansen, Dave)
-  - Use instruction back to populate fp xstate buffer. (Hansen, Dave)
-  - Will skip the test if cpu could not support xsave. (Chang S. Bae)
-  - Use __cpuid_count() helper in kselftest.h. (Reinette, Chatre)
-
-- Change from v7 to v8
-  Many thanks to Bae, Chang Seok for a bunch of comments as follow:
-  - Use the filling buffer way to prepare the xstate buffer, and use xrstor
-    instruction way to load the tested xstates.
-  - Remove useless dump_buffer, compare_buffer functions.
-  - Improve the struct of xstate_info.
-  - Added AVX512_ZMM_Hi256 and AVX512_Hi16_ZMM components in xstate test.
-  - Remove redundant xstate_info.xstate_mask, xstate_flag[], and
-    xfeature_test_mask, use xstate_info.mask instead.
-  - Check if xfeature is supported outside of fill_xstate_buf() , this change
-    is easier to read and understand.
-  - Remove useless wrpkru, only use filling all tested xstate buffer in
-    fill_xstates_buf().
-  - Improve a bunch of function names and variable names.
-  - Improve test steps flow for readability.
-
-- Change from v6 to v7:
-  - Added the error number and error description of the reason for the
-    failure, thanks Shuah Khan's suggestion.
-  - Added a description of what these tests are doing in the head comments.
-  - Added changes update in the head comments.
-  - Added description of the purpose of the function. thanks Shuah Khan.
-
-- Change from v5 to v6:
-  - In order to prevent GCC from generating any FP code by mistake,
-    "-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler parameter was
-    added, it's referred to the parameters for compiling the x86 kernel. Thanks
-    Dave Hansen's suggestion.
-  - Removed the use of "kselftest.h", because kselftest.h included <stdlib.h>,
-    and "stdlib.h" would use sse instructions in it's libc, and this *XSAVE*
-    test needed to be compiled without libc sse instructions(-mno-sse).
-  - Improved the description in commit header, thanks Chen Yu's suggestion.
-  - Becasue test code could not use buildin xsave64 in libc without sse, added
-    xsave function by instruction way.
-  - Every key test action would not use libc(like printf) except syscall until
-    it's failed or done. If it's failed, then it would print the failed reason.
-  - Used __cpuid_count() instead of native_cpuid(), becasue __cpuid_count()
-    was a macro definition function with one instruction in libc and did not
-    change xstate. Thanks Chatre Reinette, Shuah Khan.
-    https://lore.kernel.org/linux-sgx/8b7c98f4-f050-bc1c-5699-fa598ecc66a2@linuxfoundation.org/
-
-- Change from v4 to v5:
-  - Moved code files into tools/testing/selftests/x86.
-  - Delete xsave instruction test, becaue it's not related to kernel.
-  - Improved case description.
-  - Added AVX512 opmask change and related XSAVE content verification.
-  - Added PKRU part xstate test into instruction and signal handling test.
-  - Added XSAVE process swich test for FPU, AVX2, AVX512 opmask and PKRU part.
-
-- Change from v3 to v4:
-  - Improve the comment in patch 1.
-
-- Change from v2 to v3:
-  - Improve the description of patch 2 git log.
-
-- Change from v1 to v2:
-  - Improve the cover-letter. Thanks Dave Hansen's suggestion.
-
-Pengfei Xu (2):
-  selftests/x86/xstate: Add xstate signal handling test for XSAVE
-    feature
-  selftests/x86/xstate: Add xstate fork test for XSAVE feature
-
- tools/testing/selftests/x86/.gitignore       |   1 +
- tools/testing/selftests/x86/Makefile         |  11 +-
- tools/testing/selftests/x86/xstate.c         | 215 +++++++++++++++++
- tools/testing/selftests/x86/xstate.h         | 228 +++++++++++++++++++
- tools/testing/selftests/x86/xstate_helpers.c | 209 +++++++++++++++++
- tools/testing/selftests/x86/xstate_helpers.h |   9 +
- 6 files changed, 671 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/x86/xstate.c
- create mode 100644 tools/testing/selftests/x86/xstate.h
- create mode 100644 tools/testing/selftests/x86/xstate_helpers.c
- create mode 100644 tools/testing/selftests/x86/xstate_helpers.h
-
+diff --git a/drivers/input/rmi4/rmi_f03.c b/drivers/input/rmi4/rmi_f03.c
+index c194b1664b10..563b40c2dc06 100644
+--- a/drivers/input/rmi4/rmi_f03.c
++++ b/drivers/input/rmi4/rmi_f03.c
+@@ -23,8 +23,12 @@
+ #define RMI_F03_BYTES_PER_DEVICE_SHIFT	4
+ #define RMI_F03_QUEUE_LENGTH		0x0F
+ 
++#define RMI_F03_RESET_STYK		0xFE
++
+ #define PSMOUSE_OOB_EXTRA_BTNS		0x01
+ 
++#define RELATIVE_PACKET_SIZE		3
++
+ struct f03_data {
+ 	struct rmi_function *fn;
+ 
+@@ -33,6 +37,11 @@ struct f03_data {
+ 
+ 	unsigned int overwrite_buttons;
+ 
++	int iwritecommandcounter;
++	unsigned int ipacketindex;
++	unsigned int serio_flagsArry[RELATIVE_PACKET_SIZE];
++	u8 ob_dataArry[RELATIVE_PACKET_SIZE];
++
+ 	u8 device_count;
+ 	u8 rx_queue_length;
+ };
+@@ -88,6 +97,7 @@ static int rmi_f03_pt_write(struct serio *id, unsigned char val)
+ 		return error;
+ 	}
+ 
++	f03->iwritecommandcounter++;
+ 	return 0;
+ }
+ 
+@@ -107,6 +117,8 @@ static int rmi_f03_initialize(struct f03_data *f03)
+ 		return error;
+ 	}
+ 
++	f03->iwritecommandcounter = 0;
++	f03->ipacketindex = 0;
+ 	f03->device_count = query1 & RMI_F03_DEVICE_COUNT;
+ 	bytes_per_device = (query1 >> RMI_F03_BYTES_PER_DEVICE_SHIFT) &
+ 				RMI_F03_BYTES_PER_DEVICE;
+@@ -284,6 +296,22 @@ static irqreturn_t rmi_f03_attention(int irq, void *ctx)
+ 		ob_data = obs[i + RMI_F03_OB_DATA_OFFSET];
+ 		serio_flags = 0;
+ 
++		if (ob_status & (RMI_F03_OB_FLAG_TIMEOUT | RMI_F03_OB_FLAG_PARITY)) {
++			//  Send resend command to stick when timeout or parity error.
++			//  Driver can receive the last stick packet.
++			unsigned char val = RMI_F03_RESET_STYK;
++
++			error = rmi_write(f03->fn->rmi_dev, f03->fn->fd.data_base_addr, val);
++			if (error) {
++				dev_err(&f03->fn->dev,
++					"%s: Failed to rmi_write to F03 TX register (%d).\n",
++					__func__, error);
++				return error;
++			}
++			f03->ipacketindex = 0;
++			break;
++		}
++
+ 		if (!(ob_status & RMI_F03_RX_DATA_OFB))
+ 			continue;
+ 
+@@ -298,7 +326,51 @@ static irqreturn_t rmi_f03_attention(int irq, void *ctx)
+ 			serio_flags & SERIO_TIMEOUT ?  'Y' : 'N',
+ 			serio_flags & SERIO_PARITY ? 'Y' : 'N');
+ 
+-		serio_interrupt(f03->serio, ob_data, serio_flags);
++		if (f03->iwritecommandcounter > 0) {
++			// Read Acknowledge Byte after writing the PS2 command.
++			// It is not trackpoint data.
++			serio_interrupt(f03->serio, ob_data, serio_flags);
++		} else {
++			//   The relative-mode PS/2 packet format is as follows:
++			//
++			//              bit position            position (as array of bytes)
++			//     7   6   5   4   3   2   1   0
++			//   =================================+
++			//    Yov Xov DY8 DX8  1   M   R   L  | DATA[0]
++			//                DX[7:0]             | DATA[1]
++			//                DY[7:0]             | DATA[2]
++			//   =================================+
++			//		Yov: Y overflow
++			//    Xov: X overflow
++			if ((f03->ipacketindex == 0) && (ob_data & ((BIT(7)|BIT(6))))) {
++				dev_err(&f03->fn->dev,
++				"%s: X or Y is overflow. (%x)\n",
++				__func__, ob_data);
++				break;
++			} else if ((f03->ipacketindex == 0) && !(ob_data & BIT(3))) {
++				dev_err(&f03->fn->dev,
++				"%s: New BIT 3 is not 1 for the first byte\n",
++				__func__);
++				break;
++			}
++			f03->ob_dataArry[f03->ipacketindex] = ob_data;
++			f03->serio_flagsArry[f03->ipacketindex] = serio_flags;
++			f03->ipacketindex++;
++
++			if (f03->ipacketindex == RELATIVE_PACKET_SIZE)	{
++				serio_interrupt(f03->serio, f03->ob_dataArry[0],
++				 f03->serio_flagsArry[0]);
++				serio_interrupt(f03->serio, f03->ob_dataArry[1],
++				 f03->serio_flagsArry[1]);
++				serio_interrupt(f03->serio, f03->ob_dataArry[2],
++				 f03->serio_flagsArry[2]);
++				f03->ipacketindex = 0;
++			}
++		}
++	}
++	if (f03->iwritecommandcounter > 0) {
++		f03->ipacketindex = 0;
++		f03->iwritecommandcounter = f03->iwritecommandcounter - 1;
+ 	}
+ 
+ 	return IRQ_HANDLED;
 -- 
-2.31.1
+2.22.0.windows.1
 
