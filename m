@@ -2,112 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7DEC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1EBC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234616AbiHPLcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
+        id S234571AbiHPLeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234581AbiHPLcK (ORCPT
+        with ESMTP id S234523AbiHPLdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:32:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E859C52A
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:50:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1098461038
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 10:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D7DC433C1;
-        Tue, 16 Aug 2022 10:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660647033;
-        bh=3Skn3Dxm7mLcgmejceAdOhPccdXPh+grRmHbOhCB8Fo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R00EOGsCT5xr5Gs01gtbO6VV3r15NkcCu+SgfBkY3+wAUGKEuwXRgT8hBskQeA72z
-         4o10IryK0TpATyIe4WTIMd18PNbl6HvDPZ5WYUP0E+Ng3fN2vmEEBNal0Z5Q/50oFr
-         Cd7iQ1bc+0eOMHl63e1coLndXnRD+McQQE1R7rEg=
-Date:   Tue, 16 Aug 2022 12:50:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>
-Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
-Message-ID: <Yvt2dhNhLX5fH/nH@kroah.com>
-References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
- <YvtggZeUF9+xQu7D@kroah.com>
- <7bdc252f-15dd-8d92-9e08-1ba7dd8308ad@huawei.com>
+        Tue, 16 Aug 2022 07:33:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C557C1C5;
+        Tue, 16 Aug 2022 03:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660647333; x=1692183333;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ydczOs/B4f5E5PAGhD2udvBxWaaSFQ2xVkQP9xvCjU8=;
+  b=oTQzoV7YDMSyipRcfysxVCwIl8eYAFhxbhN38G9QCUwVU3uvdQIleI3Y
+   kahM2iMEBPswwj0IV1VBo3vLipO+KGBwKQk/RzOk1LW3ddU+/zhIRYyaG
+   6gvqX25GasRvTci3lEtuPT4xwuEgZiL8wucqGTvfUMK+Nqbj8KKgVdCAG
+   sRzjlRJo4z3jisqf/Q2TTHc7/5qrjEUlE2MmSTUQZzczyOLnWPTYwpmzK
+   DEHibJwbYVuu5/hbktrOGBa6wuafzsPYk1uEvMBQaI2C8Eosd7X5Rjiat
+   +OPU6r6RUqtq004icNz/HguJ8K5MsofZEfpfRSrvXiFvauEsYsPI8IMQ6
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="169486516"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Aug 2022 03:55:32 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 16 Aug 2022 03:55:30 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 16 Aug 2022 03:55:24 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: [patch net v3] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
+Date:   Tue, 16 Aug 2022 16:25:16 +0530
+Message-ID: <20220816105516.18350-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7bdc252f-15dd-8d92-9e08-1ba7dd8308ad@huawei.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 06:11:18PM +0800, Kefeng Wang wrote:
-> 
-> On 2022/8/16 17:16, Greg Kroah-Hartman wrote:
-> > On Tue, Aug 16, 2022 at 04:44:26PM +0800, Kefeng Wang wrote:
-> > > From: Liu Shixin <liushixin2@huawei.com>
-> > > 
-> > > The page on pcplist could be used, but not counted into memory free or
-> > > avaliable, and pcp_free is only showed by show_mem(). Since commit
-> > > d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
-> > > significant decrease in the display of free memory, with a large number
-> > > of cpus and nodes, the number of pages in the percpu list can be very
-> > > large, so it is better to let user to know the pcp count.
-> > > 
-> > > Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-> > > Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> > > ---
-> > >   drivers/base/node.c | 14 +++++++++++++-
-> > >   fs/proc/meminfo.c   |  9 +++++++++
-> > >   2 files changed, 22 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/base/node.c b/drivers/base/node.c
-> > > index eb0f43784c2b..846864e45db6 100644
-> > > --- a/drivers/base/node.c
-> > > +++ b/drivers/base/node.c
-> > > @@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
-> > >   	struct sysinfo i;
-> > >   	unsigned long sreclaimable, sunreclaimable;
-> > >   	unsigned long swapcached = 0;
-> > > +	unsigned long free_pcp = 0;
-> > > +	struct zone *zone;
-> > > +	int cpu;
-> > >   	si_meminfo_node(&i, nid);
-> > >   	sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
-> > > @@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
-> > >   #ifdef CONFIG_SWAP
-> > >   	swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
-> > >   #endif
-> > > +	for_each_populated_zone(zone) {
-> > > +		if (zone_to_nid(zone) != nid)
-> > > +			continue;
-> > > +		for_each_online_cpu(cpu)
-> > > +			free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-> > > +	}
-> > > +
-> > >   	len = sysfs_emit_at(buf, len,
-> > >   			    "Node %d MemTotal:       %8lu kB\n"
-> > >   			    "Node %d MemFree:        %8lu kB\n"
-> > > +			    "Node %d PcpFree:        %8lu kB\n"
-> > First off, this sysfs file is a huge violation of the normal sysfs
-> > rules, so I will not allow any new entries to be added.  In fact, the
-> > whole thing should just be removed and multiple files created in its
-> > place.
-> 
-> Hi Greg, do you mean to remove all /sys/devices/system/node/node*/meminfo,
-> 
-> but this will beak ABI, is it acceptable?
+In the ksz9477_fdb_dump function it reads the ALU control register and
+exit from the timeout loop if there is valid entry or search is
+complete. After exiting the loop, it reads the alu entry and report to
+the user space irrespective of entry is valid. It works till the valid
+entry. If the loop exited when search is complete, it reads the alu
+table. The table returns all ones and it is reported to user space. So
+bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
+To fix it, after exiting the loop the entry is reported only if it is
+valid one.
 
-I do not know, what tool relies on this file?  Any userspace tool should
-always be able to handle a sysfs file being removed, so you should
-probably work with the tool authors to fix this up before removing it.
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+changes in v3
+- changed the subject from net-next to net
 
-thanks,
+changes in v2
+- changed the fixes commit id
+- reduced the indentation level by using ! and continue statement
 
-gre gk-h
+ drivers/net/dsa/microchip/ksz9477.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 4b14d80d27ed..e4f446db0ca1 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -613,6 +613,9 @@ int ksz9477_fdb_dump(struct ksz_device *dev, int port,
+ 			goto exit;
+ 		}
+ 
++		if (!(ksz_data & ALU_VALID))
++			continue;
++
+ 		/* read ALU table */
+ 		ksz9477_read_table(dev, alu_table);
+ 
+
+base-commit: 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
+-- 
+2.36.1
+
