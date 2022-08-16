@@ -2,116 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E09C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09B6C32771
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbiHPJx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        id S234142AbiHPJyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234173AbiHPJxK (ORCPT
+        with ESMTP id S233711AbiHPJxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:53:10 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312DAA5
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:54:45 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R661e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VMPKNX3_1660640081;
-Received: from 30.97.48.47(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VMPKNX3_1660640081)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Aug 2022 16:54:41 +0800
-Message-ID: <eb6eb8ff-f0f3-fe6f-feac-887e46593a0e@linux.alibaba.com>
-Date:   Tue, 16 Aug 2022 16:54:53 +0800
+        Tue, 16 Aug 2022 05:53:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C005CBC10F
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:14:27 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oNriC-00087l-C0; Tue, 16 Aug 2022 10:14:08 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oNriB-000640-9A; Tue, 16 Aug 2022 10:14:07 +0200
+Date:   Tue, 16 Aug 2022 10:14:07 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Peng Fan <peng.fan@nxp.com>
+Cc:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        "abelvesa@kernel.org" <abelvesa@kernel.org>,
+        "abel.vesa@linaro.org" <abel.vesa@linaro.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: clock: imx8m: introduce
+ fsl,protected-clocks property
+Message-ID: <20220816081407.GH17485@pengutronix.de>
+References: <20220815033632.1687854-1-peng.fan@oss.nxp.com>
+ <20220815033632.1687854-2-peng.fan@oss.nxp.com>
+ <20220815135756.GC17485@pengutronix.de>
+ <DU0PR04MB9417593B87BB5A23A29D732E886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v6 1/2] mm: migration: fix the FOLL_GET failure on
- following huge page
-To:     Haiyue Wang <haiyue.wang@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     akpm@linux-foundation.org, david@redhat.com, apopple@nvidia.com,
-        linmiaohe@huawei.com, ying.huang@intel.com,
-        songmuchun@bytedance.com, naoya.horiguchi@linux.dev,
-        alex.sierra@amd.com
-References: <20220812084921.409142-1-haiyue.wang@intel.com>
- <20220816022102.582865-1-haiyue.wang@intel.com>
- <20220816022102.582865-2-haiyue.wang@intel.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220816022102.582865-2-haiyue.wang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DU0PR04MB9417593B87BB5A23A29D732E886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 16, 2022 at 07:13:27AM +0000, Peng Fan wrote:
+> Hi Sascha,
+> 
+> > Subject: Re: [PATCH 1/2] dt-bindings: clock: imx8m: introduce fsl,protected-
+> > clocks property
+> > 
+> > Hi Peng,
+> > 
+> > On Mon, Aug 15, 2022 at 11:36:31AM +0800, Peng Fan (OSS) wrote:
+> > > From: Peng Fan <peng.fan@nxp.com>
+> > >
+> > > i.MX8M Linux run on top of Jailhouse hypervisor, the root cell Linux
+> > > should not disable clocks used by inmate. This would also benifit AMP
+> > > to avoid Linux disable clocks used by Cortex-M4/M7.
+> > >
+> > > So introduce fsl,protected-clocks for above case.
+> > >
+> > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/clock/imx8m-clock.yaml | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
+> > > b/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
+> > > index 458c7645ee68..0ec490ff9a09 100644
+> > > --- a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
+> > > +++ b/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
+> > > @@ -39,6 +39,10 @@ properties:
+> > >        ID in its "clocks" phandle cell. See include/dt-bindings/clock/imx8m-
+> > clock.h
+> > >        for the full list of i.MX8M clock IDs.
+> > >
+> > > +  fsl,protected-clocks:
+> > > +    description: List of the Protected clock.
+> > > +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> > 
+> > There already is a generic protected-clocks property described in
+> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithu
+> > b.com%2Fdevicetree-org%2Fdt-
+> > schema%2Fblob%2F0d1b78cd0c3d9a3d523ced17d7da64b03f6c18ea%2Fdtsc
+> > hema%2Fschemas%2Fclock%2Fclock.yaml%23L131&amp;data=05%7C01%7
+> > Cpeng.fan%40nxp.com%7C5dbc72639c9147765af208da7ec63315%7C686ea
+> > 1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637961686968811809%7CUn
+> > known%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI
+> > 6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=D%2BfJA5h
+> > wblaX8VH%2BdQoN0pEFmCipfZHHf0ZVo07B4kg%3D&amp;reserved=0
+> > We probably shouldn't add a property with the same name but different
+> > meaning.
+> > 
+> 
+> Thanks for sharing the info. I should check the common bindings before
+> cook this patchset.
+> 
+> > I am not sure if we want to go the route of a fsl specific property, it looks
+> > like other SoCs could have similar problems and it might be worth solving
+> > this problem with a broader view.
+> > 
+> 
+> I see qcom just drop the clock entries before registering the clocks. But to
+> i.MX8M, it is not feasible to drop those clocks, unless check the
+> protected-clocks property before registering every clock. This is odd.
+> 
+> So here I just wanna let i.MX8M clk driver prepare enable the clocks listed
+> in protected-clocks property to avoid linux disable those clocks.
+> > Anyway, please add a description to the binding what this property actually
+> > does.
+> I will switch to use the common bindings.
 
+There were cases when a property first started with a "soc," prefix and
+later when people realized that it could be useful for other
+drivers/SoCs as well, the prefix was removed. With that in mind I
+would expect that a "fsl,protected-clocks" property behaves the same
+as a "protected-clocks" property without the prefix.
 
-On 8/16/2022 10:21 AM, Haiyue Wang wrote:
-> Not all huge page APIs support FOLL_GET option, so move_pages() syscall
-> will fail to get the page node information for some huge pages.
-> 
-> Like x86 on linux 5.19 with 1GB huge page API follow_huge_pud(), it will
-> return NULL page for FOLL_GET when calling move_pages() syscall with the
-> NULL 'nodes' parameter, the 'status' parameter has '-2' error in array.
-> 
-> Note: follow_huge_pud() now supports FOLL_GET in linux 6.0.
->        Link: https://lore.kernel.org/all/20220714042420.1847125-3-naoya.horiguchi@linux.dev
-> 
-> But these huge page APIs don't support FOLL_GET:
->    1. follow_huge_pud() in arch/s390/mm/hugetlbpage.c
->    2. follow_huge_addr() in arch/ia64/mm/hugetlbpage.c
->       It will cause WARN_ON_ONCE for FOLL_GET.
->    3. follow_huge_pgd() in mm/hugetlb.c
-> 
-> This is an temporary solution to mitigate the side effect of the race
-> condition fix by calling follow_page() with FOLL_GET set for huge pages.
-> 
-> After supporting follow huge page by FOLL_GET is done, this fix can be
-> reverted safely.
-> 
-> Fixes: 4cd614841c06 ("mm: migration: fix possible do_pages_stat_array racing with memory offline")
-> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
-> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-> ---
+If it doesn't please pick a different name. I didn't want to suggest
+to just drop the "fsl," prefix and to use the generic property name
+when the properties have a different meaning.
 
-Looks good to me.
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Sascha
 
->   mm/migrate.c | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 6a1597c92261..581dfaad9257 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1848,6 +1848,7 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->   
->   	for (i = 0; i < nr_pages; i++) {
->   		unsigned long addr = (unsigned long)(*pages);
-> +		unsigned int foll_flags = FOLL_DUMP;
->   		struct vm_area_struct *vma;
->   		struct page *page;
->   		int err = -EFAULT;
-> @@ -1856,8 +1857,12 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->   		if (!vma)
->   			goto set_status;
->   
-> +		/* Not all huge page follow APIs support 'FOLL_GET' */
-> +		if (!is_vm_hugetlb_page(vma))
-> +			foll_flags |= FOLL_GET;
-> +
->   		/* FOLL_DUMP to ignore special (like zero) pages */
-> -		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
-> +		page = follow_page(vma, addr, foll_flags);
->   
->   		err = PTR_ERR(page);
->   		if (IS_ERR(page))
-> @@ -1865,7 +1870,8 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->   
->   		if (page && !is_zone_device_page(page)) {
->   			err = page_to_nid(page);
-> -			put_page(page);
-> +			if (foll_flags & FOLL_GET)
-> +				put_page(page);
->   		} else {
->   			err = -ENOENT;
->   		}
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
