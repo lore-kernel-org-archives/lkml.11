@@ -2,75 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F62C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF6EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234823AbiHPKid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
+        id S234920AbiHPKjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234445AbiHPKi3 (ORCPT
+        with ESMTP id S234819AbiHPKit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:38:29 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDAC3E758
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:22 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id s3-20020a056e021a0300b002e10f0e8965so6704819ild.23
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:38:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=82mnOCie5mgnQOZdZuXbQHyJgQ642MjSMUz2Nnms+RI=;
-        b=7c2FhYK3ZxskdcQG93GsX0pkjNQe/1ivrdjQrhVwGEdv64+QuiTAexAwJqE9scojEo
-         ohUJ8OTXCFAUJQNFVNixoN9ZzlWtHLLCjZRJtGFddPEtfnZuw2KlSoSoZHtxx833NUc2
-         w685uPwnGYG69qYcQP/0HwwnfNw6uTBfZ1J/MwFasC7RF4MR2sz2gkZC/fF2hOO1tjND
-         oGqkoQIah7TPEkVH/KP5Im2mq0Z/kth8vW6zgqOqPDcH913h2IioPvJNKpKAJfCtgqQ4
-         C5/hHhcaJ7QucN7QLtY8knUfmdEwGHCCmSRvcZQVHLiZYE7dsLftjka9QpnhkjUnf3tz
-         2b1w==
-X-Gm-Message-State: ACgBeo2b8e9kxO6FJQkKk9uVTqx+TnsU4ysKJS3WMHlMcMv23cpjqHWf
-        anWU8ecj26bbDtKKY+JRmg1DWqVLu0KLPIFz0aFmI5WzLxMm
-X-Google-Smtp-Source: AA6agR720cBV3eukUqhnbuPdbUsju4w1ZdCTwmurQS4bv9li4klCzfXqbUjQj1HgGNaoNzBDOqtAj09VYiJjk8HvV2/S+katk34w
+        Tue, 16 Aug 2022 06:38:49 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BF92B27A;
+        Tue, 16 Aug 2022 02:21:06 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8D2305C00A0;
+        Tue, 16 Aug 2022 05:21:04 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 16 Aug 2022 05:21:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1660641664; x=1660728064; bh=OhMgZX7auI
+        gkuBlZmd1o5pXnydvmuutKuznb643+nMc=; b=xfxXIimP3vKiA76KqsYsv4Bkat
+        kSxGJqmiXPRBmc8729AnI4/OqKgSI5WloA2b27nl/Y0B9iQRu4UVWqdwYjLPSmbh
+        X4tAZDPKXkD0RyBq7fm069/5aceGNkl1HMXJhJ1BN9wghNhyHNx89INwVJl3ldzU
+        NscFrG/Ja+weLLcvQU4hOJxUu4+8ApiKoxB7J4+f/Tdz0cquvNLGU/VedpgfrG75
+        lQIlpqNdEONfxa3Z18WBL/9VQjUcHJADXHvZLYIetxqIw88GEDl11eMJdV3r3iRa
+        a/jmbb4OFAh4+GW068nhEEv10nXtqzH0/rBpf5WI2j1q9x2HWAjDnP3xGeMg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660641664; x=1660728064; bh=OhMgZX7auIgkuBlZmd1o5pXnydvm
+        uutKuznb643+nMc=; b=NRYAcG7uxWwgU7F3BWUESvVCTM7SP5pGEFkQjOorYyYu
+        FHLDot5AzJo260CjVoA/KpJH3h9ZrcJj9sdgn/leIrm1AAINVmJ5UCZXt001H+WJ
+        I/67P8234bFJm8XrfYNJwF7CF4BrJlCfSwOgW0/Xwp8iL0SBoo5bDtWgL01Wu//C
+        qEC3HXOpUXGWozg9MXvwf+K5/mHXGGvc2kywwVXPuuGPvto1NhAJIzyq0YryfEVR
+        KQvyCtxKlGc5SNezdDlai+AuGpgTSouuHLHPgbdDGtefEoW1HxUvow4pAjdAXFCY
+        q2gZf+HjpMVJkS1p9Mv5v42mefDkIBMm6OCBmqEBNA==
+X-ME-Sender: <xms:gGH7YsMIAa2ZAO31iEYHDCkOKDZzQkEPIzP6en-_q6FnT7mnC9vDNg>
+    <xme:gGH7Yi8JCg1Y1SbrzdhrkirkPQnRCJjo2aldeDEcjEYwAYscD4G7Zuibou4tXUo8D
+    fkw4dkY3WwdCA>
+X-ME-Received: <xmr:gGH7YjR7OsJMGgznXdW2UiaSNoWZ3YHE1v3r8Ny1ASZ8tL2AuASgNQ7-nj6AI7vJzj9L0kzLGpjzhPO4wUVmR9Jy8db6uO29>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgedgudeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
+    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
+    hhrdgtohhm
+X-ME-Proxy: <xmx:gGH7YkuZai49G-Wdcq-XoV26iwjsouwhdkKXs7FSOBa0A7Jn6klz0g>
+    <xmx:gGH7YkdrhCBj4b30ZzAhenBVddm6p4Il4i_v57Dxj_TTzrqUXDX_Qg>
+    <xmx:gGH7Yo0THskVFE2VOQ7H49GxUJXdRfGIf09ODhMtxm5qyM8qtc_GHw>
+    <xmx:gGH7YlVdCBeqKhfGkBNvVfd2FqJHBetDDsKCsgwZM0Adqqyv244nCg>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 16 Aug 2022 05:21:03 -0400 (EDT)
+Date:   Tue, 16 Aug 2022 11:21:01 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tsbogend@alpha.franken.de, linux-api@vger.kernel.org,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH v4] MIPS: Expose prid and globalnumber to sysfs
+Message-ID: <YvthfQUfv0TiO/bK@kroah.com>
+References: <20220816091258.9571-1-jiaxun.yang@flygoat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:b26:b0:2de:b192:9dfc with SMTP id
- e6-20020a056e020b2600b002deb1929dfcmr9325868ilu.273.1660639101658; Tue, 16
- Aug 2022 01:38:21 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:38:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c1304c05e657ab8d@google.com>
-Subject: [syzbot] upstream boot error: WARNING in corrupted
-From:   syzbot <syzbot+702878cf206fb347f510@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816091258.9571-1-jiaxun.yang@flygoat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, Aug 16, 2022 at 09:12:58AM +0000, Jiaxun Yang wrote:
+> Some application would like to know precise model and rev of processor
+> to do errata workaround or optimization.
+> 
+> Expose them in sysfs as:
+> /sys/devices/system/cpu/cpuX/regs/identification/prid
+> /sys/devices/system/cpu/cpuX/regs/identification/globalnumber
+> 
+> Reusing AArch64 CPU registers directory.
+> 
+> Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+> ---
+> v2: Drop static qualifier for kobj (gregkh)
+> v3: Use kzalloc to allocate struct cpuregs.
+>     note: When Greg mentioned about static I was thinking about
+>     static qualifier of percpu variable. After reading documents
+>     again it turns out kobjs should be allocated at runtime. Arm64's
+>     cpuinfo kobj is also on a percpu variable... I guess that was a
+>     intentional use?
+> v4: Properly handle err of kobj creation. (gregkh)
 
-syzbot found the following issue on:
+Nothing was fixed :(
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1401a5a5080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f267ed4fb258122a
-dashboard link: https://syzkaller.appspot.com/bug?extid=702878cf206fb347f510
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+Again, please read the documentation for the kobject calls you are
+making as it explains how to properly handle errors being returned from
+them, and what you need to call if that happens.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+702878cf206fb347f510@syzkaller.appspotmail.com
+thanks,
 
-scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-WARNING: CPU: 1 PID: 8 at kernel/locking/mutex.c:582 __mutex_lock_common+0x1bb7/0x26c0 kernel/locking/mutex.c:582
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+greg k-h
