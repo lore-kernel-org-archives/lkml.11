@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A28F9C32771
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A7BC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233220AbiHPJ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
+        id S234129AbiHPJ62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233956AbiHPJ5T (ORCPT
+        with ESMTP id S234124AbiHPJ5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:57:19 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955A7DB7E4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id c7-20020a056e020bc700b002e59be6ce85so4105478ilu.12
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
+        Tue, 16 Aug 2022 05:57:30 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907DDF1B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:26 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e020c0600b002deca741bc2so6673900ile.18
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:42:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=uDdqdg2D5oQb5bC2cgZXwzGB0b6PimvWB/eIeWIucQ8=;
-        b=OkjS3O5ZRaQkl23jO2CDQ+/uDYoVmmOZfXTPnzWnWbGn1VadhStzIPHmvP5uZr4CG+
-         zlIb5IPVyDhM94Pf8zLIj+f8+JyBIvmXdLzi/yONYDV0usHStXU5KYOW00La48uCkC0F
-         CJ2St+t+cFP1nsS9fuME0NIpMRqfH9QTC0xDTsCkso1kRSkzT45yq7Vucw/QsMmSkd8U
-         dqj/hXQjFdX/oZapimwXOiEcDvgvuRQGPwPDm4vOBtJZZrjG4ajHgXMAPsold+AAfEhf
-         RHUok3KCGi3P+bWdcrAhJXQomoAlgI2QPPYmBw4GDrbTgnDg+YAu+Jf4jvQiD9j5NKIv
-         0LfQ==
-X-Gm-Message-State: ACgBeo0RiK0tNdBaAYatwbWmeooDgyhUulTcDP+fTpv3kres8lUwu16c
-        wxJoquOFvgR50NW5hf/6iRNMxYp/f846Dl+gjPWRQh/UOz9Y
-X-Google-Smtp-Source: AA6agR5Hjz2xwv/dtmvPhpLiGCsPp2aHTUFCJv4E/zItJc9o+fq3jTi87/5LeY5X73yA8wURTG51x2rJZzL6GNds3OFLNd+frMkA
+        bh=+jzcfAu8UwI/Y0LokxI7igRVcQotKXMODMjaE4VIKjY=;
+        b=NBVlDAtU6YYzbMRn3Cbjs0P6/B3ubnLVPhUL2mUUKs0UW2yn3EMMAx+HRg+22TNLc0
+         P47wXEpMWNwVEMCgvkE6hOnj/wp7O83KPIJzJ6t2sp5I7pkcChFpa1JSfmZwtLFk3YVV
+         Lb/5+AhQ5m+UlZgGJBq07sxNkSqprnaZm9npsBgWr6MWD/HeNZVhD0jJ0Oy8f/7hLro3
+         3gxo4JkVEbWpeFsw+hNUdiTMJzX2c93LOZuvECFNtv6Nf3pCdzXtEWEQY9H/sy7gb3GX
+         bxyFTaWcSFhlSEwBKSotzO+1EaJdasfZjo/W8w0xbWlCbfbmK6hAUz36aVFXLS46HqeZ
+         d9tA==
+X-Gm-Message-State: ACgBeo1178D2k/aAIFlssq+8fcqSQ3GKRERSc6jHmwlHD49T67ReooSY
+        W8AU7OBp+PFTGUGGb0sX6dsYl8hqn90MQ7zZPtjYlV5mDXg2
+X-Google-Smtp-Source: AA6agR6c541eGIxRlq02NmbBlytmQ2SQ8bDe8DHmliRsrDFWAoKLU6p0PGgRogDGQedplOt63aweHhdXwP0VdZxS/v0N5mYuolkC
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3588:b0:346:b8ba:1260 with SMTP id
- v8-20020a056638358800b00346b8ba1260mr116712jal.85.1660639294979; Tue, 16 Aug
- 2022 01:41:34 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:41:34 -0700
+X-Received: by 2002:a05:6e02:1a49:b0:2e7:bed:30d9 with SMTP id
+ u9-20020a056e021a4900b002e70bed30d9mr633282ilv.209.1660639345840; Tue, 16 Aug
+ 2022 01:42:25 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:42:25 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004701b205e657b773@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in device_create
-From:   syzbot <syzbot+83174867af1448d2e62b@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000004f17af05e657bacb@google.com>
+Subject: [syzbot] upstream boot error: WARNING: bad unlock balance in handle_irq_event
+From:   syzbot <syzbot+67a35003dea56aed2517@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -53,136 +52,869 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    6c833c0581f1 Merge tag 'devicetree-fixes-for-6.0-1' of git..
+HEAD commit:    69dac8e431af Merge tag 'riscv-for-linus-5.20-mw2' of git:/..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=138a2f05080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f83c035536d7b2e3
-dashboard link: https://syzkaller.appspot.com/bug?extid=83174867af1448d2e62b
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+console output: https://syzkaller.appspot.com/x/log.txt?x=107ac5dd080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6bcb425ba129b87
+dashboard link: https://syzkaller.appspot.com/bug?extid=67a35003dea56aed2517
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+83174867af1448d2e62b@syzkaller.appspotmail.com
+Reported-by: syzbot+67a35003dea56aed2517@syzkaller.appspotmail.com
 
-usbcore: registered new interface driver nfcmrvl
-Loading iSCSI transport class v2.0-870.
-scsi host0: Virtio SCSI HBA
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-Rounding down aligned max_sectors from 4294967295 to 4294967288
-db_root: cannot open: /etc/target
-slram: not enough parameters.
-ftl_cs: FTL header not found.
-wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
-MACsec IEEE 802.1AE
-tun: Universal TUN/TAP device driver, 1.6
-vcan: Virtual CAN interface driver
-vxcan: Virtual CAN Tunnel driver
-slcan: serial line CAN interface driver
-CAN device driver interface
-usbcore: registered new interface driver usb_8dev
-usbcore: registered new interface driver ems_usb
-usbcore: registered new interface driver gs_usb
-usbcore: registered new interface driver kvaser_usb
-usbcore: registered new interface driver mcba_usb
-usbcore: registered new interface driver peak_usb
-e100: Intel(R) PRO/100 Network Driver
-e100: Copyright(c) 1999-2006 Intel Corporation
-e1000: Intel(R) PRO/1000 Network Driver
-e1000: Copyright (c) 1999-2006 Intel Corporation.
-e1000e: Intel(R) PRO/1000 Network Driver
-e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-mkiss: AX.25 Multikiss, Hans Albas PE1AYX
-AX.25: 6pack driver, Revision: 0.3.0
-AX.25: bpqether driver version 004
-PPP generic driver version 2.4.2
-PPP BSD Compression module registered
-PPP Deflate Compression module registered
-PPP MPPE Compression module registered
-NET: Registered PF_PPPOX protocol family
-PPTP driver version 0.8.5
-SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
-CSLIP: code copyright 1989 Regents of the University of California.
-SLIP linefill/keepalive option.
-hdlc: HDLC support module revision 1.22
-LAPB Ethernet driver version 0.02
-usbcore: registered new interface driver ath9k_htc
-usbcore: registered new interface driver carl9170
-usbcore: registered new interface driver ath6kl_usb
-usbcore: registered new interface driver ar5523
-usbcore: registered new interface driver ath10k_usb
-usbcore: registered new interface driver rndis_wlan
-mac80211_hwsim: initializing netlink
-general protection fault, probably for non-canonical address 0xffff000100000400: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200800002000-0xfff8200800002007]
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-syzkaller-14135-g6c833c0581f1 #0
+
+=====================================
+WARNING: bad unlock balance detected!
+5.19.0-syzkaller-14184-g69dac8e431af #0 Not tainted
+-------------------------------------
+/0 is trying to release lock (&irq_desc_lock_class) at:
+[<ffffffff816271ef>] handle_irq_event+0x9f/0x1e0 kernel/irq/handle.c:208
+but there are no more locks to release!
+
+other info that might help us debug this:
+no locks held by /0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm:  Not tainted 5.19.0-syzkaller-14184-g69dac8e431af #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:kmem_cache_alloc_trace+0x172/0x310 mm/slub.c:3282
-Code: 84 d9 00 00 00 48 83 78 10 00 0f 84 ce 00 00 00 49 8b 2e 40 f6 c5 0f 0f 85 9f 01 00 00 40 84 ff 0f 84 98 01 00 00 41 8b 46 28 <49> 8b 5c 05 00 48 8d 4a 08 4c 89 e8 65 48 0f c7 4d 00 0f 94 c0 a8
-RSP: 0000:ffffc900000678c0 EFLAGS: 00010202
-RAX: 0000000000000400 RBX: 0000000000000dc0 RCX: 0000000000000000
-RDX: 0000000000001ff8 RSI: 0000000000000dc0 RDI: ffff888012042001
-RBP: 000000000003d910 R08: dffffc0000000000 R09: fffffbfff1c4ad5e
-R10: fffffbfff1c4ad5e R11: 1ffffffff1c4ad5d R12: 0000000000000468
-R13: ffff000100000000 R14: ffff888012042000 R15: 0000000000000dc0
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_unlock_imbalance_bug include/trace/events/lock.h:69 [inline]
+ __lock_release kernel/locking/lockdep.c:5333 [inline]
+ lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5686
+ __raw_spin_unlock include/linux/spinlock_api_smp.h:141 [inline]
+ _raw_spin_unlock+0x12/0x40 kernel/locking/spinlock.c:186
+ handle_irq_event+0x9f/0x1e0 kernel/irq/handle.c:208
+ handle_edge_irq+0x25f/0xd00 kernel/irq/chip.c:819
+ generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+ handle_irq arch/x86/kernel/irq.c:231 [inline]
+ __common_interrupt+0x9d/0x210 arch/x86/kernel/irq.c:250
+ common_interrupt+0xa4/0xc0 arch/x86/kernel/irq.c:240
+ </IRQ>
+BUG: unable to handle page fault for address: ffffdc0000000033
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: unable to handle page fault for address: ffffdc0000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+BUG: IRQ stack guard page was hit at ffffc8fffffffff8 (stack is ffffc90000000000..ffffc90000008000)
+stack guard page: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 0 Comm:  Not tainted 5.19.0-syzkaller-14184-g69dac8e431af #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:memmove+0x5/0x60 mm/kasan/shadow.c:53
+Code: e8 60 f8 ff ff 84 c0 74 13 4c 89 e2 44 89 ee 48 89 ef 5d 41 5c 41 5d e9 89 d3 5c 02 5d 31 c0 41 5c 41 5d c3 90 41 55 49 89 fd <41> 54 49 89 d4 31 d2 55 48 8b 4c 24 18 48 89 f5 4c 89 e6 48 89 ef
+RSP: 0000:ffffc90000000000 EFLAGS: 00010046
+RAX: 0000000080010006 RBX: 0000000000000004 RCX: 0000000000000000
+RDX: 0000000000000002 RSI: ffffc9000000044f RDI: ffffc90000000453
+RBP: 0000000000000004 R08: 0000000000000006 R09: 0000000000000002
+R10: 000000007ffffffa R11: 0000000000000001 R12: 1ffff92000000004
+R13: ffffc90000000453 R14: 0000000000000002 R15: ffffc90000000451
 FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000ca8e000 CR4: 00000000003506f0
+CR2: ffffc8fffffffff8 CR3: 000000000bc8e000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- <TASK>
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- device_create_groups_vargs drivers/base/core.c:4176 [inline]
- device_create+0x11d/0x2e0 drivers/base/core.c:4236
- mac80211_hwsim_new_radio+0x34f/0x3de0 drivers/net/wireless/mac80211_hwsim.c:3821
- init_mac80211_hwsim+0x7b8/0xa08 drivers/net/wireless/mac80211_hwsim.c:5379
- do_one_initcall+0xbd/0x2b0 init/main.c:1296
- do_initcall_level+0x168/0x218 init/main.c:1369
- do_initcalls+0x4b/0x8c init/main.c:1385
- kernel_init_freeable+0x43a/0x5c3 init/main.c:1611
- kernel_init+0x19/0x2b0 init/main.c:1500
- ret_from_fork+0x1f/0x30
- </TASK>
+ <IRQ>
+ move_right lib/vsprintf.c:601 [inline]
+ widen_string+0x254/0x290 lib/vsprintf.c:624
+ string_nocheck lib/vsprintf.c:651 [inline]
+ string+0x1fb/0x3d0 lib/vsprintf.c:725
+ vsnprintf+0x71b/0x14f0 lib/vsprintf.c:2782
+ sprintf+0xc0/0x100 lib/vsprintf.c:2986
+ print_caller kernel/printk/printk.c:1288 [inline]
+ info_print_prefix+0x12e/0x340 kernel/printk/printk.c:1305
+ record_print_text+0x14d/0x3e0 kernel/printk/printk.c:1352
+ console_emit_next_record.constprop.0+0x6bf/0x840 kernel/printk/printk.c:2715
+ console_flush_all kernel/printk/printk.c:2794 [inline]
+ console_unlock+0x37a/0x5a0 kernel/printk/printk.c:2861
+ vprintk_emit+0x1b9/0x5f0 kernel/printk/printk.c:2271
+ vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
+ _printk+0xba/0xed kernel/printk/printk.c:2292
+ dump_pagetable.cold+0x20c/0x3d4 arch/x86/mm/fault.c:395
+ show_fault_oops arch/x86/mm/fault.c:580 [inline]
+ page_fault_oops.cold+0x176/0x3f0 arch/x86/mm/fault.c:696
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000000bb0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000017b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000000de8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000000e90 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000001d7 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000010c8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001170 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000233 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000013a8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001450 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000028f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000001688 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001730 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000002eb RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000001968 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001a10 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000347 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000001c48 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001cf0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000003a3 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000001f28 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000001fd0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000003ff RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000002208 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000022b0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000045b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000024e8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000002590 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000004b7 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000027c8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000002870 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000513 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000002aa8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000002b50 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000056f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000002d88 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000002e30 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000005cb RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003068 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000003110 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000627 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003348 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000033f0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000683 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003628 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000036d0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000006df RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003908 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000039b0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000073b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003be8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000003c90 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000797 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000003ec8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000003f70 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000007f3 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000041a8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000004250 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff9200000084f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000004488 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000004530 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000008ab RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000004768 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000004810 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000907 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000004a48 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000004af0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000963 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000004d28 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000004dd0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff920000009bf RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000005008 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000050b0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000a1b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000052e8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000005390 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000a77 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000055c8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000005670 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000ad3 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000058a8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000005950 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000b2f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000005b88 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000005c30 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000b8b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000005e68 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000005f10 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000be7 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000006148 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000061f0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000c43 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000006428 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000064d0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000c9f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000006708 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000067b0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000cfb RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc900000069e8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000006a90 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000d57 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000006cc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000006d70 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000db3 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000006fa8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000007050 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000e0f RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000007288 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000007330 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000e6b RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000007568 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc90000007610 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000ec7 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000007848 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000000
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:page_fault_oops+0x2a9/0x670 arch/x86/mm/fault.c:698
+Code: 49 8d 7e 20 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d 8b 76 20 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 86 00 00 00 4d 8b 36 bf 9d 6e ac 57 4c 89 f6 e8
+RSP: 0000:ffffc900000078f0 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: 1ffff92000000f23 RCX: 0000000000000000
+RDX: 1fffe00000000000 RSI: ffffffff8136523c RDI: ffff88801fe79da0
+RBP: ffffc90000007b28 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000080010005 R11: 2030204455502037 R12: ffffdc0000000033
+R13: 0000000000000000 R14: ffff000000000000 R15: 0000000000000000
+ kernelmode_fixup_or_oops+0x23f/0x2b0 arch/x86/mm/fault.c:760
+ __bad_area_nosemaphore+0x373/0x400 arch/x86/mm/fault.c:806
+ do_kern_addr_fault+0x5b/0x70 arch/x86/mm/fault.c:1207
+ handle_page_fault arch/x86/mm/fault.c:1486 [inline]
+ exc_page_fault+0x14b/0x170 arch/x86/mm/fault.c:1544
+ asm_exc_page_fault+0x22/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0010:get_running_cputimer include/linux/sched/cputime.h:88 [inline]
+RIP: 0010:account_group_exec_runtime include/linux/sched/cputime.h:173 [inline]
+RIP: 0010:update_curr+0x458/0x830 kernel/sched/fair.c:919
+Code: 98 03 00 00 4c 8b ab 28 08 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d bd 98 01 00 00 4d 8d b5 38 01 00 00 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 58 03 00 00 41 8b 85 98 01 00
+RSP: 0000:ffffc90000007bd8 EFLAGS: 00010806
+RAX: dffffc0000000000 RBX: ffff88801fe79e00 RCX: 1ffffffff1bbd7e1
+RDX: 1fffe00000000033 RSI: 00000001d823f4f3 RDI: ffff000000000198
+RBP: ffff8880b9a3a040 R08: 0000000000000000 R09: ffffffff8dde8b57
+R10: fffffbfff1bbd16a R11: 0000000000000001 R12: 00000001d823f4f3
+R13: ffff000000000000 R14: ffff000000000138 R15: ffff88801fe79d80
+ enqueue_entity+0x29b/0x1520 kernel/sched/fair.c:4423
+ enqueue_task_fair+0x1ba/0xce0 kernel/sched/fair.c:5757
+ enqueue_task+0xad/0x3a0 kernel/sched/core.c:2066
+ activate_task kernel/sched/core.c:2091 [inline]
+ ttwu_do_activate+0x157/0x330 kernel/sched/core.c:3670
+ ttwu_queue kernel/sched/core.c:3875 [inline]
+ try_to_wake_up+0xcc0/0x1e60 kernel/sched/core.c:4198
+ wake_up_worker kernel/workqueue.c:856 [inline]
+ insert_work+0x27e/0x350 kernel/workqueue.c:1366
+ __queue_work+0x625/0x1210 kernel/workqueue.c:1517
+ queue_work_on+0xee/0x110 kernel/workqueue.c:1545
+ add_interrupt_randomness+0x22b/0x3f0 drivers/char/random.c:1035
+ handle_irq_event_percpu kernel/irq/handle.c:195 [inline]
+ handle_irq_event+0xe0/0x1e0 kernel/irq/handle.c:210
+ handle_edge_irq+0x25f/0xd00 kernel/irq/chip.c:819
+ generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+ handle_irq arch/x86/kernel/irq.c:231 [inline]
+ __common_interrupt+0x9d/0x210 arch/x86/kernel/irq.c:250
+ common_interrupt+0xa4/0xc0 arch/x86/kernel/irq.c:240
+ </IRQ>
 Modules linked in:
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:kmem_cache_alloc_trace+0x172/0x310 mm/slub.c:3282
-Code: 84 d9 00 00 00 48 83 78 10 00 0f 84 ce 00 00 00 49 8b 2e 40 f6 c5 0f 0f 85 9f 01 00 00 40 84 ff 0f 84 98 01 00 00 41 8b 46 28 <49> 8b 5c 05 00 48 8d 4a 08 4c 89 e8 65 48 0f c7 4d 00 0f 94 c0 a8
-RSP: 0000:ffffc900000678c0 EFLAGS: 00010202
-RAX: 0000000000000400 RBX: 0000000000000dc0 RCX: 0000000000000000
-RDX: 0000000000001ff8 RSI: 0000000000000dc0 RDI: ffff888012042001
-RBP: 000000000003d910 R08: dffffc0000000000 R09: fffffbfff1c4ad5e
-R10: fffffbfff1c4ad5e R11: 1ffffffff1c4ad5d R12: 0000000000000468
-R13: ffff000100000000 R14: ffff888012042000 R15: 0000000000000dc0
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+RIP: 0010:memmove+0x5/0x60 mm/kasan/shadow.c:53
+Code: e8 60 f8 ff ff 84 c0 74 13 4c 89 e2 44 89 ee 48 89 ef 5d 41 5c 41 5d e9 89 d3 5c 02 5d 31 c0 41 5c 41 5d c3 90 41 55 49 89 fd <41> 54 49 89 d4 31 d2 55 48 8b 4c 24 18 48 89 f5 4c 89 e6 48 89 ef
+RSP: 0000:ffffc90000000000 EFLAGS: 00010046
+RAX: 0000000080010006 RBX: 0000000000000004 RCX: 0000000000000000
+RDX: 0000000000000002 RSI: ffffc9000000044f RDI: ffffc90000000453
+RBP: 0000000000000004 R08: 0000000000000006 R09: 0000000000000002
+R10: 000000007ffffffa R11: 0000000000000001 R12: 1ffff92000000004
+R13: ffffc90000000453 R14: 0000000000000002 R15: ffffc90000000451
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
+CR2: ffffc8fffffffff8 CR3: 000000000bc8e000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	84 d9                	test   %bl,%cl
-   2:	00 00                	add    %al,(%rax)
-   4:	00 48 83             	add    %cl,-0x7d(%rax)
-   7:	78 10                	js     0x19
-   9:	00 0f                	add    %cl,(%rdi)
-   b:	84 ce                	test   %cl,%dh
-   d:	00 00                	add    %al,(%rax)
-   f:	00 49 8b             	add    %cl,-0x75(%rcx)
-  12:	2e 40 f6 c5 0f       	cs test $0xf,%bpl
-  17:	0f 85 9f 01 00 00    	jne    0x1bc
-  1d:	40 84 ff             	test   %dil,%dil
-  20:	0f 84 98 01 00 00    	je     0x1be
-  26:	41 8b 46 28          	mov    0x28(%r14),%eax
-* 2a:	49 8b 5c 05 00       	mov    0x0(%r13,%rax,1),%rbx <-- trapping instruction
-  2f:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  33:	4c 89 e8             	mov    %r13,%rax
-  36:	65 48 0f c7 4d 00    	cmpxchg16b %gs:0x0(%rbp)
-  3c:	0f 94 c0             	sete   %al
-  3f:	a8                   	.byte 0xa8
+   0:	e8 60 f8 ff ff       	callq  0xfffff865
+   5:	84 c0                	test   %al,%al
+   7:	74 13                	je     0x1c
+   9:	4c 89 e2             	mov    %r12,%rdx
+   c:	44 89 ee             	mov    %r13d,%esi
+   f:	48 89 ef             	mov    %rbp,%rdi
+  12:	5d                   	pop    %rbp
+  13:	41 5c                	pop    %r12
+  15:	41 5d                	pop    %r13
+  17:	e9 89 d3 5c 02       	jmpq   0x25cd3a5
+  1c:	5d                   	pop    %rbp
+  1d:	31 c0                	xor    %eax,%eax
+  1f:	41 5c                	pop    %r12
+  21:	41 5d                	pop    %r13
+  23:	c3                   	retq
+  24:	90                   	nop
+  25:	41 55                	push   %r13
+  27:	49 89 fd             	mov    %rdi,%r13
+* 2a:	41 54                	push   %r12 <-- trapping instruction
+  2c:	49 89 d4             	mov    %rdx,%r12
+  2f:	31 d2                	xor    %edx,%edx
+  31:	55                   	push   %rbp
+  32:	48 8b 4c 24 18       	mov    0x18(%rsp),%rcx
+  37:	48 89 f5             	mov    %rsi,%rbp
+  3a:	4c 89 e6             	mov    %r12,%rsi
+  3d:	48 89 ef             	mov    %rbp,%rdi
 
 
 ---
