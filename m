@@ -2,239 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E876C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DD0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 13:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbiHPNDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
+        id S235447AbiHPNE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235388AbiHPNDZ (ORCPT
+        with ESMTP id S235416AbiHPNEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 09:03:25 -0400
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00065.outbound.protection.outlook.com [40.107.0.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A47FB6012;
-        Tue, 16 Aug 2022 06:01:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cN/gUOFMmldMuLaBlQm4hNMzfmDgV7FeYrLM9j0BJCdo/PAOibfRx3o1srHvr63rXGJvOmy7vXBo2fqKywNbv4fZcvo1swLP2YFrbrGHEuY0djd0cJIUdBEuVooD4mCxfvoO6pXW08C8O3gWwT9s+bpQ97+Ah6YII7cd3Y01UFjqN+nhuotfYycirGOhU0dPuS3IQUf31OYYos8jqVpg7qNNvH0pUKQZ7wvSnHrz65hHSS606NZsvGnt3i4tsODhD+QXQn+6sE5vYP5rsYeHr9AGhuPM4m4J9HxKecqBQLWqzWINsuTmL3zs9ZjI7Ub97senNGZKQizitpm1OVOnYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ATTftqaQMifXvi3UoDXMF0R+Q23Je2dXrI9VD2p60iI=;
- b=UCikbZ2DSZ+QWteM0PPcilxjhbi0ChRWdUXFFuV8orHV0ftry+LajDrApAH8QZC+65kO1Kpt+QKu4Kagtiip7GZ5iq6qt74CW0XswEX5+QsPT8Nzi0aFTWj6UTN4exlLgYah0phTuVYKGAkZan8TeOd3xeQD/rBdQpk45KZgTOD0bZkZIilHtIz1g3IpFTRdyq8QLgNNBqacpfEPiELp38V53VRbmzpySjKJQ8jlY+TThsEz41HuaOztbLwyDUEtwQLqSYC6e5D+LR2iKCm5cC0K0IGpjtEXnZTKVLwIidIhpB6KqftfZ/yoV3T7GclZdMptLQ0+ra3O05p4H0rVuQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ATTftqaQMifXvi3UoDXMF0R+Q23Je2dXrI9VD2p60iI=;
- b=av5aAuX4Jy4lALc3+A6UYGUvC+hdRUEfr0n7TZHCGhpTp2hRx2O/palZMFuB3V1ScQ1cL8yWfYX0Yl1kFHufPS/3hOkSBtfzwRWSRcmStMKD/46G+HDXIiqjILF2E+KJfLouJX5dUn03sfrzFWB+qnCTBoSJDYTXbT2TcbYnD8I=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by VI1PR0402MB3869.eurprd04.prod.outlook.com (2603:10a6:803:1f::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Tue, 16 Aug
- 2022 13:01:50 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
- 13:01:50 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     abelvesa@kernel.org, abel.vesa@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com
-Cc:     linux-imx@nxp.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V2] clk: imx: support protected-clocks
-Date:   Tue, 16 Aug 2022 21:03:27 +0800
-Message-Id: <20220816130327.2987710-1-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.37.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0043.apcprd02.prod.outlook.com
- (2603:1096:3:18::31) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 60f171d4-524c-4b64-07f6-08da7f877bb8
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3869:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kL8nKesiwAhaKror9Q9WrjOdHmUtGgL7U3atbSYL9cCmwroRBFi3FRPcdYWzsG+YDbM6fn1ZWTKATWX8Jk7uKgnUmnpwFdwOXFZcqCueFuke+agrE+Fz8+0jTVd2TQpRpIn2aAEiwtcXcB1aOmiupOtEL4JLjL+4nGS1MTCbjSzuofw0hun0akYlB0xkrhI260/LyBw3voK0kXhYOI++mkXHBmAUzj/c4iTi9f+9Z8d6nKP/brEfwesGpJ5xCG0Qvd/hn4iDb3Qh6Pn7yl+B+SlieglCW/6/tWFk2JdyaMHFbja047tKJCFWD/+1yqtN8PWdauq9cvBATuRb+lRgm0i65EYcPq++k8t02iyiwO3gaxieQYPuMimacRK2gilEHhoO6aBuVRLq11+1xRapxFwkwHONOUatVoS5mR4gQX+rny0k8pG5eSsigxbfDzSTzesQbRRGtDLu09/X18UO7O5Kd5Td34H9L+huLKTxEb3JvclrX1H29M799QZkiOX1kqTfpT1Ff4SfXCanL0+N68OqIrmcndoT+64rHbpXwfHwGmieDJKx8W96dTSOtHzQeftkRqAxXVB9bwLNyT3EpECKL0AEZ3lwfDDbmahgys85rof7kfrZ4uD1cNwEa+tNo2GgbpHyiy1ewPjZHpgWS8FF+Ja9zBv9dnEj9fSSnRNAFwuzdtcm+YoGaA9O4GJmmWutGCNXLHkWDS0XwuZoxeWRdPimqziAoSlhU2bozGQ6EoAXhXZT+CfSTYvljGVjliohbxEASG/vc0xKKdCdOKdWX4i3F/cupxTGE01EWuVG/SuMU84rn9syieklIY6V
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(376002)(39860400002)(396003)(26005)(6512007)(52116002)(6506007)(6666004)(41300700001)(2906002)(1076003)(316002)(186003)(83380400001)(2616005)(7416002)(5660300002)(8936002)(38350700002)(478600001)(86362001)(38100700002)(8676002)(4326008)(6486002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cFc/O5DdHVaJjTbYNJrY4ufh8BLpVloQoQhLeVTkTKVr95UfQCPon1Tv2Pxq?=
- =?us-ascii?Q?5LGsG3ykUeFf1ouUjad6ZR/LKmqLurUhsjq6rg550xNJ2G/Rz5Hv7guRKedE?=
- =?us-ascii?Q?RTLM2eVJ2e3DBx1qHVjg4CLSEnYMD41URN7xiqgYHqzulutrTmhBBrIyQ2Gy?=
- =?us-ascii?Q?oW2gnVrRlPutjwT1kNvPR52apjVVv+sEhXU1cRwtvpAaS9Z6SAo+gA9ASqQF?=
- =?us-ascii?Q?Ff1tws1zUqH6lSAM9lCwHC0ZIQ6YfUSZQXDFFI7SX00F7mrqlMhNLqKWjs+U?=
- =?us-ascii?Q?7s+FYri7Dkdxdk4U2v0J5FCyCqrLlr2BZ+TeGsuZ/9wHyZbBbxvnxYNatncX?=
- =?us-ascii?Q?nerTuwx/5WndKJq1ecwBR7KCO0VThUdQ9fYos5Oe0v3HrLH/KLV5honwJ+Pz?=
- =?us-ascii?Q?jP9EAT8l+ixO0JtD2VaAXwRD3opbyOX486j/WIciekdhH3cW6BbC42AalOnt?=
- =?us-ascii?Q?lsbM+jIlHaXLiXcLtZKzPdugPdaQF2rEB9/ceNXk5qgAD5bqC34ULaATd7c1?=
- =?us-ascii?Q?I5CjydZpyvPJDjhn+kGJxXcRJEBR6kaCUVi7BA6oO6fqQ1PPPomibc0nQgOo?=
- =?us-ascii?Q?G/ccPRTjwilvKjeLBTZlteQu/oND6MEgajJQ8NZa7khxt+GDcKmjeZj05/+R?=
- =?us-ascii?Q?UbF+yz0RjWsJIB7yySc37GG8qD72MD7vxGGGMFoh60nT9zaTVhAjO6RrGSbZ?=
- =?us-ascii?Q?akT6T2AvTQry5rkpZSvUgIYeSrL6qSnSyx5TfDo2n3J4jklQLLNKkdDNXcFw?=
- =?us-ascii?Q?2upGy+pjCp2jI9PAlrdLHy+4NQfAZwwQzEvCWwtg0dQjWVSBYLcU8to9oKgf?=
- =?us-ascii?Q?H+HZqSfTv+SuwfyRb90PtlfSCWHY4X4V/UCEHY+RvIAMFPbfx7ziXBeWqELw?=
- =?us-ascii?Q?nWMXGoLJbuYAfa++Qu8M4Xu5KdvXnQvZMv+xNb9xAkRcNgiYLACcRWw1LicS?=
- =?us-ascii?Q?vHUu0UOri1L21yZs/rwzfDrrQWX4BYR9/NH5pW59qynBTt/uqsIeeKWpoxPE?=
- =?us-ascii?Q?eJjOawtH15d01jZhov+2c/v0H7NJCoyKykN/sQUs9ZSKp//KPRCrSPJYl/xU?=
- =?us-ascii?Q?idRG5Ai62r5wfFdsQWhBwVAENDKjLYic/6xLzC7w16LfWRF8F+gmNGrtg6rv?=
- =?us-ascii?Q?BsLG6NniRUVvTYj6zoViKxxLXSxco53GQKzsx5zoGiWjhvR5If2dezAMyLtp?=
- =?us-ascii?Q?6UZpxVjlpZsA6oHWUZcyFtfg7pn0ErCsfjcej1LYHT2GsU5GpsYoR+igg5Tj?=
- =?us-ascii?Q?d8JOcd00Xln2UJZzYjU8oYTDpsdTvyU0iixfh8dIhHOFi6gXTLVa8NZjgZ6/?=
- =?us-ascii?Q?MF/BzQw7GXT6wOXqXmyKw52i7px0ZHu1A32iUYsGJUF5X3R6ADMQ+kIHvltI?=
- =?us-ascii?Q?UMZEqTYvaSoBsJFQnOWUQCEnGscyxdUVV7Mrai1ZTobAisYmvhwq9d7Ww5Q6?=
- =?us-ascii?Q?594rxAQBsnW4WfAWvkiVqs0O/4vrJkevVtgkYm8aZj/jW2w65K5zkTs5Zhyk?=
- =?us-ascii?Q?VPYDbcXdMko/owmKIMRwzAs9myU3eYzvADjrIr/6DRqg9DmmgNlaZFjwy0vl?=
- =?us-ascii?Q?FC9oF7vkPHboKOsfJfnZMLy5HKr5rCt00PlvfIK/?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60f171d4-524c-4b64-07f6-08da7f877bb8
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 13:01:50.0879
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S98UoKp/t2qUL9rg1MwD6e+gSTpnnqoZ0GoK9h28qarujHZl8VfgIgPDm9fhJ472V5g/vung2hNosvGLO/vTsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3869
+        Tue, 16 Aug 2022 09:04:08 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABFD2608
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:03:10 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3339532b6a8so26764857b3.1
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 06:03:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=bkkVnqdc/I6w9lSMDyw7ls2oYgZwW2vmouL+KxjT3IY=;
+        b=AjG38NnL1H4rpVtJyj2PcXMU+Ak5N5yVfMxCUVjiCwlNYfCTWqDE72WfHIZgZxRYkq
+         3NCe7Iy70mBLWsWX9KC+o72mCgBEK3M/Hs94qtAlpwhdKZGU0FBjwyaLd2x3R4TH/HPy
+         w+AD3Lcfdz7VfoQcvZyArbsnOJHnur1OFEmp8Xg6tQ/3SqEnEGYKpIljWlKFGiYEnI9Q
+         1h0ATcNyW0FJnVjMtGokJyXFT2yHJ8vrC/Hr7G7YstIcxP9IEL8P8fsVuw90WQyY2XZj
+         OQUmmd5k+90HwEbTn21y4mHpDu7ASGc/LICOJuV6KwV04XmFNeghQd7vUDWGe0fMFqa0
+         eBXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=bkkVnqdc/I6w9lSMDyw7ls2oYgZwW2vmouL+KxjT3IY=;
+        b=K9MhL8HuPMMMb5G1LBl3KbQN3EyA6uSwYmZfmppNGeez6oLs5vALZQFRBFM3H6U+M8
+         9H6D9doplH704wM0SpHBNTS3TAHWdBaaqgxIVpmNDmzH9LmA1aRG/8Ycpwh87SCz0En7
+         Y9oWvlpvYbVHYKupFrf2Ci8BO0Xse57ABMTGNxV0k5cKOAarYKO6kJCFasoh5Mku+5oP
+         iZ9c5lN8AmYvjXhUc37ToIehk9azG3GOIvDC0KyvCqNcMdfHpNivauXHOI05HOIc4RkU
+         AfVRelpMXRQY8Sm9vGiqipi8wvx9ElQ+6N3katt+Fn0s+u/coDmLqpRueHJ+XZ1KaBsw
+         AOjA==
+X-Gm-Message-State: ACgBeo2pjQQiFIdMvl1aWPY+Al0qDJBKkleIBqxo7LApQB/ALvksw+/x
+        aXmHHVC9LSIU7TYnc1YPZ95M9Qo6nDnyK047QAPFTa8McOYzMmKlVScOrAvM2vJ+H0R9n0DdDKs
+        Dr/C5WtRqyHuZ9V6bWoUy0rF+ns4yZII36DVSbc50BHh+8gMA80OFsKCokiJduuhHDVL4/++3rS
+        WJulGLc7M=
+X-Google-Smtp-Source: AA6agR7I3uB6myRWh/RohWLRcVhjWkwTQ4WTAJ+LVrhZSNAgvhbokfYsgeRMIEdB7qWLK43vdc/bPsAKR5WMQF2W5A==
+X-Received: from peternewman10.zrh.corp.google.com ([2a00:79e0:9d:6:6ca1:b34:654d:9422])
+ (user=peternewman job=sendgmr) by 2002:a81:4e95:0:b0:329:9477:b57a with SMTP
+ id c143-20020a814e95000000b003299477b57amr17332845ywb.58.1660654989519; Tue,
+ 16 Aug 2022 06:03:09 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 15:02:21 +0200
+Message-Id: <20220816130221.885920-1-peternewman@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v3] perf/arm: adjust hwevents mappings on boot
+From:   Peter Newman <peternewman@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     mark.rutland@arm.com, peterz@infradead.org, will@kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Peter Newman <peternewman@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Stephane Eranian <eranian@google.com>
 
-For the clocks listed in protected-clocks, enable them to avoid
-Linux disable them. This will benifit root Linux and inmate cell run
-on top of Jailhouse hypervisor, and benifit the other case(
-A53 Linux run together with M7 RTOS).
+The mapping of perf_events generic hardware events to actual PMU events on
+ARM PMUv3 may not always be correct. This is in particular true for the
+PERF_COUNT_HW_BRANCH_INSTRUCTIONS event. Although the mapping points to an
+architected event, it may not always be available. This can be seen with a
+simple:
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
+$ perf stat -e branches sleep 0
+ Performance counter stats for 'sleep 0':
+
+   <not supported>      branches
+
+       0.001401081 seconds time elapsed
+
+Yet the hardware does have an event that could be used for branches.  This
+patch fixes the problem by dynamically validating the generic hardware
+events against the supported architected events. If a mapping is wrong it
+can be replaced it with another. This is done for the event above at boot
+time.
+
+And with that:
+
+$ perf stat -e branches sleep 0
+
+ Performance counter stats for 'sleep 0':
+
+           166,739      branches
+
+       0.000832163 seconds time elapsed
+
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Co-developed-by: Peter Newman <peternewman@google.com>
+Signed-off-by: Peter Newman <peternewman@google.com>
 ---
 
-V2:
- Per Sascha, use common protected-clocks property.
- Drop patch 1 in V1
+v2: https://lore.kernel.org/lkml/20220324181458.3216262-1-eranian@google.com/
 
- drivers/clk/imx/clk-imx8mm.c |  2 ++
- drivers/clk/imx/clk-imx8mn.c |  2 ++
- drivers/clk/imx/clk-imx8mp.c |  2 ++
- drivers/clk/imx/clk-imx8mq.c |  2 ++
- drivers/clk/imx/clk.c        | 21 +++++++++++++++++++++
- drivers/clk/imx/clk.h        |  2 ++
- 6 files changed, 31 insertions(+)
+since v2, removed prints per Will's suggestion
 
-diff --git a/drivers/clk/imx/clk-imx8mm.c b/drivers/clk/imx/clk-imx8mm.c
-index b6d275855b36..24ddb1620bce 100644
---- a/drivers/clk/imx/clk-imx8mm.c
-+++ b/drivers/clk/imx/clk-imx8mm.c
-@@ -611,6 +611,8 @@ static int imx8mm_clocks_probe(struct platform_device *pdev)
- 
- 	imx_register_uart_clocks(4);
- 
-+	imx_clk_protect(dev, hws);
-+
- 	return 0;
- 
- unregister_hws:
-diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
-index d37c45b676ab..57c486317d28 100644
---- a/drivers/clk/imx/clk-imx8mn.c
-+++ b/drivers/clk/imx/clk-imx8mn.c
-@@ -604,6 +604,8 @@ static int imx8mn_clocks_probe(struct platform_device *pdev)
- 
- 	imx_register_uart_clocks(4);
- 
-+	imx_clk_protect(dev, hws);
-+
- 	return 0;
- 
- unregister_hws:
-diff --git a/drivers/clk/imx/clk-imx8mp.c b/drivers/clk/imx/clk-imx8mp.c
-index e89db568f5a8..13015973a696 100644
---- a/drivers/clk/imx/clk-imx8mp.c
-+++ b/drivers/clk/imx/clk-imx8mp.c
-@@ -713,6 +713,8 @@ static int imx8mp_clocks_probe(struct platform_device *pdev)
- 
- 	imx_register_uart_clocks(4);
- 
-+	imx_clk_protect(dev, hws);
-+
- 	return 0;
+ arch/arm64/kernel/perf_event.c | 36 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
+index cb69ff1e6138..945c31e3f3e3 100644
+--- a/arch/arm64/kernel/perf_event.c
++++ b/arch/arm64/kernel/perf_event.c
+@@ -39,7 +39,7 @@
+  * be supported on any given implementation. Unsupported events will
+  * be disabled at run-time based on the PMCEID registers.
+  */
+-static const unsigned armv8_pmuv3_perf_map[PERF_COUNT_HW_MAX] = {
++static unsigned armv8_pmuv3_perf_map[PERF_COUNT_HW_MAX] = {
+ 	PERF_MAP_ALL_UNSUPPORTED,
+ 	[PERF_COUNT_HW_CPU_CYCLES]		= ARMV8_PMUV3_PERFCTR_CPU_CYCLES,
+ 	[PERF_COUNT_HW_INSTRUCTIONS]		= ARMV8_PMUV3_PERFCTR_INST_RETIRED,
+@@ -1232,6 +1232,37 @@ static void armv8_pmu_register_sysctl_table(void)
+ 		register_sysctl("kernel", armv8_pmu_sysctl_table);
  }
  
-diff --git a/drivers/clk/imx/clk-imx8mq.c b/drivers/clk/imx/clk-imx8mq.c
-index 882dcad4817d..2868e2390667 100644
---- a/drivers/clk/imx/clk-imx8mq.c
-+++ b/drivers/clk/imx/clk-imx8mq.c
-@@ -603,6 +603,8 @@ static int imx8mq_clocks_probe(struct platform_device *pdev)
- 
- 	imx_register_uart_clocks(4);
- 
-+	imx_clk_protect(dev, hws);
-+
- 	return 0;
- 
- unregister_hws:
-diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
-index 5582f18dd632..bacba1728fab 100644
---- a/drivers/clk/imx/clk.c
-+++ b/drivers/clk/imx/clk.c
-@@ -2,6 +2,7 @@
- #include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/clk-provider.h>
-+#include <linux/device.h>
- #include <linux/err.h>
- #include <linux/io.h>
- #include <linux/module.h>
-@@ -214,4 +215,24 @@ static int __init imx_clk_disable_uart(void)
- late_initcall_sync(imx_clk_disable_uart);
- #endif
- 
-+int imx_clk_protect(struct device *dev, struct clk_hw * const clks[])
++static void armv8pmu_fixup_perf_map(struct arm_pmu *cpu_pmu)
 +{
-+	struct device_node *np = dev->of_node;
-+	struct property *prop;
-+	const __be32 *p;
-+	u32 i;
-+	int ret;
++	int i, code;
++	unsigned *map = armv8_pmuv3_perf_map;
 +
-+	of_property_for_each_u32(np, "protected-clocks", prop, p, i) {
-+		ret = clk_prepare_enable(clks[i]->clk);
-+		if (ret) {
-+			dev_err(dev, "failed to enable %s\n", clk_hw_get_name(clks[i]));
-+			return ret;
++	for (i = 0; i < PERF_COUNT_HW_MAX; i++) {
++retry:
++		code = map[i];
++		if (code == HW_OP_UNSUPPORTED)
++			continue;
++
++		if (test_bit(map[i], cpu_pmu->pmceid_bitmap))
++			continue;
++		/*
++		 * mapping does not exist,
++		 * let's see if we can fix it
++		 */
++		switch (i) {
++		case PERF_COUNT_HW_BRANCH_INSTRUCTIONS:
++			if (code == ARMV8_PMUV3_PERFCTR_PC_WRITE_RETIRED) {
++				map[i] = ARMV8_PMUV3_PERFCTR_BR_RETIRED;
++				goto retry;
++			}
++			break;
++		default:
++			map[i] = HW_OP_UNSUPPORTED;
++			break;
 +		}
 +	}
-+
-+	return 0;
 +}
-+EXPORT_SYMBOL_GPL(imx_clk_protect);
 +
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/clk/imx/clk.h b/drivers/clk/imx/clk.h
-index 5061a06468df..0b9a236e8da8 100644
---- a/drivers/clk/imx/clk.h
-+++ b/drivers/clk/imx/clk.h
-@@ -22,6 +22,8 @@ void imx_mmdc_mask_handshake(void __iomem *ccm_base, unsigned int chn);
- void imx_unregister_clocks(struct clk *clks[], unsigned int count);
- void imx_unregister_hw_clocks(struct clk_hw *hws[], unsigned int count);
+ static int armv8_pmu_init(struct arm_pmu *cpu_pmu, char *name,
+ 			  int (*map_event)(struct perf_event *event),
+ 			  const struct attribute_group *events,
+@@ -1259,6 +1290,9 @@ static int armv8_pmu_init(struct arm_pmu *cpu_pmu, char *name,
  
-+int imx_clk_protect(struct device *dev, struct clk_hw * const clks[]);
+ 	cpu_pmu->name			= name;
+ 	cpu_pmu->map_event		= map_event;
 +
- extern void imx_cscmr1_fixup(u32 *val);
- 
- enum imx_pllv1_type {
++	armv8pmu_fixup_perf_map(cpu_pmu);
++
+ 	cpu_pmu->attr_groups[ARMPMU_ATTR_GROUP_EVENTS] = events ?
+ 			events : &armv8_pmuv3_events_attr_group;
+ 	cpu_pmu->attr_groups[ARMPMU_ATTR_GROUP_FORMATS] = format ?
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-2.37.1
+2.37.1.595.g718a3a8f04-goog
 
