@@ -2,237 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA707C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:15:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E13C48BEA
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 22:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237630AbiHPWPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 18:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
+        id S237906AbiHPWPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 18:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiHPWOv (ORCPT
+        with ESMTP id S237912AbiHPWPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 18:14:51 -0400
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605E674CF7;
-        Tue, 16 Aug 2022 15:14:48 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id h21so9241634qta.3;
-        Tue, 16 Aug 2022 15:14:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=7obAM8meavf6BYbGi/c73pnbUPl8fQroK2k8DT1JisI=;
-        b=I+uW8kb1MRJUW8d0J5Y2ABTYxF73ucbhtjvhUWQsR7cCGqK7HmY6G5OSKDd1CZX+o3
-         izJLHJu2ANo2+pIkWlXFtpMO/wxcSuwZWNzWXjHRjLN8uA9Rti2rpdsJqGa00pCjwA8d
-         Ratint9ouPbHb/mcMerbROFH65W6htZf8qrHNVH5kh9SKoggLoxbY3EIzJI5DSL5F8V1
-         aX9WwQfBslw307I8wkR7Ow7QsBw+m323hp2gqz+QAqCcYGdwjowu4+op1Isswb8YFr1t
-         zfXgOVjIaVazR4rmBOVqc9MwS2dnNcDfwlO0P1XhJLRAVY8KxVGtsPiqMCuGEVmjg5vL
-         E1Sg==
-X-Gm-Message-State: ACgBeo1V7CeVOBhBGT0iHcNrraQecY3lOjdgYqRkF/8r5GzXrfVCE5bD
-        GTAR1KvzObgfDj1FxGoR891+y1iWL03eUWc0
-X-Google-Smtp-Source: AA6agR4rzFtMY+kygnC3c/63m0QBiV0I9sYWMJvipKKnaSCrJOMgwFaT/SbdNQJJDA6yG+yp7ok5hA==
-X-Received: by 2002:ac8:5856:0:b0:342:f8bf:3582 with SMTP id h22-20020ac85856000000b00342f8bf3582mr19997011qth.573.1660688085957;
-        Tue, 16 Aug 2022 15:14:45 -0700 (PDT)
-Received: from maniforge.DHCP.thefacebook.com ([2620:10d:c091:480::a5ed])
-        by smtp.gmail.com with ESMTPSA id w18-20020a05620a445200b006bb83e2e65fsm1119148qkp.42.2022.08.16.15.14.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 15:14:45 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 17:14:21 -0500
-From:   David Vernet <void@manifault.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, john.fastabend@gmail.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tj@kernel.org,
-        joannelkoong@gmail.com, linux-kernel@vger.kernel.org,
-        Kernel-team@fb.com
-Subject: Re: [PATCH 3/5] bpf: Add bpf_user_ringbuf_drain() helper
-Message-ID: <YvwWvVDN11Wb6j2l@maniforge.DHCP.thefacebook.com>
-References: <20220808155341.2479054-1-void@manifault.com>
- <20220808155341.2479054-3-void@manifault.com>
- <CAEf4BzZ-m-AUX+1+CGr7nMxMDnT=fjkn8DP9nP21Uts1y7fMyg@mail.gmail.com>
- <YvWi4f1hz/v72Fpc@maniforge.dhcp.thefacebook.com>
- <CAEf4BzZ6aaFqF0DvhEeKaMfSZiFdMjr3=YzX6oEmz8rCRuSFaA@mail.gmail.com>
+        Tue, 16 Aug 2022 18:15:31 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EA178225;
+        Tue, 16 Aug 2022 15:15:29 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GLjsEY002968;
+        Tue, 16 Aug 2022 22:15:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=d0V+gitQ+pENDmKEI1yQuDeN9jRxsYsOaUJNKg4xUKY=;
+ b=R1SSE4jXVrYJww6k3e+Svf/qOCmOi6s01otGX1RRvA5HIGN85ABQImKnNWAPC7I7yI4a
+ piVrbBcR5l7q0eoAd9uHSyL6HNq5/yB7QHIO2zhK5aBhvqqistbFGeNZ6ogXTOKRUPFv
+ TOeIo7L3jMbP/q/A/DZ0SAHsvhswgMIdO3RklM6EAhaJvM7oMALYHlNMx61rjyI5HXh7
+ QegP6zR6L+VIQP8Royq+u2Du59+PIBFv9/H/B9XZYOSdz7LICjDwFUNB20xb271NpyPf
+ UfkyjfuV4Ogc1QAYbboXLxiTl/ryjZg0k+vuzscTh2/TXzVT46qRdegxwGonaqkSZTT0 fg== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j0kekrmfr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 22:15:23 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27GM6c5K001852;
+        Tue, 16 Aug 2022 22:15:22 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma04dal.us.ibm.com with ESMTP id 3hx3ka1pqq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 22:15:22 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27GMFKKH14287466
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Aug 2022 22:15:20 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BF1B8BE058;
+        Tue, 16 Aug 2022 22:15:20 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EDBECBE053;
+        Tue, 16 Aug 2022 22:15:18 +0000 (GMT)
+Received: from [9.211.48.181] (unknown [9.211.48.181])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 16 Aug 2022 22:15:18 +0000 (GMT)
+Message-ID: <b03be97f-cc03-cb58-bd1b-5eda3abd249a@linux.ibm.com>
+Date:   Tue, 16 Aug 2022 18:15:17 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ6aaFqF0DvhEeKaMfSZiFdMjr3=YzX6oEmz8rCRuSFaA@mail.gmail.com>
-User-Agent: Mutt/2.2.7 (2022-08-07)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] KVM: s390: pci: VFIO_PCI ZDEV configuration fix
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>
+Cc:     rdunlap@infradead.org, linux-kernel@vger.kernel.org, lkp@intel.com,
+        borntraeger@linux.ibm.com, farman@linux.ibm.com,
+        linux-s390@vger.kernel.org, kvm@vger.kernel.org
+References: <1f2dd65e-b79b-44df-cc6a-8b3aa8fd61af@linux.ibm.com>
+ <20220816202855.189410-1-pmorel@linux.ibm.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20220816202855.189410-1-pmorel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: WFXgZDDTnst9prixxtIFQYqqMmzhVs9A
+X-Proofpoint-ORIG-GUID: WFXgZDDTnst9prixxtIFQYqqMmzhVs9A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ suspectscore=0 mlxscore=0 priorityscore=1501 mlxlogscore=999
+ malwarescore=0 impostorscore=0 clxscore=1015 bulkscore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208160080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 11:57:10AM -0700, Andrii Nakryiko wrote:
-
-[...]
-
-> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > index a341f877b230..ca125648d7fd 100644
-> > > > --- a/include/uapi/linux/bpf.h
-> > > > +++ b/include/uapi/linux/bpf.h
-> > > > @@ -5332,6 +5332,13 @@ union bpf_attr {
-> > > >   *             **-EACCES** if the SYN cookie is not valid.
-> > > >   *
-> > > >   *             **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
-> > > > + *
-> > > > + * long bpf_user_ringbuf_drain(struct bpf_map *map, void *callback_fn, void *ctx, u64 flags)
-> > > > + *     Description
-> > > > + *             Drain samples from the specified user ringbuffer, and invoke the
-> > > > + *             provided callback for each such sample.
-> > >
-> > > please specify what's the expected signature of callback_fn
-> >
-> > Will do, unfortunatley we're inconsistent in doing this in other helper
-> > functions, so it wasn't clear from context.
+On 8/16/22 4:28 PM, Pierre Morel wrote:
+> Fixing configuration for VFIO PCI interpretation.
 > 
-> That means we missed it for other helpers. The idea was to always
-> specify expected signature in UAPI comment, ideally we fix all the
-> missing cases.
-
-Agreed -- I'll take care of that as a follow-on patch-set.
-
-> > Agreed, I'll add a check and selftest for this.
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+> Fixes: 09340b2fca007 ("KVM: s390: pci: add routines to start/stop inter..")
+> Fixes: c435c54639aa5 ("vfio/pci: introduce CONFIG_VFIO_PCI_ZDEV_KVM..")
+> Cc: <stable@vger.kernel.org>
+> ---
+>  arch/s390/include/asm/kvm_host.h | 9 ---------
+>  arch/s390/kvm/Makefile           | 2 +-
+>  arch/s390/kvm/pci.c              | 4 ++--
+>  drivers/vfio/pci/Kconfig         | 4 ++--
+>  include/linux/vfio_pci_core.h    | 2 +-
+>  5 files changed, 6 insertions(+), 15 deletions(-)
 > 
-> Yep, consider also adding few tests where user-space intentionally
-> breaks the contract to make sure that kernel stays intact (if you
-> already did that, apologies, I haven't looked at selftests much).
+> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+> index f39092e0ceaa..f6cf961731af 100644
+> --- a/arch/s390/include/asm/kvm_host.h
+> +++ b/arch/s390/include/asm/kvm_host.h
+> @@ -1038,16 +1038,7 @@ static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
+>  #define __KVM_HAVE_ARCH_VM_FREE
+>  void kvm_arch_free_vm(struct kvm *kvm);
+>  
+> -#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+>  int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm);
+>  void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev);
+> -#else
+> -static inline int kvm_s390_pci_register_kvm(struct zpci_dev *dev,
+> -					    struct kvm *kvm)
+> -{
+> -	return -EPERM;
+> -}
+> -static inline void kvm_s390_pci_unregister_kvm(struct zpci_dev *dev) {}
+> -#endif
+>  
+>  #endif
+> diff --git a/arch/s390/kvm/Makefile b/arch/s390/kvm/Makefile
+> index 02217fb4ae10..be36afcfd6ff 100644
+> --- a/arch/s390/kvm/Makefile
+> +++ b/arch/s390/kvm/Makefile
+> @@ -9,6 +9,6 @@ ccflags-y := -Ivirt/kvm -Iarch/s390/kvm
+>  
+>  kvm-y += kvm-s390.o intercept.o interrupt.o priv.o sigp.o
+>  kvm-y += diag.o gaccess.o guestdbg.o vsie.o pv.o
+> +kvm-y += pci.o
+>  
+> -kvm-$(CONFIG_VFIO_PCI_ZDEV_KVM) += pci.o
 
-The only negative tests I currently have from user-space are verifying
-that mapping permissions are correctly enforced. Happy to add some more
-that tests boundaries for other parts of the API -- I agree that's both
-useful and prudent.
+You would need to switch this to CONFIG_PCI at least, else we get build errors with CONFIG_PCI=n.
 
-> > > > +       /* Synchronizes with smp_store_release() in
-> > > > +        * __bpf_user_ringbuf_sample_release().
-> > > > +        */
-> > > > +       cons_pos = smp_load_acquire(&rb->consumer_pos);
-> > > > +       if (cons_pos >= prod_pos) {
-> > > > +               atomic_set(&rb->busy, 0);
-> > > > +               return -ENODATA;
-> > > > +       }
-> > > > +
-> > > > +       hdr = (u32 *)((uintptr_t)rb->data + (cons_pos & rb->mask));
-> > > > +       sample_len = *hdr;
-> > >
-> > > do we need smp_load_acquire() here? libbpf's ring_buffer
-> > > implementation uses load_acquire here
-> >
-> > I thought about this when I was first adding the logic, but I can't
-> > convince myself that it's necessary and wasn't able to figure out why we
-> > did a load acquire on the len in libbpf. The kernel doesn't do a store
-> > release on the header, so I'm not sure what the load acquire in libbpf
-> > actually accomplishes. I could certainly be missing something, but I
-> > _think_ the important thing is that we have load-acquire / store-release
-> > pairs for the consumer and producer positions.
-> 
-> kernel does xchg on len on the kernel side, which is stronger than
-> smp_store_release (I think it was Paul's suggestion instead of doing
-> explicit memory barrier, but my memories are hazy for exact reasons).
+>  obj-$(CONFIG_KVM) += kvm.o
+> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> index 4946fb7757d6..cf8ab72a2109 100644
+> --- a/arch/s390/kvm/pci.c
+> +++ b/arch/s390/kvm/pci.c
+> @@ -435,7 +435,7 @@ int kvm_s390_pci_register_kvm(struct zpci_dev *zdev, struct kvm *kvm)
+>  {
+>  	int rc;
+>  
+> -	if (!zdev)
+> +	if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) || !zdev)
+>  		return -EINVAL;
+>  
+>  	mutex_lock(&zdev->kzdev_lock);
+> @@ -516,7 +516,7 @@ void kvm_s390_pci_unregister_kvm(struct zpci_dev *zdev)
+>  {
+>  	struct kvm *kvm;
+>  
+> -	if (!zdev)
+> +	if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) || !zdev)
+>  		return;
+>  
+>  	mutex_lock(&zdev->kzdev_lock);
+> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> index f9d0c908e738..bbc375b028ef 100644
+> --- a/drivers/vfio/pci/Kconfig
+> +++ b/drivers/vfio/pci/Kconfig
+> @@ -45,9 +45,9 @@ config VFIO_PCI_IGD
+>  endif
+>  
+>  config VFIO_PCI_ZDEV_KVM
+> -	bool "VFIO PCI extensions for s390x KVM passthrough"
+> +	def_tristate y
+> +	prompt "VFIO PCI extensions for s390x KVM passthrough"
+>  	depends on S390 && KVM
+> -	default y
+>  	help
+>  	  Support s390x-specific extensions to enable support for enhancements
+>  	  to KVM passthrough capabilities, such as interpretive execution of
+> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+> index 5579ece4347b..7db3bb8129b1 100644
+> --- a/include/linux/vfio_pci_core.h
+> +++ b/include/linux/vfio_pci_core.h
+> @@ -205,7 +205,7 @@ static inline int vfio_pci_igd_init(struct vfio_pci_core_device *vdev)
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_VFIO_PCI_ZDEV_KVM
+> +#if IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM)
+>  int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>  				struct vfio_info_cap *caps);
+>  int vfio_pci_zdev_open_device(struct vfio_pci_core_device *vdev);
 
-Hmmm, yeah, for the kernel-producer ringbuffer, I believe the explicit
-memory barrier is unnecessary because:
+This still doesn't seem quite right...  I tried some variations:
 
-o The smp_store_release() on producer_pos provides ordering w.r.t.
-  producer_pos, and the write to hdr->len which includes the busy-bit
-  should therefore be visibile in libbpf, which does an
-  smp_load_acquire().
-o The xchg() when the sample is committed provides full barriers before
-  and after, so the consumer is guaranteed to read the written contents of
-  the sample IFF it also sees the BPF_RINGBUF_BUSY_BIT as unset.
+1)
+CONFIG_KVM=m
+CONFIG_VFIO_PCI_CORE=m
+CONFIG_VFIO_PCI=m
+CONFIG_VFIO_PCI_ZDEV_KVM=m
 
-I can't see any scenario in which a barrier would add synchronization not
-already provided, though this stuff is tricky so I may have missed
-something.
+compiles, works with a small change:
 
-> Right now this might not be necessary, but if we add support for busy
-> bit in a sample header, it will be closer to what BPF ringbuf is doing
-> right now, with producer position being a reservation pointer, but
-> sample itself won't be "readable" until sample header is updated and
-> its busy bit is unset.
+diff --git a/include/linux/sched/user.h b/include/linux/sched/user.h
+index f054d0360a75..99734e135420 100644
+--- a/include/linux/sched/user.h
++++ b/include/linux/sched/user.h
+@@ -25,7 +25,7 @@ struct user_struct {
+ 
+ #if defined(CONFIG_PERF_EVENTS) || defined(CONFIG_BPF_SYSCALL) || \
+        defined(CONFIG_NET) || defined(CONFIG_IO_URING) || \
+-       defined(CONFIG_VFIO_PCI_ZDEV_KVM)
++       IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM)
 
-Regarding this patch, after thinking about this more I _think_ I do need
-an xchg() (or equivalent operation with full barrier semantics) in
-userspace when updating the producer_pos when committing the sample.
-Which, after applying your suggestion (which I agree with) of supporting
-BPF_RINGBUF_BUSY_BIT and BPF_RINGBUF_DISCARD_BIT from the get-go, would
-similarly be an xchg() when setting the header, paired with an
-smp_load_acquire() when reading the header in the kernel.
 
-> > Yeah, I thought about this. I don't think there's any problem with clearing
-> > busy before we schedule the irq_work_queue(). I elected to do this to err
-> > on the side of simpler logic until we observed contention, but yeah, let me
-> > just do the more performant thing here.
-> 
-> busy is like a global lock, so freeing it ASAP is good, so yeah,
-> unless there are some bad implications, let's do it early
+2)
+CONFIG_KVM=y
+CONFIG_VFIO_PCI_CORE=m
+CONFIG_VFIO_PCI=m
+CONFIG_VFIO_PCI_ZDEV_KVM=m
 
-Ack.
+compiles, works with above user.h change
 
-[...]
+3)
+CONFIG_KVM=y
+CONFIG_VFIO_PCI_CORE=y
+CONFIG_VFIO_PCI=y
+CONFIG_VFIO_PCI_ZDEV_KVM=y
 
-> > > > +                       ret = callback((u64)&dynptr,
-> > > > +                                       (u64)(uintptr_t)callback_ctx, 0, 0, 0);
-> > > > +
-> > > > +                       __bpf_user_ringbuf_sample_release(rb, size, flags);
-> > > > +                       num_samples++;
-> > > > +               }
-> > > > +       } while (err == 0 && num_samples < 4096 && ret == 0);
-> > > > +
-> > >
-> > > 4096 is pretty arbitrary. Definitely worth noting it somewhere and it
-> > > seems somewhat low, tbh...
-> > >
-> > > ideally we'd cond_resched() from time to time, but that would require
-> > > BPF program to be sleepable, so we can't do that :(
-> >
-> > Yeah, I knew this would come up in discussion. I would love to do
-> > cond_resched() here, but as you said, I don't think it's an option :-/ And
-> > given the fact that we're calling back into the BPF program, we have to be
-> > cognizant of things taking a while and clogging up the CPU. What do you
-> > think is a more reasonable number than 4096?
-> 
-> I don't know, tbh, but 4096 seems pretty low. For bpf_loop() we allow
-> up to 2mln iterations. I'd bump it up to 64-128K range, probably. But
-> also please move it into some internal #define'd constant, not some
-> integer literal buried in a code
+compiles, works with above user.h change
 
-Sounds good to me. Maybe at some point we can make this configurable, or
-something. If bpf_loop() allows a hard-coded number of iterations, I think
-it's more forgivable to do the same here. I'll bump it up to 128k and move
-it into a constant so it's not a magic number.
+4)
+CONFIG_KVM=m
+CONFIG_VFIO_PCI_CORE=y
+CONFIG_VFIO_PCI=y
+CONFIG_VFIO_PCI_ZDEV_KVM=m
 
-> >
-> > [...]
-> >
-> > > >         case ARG_PTR_TO_DYNPTR:
-> > > > +               /* We only need to check for initialized / uninitialized helper
-> > > > +                * dynptr args if the dynptr is not MEM_ALLOC, as the assumption
-> > > > +                * is that if it is, that a helper function initialized the
-> > > > +                * dynptr on behalf of the BPF program.
-> > > > +                */
-> > > > +               if (reg->type & MEM_ALLOC)
-> > >
-> > > Isn't PTR_TO_DYNPTR enough indication? Do we need MEM_ALLOC modifier?
-> > > Normal dynptr created and used inside BPF program on the stack are
-> > > actually PTR_TO_STACK, so that should be enough distinction? Or am I
-> > > missing something?
-> >
-> > I think this would also work in the current state of the codebase, but IIUC
-> > it relies on PTR_TO_STACK being the only way that a BPF program could ever
-> > allocate a dynptr. I was trying to guard against the case of a helper being
-> > added in the future that e.g. returned a dynamically allocated dynptr that
-> > the caller would eventually need to release in another helper call.
-> > MEM_ALLOC seems like the correct modifier to more generally denote that the
-> > dynptr was externally allocated.  If you think this is overkill I'm totally
-> > fine with removing MEM_ALLOC. We can always add it down the road if we add
-> > a new helper that requires it.
-> >
-> 
-> Hm.. I don't see a huge need for more flags for this, so I'd keep it
-> simple for now and if in the future we do have such a use case, we'll
-> address it at that time?
+fails with:
 
-Sounds good to me.
+ld: drivers/vfio/pci/vfio_pci_core.o: in function `vfio_pci_core_enable':
+/usr/src/linux/drivers/vfio/pci/vfio_pci_core.c:320: undefined reference to `vfio_pci_zdev_open_device'
+ld: /usr/src/linux/drivers/vfio/pci/vfio_pci_core.c:349: undefined reference to `vfio_pci_zdev_close_device'
+ld: drivers/vfio/pci/vfio_pci_core.o: in function `vfio_pci_core_disable':
+/usr/src/linux/drivers/vfio/pci/vfio_pci_core.c:428: undefined reference to `vfio_pci_zdev_close_device'
+ld: drivers/vfio/pci/vfio_pci_core.o: in function `vfio_pci_core_ioctl':
+/usr/src/linux/drivers/vfio/pci/vfio_pci_core.c:712: undefined reference to `vfio_pci_info_zdev_add_caps'
 
-Thanks,
-David
+
+5)
+CONFIG_KVM=m
+CONFIG_VFIO_PCI_CORE=y
+CONFIG_VFIO_PCI=y
+CONFIG_VFIO_PCI_ZDEV_KVM=y
+
+This forces CONFIG_VFIO_PCI_ZDEV_KVM to 'm' and fails as above.
+
+
+
