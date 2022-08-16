@@ -2,55 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941A9C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222E2C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232156AbiHPKM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S234401AbiHPKNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234364AbiHPKM3 (ORCPT
+        with ESMTP id S234365AbiHPKM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 06:12:29 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6D95F101;
-        Tue, 16 Aug 2022 02:13:07 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oNsd9-0002pT-7P; Tue, 16 Aug 2022 11:12:59 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH 04/12] dt-bindings: riscv: Add Allwinner D1 board compatibles
-Date:   Tue, 16 Aug 2022 11:12:58 +0200
-Message-ID: <2865102.2VHbPRQshP@diego>
-In-Reply-To: <20220815050815.22340-5-samuel@sholland.org>
-References: <20220815050815.22340-1-samuel@sholland.org> <20220815050815.22340-5-samuel@sholland.org>
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0467FB5A4C
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:06:29 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id c7-20020a056e020bc700b002e59be6ce85so4134725ilu.12
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:06:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=UtwS0nVyZ5kC727R08qLoiAMAPVUbacHZbVI+9xSHE0=;
+        b=mO5WprcyWKNRwtvC1k6pfmHENS6clQd9LDS+bpPZpwutvxvosgwYHa83peCie74jC9
+         KeBNfEahcZUGrjEcJOmjHhKZH+ZgWmJhqoKsDBWgDjNhrZNEwNB7YZFF4X2gB8L+JQDr
+         QGmbE7wVdlyksdOlhwJhO7wbFFF9JiRrM5uVQeIxcz+CEoPHTgqbppVYoj1E2SzTb3IL
+         BSIPRrKg/EUf4keUqKcQje0tZeKlV8IVohhYqitYg4OjX26mTEfbL8EKmu/oYf/5TYJv
+         zGc8UfhSeK22zGgQm7TcMoovZktlN+NbYGrkxJaXM0sUtAS+ZGn90l4hdsX1DdMVgldw
+         EJWQ==
+X-Gm-Message-State: ACgBeo3FigpRkclHTkm0zllxTMqlSJT9cC83k9tADYu/KbiFMo8w7JSw
+        Sye7LIgg4LwAh33taECfMShSmjeUeVVO7X2Itu6gtb3kVbUN
+X-Google-Smtp-Source: AA6agR7Z/1cnGAM6piRsfrfKZLTURpPQd1CpAoJCLIRAx0bElE/Nee8SUBDwUYprfG2PsvdubL71DA/Ng8Cev+lUmOV+Rii38KYa
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+X-Received: by 2002:a05:6638:31c1:b0:33f:2450:46a9 with SMTP id
+ n1-20020a05663831c100b0033f245046a9mr9107806jav.45.1660640788361; Tue, 16 Aug
+ 2022 02:06:28 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 02:06:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004a37dc05e6581005@google.com>
+Subject: [syzbot] KASAN: vmalloc-out-of-bounds Read in blocking_notifier_chain_unregister
+From:   syzbot <syzbot+2fd9312f3ff65d22d06f@syzkaller.appspotmail.com>
+To:     bigeasy@linutronix.de, bp@suse.de, dmitry.osipenko@collabora.com,
+        linux-kernel@vger.kernel.org, mirq-linux@rere.qmqm.pl,
+        rafael.j.wysocki@intel.com, syzkaller-bugs@googlegroups.com,
+        vschneid@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 15. August 2022, 07:08:07 CEST schrieb Samuel Holland:
-> Several SoMs and boards are available that feature the Allwinner D1 SoC.
-> Document their compatible strings.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+Hello,
 
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+syzbot found the following issue on:
+
+HEAD commit:    7ebfc85e2cd7 Merge tag 'net-6.0-rc1' of git://git.kernel.o..
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=160d0915080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
+dashboard link: https://syzkaller.appspot.com/bug?extid=2fd9312f3ff65d22d06f
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f5b2f3080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=121c0067080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2fd9312f3ff65d22d06f@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in notifier_chain_unregister kernel/notifier.c:51 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in blocking_notifier_chain_unregister+0x230/0x290 kernel/notifier.c:329
+Read of size 8 at addr ffffc900038ebbe8 by task syz-executor342/3606
+
+CPU: 1 PID: 3606 Comm: syz-executor342 Not tainted 5.19.0-syzkaller-13930-g7ebfc85e2cd7 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x59/0x719 mm/kasan/report.c:433
+ kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
+ notifier_chain_unregister kernel/notifier.c:51 [inline]
+ blocking_notifier_chain_unregister+0x230/0x290 kernel/notifier.c:329
+ hci_unregister_suspend_notifier+0x73/0x90 net/bluetooth/hci_core.c:2760
+ hci_unregister_dev+0x16f/0x4e0 net/bluetooth/hci_core.c:2678
+ vhci_release+0x7c/0xf0 drivers/bluetooth/hci_vhci.c:568
+ __fput+0x277/0x9d0 fs/file_table.c:320
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xad5/0x29b0 kernel/exit.c:795
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f278bd0d3c9
+Code: Unable to access opcode bytes at RIP 0x7f278bd0d39f.
+RSP: 002b:00007ffe2fd53298 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f278bd91450 RCX: 00007f278bd0d3c9
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffb8 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f278bd91450
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
+
+Memory state around the buggy address:
+ ffffc900038eba80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc900038ebb00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc900038ebb80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                                          ^
+ ffffc900038ebc00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc900038ebc80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
