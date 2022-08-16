@@ -2,141 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D0CC2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB87C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbiHPJ3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
+        id S232370AbiHPJ3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbiHPJ2e (ORCPT
+        with ESMTP id S231779AbiHPJ2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:28:34 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4C984EC1
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:47:08 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id a9so13680342lfm.12
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 00:47:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to
-         :content-language:subject:from:user-agent:mime-version:date
-         :message-id:from:to:cc;
-        bh=bfjb0/RfkSEH8cB4ALMY2SGVoeLIuba0qPdHr8FxVDM=;
-        b=JergNskWN39xPnLR5bvGb/rCaV2bCBGy6Rr6807+zCmwbPATiofxQXz31ejofM+fTn
-         /LSroNpUiD8E04wD1HxsOHKUwNGVROS6TugMtPbciWn0guFvovnPChmir67JJnL5kApM
-         EGLksAAooPXuouSUkIiEdtVcN5frHTAexLurasHzVDazNhBDwIje+pJlI7upfUOqmNs+
-         2Ub+ditZVqe2TJuko2iQJzGAtrNIUN8VHjUWNkG4T8Bxa6Y0YucXPTLYA+pDZVjpkMlN
-         /VknpL5iz198nETtdRlkgdBFzv3RpDgHQidhkVtMhs7NCpwZpD3ioUdGQCHmeyeMEMha
-         ti4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to
-         :content-language:subject:from:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=bfjb0/RfkSEH8cB4ALMY2SGVoeLIuba0qPdHr8FxVDM=;
-        b=HeXyJyq7UfpJfMI/PQ1YrhfI8Ur+kRFrg0UQSvQQYGXXHnVZ1/EY8JoyQzMKwmLvMx
-         nH9ACSpkGcaiR9HeCdxXO3sWvO1ERTArLK4b/Tlb6sf4wHlOcr6jra44/puaFj2iAgqW
-         WQoi2/5dBtOj/V4Ac0XW4ihpROpqa3NKi4HMHJDtxWaERsZG2bECOZCFm0Q8CmYErVj3
-         NeOboecL2up3AVAxz939BrG/oz94v9vfGHO59lFqyZliSTSO/bdLmvxt2aeVOgTMLCOR
-         ISSJKDJcJ6eD2CXSkB9GvoD6Lq7l9s4w91e7XOmEtyhsrHCuwK4zis2yB96DdcTX/UE7
-         FDaw==
-X-Gm-Message-State: ACgBeo02I7tlzCr1VuiMHzGx6p+y5xk+JK53prd2vEv1dGJkrlNvy1Pp
-        hIgC/yP8lZEkZ8kM8luszZRoN9SZJB9fPw==
-X-Google-Smtp-Source: AA6agR5vf4p7y8ytFz18vjFkux0n2aXgqMRzh8CVptkCH6zQ+cQScbcS6mdiOHeYVNFjDSCINFcJaA==
-X-Received: by 2002:a05:6512:158b:b0:48b:38:cff8 with SMTP id bp11-20020a056512158b00b0048b0038cff8mr6268892lfb.100.1660636026941;
-        Tue, 16 Aug 2022 00:47:06 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.143])
-        by smtp.gmail.com with ESMTPSA id u19-20020a05651220d300b0048b1f89ce24sm1301726lfr.264.2022.08.16.00.47.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 00:47:06 -0700 (PDT)
-Message-ID: <62188f37-f816-08e9-cdd5-8df23131746d@openvz.org>
-Date:   Tue, 16 Aug 2022 10:47:05 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Vasily Averin <vvs@openvz.org>
-Subject: Re: [PATCH 0/3] enable memcg accounting for kernfs objects
+        Tue, 16 Aug 2022 05:28:46 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2082.outbound.protection.outlook.com [40.107.20.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8FA39B94;
+        Tue, 16 Aug 2022 00:48:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XeaEjy7G5S6qYXqW1CWdpWySaZW2leshRGxAUKdPYZIWPIHrRtmMdAjU1kiwzRWu+yALSRHSo8R6J5r3FWLFWKLq2lcmzKDP9GjitVsoWC9X0jvC6Jt0xVxYM1qL/Ow9NCXYmRvRRpRBGI4oN7z4jWh53g8PGrhoYD1wgb/fQRAJ3S1GHR3OzAfS9B8Uma3OZ8o3/jyR+0L+5ExJH6RO10ls+XgXpX6pOaD1/UuHE+7NukRnCNggf/1gpFIecN78whwFBENbTChUkYc+T4sUhhG6cygqul/cjsNTDbctMOj44P3Glw/InQyErojNgMV2YKdtV9CUsvNkYbYLGXZDMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UJqymMDKp7KAlg5ez9bNluzviYjMIjegjNZ0iC38OBc=;
+ b=msFF6F4NhQFaXI864rbZ/fqBEo1cv1VQsdZ8SDU+5A+J2YP5Wm8GAWNnB5O4hvmw5OXdwLakFf4+A4E78U4x4oo3AT3KSpk/JbdGZsOUBUCcKDXrhBGRODiBwWtqJDD7xw58Xecn+C7h6cfNRLcpiE03QQBcM4oQ/1zsSEVzoG1MtuH8nRIk15zHbSV10itkNYjJ/hrTywQI5QKKXMyp+exmcfPEHpwd1O7nUyUDmWE8R172eifBB1W4pG5geqoFxz+9p4cPyNsK5xVT6vDhPBzK7/injtc6WO5qP9ZKy56VNSygcjePJv7WqaTpDj3HZrYsFRsNrEhhLYJLP1IKDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UJqymMDKp7KAlg5ez9bNluzviYjMIjegjNZ0iC38OBc=;
+ b=C6FpRyKHfc09M1Ki9TuVjIAO8sQ78qtTZtGsx1KF1OyhY4+0FlAC/i2aWyApjc2HTiKCj7981ZltAOALtSTmMScSSGC2fous+SPek5wFNLaJGKL2ahCMyJ/iMGf9gzHZhjzOzXkXJ3arP8PAnj3P+301byEzsieBor1NMKTA0AwWeCHg6n5P1i0RqEvUfyR5T5BpnUF/d0PK9HHwDrzL6MNCsynX13zVWa/oIYRnjYyIizSeFlvqoltDqObm2KLyK1BErcqk/iADavkUOvyIqGDj0txJcnlWa+GNVpFdQbDU6lGlplNTNvkF3yl4dIdAzthq0h1zttJcgatWY+KTZg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by DB6PR0402MB2808.eurprd04.prod.outlook.com (2603:10a6:4:95::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
+ 2022 07:48:11 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::2d5d:bae0:430f:70ad]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::2d5d:bae0:430f:70ad%4]) with mapi id 15.20.5525.010; Tue, 16 Aug 2022
+ 07:48:11 +0000
+Message-ID: <2987196d-a5fd-a756-03f4-e1ddc41b5249@suse.com>
+Date:   Tue, 16 Aug 2022 09:48:09 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] x86/entry: fix entry_INT80_compat for Xen PV guests
 Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org, kernel@openvz.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-References: <0414cab3-32d6-c60a-d3c8-96fc72064ba0@openvz.org>
- <YvKZ8zYJFhhFvRxO@slm.duckdns.org> <20220809174934.GC10478@blackbody.suse.cz>
- <YvKfxGvg5/J0+QoD@slm.duckdns.org>
- <b816f58a-ce25-c079-c6b3-a3406df246f9@openvz.org>
-In-Reply-To: <b816f58a-ce25-c079-c6b3-a3406df246f9@openvz.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, stable@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220816071137.4893-1-jgross@suse.com>
+From:   Jan Beulich <jbeulich@suse.com>
+In-Reply-To: <20220816071137.4893-1-jgross@suse.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0004.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1d::23) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4f8d737e-c708-453a-deb1-08da7f5baad7
+X-MS-TrafficTypeDiagnostic: DB6PR0402MB2808:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: f8I9pPpwBpZ2jfrCgNQwsB420khp5roWKgWf696fhkN4SkM63eYtCdKAVJgMryQzs1+mDbPGkQ0CoZoWmfGVQhKhgCE1eM7c3Cp6//Z5XEDflSSO+Z6UeEKotVr32MxocMHQjcAiXyEtcm4eREiX/ZaFH81mqIAIldfGvxdzBqBnSkL7VLs+vhrPtHbTnAaCMppYSsQeXaK8g0NdqikDACu8a/h0MwRw+K+PtjPlfgjn/0At03z0cHiuY/idbd4XRm2cPHZixBySOCaQTIyDBcDuTPVLt3DOO4+2hcv3RhiFQIlO2NurydDhEN83/LDuxysKCfXZhxuu6k4Lzog5/bwEvVFbnLzNLyUec9t1gi3V066QqWIY4JfQ59wSxFvrpGNJevCzOdoUJahubjmyVBsCwwILcC87d9kJdPDmWldR71G578XmmJFsUUjJc+KLb4sMlAG+UemE7k3aSg/3a81/oc3DHyggM5Z9NmqIdyC0kxQHCpl4Kj8Uh+icVPsT+JpzuvqHRyoeYeSFiakH7Lo8vqF25xJtOymmmz7hJ++CoPLX44It69zL3cicIsbPFRpE4EqZ71RjOdaVqvTjJmbe9Q5NTmIps8XgWut93dHDz8B60VfDr8Aw/OyZWkd5PaEB0eyp5pJBxrBYzChe3r8nw+DnsOtJHkIpFlF8RDhvE2u9kZ3r9BkoZ+XvkdQITsyGBQMAprJRDX191mKA8NEnTHImEcsBfDdlN/3em1Xzii/UQ9aQeUtHqAOfRanwek2daxt8jk1F21U24sSFP4l212nZduIQHdQhMlv5jgFA6+8HuyOBObY5BLJCwI70YsyP2cuiKDeWGlF5ttcUjA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(396003)(346002)(136003)(376002)(366004)(38100700002)(26005)(7416002)(5660300002)(66476007)(6512007)(6862004)(478600001)(6506007)(86362001)(8936002)(6486002)(53546011)(41300700001)(8676002)(4326008)(2906002)(37006003)(66946007)(6636002)(66556008)(31696002)(316002)(31686004)(54906003)(2616005)(186003)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WWl5c1FDYWVoTFRON3FZU1FaRWZWT2JjVWVDaXdWQUtMalRpL0IzckdmWTli?=
+ =?utf-8?B?cy9YaEY3bll2T3lDbkI5VUtXbU44d05qaWJhNm1Zd0oyd3JCcmsveVhkelU4?=
+ =?utf-8?B?VjR5KzVwQzUweE9WTE1WOUdPQ3RIbWRzbVpWOWxNTVpwdE5nek92eCt0SVdu?=
+ =?utf-8?B?THdqam9mMFdVLzR2WjBsVXJSaTY0bjJDQk81M2V6Wm5NQTQrQUNOY0tFL0Zj?=
+ =?utf-8?B?emlsUlBWMkgwRlB6cEhXRUFWZldjT1JydmpxK0x2MGtiVXZmQngrT2M1S3hj?=
+ =?utf-8?B?T3ZYVWxnZTdBSXlONHhIVm5iM0YwN2dUZFprOVRTa2UvTUNZME1NWTByZDFW?=
+ =?utf-8?B?YktJR1hpWHNsV21kSVIrZ2h3ckp4NUIydklCTDE4Z2hmUExQR3ZuaE5ZTGJ2?=
+ =?utf-8?B?SWNsNk1jUUlNSFpqOUlqTEZ1WUZ3ZUtqa2E0SzhUVDhpdWdTMDJKZXRqQlNh?=
+ =?utf-8?B?MVpVaFQ0T2xSUjI4eTVzV0RUa0M2UU0xandjYU5HV21uaFRUdnltQ2dZWXBE?=
+ =?utf-8?B?VXNmOFk2QmszY25aU1l5VGpTV09IY0Q0eTY1MTlTTkJZWXlSeGhrSTZHemNK?=
+ =?utf-8?B?d1Z6UHNHUWc1QnltVGgzLzRHR1JkYVB0VXdPZEx5V3ArSUtzdzR0bjZ4NWIr?=
+ =?utf-8?B?a2NJb1VQbWRQbjV3ZFdTNzlWNlJEQ1pZbkZqYkh5TzEwNW1pZExZUnpqeXJy?=
+ =?utf-8?B?RWU2VnYyT3JhTGtPeDhwaU5LTVdtakJpSnZWNi9LekV0aWdQSnJBOG5PSnVx?=
+ =?utf-8?B?ZjB1UitZcllONkRNZjlwUHp4OEJmcE0xWUtlWlhjVkpSRGx0RTl2VnFpZDFu?=
+ =?utf-8?B?bHVxa0VTMVJJdXFZb1FpQnVkV1k1YnZ6VHVpUlpyQmZLcVRSY1ByTVliWStQ?=
+ =?utf-8?B?YVZrZS9MMVFhYm1vVjlSbmlxWmhQRjBPUEkyRXFGajdRM3NBd1lsS2tUalR2?=
+ =?utf-8?B?NzNndzJGRmNPYzBQdGhEb3dwbkJxMkdyNkhZdXV6dkJJbWtmY0JKWmp2V2Uv?=
+ =?utf-8?B?UGRqaEM1TWZ2aFJzSTlmNGdUOWp2NmtFNTV2RnBxaXNzTFh1VmxEKzN2K0JI?=
+ =?utf-8?B?ZWxxUWRObkw2TzdQb1VKVUZHdHlNN2cxNHNvcWxmY1hkdVUyVW5TV2VLaHBE?=
+ =?utf-8?B?TkRTWWFCb3c5ZXJNQ0FrbE9TNzk0L00xUTRTZUFsNEdJVlA0RmV3R09qL3Vt?=
+ =?utf-8?B?aExYSnVLcGEwMk5TdGN3RVRhSW9KWWx2TlBZVnRhNjRVT2ZJenBHTE9xU1lC?=
+ =?utf-8?B?ZUJ2QURkNTBVdUZBaFl3eU5YUGRHTDJ6WDRHdkx6azcrclRKVk8yL3RGanJV?=
+ =?utf-8?B?dENXUkQzM29rOUk2Z0cyWUJ1bnl1U3NlbkZRMTFWZ04vbmt6UFp5bFFqV1Iv?=
+ =?utf-8?B?UEtKM05Mc2ZYNTd3ZkFJSWh1dy9FWVNYdWFER0ZBUDFDUUE0L3RnRnRlUy9Z?=
+ =?utf-8?B?TGhEY29JSFpRSHRZUm1Zbk9vbFVNblNTdDlCQVRYelNQWE83ZGNPNHVxaWQz?=
+ =?utf-8?B?UGlWL05PUWZMZmtId01IMW5Cci8xUllVaUE4MzJaRDBZdDhuWnpxZXVOc2Jk?=
+ =?utf-8?B?QUNPSWRReUlHYitUbUVod0U2ZHNaempSaGVjQnJlcU1QRGpoRlJoaEVzTUpD?=
+ =?utf-8?B?N1k2UVZib05JdUVMY2NJSWNrN0FKV1ZXVytheU1yNmI1dFJyRDE1NUxEeVp2?=
+ =?utf-8?B?Tko1N0pzekovYUY4K3hTYVZWTmxiZ09LODNqUUF5MmxuWTN4c1Y3cFJDcUtS?=
+ =?utf-8?B?c1o1ZVhLaGd2WE9wYmd4V3pjcmxvUnJKY1VZcWticEtVWFY1UlgrNUFBcW4z?=
+ =?utf-8?B?eE1SZXpXWUlFckNUU0dvK1N3WU0yOStBTG5BSXZkSC9WeDZjNUI1bm9VVXpJ?=
+ =?utf-8?B?cWcwUU1uUTl1UUl3bDF4cGZqZzcvZ01yS2ZJS0Z6SzB6VGFtTmRwckdiMUND?=
+ =?utf-8?B?WVNDYjNVYkhTak5sUDE3dlR5YjF5dnZ5bGlmbStCTFRSeVYxbmNYSzhrNnUv?=
+ =?utf-8?B?NC8rV05VNjVvazJnOVdkNS81b0hoNUxQcXo4QmI4ZEZPb3dVdkxuTUl4SktS?=
+ =?utf-8?B?c0VPalhWWVpkdTNDWkp0TlgzZWFyMDgwL0Q0MGFEVk9KT3hCY2x2NjFrM2hE?=
+ =?utf-8?Q?3WG9zGFP5ds1/udKxgoMIQqxV?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f8d737e-c708-453a-deb1-08da7f5baad7
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 07:48:11.2621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0pCys0z/aBAMRL2EbX+ymQ7B0RZ63R4syZEWdOT7U8xy27sujV0Fj+GAYKRVXuW0x7le1NQ+UviZXl6O0kBchQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2808
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/11/22 06:19, Vasily Averin wrote:
-> On 8/9/22 20:56, Tejun Heo wrote:
->> Hello,
->>
->> On Tue, Aug 09, 2022 at 07:49:34PM +0200, Michal Koutný wrote:
->>> On Tue, Aug 09, 2022 at 07:31:31AM -1000, Tejun Heo <tj@kernel.org> wrote:
->>>> I'm not quite sure whether following the usual "charge it to the allocating
->>>> task's cgroup" is the best way to go about it. I wonder whether it'd be
->>>> better to attach it to the new cgroup's nearest ancestor with memcg enabled.
->>>
->>> See also 
->>> https://lore.kernel.org/r/YnBLge4ZQNbbxufc@blackbook/
->>> and
->>> https://lore.kernel.org/r/20220511163439.GD24172@blackbody.suse.cz/
->>
->> Ah, thanks. Vasily, can you please include some summary of the discussions
->> and the rationales for the path taken in the commit message?
+On 16.08.2022 09:11, Juergen Gross wrote:
+> Commit c89191ce67ef ("x86/entry: Convert SWAPGS to swapgs and remove
+> the definition of SWAPGS") missed one use case of SWAPGS in
+> entry_INT80_compat. Removing of the SWAPGS macro led to asm just
+> using "swapgs", as it is accepting instructions in capital letters,
+> too.
 > 
-> Dear Tejun,
-> thank you for the feedback, I'll do it in next patch set iteration.
+> This in turn leads to splats in Xen PV guests like:
 > 
-> However, I noticed another problem in neighborhood and I planned to
-> add new patches into current patch set. One of the new patches is quite simple,
-> however second one is quite complex and requires some discussion.
+> [   36.145223] general protection fault, maybe for address 0x2d: 0000 [#1] PREEMPT SMP NOPTI
+> [   36.145794] CPU: 2 PID: 1847 Comm: ld-linux.so.2 Not tainted 5.19.1-1-default #1 openSUSE Tumbleweed f3b44bfb672cdb9f235aff53b57724eba8b9411b
+> [   36.146608] Hardware name: HP ProLiant ML350p Gen8, BIOS P72 11/14/2013
+> [   36.148126] RIP: e030:entry_INT80_compat+0x3/0xa3
+> 
+> Fix that by open coding this single instance of the SWAPGS macro.
+> 
+> Cc: <stable@vger.kernel.org> # 5.19
+> Fixes: c89191ce67ef ("x86/entry: Convert SWAPGS to swapgs and remove the definition of SWAPGS")
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-Summing up a private discussion with Tejun, Michal and Roman:
-I'm going to create few new patches:
-
-1) adjust active memcg for objects allocated during creation of new cgroup
-  This patch will take memcg from parent cgroup an use it for accounting
-  all objects allocated during creation of new cgroup.
-  For that it moves set_active_memcg() calls from mem_cgroup_css_alloc()
-  to cgroup_mkdir() and creates missing infrastructure.
-  This allows you to predict which memcg should be used for object accounting,
-  and should simplify debugging of possible problems and corner cases.
-
-2) memcg: enable kernfs accounting: nodes and iattr
-  Already discussed and approved patches.
-  These objects consumes significant part of memory in various scenarios,
-  including new cgroup creation and new net device creation.
-
-3) adjust active memcg for simple_xattr accounting
-  sysfs and tmpfs are in-memory file system, 
-  for extended attributes they uses simple_xattr infrastructure.
-  The patch forces sys_set[f]xattr calls to account xattr object
-  to predictable memcg: for kernfs memcg will be taken from kernfs node,
-  for shmem -- from shmem_info.
-  Like 1) case, this allows to understand which memcg should be used
-  for object accounting and simplify debugging of possible troubles.
-
-4) memcg: enable accounting for simple_xattr: names and values
-  This patch enables accounting for objects described in previous patch
-
-5) simple_xattrs: replace list to rb-tree
-  This significantly reduces the search time for existing entries.
-
-Additionally Roman Gushchin prepares patch
-"`put`ting the kernfs_node reference earlier in the cgroup removal process"
-
-Thank you,
-	Vasily Averin
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
