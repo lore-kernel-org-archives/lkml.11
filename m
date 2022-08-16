@@ -2,204 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F617C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96572C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiHPLBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60974 "EHLO
+        id S235130AbiHPLBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235201AbiHPLAo (ORCPT
+        with ESMTP id S235114AbiHPLBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:00:44 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6210C877F
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id s23so5013352wmj.4
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=/7pcMlkWYdqvd9nF4xjztw1PEhSKdH6W+Iikd1ByWuw=;
-        b=fjgXliTQmp5AXMdjyj5BNorQm9b2QUgkuF9SUN7Rt5bCG3Yq9Kr1x94ZifYm+8nVx0
-         inz8PqyRLDZjqb5gY81bWFL0yvLSIjXMVAKdCo8E5qpHS2UAhTiT/w55V1fR2cD5Pd2B
-         1Rx+cRG/T9KhAKwyGRinIsjzPbukSldQFl1GGVizLBrfm1XMPI72YWtoNtMgkYEmKW05
-         TXbTLePLT8qZVgAgEuCwywy9mlzdoK4LGNXQ3/iGFhUMp7OpcHa3REKtRBee4KGA151v
-         8ho4BL9+LhpURGEzBp4FXtfYChdegmjZyBxMB5w8yIaqOYOy9rxlBIE1yRCag9ZeJB1e
-         IxVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=/7pcMlkWYdqvd9nF4xjztw1PEhSKdH6W+Iikd1ByWuw=;
-        b=VR8RXm1H15u+rIpFm2Vrqbgjq1blSAMfI+FTbEOH9oLB9tNsGBbJFeoZfgrD7nKQVT
-         MUIs5svfOq6rV0Fc3Kg5erpZ4aNbUQ8Ek6DqreN2QJASsZw2E6QC8hNr1ILzEGsvs4vZ
-         lC9sEqT/4nS9P/WWjDf+RJ3JLcjQRWKjzjwH0DtE64I9msxZ3Yz/jAs0ui03pU+Bo8lV
-         jtbACa7qHS522gCJh0+uY0spif0CpsplSnpVuHp2Jg4KZzvklv1CmDEUiMDBONhB8TIe
-         rnCJmN4MR/X0is1OQ7m2rY1VMiNFovVL9CPkjPndK3iKz5Qn8WPXV6pWuG1myQ3Ivkto
-         6H0g==
-X-Gm-Message-State: ACgBeo2NsjUp3lLD2l7fSrkKtULT+oI8+FGCHnxs6NnMyy7wHtLW46Ad
-        81LStLsc11Cg605NBqf5ugY=
-X-Google-Smtp-Source: AA6agR4bNICp6baTecdnoJqeEJgR+Z8OLujzSNuslJ6EgUSTKVKO7aJi7ympl6exGaWyuJ1XuiVDSg==
-X-Received: by 2002:a05:600c:1f08:b0:3a5:e8d6:ddd2 with SMTP id bd8-20020a05600c1f0800b003a5e8d6ddd2mr7393277wmb.57.1660645753401;
-        Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.32.249])
-        by smtp.gmail.com with ESMTPSA id m9-20020adffe49000000b002251639bfd0sm1668407wrs.59.2022.08.16.03.29.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 03:29:13 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     javierm@redhat.com
-Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
-        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
-        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, geert@linux-m68k.org,
-        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH 1/3] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb888()
-Date:   Tue, 16 Aug 2022 12:29:01 +0200
-Message-Id: <20220816102903.276879-2-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220816102903.276879-1-jose.exposito89@gmail.com>
-References: <20220816102903.276879-1-jose.exposito89@gmail.com>
+        Tue, 16 Aug 2022 07:01:17 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E481AF09;
+        Tue, 16 Aug 2022 03:27:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YfO56ftuEHhNzKdaE7RgEVc152Mm7bVQfxREJ+tiwS2KTsgiiF2pBH4chrPz3tbV3jyb49IDhCSqdmR+1uds0aSOn7d4h9izgKT4AEC/roYir64TzBL136k/ShymXpBGlfcH4l3dGA+lVmOf5Cf8sx18GZ7Swz2umn1KNIr+FUJS4pMVS9BLn7lP8qRVVWXVhYbHAz5nkMlRbedQYecJr8Uw8qoepzOlnNbVOpemMAdRDjjPjlFNlZbX8kgg40dGHXKN64dPya7R3ToZ79dBcx0rkg1OuAP+OajOD8NE817f532EtNt9A1zO1DsjnbUWqf28QzbZf6M7C2O6wCtLFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DhPwrDBhtNQdqSvTZ7g2W7T4spW6Q8y37yDYVA87EZM=;
+ b=aYTaPKQR3q2WR5iPKhHKFUJNNtQ02VPkFePC9CjlxEEtK31DxyYQkhMGeLh7ZwEiSO6bbyDTciptQQMvuW7C3iZMP9LYsm7k+PA97ww2rdEccoi6d4iU38/pm0zG1h0PIPmYPvRflNM6VreqxQ12+Db2iyJstld26hA2gXo2vMKi9aWLZ3mveghAozzryxClyYqNQCR5uDJBmvuodAZpwnViTeRbGvKUNRPrBvACf6Sc/jM61TfJ8BV45N5hKghNUy0+OnEbyAYoYrYxG0FkLtCQ7CGEfQVrVTwKCpB/Lr/gJgy0ujDXVRFEr1Xt/GgZ2Uw5o04qJEAaLQnuu8yQ5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DhPwrDBhtNQdqSvTZ7g2W7T4spW6Q8y37yDYVA87EZM=;
+ b=TYgvk3sOr2mZBamTMZ7XDkNVbe/UYaiXGfRM8rRaxyHGWvgBB25kCuGom6c+Odki+44yaO2XzXE1zVxRhoG9kqYRTLdAuB4/BhYCDR92NuOr5hpGCrzMn+N1wf3itG8BxMIp9ezFHgsk337lUqtt2zEvCc4DwdT+d7K68ek/cpnErdjDqOZGXsoQx/Q2nlhc21PSVJr0AFXit+JqRnxgZw7brv9CDU8vriyVeFd6HiNS7g4Cr4qdiwgsE6rNmEUOgQ2F2eAo06BvrzpFd8KggFuMymdWjfRSHYNmDLBd0OJLGEqv6REVcvBmSV0MayLwj29O3KURUdYjVZ6Wd7KrWQ==
+Received: from DS7PR06CA0043.namprd06.prod.outlook.com (2603:10b6:8:54::25) by
+ CY8PR12MB7361.namprd12.prod.outlook.com (2603:10b6:930:53::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5525.11; Tue, 16 Aug 2022 10:27:31 +0000
+Received: from DM6NAM11FT095.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:54:cafe::31) by DS7PR06CA0043.outlook.office365.com
+ (2603:10b6:8:54::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.16 via Frontend
+ Transport; Tue, 16 Aug 2022 10:27:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT095.mail.protection.outlook.com (10.13.172.180) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5546.7 via Frontend Transport; Tue, 16 Aug 2022 10:27:31 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Tue, 16 Aug 2022 10:27:30 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Tue, 16 Aug 2022 03:27:29 -0700
+Received: from pshete-ubuntu.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Tue, 16 Aug 2022 03:27:27 -0700
+From:   Prathamesh Shete <pshete@nvidia.com>
+To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
+        <linux-gpio@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jonathanh@nvidia.com>,
+        <thierry.reding@gmail.com>
+CC:     <smangipudi@nvidia.com>, <pshete@nvidia.com>,
+        Manish Bhardwaj <mbhardwaj@nvidia.com>
+Subject: [PATCH v2] gpio: tegra186: add Tegra234 PMC compatible in GPIO driver
+Date:   Tue, 16 Aug 2022 15:57:25 +0530
+Message-ID: <20220816102725.14708-1-pshete@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <Yhe0pCpfeCpyfPWg@orome>
+References: <Yhe0pCpfeCpyfPWg@orome>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 419c3691-e547-4f33-5a7e-08da7f71ed2e
+X-MS-TrafficTypeDiagnostic: CY8PR12MB7361:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FVYdGrwuk6LeyM6TCPSyO6M5TCUQ84TMWhrQKchGnSTGIfkUzp+HBfnhhnTqXNJWhka9y7gW4ZfKaUChuiLHrvEduc3o+gRx6CdUzdUfd7fOB/RwlFcf1vB20Pe7sD+J9RHjMjs1KFh3aYmX7Tem9OctdK+tTlAewZE1AQxvTLlpePxo2Omi9+TE6iCVAJrOZvzgQZ3x0C+99pKK+dTVFRAG33DUgae7aYjdB1kAGVxSE7AhzfTPjQpKi19VksSDvsbhY4XL6snOiB3N6TYAUJw0HQPJ3NOZd3RKFl+NIZpGYjglAuER8RK/j95K/gb6xoUN9luB0wWmY8W6Kgeqzw1j5CKQFpzf6hX10Ge1fSdhpn/b1x3E5xH9yuKQEYiZuaLjFiIshpTkaPj1bbXr/uh3VZ9O0gRXA6QzKNY0BMJUIrbT3u6fRQ4xBW8+CRw48X83fR+wj+VjZnqOugyHFnyDtSRkBQ+y45jWhO1ThYaAzLIBkWX92672t11xe+1B84zSaZXFHKauTGNpQhIBYr3I+hEai0WznGQe+rFZXDhAG82fnRaiJgsqHLA722jyd3ajqPvDpdTpy3YB2Kf+5oQ1srbbCe5WItStoOtlPkBVJ3TNbF7DQxRJP0pZZiaUbVQgoMSAY2WGsML36+brpNJeVZF9C/cBlN3XnjAzI8oMrWFNMFdWcQbWCS8wRz5cPAzzqjo2yX3a6tMaQlBtvo3VlraiwAUOg/aNlunF4Ilu3/xPCNQZVDCF1qhngrZ3LLINAXlCNdnFzNmq8DVvMdjb+wUVzZStj0DPeFysUsy2sExDLoSFQB//tfIUg0vsj2A1oUbO6AaaiwaH6VAzpg==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(346002)(39860400002)(36840700001)(40470700004)(46966006)(82740400003)(86362001)(316002)(40480700001)(8676002)(70206006)(81166007)(4326008)(356005)(5660300002)(70586007)(4744005)(426003)(336012)(478600001)(47076005)(7696005)(2616005)(41300700001)(1076003)(54906003)(8936002)(186003)(110136005)(36860700001)(82310400005)(2906002)(107886003)(40460700003)(26005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 10:27:31.2210
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 419c3691-e547-4f33-5a7e-08da7f71ed2e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT095.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7361
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the existing test cases to test the conversion from XRGB8888 to
-RGB888.
+Using this patch we are adding PMC compatible string for
+Tegra234 in GPIO driver so the IRQ hierarchy can be set.
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Manish Bhardwaj <mbhardwaj@nvidia.com>
+Signed-off-by: Prathamesh Shete <pshete@nvidia.com>
 ---
- .../gpu/drm/tests/drm_format_helper_test.c    | 65 +++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/gpio/gpio-tegra186.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
-index 828487071796..08d08e7ab19a 100644
---- a/drivers/gpu/drm/tests/drm_format_helper_test.c
-+++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
-@@ -27,6 +27,11 @@ struct convert_to_rgb565_result {
- 	const u16 expected_swab[TEST_BUF_SIZE];
- };
- 
-+struct convert_to_rgb888_result {
-+	unsigned int dst_pitch;
-+	const u8 expected[TEST_BUF_SIZE];
-+};
-+
- struct convert_xrgb8888_case {
- 	const char *name;
- 	unsigned int pitch;
-@@ -34,6 +39,7 @@ struct convert_xrgb8888_case {
- 	const u32 xrgb8888[TEST_BUF_SIZE];
- 	struct convert_to_rgb332_result rgb332_result;
- 	struct convert_to_rgb565_result rgb565_result;
-+	struct convert_to_rgb888_result rgb888_result;
- };
- 
- static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
-@@ -51,6 +57,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 			.expected = { 0xF800 },
- 			.expected_swab = { 0x00F8 },
- 		},
-+		.rgb888_result = {
-+			.dst_pitch = 0,
-+			.expected = { 0x00, 0x00, 0xFF },
-+		},
- 	},
- 	{
- 		.name = "single_pixel_clip_rectangle",
-@@ -69,6 +79,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 			.expected = { 0xF800 },
- 			.expected_swab = { 0x00F8 },
- 		},
-+		.rgb888_result = {
-+			.dst_pitch = 0,
-+			.expected = { 0x00, 0x00, 0xFF },
-+		},
- 	},
- 	{
- 		/* Well known colors: White, black, red, green, blue, magenta,
-@@ -109,6 +123,15 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				0xE0FF, 0xFF07,
- 			},
- 		},
-+		.rgb888_result = {
-+			.dst_pitch = 0,
-+			.expected = {
-+				0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-+				0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00,
-+				0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF,
-+				0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
-+			},
-+		},
- 	},
- 	{
- 		/* Randomly picked colors. Full buffer within the clip area. */
-@@ -141,6 +164,17 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				0x00A8, 0x8E6B, 0x330A, 0x0000, 0x0000,
- 			},
- 		},
-+		.rgb888_result = {
-+			.dst_pitch = 15,
-+			.expected = {
-+				0x9C, 0x44, 0x0E, 0x05, 0x4D, 0x11, 0x03, 0x03, 0xA8,
-+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-+				0x73, 0x70, 0x6C, 0x9C, 0x44, 0x0E, 0x05, 0x4D, 0x11,
-+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-+				0x03, 0x03, 0xA8, 0x73, 0x70, 0x6C, 0x9C, 0x44, 0x0E,
-+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-+			},
-+		},
- 	},
- };
- 
-@@ -255,9 +289,40 @@ static void xrgb8888_to_rgb565_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected_swab, dst_size), 0);
- }
- 
-+static void xrgb8888_to_rgb888_test(struct kunit *test)
-+{
-+	const struct convert_xrgb8888_case *params = test->param_value;
-+	const struct convert_to_rgb888_result *result = &params->rgb888_result;
-+	size_t dst_size;
-+	__u8 *buf = NULL;
-+	__u32 *xrgb8888 = NULL;
-+	struct iosys_map dst, src;
-+
-+	struct drm_framebuffer fb = {
-+		.format = drm_format_info(DRM_FORMAT_XRGB8888),
-+		.pitches = { params->pitch, 0, 0 },
-+	};
-+
-+	dst_size = conversion_buf_size(DRM_FORMAT_RGB888, result->dst_pitch,
-+				       &params->clip);
-+	KUNIT_ASSERT_GT(test, dst_size, 0);
-+
-+	buf = kunit_kzalloc(test, dst_size, GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+	iosys_map_set_vaddr(&dst, buf);
-+
-+	xrgb8888 = le32buf_to_cpu(test, params->xrgb8888, TEST_BUF_SIZE);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, xrgb8888);
-+	iosys_map_set_vaddr(&src, xrgb8888);
-+
-+	drm_fb_xrgb8888_to_rgb888(&dst, &result->dst_pitch, &src, &fb, &params->clip);
-+	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
-+}
-+
- static struct kunit_case drm_format_helper_test_cases[] = {
- 	KUNIT_CASE_PARAM(xrgb8888_to_rgb332_test, convert_xrgb8888_gen_params),
- 	KUNIT_CASE_PARAM(xrgb8888_to_rgb565_test, convert_xrgb8888_gen_params),
-+	KUNIT_CASE_PARAM(xrgb8888_to_rgb888_test, convert_xrgb8888_gen_params),
- 	{}
+diff --git a/drivers/gpio/gpio-tegra186.c b/drivers/gpio/gpio-tegra186.c
+index 54d9fa7da9c1..824a355ff27a 100644
+--- a/drivers/gpio/gpio-tegra186.c
++++ b/drivers/gpio/gpio-tegra186.c
+@@ -669,6 +669,7 @@ static unsigned int tegra186_gpio_child_offset_to_irq(struct gpio_chip *chip,
+ static const struct of_device_id tegra186_pmc_of_match[] = {
+ 	{ .compatible = "nvidia,tegra186-pmc" },
+ 	{ .compatible = "nvidia,tegra194-pmc" },
++	{ .compatible = "nvidia,tegra234-pmc" },
+ 	{ /* sentinel */ }
  };
  
 -- 
-2.25.1
+2.17.1
 
