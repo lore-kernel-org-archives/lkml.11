@@ -2,936 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF77DC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC869C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234110AbiHPLQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40306 "EHLO
+        id S233483AbiHPLR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235380AbiHPLPZ (ORCPT
+        with ESMTP id S234221AbiHPLRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:15:25 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15192DFE2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:59:58 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id j26so2754757wms.0
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:59:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc;
-        bh=PnqklWL+RGF1i3CCCLxxKU2hE1X/c3n110YFpI0olb0=;
-        b=RTe1VVb/oV4hrVGJVXm9YA8nwupX2PMGKl+Pg3bUXFbY9jWWbffqHXxE76j8rNRouD
-         sbD96+X2iqcn6AIyC9rV5gIemvlQDVYh+uJ+Ym44t3Va9Qb+OqjZrzZJNKw/4QINWiDd
-         cp/d08ol2Ls5jKAMI1d/+AXvQJpcpyDbYz05Hpvj0qENv9DnlnTWtx3WGMWVmd803aOc
-         ZnQRvdDX/VEjVTSz6vJR2cnkArAMeB8j5Mai5k30GLi5SXDRWi/jZuEJ9mLI/up96aua
-         ZJx4ytUSSbgzGX/TGUKQa4O7tAXjnk4dh992fYzWNowAvk2wbkLrNHQnaPVtPeb4DE5s
-         /X+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=PnqklWL+RGF1i3CCCLxxKU2hE1X/c3n110YFpI0olb0=;
-        b=BpdSdAN2JG+RHpwUo7oNazhA2RpoH/9zr9JYOnWDeOqy7taSHiIDpYsq+xeuJIoBkn
-         pdZUg2dVH0Dj3cNy5m3GmR9G5FD95r0yp4IskYwlxoMrO+F+F40pdmOl5Kl/c0SeoWiG
-         qnOy3TFPknOXL4vIpj/1tjxYvSRh8lxgI+X7bV5OCtkvjfsaJoI8HRgrZwBKm5WSTbTv
-         2RMZhYwzK9K5Ci5WkqvA41iBQBRAfXvpXegnsOaQ1Lf4slL58RmawyH8ZMND0y7JvMwl
-         FV/Ly11RXwEOJOnBF9f8eDZ3ie0Ymcc9mLoOXpma+Wf+UfeVXU3ksU6UUMHTsKlD7ZLu
-         PLmg==
-X-Gm-Message-State: ACgBeo0a3M8klhS+jg1op2dLhJylipD1sGVCujNciPfLoFDe2NAJdf+U
-        oqHFTVGw76NIKPrM/tFXq9+Q+A==
-X-Google-Smtp-Source: AA6agR42gKbh+SrSoKgSqr3CinU2WRqyL1DxHjFcjbYadmn44fp4m/4ugiMrKyH6xsboL5oVeeQjXw==
-X-Received: by 2002:a7b:cd0f:0:b0:3a5:ec59:daf0 with SMTP id f15-20020a7bcd0f000000b003a5ec59daf0mr6442194wmj.13.1660643996273;
-        Tue, 16 Aug 2022 02:59:56 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:ef0b:d58b:b15c:96e6? ([2a01:e0a:982:cbb0:ef0b:d58b:b15c:96e6])
-        by smtp.gmail.com with ESMTPSA id j11-20020adfe50b000000b00224f67bfc95sm8623511wrm.62.2022.08.16.02.59.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 02:59:55 -0700 (PDT)
-Message-ID: <89777dae-34c5-3cb9-dd54-98230fd260e0@baylibre.com>
-Date:   Tue, 16 Aug 2022 11:59:54 +0200
+        Tue, 16 Aug 2022 07:17:38 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795798604E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=bIEYAdJMn8rJfxn0kVE7GP80ys7ubTpy0sCOub6aPs4=; b=CKoCDea0HqbcbzaDQ9f24zjk7P
+        UVqHhjEHGavJ5cii86GWwrZaWQJmxUAXZcNINGer8F72h3kmbRppk573SxDxeGmm8TV4wH3IMpewp
+        ezcCjp7FuaFz9mJFE167azuVlCfDV8Yx0UFB5dqTE2PEN6dFKUW1Zd/WyFlMvtMItCubDKeXR3e09
+        mxjQoiLiWZP2APT790i1y4JN5UgBrAcHFFIEcvGrv/YS+B8/Ncbop9kpmytPJURC7PFricfiUNai9
+        w24g9Hj45j8zDLWPn7FbaETtjeiLI1TuG/4mBDC/SWLs45mSYLT11bag9AwfFDIghKiPfE03HAoIy
+        TcAvZP4w==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=56539)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oNt5f-0004wT-VP; Tue, 16 Aug 2022 11:42:27 +0200
+Message-ID: <ea6ebdda-f779-78af-1ffd-bd86d715077f@tronnes.org>
+Date:   Tue, 16 Aug 2022 11:42:20 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] arm64: dts: meson-axg: add support for JetHub D1p
- (j110)
-Content-Language: en-US
-To:     Vyacheslav Bocharov <adeep@lexina.in>
-Cc:     linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-References: <20220811103113.3097868-1-adeep@lexina.in>
- <20220811103113.3097868-2-adeep@lexina.in>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220811103113.3097868-2-adeep@lexina.in>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <9fdecae2-80ad-6212-0522-7dccf9fb57be@tronnes.org>
+ <20220816082612.grebxql5ynnfnvfd@houat>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220816082612.grebxql5ynnfnvfd@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/08/2022 12:31, Vyacheslav Bocharov wrote:
-> - add support for JetHome JetHub D1p (https://jethome.ru/d1p) is a home
-> automation controller with the following features:
->    - DIN Rail Mounting
->    - Amlogic A113X (ARM Cortex-A53) quad-core up to 1.5GHz
->    - no video out
->    - 1/2/4GB LPDDR4
->    - 8/16/32GB eMMC flash
->    - 1 x USB 2.0
->    - 1 x 10/100Mbps ethernet
->    - WiFi / Bluetooth Realtek 8822CS or similar IEEE 802.11a/b/g/n/ac
->    - TI CC2652P1 Zigbee Wireless Module with up to 20dBm output power
->      and Zigbee 3.0 support.
->    - 2 x gpio LEDS
->    - GPIO user Button
->    - 1 x 1-Wire
->    - 2 x RS-485
->    - 4 x dry contact digital GPIO inputs
->    - 3 x relay GPIO outputs
->    - DC source with a voltage of 9 to 56 V / Active POE
-> 
-> - unify device tree files for JetHub D1/D1p devices
-> 
-> Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
-> ---
->   arch/arm64/boot/dts/amlogic/Makefile          |   2 +
->   .../amlogic/meson-axg-jethome-jethub-j100.dts | 338 +----------------
->   .../meson-axg-jethome-jethub-j110-rev-2.dts   |  37 ++
->   .../meson-axg-jethome-jethub-j110-rev-3.dts   |  27 ++
->   .../meson-axg-jethome-jethub-j1xx.dtsi        | 351 ++++++++++++++++++
->   5 files changed, 421 insertions(+), 334 deletions(-)
->   create mode 100644 arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
->   create mode 100644 arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-3.dts
->   create mode 100644 arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j1xx.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
-> index 8773211df50e..33e9c96af099 100644
-> --- a/arch/arm64/boot/dts/amlogic/Makefile
-> +++ b/arch/arm64/boot/dts/amlogic/Makefile
-> @@ -1,6 +1,8 @@
->   # SPDX-License-Identifier: GPL-2.0
->   dtb-$(CONFIG_ARCH_MESON) += meson-a1-ad401.dtb
->   dtb-$(CONFIG_ARCH_MESON) += meson-axg-jethome-jethub-j100.dtb
-> +dtb-$(CONFIG_ARCH_MESON) += meson-axg-jethome-jethub-j110-rev-2.dtb
-> +dtb-$(CONFIG_ARCH_MESON) += meson-axg-jethome-jethub-j110-rev-3.dtb
->   dtb-$(CONFIG_ARCH_MESON) += meson-axg-s400.dtb
->   dtb-$(CONFIG_ARCH_MESON) += meson-g12a-radxa-zero.dtb
->   dtb-$(CONFIG_ARCH_MESON) += meson-g12a-sei510.dtb
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> index 8b0d586aa84e..b2d6ba660914 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> +++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> @@ -1,270 +1,29 @@
->   // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
->   /*
-> - * Copyright (c) 2021 Vyacheslav Bocharov <adeep@lexina.in>
-> - * Copyright (c) 2020 JetHome
-> - * Author: Aleksandr Kazantsev <ak@tvip.ru>
-> - * Author: Alexey Shevelkin <ash@tvip.ru>
-> + * Copyright (c) 2022 Vyacheslav Bocharov <adeep@lexina.in>
-> + * Copyright (c) 2022 JetHome
->    * Author: Vyacheslav Bocharov <adeep@lexina.in>
->    */
->   
->   /dts-v1/;
->   
-> -#include "meson-axg.dtsi"
-> -#include <dt-bindings/input/input.h>
-> -#include <dt-bindings/thermal/thermal.h>
-> +#include "meson-axg-jethome-jethub-j1xx.dtsi"
->   
->   / {
->   	compatible = "jethome,jethub-j100", "amlogic,a113d", "amlogic,meson-axg";
-> -	model = "JetHome JetHub J100";
-> -	aliases {
-> -		serial0 = &uart_AO;   /* Console */
-> -		serial2 = &uart_AO_B; /* External UART (Wireless Module) */
-> -		ethernet0 = &ethmac;
-> -	};
-> -
-> -	chosen {
-> -		stdout-path = "serial0:115200n8";
-> -	};
-> +	model = "JetHome JetHub D1 (J100)";
->   
->   	/* 1024MB RAM */
->   	memory@0 {
->   		device_type = "memory";
->   		reg = <0x0 0x0 0x0 0x40000000>;
->   	};
-> -
-> -	reserved-memory {
-> -		linux,cma {
-> -			size = <0x0 0x400000>;
-> -		};
-> -	};
-> -
-> -	emmc_pwrseq: emmc-pwrseq {
-> -		compatible = "mmc-pwrseq-emmc";
-> -		reset-gpios = <&gpio BOOT_9 GPIO_ACTIVE_LOW>;
-> -	};
-> -
-> -	vcc_3v3: regulator-vcc_3v3 {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VCC_3V3";
-> -		regulator-min-microvolt = <3300000>;
-> -		regulator-max-microvolt = <3300000>;
-> -		vin-supply = <&vddao_3v3>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	vcc_5v: regulator-vcc_5v {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VCC5V";
-> -		regulator-min-microvolt = <5000000>;
-> -		regulator-max-microvolt = <5000000>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	vddao_3v3: regulator-vddao_3v3 {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VDDAO_3V3";
-> -		regulator-min-microvolt = <3300000>;
-> -		regulator-max-microvolt = <3300000>;
-> -		vin-supply = <&vcc_5v>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	vddio_ao18: regulator-vddio_ao18 {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VDDIO_AO18";
-> -		regulator-min-microvolt = <1800000>;
-> -		regulator-max-microvolt = <1800000>;
-> -		vin-supply = <&vddao_3v3>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	vddio_boot: regulator-vddio_boot {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VDDIO_BOOT";
-> -		regulator-min-microvolt = <3300000>;
-> -		regulator-max-microvolt = <3300000>;
-> -		vin-supply = <&vddao_3v3>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	vccq_1v8: regulator-vccq_1v8 {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "VCCQ_1V8";
-> -		regulator-min-microvolt = <1800000>;
-> -		regulator-max-microvolt = <1800000>;
-> -		vin-supply = <&vddao_3v3>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	usb_pwr: regulator-usb_pwr {
-> -		compatible = "regulator-fixed";
-> -		regulator-name = "USB_PWR";
-> -		regulator-min-microvolt = <5000000>;
-> -		regulator-max-microvolt = <5000000>;
-> -		vin-supply = <&vcc_5v>;
-> -		regulator-always-on;
-> -	};
-> -
-> -	sdio_pwrseq: sdio-pwrseq {
-> -		compatible = "mmc-pwrseq-simple";
-> -		reset-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_LOW>;
-> -		clocks = <&wifi32k>;
-> -		clock-names = "ext_clock";
-> -	};
-> -
-> -	wifi32k: wifi32k {
-> -		compatible = "pwm-clock";
-> -		#clock-cells = <0>;
-> -		clock-frequency = <32768>;
-> -		pwms = <&pwm_ab 0 30518 0>; /* PWM_A at 32.768KHz */
-> -	};
-> -
-> -	thermal-zones {
-> -		cpu_thermal: cpu-thermal {
-> -			polling-delay-passive = <250>;
-> -			polling-delay = <1000>;
-> -			thermal-sensors = <&scpi_sensors 0>;
-> -			trips {
-> -				cpu_passive: cpu-passive {
-> -					temperature = <70000>; /* millicelsius */
-> -					hysteresis = <2000>; /* millicelsius */
-> -					type = "passive";
-> -				};
-> -
-> -				cpu_hot: cpu-hot {
-> -					temperature = <80000>; /* millicelsius */
-> -					hysteresis = <2000>; /* millicelsius */
-> -					type = "hot";
-> -				};
-> -
-> -				cpu_critical: cpu-critical {
-> -					temperature = <100000>; /* millicelsius */
-> -					hysteresis = <2000>; /* millicelsius */
-> -					type = "critical";
-> -				};
-> -			};
-> -
-> -			cpu_cooling_maps: cooling-maps {
-> -				map0 {
-> -					trip = <&cpu_passive>;
-> -					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> -				};
-> -
-> -				map1 {
-> -					trip = <&cpu_hot>;
-> -					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> -							<&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> -				};
-> -			};
-> -		};
-> -	};
-> -
-> -	onewire {
-> -		compatible = "w1-gpio";
-> -		gpios = <&gpio GPIOA_14 GPIO_ACTIVE_HIGH>;
-> -		#gpio-cells = <1>;
-> -	};
-> -};
-> -
-> -&efuse {
-> -	sn: sn@32 {
-> -		reg = <0x32 0x20>;
-> -	};
-> -
-> -	eth_mac: eth_mac@0 {
-> -		reg = <0x0 0x6>;
-> -	};
-> -
-> -	bt_mac: bt_mac@6 {
-> -		reg = <0x6 0x6>;
-> -	};
-> -
-> -	wifi_mac: wifi_mac@c {
-> -		reg = <0xc 0x6>;
-> -	};
-> -
-> -	bid: bid@12 {
-> -		reg = <0x12 0x20>;
-> -	};
-> -};
-> -
-> -&ethmac {
-> -	status = "okay";
-> -	pinctrl-0 = <&eth_rmii_x_pins>;
-> -	pinctrl-names = "default";
-> -	phy-handle = <&eth_phy0>;
-> -	phy-mode = "rmii";
-> -
-> -	mdio {
-> -		compatible = "snps,dwmac-mdio";
-> -		#address-cells = <1>;
-> -		#size-cells = <0>;
-> -
-> -		/* ICPlus IP101A/G Ethernet PHY (vendor_id=0x0243, model_id=0x0c54) */
-> -		eth_phy0: ethernet-phy@0 {
-> -			/* compatible = "ethernet-phy-id0243.0c54";*/
-> -			max-speed = <100>;
-> -			reg = <0>;
-> -
-> -			reset-assert-us = <10000>;
-> -			reset-deassert-us = <10000>;
-> -			reset-gpios = <&gpio GPIOZ_5 GPIO_ACTIVE_LOW>;
-> -		};
-> -	};
-> -};
-> -
-> -/* Internal I2C bus (on CPU module) */
-> -&i2c1 {
-> -	status = "okay";
-> -	pinctrl-0 = <&i2c1_z_pins>;
-> -	pinctrl-names = "default";
-> -
-> -	/* RTC */
-> -	pcf8563: pcf8563@51 {
-> -		compatible = "nxp,pcf8563";
-> -		reg = <0x51>;
-> -		status = "okay";
-> -	};
->   };
->   
-> -/* Peripheral I2C bus (on motherboard) */
-> -&i2c_AO {
-> -	status = "okay";
-> -	pinctrl-0 = <&i2c_ao_sck_10_pins>, <&i2c_ao_sda_11_pins>;
-> -	pinctrl-names = "default";
-> -};
-> -
-> -&pwm_ab {
-> -	status = "okay";
-> -	pinctrl-0 = <&pwm_a_x20_pins>;
-> -	pinctrl-names = "default";
-> -};
->   
->   /* wifi module */
->   &sd_emmc_b {
-> -	status = "okay";
-> -	#address-cells = <1>;
-> -	#size-cells = <0>;
-> -
-> -	pinctrl-0 = <&sdio_pins>;
-> -	pinctrl-1 = <&sdio_clk_gate_pins>;
-> -	pinctrl-names = "default", "clk-gate";
-> -
-> -	bus-width = <4>;
-> -	cap-sd-highspeed;
-> -	max-frequency = <50000000>;
->   	non-removable;
-> -	disable-wp;
-> -
-> -	mmc-pwrseq = <&sdio_pwrseq>;
-> -
-> -	vmmc-supply = <&vddao_3v3>;
-> -	vqmmc-supply = <&vddio_boot>;
->   
->   	brcmf: wifi@1 {
->   		reg = <1>;
-> @@ -272,99 +31,10 @@ brcmf: wifi@1 {
->   	};
->   };
->   
-> -/* emmc storage */
-> -&sd_emmc_c {
-> -	status = "okay";
-> -	pinctrl-0 = <&emmc_pins>, <&emmc_ds_pins>;
-> -	pinctrl-1 = <&emmc_clk_gate_pins>;
-> -	pinctrl-names = "default", "clk-gate";
-> -
-> -	bus-width = <8>;
-> -	cap-mmc-highspeed;
-> -	max-frequency = <200000000>;
-> -	non-removable;
-> -	disable-wp;
-> -	mmc-ddr-1_8v;
-> -	mmc-hs200-1_8v;
-> -
-> -	mmc-pwrseq = <&emmc_pwrseq>;
-> -
-> -	vmmc-supply = <&vcc_3v3>;
-> -	vqmmc-supply = <&vccq_1v8>;
-> -};
-> -
->   /* UART Bluetooth */
->   &uart_B {
-> -	status = "okay";
-> -	pinctrl-0 = <&uart_b_z_pins>, <&uart_b_z_cts_rts_pins>;
-> -	pinctrl-names = "default";
-> -	uart-has-rtscts;
-> -
->   	bluetooth {
->   		compatible = "brcm,bcm43438-bt";
->   		shutdown-gpios = <&gpio GPIOZ_7 GPIO_ACTIVE_HIGH>;
->   	};
->   };
-> -
-> -/* UART Console */
-> -&uart_AO {
-> -	status = "okay";
-> -	pinctrl-0 = <&uart_ao_a_pins>;
-> -	pinctrl-names = "default";
-> -};
-> -
-> -/* UART Wireless module */
-> -&uart_AO_B {
-> -	status = "okay";
-> -	pinctrl-0 = <&uart_ao_b_pins>;
-> -	pinctrl-names = "default";
-> -};
-> -
-> -&usb {
-> -	status = "okay";
-> -	phy-supply = <&usb_pwr>;
-> -};
-> -
-> -&spicc1 {
-> -	status = "okay";
-> -	pinctrl-0 = <&spi1_x_pins>, <&spi1_ss0_x_pins>;
-> -	pinctrl-names = "default";
-> -};
-> -
-> -&gpio {
-> -	gpio-line-names =
-> -		"", "", "", "", "", // 0 - 4
-> -		"", "", "", "", "", // 5 - 9
-> -		"UserButton", "", "", "", "", // 10 - 14
-> -		"", "", "", "", "", // 15 - 19
-> -		"", "", "", "", "", // 20 - 24
-> -		"", "LedRed", "LedGreen", "Output3", "Output2", // 25 - 29
-> -		"Output1", "", "", "", "", // 30 - 34
-> -		"", "ZigBeeBOOT", "", "", "", // 35 - 39
-> -		"1Wire", "ZigBeeRESET", "", "Input4", "Input3", // 40 - 44
-> -		"Input2", "Input1", "", "", "", // 45 - 49
-> -		"", "", "", "", "", // 50 - 54
-> -		"", "", "", "", "", // 55 - 59
-> -		"", "", "", "", "", // 60 - 64
-> -		"", "", "", "", "", // 65 - 69
-> -		"", "", "", "", "", // 70 - 74
-> -		"", "", "", "", "", // 75 - 79
-> -		"", "", "", "", "", // 80 - 84
-> -		"", ""; // 85-86
-> -};
-> -
-> -&cpu0 {
-> -	#cooling-cells = <2>;
-> -};
-> -
-> -&cpu1 {
-> -	#cooling-cells = <2>;
-> -};
-> -
-> -&cpu2 {
-> -	#cooling-cells = <2>;
-> -};
-> -
-> -&cpu3 {
-> -	#cooling-cells = <2>;
-> -};
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
-> new file mode 100644
-> index 000000000000..0062667c4f65
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
-> @@ -0,0 +1,37 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2022 Vyacheslav Bocharov <adeep@lexina.in>
-> + * Copyright (c) 2022 JetHome
-> + * Author: Vyacheslav Bocharov <adeep@lexina.in>
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "meson-axg-jethome-jethub-j1xx.dtsi"
-> +
-> +/ {
-> +	compatible = "jethome,jethub-j110", "amlogic,a113d", "amlogic,meson-axg";
-> +	model = "JetHome JetHub D1p (J110) HW rev.2";
-> +
-> +	/* 2GiB or 4GiB RAM */
-> +	memory@0 {
-> +		device_type = "memory";
-> +		reg = <0x0 0x0 0x0 0x80000000>;
-> +	};
-> +};
-> +
-> +
-> +/* wifi module */
-> +&sd_emmc_b {
-> +	broken-cd;/* cd-gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_LOW>;*/
-> +};
-> +
-> +/* UART Bluetooth */
-> +&uart_B {
-> +	bluetooth {
-> +		compatible = "realtek,rtl8822cs-bt";
-> +		enable-gpios  = <&gpio GPIOZ_7 GPIO_ACTIVE_HIGH>;
-> +		host-wake-gpios = <&gpio GPIOZ_8 GPIO_ACTIVE_HIGH>;
-> +		device-wake-gpios = <&gpio GPIOZ_6 GPIO_ACTIVE_HIGH>;
-> +	};
-> +};
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-3.dts b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-3.dts
-> new file mode 100644
-> index 000000000000..c2d22b00c1cd
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-3.dts
-> @@ -0,0 +1,27 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2022 Vyacheslav Bocharov <adeep@lexina.in>
-> + * Copyright (c) 2022 JetHome
-> + * Author: Vyacheslav Bocharov <adeep@lexina.in>
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "meson-axg-jethome-jethub-j1xx.dtsi"
-> +
-> +/ {
-> +	compatible = "jethome,jethub-j110", "amlogic,a113d", "amlogic,meson-axg";
-> +	model = "JetHome JetHub D1p (J110) Hw rev.3";
-> +
-> +	/* 2GiB or 4GiB RAM */
-> +	memory@0 {
-> +		device_type = "memory";
-> +		reg = <0x0 0x0 0x0 0x80000000>;
-> +	};
-> +};
-> +
-> +
-> +/* wifi module */
-> +&sd_emmc_b {
-> +	broken-cd;/* cd-gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_LOW>;*/
-> +};
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j1xx.dtsi b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j1xx.dtsi
-> new file mode 100644
-> index 000000000000..5836b0030931
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j1xx.dtsi
-> @@ -0,0 +1,351 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2022 Vyacheslav Bocharov <adeep@lexina.in>
-> + * Copyright (c) 2022 JetHome
-> + * Author: Vyacheslav Bocharov <adeep@lexina.in>
-> + * Author: Aleksandr Kazantsev <ak@tvip.ru>
-> + * Author: Alexey Shevelkin <ash@tvip.ru>
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "meson-axg.dtsi"
-> +#include <dt-bindings/input/input.h>
-> +#include <dt-bindings/thermal/thermal.h>
-> +
-> +/ {
-> +	aliases {
-> +		serial0 = &uart_AO;   /* Console */
-> +		serial2 = &uart_AO_B; /* External UART (Wireless Module) */
-> +		ethernet0 = &ethmac;
-> +	};
-> +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +	};
-> +
-> +	reserved-memory {
-> +		linux,cma {
-> +			size = <0x0 0x400000>;
-> +		};
-> +	};
-> +
-> +	emmc_pwrseq: emmc-pwrseq {
-> +		compatible = "mmc-pwrseq-emmc";
-> +		reset-gpios = <&gpio BOOT_9 GPIO_ACTIVE_LOW>;
-> +	};
-> +
-> +	vcc_3v3: regulator-vcc_3v3 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VCC_3V3";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&vddao_3v3>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vcc_5v: regulator-vcc_5v {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VCC5V";
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vddao_3v3: regulator-vddao_3v3 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VDDAO_3V3";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&vcc_5v>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vddio_ao18: regulator-vddio_ao18 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VDDIO_AO18";
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +		vin-supply = <&vddao_3v3>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vddio_boot: regulator-vddio_boot {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VDDIO_BOOT";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&vddao_3v3>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vccq_1v8: regulator-vccq_1v8 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VCCQ_1V8";
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +		vin-supply = <&vddao_3v3>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	usb_pwr: regulator-usb_pwr {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "USB_PWR";
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		vin-supply = <&vcc_5v>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	sdio_pwrseq: sdio-pwrseq {
-> +		compatible = "mmc-pwrseq-simple";
-> +		reset-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_LOW>;
-> +		clocks = <&wifi32k>;
-> +		clock-names = "ext_clock";
-> +	};
-> +
-> +	wifi32k: wifi32k {
-> +		compatible = "pwm-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <32768>;
-> +		pwms = <&pwm_ab 0 30518 0>; /* PWM_A at 32.768KHz */
-> +	};
-> +
-> +	thermal-zones {
-> +		cpu_thermal: cpu-thermal {
-> +			polling-delay-passive = <250>;
-> +			polling-delay = <1000>;
-> +			thermal-sensors = <&scpi_sensors 0>;
-> +			trips {
-> +				cpu_passive: cpu-passive {
-> +					temperature = <70000>; /* millicelsius */
-> +					hysteresis = <2000>; /* millicelsius */
-> +					type = "passive";
-> +				};
-> +
-> +				cpu_hot: cpu-hot {
-> +					temperature = <80000>; /* millicelsius */
-> +					hysteresis = <2000>; /* millicelsius */
-> +					type = "hot";
-> +				};
-> +
-> +				cpu_critical: cpu-critical {
-> +					temperature = <100000>; /* millicelsius */
-> +					hysteresis = <2000>; /* millicelsius */
-> +					type = "critical";
-> +				};
-> +			};
-> +
-> +			cpu_cooling_maps: cooling-maps {
-> +				map0 {
-> +					trip = <&cpu_passive>;
-> +					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +
-> +				map1 {
-> +					trip = <&cpu_hot>;
-> +					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +							<&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +	};
-> +
-> +	onewire {
-> +		compatible = "w1-gpio";
-> +		gpios = <&gpio GPIOA_14 GPIO_ACTIVE_HIGH>;
-> +		#gpio-cells = <1>;
-> +	};
-> +};
-> +
-> +&efuse {
-> +	sn: sn@32 {
-> +		reg = <0x32 0x20>;
-> +	};
-> +
-> +	eth_mac: eth_mac@0 {
-> +		reg = <0x0 0x6>;
-> +	};
-> +
-> +	bt_mac: bt_mac@6 {
-> +		reg = <0x6 0x6>;
-> +	};
-> +
-> +	wifi_mac: wifi_mac@c {
-> +		reg = <0xc 0x6>;
-> +	};
-> +
-> +	bid: bid@12 {
-> +		reg = <0x12 0x20>;
-> +	};
-> +};
-> +
-> +&ethmac {
-> +	status = "okay";
-> +	pinctrl-0 = <&eth_rmii_x_pins>;
-> +	pinctrl-names = "default";
-> +	phy-handle = <&eth_phy0>;
-> +	phy-mode = "rmii";
-> +
-> +	mdio {
-> +		compatible = "snps,dwmac-mdio";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		/* ICPlus IP101A/G Ethernet PHY (vendor_id=0x0243, model_id=0x0c54) */
-> +		eth_phy0: ethernet-phy@0 {
-> +			/* compatible = "ethernet-phy-id0243.0c54";*/
-> +			max-speed = <100>;
-> +			reg = <0>;
-> +
-> +			reset-assert-us = <10000>;
-> +			reset-deassert-us = <10000>;
-> +			reset-gpios = <&gpio GPIOZ_5 GPIO_ACTIVE_LOW>;
-> +		};
-> +	};
-> +};
-> +
-> +/* Internal I2C bus (on CPU module) */
-> +&i2c1 {
-> +	status = "okay";
-> +	pinctrl-0 = <&i2c1_z_pins>;
-> +	pinctrl-names = "default";
-> +
-> +	/* RTC */
-> +	pcf8563: pcf8563@51 {
-> +		compatible = "nxp,pcf8563";
-> +		reg = <0x51>;
-> +		status = "okay";
-> +	};
-> +};
-> +
-> +/* Peripheral I2C bus (on motherboard) */
-> +&i2c_AO {
-> +	status = "okay";
-> +	pinctrl-0 = <&i2c_ao_sck_10_pins>, <&i2c_ao_sda_11_pins>;
-> +	pinctrl-names = "default";
-> +};
-> +
-> +&pwm_ab {
-> +	status = "okay";
-> +	pinctrl-0 = <&pwm_a_x20_pins>;
-> +	pinctrl-names = "default";
-> +};
-> +
-> +/* wifi module */
-> +&sd_emmc_b {
-> +	status = "okay";
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +
-> +	pinctrl-0 = <&sdio_pins>;
-> +	pinctrl-1 = <&sdio_clk_gate_pins>;
-> +	pinctrl-names = "default", "clk-gate";
-> +
-> +	bus-width = <4>;
-> +	cap-sd-highspeed;
-> +	max-frequency = <50000000>;
-> +	disable-wp;
-> +
-> +	mmc-pwrseq = <&sdio_pwrseq>;
-> +
-> +	vmmc-supply = <&vddao_3v3>;
-> +	vqmmc-supply = <&vddio_boot>;
-> +};
-> +
-> +/* emmc storage */
-> +&sd_emmc_c {
-> +	status = "okay";
-> +	pinctrl-0 = <&emmc_pins>, <&emmc_ds_pins>;
-> +	pinctrl-1 = <&emmc_clk_gate_pins>;
-> +	pinctrl-names = "default", "clk-gate";
-> +
-> +	bus-width = <8>;
-> +	cap-mmc-highspeed;
-> +	max-frequency = <200000000>;
-> +	non-removable;
-> +	disable-wp;
-> +	mmc-ddr-1_8v;
-> +	mmc-hs200-1_8v;
-> +
-> +	mmc-pwrseq = <&emmc_pwrseq>;
-> +
-> +	vmmc-supply = <&vcc_3v3>;
-> +	vqmmc-supply = <&vccq_1v8>;
-> +};
-> +
-> +/* UART Bluetooth */
-> +&uart_B {
-> +	status = "okay";
-> +	pinctrl-0 = <&uart_b_z_pins>, <&uart_b_z_cts_rts_pins>;
-> +	pinctrl-names = "default";
-> +	uart-has-rtscts;
-> +};
-> +
-> +/* UART Console */
-> +&uart_AO {
-> +	status = "okay";
-> +	pinctrl-0 = <&uart_ao_a_pins>;
-> +	pinctrl-names = "default";
-> +};
-> +
-> +/* UART Wireless module */
-> +&uart_AO_B {
-> +	status = "okay";
-> +	pinctrl-0 = <&uart_ao_b_pins>;
-> +	pinctrl-names = "default";
-> +};
-> +
-> +&usb {
-> +	status = "okay";
-> +	phy-supply = <&usb_pwr>;
-> +};
-> +
-> +&spicc1 {
-> +	status = "okay";
-> +	pinctrl-0 = <&spi1_x_pins>, <&spi1_ss0_x_pins>;
-> +	pinctrl-names = "default";
-> +};
-> +
-> +&gpio {
-> +	gpio-line-names =
-> +		"", "", "", "", "", // 0 - 4
-> +		"", "", "", "", "", // 5 - 9
-> +		"UserButton", "", "", "", "", // 10 - 14
-> +		"", "", "", "", "", // 15 - 19
-> +		"", "", "", "", "", // 20 - 24
-> +		"", "LedRed", "LedGreen", "Output3", "Output2", // 25 - 29
-> +		"Output1", "", "", "", "", // 30 - 34
-> +		"", "ZigBeeBOOT", "", "", "", // 35 - 39
-> +		"1Wire", "ZigBeeRESET", "", "Input4", "Input3", // 40 - 44
-> +		"Input2", "Input1", "", "", "", // 45 - 49
-> +		"", "", "", "", "", // 50 - 54
-> +		"", "", "", "", "", // 55 - 59
-> +		"", "", "", "", "", // 60 - 64
-> +		"", "", "", "", "", // 65 - 69
-> +		"", "", "", "", "", // 70 - 74
-> +		"", "", "", "", "", // 75 - 79
-> +		"", "", "", "", "", // 80 - 84
-> +		"", ""; // 85-86
-> +};
-> +
-> +&cpu0 {
-> +	#cooling-cells = <2>;
-> +};
-> +
-> +&cpu1 {
-> +	#cooling-cells = <2>;
-> +};
-> +
-> +&cpu2 {
-> +	#cooling-cells = <2>;
-> +};
-> +
-> +&cpu3 {
-> +	#cooling-cells = <2>;
-> +};
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+
+Den 16.08.2022 10.26, skrev Maxime Ripard:
+> Hi,
+> 
+> On Mon, Aug 08, 2022 at 02:44:56PM +0200, Noralf Trønnes wrote:
+>> Den 29.07.2022 18.34, skrev Maxime Ripard:
+>>> The TV mode property has been around for a while now to select and get the
+>>> current TV mode output on an analog TV connector.
+>>>
+>>> Despite that property name being generic, its content isn't and has been
+>>> driver-specific which makes it hard to build any generic behaviour on top
+>>> of it, both in kernel and user-space.
+>>>
+>>> Let's create a new bitmask tv norm property, that can contain any of the
+>>> analog TV standards currently supported by kernel drivers. Each driver can
+>>> then pass in a bitmask of the modes it supports.
+>>>
+>>> We'll then be able to phase out the older tv mode property.
+>>>
+>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+>>>
+>>
+>> Please also update Documentation/gpu/kms-properties.csv
+>>
+>> Requirements for adding a new property is found in
+>> Documentation/gpu/drm-kms.rst
+> 
+> I knew this was going to be raised at some point, so I'm glad it's that
+> early :)
+> 
+> I really don't know what to do there. If we stick by our usual rules,
+> then we can't have any of that work merged.
+> 
+> However, I think the status quo is not really satisfactory either.
+> Indeed, we have a property, that doesn't follow those requirements
+> either, with a driver-specific content, and that stands in the way of
+> fixes and further improvements at both the core framework and driver
+> levels.
+> 
+> So having that new property still seems like a net improvement at the
+> driver, framework and uAPI levels, even if it's not entirely following
+> the requirements we have in place.
+> 
+> Even more so since, realistically, those kind of interfaces will never
+> get any new development on the user-space side of things, it's
+> considered by everyone as legacy.
+> 
+> This also is something we need to support at some point if we want to
+> completely deprecate the fbdev drivers and provide decent alternatives
+> in KMS.
+> 
+> So yeah, strictly speaking, we would not qualify for our requirements
+> there. I still think we have a strong case for an exception though.
+> 
+
+Which requirements would that be? The only one I can see is the
+documentation and maybe an IGT test.
+
+Noralf.
+
+>>> diff --git a/drivers/gpu/drm/drm_atomic_uapi.c b/drivers/gpu/drm/drm_atomic_uapi.c
+>>> index c06d0639d552..d7ff6c644c2f 100644
+>>> --- a/drivers/gpu/drm/drm_atomic_uapi.c
+>>> +++ b/drivers/gpu/drm/drm_atomic_uapi.c
+>>> @@ -700,6 +700,8 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
+>>>  		state->tv.margins.bottom = val;
+>>>  	} else if (property == config->tv_mode_property) {
+>>>  		state->tv.mode = val;
+>>> +	} else if (property == config->tv_norm_property) {
+>>> +		state->tv.norm = val;
+>>>  	} else if (property == config->tv_brightness_property) {
+>>>  		state->tv.brightness = val;
+>>>  	} else if (property == config->tv_contrast_property) {
+>>> @@ -810,6 +812,8 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
+>>>  		*val = state->tv.margins.bottom;
+>>>  	} else if (property == config->tv_mode_property) {
+>>>  		*val = state->tv.mode;
+>>> +	} else if (property == config->tv_norm_property) {
+>>> +		*val = state->tv.norm;
+>>>  	} else if (property == config->tv_brightness_property) {
+>>>  		*val = state->tv.brightness;
+>>>  	} else if (property == config->tv_contrast_property) {
+>>> diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+>>> index e3142c8142b3..68a4e47f85a9 100644
+>>> --- a/drivers/gpu/drm/drm_connector.c
+>>> +++ b/drivers/gpu/drm/drm_connector.c
+>>> @@ -1637,6 +1637,7 @@ EXPORT_SYMBOL(drm_mode_create_tv_margin_properties);
+>>>  /**
+>>>   * drm_mode_create_tv_properties - create TV specific connector properties
+>>>   * @dev: DRM device
+>>> + * @supported_tv_norms: Bitmask of TV norms supported (See DRM_MODE_TV_NORM_*)
+>>>   * @num_modes: number of different TV formats (modes) supported
+>>>   * @modes: array of pointers to strings containing name of each format
+>>>   *
+>>> @@ -1649,11 +1650,40 @@ EXPORT_SYMBOL(drm_mode_create_tv_margin_properties);
+>>>   * 0 on success or a negative error code on failure.
+>>>   */
+>>>  int drm_mode_create_tv_properties(struct drm_device *dev,
+>>> +				  unsigned int supported_tv_norms,
+>>>  				  unsigned int num_modes,
+>>>  				  const char * const modes[])
+>>>  {
+>>> +	static const struct drm_prop_enum_list tv_norm_values[] = {
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_443) - 1, "NTSC-443" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_J) - 1, "NTSC-J" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_M) - 1, "NTSC-M" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_60) - 1, "PAL-60" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_B) - 1, "PAL-B" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_D) - 1, "PAL-D" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_G) - 1, "PAL-G" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_H) - 1, "PAL-H" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_I) - 1, "PAL-I" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_M) - 1, "PAL-M" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_N) - 1, "PAL-N" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_NC) - 1, "PAL-Nc" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_60) - 1, "SECAM-60" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_B) - 1, "SECAM-B" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_D) - 1, "SECAM-D" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_G) - 1, "SECAM-G" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K) - 1, "SECAM-K" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K1) - 1, "SECAM-K1" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_L) - 1, "SECAM-L" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD480I) - 1, "hd480i" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD480P) - 1, "hd480p" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD576I) - 1, "hd576i" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD576P) - 1, "hd576p" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD720P) - 1, "hd720p" },
+>>> +		{ __builtin_ffs(DRM_MODE_TV_NORM_HD1080I) - 1, "hd1080i" },
+>>> +	};
+>>>  	struct drm_property *tv_selector;
+>>>  	struct drm_property *tv_subconnector;
+>>> +	struct drm_property *tv_norm;
+>>>  	unsigned int i;
+>>>  
+>>>  	if (dev->mode_config.tv_select_subconnector_property)
+>>> @@ -1686,6 +1716,13 @@ int drm_mode_create_tv_properties(struct drm_device *dev,
+>>>  	if (drm_mode_create_tv_margin_properties(dev))
+>>>  		goto nomem;
+>>>  
+>>> +	tv_norm = drm_property_create_bitmask(dev, 0, "tv norm",
+>>> +					   tv_norm_values, ARRAY_SIZE(tv_norm_values),
+>>> +					   supported_tv_norms);
+>>
+>> I expected this to be an enum, why a bitmask? Userspace can set multiple
+>> bits in a bitmask.
+> 
+> I went for a bitmask since it allowed to report the capabilities of a
+> driver, but I just realised that you can do that with an enum too, like
+> we do for color encodings.
+> 
+> I'll switch for an enum, thanks!
+> Maxime
