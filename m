@@ -2,165 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F37EC2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF48DC32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 09:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiHPJxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 05:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
+        id S234102AbiHPJxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 05:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233448AbiHPJxX (ORCPT
+        with ESMTP id S234151AbiHPJxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 05:53:23 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39652883F3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:49:21 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id r22so8686471pgm.5
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:49:20 -0700 (PDT)
+        Tue, 16 Aug 2022 05:53:06 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A81BFC5B
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:15:06 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id fy5so17540651ejc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:15:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=ew0JbuH+cKc1GM98uFK2TY2D+9upbKP43VxsyM3NabU=;
-        b=CocRxk7jQ2Biv6MJ+Opj5wyIE68fFgnwYhZW3jCxCacPKs0IKO1vgpJYm0/gVQfM0w
-         CXNext33qwE8N7nZ0+dxm2kPy12oSb7Ij0pPuCvRDPBdpD8kT3hUMScN2zAD7xmhiPhc
-         76yIEVbZXnknWnlInNHPYnyhEeyW3YMZjuk1zOTLxoKugN4FMqxL2bl2KdpDP5rFCbpQ
-         uMu/vigsLWcV7DyQtRLqXVEKKlZdrJlqOWdTOAdszZ7dllTrEK7Gi36v7ALhZsA85c7F
-         PfQlnfI3dKGTI+uAyZt263VxEOkJNhXzsWfDdWW2v1oiFYra60gOuRO0sdgH4hPKUT8i
-         7mqQ==
+        bh=T1hC+4yFQUH4qgK9gud3ypzghlmARyu3cwDIo1GGebc=;
+        b=fsQtfO8w4EmdTySO70hlROW+fJHevfQFkEyHCuHQ1L0BKSCMsadpaVFAyY9YzxciEM
+         ZXArEpKN9d8DpPokGSjtxZ5B+kc+NVe4kzmk2H/X46RzxdvHJxALC+koLgCnzdPwylBl
+         kEX4A9/PoopQqgUvvoQ9qaYMYBBuvEhamCA5DRhwuPBqvfrWfYua8m3MhZ/BtrJn58er
+         pG4pXDEUjxmczhAeMJfUCppGZ6pxSOZWtj9hZXMaOiEoLmgV/5I0EvsUk5cByx0FtUVu
+         wjcjbtQCil/l4NA+++nTJHios0BcJBiqq8jEcERg4+PH8eIWqJj55FE4pYlpAti945ZD
+         Cs2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ew0JbuH+cKc1GM98uFK2TY2D+9upbKP43VxsyM3NabU=;
-        b=MBa73ZIUqWK6xFLVTxsrLQCuJrRp2tplztU3+GsT4ODU+O2HmuV6/KNCgGPYGNvWTq
-         eapATPzhXZV4z9nOAT+ti4bgEzfR0sIt+9AfSY/HcWQkLARHTh0z/Sh5iPtPTdGl+RhA
-         XyUHRJHBJ7dy0i4iPN4nDMi9sqeKn5hHaoo/pycuLdaRvuADKmW2sJkbNUkSUfkeF9J/
-         onFr7A6g5rHrBH8r+qG9Pcy9x4rzScBcUPsHhG6kBvZsyCe0HbZSVr2c00S5nJplXGy4
-         52FYiXO5+K7pHGHaRqCADBoTs+S4JApM6TPzIQhHbvGWkjfp7FfymMRtiight8FtRGoy
-         j8gQ==
-X-Gm-Message-State: ACgBeo1yNMd+s2deQqzka71MG0ZGzdYLAWY0bjVmaioGKxNmgCTrmbn+
-        Q2TuyVaBrdO9t1LZb4Sk2rRgoAn2a715c+NAry8=
-X-Google-Smtp-Source: AA6agR5jLUKIksUtcXneGgeIb15FslvkMh42IlSp55a5aOcBny1Rmc/S5HpHr0Res5cKXwsHlBjR0nnuwCAF1Yu/RPU=
-X-Received: by 2002:a63:6345:0:b0:41d:649a:af3d with SMTP id
- x66-20020a636345000000b0041d649aaf3dmr17235518pgb.354.1660639759746; Tue, 16
- Aug 2022 01:49:19 -0700 (PDT)
+        bh=T1hC+4yFQUH4qgK9gud3ypzghlmARyu3cwDIo1GGebc=;
+        b=j8gs8LjWR4R61cKibrucy8N4m7H053K4uORB9ZsM/EhEWVF/Jb4BvFGrzqCOR9EAVJ
+         1XFEqz1sJwa0WOOzuG+EAMofcfxVPfPfkeksZkjoDntqmb6zFXmXT8fvYXgMuYp0UkXK
+         BUye90IDhcJE6Gscs9IVSx8dkXH/xbLr7IFUz2ZRxlUGwQZNEJiADGVBcn2jMZDaYVSO
+         Xf/jVE2qOFGGI4xaaBu2aaMKAPWZvMen+xX6H7NWvOCGRdz6KcHSbZXL7H9JYC7ML5nq
+         i0+EdPuoPOBSNV2CIOyV1fXLRV+2wGhYANQM9Db7mvfc72MGFuogZTyI+2VrGvcjp+e5
+         wihw==
+X-Gm-Message-State: ACgBeo1R6qtBmphfgoZFZ331HTPEI3JH7s3QmJdkDbkTL0xrhEZFb8X+
+        xG/MfoTaPUTsWYATT9OfwxxULs17/7wq61mm2SvNRaoGVgDV3Q==
+X-Google-Smtp-Source: AA6agR52TSsA0htngy2rFuGyWB0Nl2gGNzbftZs2wwGHTbpGvlm5zLLLa6G3qnBX9PiXXNhtzHfMcFlMNyEDjZmdw0Y=
+X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
+ qa44-20020a17090786ac00b0073151808aa0mr12791312ejc.366.1660637705317; Tue, 16
+ Aug 2022 01:15:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
-In-Reply-To: <20220816084426.135528-1-wangkefeng.wang@huawei.com>
-From:   huang ying <huang.ying.caritas@gmail.com>
-Date:   Tue, 16 Aug 2022 16:48:41 +0800
-Message-ID: <CAC=cRTN=vbrgOsH7PNNMV+Coyabp=H_XF99MUL00kfET=K-32w@mail.gmail.com>
-Subject: Re: [PATCH RFC] mm, proc: add PcpFree to meminfo
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Liu Shixin <liushixin2@huawei.com>,
-        Huang Ying <ying.huang@intel.com>
+References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 16 Aug 2022 13:44:53 +0530
+Message-ID: <CA+G9fYu6_GrP_H5T1QYy9cZy4G4N3=iyCYG=6Y4sgn6UY3412A@mail.gmail.com>
+Subject: Re: [PATCH 5.18 0000/1095] 5.18.18-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 4:38 PM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+On Tue, 16 Aug 2022 at 00:25, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> From: Liu Shixin <liushixin2@huawei.com>
+> This is the start of the stable review cycle for the 5.18.18 release.
+> There are 1095 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> The page on pcplist could be used, but not counted into memory free or
-> avaliable, and pcp_free is only showed by show_mem(). Since commit
-> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
-> significant decrease in the display of free memory, with a large number
-> of cpus and nodes, the number of pages in the percpu list can be very
-> large, so it is better to let user to know the pcp count.
+> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.18-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Can you show some data?
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Another choice is to count PCP free pages in MemFree.  Is that OK for
-your use case too?
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Best Regards,
-Huang, Ying
+## Build
+* kernel: 5.18.18-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: 56bd9e4c28e9ed65e07e7148e65adfdf1f1c5524
+* git describe: v5.18.17-1096-g56bd9e4c28e9
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18.17-1096-g56bd9e4c28e9
 
-> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->  drivers/base/node.c | 14 +++++++++++++-
->  fs/proc/meminfo.c   |  9 +++++++++
->  2 files changed, 22 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/base/node.c b/drivers/base/node.c
-> index eb0f43784c2b..846864e45db6 100644
-> --- a/drivers/base/node.c
-> +++ b/drivers/base/node.c
-> @@ -375,6 +375,9 @@ static ssize_t node_read_meminfo(struct device *dev,
->         struct sysinfo i;
->         unsigned long sreclaimable, sunreclaimable;
->         unsigned long swapcached = 0;
-> +       unsigned long free_pcp = 0;
-> +       struct zone *zone;
-> +       int cpu;
->
->         si_meminfo_node(&i, nid);
->         sreclaimable = node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B);
-> @@ -382,9 +385,17 @@ static ssize_t node_read_meminfo(struct device *dev,
->  #ifdef CONFIG_SWAP
->         swapcached = node_page_state_pages(pgdat, NR_SWAPCACHE);
->  #endif
-> +       for_each_populated_zone(zone) {
-> +               if (zone_to_nid(zone) != nid)
-> +                       continue;
-> +               for_each_online_cpu(cpu)
-> +                       free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-> +       }
-> +
->         len = sysfs_emit_at(buf, len,
->                             "Node %d MemTotal:       %8lu kB\n"
->                             "Node %d MemFree:        %8lu kB\n"
-> +                           "Node %d PcpFree:        %8lu kB\n"
->                             "Node %d MemUsed:        %8lu kB\n"
->                             "Node %d SwapCached:     %8lu kB\n"
->                             "Node %d Active:         %8lu kB\n"
-> @@ -397,7 +408,8 @@ static ssize_t node_read_meminfo(struct device *dev,
->                             "Node %d Mlocked:        %8lu kB\n",
->                             nid, K(i.totalram),
->                             nid, K(i.freeram),
-> -                           nid, K(i.totalram - i.freeram),
-> +                           nid, K(free_pcp),
-> +                           nid, K(i.totalram - i.freeram - free_pcp),
->                             nid, K(swapcached),
->                             nid, K(node_page_state(pgdat, NR_ACTIVE_ANON) +
->                                    node_page_state(pgdat, NR_ACTIVE_FILE)),
-> diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> index 6e89f0e2fd20..672c784dfc8a 100644
-> --- a/fs/proc/meminfo.c
-> +++ b/fs/proc/meminfo.c
-> @@ -38,6 +38,9 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->         unsigned long pages[NR_LRU_LISTS];
->         unsigned long sreclaimable, sunreclaim;
->         int lru;
-> +       unsigned long free_pcp = 0;
-> +       struct zone *zone;
-> +       int cpu;
->
->         si_meminfo(&i);
->         si_swapinfo(&i);
-> @@ -55,8 +58,14 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->         sreclaimable = global_node_page_state_pages(NR_SLAB_RECLAIMABLE_B);
->         sunreclaim = global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B);
->
-> +       for_each_populated_zone(zone) {
-> +               for_each_online_cpu(cpu)
-> +                       free_pcp += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-> +       }
-> +
->         show_val_kb(m, "MemTotal:       ", i.totalram);
->         show_val_kb(m, "MemFree:        ", i.freeram);
-> +       show_val_kb(m, "PcpFree:        ", free_pcp);
->         show_val_kb(m, "MemAvailable:   ", available);
->         show_val_kb(m, "Buffers:        ", i.bufferram);
->         show_val_kb(m, "Cached:         ", cached);
-> --
-> 2.35.3
->
->
+## No test Regressions (compared to v5.18.16-36-g732bf05a92ab)
+
+## No metric Regressions (compared to v5.18.16-36-g732bf05a92ab)
+
+## No test Fixes (compared to v5.18.16-36-g732bf05a92ab)
+
+## No metric Fixes (compared to v5.18.16-36-g732bf05a92ab)
+
+## Test result summary
+total: 93607, pass: 85358, fail: 732, skip: 6930, xfail: 587
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 301 total, 301 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 53 passed, 2 failed
+
+## Test suites summary
+* fwts
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
