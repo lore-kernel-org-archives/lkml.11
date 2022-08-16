@@ -2,114 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8482C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E98C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 06:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbiHPGiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 02:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
+        id S229706AbiHPGjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 02:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiHPGh6 (ORCPT
+        with ESMTP id S229673AbiHPGjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 02:37:58 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1C9C3F6D;
-        Mon, 15 Aug 2022 18:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660612605; x=1692148605;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LGPJbg4YSGE8kGvV/+MMwres2qQJGjWYu0L1b7FKRhE=;
-  b=ELRkR2j1k99KuJmwKFAuMd3EZk19xB9XFwD1m3elDOIJ/99+sIdebamR
-   BPlxiwKrSATGt8r0FVnjxTZg2R9AnPplI3rWDKZl93hNRipjow5kb5V3y
-   jZoUzRg5s82gd6CunLWVcSV0iTKD/QIO6FXUx7iYPO4JGCD3q66DZ6I2n
-   dsCBypP0P08a85N7ywODoZLQyacGutLWasCv1Juw7vCsoeTEmlssEY1cp
-   t8d2L6lZzlp/dYoxYTxYNwKE6EcpGn090h7gPqU7pgfMDGt/kPyB8QZzC
-   klr52tGFjSaa8NXxv5oSnV1j9tvcpwIY/mIXXzG9Ne3RrK+YdCwXZngay
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="293368083"
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="293368083"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 18:16:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="639838790"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2022 18:16:42 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNlCD-0001KD-2Z;
-        Tue, 16 Aug 2022 01:16:41 +0000
-Date:   Tue, 16 Aug 2022 09:15:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
-Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
-Message-ID: <202208160931.5FG8tZ8G-lkp@intel.com>
-References: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
+        Tue, 16 Aug 2022 02:39:18 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6118529F1AA
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 20:25:56 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id a1-20020a4ab101000000b0044acf001f83so21960ooo.10
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 20:25:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=zaeaXOVhK8m3M+XNtVCsn3FcDPtm1Tez2CwtXwPcxOY=;
+        b=ARpEypITrGuMgsrdF/wN/8bNfpLSXuim/YQsP6UIexuLvx9eah8yn7l0kXMXTyjwRE
+         8qEhtjeKt2qs0E1Bh8Eo4E50vhNsHzDuxXjsy8Vj9b9wOEz7F0cKQq91DTLmhFa8ZmzR
+         ZSRerEin4ZzObLPGAcdjLG4Oct5E0rKGX6n6LyKNvFmuGYb+0/8nwNP9weHRw7JRtPG5
+         gDR5e0wMYm2WtchMcwKiu6iURzB2Z2tlaVfJsciS3HYKxa4MxLUHIx30a6b/OAROicQN
+         6sijuR8Y27JwEPCvlIQ3zLMZyP7xl11JHJDUrGgbcAyEL0jSsQP3GnvvVETSqzGeMEgX
+         tVgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=zaeaXOVhK8m3M+XNtVCsn3FcDPtm1Tez2CwtXwPcxOY=;
+        b=WN0b/sEtfaHA06c9MI0fpnQw7jw1XkzGvQdmmqtoCM2SDIW6UBbsR1GG86NNvZhPyz
+         YH8hJvxz1dBZyRQl9xJYshlzXrhTdPMclSIboPYZhAzpm7aCyHGsgBtkruSghhTVicvl
+         abn0+aA4CzggAe8Heb9OZbgsbOmv+frOd2xwSsQ3WuY83AowddTy7dtaIydZ7s6mwxON
+         7CVlBbJD8gPKGxP8+viWoSv0cONchAY21VFAswN84ho+iBOuoBjrFopkHGUhuQv9kcl6
+         YehvQVDzS8Yt7RUJfYiI01RretTzf4SWP48nAlKIBJ/K4JJ9gMN9arDobOmAmT0+4LfF
+         adOQ==
+X-Gm-Message-State: ACgBeo2NX3Aitgl7TJkybCowZ6/Vir2XCDU8oyOjSRYDo+Gp5+ZPO7Th
+        AunamwCU/8bS6yebSSpWx7L7tIfSPvrAHtFAh5lO
+X-Google-Smtp-Source: AA6agR5jcjvLLnXLLTG9WPjI04CMRso162GWkwQVn+kAtpYa5HfLpsgdVT8wApsA1aQLcKFgfc03rLsSBvXINeCUPls=
+X-Received: by 2002:a4a:1103:0:b0:435:4c6c:6f92 with SMTP id
+ 3-20020a4a1103000000b004354c6c6f92mr5750472ooc.26.1660620355452; Mon, 15 Aug
+ 2022 20:25:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
+References: <165970659095.2812394.6868894171102318796.stgit@warthog.procyon.org.uk>
+ <CAFqZXNv+ahpN3Hdv54ixa4u-LKaqTtCyjtkpzKGbv7x4dzwc0Q@mail.gmail.com>
+In-Reply-To: <CAFqZXNv+ahpN3Hdv54ixa4u-LKaqTtCyjtkpzKGbv7x4dzwc0Q@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 15 Aug 2022 23:25:44 -0400
+Message-ID: <CAHC9VhTpqvFbjKG5FMKGRBRHavOUrsCSFgayh+BNgSrry8bWLg@mail.gmail.com>
+Subject: Re: [PATCH v3] nfs: Fix automount superblock LSM init problem,
+ preventing sb sharing
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Scott Mayhew <smayhew@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        dwysocha@redhat.com,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Thu, Aug 11, 2022 at 8:28 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> On Fri, Aug 5, 2022 at 3:36 PM David Howells <dhowells@redhat.com> wrote:
+> > When NFS superblocks are created by automounting, their LSM parameters
+> > aren't set in the fs_context struct prior to sget_fc() being called,
+> > leading to failure to match existing superblocks.
+> >
+> > Fix this by adding a new LSM hook to load fc->security for submount
+> > creation when alloc_fs_context() is creating the fs_context for it.
+> >
+> > However, this uncovers a further bug: nfs_get_root() initialises the
+> > superblock security manually by calling security_sb_set_mnt_opts() or
+> > security_sb_clone_mnt_opts() - but then vfs_get_tree() calls
+> > security_sb_set_mnt_opts(), which can lead to SELinux, at least,
+> > complaining.
+> >
+> > Fix that by adding a flag to the fs_context that suppresses the
+> > security_sb_set_mnt_opts() call in vfs_get_tree().  This can be set by NFS
+> > when it sets the LSM context on the new superblock.
+> >
+> > The first bug leads to messages like the following appearing in dmesg:
+> >
+> >         NFS: Cache volume key already in use (nfs,4.2,2,108,106a8c0,1,,,,100000,100000,2ee,3a98,1d4c,3a98,1)
+> >
+> > Changes
+> > =======
+> > ver #2)
+> >  - Made LSM parameter extraction dependent on fc->purpose ==
+> >    FS_CONTEXT_FOR_SUBMOUNT.  Shouldn't happen on FOR_RECONFIGURE.
+> >
+> > ver #2)
+> >  - Added Smack support
+> >  - Made LSM parameter extraction dependent on reference != NULL.
+> >
+> > Signed-off-by: David Howells <dhowells@redhat.com>
+> > Fixes: 9bc61ab18b1d ("vfs: Introduce fs_context, switch vfs_kern_mount() to it.")
+> > Fixes: 779df6a5480f ("NFS: Ensure security label is set for root inode)
+> > cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+> > cc: Anna Schumaker <anna@kernel.org>
+> > cc: Alexander Viro <viro@zeniv.linux.org.uk>
+> > cc: Scott Mayhew <smayhew@redhat.com>
+> > cc: Jeff Layton <jlayton@kernel.org>
+> > cc: Paul Moore <paul@paul-moore.com>
+> > cc: Casey Schaufler <casey@schaufler-ca.com>
+> > cc: linux-nfs@vger.kernel.org
+> > cc: selinux@vger.kernel.org
+> > cc: linux-security-module@vger.kernel.org
+> > cc: linux-fsdevel@vger.kernel.org
+> > ---
+> >
+> >  fs/fs_context.c               |    4 +++
+> >  fs/nfs/getroot.c              |    1 +
+> >  fs/super.c                    |   10 ++++---
+> >  include/linux/fs_context.h    |    1 +
+> >  include/linux/lsm_hook_defs.h |    1 +
+> >  include/linux/lsm_hooks.h     |    6 +++-
+> >  include/linux/security.h      |    6 ++++
+> >  security/security.c           |    5 +++
+> >  security/selinux/hooks.c      |   29 +++++++++++++++++++
+> >  security/smack/smack_lsm.c    |   61 +++++++++++++++++++++++++++++++++++++++++
+> >  10 files changed, 119 insertions(+), 5 deletions(-)
+>
+> <snip>
+>
+> > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> > index 1bbd53321d13..ddeaff4f3bb1 100644
+> > --- a/security/selinux/hooks.c
+> > +++ b/security/selinux/hooks.c
+> > @@ -2768,6 +2768,34 @@ static int selinux_umount(struct vfsmount *mnt, int flags)
+> >                                    FILESYSTEM__UNMOUNT, NULL);
+> >  }
+> >
+> > +static int selinux_fs_context_init(struct fs_context *fc,
+> > +                                  struct dentry *reference)
+> > +{
+> > +       const struct superblock_security_struct *sbsec;
+> > +       const struct inode_security_struct *root_isec;
+> > +       struct selinux_mnt_opts *opts;
+> > +
+> > +       if (fc->purpose == FS_CONTEXT_FOR_SUBMOUNT) {
+> > +               opts = kzalloc(sizeof(*opts), GFP_KERNEL);
+> > +               if (!opts)
+> > +                       return -ENOMEM;
+> > +
+> > +               root_isec = backing_inode_security(reference->d_sb->s_root);
+> > +               sbsec = selinux_superblock(reference->d_sb);
+> > +               if (sbsec->flags & FSCONTEXT_MNT)
+> > +                       opts->fscontext_sid     = sbsec->sid;
+> > +               if (sbsec->flags & CONTEXT_MNT)
+> > +                       opts->context_sid       = sbsec->mntpoint_sid;
+> > +               if (sbsec->flags & ROOTCONTEXT_MNT)
+> > +                       opts->rootcontext_sid   = root_isec->sid;
+>
+> I wonder if this part is correct... The rootcontext=... mount option
+> relates to the root inode of the mount where it is specified - i.e. in
+> case of NFS only to the toplevel inode of the initial mount. Setting
+> the same context on the root inode of submounts, which AFAIK are
+> supposed to be transparent to the user, doesn't seem correct to me -
+> i.e. it should just be left unset for the automatically created
+> submounts.
 
-Thank you for the patch! Yet something to improve:
+Like Ondrej, I'm not going to say I'm very comfortable with some of
+the VFS corner cases, but this is an interesting case ... as far as I
+can tell, the submount has a superblock and is treated like a normal
+filesystem mount with the one exception that it is mounted
+automatically so that users might not be aware it is a separate mount.
 
-[auto build test ERROR on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220816/202208160931.5FG8tZ8G-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/c7b21d163eb9c61514dd86baf4281deb4d4387bb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
-        git checkout c7b21d163eb9c61514dd86baf4281deb4d4387bb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   net/core/filter.c: In function 'tc_cls_act_btf_struct_access':
->> net/core/filter.c:8723:24: error: implicit declaration of function 'btf_struct_access' [-Werror=implicit-function-declaration]
-    8723 |                 return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-         |                        ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/btf_struct_access +8723 net/core/filter.c
-
-  8714	
-  8715	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-  8716						const struct btf *btf,
-  8717						const struct btf_type *t, int off,
-  8718						int size, enum bpf_access_type atype,
-  8719						u32 *next_btf_id,
-  8720						enum bpf_type_flag *flag)
-  8721	{
-  8722		if (atype == BPF_READ)
-> 8723			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-  8724						 flag);
-  8725	
-  8726		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-  8727						      next_btf_id, flag);
-  8728	}
-  8729	
+I guess my question is this: for inodes inside the superblock, does
+their superblock pointer point to the submount's superblock, or the
+parent filesystem's superblock?
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+paul-moore.com
