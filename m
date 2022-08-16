@@ -2,145 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A30C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CB2C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236330AbiHPQZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S236379AbiHPQ0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236237AbiHPQZz (ORCPT
+        with ESMTP id S236351AbiHPQ0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 12:25:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AD6EE0D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:25:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4E1B6124E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 16:25:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350C4C433D6;
-        Tue, 16 Aug 2022 16:25:52 +0000 (UTC)
-Date:   Tue, 16 Aug 2022 12:25:59 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Krister Johansen <kjlx@templeofstupid.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        David Reaver <me@davidreaver.com>,
-        linux-kernel@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>
-Subject: Re: [PATCH 1/1] tracing: fix a WARN from trace_event_dyn_put_ref
-Message-ID: <20220816122559.17869abc@gandalf.local.home>
-In-Reply-To: <4e43a4eece5f382d1636397fb3c0208f2afe81fc.1660347763.git.kjlx@templeofstupid.com>
-References: <cover.1660347763.git.kjlx@templeofstupid.com>
-        <4e43a4eece5f382d1636397fb3c0208f2afe81fc.1660347763.git.kjlx@templeofstupid.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 16 Aug 2022 12:26:09 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44E7B29A;
+        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ha11so10184153pjb.2;
+        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
+        b=Am2ouX+tQrg3Qs4kMQHVsVlDKBFlmbflfJQCKuXndB3MHEu5WSgnWGi0F9EaSYN4xe
+         ZUSaOhQeIoRuynwiaW1dKomNhDpt8wKVUsEGQNd+IwEjZ3XgG8Com7hxykU7G+qmy5Bi
+         PTwBqnKH4Qk1YwqlPwRhgoUphKD7SMjylxX+1+xZkKGjHI6rwqwLu9J9FLoy4sjXxH9o
+         0TBIlt1c3Qe7Bqvcps2WC6/LxhZpB3S0HtOaiyd3gqaoFmSEc71xTqvHFPV4H3n+5oqu
+         WAxS9jWDTaL5YJeGlAA/EzZq3kmTgfgw4v4gSIAsitQckCD8neZgMjtVDeaosy6lpHum
+         1Qtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
+        b=bleyaWwODfiXEfQ2kH2w3akC+VIqvc8kDLIGY33ggoSZe2d8qDXKLru5y6O6afQdwu
+         bBpJ9y2f4B0KRQanKxm77u65OHStuxhGm0S9CSDClZixesQvjnJqbJHQknNoIuju2dok
+         Xe6Hbge72Y/gON3abGzIwPXe2NONM5zX6y+A8Q8++y/W1u3KRnZ3rnuW2B+iOHmyr8Mc
+         K0PfVk8OW20L7R+4TPyR7+1rvwQayWEKnD1Qge3x5Gc2tNKbonEScCJOzH68xV10cekt
+         iyRGLkkFjnPtgQ4zGN7hb8xF/u8LsPG105YLcV/+gsM7b163HbTX93c35oXRggOTjzz0
+         3+WA==
+X-Gm-Message-State: ACgBeo0oPqG6HpMWKnPDnjMexQZqLm11WLkvjm5/7KhY3Rf4MaRCMqSI
+        Vak/JeUmHqWIEiPZuve5pwI=
+X-Google-Smtp-Source: AA6agR5vDBZ3vhyHnItujfIaNht8KZtHXHBsEN9eLZCLlIMXA0vxLKU47fOf6q9VckZ/Tl9GAVjwjQ==
+X-Received: by 2002:a17:902:b182:b0:16e:e4ad:360c with SMTP id s2-20020a170902b18200b0016ee4ad360cmr21696621plr.21.1660667165525;
+        Tue, 16 Aug 2022 09:26:05 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id b190-20020a621bc7000000b0052d87b76d12sm8660302pfb.68.2022.08.16.09.26.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 09:26:04 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 02:29:53 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc:     virtio-dev@lists.oasis-open.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <YvsBIQU/DlHOpbEH@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1660362668.git.bobby.eshleman@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+CC'ing virtio-dev@lists.oasis-open.org
 
-[ Added the authors of this code to the Cc ]
-
-On Fri, 12 Aug 2022 17:02:20 -0700
-Krister Johansen <kjlx@templeofstupid.com> wrote:
-
-> The code in perf_trace_init takes a reference on a trace_event_call that is
-> looked up as part of the function call.  If perf_trace_event_int fails,
-> however, perf_trace_event_unreg can decrement that refcount from underneath
-> perf_trace_init.  This means that in some failure cases, perf_trace_init
-> can trigger the WARN in trace_dynevent.c which attempts to guard against
-> zero reference counts going negative.
+On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
+> Hey everybody,
 > 
-> The author can reproduce this problem readily by running perf record in a
-> loop against a series of uprobes with no other users.  Killing the record
-> process before it can finish its setup is enough to trigger this warn
-> within a few seconds.
+> This series introduces datagrams, packet scheduling, and sk_buff usage
+> to virtio vsock.
 > 
-> This patch leaves the behavior in perf_trace_event_unreg unchanged, but
-> moves most of the code in that function to perf_trace_event_cleanup.  The
-> unreg function retains the ability to drop the refcount on the tp_event,
-> but cleanup does not.  This modification is based upon the observation that
-> all of the other callers of perf_trace_event_init don't bother with
-> manipulating a reference count on the tp_events that they create.  For
-> those callers, the trace_event_put_ref was already a no-op.
+> The usage of struct sk_buff benefits users by a) preparing vsock to use
+> other related systems that require sk_buff, such as sockmap and qdisc,
+> b) supporting basic congestion control via sock_alloc_send_skb, and c)
+> reducing copying when delivering packets to TAP.
 > 
-> Signed-off-by: Krister Johansen <kjlx@templeofstupid.com>
-> Reviewed-by: David Reaver <me@davidreaver.com>
-> Fixes: 1d18538e6a092 "tracing: Have dynamic events have a ref counter"
-> CC: stable@vger.kernel.org # 5.15, 5.18, 5.19
-> ---
->  kernel/trace/trace_event_perf.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
+> The socket layer no longer forces errors to be -ENOMEM, as typically
+> userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
+> messages are being sent with option MSG_DONTWAIT.
 > 
-> diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-> index a114549720d6..7762bfd268cd 100644
-> --- a/kernel/trace/trace_event_perf.c
-> +++ b/kernel/trace/trace_event_perf.c
-> @@ -151,13 +151,13 @@ static int perf_trace_event_reg(struct trace_event_call *tp_event,
->  	return ret;
->  }
->  
-> -static void perf_trace_event_unreg(struct perf_event *p_event)
-> +static void perf_trace_event_cleanup(struct perf_event *p_event)
->  {
->  	struct trace_event_call *tp_event = p_event->tp_event;
->  	int i;
->  
->  	if (--tp_event->perf_refcount > 0)
-> -		goto out;
-> +		return;
->  
->  	tp_event->class->reg(tp_event, TRACE_REG_PERF_UNREGISTER, NULL);
->  
-> @@ -176,7 +176,13 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
->  			perf_trace_buf[i] = NULL;
->  		}
->  	}
-> -out:
-> +}
-> +
-> +static void perf_trace_event_unreg(struct perf_event *p_event)
-> +{
-> +	struct trace_event_call *tp_event = p_event->tp_event;
-> +
-> +	perf_trace_event_cleanup(p_event);
->  	trace_event_put_ref(tp_event);
->  }
->  
-> @@ -207,7 +213,7 @@ static int perf_trace_event_init(struct trace_event_call *tp_event,
->  
->  	ret = perf_trace_event_open(p_event);
->  	if (ret) {
-> -		perf_trace_event_unreg(p_event);
-> +		perf_trace_event_cleanup(p_event);
-
-The only problem I have with this patch is the loss of symmetry. Where
-perf_trace_event_reg() returns successful, so unreg() should be the
-function you call on failure.
-
-Since perf_trace_event_reg() is only called from perf_trace_event_init()
-let's move the perf_trace_event_open() into the perf_trace_event_reg() and
-have the unreg still do the clean up on failure.
-
-This way we keep the symmetry between *_reg() and *_unreg().
-
-And then the init function will not have to do any clean up, and can just
-end with:
-
-	return perf_trace_event_reg(tp_event, p_event);
-
-Thanks,
-
--- Steve
-
-
->  		return ret;
->  	}
->  
-
+> The datagram work is based off previous patches by Jiang Wang[1].
+> 
+> The introduction of datagrams creates a transport layer fairness issue
+> where datagrams may freely starve streams of queue access. This happens
+> because, unlike streams, datagrams lack the transactions necessary for
+> calculating credits and throttling.
+> 
+> Previous proposals introduce changes to the spec to add an additional
+> virtqueue pair for datagrams[1]. Although this solution works, using
+> Linux's qdisc for packet scheduling leverages already existing systems,
+> avoids the need to change the virtio specification, and gives additional
+> capabilities. The usage of SFQ or fq_codel, for example, may solve the
+> transport layer starvation problem. It is easy to imagine other use
+> cases as well. For example, services of varying importance may be
+> assigned different priorities, and qdisc will apply appropriate
+> priority-based scheduling. By default, the system default pfifo qdisc is
+> used. The qdisc may be bypassed and legacy queuing is resumed by simply
+> setting the virtio-vsock%d network device to state DOWN. This technique
+> still allows vsock to work with zero-configuration.
+> 
+> In summary, this series introduces these major changes to vsock:
+> 
+> - virtio vsock supports datagrams
+> - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
+>   - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
+>     which applies the throttling threshold sk_sndbuf.
+> - The vsock socket layer supports returning errors other than -ENOMEM.
+>   - This is used to return -EAGAIN when the sk_sndbuf threshold is
+>     reached.
+> - virtio vsock uses a net_device, through which qdisc may be used.
+>  - qdisc allows scheduling policies to be applied to vsock flows.
+>   - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
+>     it may avoid datagrams from flooding out stream flows. The benefit
+>     to this is that additional virtqueues are not needed for datagrams.
+>   - The net_device and qdisc is bypassed by simply setting the
+>     net_device state to DOWN.
+> 
+> [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
+> 
+> Bobby Eshleman (5):
+>   vsock: replace virtio_vsock_pkt with sk_buff
+>   vsock: return errors other than -ENOMEM to socket
+>   vsock: add netdev to vhost/virtio vsock
+>   virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+>   virtio/vsock: add support for dgram
+> 
+> Jiang Wang (1):
+>   vsock_test: add tests for vsock dgram
+> 
+>  drivers/vhost/vsock.c                   | 238 ++++----
+>  include/linux/virtio_vsock.h            |  73 ++-
+>  include/net/af_vsock.h                  |   2 +
+>  include/uapi/linux/virtio_vsock.h       |   2 +
+>  net/vmw_vsock/af_vsock.c                |  30 +-
+>  net/vmw_vsock/hyperv_transport.c        |   2 +-
+>  net/vmw_vsock/virtio_transport.c        | 237 +++++---
+>  net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
+>  net/vmw_vsock/vmci_transport.c          |   9 +-
+>  net/vmw_vsock/vsock_loopback.c          |  51 +-
+>  tools/testing/vsock/util.c              | 105 ++++
+>  tools/testing/vsock/util.h              |   4 +
+>  tools/testing/vsock/vsock_test.c        | 195 ++++++
+>  13 files changed, 1176 insertions(+), 543 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
