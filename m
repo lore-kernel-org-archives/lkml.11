@@ -2,244 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE10C2BB41
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD68C32773
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232535AbiHPKHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        id S234323AbiHPKH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234312AbiHPKGs (ORCPT
+        with ESMTP id S234236AbiHPKG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:06:48 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C10D6C13B;
-        Tue, 16 Aug 2022 02:13:09 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id B97AD5C023C;
-        Tue, 16 Aug 2022 05:13:06 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 16 Aug 2022 05:13:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660641186; x=1660727586; bh=8a1Us8uLfYqD/kfLMEoeT8k8O
-        knxiZLX1kGLg+OrAM4=; b=r6H+8a3y5yj7F0UBxWS3xmNGJ4AZCoV08iA9aYSiG
-        iIUMD0BVkiArJeidyP3+THHDgukkHtiYS2rV2+5jEczyQJWOJxa+ZTlU/LZywIWS
-        jIn0WD0vtvdAsrpKUe75BD5Vx/SgInIM8oyeFBWYjnul23Yq+Jc1VhQXQITkEX9X
-        8zs6nw70KAkOukTTHFd4WAytOG+3ydSI1JQuJTvF9oLI9+cHiDr15mPHkj3ROJsn
-        GzolNxC7i1+u7A9MSZNbGTYdtofb7F5t4LMWGpcCg3ovJpYAwi+ENSePxTE1uFI4
-        GcG0mtNLrBJAjou8YRD3LVd+XUzGW770AE4pH7tIXRvrA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660641186; x=1660727586; bh=8a1Us8uLfYqD/kfLMEoeT8k8OknxiZLX1kG
-        Lg+OrAM4=; b=wrYGYkzDiCXY2jq9yVfNlwFSOW1/NZDsNT4xf02gU7Drm1Ei1QJ
-        NJiG9y7Vqv95PxaclaFAxVInyTQjKlZScb4tpZip+4HPtydJDOre9VjpLJjZQUbY
-        vMaNQm3i3OrdILpnDNqtBLyKJ/gnptxLxMo8UZ+Nnc8RB4EDuTbaat4f7Eha2+VK
-        dbVzXpccV2JY2643CcTGcd97TU5fz1msF9n5JBFo6E7VgKk92FrTeX/vREcE6mr1
-        1TzcvdmZPxzFpDa3F/Piz+LcbnzQ3zrQbljtlPw7k4Ds7tGE8TVCoYa8lFtP6c65
-        qBsGmMExD8Tcxq8R3qp4HMEQbsmvRQnt9dw==
-X-ME-Sender: <xms:ol_7YgtxxlMA42cgcxr0bVkHAmattxopCO_l9CI8J6QblsGfqubOUw>
-    <xme:ol_7YtcfKP1ox8rn6hoG4fMB6BPI6kxmW4owEBEs35Z21K-I0_jPQkwtT8nKngl2x
-    OYWqvRumZocdqE_GTU>
-X-ME-Received: <xmr:ol_7YrwQRZpYNfse4O4jlQKtMJOfkvzWMHvHCsT_fjOyjKHnK_N75aEm_uHQNvn008a8o0B_WTaTdQldztknVG5Gw2HKWZEKfFlGf80nNQ-4x2TIItzR7JfG>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehgedgudegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
-    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhephfetuddtudevieeljeejte
-    ffheeujeduhefgffejudfhueelleduffefgfffveeknecuvehluhhsthgvrhfuihiivgep
-    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
-    grthdrtghomh
-X-ME-Proxy: <xmx:ol_7YjN0pHaGH713wYRLYfbjQbtuSU04CsZyS0JOSOEjfhTJMUmyPg>
-    <xmx:ol_7Yg8Qs9kdGRzPVQJgiJ8YxL0TNtXbWC_ML7BEiVc2SQR5IKYjSA>
-    <xmx:ol_7YrXsZeKZ0I5zREdmRUXKuaHtn1heGrrn8czkR53XWaFV4WJw2w>
-    <xmx:ol_7Yvkeo-Dttf3JulnEP_ywlgJvVFLVbZJRVwrNLQ51D415F7pWaQ>
-Feedback-ID: ifd894703:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 16 Aug 2022 05:13:05 -0400 (EDT)
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-To:     linux-mips@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, tsbogend@alpha.franken.de,
-        linux-api@vger.kernel.org, greg@kroah.com, f.fainelli@gmail.com,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: [PATCH v4] MIPS: Expose prid and globalnumber to sysfs
-Date:   Tue, 16 Aug 2022 09:12:58 +0000
-Message-Id: <20220816091258.9571-1-jiaxun.yang@flygoat.com>
+        Tue, 16 Aug 2022 06:06:59 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8EC844EE
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:24:37 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id r17so14049959lfm.11
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=dA9DhESaxIAdSuqYA69VElvQhXKaLx6GMaT3o/MxfcQ=;
+        b=pAYcHJ/DCBmLR9cpFpCsw+KdXs1oauKhBl0AkYjD7c8nyjJj3+eSFlS1/VCuw6wHn9
+         G6OSm0FBh/QkaDRo1ti/hDuY4VmQvslzvGnlspUuKrS3Ky3DqzYNHDKNgYRhw1Cpkhnu
+         cQtq6kzHMGotOKUXCPwoF0INia1hvQ/0Wt/ItkiqaFpHIy9U0m0cfVYiINu5hbBYp9bK
+         72rA5DZv4lzP86L9AgRiQoJjX8/H1O7S3YDKfwWUZan2CnkXRaTyakvAAzoE+Wd/YAAd
+         Hp/L5aZT4N6+3GtRgdA6f5T5yzIrcXG+IQ1Zr2670IWXX4JWNoWAye41nXDKSW7HVCnC
+         aj+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=dA9DhESaxIAdSuqYA69VElvQhXKaLx6GMaT3o/MxfcQ=;
+        b=pDv9xOkxpv5putDhf4CMKEYFw8DzlRU/8/CtYViy865Qu8NGNaEFZPlahuBUthHSh+
+         1AAlHNUoQr+r/qfDp/FZBUIc+u3o51Tq1WA+/3YE5ePL3cDvCbMdfaZOx0ylXMwdwI9f
+         NdW66w7ibjcVjiUqRNPUpc306FtT7Z5Yx+Gb0Q3YtZVNaYD+F970yb8YuvEUJIquKg13
+         ldEfRvhyXEwbUWbDQKI0aSyf+a9u28PWggR3EkknDgpS7Sq/BLb2sboSvEaqrejP98Q4
+         9gPHVSu+qE5VomW8VZLDKqdJzpEevTqOuxvnOIwf7pIou9D4RcWECD6Nu/VetYXTG841
+         Ub9Q==
+X-Gm-Message-State: ACgBeo09iboXZi/q2/PJZPT4CE6izjhrO8qRMSDyzpjAmkdZdeOJetCt
+        6GRjz7LDeNen1G4ZLZaWKiQjfg==
+X-Google-Smtp-Source: AA6agR4SacvxqdwEQnvdddBBMXsDS1BirINw4bHykF8sOxTwdBrYtb13QtvhxD+krOjDjpFrrNwVeQ==
+X-Received: by 2002:a05:651c:154b:b0:25e:c73d:a786 with SMTP id y11-20020a05651c154b00b0025ec73da786mr6211788ljp.397.1660641875620;
+        Tue, 16 Aug 2022 02:24:35 -0700 (PDT)
+Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id v11-20020a056512048b00b0048a8c907fe9sm1326420lfq.167.2022.08.16.02.24.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 02:24:35 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     tomasz.figa@gmail.com, linus.walleij@linaro.org,
+        saravanak@google.com, alim.akhtar@samsung.com,
+        s.nawrocki@samsung.com
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kernel-team@android.com, linux-samsung-soc@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v1] pinctrl: samsung: Finish initializing the gpios before registering them
+Date:   Tue, 16 Aug 2022 12:24:32 +0300
+Message-Id: <166064186857.38288.3043355425920212927.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220727013349.3056826-1-saravanak@google.com>
+References: <20220727013349.3056826-1-saravanak@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some application would like to know precise model and rev of processor
-to do errata workaround or optimization.
+On Tue, 26 Jul 2022 18:33:48 -0700, Saravana Kannan wrote:
+> As soon as a gpio is registered, it should be usable by a consumer. So,
+> do all the initialization before registering the gpios. Without this
+> change, a consumer can request a GPIO IRQ and have the gpio to IRQ
+> mapping fail.
+> 
+> 
 
-Expose them in sysfs as:
-/sys/devices/system/cpu/cpuX/regs/identification/prid
-/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
+Applied, thanks!
 
-Reusing AArch64 CPU registers directory.
+[1/1] pinctrl: samsung: Finish initializing the gpios before registering them
+      https://git.kernel.org/pinctrl/samsung/c/152a81a0b1204e9c7f4af0004b5ed7a8d67dd037
 
-Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
----
-v2: Drop static qualifier for kobj (gregkh)
-v3: Use kzalloc to allocate struct cpuregs.
-    note: When Greg mentioned about static I was thinking about
-    static qualifier of percpu variable. After reading documents
-    again it turns out kobjs should be allocated at runtime. Arm64's
-    cpuinfo kobj is also on a percpu variable... I guess that was a
-    intentional use?
-v4: Properly handle err of kobj creation. (gregkh)
----
- .../ABI/testing/sysfs-devices-system-cpu      |  11 ++
- arch/mips/kernel/topology.c                   | 103 ++++++++++++++++++
- 2 files changed, 114 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index 5bf61881f012..adf855e7bb9b 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -512,6 +512,17 @@ Description:	information about CPUs heterogeneity.
- 
- 		cpu_capacity: capacity of cpuX.
- 
-+What:		/sys/devices/system/cpu/cpuX/regs/
-+		/sys/devices/system/cpu/cpuX/regs/identification/
-+		/sys/devices/system/cpu/cpuX/regs/identification/prid
-+		/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
-+Date:		Augest 2022
-+Contact:	Linux MIPS Kernel Mailing list <linux-mips@vger.kernel.org>
-+Description:	MIPS CPU registers
-+
-+		'identification' directory exposes the Processor ID and Global Number
-+		registers for identifying model and revision of the CPU.
-+
- What:		/sys/devices/system/cpu/vulnerabilities
- 		/sys/devices/system/cpu/vulnerabilities/meltdown
- 		/sys/devices/system/cpu/vulnerabilities/spectre_v1
-diff --git a/arch/mips/kernel/topology.c b/arch/mips/kernel/topology.c
-index 9429d85a4703..45a15eda651a 100644
---- a/arch/mips/kernel/topology.c
-+++ b/arch/mips/kernel/topology.c
-@@ -5,6 +5,8 @@
- #include <linux/node.h>
- #include <linux/nodemask.h>
- #include <linux/percpu.h>
-+#include <linux/seq_file.h>
-+#include <linux/smp.h>
- 
- static DEFINE_PER_CPU(struct cpu, cpu_devices);
- 
-@@ -26,3 +28,104 @@ static int __init topology_init(void)
- }
- 
- subsys_initcall(topology_init);
-+
-+static struct kobj_type cpuregs_kobj_type = {
-+	.sysfs_ops = &kobj_sysfs_ops,
-+};
-+
-+struct cpureg {
-+	struct kobject kobj;
-+	struct cpuinfo_mips *info;
-+};
-+static DEFINE_PER_CPU(struct cpureg *, cpuregs);
-+
-+#define kobj_to_cpureg(kobj)	container_of(kobj, struct cpureg, kobj)
-+#define CPUREGS_ATTR_RO(_name, _field)						\
-+	static ssize_t _name##_show(struct kobject *kobj,			\
-+			struct kobj_attribute *attr, char *buf)			\
-+	{									\
-+		struct cpuinfo_mips *info = kobj_to_cpureg(kobj)->info;		\
-+										\
-+		return sprintf(buf, "0x%08x\n", info->_field);	\
-+	}									\
-+	static struct kobj_attribute cpuregs_attr_##_name = __ATTR_RO(_name)
-+
-+CPUREGS_ATTR_RO(prid, processor_id);
-+CPUREGS_ATTR_RO(globalnumber, globalnumber);
-+
-+static struct attribute *cpuregs_id_attrs[] = {
-+	&cpuregs_attr_prid.attr,
-+	&cpuregs_attr_globalnumber.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group cpuregs_attr_group = {
-+	.attrs = cpuregs_id_attrs,
-+	.name = "identification"
-+};
-+
-+static int cpuregs_cpu_online(unsigned int cpu)
-+{
-+	int rc;
-+	struct device *dev;
-+	struct cpureg *reg;
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev) {
-+		rc = -ENODEV;
-+		goto out;
-+	}
-+	reg = kzalloc(sizeof(struct cpureg), GFP_KERNEL);
-+	if (!reg) {
-+		rc = -ENOMEM;
-+		goto out;
-+	}
-+	rc = kobject_init_and_add(&reg->kobj, &cpuregs_kobj_type,
-+					&dev->kobj, "regs");
-+	if (rc)
-+		goto out_kfree;
-+	rc = sysfs_create_group(&reg->kobj, &cpuregs_attr_group);
-+	if (rc)
-+		goto out_kobj;
-+
-+	return 0;
-+out_kobj:
-+	kobject_put(&reg->kobj);
-+out_kfree:
-+	kfree(reg);
-+out:
-+	return rc;
-+}
-+
-+static int cpuregs_cpu_offline(unsigned int cpu)
-+{
-+	struct device *dev;
-+	struct cpureg *reg = per_cpu(cpuregs, cpu);
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev || !reg)
-+		return -ENODEV;
-+	if (reg->kobj.parent) {
-+		sysfs_remove_group(&reg->kobj, &cpuregs_attr_group);
-+		kobject_put(&reg->kobj);
-+	}
-+	kfree(reg);
-+
-+	return 0;
-+}
-+
-+static int __init cpuinfo_regs_init(void)
-+{
-+	int ret;
-+
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "mips/topology:online",
-+				cpuregs_cpu_online, cpuregs_cpu_offline);
-+	if (ret < 0) {
-+		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+device_initcall(cpuinfo_regs_init);
+Best regards,
 -- 
-2.34.1
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
