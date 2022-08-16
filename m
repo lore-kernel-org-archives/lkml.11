@@ -2,81 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2197BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B528C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 16:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235960AbiHPQA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 12:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
+        id S236233AbiHPQEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 12:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236328AbiHPP75 (ORCPT
+        with ESMTP id S235590AbiHPQEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 11:59:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF02CDF3
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 08:58:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B824A61138
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 15:58:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D58FC433D6;
-        Tue, 16 Aug 2022 15:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660665522;
-        bh=h71+JZ/0awNq3wQYEoePD4NcX3kk7FQlZzE4VDiel/s=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=q6drqwxHqmfYHJG2AlHcGazfHi1o0eomIkzGOGsoNqi79EndZKiVkiRhBCl6dpUxL
-         uzn6hytH0lHJhMZrFU1RFt6WD1zJV330bDOwbDc3SeLLLiD/aLoRBSaRDVe/b+kBhU
-         BhW/xkM/jKzwAsl2KHzmsXqN0t7ptWW2LM/qICl78YziDXxLmU9MjhFkfD8ACPpoor
-         gyZuTXkw1JBkfs4XBy5om84qh1xXeyS4ieBTM9Lzjk2HFGk0DCZ2MMMjcZzrV1A3NG
-         2bM+tdd+NBreWYuVlTg6XdmtQ0wWLqqSizXM4tFzqy27dbapmmCX+OciPc+vTzbJnG
-         qrSdVyFo1xGgQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id AF7C15C02F9; Tue, 16 Aug 2022 08:58:41 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 08:58:41 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Chang-Ho Cho <changho.cho11@gmail.com>
-Cc:     jgross@suse.com, linux-kernel@vger.kernel.org, mhocko@suse.com,
-        peterz@infradead.org
-Subject: Re: [PATCH v3 3/4] kernel/smp: add more data to CSD lock debugging
-Message-ID: <20220816155841.GD2125313@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <AEF6AAF1-0529-4661-AA6D-F9E41CE9DA44@gmail.com>
+        Tue, 16 Aug 2022 12:04:15 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4436A33417;
+        Tue, 16 Aug 2022 09:01:39 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GFcNhU021419;
+        Tue, 16 Aug 2022 16:01:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=5Yof2e/M6mXS9yDypZqKKDax++PSsoGl+R33p9/hIr0=;
+ b=mahMIrxlaibb4LnPpnULJ/yz6jm21qsQnW30g5TfdmA4bBpcB+Le25Scam0feEbDng7e
+ 2MhhxUR5eVlBfJqioh61bfSlUpAHwFvT6CABnt6GkBp5jA3aHAM9pxxsvTItQvjGF6vf
+ yAHGFYFJK6Vi88vMYMa9Iw4WSkC95ENMh7DsfDVwJ2V80cxh1hZ5hBUN2Nqad1cge6KW
+ YI0nEYpbPx9ptKOw0+sCeenAyQL8rnWmULG81egERTAt+aisKEg1w3SJBvDRcQbijW/v
+ Mr+VhFKf2ajWXiYQ/gP89WYqplTT+kqZsYg50I/JPotxnccWCUIchfrMxlZ98/khPQtK Xw== 
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j08rs97dk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 16:01:31 +0000
+Received: from pps.filterd (NASANPPMTA03.qualcomm.com [127.0.0.1])
+        by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27GFpiTj013998;
+        Tue, 16 Aug 2022 16:01:30 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NASANPPMTA03.qualcomm.com (PPS) with ESMTPS id 3j0bu4hccd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 16:01:30 +0000
+Received: from NASANPPMTA03.qualcomm.com (NASANPPMTA03.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27GG1UPs031872;
+        Tue, 16 Aug 2022 16:01:30 GMT
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NASANPPMTA03.qualcomm.com (PPS) with ESMTPS id 27GG1UtO031824
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Aug 2022 16:01:30 +0000
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 16 Aug 2022 09:01:30 -0700
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 16 Aug
+ 2022 09:01:28 -0700
+Message-ID: <5e4258b6-d253-c8bc-f697-c21d7eff63a5@quicinc.com>
+Date:   Tue, 16 Aug 2022 10:01:28 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AEF6AAF1-0529-4661-AA6D-F9E41CE9DA44@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] PCI: hv: Fix the definiton of vector in
+ hv_compose_msi_msg()
+Content-Language: en-US
+To:     <decui@microsoft.com>, <wei.liu@kernel.org>, <kys@microsoft.com>,
+        <haiyangz@microsoft.com>, <sthemmin@microsoft.com>,
+        <lpieralisi@kernel.org>, <bhelgaas@google.com>,
+        <linux-hyperv@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <mikelley@microsoft.com>,
+        <robh@kernel.org>, <kw@linux.com>, <helgaas@kernel.org>,
+        <alex.williamson@redhat.com>, <boqun.feng@gmail.com>,
+        <Boqun.Feng@microsoft.com>
+CC:     Carl Vanderlip <quic_carlv@quicinc.com>
+References: <20220815185505.7626-1-decui@microsoft.com>
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <20220815185505.7626-1-decui@microsoft.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: wJ3k5Q8zfNpYCQ4n01YM9RGz6Ou7No2A
+X-Proofpoint-GUID: wJ3k5Q8zfNpYCQ4n01YM9RGz6Ou7No2A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ mlxlogscore=999 mlxscore=0 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 priorityscore=1501 spamscore=0 clxscore=1011
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208160060
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 07:53:49PM +0900, Chang-Ho Cho wrote:
-> Hello, 
+On 8/15/2022 12:55 PM, Dexuan Cui wrote:
+> The local variable 'vector' must be u32 rather than u8: see the
+> struct hv_msi_desc3.
 > 
-> Google search brought me into this thread.  May I have update on the progress of this issue? Has anyone find root cause, solution or workaround?
-> How can I get more about the problem?
-> Windows 2008 R2 VM experiencing hang on QEMU-kvm with IPI handling issue. 
+> 'vector_count' should be u16 rather than u8: see struct hv_msi_desc,
+> hv_msi_desc2 and hv_msi_desc3.
+> 
+> Fixes: a2bad844a67b ("PCI: hv: Fix interrupt mapping for multi-MSI")
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> Cc: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> Cc: Carl Vanderlip <quic_carlv@quicinc.com>
+> ---
+> 
+> The patch should be appplied after the earlier patch:
+>      [PATCH] PCI: hv: Only reuse existing IRTE allocation for Multi-MSI
+>      https://lwn.net/ml/linux-kernel/20220804025104.15673-1-decui%40microsoft.com/
+> 
+>   drivers/pci/controller/pci-hyperv.c | 9 +++++----
+>   1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 65d0dab25deb..53580899c859 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -1614,7 +1614,7 @@ static void hv_pci_compose_compl(void *context, struct pci_response *resp,
+>   
+>   static u32 hv_compose_msi_req_v1(
+>   	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector, u8 vector_count)
+> +	u32 slot, u8 vector, u16 vector_count)
+>   {
+>   	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+>   	int_pkt->wslot.slot = slot;
+> @@ -1642,7 +1642,7 @@ static int hv_compose_msi_req_get_cpu(struct cpumask *affinity)
+>   
+>   static u32 hv_compose_msi_req_v2(
+>   	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector, u8 vector_count)
+> +	u32 slot, u8 vector, u16 vector_count)
+>   {
+>   	int cpu;
+>   
+> @@ -1661,7 +1661,7 @@ static u32 hv_compose_msi_req_v2(
+>   
+>   static u32 hv_compose_msi_req_v3(
+>   	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u32 vector, u8 vector_count)
+> +	u32 slot, u32 vector, u16 vector_count)
+>   {
+>   	int cpu;
+>   
+> @@ -1702,7 +1702,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>   	struct tran_int_desc *int_desc;
+>   	struct msi_desc *msi_desc;
+>   	bool multi_msi;
+> -	u8 vector, vector_count;
+> +	u32 vector; /* Must be u32: see the struct hv_msi_desc3 */
 
-Here is a blog entry describing the bug that was causing me trouble:
-
-https://paulmck.livejournal.com/62071.html
-
-But although this appeared to be an IPI-loss problem, it was in fact
-an interrupt storm.
-
-Juergen, who you CCed, located a race-condition issue with a non-KVM
-hypervisor, if I recall correctly.
-
-Of course, much depends on the exact versions of your various OSes
-and firmware.  One useful trick is to look for fixes since whichever
-version of Linux you are using, and to backport those.  Also, for issues
-with Windows, you are likely better served asking elsewhere.  Since you
-are asking here, I am assuming that you have somehow proven that the
-interrupt is being lost in KVM or QEMU rather than in the Windows guest.
-
-Please note that observing the hang on QEMU/KVM but not on bare metal
-is insufficient, given that the difference in timing can dramatically
-change the probability of bugs occuring.
-
-							Thanx, Paul
+Don't you need to cast this down to a u8 for v1 and v2?
+Feels like this should be generating a compiler warning...
