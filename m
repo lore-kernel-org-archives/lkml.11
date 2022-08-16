@@ -2,112 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A44C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 495E6C2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbiHPLnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S234930AbiHPLnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234357AbiHPLm7 (ORCPT
+        with ESMTP id S234530AbiHPLnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:42:59 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA2F32E
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:13:14 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id r69so8939730pgr.2
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:13:14 -0700 (PDT)
+        Tue, 16 Aug 2022 07:43:24 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE637199A
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:14:29 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id j3so10218223ljo.0
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 04:14:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=V5IkeuSVi9fKfp3zra01ncb3hrHpLVL3k3XVBC9wdIU=;
-        b=klS9soVKVxOs0Xqft08jBbZnbUmDJ2wGnHyztAXIP9Sbl/u3vHNVMSVLlxj2KCtKsB
-         DTjQPJEJJAKzL20lI8KoI7ajyPxwgQk5SeWXMJtTTmX18eFC/fJq+uF+7U4S99HSGfuf
-         HsrlcQ4A/Npdnir/K26lp5dYANl2vb2kp5CkiSjDnfZ7FmGyHO6gUugb+ShZZBhUZ7h2
-         BXt5SDXJWUvE9rqUs4JN5yHddrtvoqxcKLo3xr8PuZ5lL/F7zcrRjBGPSQV/kdwNftbP
-         jpsKPhPqiY5YSjNlQT4srBuDt61wDMQ/C+5JStujMLDxZf1gy0KDDFP/pdOXz7jF9NMS
-         OKgQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=O9pHGZVHujpeMWnCK1/1xLcvHuFaohpfkrM32FhJHXo=;
+        b=TCvxuXP6wxXxvKskvU4lwECVskKqSVbmLZj+VRFBnzwAZptLkiXudfC9COh7H9QEaK
+         NfRVyGKSr78aEVZUPzez8NffkbfjPxIPhXaT6/kEJ842fYqoujAgXM3OOfGl9NtiJVPz
+         6Nvgb4L9xGlH9eTNXR3FvAdRbHXw8J74bJXM2vLONCBWrR+wHmhVR9URCv7nAxuj/MfJ
+         6QC0buCoiEO1igxslD/mYR9QUB3XQlxH/h2oCf3BPdJ0T4nwjw12CAaGSlar3MJyNew8
+         Era9eKwETliMu8NzPD0mRSa4NbP7BGCEhD2lB9OZPKsKIkLfnC/aibJvZaWUSptty3/J
+         ut3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=V5IkeuSVi9fKfp3zra01ncb3hrHpLVL3k3XVBC9wdIU=;
-        b=Y2RNvQ8Fq+K65ml10uxskVLHVAj9kTslPOGFBZwzveozLv/26lqYVJ3RII4IEsach/
-         KJiTEK49XtEcBBRCfyEYafYybFb4mwJDG6cIVVX6FU8eNPgzPAJMiVWBExvuHPg/7Xgw
-         CBaTc1HSotvlpBMEVfsLZUy7YE7YUCCUhTyyQvjvNO38NhXCW/pLj+dzF81EMxS5gSk6
-         PenKdOITG9hb/mAlmHyVBfkaz/ORElDCVFZvmpPVwGN4s9Ck/uNErxr9qq/shtPl0jWV
-         TmqFFwlpfmjIhU7tRoOjHVIoNM2BiBYxafExHKRCkv6ktkddIBCadliKtekMhaCd3zbZ
-         BKvQ==
-X-Gm-Message-State: ACgBeo2iOYmp6mQmeEwrVib+64rV0lMqQ1CE9+jkiBVW/YWwMxguYNm1
-        Xa9ej7mfBUTcymwYs7X/hsI=
-X-Google-Smtp-Source: AA6agR5YH/ZznegVN44Uy5995PYYL+udWnPOF5P90bgS+oePK8xqjC8K/9U6cX36GyQyj03+K08Qkg==
-X-Received: by 2002:a63:2a95:0:b0:41a:27e5:1996 with SMTP id q143-20020a632a95000000b0041a27e51996mr17241093pgq.447.1660648393943;
-        Tue, 16 Aug 2022 04:13:13 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j9-20020a655589000000b0041d90d681e7sm7340496pgs.48.2022.08.16.04.13.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 04:13:12 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 16 Aug 2022 04:13:11 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Isaac Manjarres <isaacmanjarres@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Saravana Kannan <saravanak@google.com>, stable@kernel.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] driver core: Fix bus_type.match() error handling
-Message-ID: <20220816111311.GC1108868@roeck-us.net>
-References: <20220815211919.2028890-1-isaacmanjarres@google.com>
- <20220816042507.GB1108868@roeck-us.net>
- <YvsoYzIhOtX9DOi2@google.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=O9pHGZVHujpeMWnCK1/1xLcvHuFaohpfkrM32FhJHXo=;
+        b=NXlnrh3bOvuXN9Ug8aI1FoVfzXsqmmQ+P5tjec6el/cSmzJMizGO1Tq1aZErlpq0WT
+         y6fgChX7jWEHbtCQxLHK1nQL2kzIzKjsAV0VpigrJz2dwHqD4Vf0Cau58Y+RiXdkQ/q6
+         qsM8nmGxYZct0PCNEgEGssQ8kIqnKHA4HAtgRrDLGjOfHM1UK/lg32XiJ9pvWU7DzG8H
+         5Dj3pnu/DjPrEi2s32+kKW3KtpBTSuzJTvpisvjYPSpAC+xwc8QJhDNX1EdwD3o/kYiv
+         P+Ywn9JR6SGl1zGxVPKssyvn2N9fz6f9GRCQN/m8aEe/nB/QBRJ51PLXFC/XC75q6FHe
+         dJJA==
+X-Gm-Message-State: ACgBeo1+ZnNh2aqnfIRzzNtFUNMNAvWihaAh19PcgLc6sI4XATuDa1WV
+        9rMXpleojCHKkfSRfP333cRVUg==
+X-Google-Smtp-Source: AA6agR5fEzLvfeC+9F1Cr3Vuvyt8NnGGjn4fd1dcxYay0Ut+t9+UZTzqORBuYkZ6HhaCCrimKdpP9A==
+X-Received: by 2002:a2e:9953:0:b0:261:8021:35b with SMTP id r19-20020a2e9953000000b002618021035bmr4000582ljj.345.1660648467694;
+        Tue, 16 Aug 2022 04:14:27 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id w7-20020a05651204c700b0048af47aefecsm1345787lfq.290.2022.08.16.04.14.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 04:14:27 -0700 (PDT)
+Message-ID: <96685b52-efcf-2635-04de-b9e08095fa49@linaro.org>
+Date:   Tue, 16 Aug 2022 14:14:25 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvsoYzIhOtX9DOi2@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] bindings: iio: accel: extend adxl313 documentation
+ file
+Content-Language: en-US
+To:     George Mois <george.mois@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     lucas.p.stankus@gmail.com
+References: <20220816102828.182345-1-george.mois@analog.com>
+ <20220816102828.182345-2-george.mois@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220816102828.182345-2-george.mois@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:17:23PM -0700, Isaac Manjarres wrote:
-> On Mon, Aug 15, 2022 at 09:25:07PM -0700, Guenter Roeck wrote:
-> > > v1 -> v2:
-> > > - Fixed the logic in __driver_attach() to allow a driver to continue
-> > >   attempting to match and bind with devices in case of any error, not
-> > >   just probe deferral.
-> > > 
-> > > Guenter,
-> > > 
-> > > Can you please give test this patch to make sure it still works for you?
-> > > 
-> > 
-> > Not as well as v1. I still see the clk crash with versatileab, and imx25-pdk
-> > emulations now stall during boot when trying to boot from usb.
-> > 
-> > Guenter
-> Thanks for trying the patch out. This patch isn't meant to fix the clk
-> crash that you mentioned on another thread. I had made the following patch for
-> that: https://lore.kernel.org/lkml/YvqTvuqSll30Rv2k@google.com/. Have
-> you been able to give that a shot yet? If not can you please test with the
-> patch in this e-mail and that patch?
+On 16/08/2022 13:28, George Mois wrote:
+> Extend the adi,adxl313.yaml file with information regrding the
+> ADXL312 and ADXL314 devices.
 > 
+> Signed-off-by: George Mois <george.mois@analog.com>
 
-No, sorry, I missed that one. It does not apply, though - it is whitespace
-corrupted. I tried to fix it up, but that failed.
 
-> Please make sure you do not include this patch as it is known to cause
-> deadlocks: https://lore.kernel.org/lkml/YvXhJRlHN9OAIA5l@google.com/.
-> 
-No, I did not include that patch.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> Did you test imx25-pdk emulations with just v1 of this patch previously?
-> 
 
-I am quite sure I did because it is a single setup.
-
-Thanks,
-Guenter
+Best regards,
+Krzysztof
