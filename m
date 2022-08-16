@@ -2,155 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A05C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9653C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233077AbiHPLXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        id S233358AbiHPLYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232667AbiHPLXG (ORCPT
+        with ESMTP id S232527AbiHPLYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:23:06 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2086.outbound.protection.outlook.com [40.107.104.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC61A7E30E;
-        Tue, 16 Aug 2022 02:47:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=llJZSnxyvCio9rftXIeOaDFOqQQJEx9z9k1kne7vOkk9SmGHJDgHFVqSdFvoZcojgDpzuXi91Q0cWC6D9pUSU1ZsTSA3GEpNPua6L2SERbWYpBLuGMR98UqEhu8IcU1caOG6M06QyD3cVy8FBoNnt7dLPxqUM4AKS6HSs7uMc6ivyvOmSSNeXBPyuhRAh0Od8hVGid/uEaTKtlXS0yDfEY7W6fiLlpcYgkajutVZNJqtIDa5wzsCzcXouNHGa1baYYtiQVBPYRreWiGlMAiBCWvHdapgB3MuAXSRBD4q5oyVtT09GAI3Khek5V9L7DLyW1n37dDiIqDROkkrJP/vsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pjJYukIbaAtHbVJuVzWW7eVl35LychZa09iSy7sJRzk=;
- b=kb9FP1wPqY6U3sBmbAuyVsMzugFZ9hUPN+Ia5dky01DYjmtf1ouAksPDUB7I+nigmnwl/MOOsOQrDnen18r78H7DcrDjDKcl3EnLWZm3vf/BAu2VEV8DM57faqiZByopbg/n69F8onYfmzNTUg1taFtw7xrgc8mhy2d93lBx+8J3Gv5QnWHSmA7A29jwDl9DyyFt2ItfOf5Bsgx3hT511vqwjll8+gRtwFDoiXHPOAH1SBiaiMaAMd23S+VgqwlvzKsj4Q8qRlCXkbr08tAaKY7Moc9JblR3Dvt1VXfgEzX+IYxSvlkkffHisSErlJZ/2xIqDtFYp70hiX8nyshulw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pjJYukIbaAtHbVJuVzWW7eVl35LychZa09iSy7sJRzk=;
- b=ABUa9Cc2KJiW5QR0boG5MHh7l8pNruTjNT4c4D7Sn6kp+zx4OLBNSTXnfaUSR/CEUERVt3TTvHNbnYddhucB6Mwr1vuV9/cw4UxtxSRyZeFYK4OCZRgLytRF+suY8/7bjyP/hwUIPvq6Ul3tOXOO9knW0D5p4BjQJyZuPNYgjtA=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB8PR04MB7082.eurprd04.prod.outlook.com (2603:10a6:10:129::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
- 2022 09:47:01 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
- 09:47:01 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-CC:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Clark Wang <xiaoning.wang@nxp.com>
-Subject: RE: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
-Thread-Topic: [PATCH 0/6] i2c-imx-lpi2c: add IPG clock
-Thread-Index: AQHYrgSSA2Yxdic4lUaQqa4Ze2PTqa2rDHsAgAQXC0CAAeuegIAAK22wgAAS/oCAAABQ8A==
-Date:   Tue, 16 Aug 2022 09:47:01 +0000
-Message-ID: <DU0PR04MB9417187B9A8A52F4120E3488886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220812043424.4078034-1-peng.fan@oss.nxp.com>
- <f1add9c7-fc2e-a600-49a6-a6579f17db1b@linaro.org>
- <DU0PR04MB9417D62230578AC8CA4234F288689@DU0PR04MB9417.eurprd04.prod.outlook.com>
- <039566a7-5c65-b2d8-7b45-c616863cb292@linaro.org>
- <DU0PR04MB9417EF15DD50EC51B4FBBCFF886B9@DU0PR04MB9417.eurprd04.prod.outlook.com>
- <b630a007-2548-2196-a963-786c6a98b748@linaro.org>
-In-Reply-To: <b630a007-2548-2196-a963-786c6a98b748@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9d64e386-42e5-49d0-c6d2-08da7f6c44c0
-x-ms-traffictypediagnostic: DB8PR04MB7082:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EngqbTm4c07ghbKA7meo/5dbwn3NDnFXS6RFQH0j/m6jwWSJFs0oVNgMUjYb1ckuiPF7Ztf2qjIeVZbwvsgt+dbmvro4V8sDxnXPVo+S+pBB+hg2fed2qWoVj1FOmc1EtRv67+bVgXUsJj2Xclohl3idi5iGbZdmoZyDtU5PzPNoo1g2elKYpOgKG1Rgs8iFcYoSOAPQLWA4PMwtuoMgcmIVkTCbDtFCHgBtMN7JKgkwQukJDYc6hPusMdoPOyx14Z4Ptht85zAX+8oL6/U1WScHlVgwAeRCYGrJ4jqB00bzgNZ15OO46CMXeH4gcVA2G3PIfwRGTXHqEf4Dwn7wkF4aa7igozM+8CO/0HZDWoZ1+tqKZTwHMhkKosKWSWncOjNvUNGIncXDxTo0t7siUv0R5xhlfMcweWqiLHKSH+/XOBlWZBg6K++ruWw+KPLYIlBL7m90mI/BoWhmN6Dgt0iG2EZBKAxnwvlheWh9kXTFi9x8pmxSNUC9CxmGhNMXBVJDfNotiru3s/FkeQm/j2K92Vf3bynvAu45U5BSfUgjloKPKaz/eTo+wNWIpP4PjSp0eeI3BoZkvOVFzbOKL+8Uihr0CfhqhC0adFXHWzhdwDScImVOdhdpNT2TpjO1ZoIsRL2kET7mOdjoH5R9+Z+QS095h3YlXgk28gpIKioDifomkhEJ3xil4/rgdgcHdN11cTiLmnFHMNyotmCRj9r0uAwTOEPXrLp6HWAaLfLbud499HH+AIwl7pjd0NSwyonlN52850greWHEXKc8bmDa41pqmS0tJEFSr4X1PJ8YXvmJURBSwtFmBn+w1YjM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(366004)(39860400002)(346002)(396003)(44832011)(5660300002)(7416002)(53546011)(33656002)(7696005)(83380400001)(9686003)(6506007)(26005)(186003)(4744005)(41300700001)(478600001)(76116006)(52536014)(66556008)(86362001)(316002)(66476007)(64756008)(66446008)(4326008)(122000001)(71200400001)(2906002)(8676002)(38100700002)(66946007)(38070700005)(54906003)(55016003)(110136005)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aW9mVDJOVEhFYWFKakVsRkd5VjFmaGFsWElPZ0NpcHVKYnp3VzlqU3BEWG9v?=
- =?utf-8?B?N3VjL3Q0cHlDaDcwWjE0QkhnYTdUanYxVGdCeWdmOEZybFhFUWM2Mk5NYnIr?=
- =?utf-8?B?c09oYnFQKzEweTZLUWxLWHljdDdNUWRqSFF3L2ZEaFhocm4zdFpGTmh3R0V2?=
- =?utf-8?B?SEJlQnZiT3JkTTFtenF0YkxHbE9EdC91U0lzaXBlRHpBeFZ1YklPeGR6djZR?=
- =?utf-8?B?eFF5ZmF6a0dmcmt2bVpmeEU5TjhoenI2bGptblZnMkZzUnlZaGNhK3lpc2pR?=
- =?utf-8?B?VlBwak5zaE5FQ2N4UTczd3hlRkhYTVRmQ3FadmJ3NFllR1l1L21YdUF1TkpC?=
- =?utf-8?B?eXlJVTdjWEUweGhVaXM4NmdRUXA0R05kY0gzYkFlSSs4Si9SOHhnWFY2bGV6?=
- =?utf-8?B?VzFURW5UbzRSL3NQQjYyS3lpYitpYlFJY1A3L1JMdVZGSEQwZStuYURicU9F?=
- =?utf-8?B?RDlNbDNkZWdXRmRjd1QrNTdBT2t1Q1l4OEIvZ2ovci8zMkpJc29LZm9UUmVu?=
- =?utf-8?B?MzdyMmU4N0pEenpHMmk5Qzk0VFI2NUtQYVU0TVo0NldaL01Ydk5vNFRPVmll?=
- =?utf-8?B?blgxUk5tRXBBQ1FXUExDMEw1OGtyVFBDNHB1NWxTcnAxVXZhR0UreFdmSkxv?=
- =?utf-8?B?dkZnNzBiQ0QxQlFIQTN4by96RlI3K3RlM0d5dHNMODBKWVQxNGtqZVZSV3Fh?=
- =?utf-8?B?MWYxQVJYcUVhT3ozdDVxaDFlMm9EZHlWMDU3REhFTXEyM1N0TzkzSW5nMll6?=
- =?utf-8?B?aDFtL0dtSlYzSEVsNFZvZXE3dXJUcVZPMTg2dFhhMjhydWNHbTAwam1Odkxz?=
- =?utf-8?B?YTVaSXJDdW5wY1d6YnF4eGZ4NE9UQmdwcEgxYmhsejRHc0g5Zmgra0xkbHpJ?=
- =?utf-8?B?TmtkOGZyNUNySllTaVdXTDBKRGEwY2NtN3hVbTlDcW92ZkdwYmY4NHRQOGQ0?=
- =?utf-8?B?b1pNa2c2VUlYOFlCS2hwbHlqMjAvejhiZGgwMGdYWVlKMG1OOXgzVWpDaVYr?=
- =?utf-8?B?dW5tL0hmVHdxRng3bGJ5Y3RhbmZPUDFPVDJWRWU4Kzk5eFBFSHhjTGFwblFW?=
- =?utf-8?B?QklQMWxHVkxVV1RuRFpnZFhtYk1nL3M3REE0eHo0NGxhbVg4SVk3L0dUQ2I1?=
- =?utf-8?B?L1lZZi9TVGFlRWkyQzlBTUJLVjNSZlg3TTFvT0dXU250Ujl5MUdtbEYzcWlT?=
- =?utf-8?B?SmJ0QUdMM1FmbXFOdmc1SHI0SDIyTkFZY3ZteWZnZ2d2aGNKaHdQYXFSbEVW?=
- =?utf-8?B?dCt1UzlWRFFjdGVLMkhwVS9ndDJFemFqKzN5MnI3N09FVWpNeWNLRlQrblBl?=
- =?utf-8?B?TUx1WVlsWFEycFlXcnp2dGN3ajFUMUlYQUhTdyt1RHNhdEp1MXRxK25neXVP?=
- =?utf-8?B?TmVETG45U1NiSWhLZjdBRmNneVZ2TXh6aVBJa3BUYWNkMUhBdVZRSGM5OXFn?=
- =?utf-8?B?bVlRcDd0TGsyRVJ1V2Rtd0EwbkxEZWhpeG5HL04zYXd4VkZhdXdHaGs4aVQw?=
- =?utf-8?B?S1RjWi9Xc2ZrV0huZ1lqSVE0TTRmQ0E4cFY4Y2ExZEMzNzM1RmlTUWlCVjRC?=
- =?utf-8?B?b05MMGpWV1Rta3o5dzVEc3RtT3RzRE1XZmFBem56aFlvallyNVlON3R6KzRC?=
- =?utf-8?B?Qk9RMFlLQnhCM3M5NEZaNmROTDc4ejBJbVVIaWNFc3h0MmhUaVlrSWZnbkFu?=
- =?utf-8?B?Z1h2MDRUOVZraUZ0c2JQR3VhbmtHaFM3SDhYcWkzdllqQ1BrNTZWOVlLaU1W?=
- =?utf-8?B?NVFUaXFQV0ZFVXNaUWR2anUyb1lUcm1KcVJ0K0xYSTRrTjJjWHFObmZBdDVL?=
- =?utf-8?B?Sm5ySDJkNWJVTDBxMzFkRXRLL1hFRUs4SUFhRXhmWllxN2xDWEdwR3RIU0NB?=
- =?utf-8?B?VzR6RHdncWhpcnovODNaR21GLys0Z3ZRYnR4Ym1RejNMZ25qRytBcnN3amdS?=
- =?utf-8?B?TW5OVXNmR1pwM1NaOFBjMWdBSzVoVkVJMUFjSjJ4RDBzS0NYNGlYN0F0ZEQr?=
- =?utf-8?B?NjBLY1VUUDUxOEVKN0RmZWI2aVpjTWtRMjhTTnd0NDU5eFE5ajlGdWk0b2FC?=
- =?utf-8?B?RzBBV3VsMXVlc2tzazhNUzdZZmY4UkNKV2FlTlVNeC9aWXhtL202T0laWDc1?=
- =?utf-8?Q?GOnw=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 16 Aug 2022 07:24:07 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547EE3DBF7
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:38:11 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id y3so12914744eda.6
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 03:38:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=ufWvRN9ig8qXKLJ6sMdoAhRoS5NiZ0umrZmeYXNUY5s=;
+        b=QuF2Lfk6MReyDHsaxgF/85u0jGVLqLsK8ayItl3rPam/yJAtUmrXJ6l7dNLdwknhPx
+         bG0fT3PQHtz21qbt6AZcVAEx16zzSy6F3Lp+4uwJIOn3KRyvToVItcUg/e7+0Lq6j0/C
+         xaC3diIpEWjI/aJFK060fn8NCe2k33wmMd1vdUNKJfvujoh09BzFt8GM6EwCyqksHI4+
+         6sRMdDxNx5slwFiR2auEWqMkv1g/umNozk0pz2Vr5kw+tXcZ82qyX82wmfhao6iPNbNp
+         j4OhEIyhdal7mdblVjID95D0NIR1Gz+xJBwqIIJacf77hJ2o3EPYZenls0qdtfmu2a6q
+         eu6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=ufWvRN9ig8qXKLJ6sMdoAhRoS5NiZ0umrZmeYXNUY5s=;
+        b=SuY3d7a26OqhGu1i7V8W1GD+uwhLCkvq0RC4nyFvbIBOjmO0b++iqsKv8aJUkNss4x
+         MGzNADPmL/eZzPzIgNMccoCXJdIC7MfNatrzH+sqAHVt61hVuC6G/WVGGS2tUK8nz9Ob
+         nzND4W8RMiqJ8jT9/VFsivp9g4U2OUo5BbqPRiDrCHhi0EVAayCu+KxIcB//6j7UXovX
+         fPwHF4jTTWR7OHSb0rdIt+UxjDeOLXCt3RV0WxcXWXuNyC36lJ2p2qBPhZqIEbokla1R
+         uIo/Yv1JhK2JhaJZggtehhS6LA7Vt394bM3GMv3vqiOU9a5T7LZnFnCkidnl8Gs8r1d+
+         cQTQ==
+X-Gm-Message-State: ACgBeo2hzf3NwP5ebcKq4cmKNRMjg/qQTskZ8x94+cGAVuYQ+SFa5H+e
+        IKJ3UML/Gag2ZESvrJ1MzZZgGVXVTLU8AEEOgZnLBA==
+X-Google-Smtp-Source: AA6agR7jrpvglEBPKJU86Ncb/LZLDpKhvskK8YPPsieEPva2vJg/OoTwz3v0IKbJTIFYRqmV38s7KXUHGji3dO26jz0=
+X-Received: by 2002:a05:6402:447:b0:440:d482:495f with SMTP id
+ p7-20020a056402044700b00440d482495fmr18656731edw.264.1660646289626; Tue, 16
+ Aug 2022 03:38:09 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d64e386-42e5-49d0-c6d2-08da7f6c44c0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2022 09:47:01.2557
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Hel4Gqk2jFkSR1kRozWzLduqw9gmNXfqnwsgVKcQgcH+lMJ2MnliLUB7w7zLLWN0ou84qRIwcyyj3BIifMQAwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7082
+References: <20220815180439.416659447@linuxfoundation.org> <CA+G9fYtZP_rYnmRyLbMrxKPGtJuoOw4h412dJXBJnzab41CzUw@mail.gmail.com>
+ <YvtNZuap/oCKVv9O@kroah.com>
+In-Reply-To: <YvtNZuap/oCKVv9O@kroah.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 16 Aug 2022 16:07:58 +0530
+Message-ID: <CA+G9fYuqm1NzfhF2B8OXqcH8-c24ZA6UGv3Y94fYuyOKVgqaOQ@mail.gmail.com>
+Subject: Re: [PATCH 5.19 0000/1157] 5.19.2-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBTdWJqZWN0OiBSZTogW1BBVENIIDAvNl0gaTJjLWlteC1scGkyYzogYWRkIElQRyBjbG9jaw0K
-PiANCj4gT24gMTYvMDgvMjAyMiAxMTo0MywgUGVuZyBGYW4gd3JvdGU6DQo+ID4+IE5vLiBGb3Ig
-c3VjaCBwYXRjaCBBQkkgYnJlYWsgaXMgYWxzbyBub3QgYWxsb3dlZCBpbiB0aGF0IGNhc2UuIEp1
-c3QNCj4gPj4gbWFrZSB0aGUgZHJpdmVyIGJhY2t3YXJkcyBjb21wYXRpYmxlIGFuZCBib3RoIHBy
-b2JsZW1zIC0gbm9uDQo+ID4+IGJpc2VjdGFiaWxpdHkgYW5kIEFCSSBicmVhayAtIGdvIGF3YXku
-DQo+ID4NCj4gPiBPbmUgbW9yZSBwb2ludCB0aGF0IEkgYW0gbm90IHZlcnkgY2xlYXIgYWJvdXQg
-Im5vbiBiaXNlY3RhYmlsaXR5IGFuZA0KPiA+IEFCSSBicmVhayAiDQo+ID4NCj4gPiBBQkksIEkg
-c3VwcG9zZSB5b3UgbWVhbiBkdC1iaW5kaW5nLCByaWdodD8NCj4gPiBUaGUgSTJDIGJpbmRpbmdz
-IGFuZCBkdHMgdXBkYXRlIHdpbGwgZ28gdGhyb3VnaCBkaWZmZXJlbnQgdHJlZSwgSQ0KPiA+IHRo
-aW5rLiBTbyBkdGJzX2NoZWNrIG1heSBmYWlsIGNvbnNpZGVyaW5nIHRoZSBQUiBtZXJnZSBvcmRl
-ci4NCj4gDQo+IEFCSSBicmVhayBtZWFucyBicmVha2luZyBBcHBsaWNhdGlvbiBCaW5hcnkgSW50
-ZXJmYWNlLCBzbyBvdXQgb2YgdHJlZSBEVFMNCj4gY29uZm9ybWluZyB0byBvbGQgYmluZGluZ3Mg
-c3RvcCB3b3JraW5nIHdpdGggbmV3IGtlcm5lbC4NCj4gDQo+IEFCSSBpcyBkZXNjcmliZWQgYnkg
-YmluZGluZ3MgYW5kIGltcGxlbWVudGVkIGJ5IGRyaXZlci4gWW91IGJyb2tlIGl0IGluIHRoZQ0K
-PiBkcml2ZXIuDQoNClRoYW5rcyBmb3IgeW91ciBleHBsYW5hdGlvbi4gVjIgd2lsbCB0YWtlIGNh
-cmUgb2YgdGhpcy4NCg0KVGhhbmtzLA0KUGVuZy4NCj4gDQo+IEJlc3QgcmVnYXJkcywNCj4gS3J6
-eXN6dG9mDQo=
+On Tue, 16 Aug 2022 at 13:57, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Aug 16, 2022 at 01:08:26PM +0530, Naresh Kamboju wrote:
+> > On Tue, 16 Aug 2022 at 00:58, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > This is the start of the stable review cycle for the 5.19.2 release.
+> > > There are 1157 patches in this series, all will be posted as a respon=
+se
+> > > to this one.  If anyone has any issues with these being applied, plea=
+se
+> > > let me know.
+> > >
+> > > Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> > > Anything received after that time might be too late.
+> > >
+> > > The whole patch series can be found in one patch at:
+> > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/pa=
+tch-5.19.2-rc1.gz
+> > > or in the git tree and branch at:
+> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-st=
+able-rc.git linux-5.19.y
+> > > and the diffstat can be found below.
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> >
+> > The arm64 clang-14 allmodconfig failed on stable-rc 5.19.
+> > This build failure got fixed on the mainline tree two weeks ago.
+> >
+> > * arm64, build
+> >   - clang-12-allmodconfig
+> >   - clang-13-allmodconfig
+> >   - clang-14-allmodconfig
+> >   - clang-nightly-allmodconfig
+> >
+> >
+> > make --silent --keep-going --jobs=3D8
+> > O=3D/home/tuxbuild/.cache/tuxmake/builds/2/build LLVM=3D1 LLVM_IAS=3D1
+> > ARCH=3Darm64 CROSS_COMPILE=3Daarch64-linux-gnu- 'HOSTCC=3Dsccache clang=
+'
+> > 'CC=3Dsccache clang' allmodconfig
+> > make --silent --keep-going --jobs=3D8
+> > O=3D/home/tuxbuild/.cache/tuxmake/builds/2/build LLVM=3D1 LLVM_IAS=3D1
+> > ARCH=3Darm64 CROSS_COMPILE=3Daarch64-linux-gnu- 'HOSTCC=3Dsccache clang=
+'
+> > 'CC=3Dsccache clang'
+> > sound/soc/intel/avs/path.c:815:18: error: stack frame size (2192)
+> > exceeds limit (2048) in 'avs_path_create'
+> > [-Werror,-Wframe-larger-than]
+> > struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
+> >                  ^
+> > 1 error generated.
+> > make[5]: *** [/builds/linux/scripts/Makefile.build:249:
+> > sound/soc/intel/avs/path.o] Error 1
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > Steps to reproduce:
+> > -------------------------
+> > # See https://docs.tuxmake.org/ for complete documentation.
+> > # Original tuxmake command with fragments listed below.
+> > # tuxmake --runtime podman --target-arch arm64 --toolchain clang-14
+> > --kconfig allmodconfig LLVM=3D1 LLVM_IAS=3D1
+> >
+> > tuxmake --runtime podman --target-arch arm64 --toolchain clang-14
+> > --kconfig https://builds.tuxbuild.com/2DPEiUmdALSZq7DeNthZFYoPLaN/confi=
+g
+> > LLVM=3D1 LLVM_IAS=3D1
+>
+> What is the commit on mainline that resolved this issue?
+
+commit 1e744351bcb9c4cee81300de5a6097100d835386
+Author: Amadeusz S=C5=82awi=C5=84ski <amadeuszx.slawinski@linux.intel.com>
+Date:   Fri Jul 22 13:19:59 2022 +0200
+
+    ASoC: Intel: avs: Use lookup table to create modules
+
+    As reported by Nathan, when building avs driver using clang with:
+      CONFIG_COMPILE_TEST=3Dy
+      CONFIG_FORTIFY_SOURCE=3Dy
+      CONFIG_KASAN=3Dy
+      CONFIG_PCI=3Dy
+      CONFIG_SOUND=3Dy
+      CONFIG_SND=3Dy
+      CONFIG_SND_SOC=3Dy
+      CONFIG_SND_SOC_INTEL_AVS=3Dy
+
+    there are reports of too big stack use, like:
+      sound/soc/intel/avs/path.c:815:18: error: stack frame size
+(2176) exceeds limit (2048) in 'avs_path_create'
+[-Werror,-Wframe-larger-than]
+      struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
+                       ^
+      1 error generated.
+
+    This is apparently caused by inlining many calls to guid_equal which
+    inlines fortified memcpy, using 2 size_t variables.
+
+    Instead of hardcoding many calls to guid_equal, use lookup table with
+    one call, this improves stack usage.
+
+    Link: https://lore.kernel.org/alsa-devel/YtlzY9aYdbS4Y3+l@dev-arch.thel=
+io-3990X/T/
+    Link: https://github.com/ClangBuiltLinux/linux/issues/1642
+    Signed-off-by: Amadeusz S=C5=82awi=C5=84ski <amadeuszx.slawinski@linux.=
+intel.com>
+    Reported-by: Nathan Chancellor <nathan@kernel.org>
+    Build-tested-by: Nathan Chancellor <nathan@kernel.org>
+    Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+    Link: https://lore.kernel.org/r/20220722111959.2588597-1-amadeuszx.slaw=
+inski@linux.intel.com
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+
+- Naresh
