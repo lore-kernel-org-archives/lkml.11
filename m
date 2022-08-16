@@ -2,193 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5A6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0BAC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 10:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234888AbiHPKgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S234895AbiHPKgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234807AbiHPKgR (ORCPT
+        with ESMTP id S234816AbiHPKgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 06:36:17 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307336C100
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id a21-20020a5d9815000000b006882e9be20aso3113539iol.17
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=xc5VZ38s5GsqCus/sbSSb0V5SsZ/HUPvReBQR7V5qUQ=;
-        b=lzkXP4AAY9CJ1JfMqCx1aPlkuIBTsHPLy4akwlk6S2O9wOVg6w/iFBG0/K9NoNwf9b
-         64JOYNoxxi4UjDD6cC3VFZ4uFsZ8EMkxqdSQdZBoAM66ZVBG8vtGBzAjczgOG23av1hA
-         pUgzz03QWPbi0j5BIWLMH+3KMbCqAY8XY3whLHveXBhjIc+PT3kk9MkJjPxxnMCJdFu+
-         BAXey2USrRycdr0/84YDOmNSZTTSWGGXLfOaxo/VJF/pj4+Ph1eX4zLMHyfI28XPqAyZ
-         0olY0TPA3H5kqQnysV0eYaOTbygGfCJyemzEjexUYFve5hVtBlBMwqgzkAugmirg9zP1
-         MdHw==
-X-Gm-Message-State: ACgBeo1Tv6CS1g606Dix6sa7m37Lo8iB40JE6UWA0qogXLyT9eAGwB3+
-        xyRu7423rUCuTM5qZ+DUSCkz0bFSpjK/Oi9tQlOhG/eQ8nZx
-X-Google-Smtp-Source: AA6agR4K1AqOP+5VpG6jIS2BuqX2hX3xDt0kEKp5BFPJRKCL3oVRnZlUp1DO/KF5vSVxFOGzwKcG+Sw7rCctrWYpmqx1I9EV6LNh
+        Tue, 16 Aug 2022 06:36:24 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1948E5B79A;
+        Tue, 16 Aug 2022 01:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660640398; x=1692176398;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Fsbw9VD64WNebEA9SmUmkH3lTdV9uckYpcgbPhxuwEE=;
+  b=cbXdimhMXhSdqUijOstcJb6n+4pQ9EPwcVRvjT7YR0ShuLOcI+lfMflJ
+   rslMlXVtIQS9VJ4MaKRTIFC98J9Yg9iZZKsCT56qJmrUc6GdHfRtGvoGn
+   DVXaKX6YxAoSfnEQVz0TLq5qZ8rPkc/KaSoeorQrAQ8jhEOknW+FsFn/2
+   rF+0nbDGlcG7V03qEXG78T41J7Xfw2MryiJ5Lo4Q7JaKMjLoXxU0V0p81
+   6uj1q9g64CVt1OV7g9prBctfj0A0Qtt2I0wpcIjk8H2w1oJrN47XDgYax
+   fDOX+Or27oDXN7CGVmYobQUTFBckcA9fRZcuSQm+o/ae0LqjmKY72gyVd
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="292164224"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="292164224"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 01:59:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="733222124"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 16 Aug 2022 01:59:51 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNsQR-0001f6-0Z;
+        Tue, 16 Aug 2022 08:59:51 +0000
+Date:   Tue, 16 Aug 2022 16:59:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Cc:     kbuild-all@lists.01.org, loongarch@lists.linux.dev,
+        linux-arch@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] LoongArch: Add perf events support
+Message-ID: <202208161648.zq48ilEV-lkp@intel.com>
+References: <20220815124702.3330803-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2109:b0:343:59d7:3815 with SMTP id
- n9-20020a056638210900b0034359d73815mr9816658jaj.116.1660638929520; Tue, 16
- Aug 2022 01:35:29 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:35:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007e8da905e657a184@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in netdev_queue_update_kobjects
-From:   syzbot <syzbot+519ff9362a883a7a4865@syzkaller.appspotmail.com>
-To:     atenart@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815124702.3330803-1-chenhuacai@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Huacai,
 
-syzbot found the following issue on:
+I love your patch! Perhaps something to improve:
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1562e2d3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=519ff9362a883a7a4865
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+[auto build test WARNING on linus/master]
+[also build test WARNING on v6.0-rc1 next-20220816]
+[cannot apply to soc/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+519ff9362a883a7a4865@syzkaller.appspotmail.com
+url:    https://github.com/intel-lab-lkp/linux/commits/Huacai-Chen/LoongArch-Add-perf-events-support/20220815-204852
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+config: loongarch-randconfig-s051-20220815 (https://download.01.org/0day-ci/archive/20220816/202208161648.zq48ilEV-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/0e6d9490ff3f6129799675b9288135022a0908e2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Huacai-Chen/LoongArch-Add-perf-events-support/20220815-204852
+        git checkout 0e6d9490ff3f6129799675b9288135022a0908e2
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=loongarch 
 
-input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
-ACPI: button: Sleep Button [SLPF]
-ACPI: \_SB_.LNKC: Enabled at IRQ 11
-virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-ACPI: \_SB_.LNKD: Enabled at IRQ 10
-virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-ACPI: \_SB_.LNKB: Enabled at IRQ 10
-virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
-virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
-N_HDLC line discipline registered with maxframe=4096
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-Non-volatile memory driver v1.3
-Linux agpgart interface v0.103
-ACPI: bus type drm_connector registered
-[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
-Console: switching to colour frame buffer device 128x48
-platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
-usbcore: registered new interface driver udl
-brd: module loaded
-loop: module loaded
-zram: Added device: zram0
-null_blk: disk nullb0 created
-null_blk: module loaded
-Guest personality initialized and is inactive
-VMCI host device registered (name=vmci, major=10, minor=120)
-Initialized host personality
-usbcore: registered new interface driver rtsx_usb
-usbcore: registered new interface driver viperboard
-usbcore: registered new interface driver dln2
-usbcore: registered new interface driver pn533_usb
-nfcsim 0.2 initialized
-usbcore: registered new interface driver port100
-usbcore: registered new interface driver nfcmrvl
-Loading iSCSI transport class v2.0-870.
-scsi host0: Virtio SCSI HBA
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-Rounding down aligned max_sectors from 4294967295 to 4294967288
-db_root: cannot open: /etc/target
-slram: not enough parameters.
-ftl_cs: FTL header not found.
-wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
-MACsec IEEE 802.1AE
-tun: Universal TUN/TAP device driver, 1.6
-general protection fault, probably for non-canonical address 0xffff000000000800: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200000004000-0xfff8200000004007]
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
-RIP: 0010:get_freepointer mm/slub.c:354 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:kmem_cache_alloc_trace+0x164/0x3e0 mm/slub.c:3282
-Code: 8b 51 08 48 8b 01 48 83 79 10 00 48 89 44 24 08 0f 84 bf 01 00 00 48 85 c0 0f 84 b6 01 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 c2 01 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0000:ffffc90000067810 EFLAGS: 00010246
-RAX: ffff000000000000 RBX: 0000000000000000 RCX: 0000000000000800
-RDX: 0000000000002e30 RSI: 0000000000000dc0 RDI: 000000000003dce0
-RBP: ffff888011842140 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000dc0 R14: 0000000000000a20 R15: 0000000000000dc0
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- kobject_uevent_env+0x230/0x1640 lib/kobject_uevent.c:524
- netdev_queue_add_kobject net/core/net-sysfs.c:1677 [inline]
- netdev_queue_update_kobjects+0x3d1/0x4e0 net/core/net-sysfs.c:1718
- register_queue_kobjects net/core/net-sysfs.c:1779 [inline]
- netdev_register_kobject+0x330/0x400 net/core/net-sysfs.c:2019
- register_netdevice+0xe01/0x1680 net/core/dev.c:10070
- virtnet_probe+0x1378/0x2f30 drivers/net/virtio_net.c:3929
- virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
- call_driver_probe drivers/base/dd.c:530 [inline]
- really_probe+0x249/0xb90 drivers/base/dd.c:609
- __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
- __driver_attach+0x223/0x550 drivers/base/dd.c:1150
- bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
- bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
- driver_register+0x220/0x3a0 drivers/base/driver.c:240
- virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
- do_one_initcall+0xfe/0x650 init/main.c:1296
- do_initcall_level init/main.c:1369 [inline]
- do_initcalls init/main.c:1385 [inline]
- do_basic_setup init/main.c:1404 [inline]
- kernel_init_freeable+0x6b1/0x73a init/main.c:1611
- kernel_init+0x1a/0x1d0 init/main.c:1500
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
-----------------
-Code disassembly (best guess):
-   0:	8b 51 08             	mov    0x8(%rcx),%edx
-   3:	48 8b 01             	mov    (%rcx),%rax
-   6:	48 83 79 10 00       	cmpq   $0x0,0x10(%rcx)
-   b:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-  10:	0f 84 bf 01 00 00    	je     0x1d5
-  16:	48 85 c0             	test   %rax,%rax
-  19:	0f 84 b6 01 00 00    	je     0x1d5
-  1f:	48 8b 7d 00          	mov    0x0(%rbp),%rdi
-  23:	8b 4d 28             	mov    0x28(%rbp),%ecx
-  26:	40 f6 c7 0f          	test   $0xf,%dil
-* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
-  2e:	0f 85 c2 01 00 00    	jne    0x1f6
-  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
-  3d:	0f 94 c0             	sete   %al
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+sparse warnings: (new ones prefixed by >>)
+>> arch/loongarch/kernel/perf_event.c:30:50: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __user *user_frame_tail @@     got unsigned long * @@
+   arch/loongarch/kernel/perf_event.c:30:50: sparse:     expected unsigned long [noderef] __user *user_frame_tail
+   arch/loongarch/kernel/perf_event.c:30:50: sparse:     got unsigned long *
+   arch/loongarch/kernel/perf_event.c: note: in included file (through arch/loongarch/include/asm/cpu-info.h, arch/loongarch/include/asm/processor.h, ...):
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: undefined identifier '__builtin_loongarch_csrrd_d'
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: undefined identifier '__builtin_loongarch_csrwr_d'
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:237:16: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
+   arch/loongarch/include/asm/loongarch.h:247:9: sparse: sparse: cast from unknown type
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+vim +30 arch/loongarch/kernel/perf_event.c
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+    20	
+    21	/*
+    22	 * Get the return address for a single stackframe and return a pointer to the
+    23	 * next frame tail.
+    24	 */
+    25	static unsigned long
+    26	user_backtrace(struct perf_callchain_entry_ctx *entry, unsigned long fp)
+    27	{
+    28		struct stack_frame buftail;
+    29		unsigned long err;
+  > 30		unsigned long __user *user_frame_tail = (unsigned long *)(fp - sizeof(struct stack_frame));
+    31	
+    32		/* Also check accessibility of one struct frame_tail beyond */
+    33		if (!access_ok(user_frame_tail, sizeof(buftail)))
+    34			return 0;
+    35	
+    36		pagefault_disable();
+    37		err = __copy_from_user_inatomic(&buftail, user_frame_tail, sizeof(buftail));
+    38		pagefault_enable();
+    39	
+    40		if (err || (unsigned long)user_frame_tail >= buftail.fp)
+    41			return 0;
+    42	
+    43		perf_callchain_store(entry, buftail.ra);
+    44	
+    45		return buftail.fp;
+    46	}
+    47	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
