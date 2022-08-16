@@ -2,136 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A803C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E69C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:20:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbiHPLT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        id S233061AbiHPLT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiHPLS5 (ORCPT
+        with ESMTP id S233538AbiHPLTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:18:57 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC31E0FD0
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:43:54 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso962525pjk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=GTvbctvJNpJ5XFFAVjSyyK1oKWoGjmVgAKwPqHF7qTs=;
-        b=n6yB+De5LjG5J02vO6g0oPWkj3A2U2tkMwkcwVOgupo09upQEcL0TRkdI25JKNKj8n
-         Pnr5oW7kcZ+bsh8CkL+v4FHrwgbQv9zYbjC4eac45qnROLw8+chC/y4ycI2CsyEYGB7f
-         FDwchZJQIAjypZZ1C7XKKktbfWh72dp06/Yh56cBvpO+5jDq4ZLe8huL1FrOJdPibtB7
-         E0VY/CgbKLbIOdDOgSZpvFeIgQXszz4HMxIa9NwKNNd+uJrCDH3xcD7HS47ytEPl4VC5
-         fWZFSML8wxR5joZXGb6oPgAnLjn8M+UwjptMWBtSWGadM5JgzOLWn7bcyGrY88CglbJ2
-         9jfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=GTvbctvJNpJ5XFFAVjSyyK1oKWoGjmVgAKwPqHF7qTs=;
-        b=nfQ/531dZEc5+oTjZGEcsrpPCJQbk9l/fyOoP/nw7i33U7dmSoCy6ikzWUBC8YY8bd
-         sWZ/FJQpFv6pW/iCqnagSp9tMP0mJEAuzarNajUH6Itl9DXX6Vq2EkRrsaCoJoJGwabS
-         f05ZB/nfi5ds9HSmCBpaj8P3iXxwdei3ocdoY1DliHMHyQhe79ZLimlwQp3Fz+q+lhpG
-         XIifEYG+LCEfOshfl1t78y7Ej8gJ1BuLR5il3JGXt4NEliIwdHs19CY+LjL5bu+WybNf
-         HcB5feI/+XKH3/KBCaT0mJYyiR69/5yS2eLBerg+GygDLhcfNSYbI49vKHEPvU2pXmIm
-         StUw==
-X-Gm-Message-State: ACgBeo1r+7NT3WO/gLFU6If72KjIXYC2y63cfm71f1jHvJxURS/aMoWj
-        t/pBbOV/x9Cnpa7MRG4qJCWWbPkw6IPn/A==
-X-Google-Smtp-Source: AA6agR6FZQ9i+Tf/3XIz0/damoZoUYQmUBv+ZJ8T1Pk9l/5Np+oxwasrX2uAUzYHFZrxINjaXD6fsA==
-X-Received: by 2002:a17:90b:3e86:b0:1f5:2b4f:7460 with SMTP id rj6-20020a17090b3e8600b001f52b4f7460mr32854131pjb.97.1660643033650;
-        Tue, 16 Aug 2022 02:43:53 -0700 (PDT)
-Received: from FVFDK26JP3YV.bytedance.net ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id w12-20020a170902e88c00b0016a6caacaefsm8643350plg.103.2022.08.16.02.43.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Aug 2022 02:43:53 -0700 (PDT)
-From:   Lei He <helei.sig11@bytedance.com>
-To:     mst@redhat.com, herbert@gondor.apana.org.au,
-        arei.gonglei@huawei.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pizhenwei@bytedance.com, lei he <helei.sig11@bytedance.com>
-Subject: [PATCH v2] virtio-crypto: fix memory-leak
-Date:   Tue, 16 Aug 2022 17:43:36 +0800
-Message-Id: <20220816094336.27806-1-helei.sig11@bytedance.com>
-X-Mailer: git-send-email 2.29.2
+        Tue, 16 Aug 2022 07:19:38 -0400
+Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C728FD804E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 02:50:12 -0700 (PDT)
+Received: from cmgw15.mail.unifiedlayer.com (unknown [10.0.90.130])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id ADD0E1004831E
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 09:49:57 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id NtCuoD4HbsbE6NtCvoFkJu; Tue, 16 Aug 2022 09:49:57 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=EegN/NqC c=1 sm=1 tr=0 ts=62fb6845
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=biHskzXt2R4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WL1xAwhUekvDaJAQgGU/uTWwJi4vjB3BzJxU5Ig6nLA=; b=bQUE55hQKeSDtQTmmJP0NJkwjK
+        NsOrIC+koxLAVIZ9xJwncmznzhzXoMlp0uqGYHFUdfgKXJPuZAltxhfsDA1pzGmKZiMuG21J9fZaw
+        p0KffsU1aF3pU1DyKBFihf5ey8lvCOtZ/9ur9TbMGPI1j/dkqyynCChjnDpQJh27eQfIKFUKbOF0f
+        /qEciyRrTcptZmhgwLcTXpliU29Kjm33dM/+CtNg37/z1LEuAXTJ5Y9Qf7HSq8izWRSFmZh5IYbRR
+        qPsdqAyhpsMwyR7MKssYr7aTmxHQqXnC8zaVyMSEtwx+UJKWUId2o/iMtS3NJoG7viqhbJzNNOy+H
+        ds9j6y3g==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:40150 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1oNtCt-004AMm-9f;
+        Tue, 16 Aug 2022 03:49:55 -0600
+Subject: Re: [PATCH 5.19 0000/1157] 5.19.2-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <9f255516-7971-8ed4-5dc2-6c7ff6dbb010@w6rz.net>
+Date:   Tue, 16 Aug 2022 02:49:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1oNtCt-004AMm-9f
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:40150
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lei he <helei.sig11@bytedance.com>
+On 8/15/22 10:49 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.19.2 release.
+> There are 1157 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.2-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Fix memory-leak for virtio-crypto akcipher request, this problem is
-introduced by 59ca6c93387d3(virtio-crypto: implement RSA algorithm).
-The leak can be reproduced and tested with the following script
-inside virtual machine:
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-#!/bin/bash
-
-LOOP_TIMES=10000
-
-# required module: pkcs8_key_parser, virtio_crypto
-modprobe pkcs8_key_parser # if CONFIG_PKCS8_PRIVATE_KEY_PARSER=m
-modprobe virtio_crypto # if CONFIG_CRYPTO_DEV_VIRTIO=m
-rm -rf /tmp/data
-dd if=/dev/random of=/tmp/data count=1 bs=230
-
-# generate private key and self-signed cert
-openssl req -nodes -x509 -newkey rsa:2048 -keyout key.pem \
-		-outform der -out cert.der  \
-		-subj "/C=CN/ST=GD/L=SZ/O=vihoo/OU=dev/CN=always.com/emailAddress=yy@always.com"
-# convert private key from pem to der
-openssl pkcs8 -in key.pem -topk8 -nocrypt -outform DER -out key.der
-
-# add key
-PRIV_KEY_ID=`cat key.der | keyctl padd asymmetric test_priv_key @s`
-echo "priv key id = "$PRIV_KEY_ID
-PUB_KEY_ID=`cat cert.der | keyctl padd asymmetric test_pub_key @s`
-echo "pub key id = "$PUB_KEY_ID
-
-# query key
-keyctl pkey_query $PRIV_KEY_ID 0
-keyctl pkey_query $PUB_KEY_ID 0
-
-# here we only run pkey_encrypt becasuse it is the fastest interface
-function bench_pub() {
-	keyctl pkey_encrypt $PUB_KEY_ID 0 /tmp/data enc=pkcs1 >/tmp/enc.pub
-}
-
-# do bench_pub in loop to obtain the memory leak
-for (( i = 0; i < ${LOOP_TIMES}; ++i )); do
-	bench_pub
-done
-
-Signed-off-by: lei he <helei.sig11@bytedance.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Gonglei <arei.gonglei@huawei.com>
----
- drivers/crypto/virtio/virtio_crypto_akcipher_algs.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-index 2a60d0525cde..168195672e2e 100644
---- a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-+++ b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
-@@ -56,6 +56,10 @@ static void virtio_crypto_akcipher_finalize_req(
- 	struct virtio_crypto_akcipher_request *vc_akcipher_req,
- 	struct akcipher_request *req, int err)
- {
-+	kfree(vc_akcipher_req->src_buf);
-+	kfree(vc_akcipher_req->dst_buf);
-+	vc_akcipher_req->src_buf = NULL;
-+	vc_akcipher_req->dst_buf = NULL;
- 	virtcrypto_clear_request(&vc_akcipher_req->base);
- 
- 	crypto_finalize_akcipher_request(vc_akcipher_req->base.dataq->engine, req, err);
-
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.20.1
+Tested-by: Ron Economos <re@w6rz.net>
 
