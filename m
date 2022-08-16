@@ -2,116 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6172FC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137ACC32773
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 12:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235427AbiHPMJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S235398AbiHPMIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235440AbiHPMIE (ORCPT
+        with ESMTP id S233950AbiHPMHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:08:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED9E10C7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:00:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660651219;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pwz8sbWeHrkfuw7TlrsGXqGQd9GZSL1nvueVrYuNuZ0=;
-        b=NbJAAGXaDePzXDLNZgOvKqwsf6Rui8Qm0mgh69MGXNlX5r39Y7XWmlQsC8l/EdntJQYYDm
-        zL9i6uKuydP+SQVdMorsZQ2UV3gCh8YZy6j1GV0FY4i4FlgPiGzlwiMqvkaGW4kXgFAZpT
-        R2aHa9JUCbJLX9WwuBEig2b/QESkTHw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-509-t2z_HEDkN16ZdtfP_uyM4Q-1; Tue, 16 Aug 2022 08:00:17 -0400
-X-MC-Unique: t2z_HEDkN16ZdtfP_uyM4Q-1
-Received: by mail-wm1-f71.google.com with SMTP id f18-20020a05600c4e9200b003a5f81299caso1723830wmq.7
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 05:00:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Pwz8sbWeHrkfuw7TlrsGXqGQd9GZSL1nvueVrYuNuZ0=;
-        b=tO92eycBQiLYyGVssodeKPUzJA5zdkRuSsnoptuyM1FV7gx/VgLv2d7w3917KbuBUf
-         eJ57WJWEG13LpDgmNGP1UoVCknValk+2GShB3smvejiRmAOy5UmrjzbJuNkgNfx0VxJ2
-         l4b0sEAEzUJhXrWUEd1clppuCFEBkx77sjinAh8eJnt29wj7eLz6sZp7JyfhKLhTkvF0
-         az0+ocKvtHSK+VvhgrzkzE/Xw2LuHslAzKrXOTG/oySHI78jL4OjXWc5zmmSaWNR9LQa
-         /UMhkpS+VpnVJIPkhOgMowQM/FnF7N83MLmhLrzeSlpb2LAgqnXkaY8uPGs5+wFBJwg4
-         RRxg==
-X-Gm-Message-State: ACgBeo002eytDRXtltDw7copRGVrbehntT/QaqooI40ic6bgORDtfeAl
-        BF4ViGAl/8eyXOC3zi7gwmr3Z6iVwIB1ffTA6csrjL/LsTpVtzK16JURie80jIogNDBdPiLZRVS
-        hMddcjoCeFjORV7xO9pv6/PRe
-X-Received: by 2002:a05:6000:2a8:b0:220:6893:4ff6 with SMTP id l8-20020a05600002a800b0022068934ff6mr11805873wry.170.1660651216639;
-        Tue, 16 Aug 2022 05:00:16 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5+lxy72X0p8q1N/VA1caBeK9MeCyZ3upRXQRZYRJDWig+QRJxJ+nox5XWYdcFyrgUtFuIZyQ==
-X-Received: by 2002:a05:6000:2a8:b0:220:6893:4ff6 with SMTP id l8-20020a05600002a800b0022068934ff6mr11805859wry.170.1660651216420;
-        Tue, 16 Aug 2022 05:00:16 -0700 (PDT)
-Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id cl5-20020a5d5f05000000b00224f7c1328dsm8312482wrb.67.2022.08.16.05.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 05:00:15 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 08:00:10 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Nadav Amit <namit@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 1/4] Make place for common balloon code
-Message-ID: <20220816075953-mutt-send-email-mst@kernel.org>
-References: <20220816094117.3144881-1-alexander.atanasov@virtuozzo.com>
- <20220816094117.3144881-2-alexander.atanasov@virtuozzo.com>
- <YvtoDxvefWUJBfAS@kroah.com>
- <f88fe469-d4a4-3240-b325-a745255bf01c@virtuozzo.com>
- <YvuF8CsP0M1TAK1a@kroah.com>
+        Tue, 16 Aug 2022 08:07:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DFA302;
+        Tue, 16 Aug 2022 04:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660651084; x=1692187084;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1UKIh5lVnmIBtDpa/AFX4y2MwA+uxmPJv1Yi4y10neY=;
+  b=ZOqkhz0gXvSmIGe2T5t8WHxenGbTHS+sck7yvwAnS5lmECLp3WHvbEsT
+   MdVveM+9veTWWu2+VNnd6qR1FrXbyAKgP5iPZR8KNSPi6ZwZdnpdphA6+
+   dHSKwXhRUpKuSLWVPztHWd7sUhkHWO67JAnf8q5LrDZmp7VR1G3yg/Pr2
+   ukAox3CtAy85Y0mOodWM182cL7SZIzLh4ChPxGA76gRWMhCnjdO0+kMub
+   lDBScaWm04UsQijbckPBfTh6oJCX0gpWPwL+0pDgoR0r9BboLV6/Ly6T/
+   bnUGAHgaKUOQX16V4UXvsfYxxNrBp5vn9TqXnlGp29I13yUOzCmF//JJl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199331"
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="356199331"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:04 -0700
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="667080809"
+Received: from tturcu-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.51.153])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:01 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        linux-kernel@vger.kernel.org
+Cc:     Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 3/8] serial: dz: Assume previous baudrate is valid
+Date:   Tue, 16 Aug 2022 14:57:34 +0300
+Message-Id: <20220816115739.10928-4-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
+References: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvuF8CsP0M1TAK1a@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 01:56:32PM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Aug 16, 2022 at 02:47:22PM +0300, Alexander Atanasov wrote:
-> > Hello,
-> > 
-> > On 16.08.22 12:49, Greg Kroah-Hartman wrote:
-> > > On Tue, Aug 16, 2022 at 12:41:14PM +0300, Alexander Atanasov wrote:
-> > 
-> > > >   rename include/linux/{balloon_compaction.h => balloon_common.h} (99%)
-> > > 
-> > > Why rename the .h file?  It still handles the "balloon compaction"
-> > > logic.
-> > 
-> > File contains code that is common to balloon drivers,
-> > compaction is only part of it. Series add more code to it.
-> > Since it was suggested to use it for such common code.
-> > I find that common becomes a better name for it so the rename.
-> > I can drop the rename easy on next iteration if you suggest to.
-> 
-> "balloon_common.h" is very vague, you should only need one balloon.h
-> file in the include/linux/ directory, right, so of course it is "common"
-> :)
-> 
-> thanks,
-> 
-> greg "naming is hard" k-h
+Assume previously used termios has a valid baudrate and use
+it directly.
 
-Yea, just call it balloon.h and balloon.c then.
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/dz.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
+index 2e21acf39720..3eaf4e85bfdd 100644
+--- a/drivers/tty/serial/dz.c
++++ b/drivers/tty/serial/dz.c
+@@ -592,9 +592,12 @@ static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
+ 
+ 	baud = uart_get_baud_rate(uport, termios, old_termios, 50, 9600);
+ 	bflag = dz_encode_baud_rate(baud);
+-	if (bflag < 0)	{			/* Try to keep unchanged.  */
+-		baud = uart_get_baud_rate(uport, old_termios, NULL, 50, 9600);
+-		bflag = dz_encode_baud_rate(baud);
++	if (bflag < 0)	{
++		if (old_termios) {
++			/* Keep unchanged. */
++			baud = tty_termios_baud_rate(old_termios);
++			bflag = dz_encode_baud_rate(baud);
++		}
+ 		if (bflag < 0)	{		/* Resort to 9600.  */
+ 			baud = 9600;
+ 			bflag = DZ_B9600;
 -- 
-MST
+2.30.2
 
