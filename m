@@ -2,188 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B91C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0876C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 11:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234892AbiHPLzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 07:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        id S231795AbiHPLzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 07:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233924AbiHPLy5 (ORCPT
+        with ESMTP id S234875AbiHPLzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 07:54:57 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA394F6F;
-        Tue, 16 Aug 2022 04:33:43 -0700 (PDT)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6TS335HDz67wK2;
-        Tue, 16 Aug 2022 19:28:51 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 13:33:41 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 12:33:39 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <lenb@kernel.org>, <rafael@kernel.org>, <andy.shevchenko@gmail.com>
-CC:     <linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH PoC 2/3] ACPI: platform: Refactor acpi_create_platform_device()
-Date:   Tue, 16 Aug 2022 19:27:23 +0800
-Message-ID: <1660649244-146842-3-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
-References: <1660649244-146842-1-git-send-email-john.garry@huawei.com>
+        Tue, 16 Aug 2022 07:55:00 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D550233E24;
+        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id h28so9081316pfq.11;
+        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=hOaorKIBjJgqQCTYy4uwngH9aexUVaWig1LTjcqZICE=;
+        b=jgi3MlyGRuZU0sGKK67DR+ftEmeqdLT017xvKjrTgWcDC44lWgbkwpPCE0CAwm7hFh
+         lDlcoo3GuOMyt5y4nAzsfDx/0Lt9vrHQSbnsuiKLAfKbvCyrfOE6imrTJld1pfSqC1BJ
+         uwr6FahbmRyeaC5jokmFRQFJ7MV7qtm0/lXZomIlul78Xm/+NgPxmPjSBkKCJ2dnrTVz
+         vSy2/vaGRt++ppwZBuYw7bJlXcYBKy5I3r4fku6fee5z8HHFgWIC+bLE2/iu00eQL/uD
+         egXY6VmTrZOz1dx64VMlrQJV3WaCW1s7927q5J4GXsymGszJoKD/v6x16nta7GQXisDG
+         dyGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=hOaorKIBjJgqQCTYy4uwngH9aexUVaWig1LTjcqZICE=;
+        b=RBToTnWMz0aP3HLZ3XZBYyY+MW571ybOpbAyn2qd4osorDjX3ozgeP7xnJUzONkm8N
+         q/hHLAB6X5dKOAr7SQItQIJIsMkIXO1OGqEK5/6fgyDBYaYnNb7DvxW/vSLKVAqnYABJ
+         04dVTb2SiMclbixOiUhu2UlY3JyJJ4uS3hyvU33Py24FtYxFiGQCDFWH4adF8JwQkRkl
+         oupaSqYj9/5G+Fs9Gpa5PTbLurlDLkJIpVvm6DSY0m8xkePzaIdfUdYywtqZYf6hUUHK
+         QeBzO5YAdut34481pFFCPErPh+Fm5a1Wv+vsU/zu9nnWy5UpDdhEiUGKy9WyWqQgrAcW
+         ivJg==
+X-Gm-Message-State: ACgBeo3DwgzWufV0MUKIYI9Wtr2E6vBVBWEtlzfe0Egfkpvmkmo5grdu
+        DVB+/LBDLUfDrnzAuJegvyc=
+X-Google-Smtp-Source: AA6agR44EcjSp1Z2nU/bfFkaSdYaV9nSLPoWvXPvyVGF+6/JAbvgpVfZQFY6QUKttAk7UnLTN9dEUA==
+X-Received: by 2002:a63:e109:0:b0:419:c3bc:b89 with SMTP id z9-20020a63e109000000b00419c3bc0b89mr17435298pgh.176.1660649649368;
+        Tue, 16 Aug 2022 04:34:09 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a15-20020a1709027e4f00b0016d72804664sm8776994pln.205.2022.08.16.04.34.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 04:34:08 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 16 Aug 2022 04:34:07 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/779] 5.15.61-rc1 review
+Message-ID: <20220816113407.GA1809610@roeck-us.net>
+References: <20220815180337.130757997@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is commonality between acpi_create_platform_device() and
-hisi_lpc_acpi_add_child(), in that it covers 2x main steps:
-- Read resources for the acpi_device
-- Create platform device
+On Mon, Aug 15, 2022 at 07:54:04PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.61 release.
+> There are 779 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 17 Aug 2022 18:01:29 +0000.
+> Anything received after that time might be too late.
+> 
 
-Refactor acpi_create_platform_device() so that it may be reused by
-hisi_lpc_acpi_add_child() to reduce duplication.
+Building powerpc:ppc32_allmodconfig ... failed
+Building powerpc:ppc6xx_defconfig ... failed
+--------------
+Error log:
+arch/powerpc/sysdev/fsl_pci.c: In function 'fsl_add_bridge':
+arch/powerpc/sysdev/fsl_pci.c:601:39: error: 'PCI_CLASS_BRIDGE_PCI_NORMAL' undeclared
 
-The following extended support is added:
-- Allow custom platform device name be set
-- Support platform data
-- Support custom platform device id
-- Support translating resources for Indirect PIO
+This affects v5.15.y and earlier branches. Several patches
+would be needded to make this work. In mainline:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/acpi/acpi_platform.c | 37 ++++++++++++++++++++++++++++--------
- include/linux/acpi.h         | 17 +++++++++++++++--
- 2 files changed, 44 insertions(+), 10 deletions(-)
+0c551abfa004 powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+113fe88eed53 powerpc: Don't include asm/setup.h in asm/machdep.h
+e6f6390ab7b9 powerpc: Add missing headers
+904b10fb189c PCI: Add defines for normal and subtractive PCI bridges
 
-diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
-index de3cbf152dee..f153372a0b11 100644
---- a/drivers/acpi/acpi_platform.c
-+++ b/drivers/acpi/acpi_platform.c
-@@ -84,9 +84,14 @@ static void acpi_platform_fill_resource(struct acpi_device *adev,
- }
- 
- /**
-- * acpi_create_platform_device - Create platform device for ACPI device node
-+ * acpi_create_platform_device_ops - Create platform device for ACPI device node
-  * @adev: ACPI device node to create a platform device for.
-+ * @name: Name for platform device, may be unset
-  * @properties: Optional collection of build-in properties.
-+ * @data: platform data pointer
-+ * @size_data: platform data size
-+ * @xlat: callback translate function for resources
-+ * @id: platform device id
-  *
-  * Check if the given @adev can be represented as a platform device and, if
-  * that's the case, create and register a platform device, populate its common
-@@ -94,8 +99,15 @@ static void acpi_platform_fill_resource(struct acpi_device *adev,
-  *
-  * Name of the platform device will be the same as @adev's.
-  */
--struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
--						    const struct property_entry *properties)
-+struct platform_device *acpi_create_platform_device_ops(
-+					struct acpi_device *adev,
-+					const char *name,
-+					const struct property_entry *properties,
-+					void *data, size_t size_data,
-+					int (*xlat)(struct acpi_device *adev,
-+						    struct resource *res,
-+						    void *data, size_t size_data),
-+					int id)
- {
- 	struct platform_device *pdev = NULL;
- 	struct platform_device_info pdevinfo;
-@@ -124,9 +136,13 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
- 			return ERR_PTR(-ENOMEM);
- 		}
- 		count = 0;
--		list_for_each_entry(rentry, &resource_list, node)
-+		list_for_each_entry(rentry, &resource_list, node) {
- 			acpi_platform_fill_resource(adev, rentry->res,
--						    &resources[count++]);
-+						    &resources[count]);
-+			if (xlat)
-+				xlat(adev, &resources[count], data, size_data);
-+			count++;
-+		}
- 
- 		acpi_dev_free_resource_list(&resource_list);
- 	}
-@@ -139,12 +155,17 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
- 	 */
- 	pdevinfo.parent = adev->parent ?
- 		acpi_get_first_physical_node(adev->parent) : NULL;
--	pdevinfo.name = dev_name(&adev->dev);
--	pdevinfo.id = -1;
-+	if (name)
-+		pdevinfo.name = name;
-+	else
-+		pdevinfo.name = dev_name(&adev->dev);
-+	pdevinfo.id = id;
- 	pdevinfo.res = resources;
- 	pdevinfo.num_res = count;
- 	pdevinfo.fwnode = acpi_fwnode_handle(adev);
- 	pdevinfo.properties = properties;
-+	pdevinfo.data = data;
-+	pdevinfo.size_data = size_data;
- 
- 	if (acpi_dma_supported(adev))
- 		pdevinfo.dma_mask = DMA_BIT_MASK(32);
-@@ -165,7 +186,7 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
- 
- 	return pdev;
- }
--EXPORT_SYMBOL_GPL(acpi_create_platform_device);
-+EXPORT_SYMBOL_GPL(acpi_create_platform_device_ops);
- 
- void __init acpi_platform_init(void)
- {
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 6f64b2f3dc54..d657731086fd 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -28,6 +28,7 @@
- #include <linux/dynamic_debug.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/platform_device.h>
- 
- #include <acpi/acpi_bus.h>
- #include <acpi/acpi_drivers.h>
-@@ -721,8 +722,20 @@ extern bool acpi_driver_match_device(struct device *dev,
- int acpi_device_uevent_modalias(struct device *, struct kobj_uevent_env *);
- int acpi_device_modalias(struct device *, char *, int);
- 
--struct platform_device *acpi_create_platform_device(struct acpi_device *,
--						    const struct property_entry *);
-+struct platform_device *acpi_create_platform_device_ops(
-+				struct acpi_device *adev,
-+				const char *name,
-+				const struct property_entry *properties,
-+				void *data, size_t size_data,
-+				int (*xlat)(struct acpi_device *adev,
-+					    struct resource *res,
-+					    void *data, size_t size_data),
-+				int id);
-+
-+#define acpi_create_platform_device(adev, properties) \
-+	acpi_create_platform_device_ops(adev, NULL, properties, NULL, 0, \
-+					NULL, PLATFORM_DEVID_NONE)
-+
- #define ACPI_PTR(_ptr)	(_ptr)
- 
- static inline void acpi_device_set_enumerated(struct acpi_device *adev)
--- 
-2.35.3
+There may be others since the patches touch several files, and it seems
+quite unlikely that they all apply to older kernels. It may be easier
+to define PCI_CLASS_BRIDGE_PCI_NORMAL locally.
 
+Guenter
