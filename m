@@ -2,62 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB8CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08207C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241248AbiHQTD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        id S241345AbiHQTEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237429AbiHQTDv (ORCPT
+        with ESMTP id S238743AbiHQTDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:03:51 -0400
+        Wed, 17 Aug 2022 15:03:53 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2F12ED55
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:03:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EBC30F6E
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660763029;
+        s=mimecast20190719; t=1660763031;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=gd3covl43eagT0xH9juakpHOWjtQjx5gc3TXfzwf7g8=;
-        b=byHuX2E2wLrvHXrPq/iJI5Ncl53sHsZ19V00KzJQeuaRY/X+QiuvmZP1/ByQfF25RVL5kr
-        CJDTjOdCdlOQM2pBmbYElo0YcC/8vtCXvM6CEUMb7JSU/Cot0WfGPY9ljzyCT9jS8sxa27
-        i2CKae1Qb4pAENBweCenwMOYRsbI0Z4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=A9mez3un0kb/dY1Y5a1jB6zoEKYBA9P7qIxMNfLm/80=;
+        b=ZNIP6gQUq/SlDIHKUa+I9jT6WLPrM6B9parGteepjy3uJhZ7vzYIr66YWSvGsfSgxKGrL2
+        j4e4rU5G+47TizzpK89dFu8ccU0YOxG5mopXpOqyytJDZq1qZKtjzcQiFMa8Gbe8c799lU
+        o9QmAnT9M6eOun/WVq2vL70Uoz5Y1xE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-FkspZK1LNAaVCrFeEPRp4w-1; Wed, 17 Aug 2022 15:03:46 -0400
-X-MC-Unique: FkspZK1LNAaVCrFeEPRp4w-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-329-IV0x1qqsNbC0NScXgRcFVQ-1; Wed, 17 Aug 2022 15:03:46 -0400
+X-MC-Unique: IV0x1qqsNbC0NScXgRcFVQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACFC585A588;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B004A296A612;
         Wed, 17 Aug 2022 19:03:45 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EACEF492C3B;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EAA1F1121315;
         Wed, 17 Aug 2022 19:03:44 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id 7A492416D5DE; Wed, 17 Aug 2022 16:03:26 -0300 (-03)
-Message-ID: <20220817190136.096849758@redhat.com>
+        id 80968416D882; Wed, 17 Aug 2022 16:03:26 -0300 (-03)
+Message-ID: <20220817190221.546589594@redhat.com>
 User-Agent: quilt/0.66
-Date:   Wed, 17 Aug 2022 16:01:36 -0300
+Date:   Wed, 17 Aug 2022 16:01:38 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     atomlin@redhat.com, frederic@kernel.org
 Cc:     cl@linux.com, tglx@linutronix.de, mingo@kernel.org,
         peterz@infradead.org, pauld@redhat.com, neelx@redhat.com,
         oleksandr@natalenko.name, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [patch 0/3] tick/sched: Ensure quiet_vmstat() is called when the idle tick was stopped too
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+        linux-mm@kvack.org, Marcelo Tosatti <mtosatti@redhat.com>
+Subject: [patch 2/3] tick/sched: Ensure quiet_vmstat() is called when the idle tick was stopped too
+References: <20220817190136.096849758@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset contains enhancements on top of Aaron's -v6 of the series
-(see the changelog below).
+From: Aaron Tomlin <atomlin@redhat.com>
 
-It fixes the following problems two problems:
+In the context of the idle task and an adaptive-tick mode/or a nohz_full
+CPU, quiet_vmstat() can be called: before stopping the idle tick,
+entering an idle state and on exit. In particular, for the latter case,
+when the idle task is required to reschedule, the idle tick can remain
+stopped and the timer expiration time endless i.e., KTIME_MAX. Now,
+indeed before a nohz_full CPU enters an idle state, CPU-specific vmstat
+counters should be processed to ensure the respective values have been
+reset and folded into the zone specific 'vm_stat[]'. That being said, it
+can only occur when: the idle tick was previously stopped, and
+reprogramming of the timer is not required.
 
-1) A customer provided some evidence which indicates that the idle tick was
+A customer provided some evidence which indicates that the idle tick was
 stopped; albeit, CPU-specific vmstat counters still remained populated.
 Thus one can only assume quiet_vmstat() was not invoked on return to the
 idle loop.
@@ -71,171 +83,190 @@ specific pfmemalloc_wait queue will be unable to make significant
 progress via direct reclaim unless it is killed after being woken up by
 kswapd (see throttle_direct_reclaim()).
 
-2) With a SCHED_FIFO task that busy loops on a given CPU, 
-and kworker for that CPU at SCHED_OTHER priority, queuing
-work to sync per-vmstats will either cause that work
-to never execute, or stalld boosts kworker priority which 
-causes a latency violation.
+Consider the following theoretical scenario:
 
+        1.      CPU Y migrated running task A to CPU X that was
+                in an idle state i.e. waiting for an IRQ - not
+                polling; marked the current task on CPU X to
+                need/or require a reschedule i.e., set
+                TIF_NEED_RESCHED and invoked a reschedule IPI to
+                CPU X (see sched_move_task())
 
-Follows the v6 cover letter, with updated changelog. The numbers, for
-the test program attached at the end of this cover letter, executed
-inside a KVM VM, are:
+        2.      CPU X acknowledged the reschedule IPI from CPU Y;
+                generic idle loop code noticed the
+                TIF_NEED_RESCHED flag against the idle task and
+                attempts to exit of the loop and calls the main
+                scheduler function i.e. __schedule().
 
-                                Vanilla                 Patch
+                Since the idle tick was previously stopped no
+                scheduling-clock tick would occur.
+                So, no deferred timers would be handled
 
-cycles per idle loop            151858                  153258  (+1.0%)
+        3.      Post transition to kernel execution Task A
+                running on CPU Y, indirectly released a few pages
+                (e.g. see __free_one_page()); CPU Y's
+                'vm_stat_diff[NR_FREE_PAGES]' was updated and zone
+                specific 'vm_stat[]' update was deferred as per the
+                CPU-specific stat threshold
 
-cycles per syscall              8461                    8690    (+2.6%)
+        4.      Task A does invoke exit(2) and the kernel does
+                remove the task from the run-queue; the idle task
+                was selected to execute next since there are no
+                other runnable tasks assigned to the given CPU
+                (see pick_next_task() and pick_next_task_idle())
 
---------
+        5.      On return to the idle loop since the idle tick
+                was already stopped and can remain so (see [1]
+                below) e.g. no pending soft IRQs, no attempt is
+                made to zero and fold CPU Y's vmstat counters
+                since reprogramming of the scheduling-clock tick
+                is not required/or needed (see [2])
 
+		  ...
+		    do_idle
+		    {
 
-I have incorporated an idea from Marcelo's patch [1] where a CPU-specific
-variable is used to indicate if a vmstat differential/or imbalance is
-present for a given CPU. So, at the appropriate time, vmstat processing can
-be initiated. The hope is that this particular approach is "cheaper" when
-compared to need_update() - used currently; in the context of nohz_full and
-the scheduling-clock tick being stopped, we would now with this patch,
-check if a CPU-specific vmstat imbalance is present before exiting
-user-mode (see tick_nohz_user_enter_prepare()).
+		      __current_set_polling()
+		      tick_nohz_idle_enter()
 
-This trivial test program [2] was used to determine the somewhat impact
-under vanilla and with the proposed changes; mlock(2) and munlock(2) was
-used solely to modify vmstat item 'NR_MLOCK'. The following is an average
-count of CPU-cycles across the aforementioned system calls and the idle
-loop, respectively. I believe these results are negligible:
+		      while (!need_resched()) {
 
-	  Modified		   |  		Vanilla
-                                   |
-  cycles per syscall: 7399         | 	cycles per syscall: 4150
-  cycles per idle loop: 141048     |	cycles per idle loop: 144730
-                                   |
+			local_irq_disable()
 
+			...
 
-Any feedback would be appreciated. Thanks.
+			/* No polling or broadcast event */
+			cpuidle_idle_call()
+			{
 
-Changes since v6 [6]:
- - sync vmstats independently of whether vmstat_update work is queued or not
- - clean vmstat_dirty before differential sync loop
- - cancel pending work if tick stopped
- - do not queue work to remote CPU if tick stopped
+			  if (cpuidle_not_available(drv, dev)) {
+			    tick_nohz_idle_stop_tick()
+			      __tick_nohz_idle_stop_tick(this_cpu_ptr(&tick_cpu_sched))
+			      {
+				int cpu = smp_processor_id()
 
-Changes since v5 [3]:
+				if (ts->timer_expires_base)
+				  expires = ts->timer_expires
+				else if (can_stop_idle_tick(cpu, ts))
+	      (1) ------->        expires = tick_nohz_next_event(ts, cpu)
+				else
+				  return
 
- - Introduced __tick_nohz_user_enter_prepare()
- - Switched to EXPORT_SYMBOL_GPL()
+				ts->idle_calls++
 
-Changes since v4 [4]:
+				if (expires > 0LL) {
 
- - Moved vmstat_dirty specific changes into a separate patch
-   (Marcelo Tosatti)
+				  tick_nohz_stop_tick(ts, cpu)
+				  {
 
-Changes since v3 [5]:
+				    if (ts->tick_stopped && (expires == ts->next_tick)) {
+	      (2) ------->            if (tick == KTIME_MAX || ts->next_tick ==
+					hrtimer_get_expires(&ts->sched_timer))
+					return
+				    }
+				    ...
+				  }
 
- - Used EXPORT_SYMBOL() on tick_nohz_user_enter_prepare()
- - Replaced need_update()
- - Introduced CPU-specific variable namely vmstat_dirty
-   and mark_vmstat_dirty()
+So the idea of with this patch is to ensure refresh_cpu_vm_stats(false) is
+called, when it is appropriate, on return to the idle loop when the idle
+tick was previously stopped too. Additionally, in the context of
+nohz_full, when the scheduling-tick is stopped and before exiting
+to user-mode, ensure no CPU-specific vmstat differentials remain.
 
-[1]: https://lore.kernel.org/lkml/20220204173554.763888172@fedora.localdomain/
-[2]: https://pastebin.com/8AtzSAuK
-[3]: https://lore.kernel.org/lkml/20220801234258.134609-1-atomlin@redhat.com/
-[4]: https://lore.kernel.org/lkml/20220621172207.1501641-1-atomlin@redhat.com/
-[5]: https://lore.kernel.org/lkml/20220422193647.3808657-1-atomlin@redhat.com/
-[6]: https://lore.kernel.org/linux-mm/20220808194820.676246-1-atomlin@redhat.com/
-
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+---
  include/linux/tick.h     |    5 +++--
  kernel/time/tick-sched.c |   19 ++++++++++++++++++-
- mm/vmstat.c              |   74 ++++++++++++++++++++++++++++++++++++--------------------------------------
- 3 files changed, 57 insertions(+), 41 deletions(-)
+ 2 files changed, 21 insertions(+), 3 deletions(-)
 
---- test-vmstat-overhead.c ---
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
-#include <string.h>
-
-typedef unsigned long long cycles_t;
-typedef unsigned long long usecs_t;
-typedef unsigned long long u64;
-
-#ifdef __x86_64__
-#define DECLARE_ARGS(val, low, high)    unsigned long low, high
-#define EAX_EDX_VAL(val, low, high)     ((low) | ((u64)(high) << 32))
-#define EAX_EDX_ARGS(val, low, high)    "a" (low), "d" (high)
-#define EAX_EDX_RET(val, low, high)     "=a" (low), "=d" (high)
-#else
-#define DECLARE_ARGS(val, low, high)    unsigned long long val
-#define EAX_EDX_VAL(val, low, high)     (val)
-#define EAX_EDX_ARGS(val, low, high)    "A" (val)
-#define EAX_EDX_RET(val, low, high)     "=A" (val)
-#endif
-
-static inline unsigned long long __rdtscll(void)
-{
-        DECLARE_ARGS(val, low, high);
-
-        asm volatile("cpuid; rdtsc" : EAX_EDX_RET(val, low, high));
-
-        return EAX_EDX_VAL(val, low, high);
-}
-
-#define rdtscll(val) do { (val) = __rdtscll(); } while (0)
-
-#define NRSYSCALLS 30000
-#define NRSLEEPS   100000
-
-void main(int argc, char *argv[])
-{
-	unsigned long a, b, cycles;
-	int i, syscall = 0;
-	void *page = malloc(4096);
-
-	if (mlock(page, 4096))
-		perror("mlock");
-	if (munlock(page, 4096))
-		perror("munlock");
-
-	if (argc != 2) {
-		printf("usage: %s {idle,syscall}\n", argv[0]);
-		exit(1);
-	}
-
-        rdtscll(a);
-
-	if (strncmp("idle", argv[1], 4) == 0)
-		syscall = 0;
-	else if (strncmp("syscall", argv[1], 7) == 0)
-		syscall = 1;
-	else {
-		printf("usage: %s {idle,syscall}\n", argv[0]);
-		exit(1);
-	}
-	
-	if (syscall == 1) {
-        	for (i = 0; i < NRSYSCALLS; i++) {
-			if (mlock(page, 4096))
-				perror("mlock");
-			if (munlock(page, 4096))
-				perror("munlock");
-		}
-	} else {
-        	for (i = 0; i < NRSLEEPS; i++)
-		 	usleep(10);
-	}
-
-        rdtscll(b);
-
-        cycles = b - a;
-
-	if (syscall == 1)
-        	printf("cycles per syscall: %d\n", (b-a)/(NRSYSCALLS*2));
-	else
-		printf("cycles per idle loop: %d\n", (b-a)/NRSLEEPS);
-}
-
+Index: linux-2.6/include/linux/tick.h
+===================================================================
+--- linux-2.6.orig/include/linux/tick.h
++++ linux-2.6/include/linux/tick.h
+@@ -11,7 +11,6 @@
+ #include <linux/context_tracking_state.h>
+ #include <linux/cpumask.h>
+ #include <linux/sched.h>
+-#include <linux/rcupdate.h>
+ 
+ #ifdef CONFIG_GENERIC_CLOCKEVENTS
+ extern void __init tick_init(void);
+@@ -272,6 +271,7 @@ static inline void tick_dep_clear_signal
+ 
+ extern void tick_nohz_full_kick_cpu(int cpu);
+ extern void __tick_nohz_task_switch(void);
++void __tick_nohz_user_enter_prepare(void);
+ extern void __init tick_nohz_full_setup(cpumask_var_t cpumask);
+ #else
+ static inline bool tick_nohz_full_enabled(void) { return false; }
+@@ -296,6 +296,7 @@ static inline void tick_dep_clear_signal
+ 
+ static inline void tick_nohz_full_kick_cpu(int cpu) { }
+ static inline void __tick_nohz_task_switch(void) { }
++static inline void __tick_nohz_user_enter_prepare(void) { }
+ static inline void tick_nohz_full_setup(cpumask_var_t cpumask) { }
+ #endif
+ 
+@@ -308,7 +309,7 @@ static inline void tick_nohz_task_switch
+ static inline void tick_nohz_user_enter_prepare(void)
+ {
+ 	if (tick_nohz_full_cpu(smp_processor_id()))
+-		rcu_nocb_flush_deferred_wakeup();
++		__tick_nohz_user_enter_prepare();
+ }
+ 
+ #endif
+Index: linux-2.6/kernel/time/tick-sched.c
+===================================================================
+--- linux-2.6.orig/kernel/time/tick-sched.c
++++ linux-2.6/kernel/time/tick-sched.c
+@@ -26,6 +26,7 @@
+ #include <linux/posix-timers.h>
+ #include <linux/context_tracking.h>
+ #include <linux/mm.h>
++#include <linux/rcupdate.h>
+ 
+ #include <asm/irq_regs.h>
+ 
+@@ -519,6 +520,20 @@ void __tick_nohz_task_switch(void)
+ 	}
+ }
+ 
++void __tick_nohz_user_enter_prepare(void)
++{
++	struct tick_sched *ts;
++
++	if (tick_nohz_full_cpu(smp_processor_id())) {
++		ts = this_cpu_ptr(&tick_cpu_sched);
++
++		if (ts->tick_stopped)
++			quiet_vmstat();
++		rcu_nocb_flush_deferred_wakeup();
++	}
++}
++EXPORT_SYMBOL_GPL(__tick_nohz_user_enter_prepare);
++
+ /* Get the boot-time nohz CPU list from the kernel parameters. */
+ void __init tick_nohz_full_setup(cpumask_var_t cpumask)
+ {
+@@ -890,6 +905,9 @@ static void tick_nohz_stop_tick(struct t
+ 		ts->do_timer_last = 0;
+ 	}
+ 
++	/* Attempt to fold when the idle tick is stopped or not */
++	quiet_vmstat();
++
+ 	/* Skip reprogram of event if its not changed */
+ 	if (ts->tick_stopped && (expires == ts->next_tick)) {
+ 		/* Sanity check: make sure clockevent is actually programmed */
+@@ -911,7 +929,6 @@ static void tick_nohz_stop_tick(struct t
+ 	 */
+ 	if (!ts->tick_stopped) {
+ 		calc_load_nohz_start();
+-		quiet_vmstat();
+ 
+ 		ts->last_tick = hrtimer_get_expires(&ts->sched_timer);
+ 		ts->tick_stopped = 1;
 
 
