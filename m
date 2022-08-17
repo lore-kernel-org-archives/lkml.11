@@ -2,82 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03606C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B963C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240169AbiHQObd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
+        id S240196AbiHQOcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240142AbiHQObP (ORCPT
+        with ESMTP id S240177AbiHQObt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:31:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3D0923E1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:31:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 17 Aug 2022 10:31:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD8B99278;
+        Wed, 17 Aug 2022 07:31:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 45AB71F388;
+        Wed, 17 Aug 2022 14:31:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1660746703; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dI8au4TC4OwrAtVxY+/Q1utvcrjiqiLbLdD/iRthRn0=;
+        b=hP4imqwJv2J/r4IeF81X6wXnVZVP61TEVNe4PFQHL2Diz4alE83ebVCiUn21bKw3KgHGDG
+        50wvI9If46JH0VXgsa6BNhCXsgYsLmYLXYcJErVwoXh4pdkVdx8h8aj0l0N3sQX+STVssl
+        LbjofBL/g1trwFe7PAHvtz9c49/4tTA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1660746703;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dI8au4TC4OwrAtVxY+/Q1utvcrjiqiLbLdD/iRthRn0=;
+        b=3NwqDGCjy5QY8cTxNV/SD2uLCNsKLuZUNd1z1V/nEVYN+xiIIDBDSd2mZP3UilVgKF8ZFu
+        MMUoh7EW/JwORSBw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADC99B81DF6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB88C4314C;
-        Wed, 17 Aug 2022 14:31:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660746668;
-        bh=WQSEZi/ZThfpTh3nKayykvCckCTb+dDa/U+rPQf6mQM=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=dlSU1hK7riqxokULnT4opq7DBwokkzZ9sLHnQi+h8AQgYWkFjkeDfS3vWa87ET/hW
-         UFb+OzMBm9VIeWblR5iJP3PcQU+9bY5n6SPPUxiLRpjTg0GGvuaKjBNGlf0pbxe/pK
-         aHUslcb1xABNBQZMmMOFTgBggpwqVMOMABoNZa3KsUjfM0YgyYkQF3gpPDbEEX5emB
-         j7jx8RY+BY2/bsiQ7mORRua0D2bHePWTHv0k1D58thvlVwn4s4JXp4obByPAttD4UF
-         sqLAd3lOy7ytkl7QQngsFJ7hvplaFb7kLgbxTPyaWh3HBPmplKCReNh88q4I0HGDNW
-         ymMHCFuAhvTAQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Cc:     zhuning@everest-semi.com, yangxiaohua@everest-semi.com
-In-Reply-To: <20220817091519.2487385-1-yangyingliang@huawei.com>
-References: <20220817091519.2487385-1-yangyingliang@huawei.com>
-Subject: Re: [PATCH -next] ASoC: codecs: es8326: change es8326_regmap_config to static
-Message-Id: <166074666705.210979.15448004360447274699.b4-ty@kernel.org>
-Date:   Wed, 17 Aug 2022 15:31:07 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id AEF332C172;
+        Wed, 17 Aug 2022 14:31:41 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 39CACA066B; Wed, 17 Aug 2022 16:31:38 +0200 (CEST)
+Date:   Wed, 17 Aug 2022 16:31:38 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
+        lczerner@redhat.com, enwlinux@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com
+Subject: Re: [PATCH 2/2] ext4: add inode table check in __ext4_get_inode_loc
+ to aovid possible infinite loop
+Message-ID: <20220817143138.7krkxzoa3skruiyx@quack3>
+References: <20220817132701.3015912-1-libaokun1@huawei.com>
+ <20220817132701.3015912-3-libaokun1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-fe10a
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817132701.3015912-3-libaokun1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 17:15:19 +0800, Yang Yingliang wrote:
-> es8326_regmap_config is only used in es8326.c now, change it to static.
+On Wed 17-08-22 21:27:01, Baokun Li wrote:
+> In do_writepages, if the value returned by ext4_writepages is "-ENOMEM"
+> and "wbc->sync_mode == WB_SYNC_ALL", retry until the condition is not met.
 > 
+> In __ext4_get_inode_loc, if the bh returned by sb_getblk is NULL,
+> the function returns -ENOMEM.
 > 
+> In __getblk_slow, if the return value of grow_buffers is less than 0,
+> the function returns NULL.
+> 
+> When the three processes are connected in series like the following stack,
+> an infinite loop may occur:
+> 
+> do_writepages					<--- keep retrying
+>  ext4_writepages
+>   mpage_map_and_submit_extent
+>    mpage_map_one_extent
+>     ext4_map_blocks
+>      ext4_ext_map_blocks
+>       ext4_ext_handle_unwritten_extents
+>        ext4_ext_convert_to_initialized
+>         ext4_split_extent
+>          ext4_split_extent_at
+>           __ext4_ext_dirty
+>            __ext4_mark_inode_dirty
+>             ext4_reserve_inode_write
+>              ext4_get_inode_loc
+>               __ext4_get_inode_loc		<--- return -ENOMEM
+>                sb_getblk
+>                 __getblk_gfp
+>                  __getblk_slow			<--- return NULL
+>                   grow_buffers
+>                    grow_dev_page		<--- return -ENXIO
+>                     ret = (block < end_block) ? 1 : -ENXIO;
+> 
+> In this issue, bg_inode_table_hi is overwritten as an incorrect value.
+> As a result, `block < end_block` cannot be met in grow_dev_page.
+> Therefore, __ext4_get_inode_loc always returns '-ENOMEM' and do_writepages
+> keeps retrying. As a result, the writeback process is in the D state due
+> to an infinite loop.
+> 
+> Add a check on inode table block in the __ext4_get_inode_loc function by
+> referring to ext4_read_inode_bitmap to avoid this infinite loop.
+> 
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
 
-Applied to
+Thanks for the fixes. Normally, we check that inode table is fine in
+ext4_check_descriptors() (and those checks are much stricter) so it seems
+unnecessary to check it again here. I understand that in your case it was
+resize that corrupted the group descriptor after the filesystem was mounted
+which is nasty but there's much more metadata that can be corrupted like
+this and it's infeasible to check each metadata block before we use it.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+IMHO a proper fix to this class of issues would be for sb_getblk() to
+return proper error so that we can distinguish ENOMEM from other errors.
+But that will be a larger undertaking...
 
-Thanks!
+								Honza
 
-[1/1] ASoC: codecs: es8326: change es8326_regmap_config to static
-      commit: 5c69f11ce85d4a8ea985a6d266574577e94c6506
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+> ---
+>  fs/ext4/inode.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 601214453c3a..5e171879fa23 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -4466,9 +4466,17 @@ static int __ext4_get_inode_loc(struct super_block *sb, unsigned long ino,
+>  	inodes_per_block = EXT4_SB(sb)->s_inodes_per_block;
+>  	inode_offset = ((ino - 1) %
+>  			EXT4_INODES_PER_GROUP(sb));
+> -	block = ext4_inode_table(sb, gdp) + (inode_offset / inodes_per_block);
+>  	iloc->offset = (inode_offset % inodes_per_block) * EXT4_INODE_SIZE(sb);
+>  
+> +	block = ext4_inode_table(sb, gdp);
+> +	if ((block <= le32_to_cpu(EXT4_SB(sb)->s_es->s_first_data_block)) ||
+> +	    (block >= ext4_blocks_count(EXT4_SB(sb)->s_es))) {
+> +		ext4_error(sb, "Invalid inode table block %llu in "
+> +			   "block_group %u", block, iloc->block_group);
+> +		return -EFSCORRUPTED;
+> +	}
+> +	block += (inode_offset / inodes_per_block);
+> +
+>  	bh = sb_getblk(sb, block);
+>  	if (unlikely(!bh))
+>  		return -ENOMEM;
+> -- 
+> 2.31.1
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
