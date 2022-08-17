@@ -2,387 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A110FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C73CC32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240763AbiHQTjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S241277AbiHQTjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240838AbiHQTjd (ORCPT
+        with ESMTP id S238528AbiHQTjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:39:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C31599B76
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660765169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mcsf4tZNOJC+p+ORC28F9QU+NKR1HBeg7aE42FEEeVc=;
-        b=OjirXsoHeHtIWBlDUkki5gmmr5+FIrNk+0auKk4juHXKoVwClJWiLZXiwA6Wc63ZWcFqEf
-        +o6zTT1/kEXwPfEgXCwAZp+rrEj1AGCt9tQMD5N3UIWxJbWf3hDrZHPLjYO662ol66SX3g
-        k4pMB7iOf/4VTNRautzXZGVdxmqR3VM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-25-WAJVWCLQNXWIPDjwi-EfWA-1; Wed, 17 Aug 2022 15:39:24 -0400
-X-MC-Unique: WAJVWCLQNXWIPDjwi-EfWA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7857A296A609;
-        Wed, 17 Aug 2022 19:39:23 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.18.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD40E492C3B;
-        Wed, 17 Aug 2022 19:39:22 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v4 03/17] drm/display/dp_mst: Rename drm_dp_mst_vcpi_allocation
-Date:   Wed, 17 Aug 2022 15:38:32 -0400
-Message-Id: <20220817193847.557945-4-lyude@redhat.com>
-In-Reply-To: <20220817193847.557945-1-lyude@redhat.com>
-References: <20220817193847.557945-1-lyude@redhat.com>
+        Wed, 17 Aug 2022 15:39:41 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0DA98D3A;
+        Wed, 17 Aug 2022 12:39:39 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id w19so26317144ejc.7;
+        Wed, 17 Aug 2022 12:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc;
+        bh=EuNyPRJfq+eeFKDGgW9jPrQ9YAIsMyHr4aBhbhS+A4s=;
+        b=Q63m1AbpALxx+9Y4vjkVG40gDhEIjsP7Yo8Bu7O8/nYIF0bvVlaYqLFGBVFyAk6u2w
+         byz+tISo/V2bL0RHknT3uc4aFIHPTTMu3mL5B86HHJcmKdmjBSbIODow4inSy2/P1QkT
+         2KkQtE1au7DQj/RPDzus9O8GqTmmuv/PNApctAxKuib3DnnZTl3LyYd9ACfp4KfoGfeq
+         XZK0tBpnnIyHDaIJqGnz/b7tlfUDuWShBXqtlvwD437MnT7In5ArFGdQTqEvx8fxgzWC
+         atic+bEJZ8sB3o2C1rWNL2Zpnw0sx8XG4wN8FPl0mFwd7coNKds37mbYcpHa53CqP+dL
+         75qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
+        bh=EuNyPRJfq+eeFKDGgW9jPrQ9YAIsMyHr4aBhbhS+A4s=;
+        b=7lIUqXAfCLqtq1le331NYmuj8U++hMAK0Cjt3Lpvkp7pOtLcwfsOCLOvCPvo3fZg1H
+         nZgL7VKVxM24bWlOjynSeYln6b9n6hnHcWiITq37BSnjAqufIbyc3lF6GE9klQqQQMMb
+         ci8+L3OODLDt0bRZHO33Fg2kVQo0h+xBfuDyfE5vHRQRTVheDpIoYZT1hJ+1exMWYsfw
+         BUMAYIeKvEzUMRgpzVfJMWms1+q8fa86bADi2BHLICYh2y5X5cs2nGz/0QrYI7b/du3B
+         Vhvi+4mHx2slRfmZW+vXro3KixLchD080qZAQkBs1hgcK6GXT2/5iZrQd5cuuOXRlrqJ
+         vc4w==
+X-Gm-Message-State: ACgBeo2f7qIgJL9GrvuwCO/Qg9jutqt5SYp0e02tudDRhMQWJkrrFtGf
+        nkCSX8J33pOfntIYRtPEP28=
+X-Google-Smtp-Source: AA6agR7JLNM2W/egU8UqbmSaeU/ggp7D9sGrC73lkUQhDIgNs4EvJriugcZd8cHPG9HgPWsfKXnFng==
+X-Received: by 2002:a17:907:28d6:b0:731:100c:8999 with SMTP id en22-20020a17090728d600b00731100c8999mr17535301ejc.210.1660765178394;
+        Wed, 17 Aug 2022 12:39:38 -0700 (PDT)
+Received: from krava ([83.240.62.131])
+        by smtp.gmail.com with ESMTPSA id cq10-20020a056402220a00b00445d85bd754sm2211227edb.79.2022.08.17.12.39.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 12:39:37 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Wed, 17 Aug 2022 21:39:36 +0200
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+Message-ID: <Yv1D+D2mJtPR236L@krava>
+References: <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
+ <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
+ <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
+ <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
+ <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
+ <CAADnVQJuDS22o7fi9wPZx9siAWgu1grQXXB02KfasxZ-RPdRSw@mail.gmail.com>
+ <Yvpq3JDk8fTgdMv8@worktop.programming.kicks-ass.net>
+ <Yvs/oey1NUlkI30d@krava>
+ <Yvy06GPn45D0rD7n@krava>
+ <CAADnVQ+SJ7VjeXgz-wcN9OGPpfTaJVKhoyKDm895Q60C8T4-QA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQ+SJ7VjeXgz-wcN9OGPpfTaJVKhoyKDm895Q60C8T4-QA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In retrospect, the name I chose for this originally is confusing, as
-there's a lot more info in here then just the VCPI. This really should be
-called a payload. Let's make it more obvious that this is meant to be
-related to the atomic state and is about payloads by renaming it to
-drm_dp_mst_atomic_payload. Also, rename various variables throughout the
-code that use atomic payloads.
+On Wed, Aug 17, 2022 at 09:57:45AM -0700, Alexei Starovoitov wrote:
+> On Wed, Aug 17, 2022 at 2:29 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> >
+> > On Tue, Aug 16, 2022 at 08:56:33AM +0200, Jiri Olsa wrote:
+> > > On Mon, Aug 15, 2022 at 05:48:44PM +0200, Peter Zijlstra wrote:
+> > > > On Mon, Aug 15, 2022 at 08:35:53AM -0700, Alexei Starovoitov wrote:
+> > > > > On Mon, Aug 15, 2022 at 8:28 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > > > >
+> > > > > > On Mon, Aug 15, 2022 at 08:17:42AM -0700, Alexei Starovoitov wrote:
+> > > > > > > It's hiding a fake function from ftrace, since it's not a function
+> > > > > > > and ftrace infra shouldn't show it tracing logs.
+> > > > > > > In other words it's a _notrace_ function with nop5.
+> > > > > >
+> > > > > > Then make it a notrace function with a nop5 in it. That isn't hard.
+> > > > >
+> > > > > That's exactly what we're trying to do.
+> > > >
+> > > > All the while claiming ftrace is broken while it is not.
+> > > >
+> > > > > Jiri's patch is one way to achieve that.
+> > > >
+> > > > Fairly horrible way.
+> > > >
+> > > > > What is your suggestion?
+> > > >
+> > > > Mailed it already.
+> > > >
+> > > > > Move it from C to asm ?
+> > > >
+> > > > Would be much better than proposed IMO.
+> > >
+> > > nice, that would be independent of the compiler atributes
+> > > and config checking..  will check on this one ;-)
+> >
+> > how about something like below?
+> >
+> > dispatcher code is generated only for x86_64, so that will be covered
+> > by the assembly version (free of ftrace table) other archs stay same
+> >
+> > jirka
+> >
+> >
+> > ----
+> > diff --git a/arch/x86/net/Makefile b/arch/x86/net/Makefile
+> > index 383c87300b0d..94964002eaae 100644
+> > --- a/arch/x86/net/Makefile
+> > +++ b/arch/x86/net/Makefile
+> > @@ -7,4 +7,5 @@ ifeq ($(CONFIG_X86_32),y)
+> >          obj-$(CONFIG_BPF_JIT) += bpf_jit_comp32.o
+> >  else
+> >          obj-$(CONFIG_BPF_JIT) += bpf_jit_comp.o
+> > +        obj-$(CONFIG_BPF_JIT) += bpf_dispatcher.o
+> >  endif
+> > diff --git a/arch/x86/net/bpf_dispatcher.S b/arch/x86/net/bpf_dispatcher.S
+> > new file mode 100644
+> > index 000000000000..65790a1286e8
+> > --- /dev/null
+> > +++ b/arch/x86/net/bpf_dispatcher.S
+> > @@ -0,0 +1,10 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +#include <linux/linkage.h>
+> > +#include <asm/nops.h>
+> > +#include <asm/nospec-branch.h>
+> > +
+> > +       .text
+> > +SYM_FUNC_START(bpf_dispatcher_xdp_func)
+> > +       ASM_NOP5
+> > +       JMP_NOSPEC rdx
+> > +SYM_FUNC_END(bpf_dispatcher_xdp_func)
+> 
+> Wait. Why asm ? Did you try Peter's suggestion:
+> __attribute__((__no_instrument_function__))
+> __attribute__((patchable_function_entry(5)))
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
-Acked-by: Jani Nikula <jani.nikula@intel.com>
----
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 96 +++++++++----------
- include/drm/display/drm_dp_mst_helper.h       |  4 +-
- 2 files changed, 50 insertions(+), 50 deletions(-)
+ah so this suggestion came in the other thread after the asm one.. ok, will check
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 7a94a5288e8d..f448e3e5ec6e 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4370,7 +4370,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 				  int pbn_div)
- {
- 	struct drm_dp_mst_topology_state *topology_state;
--	struct drm_dp_vcpi_allocation *pos, *vcpi = NULL;
-+	struct drm_dp_mst_atomic_payload *pos, *payload = NULL;
- 	int prev_slots, prev_bw, req_slots;
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
-@@ -4378,11 +4378,11 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 		return PTR_ERR(topology_state);
- 
- 	/* Find the current allocation for this port, if any */
--	list_for_each_entry(pos, &topology_state->vcpis, next) {
-+	list_for_each_entry(pos, &topology_state->payloads, next) {
- 		if (pos->port == port) {
--			vcpi = pos;
--			prev_slots = vcpi->vcpi;
--			prev_bw = vcpi->pbn;
-+			payload = pos;
-+			prev_slots = payload->vcpi;
-+			prev_bw = payload->pbn;
- 
- 			/*
- 			 * This should never happen, unless the driver tries
-@@ -4399,7 +4399,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 			break;
- 		}
- 	}
--	if (!vcpi) {
-+	if (!payload) {
- 		prev_slots = 0;
- 		prev_bw = 0;
- 	}
-@@ -4417,17 +4417,17 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 		       port, prev_bw, pbn);
- 
- 	/* Add the new allocation to the state */
--	if (!vcpi) {
--		vcpi = kzalloc(sizeof(*vcpi), GFP_KERNEL);
--		if (!vcpi)
-+	if (!payload) {
-+		payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+		if (!payload)
- 			return -ENOMEM;
- 
- 		drm_dp_mst_get_port_malloc(port);
--		vcpi->port = port;
--		list_add(&vcpi->next, &topology_state->vcpis);
-+		payload->port = port;
-+		list_add(&payload->next, &topology_state->payloads);
- 	}
--	vcpi->vcpi = req_slots;
--	vcpi->pbn = pbn;
-+	payload->vcpi = req_slots;
-+	payload->pbn = pbn;
- 
- 	return req_slots;
- }
-@@ -4464,21 +4464,21 @@ int drm_dp_atomic_release_vcpi_slots(struct drm_atomic_state *state,
- 				     struct drm_dp_mst_port *port)
- {
- 	struct drm_dp_mst_topology_state *topology_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	bool found = false;
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
- 	if (IS_ERR(topology_state))
- 		return PTR_ERR(topology_state);
- 
--	list_for_each_entry(pos, &topology_state->vcpis, next) {
-+	list_for_each_entry(pos, &topology_state->payloads, next) {
- 		if (pos->port == port) {
- 			found = true;
- 			break;
- 		}
- 	}
- 	if (WARN_ON(!found)) {
--		drm_err(mgr->dev, "no VCPI for [MST PORT:%p] found in mst state %p\n",
-+		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
- 			port, &topology_state->base);
- 		return -EINVAL;
- 	}
-@@ -5060,7 +5060,7 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
- {
- 	struct drm_dp_mst_topology_state *state, *old_state =
- 		to_dp_mst_topology_state(obj->state);
--	struct drm_dp_vcpi_allocation *pos, *vcpi;
-+	struct drm_dp_mst_atomic_payload *pos, *payload;
- 
- 	state = kmemdup(old_state, sizeof(*state), GFP_KERNEL);
- 	if (!state)
-@@ -5068,25 +5068,25 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
- 
- 	__drm_atomic_helper_private_obj_duplicate_state(obj, &state->base);
- 
--	INIT_LIST_HEAD(&state->vcpis);
-+	INIT_LIST_HEAD(&state->payloads);
- 
--	list_for_each_entry(pos, &old_state->vcpis, next) {
-+	list_for_each_entry(pos, &old_state->payloads, next) {
- 		/* Prune leftover freed VCPI allocations */
- 		if (!pos->vcpi)
- 			continue;
- 
--		vcpi = kmemdup(pos, sizeof(*vcpi), GFP_KERNEL);
--		if (!vcpi)
-+		payload = kmemdup(pos, sizeof(*payload), GFP_KERNEL);
-+		if (!payload)
- 			goto fail;
- 
--		drm_dp_mst_get_port_malloc(vcpi->port);
--		list_add(&vcpi->next, &state->vcpis);
-+		drm_dp_mst_get_port_malloc(payload->port);
-+		list_add(&payload->next, &state->payloads);
- 	}
- 
- 	return &state->base;
- 
- fail:
--	list_for_each_entry_safe(pos, vcpi, &state->vcpis, next) {
-+	list_for_each_entry_safe(pos, payload, &state->payloads, next) {
- 		drm_dp_mst_put_port_malloc(pos->port);
- 		kfree(pos);
- 	}
-@@ -5100,9 +5100,9 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
- {
- 	struct drm_dp_mst_topology_state *mst_state =
- 		to_dp_mst_topology_state(state);
--	struct drm_dp_vcpi_allocation *pos, *tmp;
-+	struct drm_dp_mst_atomic_payload *pos, *tmp;
- 
--	list_for_each_entry_safe(pos, tmp, &mst_state->vcpis, next) {
-+	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
- 		/* We only keep references to ports with non-zero VCPIs */
- 		if (pos->vcpi)
- 			drm_dp_mst_put_port_malloc(pos->port);
-@@ -5135,7 +5135,7 @@ static int
- drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
- 				      struct drm_dp_mst_topology_state *state)
- {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	struct drm_dp_mst_port *port;
- 	int pbn_used = 0, ret;
- 	bool found = false;
-@@ -5143,9 +5143,9 @@ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
- 	/* Check that we have at least one port in our state that's downstream
- 	 * of this branch, otherwise we can skip this branch
- 	 */
--	list_for_each_entry(vcpi, &state->vcpis, next) {
--		if (!vcpi->pbn ||
--		    !drm_dp_mst_port_downstream_of_branch(vcpi->port, mstb))
-+	list_for_each_entry(payload, &state->payloads, next) {
-+		if (!payload->pbn ||
-+		    !drm_dp_mst_port_downstream_of_branch(payload->port, mstb))
- 			continue;
- 
- 		found = true;
-@@ -5176,7 +5176,7 @@ static int
- drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 				      struct drm_dp_mst_topology_state *state)
- {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	int pbn_used = 0;
- 
- 	if (port->pdt == DP_PEER_DEVICE_NONE)
-@@ -5185,10 +5185,10 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 	if (drm_dp_mst_is_end_device(port->pdt, port->mcs)) {
- 		bool found = false;
- 
--		list_for_each_entry(vcpi, &state->vcpis, next) {
--			if (vcpi->port != port)
-+		list_for_each_entry(payload, &state->payloads, next) {
-+			if (payload->port != port)
- 				continue;
--			if (!vcpi->pbn)
-+			if (!payload->pbn)
- 				return 0;
- 
- 			found = true;
-@@ -5208,7 +5208,7 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 			return -EINVAL;
- 		}
- 
--		pbn_used = vcpi->pbn;
-+		pbn_used = payload->pbn;
- 	} else {
- 		pbn_used = drm_dp_mst_atomic_check_mstb_bw_limit(port->mstb,
- 								 state);
-@@ -5233,25 +5233,25 @@ static inline int
- drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
- 					 struct drm_dp_mst_topology_state *mst_state)
- {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	int avail_slots = mst_state->total_avail_slots, payload_count = 0;
- 
--	list_for_each_entry(vcpi, &mst_state->vcpis, next) {
--		/* Releasing VCPI is always OK-even if the port is gone */
--		if (!vcpi->vcpi) {
-+	list_for_each_entry(payload, &mst_state->payloads, next) {
-+		/* Releasing payloads is always OK-even if the port is gone */
-+		if (!payload->vcpi) {
- 			drm_dbg_atomic(mgr->dev, "[MST PORT:%p] releases all VCPI slots\n",
--				       vcpi->port);
-+				       payload->port);
- 			continue;
- 		}
- 
- 		drm_dbg_atomic(mgr->dev, "[MST PORT:%p] requires %d vcpi slots\n",
--			       vcpi->port, vcpi->vcpi);
-+			       payload->port, payload->vcpi);
- 
--		avail_slots -= vcpi->vcpi;
-+		avail_slots -= payload->vcpi;
- 		if (avail_slots < 0) {
- 			drm_dbg_atomic(mgr->dev,
- 				       "[MST PORT:%p] not enough VCPI slots in mst state %p (avail=%d)\n",
--				       vcpi->port, mst_state, avail_slots + vcpi->vcpi);
-+				       payload->port, mst_state, avail_slots + payload->vcpi);
- 			return -ENOSPC;
- 		}
- 
-@@ -5284,7 +5284,7 @@ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
- int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm_dp_mst_topology_mgr *mgr)
- {
- 	struct drm_dp_mst_topology_state *mst_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	struct drm_connector *connector;
- 	struct drm_connector_state *conn_state;
- 	struct drm_crtc *crtc;
-@@ -5295,7 +5295,7 @@ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm
- 	if (IS_ERR(mst_state))
- 		return -EINVAL;
- 
--	list_for_each_entry(pos, &mst_state->vcpis, next) {
-+	list_for_each_entry(pos, &mst_state->payloads, next) {
- 
- 		connector = pos->port->connector;
- 
-@@ -5349,7 +5349,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
- 				 bool enable)
- {
- 	struct drm_dp_mst_topology_state *mst_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	bool found = false;
- 	int vcpi = 0;
- 
-@@ -5358,7 +5358,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
- 	if (IS_ERR(mst_state))
- 		return PTR_ERR(mst_state);
- 
--	list_for_each_entry(pos, &mst_state->vcpis, next) {
-+	list_for_each_entry(pos, &mst_state->payloads, next) {
- 		if (pos->port == port) {
- 			found = true;
- 			break;
-@@ -5544,7 +5544,7 @@ int drm_dp_mst_topology_mgr_init(struct drm_dp_mst_topology_mgr *mgr,
- 	mst_state->start_slot = 1;
- 
- 	mst_state->mgr = mgr;
--	INIT_LIST_HEAD(&mst_state->vcpis);
-+	INIT_LIST_HEAD(&mst_state->payloads);
- 
- 	drm_atomic_private_obj_init(dev, &mgr->base,
- 				    &mst_state->base,
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 10adec068b7f..5671173f9f37 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -542,7 +542,7 @@ struct drm_dp_payload {
- 
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
- 
--struct drm_dp_vcpi_allocation {
-+struct drm_dp_mst_atomic_payload {
- 	struct drm_dp_mst_port *port;
- 	int vcpi;
- 	int pbn;
-@@ -552,7 +552,7 @@ struct drm_dp_vcpi_allocation {
- 
- struct drm_dp_mst_topology_state {
- 	struct drm_private_state base;
--	struct list_head vcpis;
-+	struct list_head payloads;
- 	struct drm_dp_mst_topology_mgr *mgr;
- 	u8 total_avail_slots;
- 	u8 start_slot;
--- 
-2.37.1
-
+jirka
