@@ -2,112 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57DBC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F90C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239833AbiHQNWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
+        id S239487AbiHQNWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239903AbiHQNVp (ORCPT
+        with ESMTP id S236443AbiHQNWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:21:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C400580EBE;
-        Wed, 17 Aug 2022 06:21:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E97BC6130F;
-        Wed, 17 Aug 2022 13:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D4FC433C1;
-        Wed, 17 Aug 2022 13:21:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660742499;
-        bh=h4GXGKaQaNJOaFx5e5DFot02bgz0zhhO3WPRqCaKCzU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rUVUg/JR5mlDYRP4D/zT4mFFkjO3HGHnNdmUpDLUFpAK/LpYUcUD2YMWFeMdZ3sg4
-         5ZW7OGjYCZ0zq5RWB/WQoO88q1wm1et1tErGGKZ38a/Et5uYiuzWlaUZ5+do6uBBs9
-         Xx9g6yXjNZA48/Gg1lvyih/ZAaS4zcc/kdqr4vz9jF/LNRNCkU+3BC5IuAmq+/yb/V
-         sEZ9rcUG9idpjmLqHXSCzhGN29JV3Df0WhFBRWnwio2VF0VggkODbd3wPpru5JuUvq
-         AiyRW3iAW2eGyW6klN3g82+pRNLC+dE7OALI5ct/fCTW+D8+EGGwUjxzB11dvkigXC
-         wl5X/gVvF1paw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C78434035A; Wed, 17 Aug 2022 10:21:36 -0300 (-03)
-Date:   Wed, 17 Aug 2022 10:21:36 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>, John Kacur <jkacur@redhat.com>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: perf tools man pages on the web
-Message-ID: <YvzrYLx3RDHAmqbf@kernel.org>
-References: <cecae74c-6bb2-d7da-bce3-35772b6e3f8c@intel.com>
- <CAP-5=fXJtRVKuPA_xpa=jBzq66y5JMv+jmr1GFNzh-zQ-7j5QA@mail.gmail.com>
- <b42344bc-86f6-9047-b015-88ef3b58a619@intel.com>
- <CAP-5=fUq4N+X+3VMsT=he3Q9_4qHKkqxdPDcMdDE=_3qdV9aCg@mail.gmail.com>
+        Wed, 17 Aug 2022 09:22:52 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC06265675
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:22:51 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id d14so18960872lfl.13
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:22:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=pKuDJQIjnUP1FPupXFVJgNN8PDzdanh6kEbyoo/FXtE=;
+        b=x8Koy3ce7TesE9irvfo3XvT4v5oR8fBjYeN8/AbIIhR+i3t16Terl1WvSlEub8AuD2
+         UINF7cEj7uHSSD1P7QYXmtPynr48Ii9Qu5+9fHhE0oy+60t7OOHxMWY6X/wH1Dg+9up6
+         LAmW0CR4nV+l2GeFLii7UPDKzaam/L6GBrMi3VPGPwty5VWLep3MT/vtHhSOnF4gt/bs
+         lZnkj8pGOE6RbBir35xaXUy1pVzxUeIG9Akxkwg6aYSokTxF2DVw+K/5ohIScMJUZKn/
+         6F8eYg49u3DVwJMtrGCcY8rsYzSh6s/sG/NTZPHO0YhNgxPx/zOkPF+mZLkVNNm3s87y
+         ozjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=pKuDJQIjnUP1FPupXFVJgNN8PDzdanh6kEbyoo/FXtE=;
+        b=4kawK8fdE/5X0dkzWiub/j28BElzrnCdVs9eJlZYlt9MIJQC4LpomThx4ZOako+gN1
+         WmA+67QU0lpgsNF/43RjPinFRpTSFwDeXqRqM57P9WAePZpemQd2tJk3EmdoI22xW58I
+         s1g85a8oVdvRhpfUdDQsmycSuXYq8pmvjwIBfZ4F7omS0Fq1KJm0CvD92iSeAbtJxdtu
+         aIgtwv8HBhTeQAF3WCGYMjY3384OnXxx9LWSK5HcUctPwHDrepgtjJUwP5cdrgX7wuFZ
+         EgPkkILjdmP2aLZ52RsAxiLLqU3jEAzNHcmyiB+JStmGQNTVojNWgkSKkWwB0uS5cpe1
+         +LGQ==
+X-Gm-Message-State: ACgBeo1GFV8y0DoX0nMjObWBH1v2XUgTllmzoSjuPmEGfDVhmLB5mK5K
+        SbwdzToPRgoGYCndoa3BYWfIag==
+X-Google-Smtp-Source: AA6agR66cjNQJAfYsQlMR7FOKYOhQRiQWwsWAe3h7I3VqkV869rj+PTDJortJKwjBw0ErsMyAlF5Tw==
+X-Received: by 2002:ac2:5c02:0:b0:48b:29ed:6e1e with SMTP id r2-20020ac25c02000000b0048b29ed6e1emr8380920lfp.560.1660742570190;
+        Wed, 17 Aug 2022 06:22:50 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:1b1c:14b7:109b:ed76? (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
+        by smtp.gmail.com with ESMTPSA id g3-20020a2ea4a3000000b0025e5fd96bf6sm2219420ljm.15.2022.08.17.06.22.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 06:22:49 -0700 (PDT)
+Message-ID: <58851c87-9cea-8e48-1888-54d0b3237875@linaro.org>
+Date:   Wed, 17 Aug 2022 16:22:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fUq4N+X+3VMsT=he3Q9_4qHKkqxdPDcMdDE=_3qdV9aCg@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 3/4] dt-bindings: sram: sunxi-sram: Add optional
+ regulators child
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+References: <20220815043436.20170-1-samuel@sholland.org>
+ <20220815043436.20170-4-samuel@sholland.org>
+ <3e23c288-7065-a3fd-c326-8d66e168ba41@linaro.org>
+ <3c646774-3b1e-bb9a-cc7d-c4a010e8a28a@sholland.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <3c646774-3b1e-bb9a-cc7d-c4a010e8a28a@sholland.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Aug 17, 2022 at 06:02:25AM -0700, Ian Rogers escreveu:
-> On Wed, Aug 17, 2022 at 1:55 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
-> > Speaking of the wiki, anyone know how to change the
-> > "Set $wgLogo to the URL path to your own logo image." image?
- 
-> +1000
- 
-> Someone at RedHat knows :-)
+On 17/08/2022 11:47, Samuel Holland wrote:
+> On 8/16/22 4:59 AM, Krzysztof Kozlowski wrote:
+>> On 15/08/2022 07:34, Samuel Holland wrote:
+>>> Some sunxi SoCs have in-package regulators controlled by a register in
+>>> the system control MMIO block. Allow a child node for these regulators
+>>> in addition to SRAM child nodes.
+>>>
+>>> Signed-off-by: Samuel Holland <samuel@sholland.org>
+>>> ---
+>>>
+>>> Changes in v3:
+>>>  - Require the regulators node to have a unit address
+>>>  - Reference the regulator schema from the SRAM controller schema
+>>>  - Move the system LDOs example to the SRAM controller schema
+>>>  - Reorder the patches so the example passes validation
+>>>
+>>> Changes in v2:
+>>>  - New patch for v2
+>>>
+>>>  .../allwinner,sun4i-a10-system-control.yaml   | 29 +++++++++++++++++++
+>>>  1 file changed, 29 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+>>> index d64c1b28fb61..915ca85c3f10 100644
+>>> --- a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+>>> +++ b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+>>> @@ -56,6 +56,10 @@ properties:
+>>>    ranges: true
+>>>  
+>>>  patternProperties:
+>>> +  "^regulators@[0-9a-f]+$":
+>>> +    $ref: /schemas/regulator/allwinner,sun20i-d1-system-ldos.yaml#
+>>> +    unevaluatedProperties: false
+>>
+>> unevaluatedProperties is not needed. Your other schema does not allow
+>> anything else here.
+> 
+> I can remove it. I added it because it looks like the dt-schema tools use it as
+> an indicator that the matched properties are child nodes[1]. Maybe that is not
+> relevant here?
 
-Documentation is at the Media Wiki site, admin up to a point was John Kacur,
-John?
+It is not relevant here as the other schema does not allow anything else.
 
-https://www.mediawiki.org/wiki/Manual:FAQ#Changing_the_interface>
-
---------------------- 8< ----------------------------------
-
-How do I change the logo?
-
-The logo that appears in the top left of each page is determined by the $wgLogo configuration line in the LocalSettings.php file.
-
-There are two ways to change the logo:
-
-    Upload a picture to your wiki using the normal file uploading interface. This allows the logo to be replaced easily, so you may want to protect the page if you use this method.
-
-        Then add the $wgLogo line to LocalSettings.php, for example:
-
-        $wgLogo = "{$wgUploadPath}/6/62/mylogo.png";
-
-    Upload an image to your server by other means (such as FTP).
-
-        Add the $wgLogo line to LocalSettings.php, for example:
-
-        $wgLogo = "{$wgScriptPath}/mylogo.jpg";
-
-        (In this example, the image is in the same folder as the LocalSettings.php file.)
-
-If you want to change the logo in only specific pages, override #p-logo
-css's background-image property or use third party extension like
-Extension:LogoFunctions.  Caution! Caution: 	Do not simply overwrite
-the default logo installed with MediaWiki (/resources/assets/wiki.png);
-this file will be overwritten when you upgrade.  A good size for a
-square logo is 135x135px or 150x150px, but the logo need not be square,
-especially if it contains text below an image. The maximum logo size in
-Vector is ~160x160px, while MonoBook's is ~155x155px. A logo that is too
-large will be cut off.
-
---------------------- 8< ----------------------------------
-
-- Arnaldo
+Best regards,
+Krzysztof
