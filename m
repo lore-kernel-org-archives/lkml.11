@@ -2,116 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4570C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B39AC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241659AbiHQUBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
+        id S241668AbiHQUDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbiHQUBh (ORCPT
+        with ESMTP id S232057AbiHQUDm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:01:37 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E09A599D
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:01:36 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-10e615a36b0so16372958fac.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=6eODbFYSNHzTuwWiVkGa7QI/g8whElY3HQhU5xyyJDA=;
-        b=qBrlMrWhOyQQz/D+59/12MDC6dZAIb0gON7CtF6SLWaq7F4zU+4tS0olQW+SGbSlno
-         klAf6dyr3CGXkeM578EJB3bE20Bi5RngNjXIwiwEKUOEbMquC2cBgRrHLlwrS+68K39e
-         MmpBCtyV0GMM2x2L1teBOI/VpdeIpY4p+sZZUyCE+UfGauMcYRd6ZlvMTiuE/KMW3vDz
-         Su5TmRASdAednAbpZyzqLeDBQYHnx/U0oELBhLtN5DzqkAWMYqAwtUcw/JHbbsXVYPBR
-         Tjd7kOusj39+0fM6TUFCo3/WYnF1JugEN2WjngwDoGthNbU8+V+3l9zlXYAMzlbYgdQ8
-         91Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=6eODbFYSNHzTuwWiVkGa7QI/g8whElY3HQhU5xyyJDA=;
-        b=EshqPaxWnmQixxhsZjazSL6vYTTRyaWHCV40/VpyJ/37UDaa4tz/2iPNuw2DPCm2Du
-         /G/wKI7PJPkEedfATiqsN0zzrbI0UQ1+nhqGAKWquRIVnAp5mPROT0GwPH6Slg38gymF
-         XeC79VhhtEBZfre0rE8RQgtbDdQlcKqs9lxq/Ql/07Ni+EMYI5zIYPZCfBSwYdnlUwcT
-         fyEtJb/iPJA35f8/QJUSZqoYIXQCnG9ryRMat37GCbr2gmDqlrt31Pcd0lmGlJhnHSum
-         UEXrVZownJW5HUf0o/AFzYpBe67T7sHbjAOSv4UyKRbg9N38j8giESTme92/d3muDanZ
-         uF3w==
-X-Gm-Message-State: ACgBeo04GbrCjldEMIpndzvHAKQUs+/8aK5reBHfIjBjRfKwECxMpWE0
-        /gcBZIS6SQFhaJ0G+TQu8K4JAgrKQEo=
-X-Google-Smtp-Source: AA6agR6RJuC5Xm1znTFKNuqH8lMO0ei7i8lAdw6tVu8DL6IGAuGr5xYUioJSxzbyZIulOWyQ0slmiA==
-X-Received: by 2002:a05:6870:5b85:b0:11c:1d6f:2c82 with SMTP id em5-20020a0568705b8500b0011c1d6f2c82mr2419548oab.14.1660766495386;
-        Wed, 17 Aug 2022 13:01:35 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id cv3-20020a056870c68300b0010d7242b623sm3109486oab.21.2022.08.17.13.01.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:01:34 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 12:59:22 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Sander Vanheule <sander@svanheule.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: Re: [GIT PULL] Bitmap patches for v6.0-rc2
-Message-ID: <Yv1ImkLgHZglhIyp@yury-laptop>
-References: <Yv0RKXkSYMLjCezv@yury-laptop>
+        Wed, 17 Aug 2022 16:03:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E34918340
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:03:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FE386151C
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 20:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED50CC433D6;
+        Wed, 17 Aug 2022 20:03:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660766620;
+        bh=0ZcQMibMEVZJPOojqwq2yBUXq0LRnX3KICwqnQfqKLw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Hi3P8xdLSdIRaXdyCEilVUGu31fLrjs2H8b1VQ217qL7JEa/6KPFRJjRrTfnYihB9
+         r6z6ImlHAgBnf5vzPQmxudqvNiNTt+wJdzYdTFJHFUmelT3UPf8pknlXJF2fCI/Gwk
+         GlkfyAQqNTIseRoLdVpeuyHIePIpiFXEJaYpR4In96sECKk/hIXdMtq84B+si8N1OE
+         JGlQK9IC17FvHsR4zyLxanoPRP65aASolOouBG3AjZViAPdf0HgytjuKb8veoe5mLZ
+         w8dZI6DMsc0SdE1XBag55q5WXk0/ezTcHOkq90rFHqwGdq6EdywXREM9FX0vYm3UkL
+         ls2NOUwaWC3wg==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linux Phy <linux-phy@lists.infradead.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        pali@kernel.org, josef.schlehofer@nic.cz,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH linux-phy v2 0/4] mvebu a3720 comphy: Fix serdes transmit amplitude
+Date:   Wed, 17 Aug 2022 22:03:31 +0200
+Message-Id: <20220817200335.911-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yv0RKXkSYMLjCezv@yury-laptop>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ LKML
+Changes since v1:
+- fix
+    static const char * array should probably be static const char * const
+  warning in patch 2
+- fix wrong parameter order to function comphy_find_best_tx_amp()
+  in patch 3
 
-On Wed, Aug 17, 2022 at 09:05:03AM -0700, Yury Norov wrote:
-> The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
-> 
->   Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
-> 
-> are available in the Git repository at:
-> 
->   https://github.com/norov/linux.git tags/bitmap-6.0-rc2
-> 
-> for you to fetch changes up to 61b123ffcedac72a1ac6a96d1da87d25efddcbda:
-> 
->   lib/cpumask: drop always-true preprocessor guard (2022-08-15 11:00:44 -0700)
-> 
-> ----------------------------------------------------------------
-> 
-> Hi Linus,
-> 
-> Please pull this updates for UP rework series. The one that we have
-> in -rc1 came from mm tree, and doesn't include latest changes.
-> 
-> One important advantage is that the new one based on cpumask headers
-> rework, and it allows to keep cpumask.c a purely SMP thing.
-> 
-> From Sander Vanheule's email:
-> 
-> cpumask: UP optimisation fixes follow-up
-> 
-> As an older version of the UP optimisation fixes was merged, not all
-> review feedback has been implemented.  These patches implement the
-> feedback received on the merged version [1], and the respin [2], for
-> changes related to include/linux/cpumask.h and lib/cpumask.c.
-> 
-> [1] https://lore.kernel.org/lkml/cover.1656777646.git.sander@svanheule.net/
-> [2] https://lore.kernel.org/lkml/cover.1659077534.git.sander@svanheule.net/
-> 
-> Thanks,
-> Yury
-> 
-> ----------------------------------------------------------------
-> Sander Vanheule (3):
->       cpumask: align signatures of UP implementations
->       lib/cpumask: add inline cpumask_next_wrap() for UP
->       lib/cpumask: drop always-true preprocessor guard
-> 
->  include/linux/cpumask.h | 26 +++++++++++++++++++++++---
->  lib/Makefile            |  3 ++-
->  lib/cpumask.c           |  2 --
->  3 files changed, 25 insertions(+), 6 deletions(-)
+Original cover letter:
+
+This series adds support for setting serdes transmit amplitude for
+ethernet modes (sgmii, 1000base-x, 2500base-x) in the Marvell A3720
+comphy driver.
+
+The amplitude is set according to setting in device tree.
+
+Finally the Turris MOX device tree is changed to set the 2500base-x
+mode tx amplitude to 1025 mV.
+
+This is needed to fix a weird issue wherein when A3720 sends a packet
+to Topaz, and the packet contains a long sequence of 'J's or '\xb5'
+bytes (these translate to '010101010101'... in 8b/10b encoding), the
+packet may be lost on Topaz due to FCS error. The probability of
+loss grows with number of 'J's:
+
+  loss
+                         ______
+  100%                .-^
+                     /
+                    /
+   50%             /
+                  /
+                 /
+    0%  ______.-^
+            90    114    125     number of consecutive 'J's
+
+Marek Behún (4):
+  string.h: Add str_has_proper_prefix()
+  device property: Add {fwnode/device}_get_tx_p2p_amplitude()
+  phy: marvell: phy-mvebu-a3700-comphy: Support changing tx amplitude
+    for ethernet
+  arm64: dts: armada-3720-turris-mox: Change comphy tx amplitude for
+    2500base-x mode
+
+ .../dts/marvell/armada-3720-turris-mox.dts    |  10 ++
+ drivers/base/property.c                       | 130 ++++++++++++++++++
+ drivers/phy/marvell/phy-mvebu-a3700-comphy.c  | 109 ++++++++++++++-
+ include/linux/property.h                      |   5 +
+ include/linux/string.h                        |  18 +++
+ 5 files changed, 271 insertions(+), 1 deletion(-)
+
+-- 
+2.35.1
+
