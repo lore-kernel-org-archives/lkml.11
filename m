@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D48C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8343EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237097AbiHQSkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
+        id S240405AbiHQSlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241006AbiHQSko (ORCPT
+        with ESMTP id S237461AbiHQSle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:40:44 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBB5A00EE
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:40:40 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id d3-20020a170902cec300b0016f04e2e730so8595349plg.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:40:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=ZYTlBBFnaZ0P/8h1RW7JgkzBP7Qz3/ENWA74waVFHsk=;
-        b=rEKzgG4kB4gJbvdPUY9H+lfnRgqahefKDR5Jl73nA4WKGW5kwuqnE88uTY3v00RzaR
-         P1XqUhHs+w6cV8koRkvS9gXHlJMZFkJO0Bj5DiMro7jSn6MbktfS4XD+brKZjtIQlDvb
-         oF6nNCpMSlQJz8fcZfBUd8ryCNywZ6t4+gIMJS/wasIo4COpmd00eLTiu9rkzKnLBiyj
-         jZPGnBjgNjAqfK+18xRawhoR/RLoAcl5bAavj+iTn+QzSSJGMAzogpo0nyPY7URheaJZ
-         MLzzf2V3uR8cfruliPSKCDP2Qt73gUn9gGO7Y8hp82RFjbgulhTxsLFZyJSWboAG7dMI
-         6FIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=ZYTlBBFnaZ0P/8h1RW7JgkzBP7Qz3/ENWA74waVFHsk=;
-        b=4DEc/FPpEpJtBVm6bYszy1nwW9He2md+d2JrxIlg65btQrxiWs9fUVmfnVih/HnKDc
-         F+xKbdyR/8T6EeXHni8lz2KUdpvnTBscttYJEMhNkTA4Zh/oi2Ty/t7MXhTyFnMd3IVt
-         RMW22JSAuVCZJ+3BfSrHUoUAnNY/XPogLrmOj6o9nQCsyh4IJ9HyC4yiJwl3GDRRu7Mm
-         8bOWf3YvPQX1hhCQyat3ZzA7D4z+WasCraF6mRcoL1LJKzVef6k8cOnIhIcF/jkPWlES
-         MMdGLSq86hgACcQVUIBSVFs7IAZFzvowVMUZ8ioxCLN8eI/n6z2DvOS+nVERuougrNLZ
-         wD2A==
-X-Gm-Message-State: ACgBeo3QswZia55bcIDNiSg7s3J03Mj/m/jxkaBJ2c/5+QsCYWrUTTSr
-        kp8DMuauavvVFvj9Emt46CJDsS/YaaXqhYFZhXGU2w==
-X-Google-Smtp-Source: AA6agR6CY7WhInmP29tG9He+JFpqE/zTM3C8nWq8t4Z4fQTePSj6YMvMB7iBjRaZ4xlxokQyxFxrdpVFfQgF/p2WMWMGoA==
-X-Received: from isaacmanjarres.irv.corp.google.com ([2620:15c:2d:3:6c6d:d00:f0dd:6ddf])
- (user=isaacmanjarres job=sendgmr) by 2002:a17:90a:bf0a:b0:1fa:b53c:3f3a with
- SMTP id c10-20020a17090abf0a00b001fab53c3f3amr4095338pjs.126.1660761640140;
- Wed, 17 Aug 2022 11:40:40 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 11:40:26 -0700
-Message-Id: <20220817184026.3468620-1-isaacmanjarres@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH v3] driver core: Don't probe devices after bus_type.match()
- probe deferral
-From:   "Isaac J. Manjarres" <isaacmanjarres@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc:     "Isaac J. Manjarres" <isaacmanjarres@google.com>,
-        stable@vger.kernel.org, Saravana Kannan <saravanak@google.com>,
-        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 17 Aug 2022 14:41:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEE7A00C9
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:41:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660761692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KrNH++9OSLFu7Ijopj+il7JOfOGrBfah2cWjWaVWpUk=;
+        b=fqLtaUIqLdGseRaXkwE8kWubtDEkzz5R595LWZh8NK2PCzv2xaWA8PoqDnjTTMwfjhBAuO
+        rUE+UeDTWv8D4TKq1SnXtyjRV4cGIgyPoyNC03FabtTRSC8+5sBqOidKRiM/M/5jQStQJo
+        6/Jm9GDmGuJWZgyAhz2XHf+BVavwrUs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-346-32larb_kPq-ypeLxP7hJuQ-1; Wed, 17 Aug 2022 14:41:29 -0400
+X-MC-Unique: 32larb_kPq-ypeLxP7hJuQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 105481C01B43;
+        Wed, 17 Aug 2022 18:41:29 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 13FFB1121315;
+        Wed, 17 Aug 2022 18:41:27 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH v2] locks: Fix dropped call to ->fl_release_private()
+From:   David Howells <dhowells@redhat.com>
+To:     jlayton@kernel.org
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        dhowells@redhat.com, linux-kernel@vger.kernel.org
+Date:   Wed, 17 Aug 2022 19:41:27 +0100
+Message-ID: <166076168742.3677624.2936950729624462101.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both __device_attach_driver() and __driver_attach() check the return
-code of the bus_type.match() function to see if the device needs to be
-added to the deferred probe list. After adding the device to the list,
-the logic attempts to bind the device to the driver anyway, as if the
-device had matched with the driver, which is not correct.
+Prior to commit 4149be7bda7e, sys_flock() would allocate the file_lock
+struct it was going to use to pass parameters, call ->flock() and then call
+locks_free_lock() to get rid of it - which had the side effect of calling
+locks_release_private() and thus ->fl_release_private().
 
-If __device_attach_driver() detects that the device in question is not
-ready to match with a driver on the bus, then it doesn't make sense for
-the device to attempt to bind with the current driver or continue
-attempting to match with any of the other drivers on the bus. So, update
-the logic in __device_attach_driver() to reflect this.
+With commit 4149be7bda7e, however, this is no longer the case: the struct
+is now allocated on the stack, and locks_free_lock() is no longer called -
+and thus any remaining private data doesn't get cleaned up either.
 
-If __driver_attach() detects that a driver tried to match with a device
-that is not ready to match yet, then the driver should not attempt to bind
-with the device. However, the driver can still attempt to match and bind
-with other devices on the bus, as drivers can be bound to multiple
-devices. So, update the logic in __driver_attach() to reflect this.
+This causes afs flock to cause oops.  Kasan catches this as a UAF by the
+list_del_init() in afs_fl_release_private() for the file_lock record
+produced by afs_fl_copy_lock() as the original record didn't get delisted.
+It can be reproduced using the generic/504 xfstest.
 
-Cc: stable@vger.kernel.org
-Cc: Saravana Kannan <saravanak@google.com>
-Fixes: 656b8035b0ee ("ARM: 8524/1: driver cohandle -EPROBE_DEFER from bus_type.match()")
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Saravana Kannan <saravanak@google.com>
+Fix this by reinstating the locks_release_private() call in sys_flock().
+I'm not sure if this would affect any other filesystems.  If not, then the
+release could be done in afs_flock() instead.
+
+Changes
+=======
+ver #2)
+ - Don't need to call ->fl_release_private() after calling the security
+   hook, only after calling ->flock().
+
+Fixes: 4149be7bda7e ("fs/lock: Don't allocate file_lock in flock_make_lock().")
+cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Jeff Layton <jlayton@kernel.org>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+cc: linux-fsdevel@vger.kernel.org
+Link: https://lore.kernel.org/r/166075758809.3532462.13307935588777587536.stgit@warthog.procyon.org.uk/ # v1
 ---
- drivers/base/dd.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
 
-v1 -> v2:
-- Fixed the logic in __driver_attach() to allow a driver to continue
-  attempting to match and bind with devices in case of any error, not
-  just probe deferral.
+ fs/locks.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-v2 -> v3:
-- Restored the patch back to v1.
-- Added Guenter's Tested-by tag.
-- Added Saravana's Reviewed-by tag.
-- Cc'd stable@vger.kernel.org
+diff --git a/fs/locks.c b/fs/locks.c
+index c266cfdc3291..607f94a0e789 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -2129,6 +2129,7 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
+ 	else
+ 		error = locks_lock_file_wait(f.file, &fl);
+ 
++	locks_release_private(&fl);
+  out_putf:
+ 	fdput(f);
+ 
 
-Greg,
-
-This is the final version of this patch. Can you please pick this up?
-
-Thanks,
-Isaac
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 70f79fc71539..90b31fb141a5 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -881,6 +881,11 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
- 		dev_dbg(dev, "Device match requests probe deferral\n");
- 		dev->can_match = true;
- 		driver_deferred_probe_add(dev);
-+		/*
-+		 * Device can't match with a driver right now, so don't attempt
-+		 * to match or bind with other drivers on the bus.
-+		 */
-+		return ret;
- 	} else if (ret < 0) {
- 		dev_dbg(dev, "Bus failed to match device: %d\n", ret);
- 		return ret;
-@@ -1120,6 +1125,11 @@ static int __driver_attach(struct device *dev, void *data)
- 		dev_dbg(dev, "Device match requests probe deferral\n");
- 		dev->can_match = true;
- 		driver_deferred_probe_add(dev);
-+		/*
-+		 * Driver could not match with device, but may match with
-+		 * another device on the bus.
-+		 */
-+		return 0;
- 	} else if (ret < 0) {
- 		dev_dbg(dev, "Bus failed to match device: %d\n", ret);
- 		return ret;
--- 
-2.37.1.595.g718a3a8f04-goog
 
