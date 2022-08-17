@@ -2,75 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99846C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C418BC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiHQOAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
+        id S239925AbiHQOBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239977AbiHQOAa (ORCPT
+        with ESMTP id S236340AbiHQOAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:00:30 -0400
-X-Greylist: delayed 513 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 07:00:21 PDT
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B1F8E0CB
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:00:21 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id 04DB8C800A0;
-        Wed, 17 Aug 2022 15:51:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        tuxedocomputers.com; h=content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from; s=
-        default; t=1660744306; x=1662558707; bh=zoHsmsgSZr0s6jBD9pNOl5vz
-        YbJscvUXnCuoXg5kmOg=; b=dreyaintOjFe5bNZydKdOy5dmYQ6nHVY7Up3DV8y
-        7AhCxhrfzqdrbFSdAeMsdvrJVzBJP7oGmp21okHBsyyqCqaVhUZBs6F7MZpCdZ/z
-        sG5d8/yvvrOMZXQYiChrK1ovSiS+VxPQde1hszcNNQbeYzjyhnnqa+IUimD0k4jU
-        yyo=
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
-        with LMTP id T08H7Kkwsf5V; Wed, 17 Aug 2022 15:51:46 +0200 (CEST)
-Received: from wsembach-tuxedo.fritz.box (p200300E37f47c3007DCC1c82f3790F7a.dip0.t-ipconnect.de [IPv6:2003:e3:7f47:c300:7dcc:1c82:f379:f7a])
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPA id B0184C8009B;
-        Wed, 17 Aug 2022 15:51:46 +0200 (CEST)
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: hda/realtek: Add quirk for Clevo NS50PU, NS70PU
-Date:   Wed, 17 Aug 2022 15:51:44 +0200
-Message-Id: <20220817135144.34103-1-wse@tuxedocomputers.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 17 Aug 2022 10:00:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043148F962
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:00:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AD4361369
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:00:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1735FC433C1;
+        Wed, 17 Aug 2022 14:00:38 +0000 (UTC)
+Date:   Wed, 17 Aug 2022 10:00:48 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Yang Jihong <yangjihong1@huawei.com>
+Cc:     <mingo@redhat.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ftrace: Fix NULL pointer dereference in
+ is_ftrace_trampoline when ftrace is dead
+Message-ID: <20220817100048.01132818@gandalf.local.home>
+In-Reply-To: <7cab66d9-3f41-0a8b-9906-b56f88dd6603@huawei.com>
+References: <20220804021610.209791-1-yangjihong1@huawei.com>
+        <7cab66d9-3f41-0a8b-9906-b56f88dd6603@huawei.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoffer Sandberg <cs@tuxedo.de>
+On Wed, 17 Aug 2022 16:19:53 +0800
+Yang Jihong <yangjihong1@huawei.com> wrote:
 
-Fixes headset microphone detection on Clevo NS50PU and NS70PU.
+> Hello,
+> 
+> PING.
 
-Signed-off-by: Christoffer Sandberg <cs@tuxedo.de>
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: <stable@vger.kernel.org>
----
- sound/pci/hda/patch_realtek.c | 1 +
- 1 file changed, 1 insertion(+)
+Hmm, this patch got set to "Superseded" in my local Patchwork :-/
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index fd630d62b5a0..fceac608214e 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9389,6 +9389,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x7717, "Clevo NS70PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
--- 
-2.34.1
+Thanks for the ping, I'll take a look at it now.
 
+-- Steve
