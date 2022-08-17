@@ -2,110 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FFEC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D975AC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbiHQSrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        id S241212AbiHQSsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241176AbiHQSrk (ORCPT
+        with ESMTP id S241223AbiHQSr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:47:40 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792A5A3452;
-        Wed, 17 Aug 2022 11:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SkpJfRL2fEX0ZCrYY78UnGUy/KfqmdSThM2JF2kNt+A=; b=JMOw4iXvCN9lZfNf2OG/hB6Fo3
-        9NwE+OWODeKClqBL344u7qYRnOYGt54O3+aa26nsaE/f63tGSMQLJWKHqOmdEKGd9HT/CkTyz+dR6
-        r2dYvLK/Uaz3uD/r/hK40X6gA/3ZA85KA9wLfBiCi/F0U6bjBP/dRFr/WZ46adF+Qz28N/9b0nTQ5
-        o1EF5Xp228F+r4TdaX5Bz8dl4MpW12VOlh6PVN7GCys5HyvOALccfGYLcM5rg4DZet7XGUH/ymOWa
-        QGKvYg0ACpBZP/hJX1w8q8j6+HDvd4aLzmHbq+w1Z5n060anBDMvOsvu3LCP3w5qq/pwwsT7GDawh
-        Pq/3eSGA==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oOO3y-00AsZm-UT; Wed, 17 Aug 2022 20:46:47 +0200
-Message-ID: <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com>
-Date:   Wed, 17 Aug 2022 15:45:30 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
+        Wed, 17 Aug 2022 14:47:59 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059EA3D47;
+        Wed, 17 Aug 2022 11:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1660762078; x=1692298078;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=JT0UheZqUwL1j3/nLtQTtWmRIyVlwLxdUB5dC6DEMzw=;
+  b=CbKgmShwQTK1TtuKBbNK8UCzCyCjAFA9OrT20liwpdP+0CD6er6iLCqM
+   k/VzpDWxGioSVgBiY62BBQ0sHBYnTjo71ZPPu1mgvg+IFpmG0w9aIECwX
+   OtkwtSvEdF2t0EzmbnI6UkGa/RpPRcNN1exl86d8+ucJLZLwakPurWwtS
+   M=;
+Subject: Re: [PATCH v2] locks: Fix dropped call to ->fl_release_private()
+Thread-Topic: [PATCH v2] locks: Fix dropped call to ->fl_release_private()
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 18:47:57 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com (Postfix) with ESMTPS id 12A22C4428;
+        Wed, 17 Aug 2022 18:47:56 +0000 (UTC)
+Received: from EX19D004ANA004.ant.amazon.com (10.37.240.146) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Wed, 17 Aug 2022 18:47:55 +0000
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19D004ANA004.ant.amazon.com (10.37.240.146) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Wed, 17 Aug 2022 18:47:54 +0000
+Received: from EX19D004ANA001.ant.amazon.com ([fe80::643d:967a:f5ca:396]) by
+ EX19D004ANA001.ant.amazon.com ([fe80::643d:967a:f5ca:396%5]) with mapi id
+ 15.02.1118.012; Wed, 17 Aug 2022 18:47:54 +0000
+From:   "Iwashima, Kuniyuki" <kuniyu@amazon.co.jp>
+To:     Jeff Layton <jlayton@kernel.org>,
+        David Howells <dhowells@redhat.com>
+CC:     Chuck Lever <chuck.lever@oracle.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Iwashima, Kuniyuki" <kuniyu@amazon.co.jp>
+Thread-Index: AQHYsmk2dzPGHVMfBkyAOXcKUcCBp62y+YuA
+Date:   Wed, 17 Aug 2022 18:47:54 +0000
+Message-ID: <3444D598-327B-4C74-81D7-B1BC80EA600F@amazon.co.jp>
+References: <166076168742.3677624.2936950729624462101.stgit@warthog.procyon.org.uk>
+ <e3952386b70e9bf07e676c47a5a9fa63df93bacf.camel@kernel.org>
+In-Reply-To: <e3952386b70e9bf07e676c47a5a9fa63df93bacf.camel@kernel.org>
+Accept-Language: ja-JP, en-US
 Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yv0mCY04heUXsGiC@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.187.171.21]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <205CD97F578E7F47BAE7AE974C1974A1@amazon.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/08/2022 14:31, Borislav Petkov wrote:
-> [...]
-> 
-> How does the fact that kdump is loaded, obviate the need to print
-> information about the errors?
-> 
-> Are you suggesting that people who have the whole vmcore would be able
-> to piece together the error information?
-> 
-
-Hi Boris, thanks for chiming in.
-
-So, this is part of an effort to clean-up the panic path. Currently, if
-a kdump happens, *all* the panic notifiers are skipped by default,
-including this one. In this scenario, this patch seems like a no-op.
-
-But happens that in the refactor we are proposing [0], some notifiers
-should run before the kdump. We are basically putting some ordering in
-the way notifiers are executed, while documenting this properly and with
-the goal of not increasing the failure risk for kdump.
-
-This patch is useful so we can bring the altera EDAC notifier to run
-earlier while not increasing the risk on kdump - this operation is a bit
-"delicate" to happen in the panic scenario. The origin of this patch was
-a discussion with Tony/Peter [1], guess we can call it a "compromise
-solution".
-
-Let me know if you disagree or have more questions, and in case you'd
-like to check/participate in the whole panic notifiers refactor
-discussion, it would be great =)
-Cheers,
-
-
-Guilherme
-
-
-[0]
-https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
-
-[1]
-https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
+RnJvbTogSmVmZiBMYXl0b24gPGpsYXl0b25Aa2VybmVsLm9yZz4NCkRhdGU6IFdlZCwgMTcgQXVn
+IDIwMjIgMTQ6NDI6NTcgLTA0MDANCj4gT24gV2VkLCAyMDIyLTA4LTE3IGF0IDE5OjQxICswMTAw
+LCBEYXZpZCBIb3dlbGxzIHdyb3RlOg0KPiA+IFByaW9yIHRvIGNvbW1pdCA0MTQ5YmU3YmRhN2Us
+IHN5c19mbG9jaygpIHdvdWxkIGFsbG9jYXRlIHRoZSBmaWxlX2xvY2sNCj4gPiBzdHJ1Y3QgaXQg
+d2FzIGdvaW5nIHRvIHVzZSB0byBwYXNzIHBhcmFtZXRlcnMsIGNhbGwgLT5mbG9jaygpIGFuZCB0
+aGVuIGNhbGwNCj4gPiBsb2Nrc19mcmVlX2xvY2soKSB0byBnZXQgcmlkIG9mIGl0IC0gd2hpY2gg
+aGFkIHRoZSBzaWRlIGVmZmVjdCBvZiBjYWxsaW5nDQo+ID4gbG9ja3NfcmVsZWFzZV9wcml2YXRl
+KCkgYW5kIHRodXMgLT5mbF9yZWxlYXNlX3ByaXZhdGUoKS4NCj4gPg0KPiA+IFdpdGggY29tbWl0
+IDQxNDliZTdiZGE3ZSwgaG93ZXZlciwgdGhpcyBpcyBubyBsb25nZXIgdGhlIGNhc2U6IHRoZSBz
+dHJ1Y3QNCj4gPiBpcyBub3cgYWxsb2NhdGVkIG9uIHRoZSBzdGFjaywgYW5kIGxvY2tzX2ZyZWVf
+bG9jaygpIGlzIG5vIGxvbmdlciBjYWxsZWQgLQ0KPiA+IGFuZCB0aHVzIGFueSByZW1haW5pbmcg
+cHJpdmF0ZSBkYXRhIGRvZXNuJ3QgZ2V0IGNsZWFuZWQgdXAgZWl0aGVyLg0KPiA+DQo+ID4gVGhp
+cyBjYXVzZXMgYWZzIGZsb2NrIHRvIGNhdXNlIG9vcHMuICBLYXNhbiBjYXRjaGVzIHRoaXMgYXMg
+YSBVQUYgYnkgdGhlDQo+ID4gbGlzdF9kZWxfaW5pdCgpIGluIGFmc19mbF9yZWxlYXNlX3ByaXZh
+dGUoKSBmb3IgdGhlIGZpbGVfbG9jayByZWNvcmQNCj4gPiBwcm9kdWNlZCBieSBhZnNfZmxfY29w
+eV9sb2NrKCkgYXMgdGhlIG9yaWdpbmFsIHJlY29yZCBkaWRuJ3QgZ2V0IGRlbGlzdGVkLg0KPiA+
+IEl0IGNhbiBiZSByZXByb2R1Y2VkIHVzaW5nIHRoZSBnZW5lcmljLzUwNCB4ZnN0ZXN0Lg0KPiA+
+DQo+ID4gRml4IHRoaXMgYnkgcmVpbnN0YXRpbmcgdGhlIGxvY2tzX3JlbGVhc2VfcHJpdmF0ZSgp
+IGNhbGwgaW4gc3lzX2Zsb2NrKCkuDQo+ID4gSSdtIG5vdCBzdXJlIGlmIHRoaXMgd291bGQgYWZm
+ZWN0IGFueSBvdGhlciBmaWxlc3lzdGVtcy4gIElmIG5vdCwgdGhlbiB0aGUNCj4gPiByZWxlYXNl
+IGNvdWxkIGJlIGRvbmUgaW4gYWZzX2Zsb2NrKCkgaW5zdGVhZC4NCj4gPg0KPiA+IENoYW5nZXMN
+Cj4gPiA9PT09PT09DQo+ID4gdmVyICMyKQ0KPiA+ICAtIERvbid0IG5lZWQgdG8gY2FsbCAtPmZs
+X3JlbGVhc2VfcHJpdmF0ZSgpIGFmdGVyIGNhbGxpbmcgdGhlIHNlY3VyaXR5DQo+ID4gICAgaG9v
+aywgb25seSBhZnRlciBjYWxsaW5nIC0+ZmxvY2soKS4NCj4gPg0KPiA+IEZpeGVzOiA0MTQ5YmU3
+YmRhN2UgKCJmcy9sb2NrOiBEb24ndCBhbGxvY2F0ZSBmaWxlX2xvY2sgaW4gZmxvY2tfbWFrZV9s
+b2NrKCkuIikNCj4gPiBjYzogS3VuaXl1a2kgSXdhc2hpbWEgPGt1bml5dUBhbWF6b24uY29tPg0K
+PiA+IGNjOiBDaHVjayBMZXZlciA8Y2h1Y2subGV2ZXJAb3JhY2xlLmNvbT4NCj4gPiBjYzogSmVm
+ZiBMYXl0b24gPGpsYXl0b25Aa2VybmVsLm9yZz4NCj4gPiBjYzogTWFyYyBEaW9ubmUgPG1hcmMu
+ZGlvbm5lQGF1cmlzdG9yLmNvbT4NCj4gPiBjYzogbGludXgtYWZzQGxpc3RzLmluZnJhZGVhZC5v
+cmcNCj4gPiBjYzogbGludXgtZnNkZXZlbEB2Z2VyLmtlcm5lbC5vcmcNCj4gPiBMaW5rOiBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9yLzE2NjA3NTc1ODgwOS4zNTMyNDYyLjEzMzA3OTM1NTg4Nzc3
+NTg3NTM2LnN0Z2l0QHdhcnRob2cucHJvY3lvbi5vcmcudWsvICMgdjENCg0Kbml0OiBtaXNzaW5n
+IFNpZ25lZC1vZmYtYnkgOikNCg0KQWNrZWQtYnk6IEt1bml5dWtpIEl3YXNoaW1hIDxrdW5peXVA
+YW1hem9uLmNvbT4NCg0KVGhhbmtzIGZvciB0aGUgZml4IQ0KDQoNCj4gPiAtLS0NCj4gPg0KPiA+
+ICBmcy9sb2Nrcy5jIHwgICAgMSArDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigr
+KQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2ZzL2xvY2tzLmMgYi9mcy9sb2Nrcy5jDQo+ID4gaW5k
+ZXggYzI2NmNmZGMzMjkxLi42MDdmOTRhMGU3ODkgMTAwNjQ0DQo+ID4gLS0tIGEvZnMvbG9ja3Mu
+Yw0KPiA+ICsrKyBiL2ZzL2xvY2tzLmMNCj4gPiBAQCAtMjEyOSw2ICsyMTI5LDcgQEAgU1lTQ0FM
+TF9ERUZJTkUyKGZsb2NrLCB1bnNpZ25lZCBpbnQsIGZkLCB1bnNpZ25lZCBpbnQsIGNtZCkNCj4g
+PiAgICAgICBlbHNlDQo+ID4gICAgICAgICAgICAgICBlcnJvciA9IGxvY2tzX2xvY2tfZmlsZV93
+YWl0KGYuZmlsZSwgJmZsKTsNCj4gPg0KPiA+ICsgICAgIGxvY2tzX3JlbGVhc2VfcHJpdmF0ZSgm
+ZmwpOw0KPiA+ICAgb3V0X3B1dGY6DQo+ID4gICAgICAgZmRwdXQoZik7DQo+ID4NCj4gPg0KPiA+
+DQo+IA0KPiBMb29rcyBnb29kLiBJJ2xsIGdldCB0aGlzIGludG8gLW5leHQgYW5kIHBsYW4gdG8g
+Z2V0IGl0IHVwIHRvIExpbnVzDQo+IHNvb24uDQo+IA0KPiBUaGFua3MhDQo+IC0tDQo+IEplZmYg
+TGF5dG9uIDxqbGF5dG9uQGtlcm5lbC5vcmc+DQo+DQoNCg==
