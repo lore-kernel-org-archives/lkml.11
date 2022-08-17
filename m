@@ -2,161 +2,403 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7465C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FD0C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 23:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiHQXP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 19:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
+        id S242155AbiHQXVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 19:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242312AbiHQXPw (ORCPT
+        with ESMTP id S231510AbiHQXVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 19:15:52 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116ECABD58
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:15:51 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so95263wms.5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:15:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=FAp+0S/t7YU8InMU47zEYoFV6slTO7PsovSrf3VShbY=;
-        b=vmxd23h3CgHfjk4V5JZvUsKDnOZgufjfND0t2o1KBZQr6d+y886Y+C08IiNDrFuV0W
-         Km4dAalac3EbtT/Ww+DoRLF++YozVKJSvSuDfoBpcybyfbJYWLkxlr9QYhwPooUS8IqU
-         HwbcUnHQPvTKoaRE6mpEiMxsCYOm7F8gQoKkgduJMFDAx6BG/O+GHOKUPxCMyuzdME8l
-         oI6o1lqGDXvLozrxWjEyL06biH4NMHr+SbtvdBRYJH7vnLm8bv88ehTQU3loxw0Q/Nsi
-         K+097RW10XExwWNTs2OucjPVk1J9AJ1g2DFjhY/QDCm8vPvJd1lrJHRMyBCoN2+2rqum
-         b+GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=FAp+0S/t7YU8InMU47zEYoFV6slTO7PsovSrf3VShbY=;
-        b=VzFRsZAaQiXquP0RtUF70AoUnccVoqUXplxOi2XsBk1b+cxOrHtfUHCU+XqNodcXn6
-         o88RnkyXAbR1Dp7LMZGOeo+qtUWcFRXa2tY0Atn1ZJk3ZaSDLDqmrpIx218PWjf4qiNl
-         pY/Zlreilvfb0eLjHuhW1YXr0X1s+agZ1mJrCJwUHEYAXlBFXyz0iGWzmJN9GrrAwQQv
-         pgfdFi/tIZ3HEA/JquDm260TuRV5Ha8WqxSb+BGezJLVq5TvlCh6KM0iiJzX+3eRq1Ka
-         4qE4zos28Zbt7IvGRcR4to3jx1NioNpw9cY+hdRPF92ZVz8ylaxcNqLpU7fnurS+3ksn
-         43vw==
-X-Gm-Message-State: ACgBeo3sBL8R4uVi41A3SiOVr0mD0NUV7gX5Hz/3C7P6pGCa/FviKTHV
-        mpeiFVroQdTeDu4+Wng2p/9ivw==
-X-Google-Smtp-Source: AA6agR51Q7GBXsRdO47Gle1+xrKCXRwcqVH25hN6raTnvfs7hipfhpD/aA5uTx9JDC+wKqEGl9nNcg==
-X-Received: by 2002:a1c:3b56:0:b0:3a5:b699:3d5a with SMTP id i83-20020a1c3b56000000b003a5b6993d5amr170670wma.45.1660778149529;
-        Wed, 17 Aug 2022 16:15:49 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id d7-20020a05600c3ac700b003a5ad7f6de2sm137216wms.15.2022.08.17.16.15.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 16:15:49 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>
-Subject: [PATCH 2/2] thermal/of: Remove the thermal_zone_of_get_sensor_id() function
-Date:   Thu, 18 Aug 2022 01:15:33 +0200
-Message-Id: <20220817231533.2639806-2-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817231533.2639806-1-daniel.lezcano@linaro.org>
-References: <20220817231533.2639806-1-daniel.lezcano@linaro.org>
-MIME-Version: 1.0
+        Wed, 17 Aug 2022 19:21:21 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9614DA404E;
+        Wed, 17 Aug 2022 16:21:20 -0700 (PDT)
+Received: from pps.filterd (m0134420.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HNKOQh020677;
+        Wed, 17 Aug 2022 23:21:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pps0720;
+ bh=UJv/2liIKuv56++kg5KhoLxF1aoiqDHXWk2kl06Nkqg=;
+ b=EUBhmw71DbsITFrrEy0HHLtG/9SPVsJ4DeECQ8xL+hV2Fn8Wy52cOtVsJeP2DHC6QqL1
+ srg3VLxxXxe080OmGg+iFFhT6Lm2XIsfJwXLza6n52Vxsb7HhgYkcD7FSa1+okteM3MH
+ oEd3R8ywqBv7Ie3xf8GpgRgrQkfUIiqTpe9OIu4qO/NVjUoE3Ad5o73MHhu71Z06XCZz
+ MR+ykeSOvOv2l650j+r6oyNvEYodeUMWdkJqe5zqplAKTtNiN9F9U6fxjlakgBQX9qwa
+ T6DVdmvUZzmNXIRUrGvMsRFX3cJG1eqAhTDONlH2GSz9dUM0HnMwjCJCA+Xicyb1xs5u LQ== 
+Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3j19wer083-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 23:21:15 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 35BDFD2E5;
+        Wed, 17 Aug 2022 23:21:15 +0000 (UTC)
+Received: from adevxp033-sys.us.rdlabs.hpecorp.net (unknown [16.231.227.36])
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTP id E463E80170A;
+        Wed, 17 Aug 2022 23:21:14 +0000 (UTC)
+From:   Robert Elliott <elliott@hpe.com>
+To:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        ebiggers@kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Robert Elliott <elliott@hpe.com>
+Subject: [PATCH v2 03/10] crypto: Kconfig - move s390 entries to a submenu
+Date:   Wed, 17 Aug 2022 18:20:50 -0500
+Message-Id: <20220817232057.73643-4-elliott@hpe.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220817232057.73643-1-elliott@hpe.com>
+References: <20220815190608.47182-9-elliott@hpe.com>
+ <20220817232057.73643-1-elliott@hpe.com>
+X-Proofpoint-GUID: Z621KLWkd41IGiMOocGFz8uCykg7spHf
+X-Proofpoint-ORIG-GUID: Z621KLWkd41IGiMOocGFz8uCykg7spHf
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-17_15,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 bulkscore=0 adultscore=0 impostorscore=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=591 clxscore=1015 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208170088
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function thermal_zone_of_get_sensor_id() is no longer used
-anywhere, remove it.
+Move CPU-specific crypto/Kconfig entries to arch/xxx/crypto/Kconfig
+and create a submenu for them under the Crypto API menu.
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Suggested-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Robert Elliott <elliott@hpe.com>
 ---
- drivers/thermal/thermal_of.c | 44 ------------------------------------
- include/linux/thermal.h      | 10 --------
- 2 files changed, 54 deletions(-)
+ arch/s390/crypto/Kconfig | 120 +++++++++++++++++++++++++++++++++++++++
+ crypto/Kconfig           | 118 +-------------------------------------
+ 2 files changed, 123 insertions(+), 115 deletions(-)
+ create mode 100644 arch/s390/crypto/Kconfig
 
-diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-index fd2fb84bf246..d4b6335ace15 100644
---- a/drivers/thermal/thermal_of.c
-+++ b/drivers/thermal/thermal_of.c
-@@ -130,50 +130,6 @@ static int of_thermal_get_crit_temp(struct thermal_zone_device *tz,
- 	return -EINVAL;
- }
+diff --git a/arch/s390/crypto/Kconfig b/arch/s390/crypto/Kconfig
+new file mode 100644
+index 000000000000..ef0651d71e9d
+--- /dev/null
++++ b/arch/s390/crypto/Kconfig
+@@ -0,0 +1,120 @@
++# SPDX-License-Identifier: GPL-2.0
++
++menu "Accelerated Cryptographic Algorithms for CPU (s390)"
++
++config CRYPTO_CRC32_S390
++	tristate "CRC-32 algorithms"
++	depends on S390
++	select CRYPTO_HASH
++	select CRC32
++	help
++	  Select this option if you want to use hardware accelerated
++	  implementations of CRC algorithms.  With this option, you
++	  can optimize the computation of CRC-32 (IEEE 802.3 Ethernet)
++	  and CRC-32C (Castagnoli).
++
++	  It is available with IBM z13 or later.
++
++config CRYPTO_SHA512_S390
++	tristate "SHA384 and SHA512 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA512 secure hash standard.
++
++	  It is available as of z10.
++
++config CRYPTO_SHA1_S390
++	tristate "SHA1 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
++
++	  It is available as of z990.
++
++config CRYPTO_SHA256_S390
++	tristate "SHA256 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA256 secure hash standard (DFIPS 180-2).
++
++	  It is available as of z9.
++
++config CRYPTO_SHA3_256_S390
++	tristate "SHA3_224 and SHA3_256 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA3_256 secure hash standard.
++
++	  It is available as of z14.
++
++config CRYPTO_SHA3_512_S390
++	tristate "SHA3_384 and SHA3_512 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA3_512 secure hash standard.
++
++	  It is available as of z14.
++
++config CRYPTO_GHASH_S390
++	tristate "GHASH hash function"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of GHASH,
++	  the hash function used in GCM (Galois/Counter mode).
++
++	  It is available as of z196.
++
++config CRYPTO_AES_S390
++	tristate "AES cipher algorithms"
++	depends on S390
++	select CRYPTO_ALGAPI
++	select CRYPTO_SKCIPHER
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  AES cipher algorithms (FIPS-197).
++
++	  As of z9 the ECB and CBC modes are hardware accelerated
++	  for 128 bit keys.
++	  As of z10 the ECB and CBC modes are hardware accelerated
++	  for all AES key sizes.
++	  As of z196 the CTR mode is hardware accelerated for all AES
++	  key sizes and XTS mode is hardware accelerated for 256 and
++	  512 bit keys.
++
++config CRYPTO_DES_S390
++	tristate "DES and Triple DES cipher algorithms"
++	depends on S390
++	select CRYPTO_ALGAPI
++	select CRYPTO_SKCIPHER
++	select CRYPTO_LIB_DES
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  DES cipher algorithm (FIPS 46-2), and Triple DES EDE (FIPS 46-3).
++
++	  As of z990 the ECB and CBC mode are hardware accelerated.
++	  As of z196 the CTR mode is hardware accelerated.
++
++config CRYPTO_CHACHA_S390
++	tristate "ChaCha20 stream cipher"
++	depends on S390
++	select CRYPTO_SKCIPHER
++	select CRYPTO_LIB_CHACHA_GENERIC
++	select CRYPTO_ARCH_HAVE_LIB_CHACHA
++	help
++	  This is the s390 SIMD implementation of the ChaCha20 stream
++	  cipher (RFC 7539).
++
++	  It is available as of z13.
++
++endmenu
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index efb73dae2e52..5678f7f18b76 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -647,19 +647,6 @@ menuconfig CRYPTO
+ 	  which will enable any routine to use the CRC-32-IEEE 802.3 checksum
+ 	  and gain better performance as compared with the table implementation.
  
--/**
-- * thermal_zone_of_get_sensor_id - get sensor ID from a DT thermal zone
-- * @tz_np: a valid thermal zone device node.
-- * @sensor_np: a sensor node of a valid sensor device.
-- * @id: the sensor ID returned if success.
-- *
-- * This function will get sensor ID from a given thermal zone node and
-- * the sensor node must match the temperature provider @sensor_np.
-- *
-- * Return: 0 on success, proper error code otherwise.
-- */
+-config CRYPTO_CRC32_S390
+-	tristate "CRC-32 algorithms"
+-	depends on S390
+-	select CRYPTO_HASH
+-	select CRC32
+-	help
+-	  Select this option if you want to use hardware accelerated
+-	  implementations of CRC algorithms.  With this option, you
+-	  can optimize the computation of CRC-32 (IEEE 802.3 Ethernet)
+-	  and CRC-32C (Castagnoli).
 -
--int thermal_zone_of_get_sensor_id(struct device_node *tz_np,
--				  struct device_node *sensor_np,
--				  u32 *id)
--{
--	struct of_phandle_args sensor_specs;
--	int ret;
+-	  It is available with IBM z13 or later.
 -
--	ret = of_parse_phandle_with_args(tz_np,
--					 "thermal-sensors",
--					 "#thermal-sensor-cells",
--					 0,
--					 &sensor_specs);
--	if (ret)
--		return ret;
--
--	if (sensor_specs.np != sensor_np) {
--		of_node_put(sensor_specs.np);
--		return -ENODEV;
--	}
--
--	if (sensor_specs.args_count > 1)
--		pr_warn("%pOFn: too many cells in sensor specifier %d\n",
--		     sensor_specs.np, sensor_specs.args_count);
--
--	*id = sensor_specs.args_count ? sensor_specs.args[0] : 0;
--
--	of_node_put(sensor_specs.np);
--
--	return 0;
--}
--EXPORT_SYMBOL_GPL(thermal_zone_of_get_sensor_id);
--
- /***   functions parsing device tree nodes   ***/
+ config CRYPTO_XXHASH
+ 	tristate "xxHash hash algorithm"
+ 	select CRYPTO_HASH
+@@ -852,16 +839,6 @@ menuconfig CRYPTO
+ 	  Extensions version 1 (AVX1), or Advanced Vector Extensions
+ 	  version 2 (AVX2) instructions, when available.
  
- static int of_find_trip_id(struct device_node *np, struct device_node *trip)
-diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-index 86c24ddd5985..a5a18351a898 100644
---- a/include/linux/thermal.h
-+++ b/include/linux/thermal.h
-@@ -310,9 +310,6 @@ void devm_thermal_of_zone_unregister(struct device *dev, struct thermal_zone_dev
- 
- void thermal_of_zone_unregister(struct thermal_zone_device *tz);
- 
--int thermal_zone_of_get_sensor_id(struct device_node *tz_np,
--				  struct device_node *sensor_np,
--				  u32 *id);
- #else
- static inline
- struct thermal_zone_device *thermal_of_zone_register(struct device_node *sensor, int id, void *data,
-@@ -336,13 +333,6 @@ static inline void devm_thermal_of_zone_unregister(struct device *dev,
- 						   struct thermal_zone_device *tz)
- {
- }
+-config CRYPTO_SHA512_S390
+-	tristate "SHA384 and SHA512 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA512 secure hash standard.
 -
--static inline int thermal_zone_of_get_sensor_id(struct device_node *tz_np,
--						struct device_node *sensor_np,
--						u32 *id)
--{
--	return -ENOENT;
--}
- #endif
+-	  It is available as of z10.
+-
+ config CRYPTO_SHA1_SPARC64
+ 	tristate "SHA1 digest algorithm (SPARC64)"
+ 	depends on SPARC64
+@@ -871,16 +848,6 @@ menuconfig CRYPTO
+ 	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2) implemented
+ 	  using sparc64 crypto instructions, when available.
  
- #ifdef CONFIG_THERMAL
+-config CRYPTO_SHA1_S390
+-	tristate "SHA1 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
+-
+-	  It is available as of z990.
+-
+ config CRYPTO_SHA256
+ 	tristate "SHA224 and SHA256 digest algorithm"
+ 	select CRYPTO_HASH
+@@ -903,16 +870,6 @@ menuconfig CRYPTO
+ 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
+ 	  using sparc64 crypto instructions, when available.
+ 
+-config CRYPTO_SHA256_S390
+-	tristate "SHA256 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA256 secure hash standard (DFIPS 180-2).
+-
+-	  It is available as of z9.
+-
+ config CRYPTO_SHA512
+ 	tristate "SHA384 and SHA512 digest algorithms"
+ 	select CRYPTO_HASH
+@@ -944,26 +901,6 @@ menuconfig CRYPTO
+ 	  References:
+ 	  http://keccak.noekeon.org/
+ 
+-config CRYPTO_SHA3_256_S390
+-	tristate "SHA3_224 and SHA3_256 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA3_256 secure hash standard.
+-
+-	  It is available as of z14.
+-
+-config CRYPTO_SHA3_512_S390
+-	tristate "SHA3_384 and SHA3_512 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA3_512 secure hash standard.
+-
+-	  It is available as of z14.
+-
+ config CRYPTO_SM3
+ 	tristate
+ 
+@@ -1024,16 +961,6 @@ menuconfig CRYPTO
+ 	  This is the x86_64 CLMUL-NI accelerated implementation of
+ 	  GHASH, the hash function used in GCM (Galois/Counter mode).
+ 
+-config CRYPTO_GHASH_S390
+-	tristate "GHASH hash function"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of GHASH,
+-	  the hash function used in GCM (Galois/Counter mode).
+-
+-	  It is available as of z196.
+-
+ comment "Ciphers"
+ 
+ config CRYPTO_AES
+@@ -1135,23 +1062,6 @@ menuconfig CRYPTO
+ 	  for some popular block cipher mode is supported too, including
+ 	  ECB and CBC.
+ 
+-config CRYPTO_AES_S390
+-	tristate "AES cipher algorithms"
+-	depends on S390
+-	select CRYPTO_ALGAPI
+-	select CRYPTO_SKCIPHER
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  AES cipher algorithms (FIPS-197).
+-
+-	  As of z9 the ECB and CBC modes are hardware accelerated
+-	  for 128 bit keys.
+-	  As of z10 the ECB and CBC modes are hardware accelerated
+-	  for all AES key sizes.
+-	  As of z196 the CTR mode is hardware accelerated for all AES
+-	  key sizes and XTS mode is hardware accelerated for 256 and
+-	  512 bit keys.
+-
+ config CRYPTO_ANUBIS
+ 	tristate "Anubis cipher algorithm"
+ 	depends on CRYPTO_USER_API_ENABLE_OBSOLETE
+@@ -1382,19 +1292,6 @@ menuconfig CRYPTO
+ 	  algorithm are provided; regular processing one input block and
+ 	  one that processes three blocks parallel.
+ 
+-config CRYPTO_DES_S390
+-	tristate "DES and Triple DES cipher algorithms"
+-	depends on S390
+-	select CRYPTO_ALGAPI
+-	select CRYPTO_SKCIPHER
+-	select CRYPTO_LIB_DES
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  DES cipher algorithm (FIPS 46-2), and Triple DES EDE (FIPS 46-3).
+-
+-	  As of z990 the ECB and CBC mode are hardware accelerated.
+-	  As of z196 the CTR mode is hardware accelerated.
+-
+ config CRYPTO_FCRYPT
+ 	tristate "FCrypt cipher algorithm"
+ 	select CRYPTO_ALGAPI
+@@ -1448,18 +1345,6 @@ menuconfig CRYPTO
+ 	  SSSE3, AVX2, and AVX-512VL optimized implementations of the ChaCha20,
+ 	  XChaCha20, and XChaCha12 stream ciphers.
+ 
+-config CRYPTO_CHACHA_S390
+-	tristate "ChaCha20 stream cipher"
+-	depends on S390
+-	select CRYPTO_SKCIPHER
+-	select CRYPTO_LIB_CHACHA_GENERIC
+-	select CRYPTO_ARCH_HAVE_LIB_CHACHA
+-	help
+-	  This is the s390 SIMD implementation of the ChaCha20 stream
+-	  cipher (RFC 7539).
+-
+-	  It is available as of z13.
+-
+ config CRYPTO_SEED
+ 	tristate "SEED cipher algorithm"
+ 	depends on CRYPTO_USER_API_ENABLE_OBSOLETE
+@@ -1950,6 +1835,9 @@ menuconfig CRYPTO_DRBG_MENU
+ if PPC
+ source "arch/powerpc/crypto/Kconfig"
+ endif
++if S390
++source "arch/s390/crypto/Kconfig"
++endif
+ 
+ source "drivers/crypto/Kconfig"
+ source "crypto/asymmetric_keys/Kconfig"
 -- 
-2.34.1
+2.37.1
 
