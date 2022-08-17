@@ -2,108 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F09C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE883C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237903AbiHQANl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 20:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        id S237963AbiHQAVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 20:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235882AbiHQANh (ORCPT
+        with ESMTP id S237947AbiHQAVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 20:13:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D79E2CDCF
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 17:13:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660695213;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n9qL/h6uXIAb6VYdRPx1bWna3ld2RQQy7Q8vkiGHtWQ=;
-        b=Nd8hKxBj+icX9SqDWBjtmN7BEamXHs22fLnVNElZ9VoF1dEUmI7zh/pQQBZqdxXJGgAUEc
-        4X1qeC7zyyNeI5Im8WhVzQt5/oZ01BEfl8duXGFInp/QO9o6+a8C1BxEgHqHrw5sKjC+LS
-        ztcY3iO4qKs285Q2gz3TIZQZUmMwyoQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-82-tHEhQ5eaPl6ec8C8iEqrAQ-1; Tue, 16 Aug 2022 20:13:28 -0400
-X-MC-Unique: tHEhQ5eaPl6ec8C8iEqrAQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7CDEE101A54E;
-        Wed, 17 Aug 2022 00:13:27 +0000 (UTC)
-Received: from [10.22.32.9] (unknown [10.22.32.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4DA9140D2827;
-        Wed, 17 Aug 2022 00:13:26 +0000 (UTC)
-Message-ID: <eed3b91b-5297-c27a-acab-87e4afb4148c@redhat.com>
-Date:   Tue, 16 Aug 2022 20:13:25 -0400
+        Tue, 16 Aug 2022 20:21:10 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE29832FF
+        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 17:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660695667; x=1692231667;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Bto+wWr8rVGJdNYoL7NXnmgkSF7ReEMHmQXEtISCcqo=;
+  b=k7R55xlDMhzAtOsPHa8SX0lpjnz4THTt327U0yBBISffruDUBHbkXJM3
+   QklJcvm2EFUBj6Ly8bMYuneMcEFcwLNWe/vQd+UhQgaRonWJBSolSU0pR
+   6yogmX288sPShKZZkotAkzRzrWD+gYOIA9xDDRB4E92L4bYGW9qN3aJFc
+   4PCzcYNaaumowGXtQNtOa0XkX9etxqMmZ9OMB8Bo9nps79fVWX3vG/ZOP
+   B9Tt3LJYzH6xFjC/YnB/T/Aa9yHRAieTaNwq1mLIWzA8PROlCsbzwjMOO
+   uL8Vg1IvE6tnG9+TBjfgmVq1X9YXWhECDeeUwg4vhGbcyboXRJ+p/8/Xw
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="291114683"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="291114683"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 17:21:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="640241718"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 16 Aug 2022 17:21:05 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oO6nw-0000Mz-1u;
+        Wed, 17 Aug 2022 00:21:04 +0000
+Date:   Wed, 17 Aug 2022 08:20:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thierry Escande <thierry.escande@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [jsarha:topic/cros-sof-v4.14 8531/9354] hci_qca.c:undefined
+ reference to `clk_set_rate'
+Message-ID: <202208170859.QbynVWlL-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 3/3] cgroup/cpuset: Keep user set cpus affinity
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220816192734.67115-1-longman@redhat.com>
- <20220816192734.67115-4-longman@redhat.com>
- <Yvv66EWygCwHUCqy@slm.duckdns.org>
- <c10e4f69-9951-6c38-6e28-fafcaec00d89@redhat.com>
- <YvwX24GXadKQNp6V@slm.duckdns.org>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YvwX24GXadKQNp6V@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
+head:   6f750b16c322c9191168a3a97c427c90581d9144
+commit: bdcc355ed6e4fc2b4ca55cccebbdfdc195a5dcbf [8531/9354] UPSTREAM: Bluetooth: hci_qca: Add serdev support
+config: m68k-randconfig-r003-20220816 (https://download.01.org/0day-ci/archive/20220817/202208170859.QbynVWlL-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 7.5.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jsarha/linux/commit/bdcc355ed6e4fc2b4ca55cccebbdfdc195a5dcbf
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/cros-sof-v4.14
+        git checkout bdcc355ed6e4fc2b4ca55cccebbdfdc195a5dcbf
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-On 8/16/22 18:19, Tejun Heo wrote:
-> Hello,
->
-> On Tue, Aug 16, 2022 at 06:11:03PM -0400, Waiman Long wrote:
->> It is hard to synchronize different subsystems atomically without running
->> into locking issue. Let me think about what can be done in this case.
-> I have a hard time seeing why this would be particularly difficult. cpuset
-> just needs to make the latest cpumask available to sched core in an easily
-> accessible form and whenever that changes, trigger a set_cpus_allowed call.
-> There's no need to entangle operations across the whole subsystems. All
-> that's needed to be communicated is the current cpumask.
->
->> Is using a sequence number to check for race with retry good enough?
-> It seems unnecessarily fragile and complicated to me. If we're gonna change
-> it, let's change it right.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for the suggestion. I think I get what you want. I am going to 
-migrate the cpuset_set_cpus_allowed_ptr() logic into 
-set_cpus_allowed_ptr() itself. IOW, if user_cpus_ptr is defined, it will 
-be an additional mask to be applied on top. It does affect all callers 
-of set_cpus_allowed_ptr() though. I am going to drop this cpuset 
-specific patch.
+All errors (new ones prefixed by >>):
 
-BTW, I will be on PTO starting tomorrow until next Tuesday. So I will be 
-slow in responding to emails.
+   drivers/scsi/ufs/ufshcd.o: In function `ufshcd_init':
+   ufshcd.c:(.text+0xa8a0): undefined reference to `clk_set_rate'
+   drivers/scsi/ufs/ufshcd.o: In function `ufshcd_scale_clks':
+   ufshcd.c:(.text+0x71a): undefined reference to `clk_set_rate'
+   ufshcd.c:(.text+0x7e4): undefined reference to `clk_set_rate'
+   ufshcd.c:(.text+0x84c): undefined reference to `clk_set_rate'
+   drivers/media/i2c/ov5645.o: In function `ov5645_probe':
+   ov5645.c:(.text+0xd52): undefined reference to `clk_set_rate'
+   drivers/media/i2c/mt9p031.o:mt9p031.c:(.text+0xb5c): more undefined references to `clk_set_rate' follow
+   drivers/media/v4l2-core/v4l2-clk.o: In function `v4l2_clk_set_rate':
+   v4l2-clk.c:(.text+0x57c): undefined reference to `clk_round_rate'
+   v4l2-clk.c:(.text+0x5a4): undefined reference to `clk_set_rate'
+   drivers/bluetooth/hci_qca.o: In function `qca_serdev_probe':
+>> hci_qca.c:(.text+0xbde): undefined reference to `clk_set_rate'
+   drivers/opp/core.o: In function `dev_pm_opp_set_rate':
+   core.c:(.text+0xb2c): undefined reference to `clk_round_rate'
+   core.c:(.text+0xc92): undefined reference to `clk_set_rate'
+   core.c:(.text+0xdb6): undefined reference to `clk_set_rate'
+   core.c:(.text+0xe2a): undefined reference to `clk_set_rate'
+   core.c:(.text+0xe96): undefined reference to `clk_set_rate'
 
-Cheers,
-Longman
-
-Cheers,
-Longman
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
