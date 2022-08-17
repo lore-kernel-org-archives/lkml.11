@@ -2,272 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9788EC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040F8C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237072AbiHQPbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43026 "EHLO
+        id S240257AbiHQPcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240319AbiHQPbn (ORCPT
+        with ESMTP id S240417AbiHQPcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 11:31:43 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF789D667
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:31:41 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id m3-20020a05600c3b0300b003a5e0557150so1986785wms.0
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:31:41 -0700 (PDT)
+        Wed, 17 Aug 2022 11:32:01 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A59D8CF
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:31:54 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id y13so25114103ejp.13
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 08:31:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=x/8xM9ld9yrSaRR9pDeYKmRNvDsAFYo8/I49PiB0Ceo=;
-        b=ccOl9EvZk+s+6ZxGWVd80a/mQypWz20imbB4Q0Hv2rztkoFOKCvGXBegixRftkpheM
-         MqgQz/9PcTRh1mG+mfw56lmXtCXESaWgufZ+CMdvWb1GBujZzp8CKq+rQmObr93k6G39
-         cYYNFfphmlBvADyQ6J8/nPLjl/xDpNtPWMBtjjEAj4xGKqrywn9Q+RhU9q3/hbpo5+Cp
-         oFmRXqbyWcPHnYhhjkVeNzvZKUVMMPfBP+e8wcjZ/tMiVgvdT9Eyn3mjN2evlM7gr2WL
-         b39zwKebTo/1sI5apvAcudpfA1kPvP9BxxIPcWHuw5j9FcgE+EgheOS5B9RaX9+wXUbt
-         SxtQ==
+        d=ventanamicro.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=a/PIyfsanhuZllpPivL8Bh2mQBuFyAwgudcPaKdSSHQ=;
+        b=Y3aPmPl8Gl6Ticd5n+ONhVYew/dhHhrWtA9QzSdIK2WfxGUQcV+aTEE5sBioizif58
+         OMIiUU2yFGe+LN9MNuo6NvHBMzw6a1w1uAUbDruLKacHo5ZwTMXNuD5lIKa0EX0HsCjm
+         nY/m5XdLBg0kQmNnRLGHYHl4hEV3XqzIMyb6y1aSac9kD1+uMVmyUXmTExjLMqfpt1WZ
+         TdtVqqeYVi0rxxTde2WbCPYcQVAOLu/KA3ft8im+QLVC2HK8rz5uj/KkRRC3oPvIGVJY
+         UbzT8TBpVh9yfFxFH/wE81VFXr+d0wzfOSZXH4sQVceJdWaPnM4U1Msj1qWMfcLSuyAd
+         S2jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=x/8xM9ld9yrSaRR9pDeYKmRNvDsAFYo8/I49PiB0Ceo=;
-        b=geidQ/lOD8Yg+yxpERw2iuCYp4WE/xe2HfVRj9/egOL75cKygdCm2awR+01G81zHuc
-         Vpg4OAqsvG0upbn0qwRn943JBdHbOpWJLM56ZZArZ3VREsy8VStrFuKJYoo4QVefCBbx
-         YVeBVceoiy3dJKBHGiQzWrkSt9m0cTo0hxA0cTbQYcIDtS/BOcTeesZDIgQ2HMgFnTKv
-         dYiXoEhdHSEZ8brPdiBjnzXWeRP2EkLYinvgCUEA5imy28V8Gdh8I7NEt/xoui7fJA5y
-         BNAJqP54dyMj5tJwbyn437/VknHlnw9FWwIfjPsHAfQ9vSyyif92gaWrkrJQN9WipJNK
-         2zhQ==
-X-Gm-Message-State: ACgBeo33yzPt7F5r5TIZB1zFKC3j3/gUhAnKdEadAr86cqv1K+uUX+wd
-        RXMiSv9+DJEg8J4/9UgRwarW9g==
-X-Google-Smtp-Source: AA6agR4cNmGCf8XKin9xGyp8cT0b0iQPYD3hPoSzK7Lcas7XgCjIkGJwabbksuMGV19Oi3gnr2sccA==
-X-Received: by 2002:a7b:c848:0:b0:3a5:41f6:4d37 with SMTP id c8-20020a7bc848000000b003a541f64d37mr2634311wml.23.1660750299682;
-        Wed, 17 Aug 2022 08:31:39 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id t5-20020adfeb85000000b002216d6f8ad6sm13229633wrn.2.2022.08.17.08.31.38
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=a/PIyfsanhuZllpPivL8Bh2mQBuFyAwgudcPaKdSSHQ=;
+        b=LVrQ30grjjBWYMzYo5RKh6yFRYjZucXW1Gwi4MFv/7YSNTTmXzDzAVUjg4uvrUk3kv
+         ghArmm/5HkUMBKp/zwH94hkQUd0pIs8ZtSaQhbQu+A1dazufXmBdl/BEeIL1p3f8UaMe
+         dT7L/8Jh2TgYab4IxEUMLV4/Ry1/A6ud169+U7eKs4UvyzmXmuX0NhkJR/mh2C35BL0K
+         Nv+eITeqCEk2u/xe6yCUHSeL3+FT6MMTQnASoKMNsVNtCPssE3EzTKGwWVKFkiKg+GTB
+         jcwjgh7iORQUOQw3hBX57F3CFaAUy7B0asL5m3U21m1qspcGg0/AXeDAXgp5/JCeMx2B
+         dWhA==
+X-Gm-Message-State: ACgBeo16dcNyIwJyxVaBD3HK1hDUxpEqhYlc1JOhHVNYjcivSx6cFypw
+        Z7deUgW5D/nugNoR9p6lmY+HqA==
+X-Google-Smtp-Source: AA6agR5EXt7m0iYui0lTtqSryBN00lK2V0UI74nd+7U7PhHJGidvWTUIyrw9wqSAXWbqjfZ9oT/8aQ==
+X-Received: by 2002:a17:907:7e9f:b0:730:d954:c2b5 with SMTP id qb31-20020a1709077e9f00b00730d954c2b5mr16466931ejc.311.1660750312930;
+        Wed, 17 Aug 2022 08:31:52 -0700 (PDT)
+Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id fn3-20020a1709069d0300b0072fb3704e49sm6892820ejc.46.2022.08.17.08.31.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 08:31:38 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vadimp@mellanox.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vadimp@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, idosch@nvidia.com,
-        pabeni@redhat.com
-Subject: [PATCH v4] Revert "mlxsw: core: Add the hottest thermal zone detection"
-Date:   Wed, 17 Aug 2022 17:30:40 +0200
-Message-Id: <20220817153040.2464245-1-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 17 Aug 2022 08:31:52 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 17:31:50 +0200
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, atishp@atishpatra.org,
+        linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, daolu@rivosinc.com,
+        Conor.Dooley@microchip.com, re@w6rz.net, apatel@ventanamicro.com
+Subject: Re: [PATCH] riscv: Ensure isa-ext static keys are writable
+Message-ID: <20220817153150.fvht2isdiqjpk3my@kamzik>
+References: <CAOnJCU+Gx44ESHWyku7Kb6u5QnzjXiZcat5XmVWjksdFpcQ6nA@mail.gmail.com>
+ <mhng-dd00cb27-4162-48aa-834d-30fb90e194cf@palmer-mbp2014>
+ <Yvz7byY9F0ow1bgf@xhacker>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yvz7byY9F0ow1bgf@xhacker>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 2dc2f760052da4925482ecdcdc5c94d4a599153c and
-commit 6f73862fabd93213de157d9cc6ef76084311c628.
+On Wed, Aug 17, 2022 at 10:30:07PM +0800, Jisheng Zhang wrote:
+> On Tue, Aug 16, 2022 at 09:29:36PM -0700, Palmer Dabbelt wrote:
+> > On Tue, 16 Aug 2022 16:41:46 PDT (-0700), atishp@atishpatra.org wrote:
+> > > On Tue, Aug 16, 2022 at 9:31 AM Andrew Jones <ajones@ventanamicro.com> wrote:
+> > > > 
+> > > > riscv_isa_ext_keys[] is an array of static keys used in the unified
+> > > > ISA extension framework. The keys added to this array may be used
+> > > > anywhere, including in modules. Ensure the keys remain writable by
+> > > > placing them in the data section.
+> > > > 
+> > > > The need to change riscv_isa_ext_keys[]'s section was found when the
+> > > > kvm module started failing to load. Commit 8eb060e10185 ("arch/riscv:
+> > > > add Zihintpause support") adds a static branch check for a newly
+> > > > added isa-ext key to cpu_relax(), which kvm uses.
+> > >> > > 
+> > > > Fixes: c360cbec3511 ("riscv: introduce unified static key mechanism for ISA extensions")
+> > > > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> > > > > > ---
+> > > >  arch/riscv/kernel/cpufeature.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> > > > index 553d755483ed..3b5583db9d80 100644
+> > > > --- a/arch/riscv/kernel/cpufeature.c
+> > > > +++ b/arch/riscv/kernel/cpufeature.c
+> > > > @@ -28,7 +28,7 @@ unsigned long elf_hwcap __read_mostly;
+> > > >  /* Host ISA bitmap */
+> > > >  static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+> > > > 
+> > > > -__ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+> > > > +DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+> > > >  EXPORT_SYMBOL(riscv_isa_ext_keys);
+> > > > 
+> > > >  /**
+> > > > --
+> > > > 2.37.1
+> > > > 
+> > > > 
+> > > > --
+> > > > kvm-riscv mailing list
+> > > > kvm-riscv@lists.infradead.org
+> > > > http://lists.infradead.org/mailman/listinfo/kvm-riscv
+> > > 
+> > > Thanks for the quick fix. Tested with kvm guests booting in Qemu.
+> > > 
+> > > Tested-by: Atish Patra <atishp@rivosinc.com>
+> 
+> Reviewed-by: Jisheng Zhang <jszhang@kernel.org>
+> 
+> Thanks for catching the bug in my code.
+> 
+> > 
+> > Thanks, I hadn't realized how static keys work but looks like having them as
+> > __ro_after_init was always bogus.  Sorry to break stuff, looks like I should be
+> 
+> Sorry for breaking the static isa extension key usage in modules.
+> It's a good idea to make them readonly, but need to cope with the usage
+> in module properly. This may be a good improvement item.
 
-As discussed in the thread:
+While some static keys do use __ro_after_init, they're almost all locally
+defined (static __ro_after_init). I see a few instances of __read_mostly
+global static key definitions, though. That may make sense for
+riscv_isa_ext_keys[] as well.
 
-https://lore.kernel.org/all/f3c62ebe-7d59-c537-a010-bff366c8aeba@linaro.org/
-
-the feature provided by commits 2dc2f760052da and 6f73862fabd93 is
-actually already handled by the thermal framework via the cooling
-device state aggregation, thus all this code is pointless.
-
-The revert conflicts with the following changes:
- - 7f4957be0d5b8: thermal: Use mode helpers in drivers
- - 6a79507cfe94c: mlxsw: core: Extend thermal module with per QSFP module thermal zones
-
-These conflicts were fixed and the resulting changes are in this patch.
-
-Both reverts are in the same change as requested by Ido Schimmel:
-
-https://lore.kernel.org/all/Yvz7+RUsmVco3Xpj@shredder/
-
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Tested-by: Vadim Pasternak <vadimp@nvidia.com>
----
-  -v4:
-   - Squash patch #1 and #2 as requested by Ido Schimmel
-   - Remove blank lines
-  -v3:
-   - Respin against v6.0-rc1
-  -v2
-   - Fix 'err' not used as reported by kbuild test:
-   https://lore.kernel.org/all/202208150708.fk6sfd8u-lkp@intel.com/
-
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
----
- .../ethernet/mellanox/mlxsw/core_thermal.c    | 77 +------------------
- 1 file changed, 2 insertions(+), 75 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 3548fe1df7c8..987fe5c9d5a3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -21,7 +21,6 @@
- #define MLXSW_THERMAL_ASIC_TEMP_HOT	105000	/* 105C */
- #define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
- #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
--#define MLXSW_THERMAL_TEMP_SCORE_MAX	GENMASK(31, 0)
- #define MLXSW_THERMAL_MAX_STATE	10
- #define MLXSW_THERMAL_MIN_STATE	2
- #define MLXSW_THERMAL_MAX_DUTY	255
-@@ -101,8 +100,6 @@ struct mlxsw_thermal {
- 	struct thermal_cooling_device *cdevs[MLXSW_MFCR_PWMS_MAX];
- 	u8 cooling_levels[MLXSW_THERMAL_MAX_STATE + 1];
- 	struct mlxsw_thermal_trip trips[MLXSW_THERMAL_NUM_TRIPS];
--	unsigned int tz_highest_score;
--	struct thermal_zone_device *tz_highest_dev;
- 	struct mlxsw_thermal_area line_cards[];
- };
- 
-@@ -193,34 +190,6 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
- 	return 0;
- }
- 
--static void mlxsw_thermal_tz_score_update(struct mlxsw_thermal *thermal,
--					  struct thermal_zone_device *tzdev,
--					  struct mlxsw_thermal_trip *trips,
--					  int temp)
--{
--	struct mlxsw_thermal_trip *trip = trips;
--	unsigned int score, delta, i, shift = 1;
--
--	/* Calculate thermal zone score, if temperature is above the hot
--	 * threshold score is set to MLXSW_THERMAL_TEMP_SCORE_MAX.
--	 */
--	score = MLXSW_THERMAL_TEMP_SCORE_MAX;
--	for (i = MLXSW_THERMAL_TEMP_TRIP_NORM; i < MLXSW_THERMAL_NUM_TRIPS;
--	     i++, trip++) {
--		if (temp < trip->temp) {
--			delta = DIV_ROUND_CLOSEST(temp, trip->temp - temp);
--			score = delta * shift;
--			break;
--		}
--		shift *= 256;
--	}
--
--	if (score > thermal->tz_highest_score) {
--		thermal->tz_highest_score = score;
--		thermal->tz_highest_dev = tzdev;
--	}
--}
--
- static int mlxsw_thermal_bind(struct thermal_zone_device *tzdev,
- 			      struct thermal_cooling_device *cdev)
- {
-@@ -286,9 +255,6 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
- 		return err;
- 	}
- 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
--	if (temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
--					      temp);
- 
- 	*p_temp = temp;
- 	return 0;
-@@ -349,21 +315,6 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
- 	return 0;
- }
- 
--static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
--				   int trip, enum thermal_trend *trend)
--{
--	struct mlxsw_thermal *thermal = tzdev->devdata;
--
--	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
--		return -EINVAL;
--
--	if (tzdev == thermal->tz_highest_dev)
--		return 1;
--
--	*trend = THERMAL_TREND_STABLE;
--	return 0;
--}
--
- static struct thermal_zone_params mlxsw_thermal_params = {
- 	.no_hwmon = true,
- };
-@@ -377,7 +328,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_ops = {
- 	.set_trip_temp	= mlxsw_thermal_set_trip_temp,
- 	.get_trip_hyst	= mlxsw_thermal_get_trip_hyst,
- 	.set_trip_hyst	= mlxsw_thermal_set_trip_hyst,
--	.get_trend	= mlxsw_thermal_trend_get,
- };
- 
- static int mlxsw_thermal_module_bind(struct thermal_zone_device *tzdev,
-@@ -463,7 +413,6 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
- 	int temp, crit_temp, emerg_temp;
- 	struct device *dev;
- 	u16 sensor_index;
--	int err;
- 
- 	dev = thermal->bus_info->dev;
- 	sensor_index = MLXSW_REG_MTMP_MODULE_INDEX_MIN + tz->module;
-@@ -479,10 +428,8 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
- 		return 0;
- 
- 	/* Update trip points. */
--	err = mlxsw_thermal_module_trips_update(dev, thermal->core, tz,
--						crit_temp, emerg_temp);
--	if (!err && temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
-+	mlxsw_thermal_module_trips_update(dev, thermal->core, tz,
-+					  crit_temp, emerg_temp);
- 
- 	return 0;
- }
-@@ -546,22 +493,6 @@ mlxsw_thermal_module_trip_hyst_set(struct thermal_zone_device *tzdev, int trip,
- 	return 0;
- }
- 
--static int mlxsw_thermal_module_trend_get(struct thermal_zone_device *tzdev,
--					  int trip, enum thermal_trend *trend)
--{
--	struct mlxsw_thermal_module *tz = tzdev->devdata;
--	struct mlxsw_thermal *thermal = tz->parent;
--
--	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
--		return -EINVAL;
--
--	if (tzdev == thermal->tz_highest_dev)
--		return 1;
--
--	*trend = THERMAL_TREND_STABLE;
--	return 0;
--}
--
- static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
- 	.bind		= mlxsw_thermal_module_bind,
- 	.unbind		= mlxsw_thermal_module_unbind,
-@@ -571,7 +502,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
--	.get_trend	= mlxsw_thermal_module_trend_get,
- };
- 
- static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
-@@ -592,8 +522,6 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
- 		return err;
- 
- 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
--	if (temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
- 
- 	*p_temp = temp;
- 	return 0;
-@@ -608,7 +536,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
--	.get_trend	= mlxsw_thermal_module_trend_get,
- };
- 
- static int mlxsw_thermal_get_max_state(struct thermal_cooling_device *cdev,
--- 
-2.34.1
-
+Thanks,
+drew
