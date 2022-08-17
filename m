@@ -2,68 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9D8C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E57C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233266AbiHQIgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50792 "EHLO
+        id S233450AbiHQIhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiHQIgj (ORCPT
+        with ESMTP id S229794AbiHQIhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 04:36:39 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4097B786E8;
-        Wed, 17 Aug 2022 01:36:38 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M71Vz2fj0z1N7H2;
-        Wed, 17 Aug 2022 16:33:15 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 16:36:35 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 17 Aug
- 2022 16:36:35 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>
-CC:     <bhelgaas@google.com>
-Subject: [PATCH -next 1/2] PCI: fix possible memory leak in error case in pci_setup_device()
-Date:   Wed, 17 Aug 2022 16:44:43 +0800
-Message-ID: <20220817084444.2876059-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 17 Aug 2022 04:37:19 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CA97A518;
+        Wed, 17 Aug 2022 01:37:18 -0700 (PDT)
+Received: from zn.tnic (p2e55d27b.dip0.t-ipconnect.de [46.85.210.123])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3907D1EC04F0;
+        Wed, 17 Aug 2022 10:37:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660725433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=flMrwpLpNIbeVUWLCXG1+5u4wzSiDBK+MUv8SabEeFQ=;
+        b=ecDe3hxpUw4zMT/0CcSlrG3Un59lf77Rh5UgscVpLI+KL4qoxypnDgx5Xh4thaOCtIRXxq
+        D4DS4t7RhgmIoTavkFQwuovFuWvT18R4ew+oBpQuVLBFhVWJJNYoLaNhC2UkcnlFWuHP2d
+        RcaaBHcDODYtqdqeBMhri95GNveEFfk=
+Date:   Wed, 17 Aug 2022 10:36:56 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Justin He <Justin.He@arm.com>
+Cc:     "toshi.kani@hpe.com" <toshi.kani@hpe.com>,
+        Ard Biesheuvel <ardb@kernel.org>, Len Brown <lenb@kernel.org>,
+        James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "devel@acpica.org" <devel@acpica.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        nd <nd@arm.com>, "stable@kernel.org" <stable@kernel.org>
+Subject: Re: [PATCH 2/2] EDAC/ghes: Modularize ghes_edac driver to remove the
+ dependency on ghes
+Message-ID: <YvynOu+Mjkspreva@zn.tnic>
+References: <20220811091713.10427-1-justin.he@arm.com>
+ <20220811091713.10427-3-justin.he@arm.com>
+ <YvZnrTrXhRn8FV3I@zn.tnic>
+ <DBBPR08MB45385132F6FC09B4941B5706F7689@DBBPR08MB4538.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <DBBPR08MB45385132F6FC09B4941B5706F7689@DBBPR08MB4538.eurprd08.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If pci_setup_device() fails, the device name need be freed
-to avoid memory leak.
+On Mon, Aug 15, 2022 at 01:32:40AM +0000, Justin He wrote:
+> But is ghes_proc_in_irq() in the irq context which can invoke the notifier?
+> I described it in the commit log:
+> >To resolve the build dependency of ghes_edac_report_mem_error() for ghes,
+> >introduce a notifier which is registered by ghes_edac module. atomic
+> >notifier is used because ghes_proc_in_irq() is in the irq context.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/pci/probe.c | 1 +
- 1 file changed, 1 insertion(+)
+Ah, yes, there's that aspect. atomic it is.
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index c5286b027f00..0e947f24153e 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1976,6 +1976,7 @@ int pci_setup_device(struct pci_dev *dev)
- 	default:				    /* unknown header */
- 		pci_err(dev, "unknown header type %02x, ignoring device\n",
- 			dev->hdr_type);
-+		kfree_const(dev->dev.kobj.name);
- 		pci_release_of_node(dev);
- 		return -EIO;
- 
+Thx.
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
