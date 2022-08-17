@@ -2,111 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BEA2C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAB4C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbiHQHps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38334 "EHLO
+        id S233324AbiHQHqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233272AbiHQHpd (ORCPT
+        with ESMTP id S233329AbiHQHqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:45:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303D079EE2
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 00:45:32 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M70PL3qVHzhXWh;
-        Wed, 17 Aug 2022 15:43:18 +0800 (CST)
-Received: from CHINA (10.175.102.38) by canpemm500009.china.huawei.com
- (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 17 Aug
- 2022 15:45:29 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Akinobu Mita <akinobu.mita@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Wed, 17 Aug 2022 03:46:02 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529957C1F4;
+        Wed, 17 Aug 2022 00:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=45RsTvvQpAn/sSf9KQMAsIEwdB3TRL9b7yAQ8edqZtc=; b=rQtLOXCrBQhDRm/70fh1y3S2/5
+        Zvjv3iR9bXRxOX13MCcEc+zLzE1ul+eO189lBhcYzwcTX+W1j/mi2IgUa+iUyMVGaK8aYo36zJjSY
+        NkCmlQy650FpaTgpiFwTVE4INDiafqOmRl68kXZHmAHqlDDBq0ErZdxHYP6lyJAeElBUCv6Vt8FIY
+        bf/z+K5QWA5XTj32dh1I+lB8Kzy9/+y9UNrjbghtVzObo1Si4ugnWoJA85F98bM8STwICsN6Huv2z
+        pdHljpDabBsJ59lxHnBBhfJFWRny5gkRtg3Z4buBCxMiC6dFPr7tF7TLfLLlH38venKpOxQl61ZM/
+        T7NlV8ng==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oODkH-003CgF-VP; Wed, 17 Aug 2022 07:45:46 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4881A98007A; Wed, 17 Aug 2022 09:45:45 +0200 (CEST)
+Date:   Wed, 17 Aug 2022 09:45:45 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
         Nathan Chancellor <nathan@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4/4 -next] fault-injection: make stacktrace filter works as expected
-Date:   Wed, 17 Aug 2022 08:03:32 +0000
-Message-ID: <20220817080332.1052710-5-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817080332.1052710-1-weiyongjun1@huawei.com>
-References: <20220817080332.1052710-1-weiyongjun1@huawei.com>
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Subject: Re: Simplify load_unaligned_zeropad() (was Re: [GIT PULL] Ceph
+ updates for 5.20-rc1)
+Message-ID: <YvycqWVs5JbBR1D+@worktop.programming.kicks-ass.net>
+References: <CAHk-=wh1xHi-WeytuAK1-iSsR0wi=6e4-WgFq6ZPt8Z1mvqoNA@mail.gmail.com>
+ <Yvny9L3tw1EolqQ4@worktop.programming.kicks-ass.net>
+ <CAHk-=whnEN3Apb5gRXSZK7BM+MOby9VCZe3sDcW34Zme_wk3uA@mail.gmail.com>
+ <Yvqn8BqE7FdB6Ccd@worktop.programming.kicks-ass.net>
+ <CAHk-=wj6QaNkoNPA0jrW8F_=RNNb1jCsFF2QngNEQb_C=wMDPQ@mail.gmail.com>
+ <YvtPEA/9GV7GthZJ@worktop.programming.kicks-ass.net>
+ <CAHk-=wjZ0oC0__-kLX51jRwo4XgAQ9xJ=OeT5_=fiLxmDexFZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.102.38]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjZ0oC0__-kLX51jRwo4XgAQ9xJ=OeT5_=fiLxmDexFZw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-stacktrace filter is checked after others, such as fail-nth,
-interval and probability. This make it doesn't work well as
-expected.
+On Tue, Aug 16, 2022 at 10:57:45AM -0700, Linus Torvalds wrote:
 
-Fix to running stacktrace filter before other filters. It will
-speed up fault inject testing for driver modules.
+> > > +     if (insn_decode(&insn, (void *) regs->ip, len, INSN_MODE_KERN))
+> > > +             return false;
+> >
+> > We have insn_decode_kernel() for exactly this (very) common case.
+> 
+> I did that originally, and then I undid it in disgust, because that
+> interface is too simple.
+> 
+> In particular, it just uses MAX_INSN_SIZE blindly. Which I didn't want
+> to do when I actually had the instruction size.
+> 
+> Yes, yes, I also check the decode size after-the-fact, but I didn't
+> want the decoder to even look at the invalid bytes.
+> 
+> This exception case is about the data being at the end of the page, I
+> wanted the fixup to be aware of code being at the end of a page too.
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- lib/fault-inject.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+I don't want to argue this point too much; but I will anyway :-)
 
-diff --git a/lib/fault-inject.c b/lib/fault-inject.c
-index deca05e7c9b3..9dd1dd1d2610 100644
---- a/lib/fault-inject.c
-+++ b/lib/fault-inject.c
-@@ -105,10 +105,16 @@ static inline bool fail_stacktrace(struct fault_attr *attr)
- 
- bool should_fail(struct fault_attr *attr, ssize_t size)
- {
-+	bool stack_checked = false;
-+
- 	if (in_task()) {
- 		unsigned int fail_nth = READ_ONCE(current->fail_nth);
- 
- 		if (fail_nth) {
-+			if (!fail_stacktrace(attr))
-+				return false;
-+
-+			stack_checked = true;
- 			fail_nth--;
- 			WRITE_ONCE(current->fail_nth, fail_nth);
- 			if (!fail_nth)
-@@ -128,6 +134,9 @@ bool should_fail(struct fault_attr *attr, ssize_t size)
- 	if (atomic_read(&attr->times) == 0)
- 		return false;
- 
-+	if (!stack_checked && !fail_stacktrace(attr))
-+		return false;
-+
- 	if (atomic_read(&attr->space) > size) {
- 		atomic_sub(size, &attr->space);
- 		return false;
-@@ -142,9 +151,6 @@ bool should_fail(struct fault_attr *attr, ssize_t size)
- 	if (attr->probability <= prandom_u32() % 100)
- 		return false;
- 
--	if (!fail_stacktrace(attr))
--		return false;
--
- fail:
- 	fail_dump(attr);
- 
--- 
-2.34.1
+IMO if the decoder ends up out of bounds its a decoder bug either way
+around. That is, we *know* there is a full instruction at the given IP
+because we got into this exception path.
 
+( it would be possible to add further constraints on trapnr )
+
+Irrespective of the length constraint given to the decoder, it should
+not decode/access things past this instruction (without being careful
+about it).
+
+Anyway, I'm fine with the patch as you have it.
