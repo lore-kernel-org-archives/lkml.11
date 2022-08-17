@@ -2,138 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C89D2C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F82DC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240932AbiHQSlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
+        id S240251AbiHQSmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiHQSle (ORCPT
+        with ESMTP id S230051AbiHQSmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:41:34 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875249FAB8;
-        Wed, 17 Aug 2022 11:41:33 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id E96C55C0055;
-        Wed, 17 Aug 2022 14:41:32 -0400 (EDT)
-Received: from imap42 ([10.202.2.92])
-  by compute2.internal (MEProxy); Wed, 17 Aug 2022 14:41:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1660761692; x=
-        1660848092; bh=KBkAVrFUWUiLnYz1HgB/kktwNXCcCNFrJP92tOCbhDk=; b=i
-        kSCWfDhzh9hREGc9NnjtCI/XLmrpunPU3M5N8WxiUoMsnKo0cUDYKCcUIFKOTgtF
-        +6TFAc1M/ixDcswGt0aKJ9BSLoT1dKD4+ow6CxfhKhJ7nlC4o3I3PY/QYRMhy3+j
-        Lt03MeQ52D9lQpUfNbSjAeHh9+UbPXZxySSP2kFJM7ynMzbKUiE9qnrPcDB2vvTX
-        +BbhwhbMRuBoFiWU0npqrL0DCJVpGyTJ4956cIX8AxJ7IEkMResR4POpQ4Y1Zgt0
-        0gTLlz3Cf8ezcyPX7FUQ6ixRwFgGgkXeGwcEbQbxlBDuosZe0NX8CeRV4RIST2Z1
-        lFmBvg+71tN/LxHUMLuEA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660761692; x=
-        1660848092; bh=KBkAVrFUWUiLnYz1HgB/kktwNXCcCNFrJP92tOCbhDk=; b=U
-        Dy6EGmSK7gzMimqN2Np815myw8KzJqgcF72m++jcMXieKMudfuKtm4o4pIthssx1
-        jJzVD6Yc2FOrUaOe3zW/5cHKGqJLSLAMd4UksqbU6tjF2/11FDlL2GmqL6NQICYf
-        HQf7kdvQg5h01FPOw57CsTicUHiA8E+egEGCtA5cPqo9BatnyuL+zsOGziXAn2EZ
-        b/9N6bW7bXJM+l1vM5vMh7EFOtWs5vTu5GY5lz1P8DXI+2qNAcrf6OO9WmIE0bJy
-        RpcdZa6wUlwvTUl4HPNHLI3Ys6WGTnySymfYcKBaVG4I2dIomm4iQDFBO5DLRIEK
-        7eSzQdx0Xr0P+90lPHfdQ==
-X-ME-Sender: <xms:XDb9YnFIagB7A2cBaaQ9vILES5qUY8hgnO2VQhhYng81is1f3NxtKQ>
-    <xme:XDb9YkV6eLgxdJ0xqtrcFHxCIAGsWTc-K38ygMoLkemAoHyfBQQvIpjATGxsIH_zJ
-    SpE9gyB3yfAaj03rA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedguddvlecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculddvfedmnecujfgurhepofgfggfkjghffffhvfevufgtgfesthhq
-    redtreerjeenucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurd
-    ighiiiqeenucggtffrrghtthgvrhhnpeffheffhfdvfefgjeehfedviedvfeehgeefgeeu
-    jedvheeuteelkeevvdduvdeludenucffohhmrghinheplhhotghkrdhrvggrugenucevlh
-    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihu
-    uhhurdighiii
-X-ME-Proxy: <xmx:XDb9YpJlIk5i-V5nCszbe21XnXqF-pO9TMHo9Nw8cXdqfBlWoNl2nw>
-    <xmx:XDb9YlHXYa8YJJP43LNqim97aNApWqDSToNK0K1TjcFnMEeeSfZUNQ>
-    <xmx:XDb9YtU3C4346XXEp4OB1tOcRRXLxP952bpCHiZ0SSkOisQqX4-72Q>
-    <xmx:XDb9YprWXRms0hWDnATlbCgWhPHNu29K7_MI2QvQkq_MkujLAU0zdQ>
-Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 90270BC0075; Wed, 17 Aug 2022 14:41:32 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <668406b9-714f-4ade-889d-051cf42ceefc@www.fastmail.com>
-In-Reply-To: <20220817183453.GA24008@breakpoint.cc>
-References: <cover.1660592020.git.dxu@dxuuu.xyz>
- <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
- <871qth87r1.fsf@toke.dk> <20220815224011.GA9821@breakpoint.cc>
- <5c7ac2ab-942f-4ee7-8a9c-39948a40681c@www.fastmail.com>
- <20220817183453.GA24008@breakpoint.cc>
-Date:   Wed, 17 Aug 2022 12:41:12 -0600
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Florian Westphal" <fw@strlen.de>
-Cc:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>, pablo@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Wed, 17 Aug 2022 14:42:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594CFA00C6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:42:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660761729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zGxwI/HJK8YvsL38NfBt47qZQNhHEBbbdeHKaJUV0vE=;
+        b=L2LPWzrGerol0IQHBxA5dmJZJKHFZeAY/jDYzTuxhFqf3ewmrjvxbNel50IU0QCDqEBb+F
+        KvN5T7VhMe2WNf/Y4pJalJdLmfQhueLQ93fTulK0P9uX3n3gR5DWRQu2+cxJn/9/6lnyS2
+        vu0Pk85E66QIfgM/0dVYVaBiE6MHuBA=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-347-IhJ676m1OGGgI4p6W7EdZA-1; Wed, 17 Aug 2022 14:42:05 -0400
+X-MC-Unique: IhJ676m1OGGgI4p6W7EdZA-1
+Received: by mail-qv1-f69.google.com with SMTP id ly9-20020a0562145c0900b00495bcb17d9cso2790049qvb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:42:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=zGxwI/HJK8YvsL38NfBt47qZQNhHEBbbdeHKaJUV0vE=;
+        b=toWEWoYa2qtya6VLk53z8kvD8IDWO/AXxRlV8e10F8R4ZhdU5gkbDVo5zTXzlzOziQ
+         01vEv0mqomk20GZ0b7EYhQZNs+tcAG5O/Jv3mJcy4lVGVlrEol6Xx3IA1VUAdeZ/bCtC
+         e1KKmUg3eUtY7IRyc4sfgt4Ts+HjAy40OOxnvFlSdSEqgstuICFQ84JIj832N9zVVr+/
+         OzEheFUL4gd0rusF0hDmmVRTfTnPsepI7fQoKhK93QvGlfZZu4p/QlMHJei3iPobI99V
+         AbM4OcnJ7vpvty0uWGQaWUFgNbHvc3G3O8BYEvBWuXZl4HRbyXpZeH6NRFxcMz3cqSYs
+         YKXA==
+X-Gm-Message-State: ACgBeo025lLlG+aHndX9bd9LMcHMp/w5tmYgg5Zs2ZpB+/U6RLHITW93
+        gUI/66DF2JrgsKxb1eTR6CmyFBJAHExQWZNVsBu3axmKafuV8RNk5fDU7uo/m5fBhvQ1wYB2lwQ
+        9can1GtgLX9a68MgsKFUmTmPB
+X-Received: by 2002:ad4:4a73:0:b0:474:6e80:e1cb with SMTP id cn19-20020ad44a73000000b004746e80e1cbmr22951892qvb.127.1660761724871;
+        Wed, 17 Aug 2022 11:42:04 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6glVEO9fSvKAq1HJGMpFnpPZlbXHRAm3M0HzZs/KuTWZEFuL9lo4h5V4gSz7ZZrHoWpJppyw==
+X-Received: by 2002:ad4:4a73:0:b0:474:6e80:e1cb with SMTP id cn19-20020ad44a73000000b004746e80e1cbmr22951879qvb.127.1660761724629;
+        Wed, 17 Aug 2022 11:42:04 -0700 (PDT)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id b21-20020ae9eb15000000b006bb6c63114fsm3797780qkg.110.2022.08.17.11.42.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 11:42:04 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 14:42:02 -0400
+From:   Brian Foster <bfoster@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Alexey Dobriyan <adobriyan@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] proc: save LOC in vsyscall test
+Message-ID: <Yv02eoqPehWoDEVM@bfoster>
+References: <YvoWzAn5dlhF75xa@localhost.localdomain>
+ <YvuDMGHcNtjhhMuq@bfoster>
+ <20220817112802.29b92729e25313eeec2d44d3@linux-foundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817112802.29b92729e25313eeec2d44d3@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022, at 12:34 PM, Florian Westphal wrote:
-> Daniel Xu <dxu@dxuuu.xyz> wrote:
->> On Mon, Aug 15, 2022, at 4:40 PM, Florian Westphal wrote:
->> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org> wrote:
->> >> > Support direct writes to nf_conn:mark from TC and XDP prog types=
-. This
->> >> > is useful when applications want to store per-connection metadat=
-a. This
->> >> > is also particularly useful for applications that run both bpf a=
-nd
->> >> > iptables/nftables because the latter can trivially access this m=
-etadata.
->> >> >
->> >> > One example use case would be if a bpf prog is responsible for a=
-dvanced
->> >> > packet classification and iptables/nftables is later used for ro=
-uting
->> >> > due to pre-existing/legacy code.
->> >> >
->> >> > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->> >>=20
->> >> Didn't we agree the last time around that all field access should =
-be
->> >> using helper kfuncs instead of allowing direct writes to struct nf=
-_conn?
->> >
->> > I don't see why ct->mark needs special handling.
->> >
->> > It might be possible we need to change accesses on nf/tc side to use
->> > READ/WRITE_ONCE though.
->>=20
->> I reviewed some of the LKMM literature and I would concur that
->> READ/WRITE_ONCE() is necessary. Especially after this patchset.
->>=20
->> However, it's unclear to me if this is a latent issue. IOW: is reading
->> ct->mark protected by a lock? I only briefly looked but it doesn't
->> seem like it.
->
-> No, its not protected by a lock.  READ/WRITE_ONCE is unrelated to your
-> patchset, this is a pre-existing "bug".
+On Wed, Aug 17, 2022 at 11:28:02AM -0700, Andrew Morton wrote:
+> On Tue, 16 Aug 2022 07:44:48 -0400 Brian Foster <bfoster@redhat.com> wrote:
+> 
+> > On Mon, Aug 15, 2022 at 12:50:04PM +0300, Alexey Dobriyan wrote:
+> > > From: Brian Foster <bfoster@redhat.com>
+> > > 
+> > > Do one fork in vsyscall detection code and let SIGSEGV handler exit and
+> > > carry information to the parent saving LOC.
+> > > 
+> > > 	[
+> > > 		redo original patch,
+> > > 		delete unnecessary variables,
+> > > 		minimise code changes.
+> > > 					--adobriyan
+> > > 	]
+> > > 
+> > > Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> > > ---
+> > 
+> > LGTM and passes my quick tests, thanks!
+> > 
+> > FWIW:
+> > 
+> > Reviewed-by: Brian Foster <bfoster@redhat.com>
+> 
+> It would be appropriate for us to include your Signed-off-by.  Please
+> send one along?
+> 
 
-Thanks for confirming. Since it's pre-existing I will send out a followup
-patchset then.
+Sure, feel free to use whichever tags make the most sense:
 
-Thanks,
-Daniel
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+
