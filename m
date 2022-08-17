@@ -2,117 +2,384 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 070D6C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3620CC2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbiHQIOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:14:34 -0400
+        id S234719AbiHQIOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:14:40 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234506AbiHQIO0 (ORCPT
+        with ESMTP id S234531AbiHQIO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 04:14:26 -0400
+        Wed, 17 Aug 2022 04:14:28 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013954670;
-        Wed, 17 Aug 2022 01:14:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4B25300F
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:14:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660724060; x=1692260060;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WSvGEjuAiVX5neKeHcOX4QCFy/+sM1+tD4NRxZl6qQA=;
-  b=JTsEOZVYFxw/zel/cY+7au8ZYbfFgiyW8BpEE/RUR48aGqGmMmQX+Knf
-   /bGxMncOt7zy3uwaU3iydMNwKrm/ut8+a8xWYqGMGKcLQED5hLYoPmJYp
-   ThQ88WGRIM8pYszql+NOeiQ8bLC+uPt3FRArew9pTZ5bFHvedQcqdcxr5
-   EnXcpgZsTCOEidXU0hFJCJ8FscwglTb9O1bUKO+uIOg6oT14xMYVShlM+
-   7FTbRJFjYX8LsLyL1P9nN4xG9P9G0Wctqeu/qGhgIMc4sEJOAC43KKkb1
-   9mctERyJEL5fega9tZUHlN1r2wBLse45bp05lv80QIIO8NQ+wvXUPbIe/
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293228766"
+  t=1660724061; x=1692260061;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YgX2oWE22h0TBxS39QPKndxaK0c4rvOlVqgEtY2CsnQ=;
+  b=HQ72BfIPh56rx7JMotpdG7migocT0TaHG22TScwVTihsGx/g7ClMZ6FZ
+   hVg9YPpANQu7ROZ3aLQSx/wH3E80vb0BrXenFD5D9FKee92zDwqy71EIb
+   3hwbpiB64OR2OEG28HJEevfIY+jYGhiQB8890NoQPKVLwNQH0oShMuGM6
+   j9prEkIPqRfHE3Mcq47/2qhdRTLXm4TNNFr1g60hvnJsvpEJQ8n/O1L8m
+   cxoOonBckupI0MTAiYh7/c0ZfcYX9NHEqHuO2ThnNPXc4I/BoNVCVub+C
+   EHe9f+RVlxfizrLpAvdzIetawuyO8wsqDoDxsOYtKgbJD+2aEKmpYqWwL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293228776"
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="293228766"
+   d="scan'208";a="293228776"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:16 -0700
-X-ExtLoop1: 1
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:21 -0700
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="583668044"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 01:14:14 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOEBq-0000is-0o;
-        Wed, 17 Aug 2022 08:14:14 +0000
-Date:   Wed, 17 Aug 2022 16:13:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>, yin31149@gmail.com
-Cc:     kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, dhowells@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2] net: Fix suspicious RCU usage in
- bpf_sk_reuseport_detach()
-Message-ID: <202208171521.JiKYmnhP-lkp@intel.com>
-References: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
+   d="scan'208";a="583668065"
+Received: from yhuang6-mobl1.sh.intel.com ([10.238.6.172])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:18 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>
+Subject: [PATCH -V3 0/8] migrate_pages(): fix several bugs in error path
+Date:   Wed, 17 Aug 2022 16:14:00 +0800
+Message-Id: <20220817081408.513338-1-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+From: "Huang, Ying" <ying.huang@intel.com>
 
-I love your patch! Yet something to improve:
+During review the code of migrate_pages() and build a test program for
+it.  Several bugs in error path are identified and fixed in this
+series.
 
-[auto build test ERROR on net/master]
+Most patches are tested via
 
-url:    https://github.com/intel-lab-lkp/linux/commits/David-Howells/net-Fix-suspicious-RCU-usage-in-bpf_sk_reuseport_detach/20220816-212744
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git ae806c7805571a9813e41bf6763dd08d0706f4ed
-config: x86_64-rhel-8.3-kvm (https://download.01.org/0day-ci/archive/20220817/202208171521.JiKYmnhP-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/fe74fdc1e7fe8aa84006265deb7b55f40bcc8736
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review David-Howells/net-Fix-suspicious-RCU-usage-in-bpf_sk_reuseport_detach/20220816-212744
-        git checkout fe74fdc1e7fe8aa84006265deb7b55f40bcc8736
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+- Apply error-inject.patch in Linux kernel
+- Compile test-migrate.c (with -lnuma)
+- Test with test-migrate.sh
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+error-inject.patch, test-migrate.c, and test-migrate.sh are as below.
+It turns out that error injection is an important tool to fix bugs in
+error path.
 
-All errors (new ones prefixed by >>):
+Changes:
 
-   ld: kernel/bpf/reuseport_array.o: in function `bpf_sk_reuseport_detach':
->> kernel/bpf/reuseport_array.c:28: undefined reference to `lockdep_is_held'
+v3:
 
+- Rebased on mm-unstable (20220816)
 
-vim +28 kernel/bpf/reuseport_array.c
+- Added Baolin's patch to avoid retry 10 times for fail to migrate THP subpages
 
-    20	
-    21	/* The caller must hold the reuseport_lock */
-    22	void bpf_sk_reuseport_detach(struct sock *sk)
-    23	{
-    24		struct sock __rcu **socks;
-    25	
-    26		write_lock_bh(&sk->sk_callback_lock);
-    27		socks = __rcu_dereference_sk_user_data_with_flags_check(
-  > 28			sk, SK_USER_DATA_BPF, lockdep_is_held(&sk->sk_callback_lock));
-    29		if (socks) {
-    30			WRITE_ONCE(sk->sk_user_data, NULL);
-    31			/*
-    32			 * Do not move this NULL assignment outside of
-    33			 * sk->sk_callback_lock because there is
-    34			 * a race with reuseport_array_free()
-    35			 * which does not hold the reuseport_lock.
-    36			 */
-    37			RCU_INIT_POINTER(*socks, NULL);
-    38		}
-    39		write_unlock_bh(&sk->sk_callback_lock);
-    40	}
-    41	
+v2:
 
+- Rebased on v5.19-rc5
+
+- Addressed some comments from Baolin, Thanks!
+
+- Added reviewed-by tags
+
+Best Regards,
+Huang, Ying
+
+------------------------- error-inject.patch -------------------------
+From 295ea21204f3f025a041fe39c68a2eaec8313c68 Mon Sep 17 00:00:00 2001
+From: Huang Ying <ying.huang@intel.com>
+Date: Tue, 21 Jun 2022 11:08:30 +0800
+Subject: [PATCH] migrate_pages: error inject
+
+---
+ mm/migrate.c | 58 +++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 399904015d23..87d47064ec6c 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -337,6 +337,42 @@ void pmd_migration_entry_wait(struct mm_struct *mm, pmd_t *pmd)
+ }
+ #endif
+ 
++#define EI_MP_ENOSYS		0x0001
++#define EI_MP_THP_ENOMEM	0x0002
++#define EI_MP_NP_ENOMEM		0x0004
++#define EI_MP_EAGAIN		0x0008
++#define EI_MP_EOTHER		0x0010
++#define EI_MP_NOSPLIT		0x0020
++#define EI_MP_SPLIT_FAIL	0x0040
++#define EI_MP_EAGAIN_PERM	0x0080
++#define EI_MP_EBUSY		0x0100
++
++static unsigned int ei_migrate_pages;
++
++module_param(ei_migrate_pages, uint, 0644);
++
++static bool ei_thp_migration_supported(void)
++{
++	if (ei_migrate_pages & EI_MP_ENOSYS)
++		return false;
++	else
++		return thp_migration_supported();
++}
++
++static int ei_trylock_page(struct page *page)
++{
++	if (ei_migrate_pages & EI_MP_EAGAIN)
++		return 0;
++	return trylock_page(page);
++}
++
++static int ei_split_huge_page_to_list(struct page *page, struct list_head *list)
++{
++	if (ei_migrate_pages & EI_MP_SPLIT_FAIL)
++		return -EBUSY;
++	return split_huge_page_to_list(page, list);
++}
++
+ static int expected_page_refs(struct address_space *mapping, struct page *page)
+ {
+ 	int expected_count = 1;
+@@ -368,6 +404,9 @@ int folio_migrate_mapping(struct address_space *mapping,
+ 		if (folio_ref_count(folio) != expected_count)
+ 			return -EAGAIN;
+ 
++		if (ei_migrate_pages & EI_MP_EAGAIN_PERM)
++			return -EAGAIN;
++
+ 		/* No turning back from here */
+ 		newfolio->index = folio->index;
+ 		newfolio->mapping = folio->mapping;
+@@ -929,7 +968,7 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 	struct anon_vma *anon_vma = NULL;
+ 	bool is_lru = !__PageMovable(page);
+ 
+-	if (!trylock_page(page)) {
++	if (!ei_trylock_page(page)) {
+ 		if (!force || mode == MIGRATE_ASYNC)
+ 			goto out;
+ 
+@@ -952,6 +991,11 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 		lock_page(page);
+ 	}
+ 
++	if (ei_migrate_pages & EI_MP_EBUSY) {
++		rc = -EBUSY;
++		goto out_unlock;
++	}
++
+ 	if (PageWriteback(page)) {
+ 		/*
+ 		 * Only in the case of a full synchronous migration is it
+@@ -1086,7 +1130,7 @@ static int unmap_and_move(new_page_t get_new_page,
+ 	int rc = MIGRATEPAGE_SUCCESS;
+ 	struct page *newpage = NULL;
+ 
+-	if (!thp_migration_supported() && PageTransHuge(page))
++	if (!ei_thp_migration_supported() && PageTransHuge(page))
+ 		return -ENOSYS;
+ 
+ 	if (page_count(page) == 1) {
+@@ -1102,6 +1146,11 @@ static int unmap_and_move(new_page_t get_new_page,
+ 		goto out;
+ 	}
+ 
++	if ((ei_migrate_pages & EI_MP_THP_ENOMEM) && PageTransHuge(page))
++		return -ENOMEM;
++	if ((ei_migrate_pages & EI_MP_NP_ENOMEM) && !PageTransHuge(page))
++		return -ENOMEM;
++
+ 	newpage = get_new_page(page, private);
+ 	if (!newpage)
+ 		return -ENOMEM;
+@@ -1305,7 +1354,7 @@ static inline int try_split_thp(struct page *page, struct list_head *split_pages
+ 	int rc;
+ 
+ 	lock_page(page);
+-	rc = split_huge_page_to_list(page, split_pages);
++	rc = ei_split_huge_page_to_list(page, split_pages);
+ 	unlock_page(page);
+ 
+ 	return rc;
+@@ -1358,6 +1407,9 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 	bool nosplit = (reason == MR_NUMA_MISPLACED);
+ 	bool no_subpage_counting = false;
+ 
++	if (ei_migrate_pages & EI_MP_NOSPLIT)
++		nosplit = true;
++
+ 	trace_mm_migrate_pages_start(mode, reason);
+ 
+ thp_subpage_migration:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
+------------------------- test-migrate.c -------------------------------------
+ #define _GNU_SOURCE
+
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+ #include <errno.h>
+
+ #include <fcntl.h>
+ #include <sys/uio.h>
+ #include <sys/mman.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <numaif.h>
+ #include <numa.h>
+
+ #ifndef MADV_FREE
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+ #endif
+
+ #define ONE_MB		(1024 * 1024)
+ #define MAP_SIZE	(16 * ONE_MB)
+ #define THP_SIZE	(2 * ONE_MB)
+ #define THP_MASK	(THP_SIZE - 1)
+
+ #define ERR_EXIT_ON(cond, msg)					\
+	 do {							\
+		 int __cond_in_macro = (cond);			\
+		 if (__cond_in_macro)				\
+			 error_exit(__cond_in_macro, (msg));	\
+	 } while (0)
+
+ void error_msg(int ret, int nr, int *status, const char *msg)
+ {
+	 int i;
+
+	 fprintf(stderr, "Error: %s, ret : %d, error: %s\n",
+		 msg, ret, strerror(errno));
+
+	 if (!nr)
+		 return;
+	 fprintf(stderr, "status: ");
+	 for (i = 0; i < nr; i++)
+		 fprintf(stderr, "%d ", status[i]);
+	 fprintf(stderr, "\n");
+ }
+
+ void error_exit(int ret, const char *msg)
+ {
+	 error_msg(ret, 0, NULL, msg);
+	 exit(1);
+ }
+
+ void *addr_thp;
+ void *addr;
+ char *pn;
+ char *pn1;
+ char *pn2;
+ char *pn3;
+ void *pages[4];
+ int status[4];
+
+ void create_map(bool thp)
+ {
+	 int ret;
+	 void *p;
+
+	 p = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE,
+		  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	 ERR_EXIT_ON(p == MAP_FAILED, "mmap");
+	 if (thp) {
+		 ret = madvise(p, MAP_SIZE, MADV_HUGEPAGE);
+		 ERR_EXIT_ON(ret, "advise hugepage");
+		 addr_thp = p;
+	 } else {
+		 addr = p;
+	 }
+ }
+
+ void prepare()
+ {
+	 int ret;
+	 struct iovec iov;
+
+	 if (addr) {
+		 munmap(addr_thp, MAP_SIZE);
+		 munmap(addr, MAP_SIZE);
+	 }
+
+	 create_map(true);
+	 create_map(false);
+
+	 pn = (char *)(((unsigned long)addr_thp + THP_SIZE) & ~THP_MASK);
+	 pn1 = pn + THP_SIZE;
+	 pages[0] = pn;
+	 pages[1] = pn1;
+	 *pn = 1;
+
+	 pn2 = (char *)(((unsigned long)addr + THP_SIZE) & ~THP_MASK);
+	 pn3 = pn2 + THP_SIZE;
+	 pages[2] = pn2;
+	 pages[3] = pn3;
+
+	 status[0] = status[1] = status[2] = status[3] = 1024;
+ }
+
+ void test_migrate()
+ {
+	 int ret;
+	 int nodes[4] = { 1, 1, 1, 1 };
+	 pid_t pid = getpid();
+
+	 prepare();
+	 *pn1 = 1;
+	 *pn2 = 1;
+	 *pn3 = 1;
+	 ret = move_pages(pid, 4, pages, nodes, status, MPOL_MF_MOVE_ALL);
+	 error_msg(ret, 4, status, "move 4 pages");
+ }
+
+ int main(int argc, char *argv[])
+ {
+	 numa_run_on_node(0);
+
+	 test_migrate();
+
+	 return 0;
+ }
+--------------------- test-migrate.sh ----------------------------
+ #!/bin/bash
+
+ PARAM=/sys/module/migrate/parameters/ei_migrate_pages
+
+ get_vmstat()
+ {
+	 echo ================= $* ================
+	 cat /proc/vmstat | grep -e '\(pgmigrate\|thp_migration\)'
+ }
+
+ simple_test()
+ {
+	 echo $1 > $PARAM
+	 shift
+	 get_vmstat before $*
+	 ./test-migrate
+	 get_vmstat after $*
+ }
+
+ #define EI_MP_ENOSYS		0x0001
+ #define EI_MP_THP_ENOMEM	0x0002
+ #define EI_MP_NP_ENOMEM		0x0004
+ #define EI_MP_EAGAIN		0x0008
+ #define EI_MP_EOTHER		0x0010
+ #define EI_MP_NOSPLIT		0x0020
+ #define EI_MP_SPLIT_FAIL	0x0040
+ #define EI_MP_EAGAIN_PERM	0x0080
+ #define EI_MP_EBUSY		0x0100
+
+ simple_test 0x26 ENOMEM
+ simple_test 0x81 retry THP subpages
+ simple_test 0xc1 ENOSYS
+ simple_test 0x101 ENOSYS
