@@ -2,165 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B96C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FAEC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240218AbiHQOlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        id S240266AbiHQOlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240298AbiHQOkG (ORCPT
+        with ESMTP id S240486AbiHQOkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:40:06 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F9712A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:39:28 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HEJvtw017836;
-        Wed, 17 Aug 2022 14:38:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=GtGdwtxeHCtaMIpyjP57lY6ndIfMIOAefiaokaG9/Fg=;
- b=Dgs6iiKZzPFx1a2UNhbkSIIgK48KIxc49fvIdGUjR9hURY0IGstBIwGHSzYhLWtbF+nx
- X/icIzbgh3KUwwhiuaUDfBKeLz9hDCqNJk/8e6SRXfI2fKlKtSbHYA+G7w20FXiHmWpu
- qAuCGXi+GJe412SCf0iPcvZH6TpyVpQg86ok+3hWiOOb+AyeJnoalskTswKMR2fVX3Wq
- 9nwkA7CrKkY9Nh3xk6rhvQT59FLpQYgP+HS0iWA+O7qQnGG45DSsplKzeiUr5DzsNdSk
- VZO1cxvK1hJZ47YUvv6Tg2iV3c0ASm3NeQCV84lZeSsjAckLiAE7k1ogRlXTZ1sXFMnV +g== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j120j8np9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Aug 2022 14:38:50 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27HEadqg028218;
-        Wed, 17 Aug 2022 14:38:45 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3hx3k93fbm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Aug 2022 14:38:45 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27HEZuIJ33423846
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Aug 2022 14:35:56 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 038365204E;
-        Wed, 17 Aug 2022 14:38:42 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.13.253])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9EB6652051;
-        Wed, 17 Aug 2022 14:38:41 +0000 (GMT)
-Date:   Wed, 17 Aug 2022 16:38:38 +0200
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
-        lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>
-Subject: Re: arch/s390/kvm/gaccess.c:859 guest_range_to_gpas() error:
- uninitialized symbol 'prot'.
-Message-ID: <20220817163838.5469ca53@p-imbrenda>
-In-Reply-To: <f27b0f3a-5e89-1fb1-ac23-ed896ec7150f@linux.ibm.com>
-References: <202208140141.4uzWszG4-lkp@intel.com>
-        <f27b0f3a-5e89-1fb1-ac23-ed896ec7150f@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: rU1js-jorhGq9oxAj84lh4ttk8FwYySh
-X-Proofpoint-GUID: rU1js-jorhGq9oxAj84lh4ttk8FwYySh
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 17 Aug 2022 10:40:39 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D085FF68;
+        Wed, 17 Aug 2022 07:40:15 -0700 (PDT)
+Received: from mail-ej1-f47.google.com ([209.85.218.47]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N14xe-1nMpbb34jC-012VSC; Wed, 17 Aug 2022 16:40:13 +0200
+Received: by mail-ej1-f47.google.com with SMTP id j8so24887380ejx.9;
+        Wed, 17 Aug 2022 07:40:13 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2gepU2aWElGKEdBcM0SZdXdmyYsWY+oqu1nmrwoclIrH8jdyL/
+        Uz8GkDdQaBuYHR87akMjfPLkwQmwsn2edCKzvAI=
+X-Google-Smtp-Source: AA6agR7iG7b/sKnfv3rtR0wMkiNVbuKu4gohq2MlJovs7t4zv9/h1/ech5e7m293ULb6jtgNsC4wsmH5KCjGWqjMolI=
+X-Received: by 2002:a17:907:6da8:b0:730:8ed5:2df8 with SMTP id
+ sb40-20020a1709076da800b007308ed52df8mr16850681ejc.75.1660747213344; Wed, 17
+ Aug 2022 07:40:13 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-17_09,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 mlxscore=0 priorityscore=1501 clxscore=1011 phishscore=0
- impostorscore=0 suspectscore=0 bulkscore=0 spamscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208170057
+References: <20220802015052.10452-1-ojeda@kernel.org> <20220802015052.10452-28-ojeda@kernel.org>
+In-Reply-To: <20220802015052.10452-28-ojeda@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 17 Aug 2022 16:39:57 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0jqhGY9E85VC9gNem5q6-dWeq0H6-7bhJopinMnLtOKQ@mail.gmail.com>
+Message-ID: <CAK8P3a0jqhGY9E85VC9gNem5q6-dWeq0H6-7bhJopinMnLtOKQ@mail.gmail.com>
+Subject: Re: [PATCH v8 27/31] Kbuild: add Rust support
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Miguel Cano <macanroj@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Gary Guo <gary@garyguo.net>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Borislav Petkov <bp@alien8.de>,
+        linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>,
+        Martin Rodriguez Reboredo <yakoyoku@gmail.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>, x86@kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Ingo Molnar <mingo@redhat.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        rust-for-linux@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-um@lists.infradead.org,
+        =?UTF-8?Q?Bj=C3=83B_6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Daniel Xu <dxu@dxuuu.xyz>, David Gow <davidgow@google.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        linux-arm-kernel@lists.infradead.org,
+        Tiago Lam <tiagolam@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Richard Weinberger <richard@nod.at>,
+        Finn Behrens <me@kloenk.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:tVzw5+z9RodDD21jtXQCFgO607eyohyIMOrWmsXL/aDjp4s+CRv
+ l24azQbCM+GbjsQ0bt0M1q2TGktvETxpOKTJX8zIhUKMgmX6VjnNNvSMA+hLMZyXu2BOan1
+ rtuPt3KDtNuPQ2JniYUasS88+1me0zC+JupNCzFmC6SVN10BUJxX1LeK6U/dUR41BwA65XS
+ P2zHHW5gySz9QBkAYfMRQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IU4fUE6Y81o=:oiCN1TqVZ2a8Z2BGXy9GRK
+ R62ORgAfkEIyHLXprrynxmcYh4c/bjPc9rpdD6YQ7s0KPASQxJzNGt739utispl1oBjFqWUVw
+ TkdgqMXx4vDhhffWghclQH8KqNVhhOc1EdiFm/Arr8k1QxtjFXelHA4IJQwlr9KqLiiSoK1ij
+ 7qryClrQ+9snGR7m41V4pRrBOKl2jUeZHyPe2zs0joXSYZoRoxKla3oxeArBsGOeWGBohQORG
+ IIiuJMDc2HOMrzzGDHJQXYfX9WXFKTG7ikA257j92gYJIH1ZuGJtLlbQNSF1Gqdf0Jo5mYiQp
+ KOGecopeE+f/5BBy5FAa+N02g7P7OZWJuFJ7oNFa2ONhwPbV5oZIRGbsyeEUqerYToiClj+A1
+ Y/mtJanJuhxL1anUSQ6bpULcGeFTK59+QEg6BxR1ap89SoOg/UrLU7mSOEOG+NUbRzAsh4zRo
+ 7Qhi0LmIdv56N/Wi00RH+kmZYHyrdTNj/zYR0MsxlbgLNsoeB/t9SUX7tj4mjs/WrXegUvH5e
+ DQpL0T8WOppt7pk0qoE9bmp4Hc8+aT2KR/hi0pdlHwSz0bn4b4yuwGCqwHCoIq6ta9IREMlp6
+ EI8ceFq7u8GLk5ZHwUT48rwGzlMTer8kDI0vGMPgCnYuc2l2bxGOdELMOX3fbqsHs6dgfq41a
+ YouZHxBSk/Sa5w57oLGHBZYaqsilJzrHNfN3Ku6BkyITl4SE1Rd4yQTSlUawU2G6lT8gwD/k5
+ Rg/whtDaGEfix1wMHSt02+43d8VHQI0tpnDvKvcWJErmkhaJYSZ75rCEennjGLWUxl5VXInph
+ 0fmFQVqt7Di1NQhWvwOOibofPnZk0GdHnk4EvjwzPLF7Zbu13GwV89QKvLTTHiAIFKfqe87il
+ zL6uNyNmq5mXQC1F1TQA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 12:30:11 +0200
-Janis Schoetterl-Glausch <scgl@linux.ibm.com> wrote:
+On Tue, Aug 2, 2022 at 3:50 AM Miguel Ojeda <ojeda@kernel.org> wrote:
+>
+> +# These flags apply to all Rust code in the tree, including the kernel and
+> +# host programs.
+> +export rust_common_flags := --edition=2021 \
+> +                           -Zbinary_dep_depinfo=y \
+> +                           -Dunsafe_op_in_unsafe_fn -Drust_2018_idioms \
+> +                           -Dunreachable_pub -Dnon_ascii_idents \
+> +                           -Wmissing_docs \
+> +                           -Drustdoc::missing_crate_level_docs \
+> +                           -Dclippy::correctness -Dclippy::style \
+> +                           -Dclippy::suspicious -Dclippy::complexity \
+> +                           -Dclippy::perf \
+> +                           -Dclippy::let_unit_value -Dclippy::mut_mut \
+> +                           -Dclippy::needless_bitwise_bool \
+> +                           -Dclippy::needless_continue \
+> +                           -Wclippy::dbg_macro
 
-> On 8/15/22 09:23, Dan Carpenter wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
-> > commit: 7faa543df19bf62d4583a64d3902705747f2ad29 KVM: s390: gaccess: Refactor access address range check
-> > config: s390-randconfig-m031-20220812 (https://download.01.org/0day-ci/archive/20220814/202208140141.4uzWszG4-lkp@intel.com/config)
-> > compiler: s390-linux-gcc (GCC) 12.1.0
-> > 
-> > If you fix the issue, kindly add following tag where applicable
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > 
-> > smatch warnings:
-> > arch/s390/kvm/gaccess.c:859 guest_range_to_gpas() error: uninitialized symbol 'prot'.
-> > 
-> > vim +/prot +859 arch/s390/kvm/gaccess.c
-> > 
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  831  static int guest_range_to_gpas(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  832  			       unsigned long *gpas, unsigned long len,
-> > 92c9632119b67f David Hildenbrand        2015-11-16  833  			       const union asce asce, enum gacc_mode mode)
-> > 2293897805c2fe Heiko Carstens           2014-01-01  834  {
-> > 2293897805c2fe Heiko Carstens           2014-01-01  835  	psw_t *psw = &vcpu->arch.sie_block->gpsw;
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  836  	unsigned int offset = offset_in_page(ga);
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  837  	unsigned int fragment_len;
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  838  	int lap_enabled, rc = 0;
-> > 6ae1574c2a24ee Christian Borntraeger    2017-06-07  839  	enum prot_type prot;
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  840  	unsigned long gpa;
-> > 2293897805c2fe Heiko Carstens           2014-01-01  841  
-> > 75a1812230ad7a Alexander Yarygin        2015-01-22  842  	lap_enabled = low_address_protection_enabled(vcpu, asce);
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  843  	while (min(PAGE_SIZE - offset, len) > 0) {
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  844  		fragment_len = min(PAGE_SIZE - offset, len);
-> > 2293897805c2fe Heiko Carstens           2014-01-01  845  		ga = kvm_s390_logical_to_effective(vcpu, ga);
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  846  		if (mode == GACC_STORE && lap_enabled && is_low_address(ga))
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  847  			return trans_exc(vcpu, PGM_PROTECTION, ga, ar, mode,
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  848  					 PROT_TYPE_LA);
-> > a752598254016d Heiko Carstens           2017-06-03  849  		if (psw_bits(*psw).dat) {
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  850  			rc = guest_translate(vcpu, ga, &gpa, asce, mode, &prot);
-> > 2293897805c2fe Heiko Carstens           2014-01-01  851  			if (rc < 0)
-> > 2293897805c2fe Heiko Carstens           2014-01-01  852  				return rc;
-> > 2293897805c2fe Heiko Carstens           2014-01-01  853  		} else {
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  854  			gpa = kvm_s390_real_to_abs(vcpu, ga);
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  855  			if (kvm_is_error_gpa(vcpu->kvm, gpa))
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  856  				rc = PGM_ADDRESSING;
-> >                                                                                         ^^^^^^^^^^^^^^^^^^^^
-> > 
-> > "rc" set but "prot" not initialized.  
-> 
-> prot is only used in case of PGM_PROTECTION.
-> Because of that, we could initialize prot to an arbitrary value, but that seems misleading and a bit ugly to me.
-> Alternatively, we could introduce a PROT_NONE.
-> Or we do nothing, since there is no actual problem.
-> @Janosch, @Claudio, what do you think?
+Hi Miguel,
 
-I agree that this is not a bug.
+I tried enabling rust support in the gcc builds I provide at
+https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/arm64/12.1.0/
+to make this more accessible, but it appears that the command line
+options here are not portable:
 
-It does look ugly, though, and all reasonable solutions are also ugly
-(each for a different reason).
+ /home/arnd/cross/x86_64/gcc-12.1.0+rust-nolibc/x86_64-linux/bin/x86_64-linux-gccrs
+--edition=2021 -Zbinary_dep_depinfo=y -Dunsafe_op_in_unsafe_fn
+-Drust_2018_idioms -Dunreachable_pub -Dnon_ascii_idents -Wmissing_docs
+-Drustdoc::missing_crate_level_docs -Dclippy::correctness
+-Dclippy::style -Dclippy::suspicious -Dclippy::complexity
+-Dclippy::perf -Dclippy::let_unit_value -Dclippy::mut_mut
+-Dclippy::needless_bitwise_bool -Dclippy::needless_continue
+-Wclippy::dbg_macro -O -Cstrip=debuginfo -Zallow-features=
+--emit=dep-info,link --out-dir=scripts/
+/git/arm-soc/scripts/generate_rust_target.rs; mv
+scripts/generate_rust_target.d scripts/.generate_rust_target.d; sed -i
+'/^#/d' scripts/.generate_rust_target.d
+x86_64-linux-gccrs: error: unrecognized command-line option
+'--edition=2021'; did you mean '-frust-edition=2021'?
+x86_64-linux-gccrs: error: unrecognized command-line option
+'-Zbinary_dep_depinfo=y'
+x86_64-linux-gccrs: error: unrecognized command-line option
+'-Wmissing_docs'; did you mean '-Wmissing-braces'?
+x86_64-linux-gccrs: error: unrecognized command-line option
+'-Wclippy::dbg_macro'
+x86_64-linux-gccrs: error: unrecognized command-line option '-Cstrip=debuginfo'
+x86_64-linux-gccrs: error: unrecognized command-line option '-Zallow-features='
+x86_64-linux-gccrs: error: unrecognized command-line option
+'--emit=dep-info,link'
+x86_64-linux-gccrs: error: unrecognized command-line option '--out-dir=scripts/'
+make[3]: *** [/git/arm-soc/scripts/Makefile.host:157:
+scripts/generate_rust_target] Error 1
 
-another solution is to set prot to an arbitrary value only in the if
-case marked above. that way prot is not arbitrarily initialized, and
-there is no need to add a new PROT_NONE (which then would need to be
-checked for in trans_exc)
+I guess nobody has tried this so far. Would you think that fixing this is only
+a matter for fixing the build system to pass the correct flags depending on the
+compiler, or is this broken in a more fundamental way?
 
-I do not have a strong opinion, though
-
-> 
-> > 
-> > 2293897805c2fe Heiko Carstens           2014-01-01  857  		}
-> > cde0dcfb5df1db David Hildenbrand        2016-05-31  858  		if (rc)
-> > 6ae1574c2a24ee Christian Borntraeger    2017-06-07 @859  			return trans_exc(vcpu, rc, ga, ar, mode, prot);
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  860  		if (gpas)
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  861  			*gpas++ = gpa;
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  862  		offset = 0;
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  863  		ga += fragment_len;
-> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  864  		len -= fragment_len;
-> > 2293897805c2fe Heiko Carstens           2014-01-01  865  	}
-> > 2293897805c2fe Heiko Carstens           2014-01-01  866  	return 0;
-> > 2293897805c2fe Heiko Carstens           2014-01-01  867  }
-> >   
-> 
-
+         Arnd
