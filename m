@@ -2,168 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3352FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96449C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbiHQJ3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 05:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
+        id S233769AbiHQJak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 05:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiHQJ3S (ORCPT
+        with ESMTP id S230518AbiHQJac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 05:29:18 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C2F27CF2;
-        Wed, 17 Aug 2022 02:29:16 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y13so23444376ejp.13;
-        Wed, 17 Aug 2022 02:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc;
-        bh=jljdedi6DAkIAYkCnbgj5IjVnTulkRPsvXaOGGTQHjk=;
-        b=CYrdM5leNid3d5aUornHuKlAPIq/tg/zwug8RUJg3j5tU/mlmvLw4iO09HoO9rewuy
-         ZfZoPfjf6lbjcmxsPH2HthMiXmtB9kaov+wNSxDX9sVPHwh2voBdySWIS13yeFYWGhGv
-         VuXrxQDvTZyoOcaQGoNZw0JY4xESY7jzNlcvSKiGY6jkPCSYTK44HiO/TBOpsD9kc1DH
-         gyhUiZgvUj7hgFtc2cdUzVKn03eBN7k9xnLrV/e4XrQkQ+sA7eE3CVkvaOP783Yi2kgY
-         QPS8wG9CEG8uvXxGGWJ2rt7M8t9TDxcHOlxS2CYHim6oUSSAcjr/4GN0l4mosF+nAisk
-         VI5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
-        bh=jljdedi6DAkIAYkCnbgj5IjVnTulkRPsvXaOGGTQHjk=;
-        b=g9aWi0295dK1aWLTjxqlFEzpqaTCWo8amRV9Q0bzyQEmS3d3jQeKKzRZiBO0wKBB77
-         QpLjZ4sP9RKv6lK7KtTn/2yUNYO1kAkzD8PWD3qO0yNsf6f0wn9Y8g2FDTOm3+ysEmI0
-         4a2ajxNfaoC387gY2oNR2j6KdLnxo+j8ChozW+rLaEw1/b9Rc0JLIlhSNk0jay7r7Wno
-         51GpJSMp2LZbQOZdQWjkxCEejvxLbGqkU6DQ5cU3dmwI2Xodg6bhzpXpEJf2yqLfnpq5
-         RCXauokeOuiSOo+SrjjwEHMeY+hShhhkhElp2G/cm1kmRJhyYhUnjhFBT2SIXQNPZoHR
-         9Exw==
-X-Gm-Message-State: ACgBeo3Zx60mg14oyNAI4O0Lq8c/bqfrxPU/1VFxhECi/ALn7OzH5YmZ
-        PhwAgL3bxb7ZomrG3IvENeM=
-X-Google-Smtp-Source: AA6agR4MiAdMay67Au4I3uD3+4DBq5nNX1gACXdguiQjG+H8gS8v9LqNb0OxRpTdm2KNehcwOikG5A==
-X-Received: by 2002:a17:907:7d8c:b0:731:65f6:1f28 with SMTP id oz12-20020a1709077d8c00b0073165f61f28mr15361798ejc.91.1660728555133;
-        Wed, 17 Aug 2022 02:29:15 -0700 (PDT)
-Received: from krava ([83.240.61.33])
-        by smtp.gmail.com with ESMTPSA id p26-20020aa7cc9a000000b0043cc66d7accsm10210626edt.36.2022.08.17.02.29.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 02:29:14 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Wed, 17 Aug 2022 11:29:12 +0200
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
-Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
-Message-ID: <Yvy06GPn45D0rD7n@krava>
-References: <Yvo+EpO9dN30G0XE@worktop.programming.kicks-ass.net>
- <CAADnVQJfvn2RYydqgO-nS_K+C8WJL7BdCnR44MiMF4rnAwWM5A@mail.gmail.com>
- <YvpZJQGQdVaa2Oh4@worktop.programming.kicks-ass.net>
- <CAADnVQKyfrFTZOM9F77i0NbaXLZZ7KbvKBvu7p6kgdnRgG+2=Q@mail.gmail.com>
- <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
- <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
- <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
- <CAADnVQJuDS22o7fi9wPZx9siAWgu1grQXXB02KfasxZ-RPdRSw@mail.gmail.com>
- <Yvpq3JDk8fTgdMv8@worktop.programming.kicks-ass.net>
- <Yvs/oey1NUlkI30d@krava>
+        Wed, 17 Aug 2022 05:30:32 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DDA5A824;
+        Wed, 17 Aug 2022 02:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=B1hmJLzhgp+cCdKeDExeQqbkP18e8HhH601vV+E1w50=;
+        b=SXOXeg0hXtXaVqOOnK5acOIEm8TnPQJxV5wFYx4mSwxEoLkg1SF2ceF0q4XC8E52IuKOWgzTwwff8
+         GXTaypsIplyq9skK2OOme1XHNtGh9+gJV1UxKQo+3L9t/Lq2uSIJLBY49eqtcriHlkoZcEdBjbmWcu
+         ywLD1UhtAxKNTjM5C7gkkbThg2UK/T8Z71T8oQSFrNdtfzLNoEmDJ37EJi3KeANAfYrg2aGL0OGeog
+         +scBNcI0UVRdRncwg6FI0JZ2Z3VSWAp7+nvaDALG5h11YNccmhAErBJ6Vrn28g1/gAZE9wBWO8P2/2
+         uxcrEJA9EVm5WQYjGWz8OK2aq8vhlOA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000014,0.007457)], BW: [Enabled, t: (0.000014,0.000001)], RTDA: [Enabled, t: (0.074159), Hit: No, Details: v2.41.0; Id: 15.52kaaj.1gali6mdc.ev6o; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([92.100.85.134])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Wed, 17 Aug 2022 12:29:55 +0300
+Date:   Wed, 17 Aug 2022 12:04:13 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Xu Yilun <yilun.xu@intel.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: Re: [PATCH v6 1/2] fpga: ecp5-spi: add Lattice ECP5 FPGA manager
+Message-ID: <20220817090413.ywf7wescwj2manif@x260>
+References: <20220815132157.8083-1-i.bornyakov@metrotek.ru>
+ <20220815132157.8083-2-i.bornyakov@metrotek.ru>
+ <Yvr6SY5WGXlYiLig@yilunxu-OptiPlex-7050>
+ <20220816045841.irhr5vigemdqknaw@x260>
+ <Yvs0jieXsyzhn8q9@yilunxu-OptiPlex-7050>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yvs/oey1NUlkI30d@krava>
+In-Reply-To: <Yvs0jieXsyzhn8q9@yilunxu-OptiPlex-7050>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 08:56:33AM +0200, Jiri Olsa wrote:
-> On Mon, Aug 15, 2022 at 05:48:44PM +0200, Peter Zijlstra wrote:
-> > On Mon, Aug 15, 2022 at 08:35:53AM -0700, Alexei Starovoitov wrote:
-> > > On Mon, Aug 15, 2022 at 8:28 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > > >
-> > > > On Mon, Aug 15, 2022 at 08:17:42AM -0700, Alexei Starovoitov wrote:
-> > > > > It's hiding a fake function from ftrace, since it's not a function
-> > > > > and ftrace infra shouldn't show it tracing logs.
-> > > > > In other words it's a _notrace_ function with nop5.
-> > > >
-> > > > Then make it a notrace function with a nop5 in it. That isn't hard.
+On Tue, Aug 16, 2022 at 02:09:18PM +0800, Xu Yilun wrote:
+> On 2022-08-16 at 07:58:41 +0300, Ivan Bornyakov wrote:
+> > On Tue, Aug 16, 2022 at 10:00:41AM +0800, Xu Yilun wrote:
+> > > On 2022-08-15 at 16:21:56 +0300, Ivan Bornyakov wrote:
+> > > > Add support to the FPGA manager for programming Lattice ECP5 FPGA over
+> > > > slave SPI interface with .bit formatted uncompressed bitstream image.
 > > > 
-> > > That's exactly what we're trying to do.
+> > > Not sure if something is missed.
+> > > 
+> > > https://lore.kernel.org/all/20220729145757.GA2601292@yilunxu-OptiPlex-7050/
+> > > 
+> > > I was considering if a generic driver for lattice slave SPI sysCONFIG
+> > > interface could be introduced. From machxo2 & ecp5 Programming Usage
+> > > Guide, or others in this series, they basically use the same reconfigure
+> > > interface & protocol.
+> > > 
+> > > Thanks,
+> > > Yilun
+> > > 
 > > 
-> > All the while claiming ftrace is broken while it is not.
-> > 
-> > > Jiri's patch is one way to achieve that.
-> > 
-> > Fairly horrible way.
-> > 
-> > > What is your suggestion?
-> > 
-> > Mailed it already.
-> > 
-> > > Move it from C to asm ?
-> > 
-> > Would be much better than proposed IMO.
+> > I only have HW with ECP5, can't vouch for the rest.
 > 
-> nice, that would be independent of the compiler atributes
-> and config checking..  will check on this one ;-)
+> I understand your concern, but having separate drivers for the same IP on
+> different boards makes the maintaining harder.
+> 
+> We don't have to make everything fine, but start with machxo2 and ecp5
+> first. If the change affects machxo2, other people may help.
+> 
+> Thanks,
+> Yilun
+> 
 
-how about something like below?
+Hi, Yilun.
 
-dispatcher code is generated only for x86_64, so that will be covered
-by the assembly version (free of ftrace table) other archs stay same
+To clear things out, considering what Daniel said in
+https://lore.kernel.org/linux-fpga/20220816074216.GA31706@homes.emlix.com/
+you still don't want separate ECP5 driver, or this v6 is OK and review
+continues?
 
-jirka
-
-
-----
-diff --git a/arch/x86/net/Makefile b/arch/x86/net/Makefile
-index 383c87300b0d..94964002eaae 100644
---- a/arch/x86/net/Makefile
-+++ b/arch/x86/net/Makefile
-@@ -7,4 +7,5 @@ ifeq ($(CONFIG_X86_32),y)
-         obj-$(CONFIG_BPF_JIT) += bpf_jit_comp32.o
- else
-         obj-$(CONFIG_BPF_JIT) += bpf_jit_comp.o
-+        obj-$(CONFIG_BPF_JIT) += bpf_dispatcher.o
- endif
-diff --git a/arch/x86/net/bpf_dispatcher.S b/arch/x86/net/bpf_dispatcher.S
-new file mode 100644
-index 000000000000..65790a1286e8
---- /dev/null
-+++ b/arch/x86/net/bpf_dispatcher.S
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/linkage.h>
-+#include <asm/nops.h>
-+#include <asm/nospec-branch.h>
-+
-+	.text
-+SYM_FUNC_START(bpf_dispatcher_xdp_func)
-+	ASM_NOP5
-+	JMP_NOSPEC rdx
-+SYM_FUNC_END(bpf_dispatcher_xdp_func)
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a627a02cf8ab..03b54c820b95 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -924,7 +924,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs);
- }
- 
- #define DEFINE_BPF_DISPATCHER(name)					\
--	noinline __nocfi unsigned int bpf_dispatcher_##name##_func(	\
-+	noinline __nocfi unsigned int __weak bpf_dispatcher_##name##_func(\
- 		const void *ctx,					\
- 		const struct bpf_insn *insnsi,				\
- 		bpf_func_t bpf_func)					\
