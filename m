@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C23CFC28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B45BAC25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238243AbiHQBjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 21:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        id S238260AbiHQBjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 21:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238257AbiHQBi5 (ORCPT
+        with ESMTP id S238042AbiHQBjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 21:38:57 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCAA3ED69;
-        Tue, 16 Aug 2022 18:38:48 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4M6rH155CVzKK5b;
-        Wed, 17 Aug 2022 09:37:17 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP2 (Coremail) with SMTP id Syh0CgDHsb2lRvxib5zWAQ--.29963S3;
-        Wed, 17 Aug 2022 09:38:46 +0800 (CST)
-Subject: Re: [PATCH v7 8/9] blk-throttle: cleanup tg_update_disptime()
-To:     Tejun Heo <tj@kernel.org>, Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        "yukuai (C)" <yukuai3@huawei.com>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
- <20220802140415.2960284-9-yukuai1@huaweicloud.com>
- <Yvv5as5BVuqjw6PX@slm.duckdns.org>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <b06bbbce-ffd1-4a07-3f74-eac8411edd97@huaweicloud.com>
-Date:   Wed, 17 Aug 2022 09:38:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 16 Aug 2022 21:39:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5335995AFE;
+        Tue, 16 Aug 2022 18:39:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CAD8B81B8D;
+        Wed, 17 Aug 2022 01:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E42C433D6;
+        Wed, 17 Aug 2022 01:39:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660700372;
+        bh=WNI4T2l1xlFYKRJlgSA2O9Bc98a5ZBHH6E/B6tCD50A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EEknQiKrl/fuhzX2gYjfHuS2LhzKcvaeq3V/YtQcZVtcI78dfH+0IsdjveRIYTLHh
+         1grv26DVJhODDyf1ecCVDxMbjo1sSJ4DqiS37XphKS80Gl4NvqNQhdrIPoDTnt3Abz
+         QmkJq5ksZu/qUhsA29utPhTN2t2Qz3uH2BuTQSYGUxF52YZT8KVZcInAT4lYyTZO+Y
+         lDx+luMTE+zYuCCY/I1QGnAM3LhLa04WQaCJCog9XRcyZgpzcM340le5rc3eHddq+y
+         mP8yQCYrjv4h0HShV9WvfJ8uR2lQaw0H292s6ns2Y3uuqlSs4UD0nXtewuds+18bpf
+         VHHXp+xAm2gfQ==
+Date:   Tue, 16 Aug 2022 18:39:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        bpf@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>
+Subject: Re: [PATCH] net: Fix suspicious RCU usage in
+ bpf_sk_reuseport_detach()
+Message-ID: <20220816183930.2328d46d@kernel.org>
+In-Reply-To: <20220817004319.fd7dekpqeumbvmsh@kafai-mbp>
+References: <20220816103452.479281-1-yin31149@gmail.com>
+        <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
+        <804153.1660684606@warthog.procyon.org.uk>
+        <20220816164435.0558ef94@kernel.org>
+        <20220817004319.fd7dekpqeumbvmsh@kafai-mbp>
 MIME-Version: 1.0
-In-Reply-To: <Yvv5as5BVuqjw6PX@slm.duckdns.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgDHsb2lRvxib5zWAQ--.29963S3
-X-Coremail-Antispam: 1UD129KBjvdXoWrZr1xJF1xXF4xJFyUur1UGFg_yoW3Cwb_GF
-        yvyrW0y34UAFZavasxJ3ZxCa9rWr4rGFy3Xw4Ivw47Kry5Xan8Zan8G395Ar13Gw4DtrnI
-        krWDGr4avrWSkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUba8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kI
-        c2xKxwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3
-        Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-        sGvfC2KfnxnUUI43ZEXa7VUbE_M3UUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Tejun£¡
+On Tue, 16 Aug 2022 17:43:19 -0700 Martin KaFai Lau wrote:
+> > I like your version because it documents what the lock protecting this
+> > field is.
+> > 
+> > In fact should we also add && sock_owned_by_user(). Martin, WDYT? Would
+> > that work for reuseport? Jakub S is fixing l2tp to hold the socket lock
+> > while setting this field, yet most places take the callback lock...  
+>
+> It needs to take a closer look at where the lock_sock() has already
+> been acquired and also need to consider the lock ordering with reuseport_lock.
+> It probably should work but may need a separate patch to discuss those
+> considerations ?
 
-ÔÚ 2022/08/17 4:09, Tejun Heo Ð´µÀ:
-> On Tue, Aug 02, 2022 at 10:04:14PM +0800, Yu Kuai wrote:
->> From: Yu Kuai <yukuai3@huawei.com>
->>
->> tg_update_disptime() only need to adjust postion for 'tg' in
->> 'parent_sq', there is no need to call throtl_enqueue/dequeue_tg().
->>
->> Save a little overhead in tg_update_disptime() and prepare to cleanup
->> flag 'THROTL_TG_PENDING', there are no functional changes.
-> 
-> Does this actually help anything? Given that the heavy part of the operation
-> remains the same, this might not be much of an optimization. Is there even a
-> microbench that can show the difference?
-
-It's right heavy part remains the same, the patch just remove some
-unnecessary operations. And I didn't run benchmark to test that yet.
-
-Thanks,
-Kuai
-> 
-> Thanks.
-> 
-
+Right, the users of the field with a bit allocated protect the writes
+with the callback lock, so we can hard code the check against the
+callback lock for now and revisit later if needed.
