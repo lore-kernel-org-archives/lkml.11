@@ -2,97 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F50BC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 10:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D73E6C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 10:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239016AbiHQKul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 06:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
+        id S235852AbiHQKyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 06:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238839AbiHQKuf (ORCPT
+        with ESMTP id S234506AbiHQKyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 06:50:35 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F036C13A;
-        Wed, 17 Aug 2022 03:50:34 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id c24so11652272pgg.11;
-        Wed, 17 Aug 2022 03:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=5RiZpgZDUuO6MV3ALtXTmbuVcbhlGB6egOopFvdYj90=;
-        b=fNzPi2WncFTKeH2XgHbHqO3yz1RWdVZcL/3a6wAebKjrIqoAkjVoPwk7v+t+NXa4Li
-         NOKo6/ZYV6Cbrg31/a/m+Ntxb/ppYHnmzgOMsPxUzvBuuCt5y0a2CDYI6wuCLYLM5bF9
-         Vkxksy10GEdcWIZZuPGUbpTiQdqy0wZDV8n+gGCKzIdldBWGmN994Pqih5/yevIoAuHk
-         tBie1d7q5KZoKi4SddL6HNREi6cvEEHVeom7NkIJvSecw43K2pe81qJyyOBvxwV/qfMk
-         gBDcjEqGJmrpmi+41Y6QYYPG0uuPXnVZ+n/TUHrjkUfZ0z6cLaWNIQ+wQJ+//AfJe/4b
-         Y5vg==
+        Wed, 17 Aug 2022 06:54:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD844A83F
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 03:54:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660733642;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gWHtHY6d40uY0Ij4s58yaxGtL5XuSJS0/N+jf5H/pmM=;
+        b=S8+n9d3Kax4NRRwTfe9hCHnS0x43t5BvUwNfVbbp8VBEi6ndhK9Y15mKdOCFx+MSZ5+Uwi
+        sF3WUmXKrMhtgWLak5q6Pj8lyU8htzgmXEgXfkOBL7qUbaLV4VT5sQoGeQSXzVBTo21pD1
+        6iP3wN9tU5lGa6efxaZd/aVjhomF5bc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-556-PvU81CrMMaibchX8botS0g-1; Wed, 17 Aug 2022 06:54:01 -0400
+X-MC-Unique: PvU81CrMMaibchX8botS0g-1
+Received: by mail-wm1-f72.google.com with SMTP id r10-20020a1c440a000000b003a538a648a9so6174832wma.5
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 03:54:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=5RiZpgZDUuO6MV3ALtXTmbuVcbhlGB6egOopFvdYj90=;
-        b=kb0/QK3XKUIHoGWKHra2R2NVajdJbv+VLe89QaCluIv8ctZnlAyxfyluSSU5IQlGSH
-         FeTxfnKVdOCwddRonGhtouWLiW7by9QdRCVSIUhlZxrUktERehf5yf2Nbeq7i3YKoY9E
-         yoTNF5ey2VudZr1N96zjFsdy1hY6bVMi5FhUdh59P+6Ofpb45EkSy3zhS1IB0UfQ2wY1
-         1jhKtVPGSA3sjodBpKb0DVRU8HB0afwkpziRLApcnGPhPxnDH3ZSPwK1sH4IsccyR15h
-         6JGw3e8BoU5I6wQ0yzj++CooqNvRerfy0ituCLYxS5GoOTtFqormajvrpTmol8bitwCs
-         VZsw==
-X-Gm-Message-State: ACgBeo2NWtD5sEqseWbrEVRJA+gNKifn8VbkOBVTDzUrciOShmSExGox
-        Q4A9HgoYUZyVwt7oaQPfhtZ7oGgxqYY=
-X-Google-Smtp-Source: AA6agR6v/qaKXALKSRCgB2FvuUcNiNmRImMFtCzuegTfY64K6w8+f2ca/C2oUByGIo4KEIPNsYUC8Q==
-X-Received: by 2002:a05:6a00:1a47:b0:52e:6a8c:5430 with SMTP id h7-20020a056a001a4700b0052e6a8c5430mr24537458pfv.48.1660733434041;
-        Wed, 17 Aug 2022 03:50:34 -0700 (PDT)
-Received: from fedora.. ([49.49.237.218])
-        by smtp.googlemail.com with ESMTPSA id n8-20020a170902d2c800b00172897952a0sm1152033plc.283.2022.08.17.03.50.32
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gWHtHY6d40uY0Ij4s58yaxGtL5XuSJS0/N+jf5H/pmM=;
+        b=3xf4eAbdTfMPTPlbdDGuGJX9AMlt6UVHaEQE0Da+UG+92x+37djnrBdiy1IVGiOQhz
+         hTiVrndCOWwf8EA+uJ6YK88vb0J0waqecx8ZwvX7mtXJNarc8d7MEbeTtLuObuODGHQa
+         jXWBZXEpxbIJdo7eeLhePB7H557R92RHicO9Qtl/XR9dVEzlhvzyTNc+HOuNJLLcBwQQ
+         GKu5oudQyxrWePyPHXdxTn6aDL0/Kqf4rwJbMsfIxVbtlsWrtxwz5VV2/QVPFvdc+bdE
+         a6o294Gw7L4ZJ6Og3+M6CE9KYSR0Q13XiR1WjjiiXIAKyjYA3K91oOyP5adHt6OjDtSW
+         w9/Q==
+X-Gm-Message-State: ACgBeo23ZXtoWoUCz9yQapmbI3HYNKbKaiVJasT+sX/CNyEn46LHZeDo
+        qOoosSHY2N5TO4MvJJt8koDyEpQeM200ETuNrZZh9V0DGFdYO3Qo6eQZPk4UUNiLV1fR9dnMOmd
+        2PPFd5SQ6oycD0tAgwT0FeXSS
+X-Received: by 2002:a05:600c:4e11:b0:3a5:bfd3:a899 with SMTP id b17-20020a05600c4e1100b003a5bfd3a899mr1743689wmq.185.1660733639794;
+        Wed, 17 Aug 2022 03:53:59 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7d/IR607lJwmB2S6Sw1FJB/dSOGJPbcoQRDZgxOs2ObvWS+6e3HgFTFDQjrws5pZac+mb1Cw==
+X-Received: by 2002:a05:600c:4e11:b0:3a5:bfd3:a899 with SMTP id b17-20020a05600c4e1100b003a5bfd3a899mr1743679wmq.185.1660733639576;
+        Wed, 17 Aug 2022 03:53:59 -0700 (PDT)
+Received: from redhat.com ([2.55.4.37])
+        by smtp.gmail.com with ESMTPSA id p27-20020a05600c1d9b00b003a35ec4bf4fsm1905896wms.20.2022.08.17.03.53.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 03:50:33 -0700 (PDT)
-From:   Supasak Sutha <blur.3rd@gmail.com>
-Cc:     blur.3rd@gmail.com, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] HID: magicmouse: Add parameter to be able to adjust middle button position.
-Date:   Wed, 17 Aug 2022 17:50:13 +0700
-Message-Id: <20220817105013.28036-1-blur.3rd@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        Wed, 17 Aug 2022 03:53:59 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 06:53:53 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        James.Bottomley@hansenpartnership.com, andres@anarazel.de,
+        axboe@kernel.dk, c@redhat.com, davem@davemloft.net,
+        edumazet@google.com, gregkh@linuxfoundation.org,
+        jasowang@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@roeck-us.net, martin.petersen@oracle.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        torvalds@linux-foundation.org,
+        virtualization@lists.linux-foundation.org,
+        kasan-dev@googlegroups.com
+Subject: Re: upstream kernel crashes
+Message-ID: <20220817065207-mutt-send-email-mst@kernel.org>
+References: <20220815113729-mutt-send-email-mst@kernel.org>
+ <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
+ <20220815124748-mutt-send-email-mst@kernel.org>
+ <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
+ <20220815161423-mutt-send-email-mst@kernel.org>
+ <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
+ <20220815170444-mutt-send-email-mst@kernel.org>
+ <20220817061359.200970-1-dvyukov@google.com>
+ <1660718191.3631961-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1660718191.3631961-1-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apparently the driver fixed the offset of middle button to [-350, +350].
-Which separated the area to 3 equally space for 3 buttons.
-Lead to a lot of mis-clicking as the magicmouse has no real button.
-Users should be able to adjust the buttons to suite their fingers.
+On Wed, Aug 17, 2022 at 02:36:31PM +0800, Xuan Zhuo wrote:
+> On Wed, 17 Aug 2022 08:13:59 +0200, Dmitry Vyukov <dvyukov@google.com> wrote:
+> > On Mon, 15 Aug 2022 17:32:06 -0400, Michael wrote:
+> > > So if you pass the size parameter for a legacy device it will
+> > > try to make the ring smaller and that is not legal with
+> > > legacy at all. But the driver treats legacy and modern
+> > > the same, it allocates a smaller queue anyway.
+> > >
+> > > Lo and behold, I pass disable-modern=on to qemu and it happily
+> > > corrupts memory exactly the same as GCP does.
+> >
+> > Ouch!
+> >
+> > I understand that the host does the actual corruption,
+> > but could you think of any additional debug checking in the guest
+> > that would caught this in future? Potentially only when KASAN
+> > is enabled which can verify validity of memory ranges.
+> > Some kind of additional layer of sanity checking.
+> >
+> > This caused a bit of a havoc for syzbot with almost 100 unique
+> > crash signatures, so would be useful to catch such issues more
+> > reliably in future.
+> 
+> We can add a check to vring size before calling vp_legacy_set_queue_address().
+> Checking the memory range directly is a bit cumbersome.
+> 
+> Thanks.
 
-This patch add parameters to adjust theses offsets,
-while keeping the default values to [-350, +350].
+With a comment along the lines of
 
-Signed-off-by: Supasak Sutha <blur.3rd@gmail.com>
----
- drivers/hid/hid-magicmouse.c | 5 +++++
- 1 file changed, 5 insertions(+)
+/* Legacy virtio pci has no way to communicate a change in vq size to
+ * the hypervisor. If ring sizes don't match hypervisor will happily
+ * corrupt memory.
+ */
 
-diff --git a/drivers/hid/hid-magicmouse.c b/drivers/hid/hid-magicmouse.c
-index 664a624a363d..9709085647fb 100644
---- a/drivers/hid/hid-magicmouse.c
-+++ b/drivers/hid/hid-magicmouse.c
-@@ -25,7 +25,12 @@ module_param(emulate_3button, bool, 0644);
- MODULE_PARM_DESC(emulate_3button, "Emulate a middle button");
- 
- static int middle_button_start = -350;
-+module_param(middle_button_start, int, 0644);
-+MODULE_PARM_DESC(middle_button_start, "Middle button beginning offset");
-+
- static int middle_button_stop = +350;
-+module_param(middle_button_stop, int, 0644);
-+MODULE_PARM_DESC(middle_button_stop, "Middle button end offset");
- 
- static bool emulate_scroll_wheel = true;
- module_param(emulate_scroll_wheel, bool, 0644);
--- 
-2.37.1
+
+> diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+> index 2257f1b3d8ae..0673831f45b6 100644
+> --- a/drivers/virtio/virtio_pci_legacy.c
+> +++ b/drivers/virtio/virtio_pci_legacy.c
+> @@ -146,6 +146,8 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+>                 goto out_del_vq;
+>         }
+> 
+> +       BUG_ON(num != virtqueue_get_vring_size(vq));
+> +
+>         /* activate the queue */
+>         vp_legacy_set_queue_address(&vp_dev->ldev, index, q_pfn);
+> 
+> 
+> >
+> > Thanks
 
