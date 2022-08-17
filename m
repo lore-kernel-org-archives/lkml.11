@@ -2,150 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C2AC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC161C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239133AbiHQLOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 07:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S238994AbiHQLPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 07:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230122AbiHQLOS (ORCPT
+        with ESMTP id S230122AbiHQLPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 07:14:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3155A884;
-        Wed, 17 Aug 2022 04:14:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A795BB815DF;
-        Wed, 17 Aug 2022 11:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF5DC433C1;
-        Wed, 17 Aug 2022 11:14:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660734854;
-        bh=gKsyoiXpQfvK+t3+8O7SdbTWSMeMfmoQPtX4/sg+ffo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zLeEm1lMFMHUx1ybmkdNdDkfmatpndn3cmB8V7nCx4qMHTRa2ZEiE78rVwcH+G/6O
-         QsvPF7a+8V3Q3JxkPab8EnITte3SRlNTbm3kWycfccYYm4NdwLA1CSrmBW/clwgtQ0
-         UPbUVKLtep8RyRjB66BS3qVgvoGFtQHd4aZjjvIs=
-Date:   Wed, 17 Aug 2022 13:14:11 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Shunsuke Mie <mie@igel.co.jp>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] misc: pci_endpoint_test: Fix
- pci_endpoint_test_{copy,write,read}() panic
-Message-ID: <YvzNg5ROnxEApDgS@kroah.com>
-References: <20220816100617.90720-1-mie@igel.co.jp>
- <YvtxAN7E4nmZmL/X@kroah.com>
- <Yvuvpd9n59mp96p0@lpieralisi>
- <695ab9b3-8385-e8bd-0095-14b07de66b15@ti.com>
+        Wed, 17 Aug 2022 07:15:04 -0400
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F57167173
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 04:15:03 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 5E94E580DA3;
+        Wed, 17 Aug 2022 07:15:00 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 17 Aug 2022 07:15:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660734900; x=1660742100; bh=7/MyY+LBb7
+        xbVEmhuCyBhoCzY/9cxkCFf1VHHVrX6CY=; b=grrDb7phnJ8YS7DoYmClhDowva
+        mf0hyZG1cElbLmCByi9qZfwQST1mrUurzidSCbpXzLfvUzrbTrOQioCAKC7U2Fwp
+        jm+jENEKf8Vy1T/MorGsNClgSxDglsVgGyCX7UfoFeVFnLOETgr0/p9hs3QB88dR
+        sbSoRPnGd69728/P/mt+7Fh+vWebfjlS/I7UsqjhGtn17DbWdnP/EkpsYqbQNwVv
+        WQtJ4vAXXBVssg+IMz+GS+lG3ddEwQCPDgiFnLFA9ysgfKqwRZXwt8UFyXWB1BS0
+        kUzrjtDuamQLJjwF4qqcj5aFreTij0nTlG0h1GIxKPYZ2AhmjLEmwgoC2u/Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660734900; x=1660742100; bh=7/MyY+LBb7xbVEmhuCyBhoCzY/9c
+        xkCFf1VHHVrX6CY=; b=1EjiYV1IDT9sKd5r3mLzkdKwMFMlonp4bEctBDecRUya
+        ZlpnqtUdldGetHD37riEiUUvZGlMEqu124iAqLMJ5iN2ONf2abY5VWp06pRbQ+/6
+        6W4ZKgtun/ru5zgTMT/ePki4t9Z1FsEfCzHeI5zEz+PrbhaFCGLsggAXU5MVBu5U
+        +FwyikIohL0SBGOuk1IfHbASHFnJCiOCRnZThfHbBprg6joaAp7F8MNh+k1pj/jf
+        DyTXjPYwQFQehxwbJdfXESh1FquX9og/rEOuQMKCTlBFZrFevsqr6cgA4gaTkM4X
+        WlmugzAHmc7tzr6NIUDl6X9UGByCvf/IOiJ6IMjRHQ==
+X-ME-Sender: <xms:ss38Ymz6QIJVROnLxmIjqn_3TMnD9ZLFHefJCfGNyBCHaTEh0d9E8A>
+    <xme:ss38YiTELaLWGqYanHfSD6VWKyMUjfqc07lsrLPsN3Xf25xqqj0yBtjUnChpOnajr
+    92MoarTmCFXFjH7m0g>
+X-ME-Received: <xmr:ss38YoUzRSzcuNOADkP7kR5ntYkzbd9ylNolSoNBKiyDhA78E3ttDGbQ-g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedgfeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetfefffefgkedtfefgledugfdtjeefjedvtddtkeetieffjedvgfehheff
+    hfevudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:ss38YsjZPx_G1Zc8tP9aygClJLiL_P6juc2jFveN0GQgc0P9nQkhuw>
+    <xmx:ss38YoAufRzR7_QR2U-zba1HO11VCExDDNMadtbPaaWeyOFbRlviRA>
+    <xmx:ss38YtJo-vfEDw0s84F9ypKZ1-0zVXkz8garCQi-_Nfg8XoGqLnY2A>
+    <xmx:tM38Yqy6P1AyJ75RZnKbU9oqLErBbDheLyu7DSvqoX3-T7Z68V_Beg>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 17 Aug 2022 07:14:57 -0400 (EDT)
+Date:   Wed, 17 Aug 2022 13:14:54 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+Message-ID: <20220817111454.pn2iltvyo2drebq7@houat>
+References: <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <CAMuHMdWYo7M44uLNhTmJenGDreGALBZ9E48oyBDEeAuL=0h=dw@mail.gmail.com>
+ <20220816132040.uwirtjm5yr6rdd3q@houat>
+ <CAMuHMdWevP=3af=NneAJEDfOR+sz1thrQEhAQPNGrgitBtLjGA@mail.gmail.com>
+ <20220816141116.5nuszmilqv2exdb3@houat>
+ <CAMuHMdXq_xGPx46bdnUFGDiG4kcgdxtXaRGTucFd3TRq8353dg@mail.gmail.com>
+ <20220816154956.pkdpxmmw27mia5ix@houat>
+ <CAMuHMdX0L6cO_jYXKZTv0sm9V39Eiy_STiknSkdRQG4k-9GJeg@mail.gmail.com>
+ <20220817074710.w4c4xwj7edly2b5p@houat>
+ <CAMuHMdXeBakWr6geOWGxnjQYaU9Pi4tRvVFFtubyMJZTT2nPnw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gu5whptxg6eujuan"
 Content-Disposition: inline
-In-Reply-To: <695ab9b3-8385-e8bd-0095-14b07de66b15@ti.com>
+In-Reply-To: <CAMuHMdXeBakWr6geOWGxnjQYaU9Pi4tRvVFFtubyMJZTT2nPnw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 02:18:58PM +0530, Kishon Vijay Abraham I wrote:
-> Hi Lorenzo,
-> 
-> On 16/08/22 20:24, Lorenzo Pieralisi wrote:
-> > On Tue, Aug 16, 2022 at 12:27:12PM +0200, Greg Kroah-Hartman wrote:
-> >> On Tue, Aug 16, 2022 at 07:06:17PM +0900, Shunsuke Mie wrote:
-> >>> Although dma_map_single() doesn't permit zero length mapping, the each
-> >>> test functions called the function without zero checking.
-> >>>
-> >>> A panic was reported on arm64:
-> >>>
-> >>> [   60.137988] ------------[ cut here ]------------
-> >>> [   60.142630] kernel BUG at kernel/dma/swiotlb.c:624!
-> >>> [   60.147508] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-> >>> [   60.152992] Modules linked in: dw_hdmi_cec crct10dif_ce simple_bridge rcar_fdp1 vsp1 rcar_vin videobuf2_vmalloc rcar_csi2 v4l
-> >>> 2_mem2mem videobuf2_dma_contig videobuf2_memops pci_endpoint_test videobuf2_v4l2 videobuf2_common rcar_fcp v4l2_fwnode v4l2_asyn
-> >>> c videodev mc gpio_bd9571mwv max9611 pwm_rcar ccree at24 authenc libdes phy_rcar_gen3_usb3 usb_dmac display_connector pwm_bl
-> >>> [   60.186252] CPU: 0 PID: 508 Comm: pcitest Not tainted 6.0.0-rc1rpci-dev+ #237
-> >>> [   60.193387] Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
-> >>> [   60.201302] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> >>> [   60.208263] pc : swiotlb_tbl_map_single+0x2c0/0x590
-> >>> [   60.213149] lr : swiotlb_map+0x88/0x1f0
-> >>> [   60.216982] sp : ffff80000a883bc0
-> >>> [   60.220292] x29: ffff80000a883bc0 x28: 0000000000000000 x27: 0000000000000000
-> >>> [   60.227430] x26: 0000000000000000 x25: ffff0004c0da20d0 x24: ffff80000a1f77c0
-> >>> [   60.234567] x23: 0000000000000002 x22: 0001000040000010 x21: 000000007a000000
-> >>> [   60.241703] x20: 0000000000200000 x19: 0000000000000000 x18: 0000000000000000
-> >>> [   60.248840] x17: 0000000000000000 x16: 0000000000000000 x15: ffff0006ff7b9180
-> >>> [   60.255977] x14: ffff0006ff7b9180 x13: 0000000000000000 x12: 0000000000000000
-> >>> [   60.263113] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-> >>> [   60.270249] x8 : 0001000000000010 x7 : ffff0004c6754b20 x6 : 0000000000000000
-> >>> [   60.277385] x5 : ffff0004c0da2090 x4 : 0000000000000000 x3 : 0000000000000001
-> >>> [   60.284521] x2 : 0000000040000000 x1 : 0000000000000000 x0 : 0000000040000010
-> >>> [   60.291658] Call trace:
-> >>> [   60.294100]  swiotlb_tbl_map_single+0x2c0/0x590
-> >>> [   60.298629]  swiotlb_map+0x88/0x1f0
-> >>> [   60.302115]  dma_map_page_attrs+0x188/0x230
-> >>> [   60.306299]  pci_endpoint_test_ioctl+0x5e4/0xd90 [pci_endpoint_test]
-> >>> [   60.312660]  __arm64_sys_ioctl+0xa8/0xf0
-> >>> [   60.316583]  invoke_syscall+0x44/0x108
-> >>> [   60.320334]  el0_svc_common.constprop.0+0xcc/0xf0
-> >>> [   60.325038]  do_el0_svc+0x2c/0xb8
-> >>> [   60.328351]  el0_svc+0x2c/0x88
-> >>> [   60.331406]  el0t_64_sync_handler+0xb8/0xc0
-> >>> [   60.335587]  el0t_64_sync+0x18c/0x190
-> >>> [   60.339251] Code: 52800013 d2e00414 35fff45c d503201f (d4210000)
-> >>> [   60.345344] ---[ end trace 0000000000000000 ]---
-> >>>
-> >>> To fix it, this patch adds checkings the payload length if it is zero.
-> >>>
-> >>> Fixes: 343dc693f7b7 ("misc: pci_endpoint_test: Prevent some integer overflows")
-> >>> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
-> >>> ---
-> >>>  drivers/misc/pci_endpoint_test.c | 6 +++---
-> >>>  1 file changed, 3 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
-> >>> index 8f786a225dcf..d45426a73396 100644
-> >>> --- a/drivers/misc/pci_endpoint_test.c
-> >>> +++ b/drivers/misc/pci_endpoint_test.c
-> >>> @@ -364,7 +364,7 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
-> >>>  	}
-> >>>  
-> >>>  	size = param.size;
-> >>> -	if (size > SIZE_MAX - alignment)
-> >>> +	if (size > SIZE_MAX - alignment || !size)
-> >>>  		goto err;
-> >>
-> >> Can we test size first?  And do it in the ioctl handler in one place so
-> >> you don't have to add it everywhere?
-> >>
-> >> Or have a "validate all parameters" function that you do it in one
-> >> place?
-> >>
-> >> Also, all of these ioctl handlers are wrong, they are returning "0" to
-> >> userspace if they fail, which is not correct at all.
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/pci/pcitest.c
-> > This is bad, thanks Greg for spotting it.
-> > 
-> > @Kishon, we have to fix it asap, please let me know if you
-> > can post a patch promptly.
-> 
-> The userspace tool (pcitest [1]) that calls these IOCTLS prints "NOT
-> OKAY" on 0 and "OKAY" for 1.
-> 
-> I'll change to negative value for error and still keep '0' for data
-> mismatch error?
 
-No, 0 as a return value from a system call means "success".  You can not
-redefine it to mean something else for a tiny single kernel driver,
-otherwise so much for consistency.
+--gu5whptxg6eujuan
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-0 is success, -ERROR_NUMBER is an error, please read the ioctl man page.
+On Wed, Aug 17, 2022 at 10:35:07AM +0200, Geert Uytterhoeven wrote:
+> Hi Maxime,
+>=20
+> On Wed, Aug 17, 2022 at 9:47 AM Maxime Ripard <maxime@cerno.tech> wrote:
+> > On Wed, Aug 17, 2022 at 09:31:18AM +0200, Geert Uytterhoeven wrote:
+> > > On Tue, Aug 16, 2022 at 5:50 PM Maxime Ripard <maxime@cerno.tech> wro=
+te:
+> > > > On Tue, Aug 16, 2022 at 04:43:44PM +0200, Geert Uytterhoeven wrote:
+> > > > > > > > > Either you have to add them here (e.g. "hd720p50" and "hd=
+720p60"), or
+> > > > > > > > > handle them through "@<refresh>".  The latter would impac=
+t "[PATCH v1
+> > > > > > > > > 09/35] drm/modes: Move named modes parsing to a separate =
+function", as
+> > > > > > > > > currently a named mode and a refresh rate can't be specif=
+ied both.
+> > > > > > > >
+> > > > > > > > I think the former would make more sense. It simplifies a b=
+it the
+> > > > > > > > parser, and we're going to use a named mode anyway.
+> > > > > > > >
+> > > > > > > > > As "[PATCH v1 34/35] drm/modes: Introduce the tv_mode pro=
+perty as a
+> > > > > > > > > command-line option" uses a separate "tv_mode" option, an=
+d not the main
+> > > > > > > > > mode name, I think you want to add them here.
+> > > > > > > >
+> > > > > > > > It's a separate story I think, we could have a named mode h=
+d720p50,
+> > > > > > > > which would be equivalent to 1280x720,tv_mode=3Dhd720p
+> > > > > > >
+> > > > > > > So where's the field rate in "1280x720,tv_mode=3Dhd720p"?
+> > > > > >
+> > > > > > Yeah, sorry I meant 1280x720@50,tv_mode=3Dhd720p
+> > > > >
+> > > > > Above you said "I think the former would make more sense", so that
+> > > > > should be "1280x720,tv_mode=3Dhd720p50"?
+> > > >
+> > > > No, 720p at 50Hz would be either hd720p50 or 1280x720@50,tv_mode=3D=
+hd720p
+> > > > and 60Hz would be hd720p60 or 1280x720@60,tv_mode=3Dhd720p
+> > >
+> > > I disagree: hd720p50 and hd720p60 are different TV modes.
+> >
+> > I agree, and I don't see how that command-line doesn't express that?
+>=20
+> Oh, I see what you mean: yes, it expresses that.
+> But it is inconsistent with the NTSC/PAL/SECAM/hd{480,576}[ip] modes,
+> where the TV mode specifies both number of lines and frame rate.
 
-thanks,
+Only if we're using a named mode, and naming is hard :)
 
-greg k-h
+Honestly, I'd be inclined to drop the hd* for now from this series. I
+don't have a hardware to test it with, for some we don't even have
+drivers that could implement these modes, we don't have a spec to work
+=66rom, it looks like a recipe for failure :)
+
+Maxime
+
+--gu5whptxg6eujuan
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYvzNrgAKCRDj7w1vZxhR
+xZPiAP9cuj5zZR8NRJHbKfFO0mr9fc31dj4wR+Gpelf6U7ZzwQEAvGoAg1Oi6hb0
+Hui+aaNLN6Rq3Vi1HR7q65YsP3trIwM=
+=i1o+
+-----END PGP SIGNATURE-----
+
+--gu5whptxg6eujuan--
