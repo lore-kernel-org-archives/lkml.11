@@ -2,113 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EF9C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B96C28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240385AbiHQOkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        id S240218AbiHQOlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240297AbiHQOkG (ORCPT
+        with ESMTP id S240298AbiHQOkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 10:40:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633B87330C
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:39:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B235F614EC
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA31C433C1;
-        Wed, 17 Aug 2022 14:39:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660747166;
-        bh=D2F5rhQcvdQNsiT8HtBPBvUKoSwn9XOVx+QjpXWS2Bw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N0tg25bb4yMVbc2/THbcZW6YZykHnEAvJ25bUxovHiM35NM3GrgF6VWqxAa5cbn6h
-         iPxzqoNhqR/D23BBn3UaIWPe/+MrNiaUMcFTzrAWvJqjJzH/qwITp0K3feYHru+Kcd
-         SMp90lCO0If5gfJjS3fEpfLW+PdpcBthUGRK0fOtEF8HbpFvAyqT9Z/WjYYPb7vI9o
-         ig/SmCQU0s9LYO22TstjwWjAOov1nCMFmHuonI5SDpIpoJZGMPYMad53jjfaxE93S+
-         OXP9UyTBOmeuYzGImmAc0LG0hgUkB9COA39grfwiTb+rtqXEEeN2PghkTZ6TjjKblG
-         7gq06Qurh5nSQ==
-Date:   Wed, 17 Aug 2022 22:30:07 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     atishp@atishpatra.org, ajones@ventanamicro.com,
-        linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, daolu@rivosinc.com,
-        Conor.Dooley@microchip.com, re@w6rz.net, apatel@ventanamicro.com
-Subject: Re: [PATCH] riscv: Ensure isa-ext static keys are writable
-Message-ID: <Yvz7byY9F0ow1bgf@xhacker>
-References: <CAOnJCU+Gx44ESHWyku7Kb6u5QnzjXiZcat5XmVWjksdFpcQ6nA@mail.gmail.com>
- <mhng-dd00cb27-4162-48aa-834d-30fb90e194cf@palmer-mbp2014>
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F9712A
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:39:28 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HEJvtw017836;
+        Wed, 17 Aug 2022 14:38:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=GtGdwtxeHCtaMIpyjP57lY6ndIfMIOAefiaokaG9/Fg=;
+ b=Dgs6iiKZzPFx1a2UNhbkSIIgK48KIxc49fvIdGUjR9hURY0IGstBIwGHSzYhLWtbF+nx
+ X/icIzbgh3KUwwhiuaUDfBKeLz9hDCqNJk/8e6SRXfI2fKlKtSbHYA+G7w20FXiHmWpu
+ qAuCGXi+GJe412SCf0iPcvZH6TpyVpQg86ok+3hWiOOb+AyeJnoalskTswKMR2fVX3Wq
+ 9nwkA7CrKkY9Nh3xk6rhvQT59FLpQYgP+HS0iWA+O7qQnGG45DSsplKzeiUr5DzsNdSk
+ VZO1cxvK1hJZ47YUvv6Tg2iV3c0ASm3NeQCV84lZeSsjAckLiAE7k1ogRlXTZ1sXFMnV +g== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j120j8np9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 14:38:50 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27HEadqg028218;
+        Wed, 17 Aug 2022 14:38:45 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma01fra.de.ibm.com with ESMTP id 3hx3k93fbm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 14:38:45 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27HEZuIJ33423846
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Aug 2022 14:35:56 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 038365204E;
+        Wed, 17 Aug 2022 14:38:42 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.13.253])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9EB6652051;
+        Wed, 17 Aug 2022 14:38:41 +0000 (GMT)
+Date:   Wed, 17 Aug 2022 16:38:38 +0200
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
+        lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>
+Subject: Re: arch/s390/kvm/gaccess.c:859 guest_range_to_gpas() error:
+ uninitialized symbol 'prot'.
+Message-ID: <20220817163838.5469ca53@p-imbrenda>
+In-Reply-To: <f27b0f3a-5e89-1fb1-ac23-ed896ec7150f@linux.ibm.com>
+References: <202208140141.4uzWszG4-lkp@intel.com>
+        <f27b0f3a-5e89-1fb1-ac23-ed896ec7150f@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: rU1js-jorhGq9oxAj84lh4ttk8FwYySh
+X-Proofpoint-GUID: rU1js-jorhGq9oxAj84lh4ttk8FwYySh
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <mhng-dd00cb27-4162-48aa-834d-30fb90e194cf@palmer-mbp2014>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-17_09,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 mlxscore=0 priorityscore=1501 clxscore=1011 phishscore=0
+ impostorscore=0 suspectscore=0 bulkscore=0 spamscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208170057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 09:29:36PM -0700, Palmer Dabbelt wrote:
-> On Tue, 16 Aug 2022 16:41:46 PDT (-0700), atishp@atishpatra.org wrote:
-> > On Tue, Aug 16, 2022 at 9:31 AM Andrew Jones <ajones@ventanamicro.com> wrote:
-> > > 
-> > > riscv_isa_ext_keys[] is an array of static keys used in the unified
-> > > ISA extension framework. The keys added to this array may be used
-> > > anywhere, including in modules. Ensure the keys remain writable by
-> > > placing them in the data section.
-> > > 
-> > > The need to change riscv_isa_ext_keys[]'s section was found when the
-> > > kvm module started failing to load. Commit 8eb060e10185 ("arch/riscv:
-> > > add Zihintpause support") adds a static branch check for a newly
-> > > added isa-ext key to cpu_relax(), which kvm uses.
-> >> > > 
-> > > Fixes: c360cbec3511 ("riscv: introduce unified static key mechanism for ISA extensions")
-> > > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
-> > > > > ---
-> > >  arch/riscv/kernel/cpufeature.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-> > > index 553d755483ed..3b5583db9d80 100644
-> > > --- a/arch/riscv/kernel/cpufeature.c
-> > > +++ b/arch/riscv/kernel/cpufeature.c
-> > > @@ -28,7 +28,7 @@ unsigned long elf_hwcap __read_mostly;
-> > >  /* Host ISA bitmap */
-> > >  static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
-> > > 
-> > > -__ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
-> > > +DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
-> > >  EXPORT_SYMBOL(riscv_isa_ext_keys);
-> > > 
-> > >  /**
-> > > --
-> > > 2.37.1
-> > > 
-> > > 
-> > > --
-> > > kvm-riscv mailing list
-> > > kvm-riscv@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/kvm-riscv
-> > 
-> > Thanks for the quick fix. Tested with kvm guests booting in Qemu.
-> > 
-> > Tested-by: Atish Patra <atishp@rivosinc.com>
+On Wed, 17 Aug 2022 12:30:11 +0200
+Janis Schoetterl-Glausch <scgl@linux.ibm.com> wrote:
 
-Reviewed-by: Jisheng Zhang <jszhang@kernel.org>
+> On 8/15/22 09:23, Dan Carpenter wrote:
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> > head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
+> > commit: 7faa543df19bf62d4583a64d3902705747f2ad29 KVM: s390: gaccess: Refactor access address range check
+> > config: s390-randconfig-m031-20220812 (https://download.01.org/0day-ci/archive/20220814/202208140141.4uzWszG4-lkp@intel.com/config)
+> > compiler: s390-linux-gcc (GCC) 12.1.0
+> > 
+> > If you fix the issue, kindly add following tag where applicable
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > 
+> > smatch warnings:
+> > arch/s390/kvm/gaccess.c:859 guest_range_to_gpas() error: uninitialized symbol 'prot'.
+> > 
+> > vim +/prot +859 arch/s390/kvm/gaccess.c
+> > 
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  831  static int guest_range_to_gpas(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  832  			       unsigned long *gpas, unsigned long len,
+> > 92c9632119b67f David Hildenbrand        2015-11-16  833  			       const union asce asce, enum gacc_mode mode)
+> > 2293897805c2fe Heiko Carstens           2014-01-01  834  {
+> > 2293897805c2fe Heiko Carstens           2014-01-01  835  	psw_t *psw = &vcpu->arch.sie_block->gpsw;
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  836  	unsigned int offset = offset_in_page(ga);
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  837  	unsigned int fragment_len;
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  838  	int lap_enabled, rc = 0;
+> > 6ae1574c2a24ee Christian Borntraeger    2017-06-07  839  	enum prot_type prot;
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  840  	unsigned long gpa;
+> > 2293897805c2fe Heiko Carstens           2014-01-01  841  
+> > 75a1812230ad7a Alexander Yarygin        2015-01-22  842  	lap_enabled = low_address_protection_enabled(vcpu, asce);
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  843  	while (min(PAGE_SIZE - offset, len) > 0) {
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  844  		fragment_len = min(PAGE_SIZE - offset, len);
+> > 2293897805c2fe Heiko Carstens           2014-01-01  845  		ga = kvm_s390_logical_to_effective(vcpu, ga);
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  846  		if (mode == GACC_STORE && lap_enabled && is_low_address(ga))
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  847  			return trans_exc(vcpu, PGM_PROTECTION, ga, ar, mode,
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  848  					 PROT_TYPE_LA);
+> > a752598254016d Heiko Carstens           2017-06-03  849  		if (psw_bits(*psw).dat) {
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  850  			rc = guest_translate(vcpu, ga, &gpa, asce, mode, &prot);
+> > 2293897805c2fe Heiko Carstens           2014-01-01  851  			if (rc < 0)
+> > 2293897805c2fe Heiko Carstens           2014-01-01  852  				return rc;
+> > 2293897805c2fe Heiko Carstens           2014-01-01  853  		} else {
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  854  			gpa = kvm_s390_real_to_abs(vcpu, ga);
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  855  			if (kvm_is_error_gpa(vcpu->kvm, gpa))
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  856  				rc = PGM_ADDRESSING;
+> >                                                                                         ^^^^^^^^^^^^^^^^^^^^
+> > 
+> > "rc" set but "prot" not initialized.  
+> 
+> prot is only used in case of PGM_PROTECTION.
+> Because of that, we could initialize prot to an arbitrary value, but that seems misleading and a bit ugly to me.
+> Alternatively, we could introduce a PROT_NONE.
+> Or we do nothing, since there is no actual problem.
+> @Janosch, @Claudio, what do you think?
 
-Thanks for catching the bug in my code.
+I agree that this is not a bug.
+
+It does look ugly, though, and all reasonable solutions are also ugly
+(each for a different reason).
+
+another solution is to set prot to an arbitrary value only in the if
+case marked above. that way prot is not arbitrarily initialized, and
+there is no need to add a new PROT_NONE (which then would need to be
+checked for in trans_exc)
+
+I do not have a strong opinion, though
 
 > 
-> Thanks, I hadn't realized how static keys work but looks like having them as
-> __ro_after_init was always bogus.  Sorry to break stuff, looks like I should be
-
-Sorry for breaking the static isa extension key usage in modules.
-It's a good idea to make them readonly, but need to cope with the usage
-in module properly. This may be a good improvement item.
-
-> loading some module (probably KVM, as it's in the defconfig) during testing.
+> > 
+> > 2293897805c2fe Heiko Carstens           2014-01-01  857  		}
+> > cde0dcfb5df1db David Hildenbrand        2016-05-31  858  		if (rc)
+> > 6ae1574c2a24ee Christian Borntraeger    2017-06-07 @859  			return trans_exc(vcpu, rc, ga, ar, mode, prot);
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  860  		if (gpas)
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  861  			*gpas++ = gpa;
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  862  		offset = 0;
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  863  		ga += fragment_len;
+> > 7faa543df19bf6 Janis Schoetterl-Glausch 2021-11-26  864  		len -= fragment_len;
+> > 2293897805c2fe Heiko Carstens           2014-01-01  865  	}
+> > 2293897805c2fe Heiko Carstens           2014-01-01  866  	return 0;
+> > 2293897805c2fe Heiko Carstens           2014-01-01  867  }
+> >   
 > 
-> This is on fixes, I'm planning on sending it up later this week.
+
