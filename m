@@ -2,176 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74E1C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DB1C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241047AbiHQSnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
+        id S241258AbiHQSnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240996AbiHQSnL (ORCPT
+        with ESMTP id S240974AbiHQSnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:43:11 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C62A1D7C
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:43:07 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4M7H2f3dTnzDqNy;
-        Wed, 17 Aug 2022 18:43:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1660761786; bh=pybABoossopvyk5GCmIybMdFUdJj94XeORKmXmsyBkA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=eWqxU8J9ICiUUIl9vGm2Y3qok3XUsEQbxMFbBPn4fbBPgkLwD5DxaEeU/gI2KiT6G
-         6LLrlqzWb0pX4pLF+03bTaRAMS8lpUpqB0HoSWGzdGYX+IIpspnbpLOwiupiGLLkf8
-         DhLr7oSeiPcN6V9tFjhwb2z9/KX9CT4k6coU5H+c=
-X-Riseup-User-ID: 174D87B460C20107E9EA535CD40FAE534F423A2963B4AE97779D65618A1E54BC
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4M7H2c1rhwz5vRK;
-        Wed, 17 Aug 2022 18:43:04 +0000 (UTC)
-Message-ID: <dd2ee57a-2ab2-db94-36d9-8faced18fe61@riseup.net>
-Date:   Wed, 17 Aug 2022 15:43:00 -0300
+        Wed, 17 Aug 2022 14:43:31 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33185FEE;
+        Wed, 17 Aug 2022 11:43:17 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 355555C0180;
+        Wed, 17 Aug 2022 14:43:16 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 17 Aug 2022 14:43:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1660761796; x=1660848196; bh=jdo+e+0Bg4eiX19+TskCBEv6l
+        gk9aqZm7MX54jqJxcU=; b=tpkSLIwCX8n2WaO9TdHjNYfChpm/5FcyKvBJLWrm9
+        A1ok251C65D1UDZDAVKLprAivuBc+jp321ezOGQhPzw7ohTLEi3lkFOySIGydPIC
+        54OGirmUv5Zoguy3+99R2wfc5ud8sHClCqwKRx+D+OUSQfaSoElAlp3CZp4XzzlQ
+        TcSTQPvdwMrmIu7L6FuHFZlDTE44ltFq3CfrlKrCyBjgzi+WO2jJaNJuxC+vE+2f
+        LqN2f4lqy6wTifiPNXFAnlsUt40m8cuw0IlbJtKZRjtjW126QUP1uMJ/tzfmUooh
+        IigDOSJiufsN2c3bryiI6ty7TI5ov5XSAPd87hiRlf4gQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1660761796; x=1660848196; bh=jdo+e+0Bg4eiX19+TskCBEv6lgk9aqZm7MX
+        54jqJxcU=; b=RmC27Scg7eEXx3KQVry4BBq/20JQXG2jPpodn7kWim6PRGCy+dm
+        L+LmirRDyPLNAQLCjB6fn/WGTMfq7S32LmYXx8Shz9++8GCd/nNvNc/Hc2oEfwk5
+        Ujze5DhvnE2uErGuHOAriRJst9zFihf/h0xAMlczFDSCBvslJPxT2YGPd+TzrzmI
+        3M0MXeQwb8GjrN3wVu1kb+k+Pb4lgLWwWG1Ph9GeWFz1Xl+KBIevVMTfovdjcquK
+        /t4bRE9h8KCRGCryEanGf8x6nNV76MaOEC+GrkzZT3Pl4zNKrdPHu028JKdt9cIh
+        83Qc8CvY3nV8jRZHgqbUTTIr5fGO/uS78iA==
+X-ME-Sender: <xms:xDb9YvhRecJHIja9Wj-GnD507BftfBaYRXEKVDVYoCjAU6DOztgONA>
+    <xme:xDb9YsDS4rU1MwBEwsgyrJZzq889XUaWk4urwvtYkrNOH-5gnsIzZ9tD0mzyDSq87
+    rWiJDL-IrsTrnl8rQ>
+X-ME-Received: <xmr:xDb9YvGTTPs88huJ_PwU_odZdWwXcemYilyU7UiNprDhTcQ0zow3fzMiH-0yDD3HmbG6pkxCvrIJgkVe-ylIaaX3fhgY3LXve0KO>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedgudeftdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephf
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeetueektdeuhfefvefggf
+    evgeffgfekfefhkeekteffheevtddvhedukeehffeltdenucffohhmrghinhepkhgvrhhn
+    vghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepugiguhesugiguhhuuhdrgiihii
+X-ME-Proxy: <xmx:xDb9YsTvlHEKGW9KGsJEsmCjvIwRQVTQ6q0wtxCMg60oCZX8aNdPzA>
+    <xmx:xDb9Yszyx2ihUaO3DR0UrrJVqupxJryPwqDzOFpOZnxB53lJZg_pSg>
+    <xmx:xDb9Yi5FPH6eX-djY7xwB_IUMJqWTy1BpALmyuCHK0_W6ozXK2NWWw>
+    <xmx:xDb9YhrQgD_rOhBj__CFlNou_aGDFoMTLDThljcRjgtGZWqbbZ655Q>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 17 Aug 2022 14:43:15 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/4] Support direct writes to nf_conn:mark
+Date:   Wed, 17 Aug 2022 12:42:58 -0600
+Message-Id: <cover.1660761035.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Subject: Re: [BUG][5.20] refcount_t: underflow; use-after-free
-Content-Language: en-US
-To:     Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
-        Melissa Wen <mwen@igalia.com>
-Cc:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-References: <CABXGCsM58-8fxVKAVkwsshg+33B_1_t_WesG160AtVBe1ZvKiw@mail.gmail.com>
- <be6f1ce4-46b1-7a80-230c-b99f203ce8ad@riseup.net>
- <CABXGCsMFYnE+Wn2EAWuC8DSVj=TVprj6ABZwRK-hXcw-1hnMyw@mail.gmail.com>
- <CABXGCsMpGabZ32j_ObEHa_har2W8M8RWuqnx3d=yJT2NX_ztNg@mail.gmail.com>
- <20220817160751.moqhebkiuiydraka@mail.igalia.com>
- <CABXGCsOM9An-+EeaGWm0OA1FN2p94=BF210Lhy0tiO6ye9onWQ@mail.gmail.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
-In-Reply-To: <CABXGCsOM9An-+EeaGWm0OA1FN2p94=BF210Lhy0tiO6ye9onWQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Support direct writes to nf_conn:mark from TC and XDP prog types. This
+is useful when applications want to store per-connection metadata. This
+is also particularly useful for applications that run both bpf and
+iptables/nftables because the latter can trivially access this metadata.
 
+One example use case would be if a bpf prog is responsible for advanced
+packet classification and iptables/nftables is later used for routing
+due to pre-existing/legacy code.
 
-On 8/17/22 14:44, Mikhail Gavrilov wrote:
-> On Wed, Aug 17, 2022 at 9:08 PM Melissa Wen <mwen@igalia.com> wrote:
->>
->> Hi Mikhail,
->>
->> IIUC, you got this second user-after-free by applying the first version
->> of Maíra's patch, right? So, that version was adding another unbalanced
->> unlock to the cs ioctl flow, but it was solved in the latest version,
->> that you can find here: https://patchwork.freedesktop.org/patch/497680/
->> If this is the situation, can you check this last version?
->>
->> Thanks,
->>
->> Melissa
-> 
-> With the last version warning "bad unlock balance detected!" was gone,
-> but the user-after-free issue remains.
-> And again "Workqueue: events drm_sched_entity_kill_jobs_work [gpu_sched]".
+Past discussion:
+- v1: https://lore.kernel.org/bpf/cover.1660592020.git.dxu@dxuuu.xyz/
 
-Hi Mikhail,
+Changes since v1:
+- Add unimplemented stub for when !CONFIG_BPF_SYSCALL
 
-Looks like 45ecaea738830b9d521c93520c8f201359dcbd95 ("drm/sched: Partial 
-revert of 'drm/sched: Keep s_fence->parent pointer'") introduced the 
-error. Try reverting it and check if the use-after-free still happens.
+Daniel Xu (4):
+  bpf: Remove duplicate PTR_TO_BTF_ID RO check
+  bpf: Add stub for btf_struct_access()
+  bpf: Add support for writing to nf_conn:mark
+  selftests/bpf: Add tests for writing to nf_conn:mark
 
-Best Regards,
-- Maíra Canal
+ include/linux/bpf.h                           |  9 ++++
+ include/net/netfilter/nf_conntrack_bpf.h      | 18 +++++++
+ kernel/bpf/verifier.c                         |  3 --
+ net/core/filter.c                             | 34 +++++++++++++
+ net/netfilter/nf_conntrack_bpf.c              | 50 +++++++++++++++++++
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c |  1 +
+ .../testing/selftests/bpf/progs/test_bpf_nf.c |  6 ++-
+ .../selftests/bpf/progs/test_bpf_nf_fail.c    | 14 ++++++
+ 8 files changed, 130 insertions(+), 5 deletions(-)
 
-> 
-> [  297.834779] ------------[ cut here ]------------
-> [  297.834818] refcount_t: underflow; use-after-free.
-> [  297.834831] WARNING: CPU: 30 PID: 2377 at lib/refcount.c:28
-> refcount_warn_saturate+0xba/0x110
-> [  297.834838] Modules linked in: uinput rfcomm snd_seq_dummy
-> snd_hrtimer nft_objref nf_conntrack_netbios_ns nf_conntrack_broadcast
-> nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet
-> nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat
-> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink
-> qrtr bnep sunrpc binfmt_misc snd_seq_midi snd_seq_midi_event mt76x2u
-> mt76x2_common mt76x02_usb mt76_usb mt76x02_lib snd_hda_codec_realtek
-> iwlmvm intel_rapl_msr snd_hda_codec_generic snd_hda_codec_hdmi mt76
-> vfat fat snd_hda_intel intel_rapl_common mac80211 snd_intel_dspcfg
-> snd_intel_sdw_acpi snd_usb_audio snd_hda_codec snd_usbmidi_lib btusb
-> edac_mce_amd iwlwifi libarc4 uvcvideo snd_hda_core btrtl snd_rawmidi
-> snd_hwdep videobuf2_vmalloc btbcm kvm_amd videobuf2_memops snd_seq
-> iwlmei btintel videobuf2_v4l2 eeepc_wmi snd_seq_device
-> videobuf2_common btmtk kvm xpad videodev joydev irqbypass snd_pcm
-> asus_wmi hid_logitech_hidpp ff_memless cfg80211 bluetooth rapl mc
-> [  297.834932]  ledtrig_audio snd_timer sparse_keymap platform_profile
-> wmi_bmof snd video pcspkr k10temp i2c_piix4 rfkill soundcore mei
-> asus_ec_sensors acpi_cpufreq zram amdgpu drm_ttm_helper ttm
-> crct10dif_pclmul crc32_pclmul crc32c_intel iommu_v2 ucsi_ccg gpu_sched
-> typec_ucsi drm_buddy ghash_clmulni_intel drm_display_helper ccp igb
-> typec sp5100_tco nvme cec nvme_core dca wmi ip6_tables ip_tables fuse
-> [  297.834978] Unloaded tainted modules: amd64_edac():1 amd64_edac():1
-> amd64_edac():1 amd64_edac():1 amd64_edac():1 amd64_edac():1
-> amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-> amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 amd64_edac():1
-> pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1
-> pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1
-> amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-> amd64_edac():1 amd64_edac():1 pcc_cpufreq():1 pcc_cpufreq():1
-> amd64_edac():1 pcc_cpufreq():1 amd64_edac():1 amd64_edac():1
-> pcc_cpufreq():1 amd64_edac():1 pcc_cpufreq():1 amd64_edac():1
-> pcc_cpufreq():1 pcc_cpufreq():1 pcc_cpufreq():1 fjes():1
-> [  297.835055]  pcc_cpufreq():1 fjes():1 pcc_cpufreq():1 fjes():1
-> pcc_cpufreq():1 fjes():1 fjes():1 fjes():1 fjes():1 fjes():1
-> [  297.835071] CPU: 30 PID: 2377 Comm: kworker/30:6 Tainted: G
-> W    L    -------  ---
-> 6.0.0-0.rc1.20220817git3cc40a443a04.14.fc38.x86_64 #1
-> [  297.835075] Hardware name: System manufacturer System Product
-> Name/ROG STRIX X570-I GAMING, BIOS 4403 04/27/2022
-> [  297.835078] Workqueue: events drm_sched_entity_kill_jobs_work [gpu_sched]
-> [  297.835085] RIP: 0010:refcount_warn_saturate+0xba/0x110
-> [  297.835088] Code: 01 01 e8 59 59 6f 00 0f 0b e9 22 46 a5 00 80 3d
-> be 7d be 01 00 75 85 48 c7 c7 c0 99 8e aa c6 05 ae 7d be 01 01 e8 36
-> 59 6f 00 <0f> 0b e9 ff 45 a5 00 80 3d 99 7d be 01 00 0f 85 5e ff ff ff
-> 48 c7
-> [  297.835091] RSP: 0018:ffffbd3506df7e60 EFLAGS: 00010286
-> [  297.835095] RAX: 0000000000000026 RBX: ffff961b250cbc28 RCX: 0000000000000000
-> [  297.835097] RDX: 0000000000000001 RSI: ffffffffaa8d07a4 RDI: 00000000ffffffff
-> [  297.835100] RBP: ffff96276a3f5600 R08: 0000000000000000 R09: ffffbd3506df7d10
-> [  297.835102] R10: 0000000000000003 R11: ffff9627ae2fffe8 R12: ffff96276a3fc800
-> [  297.835105] R13: ffff9618c03e6600 R14: ffff96276a3fc805 R15: ffff961b250cbc30
-> [  297.835108] FS:  0000000000000000(0000) GS:ffff96276a200000(0000)
-> knlGS:0000000000000000
-> [  297.835110] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  297.835113] CR2: 0000621001e4a000 CR3: 000000018d958000 CR4: 0000000000350ee0
-> [  297.835116] Call Trace:
-> [  297.835118]  <TASK>
-> [  297.835121]  process_one_work+0x2a0/0x600
-> [  297.835133]  worker_thread+0x4f/0x3a0
-> [  297.835139]  ? process_one_work+0x600/0x600
-> [  297.835142]  kthread+0xf5/0x120
-> [  297.835145]  ? kthread_complete_and_exit+0x20/0x20
-> [  297.835151]  ret_from_fork+0x22/0x30
-> [  297.835166]  </TASK>
-> [  297.835168] irq event stamp: 198245
-> [  297.835171] hardirqs last  enabled at (198253):
-> [<ffffffffa918ce7e>] __up_console_sem+0x5e/0x70
-> [  297.835175] hardirqs last disabled at (198260):
-> [<ffffffffa918ce63>] __up_console_sem+0x43/0x70
-> [  297.835177] softirqs last  enabled at (196454):
-> [<ffffffffa9de3a4e>] addrconf_verify_rtnl+0x23e/0x920
-> [  297.835182] softirqs last disabled at (196448):
-> [<ffffffffa9de3835>] addrconf_verify_rtnl+0x25/0x920
-> [  297.835185] ---[ end trace 0000000000000000 ]---
-> 
-> 
-> Fill kernel log: https://pastebin.com/zbbY2zDU
-> 
+-- 
+2.37.1
+
