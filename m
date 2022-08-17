@@ -2,128 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA31C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58196C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240242AbiHQOnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53744 "EHLO
+        id S240298AbiHQOoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236912AbiHQOnB (ORCPT
+        with ESMTP id S237255AbiHQOof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:43:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00139410A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660747376;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bjZe8Vmc144tOlC9BhcpPSSqL3xq9DbQHAEA2c55U+w=;
-        b=W4gonXlempj7r0H+r0/6+0/Upl2Xf+L8TbEHVwNrsZbMd2Lw49O0j/TNEFysplvRjZclb4
-        I8LRBRYFe/JfUF88yPDSnANIWQLUiQ0B4OjNS1+DXjNnlk8pqlYc2o26Z9JvmaPAAFvCjX
-        N/0XuwFWJuffnv6GTK+3az6DUx49M2s=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-317-pno4RYIqMC-WKaU8LvkS5g-1; Wed, 17 Aug 2022 10:42:55 -0400
-X-MC-Unique: pno4RYIqMC-WKaU8LvkS5g-1
-Received: by mail-wm1-f72.google.com with SMTP id c66-20020a1c3545000000b003a5f6dd6a25so1172489wma.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:42:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=bjZe8Vmc144tOlC9BhcpPSSqL3xq9DbQHAEA2c55U+w=;
-        b=rZYQq01enlnbwBwQpfZIF57HGyrNXlPqWJi8D4NzCn18OFhPlzKh0SIaIJX5JJXvuJ
-         fdPCz3m/+cpDR3otEywdiyIqNhrvWV3zdnFwUnH4M09ubL1uTEajx/dn6UrdeS89frFO
-         XlxGiHhh0RiKy8T5kzdGTSG75g8vQkqHYzym8z4jeoYd+Guk8I1GJkzdHdgZyHBNUVJX
-         Ji2hw3B5YAs2c1ar421b/bQZT0lOG4GDuFHu5NaIqZDbrfmFJXemlGeBXMtgB2ajDn/a
-         tIi0YWJpxOHuV4PFzveOVkqEJWHgiAcLOJ2sQgO15/MRcWn2Pzjlc51LKHTEYa19PQxa
-         RRuQ==
-X-Gm-Message-State: ACgBeo0bODUCyWflybBtp+fRqF6WRkw+skhdmHIW7BrgrljH/KD47ovO
-        8FuI1LrTsfsEiiho60KpFowPogTm+cBpEO3QDtalN1IWwvMg1wpTYjx+nX+nVBO9QNBQaL/r8nU
-        LhssRCV15mbWVSaElhKr3NtiK
-X-Received: by 2002:a05:600c:3d19:b0:3a5:c6ef:a875 with SMTP id bh25-20020a05600c3d1900b003a5c6efa875mr2336352wmb.66.1660747374688;
-        Wed, 17 Aug 2022 07:42:54 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5YbAWrT75CQs7EPLDUNaqGsrAc0TzV2wqB74/+65VRQAtS7ImCQhlWBz1LLjBGLWy6cZh5pg==
-X-Received: by 2002:a05:600c:3d19:b0:3a5:c6ef:a875 with SMTP id bh25-20020a05600c3d1900b003a5c6efa875mr2336334wmb.66.1660747374529;
-        Wed, 17 Aug 2022 07:42:54 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id q13-20020a056000136d00b00224f5bfa890sm11926902wrz.97.2022.08.17.07.42.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 07:42:53 -0700 (PDT)
-Message-ID: <f784199190fd070b97178b72c09965e5f02905c0.camel@redhat.com>
-Subject: Re: [PATCH v3 03/13] KVM: x86: emulator: introduce
- emulator_recalc_and_set_mode
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Cc:     Borislav Petkov <bp@alien8.de>,
+        Wed, 17 Aug 2022 10:44:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8474C49B42;
+        Wed, 17 Aug 2022 07:44:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31C64B81DFB;
+        Wed, 17 Aug 2022 14:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F0DDC433C1;
+        Wed, 17 Aug 2022 14:44:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660747471;
+        bh=5+hesGY57xQHtUlGuPxqV55DlNRITexFStZnpOUjosc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lwkPzrQv4yGKxWlawuNpbVntJN4LEfpnbd0DbhhcYa0Njc3wfN+lEwn97cL0QnFYT
+         NItsXu9JdTxMuD9S7eusL8VI/FJT20pmBc10Daec5Zw5VVUn9kGbxEGeWuO6LkEYeA
+         SzQNHyUkl03Ptn2kTbrS9EY/K8W5JfApm9xKwAZ78uaUbtEPZOj8nR+1L6metNylHX
+         mUlqaxIRjoonfvd+Npfwwei1amC4kvhWGCi4RRSdZX6itfCXTav1dXbKmMULYiTaVG
+         rVc10EPbb0vTf88hVHn1ai87xODmTFqXC0aCARKtxz8QE/ehS0J2ZLVBa/ISrL7Mg0
+         K2avT2zDGd4lw==
+Date:   Wed, 17 Aug 2022 17:44:27 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Jim Mattson <jmattson@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Date:   Wed, 17 Aug 2022 17:42:51 +0300
-In-Reply-To: <2e191acd-0b71-784a-2c14-6e78351788cc@intel.com>
-References: <20220803155011.43721-1-mlevitsk@redhat.com>
-         <20220803155011.43721-4-mlevitsk@redhat.com>
-         <2e191acd-0b71-784a-2c14-6e78351788cc@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] selftests/sgx: Add SGX selftest
+ augment_via_eaccept_long
+Message-ID: <Yvz+yxnxp8G6KzHi@kernel.org>
+References: <20220815233900.11225-1-jarkko@kernel.org>
+ <20220815233900.11225-2-jarkko@kernel.org>
+ <6b304bb4-01cc-c88a-7299-19217a7a692b@intel.com>
+ <YvwpX7pYOW3Jv+vJ@kernel.org>
+ <DM8PR11MB55913534E8CE66F63460E707F66A9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <24bd8e42-ff4e-0090-d9e1-cd81e4807f21@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24bd8e42-ff4e-0090-d9e1-cd81e4807f21@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-08-11 at 23:33 +0800, Yang, Weijiang wrote:
+On Tue, Aug 16, 2022 at 09:35:27PM -0700, Reinette Chatre wrote:
+> >>> This portion below was also copied from previous test and by only
+> >>> testing a write to the first page of the range the purpose is not
+> >>> clear. Could you please elaborate if the intention is to only test
+> >>> accessibility of the first page and why that is sufficient?
+> >>
+> >> It is sufficient because the test reproduces the bug. It would have to be
+> >> rather elaborated why you would possibly want to do more than that.
 > 
-> On 8/3/2022 11:50 PM, Maxim Levitsky wrote:
-> > [...]
-> > +static inline int emulator_recalc_and_set_mode(struct x86_emulate_ctxt *ctxt)
-> > +{
-> > +       u64 efer;
-> > +       struct desc_struct cs;
-> > +       u16 selector;
-> > +       u32 base3;
-> > +
-> > +       ctxt->ops->get_msr(ctxt, MSR_EFER, &efer);
-> > +
-> > +       if (!ctxt->ops->get_cr(ctxt, 0) & X86_CR0_PE) {
-> Shouldn't this be:  !(ctxt->ops->get_cr(ctxt, 0) & X86_CR0_PE) ?
+> That is fair. An accurate comment (currently an inaccurate copy&paste) would
+> help to explain this part of the test.
 
-Ouch, thanks for noticing this!
-I'll fix it in v4 (I'll wait a bit if I get more review feedback before sending it).
+I would simply add something like:
 
-Best regards,
-	Maxim Levitsky
+/* 
+ * Define memory pool size big enough to trigger the reclaimer in the EAUG
+ * path of the page reclaimer.
+ */
 
+Suggestions/edits obviously welcome for the comment.
 
-
-
-> > +               /* Real mode. cpu must not have long mode active */
-> > +               if (efer & EFER_LMA)
-> > +                       return X86EMUL_UNHANDLEABLE;
-> > +               ctxt->mode = X86EMUL_MODE_REAL;
-> > +               return X86EMUL_CONTINUE;
-> > +       }
-> > +
-> [...]
-> > --
-> > 2.26.3
-> > 
-> 
-
-
+BR, Jarkko
