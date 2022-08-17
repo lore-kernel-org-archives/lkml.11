@@ -2,186 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6870C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CD6C32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239189AbiHQMES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        id S239200AbiHQMEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236580AbiHQMEP (ORCPT
+        with ESMTP id S239177AbiHQMEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:04:15 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461844C62A;
-        Wed, 17 Aug 2022 05:04:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660737854; x=1692273854;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Sw03qyNAB0MNEYgJP3KDR/9fx3+F8UT/HeVmqYUt2GE=;
-  b=Wip09kIPrY9+dtHdJJ1xkDqJ88AoZCotBUpwVJ1cbc7lXwkHwEStLNWl
-   nA66f1taTPDa/jQk4A2v4piCtZ+MLBFAKWCWfiLlDkvZAjrqeFgA76d7f
-   tiy0r+f0MSK+Qwxb8GO6U258dCYiN5I/tLZpD2q7hjf3fKDZk0c+iaz76
-   yNxgdRD3gkOdCD8jv0rQ/txx0/Bq4dZkoAcShncBn4J9wm5LRmOfoaFP7
-   b7WTS7bthyNuduy+HdmvhRZ0UtvJdNI9gnagQmw53uTriL/lUn2rTXuas
-   ID85G38SR9ScRPX1uUO8aLn4tyxxWULYLOC5c1d0HCycvHZvnf9LttnQA
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="356471447"
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="356471447"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 05:04:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="583742759"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 05:04:09 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 0BF04235; Wed, 17 Aug 2022 15:04:22 +0300 (EEST)
-Date:   Wed, 17 Aug 2022 15:04:22 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Szuying Chen <chensiying21@gmail.com>
-Cc:     mario.limonciello@amd.com, gregkh@linuxfoundation.org,
-        andreas.noever@gmail.com, michael.jamet@intel.com,
-        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yd_Tseng@asmedia.com.tw,
-        Chloe_Chen@asmedia.com.tw, Richard_Hsu@asmedia.com.tw
-Subject: Re: RE: [PATCH v4] thunderbolt: thunderbolt: add vendor's NVM formats
-Message-ID: <YvzZRsyGR/hakhIo@black.fi.intel.com>
-References: <20220817102450.63514-1-chensiying21@gmail.com>
+        Wed, 17 Aug 2022 08:04:16 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCD24D176
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:04:14 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id v2so18728764lfi.6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=yqssnPgj5AL6F0xZ/NeSjNCL9/LCIOq0NDJYiOB1qxU=;
+        b=RNZ0gz96FCyTInbkdKq7kFz/xXvFC9CqaukFbtQ74i3N1mysOLy08KcyEMXOYjHAmc
+         u30h2X3eTzG/DRaTinny0000oJsEUc4q3JVdQ5UEjv/hS3kA4n9bdoRuG3rFXdFYwxYU
+         kUvlkc6fb/i9rLYbFpBqw6B+kz/Xwfd/PbSHzK1gB+ulya+svg4WVUB/9tOeh71nSvzE
+         RWW351YYzAZw9TQ4Mxj8XYpv8/DYmBGLKcqJLO2xgylu0PDe6OZtGg26DCl/++R/WYqO
+         cEwMUNxgrySu7pPRBU6jPRywK3ymG3yWn3dEXvNpfOdNTd4/cBjv9Mq0eBGKuUHILdTM
+         qoTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=yqssnPgj5AL6F0xZ/NeSjNCL9/LCIOq0NDJYiOB1qxU=;
+        b=CDZUUixbFoFHpqAJWTzxG9IeiEHdC1+pzYK4hEOdFSyv0Yw1ALMekXah97iE+X9Qby
+         95kscpHsKeVDI1ukS+NRvkdAXkJ4VLzrRIYWVLdDDcGrDUSXoAHHK/3fc7wRBweu9TxQ
+         S/gyCmsnnhi7iwBc4GqyHEJGY4FEborA4e4rn3Re8QKAnV/pvKcblGwv7MH97fpRUbJc
+         AIfbhCInPoFWQ5RErE0BXdvLqUVpyDb+RaRhCn4dp8sy8H6isU/+C/AyUUjPtFP61KAw
+         +FduiztCwXMX8Ki9wcx1bFk25UOniox1a3tdXU4+pH0Y2EsXoXW2Bu7Y7M837GQIAAnm
+         37fw==
+X-Gm-Message-State: ACgBeo3E9eXFLsV2IPhJhw/30fYkzc36FKpNRv1QNRAJu4hzVGjsZk6l
+        YI9tk4EUZ+sq667JKb8MuXE10w==
+X-Google-Smtp-Source: AA6agR41ljtllSk6AwaS1v+x8NlqpoDbXtXK5sbPFe8/L6CKLHW/A0mdoe/rV6/tbtHihW7P1ebnrA==
+X-Received: by 2002:a05:6512:2210:b0:48c:eba9:5493 with SMTP id h16-20020a056512221000b0048ceba95493mr8530991lfu.540.1660737852630;
+        Wed, 17 Aug 2022 05:04:12 -0700 (PDT)
+Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
+        by smtp.gmail.com with ESMTPSA id d15-20020a05651221cf00b0048a97042251sm1670496lft.22.2022.08.17.05.04.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 05:04:12 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH 00/14] arm64: dts: qcom: improvements to TCSR mutex in DTS
+Date:   Wed, 17 Aug 2022 15:03:48 +0300
+Message-Id: <20220817120403.458000-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817102450.63514-1-chensiying21@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Wed, Aug 17, 2022 at 06:24:50PM +0800, Szuying Chen wrote:
-> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
-> 
-> Signed-off-by: Szuying Chen <Chloe_Chen@asmedia.com.tw>
-> ---
-> Hi,
-> 
-> >> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
-> >>
-> 
-> >> +static int asmedia_nvm_validate(struct tb_switch *sw, unsigned int mode)
-> >> +{
-> >> +	struct tb_nvm *nvm;
-> >> +	u32 val;
-> >> +	u32 nvm_size;
-> >> +	int ret = 0;
-> >> +	unsigned int image_size;
-> >> +
-> >> +	switch (mode) {
-> >> +	case NVM_UPGRADE:
-> >> +		if (sw->no_nvm_upgrade)
-> >> +			sw->no_nvm_upgrade = false;
-> >> +
-> >> +		break;
-> >> +
-> >> +	case NVM_ADD:
-> >> +		nvm = tb_nvm_alloc(&sw->dev);
-> >
-> >This function does not only "validate" but it also creates the NVMem
-> >devices and whatnot.
-> >
-> >Do you have some public description of the ASMedia format that I could
-> >take a look? Perhaps we can find some simpler way of validating the
-> >thing that works accross different vendors.
-> >
-> 
-> ASMedia NVM format include rom file, firmware and security
-> configuration information. And active firmware depend on this
-> information for processing. We don't need to do any validation during
-> firmware upgrade, so we haven't public description of the ASMedia
-> format.
-> 
-> I think I use "validate" is not fit. This function mainly to create
-> the NVMem devices and write. I will rename in the next patch.
+Set of improvements for TCSR mutex to match the bindings after conversion to DT schema.
 
-So instead what you now do, I suggest that we move all the vendor
-support out to nvm.c, that includes Intel too. What I mean by this is
-that the tb_switch_nvm_add() would then look something like this:
+Tested briefly on SDM845. Please kindly test on other platformss (therefore RFT).
 
-tb_switch_nvm_add(sw)
-{
-	if (!nvm_readable(sw))
-		return 0;
+Best regards,
+Krzysztof
 
-	nvm = tb_switch_nvm_alloc(sw);
-	if (IS_ERR(nvm)) {
-		if (PTR_ERR(nvm) == -EOPNOTSUPP) {
-			dev_info(&sw->dev,
-				"NVM format of vendor %#x is not known, disabling NVM upgrade\n",
-				sw->config.vendor_id);
-			return 0;
-		}
+Krzysztof Kozlowski (14):
+  dt-bindings: mfd: qcom,tcsr: add SC7x80, SDM845 and MSM8996/8
+  arm64: dts: qcom: msm8996: split TCSR halt regs out of mutex
+  arm64: dts: qcom: msm8996: switch TCSR mutex to MMIO
+  arm64: dts: qcom: msm8998: split TCSR halt regs out of mutex
+  arm64: dts: qcom: msm8998: switch TCSR mutex to MMIO
+  arm64: dts: qcom: sc7180: add missing TCSR syscon compatible
+  arm64: dts: qcom: sc7180: split TCSR halt regs out of mutex
+  arm64: dts: qcom: sc7180: switch TCSR mutex to MMIO
+  arm64: dts: qcom: sc7280: split TCSR halt regs out of mutex
+  arm64: dts: qcom: sdm845: split TCSR halt regs out of mutex
+  arm64: dts: qcom: sdm845: switch TCSR mutex to MMIO
+  arm64: dts: qcom: qcs404: switch TCSR mutex to MMIO
+  arm64: dts: qcom: sdm630: switch TCSR mutex to MMIO
+  arm64: dts: qcom: sm8150: switch TCSR mutex to MMIO
 
-		return PTR_ERR(nvm);
-	}
+ .../devicetree/bindings/mfd/qcom,tcsr.yaml    |  5 ++++
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         | 24 ++++++++---------
+ arch/arm64/boot/dts/qcom/msm8998.dtsi         | 20 +++++++-------
+ arch/arm64/boot/dts/qcom/qcs404.dtsi          | 11 +++-----
+ arch/arm64/boot/dts/qcom/sc7180.dtsi          | 26 +++++++++----------
+ arch/arm64/boot/dts/qcom/sc7280.dtsi          | 19 +++++++++-----
+ arch/arm64/boot/dts/qcom/sdm630.dtsi          | 13 +++-------
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          | 20 +++++++-------
+ arch/arm64/boot/dts/qcom/sm8150.dtsi          | 13 +++-------
+ 9 files changed, 73 insertions(+), 78 deletions(-)
 
-	ret = tb_nvm_add_active(nvm, nvm->size, tb_switch_nvm_read);
-	if (ret)
-		...
+-- 
+2.34.1
 
-	if (!sw->no_nvm_upgrade) {
-		ret = tb_nvm_add_non_active(nvm, NVM_MAX_SIZE, tb_switch_nvm_write);
-		if (ret)
-			...
-	}
-
-	sw->nvm = nvm;
-	...
-}
-
-And the tb_switch_nvm_alloc() resides in nvm.c and that one goes over an
-array of supported vendors matching sw->config.vendor_id and if it finds
-the match it will set nvm->vops to point the vendor specific operations
-and in addition it will will populate rest of the nvm fields like this:
-
-static const struct {
-	u16 vendor;
-	const struct tb_nvm_vendor_ops *vops;
-} switch_nvm_vendors[] = {
-	{ 0x8086, &intel_switch_nvm_ops },
-	{ 0x8087, &intel_switch_nvm_ops },
-	{ 0x174c, &asmedia_switch_nvm_ops },
-};
-
-tb_switch_nvm_alloc(sw)
-{
-	struct tb_nvm_vendor_ops *ops = NULL;
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(switch_nvm_vendors); i++) {
-		if (switch_nvm_vendors[i].vendor == sw->config.vendor_id)
-			vops = &switch_nvm_vendors[i].vops;
-			break;
-	}
-
-	if (!vops)
-		return ERR_PTR(-EOPNOTSUPP);
-
-	nvm = tb_nvm_alloc(&sw->dev);
-	if (IS_ERR(nvm))
-		...
-
-	nvm->vops = vops;
-	ret = vops->populate(nvm);
-	if (ret)
-		...
-
-	...
-}
-
-Then we would have all the vendor specific things in
-intel_switch_nvm_ops and asmedia_switch_nvm_ops accordingly and the rest
-of the code is generic USB4 stuff. We need to do the same for retimers
-too at some point.
