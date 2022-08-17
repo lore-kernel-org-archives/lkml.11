@@ -2,66 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B8BC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EF9C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240352AbiHQOkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37406 "EHLO
+        id S240385AbiHQOkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240344AbiHQOkA (ORCPT
+        with ESMTP id S240297AbiHQOkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:40:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266CD72B62;
-        Wed, 17 Aug 2022 07:39:06 -0700 (PDT)
+        Wed, 17 Aug 2022 10:40:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633B87330C
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE270B81DE9;
-        Wed, 17 Aug 2022 14:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C3EC433C1;
-        Wed, 17 Aug 2022 14:39:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B235F614EC
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA31C433C1;
+        Wed, 17 Aug 2022 14:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660747143;
-        bh=H1/55EN0CNNUFKMWzDOU/nWySd6mb3zYs3Er1MLkWeo=;
+        s=k20201202; t=1660747166;
+        bh=D2F5rhQcvdQNsiT8HtBPBvUKoSwn9XOVx+QjpXWS2Bw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bQ/YUfhAl2Ua2sOsX8zm8+SzzLH/BPgYknTCUNxJ2+TVz2gjzxEOPGQZfY+fBdFbi
-         qpXbQVwwpgP3HyW37XRz1X/VhQtX4MNdityW7oOiB+rmCjbzhvpKXukei8HiZo5f86
-         nf5RM1IEecP6nBF7gRGxZ3hwtGGWAiv0m62yfObXszgrQyDS30td/+KMbcjx4UNgU0
-         qZEv9xSuTyM114JAa00rcpPVCuWNmQmfDnDkYFEkRcCZF6RgBLDm01dCOqDx3w8+te
-         RGYPLEjTJh1HplazTpEK0qccvOn6SJl+VTz1U7eGuDJGxL+ATmebvsdFn6zzT5SNCC
-         q/1nB/he6DYWg==
-Date:   Wed, 17 Aug 2022 17:38:59 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
-Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] selftests/sgx: Add SGX selftest
- augment_via_eaccept_long
-Message-ID: <Yvz9g1dx9qbbMXJf@kernel.org>
-References: <20220815233900.11225-1-jarkko@kernel.org>
- <20220815233900.11225-2-jarkko@kernel.org>
- <6b304bb4-01cc-c88a-7299-19217a7a692b@intel.com>
- <YvwpX7pYOW3Jv+vJ@kernel.org>
- <DM8PR11MB55913534E8CE66F63460E707F66A9@DM8PR11MB5591.namprd11.prod.outlook.com>
+        b=N0tg25bb4yMVbc2/THbcZW6YZykHnEAvJ25bUxovHiM35NM3GrgF6VWqxAa5cbn6h
+         iPxzqoNhqR/D23BBn3UaIWPe/+MrNiaUMcFTzrAWvJqjJzH/qwITp0K3feYHru+Kcd
+         SMp90lCO0If5gfJjS3fEpfLW+PdpcBthUGRK0fOtEF8HbpFvAyqT9Z/WjYYPb7vI9o
+         ig/SmCQU0s9LYO22TstjwWjAOov1nCMFmHuonI5SDpIpoJZGMPYMad53jjfaxE93S+
+         OXP9UyTBOmeuYzGImmAc0LG0hgUkB9COA39grfwiTb+rtqXEEeN2PghkTZ6TjjKblG
+         7gq06Qurh5nSQ==
+Date:   Wed, 17 Aug 2022 22:30:07 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     atishp@atishpatra.org, ajones@ventanamicro.com,
+        linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, daolu@rivosinc.com,
+        Conor.Dooley@microchip.com, re@w6rz.net, apatel@ventanamicro.com
+Subject: Re: [PATCH] riscv: Ensure isa-ext static keys are writable
+Message-ID: <Yvz7byY9F0ow1bgf@xhacker>
+References: <CAOnJCU+Gx44ESHWyku7Kb6u5QnzjXiZcat5XmVWjksdFpcQ6nA@mail.gmail.com>
+ <mhng-dd00cb27-4162-48aa-834d-30fb90e194cf@palmer-mbp2014>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DM8PR11MB55913534E8CE66F63460E707F66A9@DM8PR11MB5591.namprd11.prod.outlook.com>
+In-Reply-To: <mhng-dd00cb27-4162-48aa-834d-30fb90e194cf@palmer-mbp2014>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 01:27:38AM +0000, Dhanraj, Vijay wrote:
-> I think changing it to "int i" will cause a buffer overflow with
-> edmm_size being 8GB.
+On Tue, Aug 16, 2022 at 09:29:36PM -0700, Palmer Dabbelt wrote:
+> On Tue, 16 Aug 2022 16:41:46 PDT (-0700), atishp@atishpatra.org wrote:
+> > On Tue, Aug 16, 2022 at 9:31 AM Andrew Jones <ajones@ventanamicro.com> wrote:
+> > > 
+> > > riscv_isa_ext_keys[] is an array of static keys used in the unified
+> > > ISA extension framework. The keys added to this array may be used
+> > > anywhere, including in modules. Ensure the keys remain writable by
+> > > placing them in the data section.
+> > > 
+> > > The need to change riscv_isa_ext_keys[]'s section was found when the
+> > > kvm module started failing to load. Commit 8eb060e10185 ("arch/riscv:
+> > > add Zihintpause support") adds a static branch check for a newly
+> > > added isa-ext key to cpu_relax(), which kvm uses.
+> >> > > 
+> > > Fixes: c360cbec3511 ("riscv: introduce unified static key mechanism for ISA extensions")
+> > > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> > > > > ---
+> > >  arch/riscv/kernel/cpufeature.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> > > index 553d755483ed..3b5583db9d80 100644
+> > > --- a/arch/riscv/kernel/cpufeature.c
+> > > +++ b/arch/riscv/kernel/cpufeature.c
+> > > @@ -28,7 +28,7 @@ unsigned long elf_hwcap __read_mostly;
+> > >  /* Host ISA bitmap */
+> > >  static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+> > > 
+> > > -__ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+> > > +DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
+> > >  EXPORT_SYMBOL(riscv_isa_ext_keys);
+> > > 
+> > >  /**
+> > > --
+> > > 2.37.1
+> > > 
+> > > 
+> > > --
+> > > kvm-riscv mailing list
+> > > kvm-riscv@lists.infradead.org
+> > > http://lists.infradead.org/mailman/listinfo/kvm-riscv
+> > 
+> > Thanks for the quick fix. Tested with kvm guests booting in Qemu.
+> > 
+> > Tested-by: Atish Patra <atishp@rivosinc.com>
 
-Hmm.. 'i' iterates segments. Amd I missing something?
+Reviewed-by: Jisheng Zhang <jszhang@kernel.org>
 
-BR, Jarkko
+Thanks for catching the bug in my code.
+
+> 
+> Thanks, I hadn't realized how static keys work but looks like having them as
+> __ro_after_init was always bogus.  Sorry to break stuff, looks like I should be
+
+Sorry for breaking the static isa extension key usage in modules.
+It's a good idea to make them readonly, but need to cope with the usage
+in module properly. This may be a good improvement item.
+
+> loading some module (probably KVM, as it's in the defconfig) during testing.
+> 
+> This is on fixes, I'm planning on sending it up later this week.
