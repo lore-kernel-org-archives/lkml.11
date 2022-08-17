@@ -2,184 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2659EC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C252C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240984AbiHQQLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        id S241041AbiHQQMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240881AbiHQQLU (ORCPT
+        with ESMTP id S240960AbiHQQL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:11:20 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A93F9F76C;
-        Wed, 17 Aug 2022 09:11:09 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id r69so12356161pgr.2;
-        Wed, 17 Aug 2022 09:11:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=MecChw+7gX16c23ZglNUB2LcmNSIQPOmIL4PPR6f9Ek=;
-        b=RC3Bcsjz+Tt/WKmtQIcxzHpr6VlfHcVwuCYhhyjhlMY0iFwVRz+CrSrre4h9hzgA8e
-         a+0dRoipxqsQiC8J15r4HlSOqvqiL0ECPZB7b/al2XN8LZArVQqFOTqcBELIywim7TJj
-         8GS89CzE7+8i9IYuiVUAhppK/F1JJ/6w6NXJEHprNRMm1YnBFUyGdeW0n+/w6iNHEPVm
-         VjpTI2qspfUNtgNN9LLgpeBJ1zUC/OlcFsmJQ/NeO/9dX9WoMolVpJlBRzgP9L3j+SIQ
-         2lgWw5beGR8nfFSQdW6ciW5guLaLk/ZpoFw/jeiNBByFUCj5hY93OymA9jxnybfjJsy6
-         12Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=MecChw+7gX16c23ZglNUB2LcmNSIQPOmIL4PPR6f9Ek=;
-        b=W/07aw8pzYB9vbZphEnddW9VkT1g0ZtDKgAOwPWHteNom5h9JXlGijeOyyG9gcMtHb
-         /nKBPdVjuu5owkSUZsbKwxGJLH6ph4zg9Lu6GfgXmCsgM/1PPOpbQ7TXyBjoPilmNFz1
-         DI9vLgGuLGNQ6O/9TVnA5Oy4f9eRAITYgr5/YM+/9z7Pj4aOc7RWFFtxKmteLYjVJb9L
-         RnfdwvkbELUMuyHgYEYUtxLtHmRyep0PPj+pWTBgy29r4ypIh3Ofm7jlGARwxhmmreBM
-         enx5f3eFYoIgNmrfoUddR5bOJUUcCr0YriQzhLjWe7XHfPmt29bEbVKdLa7pZX5GWVLD
-         OyvQ==
-X-Gm-Message-State: ACgBeo3/TLy0ATgxAKy00wqB5raQZcfTejgE8bSUtx1RpAMo+NINUFb1
-        Q4wfFe5rS+2epYgTR2X9/Ac=
-X-Google-Smtp-Source: AA6agR51o8Q+PHdYduMQAiLT/vq4twBjog7wFsfFXrbDSHoWsRTQ2lnX1+Ji8LbLYrqEQo74+Ytzlw==
-X-Received: by 2002:a63:b07:0:b0:429:411a:ff51 with SMTP id 7-20020a630b07000000b00429411aff51mr11987848pgl.207.1660752669309;
-        Wed, 17 Aug 2022 09:11:09 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id 5-20020a620605000000b0052e57ed8cdasm10685780pfg.55.2022.08.17.09.10.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 09:10:50 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 09:42:51 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <YvtmYpMieMFb80qR@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <20220817025250-mutt-send-email-mst@kernel.org>
+        Wed, 17 Aug 2022 12:11:26 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29D655A8;
+        Wed, 17 Aug 2022 09:11:17 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 16:11:02 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1660752671; x=1661011871;
+        bh=D7wmN5qV4emk+fg1faj1v+A7IXjv09X2AsHUIrsCn0k=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=IsDoc4npeWk0r72wVIlqVnw1Z7A9wz2QzGggjZ0LMDtOAWxh+wgWqOxMimKAoNGPA
+         yQN4hx+K4ji7Zo2YxqmLF+UAutLDoxVMcJ5EiOksPgBWJNSTfvRP01jcLdgn+U/IHR
+         lXnXYbDak+b9zfyGitx64bR07jPvJyYjob9QCO1BPGcMIKqF9J+JjWjsL3zFXa06e8
+         N9wayJKKpjGwuTW5ohs6cw9SrMhUNZU/zi/Ag4HZHPPprbH7yJA/VSPu9aTVjB/7Os
+         cou5MU5UT4+ZoTjhexXmeuzWC0G1mjkOuHMhvDsrU4XPDLebMxpzFTvKSYtr/3IUaN
+         pv0TUeeu7un9Q==
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+From:   =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Miguel Cano <macanroj@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Gary Guo <gary@garyguo.net>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Borislav Petkov <bp@alien8.de>,
+        linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>,
+        Martin Rodriguez Reboredo <yakoyoku@gmail.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>, x86@kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Ingo Molnar <mingo@redhat.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        rust-for-linux@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-um@lists.infradead.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Daniel Xu <dxu@dxuuu.xyz>, David Gow <davidgow@google.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        linux-arm-kernel@lists.infradead.org,
+        Tiago Lam <tiagolam@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Richard Weinberger <richard@nod.at>,
+        Finn Behrens <me@kloenk.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linuxppc-dev@lists.ozlabs.org,
+        Philip Herron <philip.herron@embecosm.com>,
+        Arthur Cohen <arthur.cohen@embecosm.com>
+Reply-To: =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>
+Subject: Re: [PATCH v8 27/31] Kbuild: add Rust support
+Message-ID: <rYTolA_zKqIX3oCL_i-vlIqKS99s0bYQmRKAdcScDq0mcyxti3imzP7AvJzBpiI6RAuH5RU5BpU4xuEY1Vzq57CuY5v47tO3SuUNAMd7seM=@protonmail.com>
+In-Reply-To: <CANiq72nNucEhXAXkXSujnGkpQrkv3-Pcn7ua8N=2XB-suAjs9w@mail.gmail.com>
+References: <20220802015052.10452-1-ojeda@kernel.org> <20220802015052.10452-28-ojeda@kernel.org> <CAK8P3a0jqhGY9E85VC9gNem5q6-dWeq0H6-7bhJopinMnLtOKQ@mail.gmail.com> <CANiq72nNucEhXAXkXSujnGkpQrkv3-Pcn7ua8N=2XB-suAjs9w@mail.gmail.com>
+Feedback-ID: 27884398:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817025250-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 02:54:33AM -0400, Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
-> > Hey everybody,
-> > 
-> > This series introduces datagrams, packet scheduling, and sk_buff usage
-> > to virtio vsock.
-> > 
-> > The usage of struct sk_buff benefits users by a) preparing vsock to use
-> > other related systems that require sk_buff, such as sockmap and qdisc,
-> > b) supporting basic congestion control via sock_alloc_send_skb, and c)
-> > reducing copying when delivering packets to TAP.
-> > 
-> > The socket layer no longer forces errors to be -ENOMEM, as typically
-> > userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
-> > messages are being sent with option MSG_DONTWAIT.
-> > 
-> > The datagram work is based off previous patches by Jiang Wang[1].
-> > 
-> > The introduction of datagrams creates a transport layer fairness issue
-> > where datagrams may freely starve streams of queue access. This happens
-> > because, unlike streams, datagrams lack the transactions necessary for
-> > calculating credits and throttling.
-> > 
-> > Previous proposals introduce changes to the spec to add an additional
-> > virtqueue pair for datagrams[1]. Although this solution works, using
-> > Linux's qdisc for packet scheduling leverages already existing systems,
-> > avoids the need to change the virtio specification, and gives additional
-> > capabilities. The usage of SFQ or fq_codel, for example, may solve the
-> > transport layer starvation problem. It is easy to imagine other use
-> > cases as well. For example, services of varying importance may be
-> > assigned different priorities, and qdisc will apply appropriate
-> > priority-based scheduling. By default, the system default pfifo qdisc is
-> > used. The qdisc may be bypassed and legacy queuing is resumed by simply
-> > setting the virtio-vsock%d network device to state DOWN. This technique
-> > still allows vsock to work with zero-configuration.
-> 
-> The basic question to answer then is this: with a net device qdisc
-> etc in the picture, how is this different from virtio net then?
-> Why do you still want to use vsock?
-> 
+On Wednesday, August 17th, 2022 at 17:13, Miguel Ojeda <miguel.ojeda.sandon=
+is@gmail.com> wrote:
 
-When using virtio-net, users looking for inter-VM communication are
-required to setup bridges, TAPs, allocate IP addresses or setup DNS,
-etc... and then finally when you have a network, you can open a socket
-on an IP address and port. This is the configuration that vsock avoids.
-For vsock, we just need a CID and a port, but no network configuration.
+> Hi Arnd,
+>=20
+> On Wed, Aug 17, 2022 at 4:40 PM Arnd Bergmann arnd@arndb.de wrote:
+>=20
+> > Hi Miguel,
+> >=20
+> > I tried enabling rust support in the gcc builds I provide at
+> > https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/arm64/12.=
+1.0/
+>=20
+>=20
+> Thanks for giving it a go!
+>=20
+> > to make this more accessible, but it appears that the command line
+> > options here are not portable:
+> >=20
+> > /home/arnd/cross/x86_64/gcc-12.1.0+rust-nolibc/x86_64-linux/bin/x86_64-=
+linux-gccrs
+>=20
+>=20
+> So you mean with GCC Rust, right? (i.e. we have "GCC builds" working,
+> via compiling the Rust side with LLVM and linking with the GCC C side,
+> but it is not intended for production or to be supported, even if we
+> cover it in our CI, test it boots and loads modules etc.).
+>=20
+> Indeed, `gccrs` does not support `rustc` flags yet. I am not sure if
+> the GCC Rust team will eventually provide a driver for those like
+> clang does for e.g. `cl` -- I would hope they do, since many projects
+> would benefit from it, but maybe they plan to start simply by
+> modifying Cargo to call them as they need instead.
 
-This benefit still exists after introducing a netdev to vsock. The major
-added benefit is that when you have many different vsock flows in
-parallel and you are observing issues like starvation and tail latency
-that are caused by pure FIFO queuing, now there is a mechanism to fix
-those issues. You might recall such an issue discussed here[1].
+There is already a prototype of such a driver. It can be found at https://g=
+ithub.com/Rust-GCC/cargo-gccrs. Unlike what the name suggests it is not car=
+go specific. It consists of two binaries. The first calls cargo, but tells =
+it to use the second binary instead of a real rustc. This second part then =
+translates all arguments to what gccrs expects. It is possible to directly =
+invoke this second binary. For now it probably won't work for rust-for-linu=
+x though as it doesn't have all arguments that are used by rust-for-linux i=
+mplemented.
 
-[1]: https://gitlab.com/vsock/vsock/-/issues/1
+>=20
+> If they don't support it, we will have to map the flags on our side --
+> it should not be a big problem. However, see below...
+>=20
+> > I guess nobody has tried this so far. Would you think that fixing this =
+is only
+> > a matter for fixing the build system to pass the correct flags dependin=
+g on the
+> > compiler, or is this broken in a more fundamental way?
+>=20
+>=20
+> If you meant GCC Rust, then it is a bit too early for the compiler. As
+> far as I now, they are working on compiling the `core` crate and
+> supporting more stable language features. They are also researching
+> the integration of the borrow checker, though we wouldn't need that
+> for "only" compiling the kernel.
+>=20
+> Now, if they decided to focus on supporting Rust for Linux early on
+> (which would be great), they would still need to work on the delta
+> between what what they target now and what we use (which includes both
+> stable and some unstable features), plus I assume infrastructure bits
+> like the platform (target spec) support, the flags / `rustc` driver
+> (though I would be happy to do as much as possible on our side to
+> help), etc.
+>=20
+> (We privately talked about possible timelines for all that if they
+> were to focus on Rust for Linux etc., but I let them comment or not on
+> that... Cc'ing them! :)
+>=20
+> Cheers,
+> Miguel
 
-> > In summary, this series introduces these major changes to vsock:
-> > 
-> > - virtio vsock supports datagrams
-> > - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
-> >   - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
-> >     which applies the throttling threshold sk_sndbuf.
-> > - The vsock socket layer supports returning errors other than -ENOMEM.
-> >   - This is used to return -EAGAIN when the sk_sndbuf threshold is
-> >     reached.
-> > - virtio vsock uses a net_device, through which qdisc may be used.
-> >  - qdisc allows scheduling policies to be applied to vsock flows.
-> >   - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
-> >     it may avoid datagrams from flooding out stream flows. The benefit
-> >     to this is that additional virtqueues are not needed for datagrams.
-> >   - The net_device and qdisc is bypassed by simply setting the
-> >     net_device state to DOWN.
-> > 
-> > [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
-> > 
-> > Bobby Eshleman (5):
-> >   vsock: replace virtio_vsock_pkt with sk_buff
-> >   vsock: return errors other than -ENOMEM to socket
-> >   vsock: add netdev to vhost/virtio vsock
-> >   virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
-> >   virtio/vsock: add support for dgram
-> > 
-> > Jiang Wang (1):
-> >   vsock_test: add tests for vsock dgram
-> > 
-> >  drivers/vhost/vsock.c                   | 238 ++++----
-> >  include/linux/virtio_vsock.h            |  73 ++-
-> >  include/net/af_vsock.h                  |   2 +
-> >  include/uapi/linux/virtio_vsock.h       |   2 +
-> >  net/vmw_vsock/af_vsock.c                |  30 +-
-> >  net/vmw_vsock/hyperv_transport.c        |   2 +-
-> >  net/vmw_vsock/virtio_transport.c        | 237 +++++---
-> >  net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
-> >  net/vmw_vsock/vmci_transport.c          |   9 +-
-> >  net/vmw_vsock/vsock_loopback.c          |  51 +-
-> >  tools/testing/vsock/util.c              | 105 ++++
-> >  tools/testing/vsock/util.h              |   4 +
-> >  tools/testing/vsock/vsock_test.c        | 195 ++++++
-> >  13 files changed, 1176 insertions(+), 543 deletions(-)
-> > 
-> > -- 
-> > 2.35.1
-> 
+As alternative to GCC Rust there is also github.com/rust-lang/rustc_codegen=
+_gcc/ which uses libgccjit as backend for the official rust compiler rather=
+ than writing a full Rust frontend for GCC from scratch. With a bit of patc=
+hing to force it to be used, I was able to compile all Rust samples with GC=
+C using rustc_codegen_gcc. However it gives warnings of the following kind:
+
+    ld.lld: warning: rust/built-in.a(core.o):(.data.rel.local) is being pla=
+ced in '.data.rel.local'
+
+And hangs very early in the boot process. If I enable early logging, it pri=
+nts up to "Booting the kernel." and then does nothing. This is probably bec=
+ause support for setting a different relocation model is not yet implemente=
+d. I opened https://github.com/rust-lang/rustc_codegen_gcc/issues/205 for t=
+his.
+
+There may be other issues, but rustc_codegen_gcc is probably going to be th=
+e easiest route towards a LLVM free rust-for-linux build. By the way note t=
+hat rust-bindgen which we use for generating rust bindings from C headers d=
+epends on LLVM. See https://github.com/rust-lang/rust-bindgen/issues/1949.
+
+Cheers,
+Bjorn
