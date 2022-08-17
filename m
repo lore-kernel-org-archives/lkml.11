@@ -2,84 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF57DC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A7BC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235532AbiHQU4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47548 "EHLO
+        id S242137AbiHQU4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241930AbiHQU4q (ORCPT
+        with ESMTP id S242057AbiHQU4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:56:46 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B26AA3F5;
-        Wed, 17 Aug 2022 13:56:37 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98b0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b0:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 664C81EC04E4;
-        Wed, 17 Aug 2022 22:56:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660769791;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=tiVP7B7HqlfzlVZrDZyL75M10GyjhcXbSwt07RTWZz4=;
-        b=Ayv1JslMZL8aHi7lmTwUrwErDmFhCns2DXnPfcwP1ZOzGxyfumd79YfsIECTf3/8jtq4CY
-        OFkuFnmJ5Msr+LtZi1xc7pDi2lOdFj2RGpjwRv24vR0RAIJBt79eMbpWoUiJychaR4habb
-        Vc1dbgCzGJMjWOFJjJNo07kUBBkVQJM=
-Date:   Wed, 17 Aug 2022 22:56:26 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kani, Toshi" <toshi.kani@hpe.com>
-Cc:     Justin He <Justin.He@arm.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Robert Moore <robert.moore@intel.com>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "devel@acpica.org" <devel@acpica.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        nd <nd@arm.com>, "stable@kernel.org" <stable@kernel.org>
-Subject: Re: [PATCH 2/2] EDAC/ghes: Modularize ghes_edac driver to remove the
- dependency on ghes
-Message-ID: <Yv1V+gWICIcuNXdE@zn.tnic>
-References: <20220811091713.10427-1-justin.he@arm.com>
- <20220811091713.10427-3-justin.he@arm.com>
- <YvZnrTrXhRn8FV3I@zn.tnic>
- <DBBPR08MB45389A9DB098F1AC14C19074F76B9@DBBPR08MB4538.eurprd08.prod.outlook.com>
- <PH7PR84MB1838203B478319EA45167BB4826A9@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
- <YvyruNX+BUi+O3Df@zn.tnic>
- <PH7PR84MB183888AC20B37A3D891C332D826A9@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+        Wed, 17 Aug 2022 16:56:47 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE86A99E9;
+        Wed, 17 Aug 2022 13:56:38 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:43026)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oOQ5c-007tAA-3N; Wed, 17 Aug 2022 14:56:36 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:44962 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oOQ5b-006es9-5Q; Wed, 17 Aug 2022 14:56:35 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
+References: <20220815162028.926858-1-fred@cloudflare.com>
+        <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+        <8735dux60p.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
+        <871qte8wy3.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+Date:   Wed, 17 Aug 2022 15:56:26 -0500
+In-Reply-To: <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+        (Paul Moore's message of "Wed, 17 Aug 2022 16:13:39 -0400")
+Message-ID: <8735du7fnp.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <PH7PR84MB183888AC20B37A3D891C332D826A9@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+Content-Type: text/plain
+X-XM-SPF: eid=1oOQ5b-006es9-5Q;;;mid=<8735du7fnp.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/Xn3ZKbDRXVpMvUTRIq5cONwBCXE13Nz4=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 08:22:58PM +0000, Kani, Toshi wrote:
-> ghes_edac is used on Arm. This original issue happened on a non-HPE
-> platform.
+Paul Moore <paul@paul-moore.com> writes:
 
-Remember: ghes_edac loads only on known-good platforms - not the other
-way around. If ARM folks wanna use it there, then I'd expect explicit
-enablement to do so.
+> On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> Paul Moore <paul@paul-moore.com> writes:
+>>
+>> > At the end of the v4 patchset I suggested merging this into lsm/next
+>> > so it could get a full -rc cycle in linux-next, assuming no issues
+>> > were uncovered during testing
+>>
+>> What in the world can be uncovered in linux-next for code that has no in
+>> tree users.
+>
+> The patchset provides both BPF LSM and SELinux implementations of the
+> hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
+> If no one beats me to it, I plan to work on adding a test to the
+> selinux-testsuite as soon as I'm done dealing with other urgent
+> LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
+> run these tests multiple times a week (multiple times a day sometimes)
+> against the -rcX kernels with the lsm/next, selinux/next, and
+> audit/next branches applied on top.  I know others do similar things.
 
-> to keep it protected from any edac driver.
+A layer of hooks that leaves all of the logic to userspace is not an
+in-tree user for purposes of understanding the logic of the code.
 
-You got this all backwards. If anything, the kernel should be protected
-from ghes.
 
--- 
-Regards/Gruss,
-    Boris.
+The reason why I implemented user namespaces is so that all of linux's
+neat features could be exposed to non-root userspace processes, in
+a way that doesn't break suid root processes.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+The access control you are adding to user namespaces looks to take that
+away.  It looks to remove the whole point of user namespaces.
+
+
+So without any mention of how people intend to use this feature, without
+any code that uses this hook to implement semantics.  Without any talk
+about how this semantic change is reasonable.  I strenuously object.
+
+Eric
+
