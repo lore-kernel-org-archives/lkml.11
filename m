@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86653C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D32C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240425AbiHQQDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
+        id S240472AbiHQQDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240315AbiHQQC7 (ORCPT
+        with ESMTP id S240367AbiHQQDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:02:59 -0400
+        Wed, 17 Aug 2022 12:03:04 -0400
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60050.outbound.protection.outlook.com [40.107.6.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037899F740;
-        Wed, 17 Aug 2022 09:02:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2CD9F0C7;
+        Wed, 17 Aug 2022 09:03:03 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b5Ryh9q+11szxoBbXhwf2B0fX/Elb6mn2CAs23J1J4hdYk48oaLEfwows6kU582UPVEVS4VMiT8oDQ319p+SVTX3k4KQlaTN3Wv/BJRU7Zgmhmo56yAS697VOC/S260FE/Hqs4zOopEuKWcgWAfDpX8eDPlwoIqmApQGOupyYkFjTe8exFSzplAXvmVV64AXA+zADc7RYOYTMH/4lIMaEn8OhTVU04Jq0kY8FkLtzeobpeT44LEjWSOuZiSAHjMcqq9qko7pWJabVDdxCXvTnQhxPOoFEzPcC7nplVpRXRR25RURQryINMGEO/99GJqc6Os8ew7UAdlqapmrQ/Os7Q==
+ b=QQf+ozvqPYXlWObzmr1mixuieZhE/50qCPLGOLvhj+13hXXuRt0zIG5yya8fJOEndxvUk4aaIpC8pjMtqpS0x3UOBH9BoK5574yVSXtzn0oLk698Hd8Xr9aJ21/D+FQqVJfiFz9Mn9ZGm8Zq0jXaUtaaaCUgfrfawtj67BUOAuXuu+IXZR1bEQ2+ZT/BqA9yg9MUXfHHS0A2ljQ9xWS0bDE+hVAnCa3pQppENSXxYtkierG88L+HLPLEqENsiiR/VvNT89Wj1PDGh0mG9SzuRFWG61onuJ1Hh+P5FPv2iATbacK1lrMxUORiCeSqodIwAIhioPhnmCe+KSeKmza3XA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2IIC/FDvsCZG0SuQSAlEJoMEuskYRMGhkKu9i3/oHcQ=;
- b=HZHMFoHdJBjRvJOvSwB+JsKAWeY5pe6oWUEZICKGMbbZqgJDXA9IcXkS+byypkZowFDwcyktSa1QyZrkgpvYTeJzVtGuuIYq9bo2DrtxSS9pVYkczAr8VYvCV1gir9xVyTcBAzPtYGMpBfZ7SW1gW0F5Ksg4CZ8H86WjsKfi7Tm/1OQDpJYc5Zb/RwP4N+uZgPLMdki5dffbklhWzE82TQA2ISglydP0nxRgbEwddtwtolItvG0HD/h0h00htkofZ4iRju6tYetnk4BW8E1S4AHQQxtU+xMEJR9Zs27uyZ6VkwmDPT2FI6nHT/hNX3pkEtEm5E5YGicO/dUVHa9Ruw==
+ bh=hL2ue7bxqL6wT/o3f28ReSYaMfSe/S2aKJRm6tvk78c=;
+ b=oNZwbeTp1yH68rkw6DiKPRinTPGRd02CB8PLkp605q1Zf90QM+kn+gg3dWKaEWldP8OnPVz8CxothgsNUck8GeqvQ3gYuhHE+Azj67uPLr8rA30ATtfa3mcC/vFoTCkvRYcVJsNi/Uwa+5TEkOk4rqo2ro8vwm5PauvsjxUXmna8H4TYGHW/LQ7l0GBUI/GQtTrwHQN6rPdLwxi/ocTsN5q/5XBb/rlDf0D1/llErPjrx4ydLE0rPgSqWttfoItkBahwBzlrulpT5VnAdqr4cQWw4C2qpEfkcEllqwvuTM0k09JVkV3cJyUHar0fUQ2lX8b7WHnZiYFhfdle7phj6Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=stud.acs.upb.ro; dmarc=pass action=none
  header.from=stud.acs.upb.ro; dkim=pass header.d=stud.acs.upb.ro; arc=none
@@ -31,11 +31,11 @@ Received: from AM6PR0102MB3159.eurprd01.prod.exchangelabs.com
  (2603:10a6:209:3::16) by AM6PR01MB5734.eurprd01.prod.exchangelabs.com
  (2603:10a6:20b:fc::20) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Wed, 17 Aug
- 2022 16:02:55 +0000
+ 2022 16:02:58 +0000
 Received: from AM6PR0102MB3159.eurprd01.prod.exchangelabs.com
  ([fe80::19b7:7216:e4a2:b0b]) by
  AM6PR0102MB3159.eurprd01.prod.exchangelabs.com ([fe80::19b7:7216:e4a2:b0b%7])
- with mapi id 15.20.5504.028; Wed, 17 Aug 2022 16:02:55 +0000
+ with mapi id 15.20.5504.028; Wed, 17 Aug 2022 16:02:58 +0000
 From:   andrei.tachici@stud.acs.upb.ro
 To:     linux-kernel@vger.kernel.org
 Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
@@ -44,9 +44,9 @@ Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         devicetree@vger.kernel.org
-Subject: [net-next v4 1/3] net: phy: adin1100: add PHY IDs of adin1110/adin2111
-Date:   Wed, 17 Aug 2022 19:02:34 +0300
-Message-Id: <20220817160236.53586-2-andrei.tachici@stud.acs.upb.ro>
+Subject: [net-next v4 3/3] dt-bindings: net: adin1110: Add docs
+Date:   Wed, 17 Aug 2022 19:02:36 +0300
+Message-Id: <20220817160236.53586-4-andrei.tachici@stud.acs.upb.ro>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220817160236.53586-1-andrei.tachici@stud.acs.upb.ro>
 References: <20220817160236.53586-1-andrei.tachici@stud.acs.upb.ro>
@@ -57,53 +57,53 @@ X-ClientProxiedBy: BE1P281CA0062.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:209:3::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d8a93da8-83bd-4848-11d8-08da8069f262
+X-MS-Office365-Filtering-Correlation-Id: 8b520756-ab04-4ea6-333a-08da8069f3f0
 X-MS-TrafficTypeDiagnostic: AM6PR01MB5734:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Th0iZZUGrnva9fdRDmgWaqFThnY1AKS/+LS0zLqqS8NRbv7E68SqWyzctQcs6UkgIyDt3K9jR0QYqGktPi7ZShIIZTvjcnJ5hInNy0UIAP/nIOYQEuoKkeujBdLknCa6EIRLndW2UwFm4Dkmnextgao9OC3ky87kZLzG1QqXP4x+Fi4uJUoh9Ysn2N1Y7rtGF8hDYB2/fomQGThy55YavtOrN46FUI+MhZ+tOYqZKCj+zFSUfN9THE4WmAyDRS8LU0r+7tHxoiTlie3q/yJ+1pnH3hS5vI/ux/T6O6fgOKyCPkcf635ENBqxifQmZQxG+6+5qvsbyJAxICFNFklWFe/UPikkVmBRgDQVafjBt7Dxlsq/BszS2xOrDZII3hh0hFK+6JZko/qSDUmANrpj/gc+wDMbhUyIzBmUN5FC9x7w1ddSIv88Fd69OTiA07YijeJG2BY46i+EERzbpdLp+I6RHkUNO/jluCIXcHtuB5R64SaAjbAN5Pa8Iy9xkqsX2iIRWuvgCDsjwSplQO+zxTCV6nL9vYt/YK6SVGatf74P8A28BsR2I/KLhS0cS6pb0pq850lFbLOvr17w3Uw3ryg74hPCSJUWam4bEZ1WUZGRLW8W6jOYeAjpsl8vu4U7L4veug0vYT9XQDh7xqsgr1sTtF0TWkValdEiZ1VF8vT0ANVbEKM2S13RfNOfwavB1T6mHQ3W3uyqrXG+0s1TgfqfYiLkrrRDQVKKO4j1sto=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0102MB3159.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(366004)(376002)(346002)(39860400002)(1076003)(6666004)(6486002)(6512007)(52116002)(83380400001)(6506007)(5660300002)(9686003)(186003)(41300700001)(786003)(316002)(41320700001)(2616005)(7416002)(478600001)(2906002)(4326008)(86362001)(6916009)(66946007)(66556008)(8676002)(66476007)(38100700002)(8936002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 6sQ13eR0PSUyRFvRJattydqL069G9bLPSFvWTQ0Bk8KBUZpFLzgHbOvgRWS+Md8Zbo0wfYGwkFLiMUngNqmyMt2Ml+mhUZAkFqlbbHsGrkaIIxocS0lkcOEZCR646wRvnUPW6866PFVRsSDs/xtsNAbPkiGX2+/K0qpkiDMZqDc+P3wPQxAG0UGPTRxObtyofXF8k4S0cLFSwHiKxW5BFWLcaRIewXpyOBNl5a9kpe97aPatLOsPPxFbcDRX0ptHdDBJqvrYw/p1zQqBe58Yg113fH+samfslI1cYIwfP1cyukL/EiDEgcWkGSvfxLc8OraJ0fvoVIea4MnlSLiXYRbJLxuLOO27kYCimjxKc0Dda2n/AxmA7wsHq83pv0HLBvK/TYhlqDc4ZvpPeKZhKuNVlLtDIjKnLCH71tjP/KG8Nzo+w93KcsYiJr4pIP5YbjE3BF1+fjYSgS5AXeIluKXURtU4JIBY68mNWPTrY9IW3oBJfe9B7FmSt7EVLs41VgRwgmRhRgSJXcDNBK50wbaPcAIXdXs5wdeQEbDsspFXRMTMX4K2rR86f5u5i7GLvnm6Lb0jfHvJsXgGQOahUerOAQQeWyyisMNMDzzufbS+IC37HnfEL43mJ6JoViIEFR654xhkbKB3kByZuaphCRXN/G+BDDBJLmjPdnKSSUFDabB4v7pMk5tAzWRLwVLvPRpgNERNcM0GTSIodl/hTuhLoXVHjR/TcITpSttsnKIM3G+1JKaxOVs3jfNM3kb9rsbcR9z37F0m3sJ3f499Xw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0102MB3159.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(366004)(376002)(346002)(39860400002)(1076003)(6666004)(6486002)(6512007)(966005)(52116002)(83380400001)(6506007)(5660300002)(9686003)(186003)(41300700001)(786003)(316002)(41320700001)(2616005)(7416002)(478600001)(2906002)(4326008)(86362001)(6916009)(66946007)(66556008)(8676002)(66476007)(38100700002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/5YwLK9woymsq9VlSLewWO2lhuO+pfsx200ZbGSV3MABxw+A1ts8dknskJv/?=
- =?us-ascii?Q?gJyV89IokQVMNwx9Bk9PFr5Y7avdCcjXw9G/lTkxjlkj4YGtfaF3ipmhnN/3?=
- =?us-ascii?Q?k7uF39hS/NnNxd2stE9GSlUIFwB+c0JMDhoSbOfDFmsr9EmXZ3AFGDJ/F5Gi?=
- =?us-ascii?Q?Cc5RJimHa0eMf3tiyP+9LFlRdOW2b5maBEvcBvgGM3wdXx1uPVeRFALatnL6?=
- =?us-ascii?Q?qn6IKAatepfdl6BeajeuYZfOn8VrdVjfkPG+HJFKkYxiTJfN0SVca0Zecyuu?=
- =?us-ascii?Q?1Q7/8OHvO/mtx6Tqj1pZA8iVB2N/mUE1HfJr/q35szVzhV2VmNFyZkjvj8wt?=
- =?us-ascii?Q?iGYaf0migftyslyFMhbM6zSByhTWCQL2raA5pbCdOrwqoF9XYbMo9talsRXx?=
- =?us-ascii?Q?+LljwD96BiMPrJ3/5egF25L4eqZ4T9voUiqU6jbVMnfQbgwXnCYqO41OoaDI?=
- =?us-ascii?Q?5ps4+UevTNyvBqloGziHHTAGQGJ2wUFQ2++YGj3nMEjpv1I1sJJC7tJhIRpE?=
- =?us-ascii?Q?sh/6wCNfLyIoIALUkFO1nNikF6IJL5stIWtlip3obdRpP/Im1+0Bzmo6fNfJ?=
- =?us-ascii?Q?9aL5D0ECIS//zKdhfrYesLM15x/b5xR+Lg8PRU5huYtTMUdQZmyS14hG9arc?=
- =?us-ascii?Q?dwe+CQoxbaoOB4DJ8noeX4hxcP12HwTW7VEhZzeMSlQJYT3m8aMXeuBZqRYQ?=
- =?us-ascii?Q?H8/ap65PcCxuI5onKQHGEVtytabI6nB3j3N5KnV4Cch9iYVtVTmXMbumbjoZ?=
- =?us-ascii?Q?/EhrudD1ZTyXjf0p+MjxnD33uNeF82QbF1rncR73JMxEKqbsy1MgREV3kxqZ?=
- =?us-ascii?Q?R6WRviAIqLqxNBie86TpXVDIOWCkbsWV5QMwSafeAZraEAMYJJOLH2UqFoHF?=
- =?us-ascii?Q?eXWpZoCXOvHH5IHldtcbTkgD35LnHO2T3MfxeYDWfHvdZQrFiPhaZwzQoSXP?=
- =?us-ascii?Q?MFHIREs4KeXBzu7ySPmmZxEUkrpRsMr+urqz4ra4uSSzXMeNNqvlUp82/5NY?=
- =?us-ascii?Q?sUemOE04wVZE+HWeSishfvy6Ng0wZlyH1bvXHbmsp/HxI6g25k2XNwhdPEFh?=
- =?us-ascii?Q?yF61iIRTw+xzQPZ4BHb3OLj9dgg00kOA2lgS4UTL26ReoLIWZvJHpEdlqkgR?=
- =?us-ascii?Q?G/4ieMDR9xM78aNDhCLYSJ8lIS1vHcK5fe2zYv4MiAhRgNuVPHOPkcxF+yyh?=
- =?us-ascii?Q?BZ0t9qH7xOkcY6MiIta9N8ww34gO/HtCp6+BrSiWQzJsIXVefPeHQhwnA/Pl?=
- =?us-ascii?Q?I5iUGSVDs3bDzmuUnXHwAs+ioOcDc1qtgIxQ7QXCQcRFeKUb7GsQ7rYxOSAF?=
- =?us-ascii?Q?DRzTHmNGEzw0l8GA0PiJ6/afTfHTRAc9mKnlvxKkERS3a1PkQLwogMsccoyj?=
- =?us-ascii?Q?sr14qIM3Y0ZajuXesEQszG6qOoXHWQjQOSArqr7z90FORxdT1CMxTgItyNpW?=
- =?us-ascii?Q?SvXUMcwpQxO/hIHz8901FepNPOFZALFBgkShRnaEmz6p2jzZ4e0O0btkYqH1?=
- =?us-ascii?Q?lgQEC4aoV5rZllSndn+zRhQoZKAo/sonoX1FTAwtgKyR652/cwwi26fkFmwk?=
- =?us-ascii?Q?yjDsNI1D1f49KQ3dC100ZnHhmImUV3d6X0yo6r0/wZ9ome7dnpF6pu8Ev9Wc?=
- =?us-ascii?Q?LH4+sumbqHtBgfm3pj60zEhsyV/qFILkgNQiuMt9l+MyEMRGMYU5HeMc8FcC?=
- =?us-ascii?Q?dpgLiw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sTdXh+Af0Uzm6AWPAbKNvOv3wAYGTU8+WXl1S49jaioQGMG1xWL2sM8oSvXg?=
+ =?us-ascii?Q?51UnsEDvTuhGjJZfXn1JqGFv1WhaYyT4VmlbFyCu21HYUyaqRugxN5DsM5yB?=
+ =?us-ascii?Q?x2Yv1HuNbKwmgn9k+G5jNB+3gxbZQZk/uel26MZlgPvSoFoednpr0PzEIg2C?=
+ =?us-ascii?Q?yYJBQlh1nv8U8lg2OKesGHfDpAStcBUsuz0k/wokmnXr8p4bbRzTnrRqHRuD?=
+ =?us-ascii?Q?ZU7u83HgiR12+fLdwdHZFAcJ2uhhfnNUFQPDDElTwyec2QccpU5D7mZ4rVCA?=
+ =?us-ascii?Q?ksxmw3eOMY7lu//lVcSTHjOO+YS0kchyFn/+3l3SB/QIeteT2GpEPdPW7s1/?=
+ =?us-ascii?Q?W8Rdo2MkZnzz4uU+0z028ekg9I4FlOWcba/3557191yVcSvFIJ5qeytPqfb+?=
+ =?us-ascii?Q?B+lmNxsof8PZdg6PKztpHye09glh247Z+T+YeODY7tZ18gVSvCFA5ncEPBYA?=
+ =?us-ascii?Q?GmunCNb4aanqorgocWt4bZavWv08UV8a8izHClFKAkUnLMeAo0zeob+qP0A8?=
+ =?us-ascii?Q?5MIlfKcPlzJpzttHwLHsvjbxwpn2hcMhOCWo4LdgNgAdCiT8msZu3ThzbPWd?=
+ =?us-ascii?Q?hikabMmDK3WHE0dJWiwBbpL1pudTeAleN2SIErYt7l4OsY9Fo/Psxw5OkBgh?=
+ =?us-ascii?Q?jUApgikCf3IJLaNQFJ+XDMf+9BxIhXk8TkUwvHo/AP6IONiG2UvoAgszlSmc?=
+ =?us-ascii?Q?kn8m2aaDE0+2N4UCAqIm5Kkq1mPRqg7F0+ILxTCZvZWY6OcpKJ/FKR3fCwXq?=
+ =?us-ascii?Q?4Gg4Hn7+ziGI0CeghySVxHH55DyaGjlbh1XFMZwjbUp7d7slUdwFPV7BKofE?=
+ =?us-ascii?Q?F+d2uJdtKfiLP5VnHE9BeFJRJI036ETPmQtiNKpFYP3Dxq7LIOkxWfo2MxB4?=
+ =?us-ascii?Q?e/yuK0puZkup22v5teSsvuAmNkMFnNKV7maJ3ypfRhB8oxL7bPb4LQsgnmyU?=
+ =?us-ascii?Q?QCasq0PK+XTkBbFKJNOg3HMOZP2mF2oof3p2O1E2AbNClAeBFfSzQFGNhBkt?=
+ =?us-ascii?Q?70sZ9BeyQ+soFPM2VsTmFySGELr2h0CDnpyh/a/I2jQTTJRYUc41QFQtveAd?=
+ =?us-ascii?Q?VX7NLVaWJbV2XoeypmSXoUEQu2gU8/9gMoyqYRpi2j8hhYWDv7ZD8wJI+vBx?=
+ =?us-ascii?Q?62i21FvBHbXoSaBNS88p4so3a3KF93Ov1aUoCKRP8PXsoZo9UVCNszWIixFu?=
+ =?us-ascii?Q?w5aThq2GHGC/Jsq/4E3bC17Nd82xZYrBJE30YK6sJXnln3yjD0j7MQxuFo4m?=
+ =?us-ascii?Q?zsW1+DOm9PkdalTp601siHO16vF8/D5empzGmAm0yn/s9TNb7cWKpqOZ55Rs?=
+ =?us-ascii?Q?hj22lhpxGoVKYBxX7z/DhyLmVQdobZFVtUUpxMSMVtXVdzg41aEd6+PFeo3H?=
+ =?us-ascii?Q?GMXZzHclHOqJX/kKlqjVOtYgC1njzsiWYy1NUCmRoMS8jFIycKMZpm3OQ41t?=
+ =?us-ascii?Q?cBWj9R99EOIK4+RKsfb5P/ZXMKiHoAsiCwq9vMdFWUioBMu9ABJBAs47Tw9D?=
+ =?us-ascii?Q?roWOcqTzp0kP0LAYcgv9rklOK9jOoKkzhUNdgK/Y6x4ETqJwuZK4k3AXzhEF?=
+ =?us-ascii?Q?YqBr1BICPx0lcVcHT8gUv0IJrxnADhwRCZVUSQmV2llrEcSMgwxfo86tnCdA?=
+ =?us-ascii?Q?KIolct5wzX1EY5Qn51y42MVtHLx2yvOrsil0daMuRrQ1gnmrTp3CE32vAOXy?=
+ =?us-ascii?Q?ATvnLe+oWNJzqJBvKkvSwFsv7Sg=3D?=
 X-OriginatorOrg: stud.acs.upb.ro
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8a93da8-83bd-4848-11d8-08da8069f262
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b520756-ab04-4ea6-333a-08da8069f3f0
 X-MS-Exchange-CrossTenant-AuthSource: AM6PR0102MB3159.eurprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 16:02:55.4499
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 16:02:57.9966
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 2d8cc8ba-8dda-4334-9e5c-fac2092e9bac
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2Hsvai8WDEHL8+ZY5lpoLB32qWGAkkdpJOBz0IsZiRgUHh8NBc+D91NlGzFO+yI/El2pEuBurJbd3yYetQQlJHf8rMSUy1YzbX4Efq7T1YY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: s/9Es+zttqMAoXx9iysgYPTZcF707zK8tz8qIrXA50MNGzazI7yud3KUHrfhkrD3ks4V/Su2WNFv7qExRwFbdyVkXfLwAIsuh71qQwtzHHk=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR01MB5734
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -111,45 +111,97 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Add additional PHY IDs for the internal PHYs of adin1110 and adin2111.
+Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
 
 Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
- drivers/net/phy/adin1100.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/net/adi,adin1110.yaml | 77 +++++++++++++++++++
+ 1 file changed, 77 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
 
-diff --git a/drivers/net/phy/adin1100.c b/drivers/net/phy/adin1100.c
-index b6d139501199..7619d6185801 100644
---- a/drivers/net/phy/adin1100.c
-+++ b/drivers/net/phy/adin1100.c
-@@ -15,6 +15,8 @@
- #include <linux/property.h>
- 
- #define PHY_ID_ADIN1100				0x0283bc81
-+#define PHY_ID_ADIN1110				0x0283bc91
-+#define PHY_ID_ADIN2111				0x0283bca1
- 
- #define ADIN_FORCED_MODE			0x8000
- #define   ADIN_FORCED_MODE_EN			BIT(0)
-@@ -265,7 +267,8 @@ static int adin_probe(struct phy_device *phydev)
- 
- static struct phy_driver adin_driver[] = {
- 	{
--		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100),
-+		.phy_id			= PHY_ID_ADIN1100,
-+		.phy_id_mask		= 0xffffffcf,
- 		.name			= "ADIN1100",
- 		.get_features		= adin_get_features,
- 		.soft_reset		= adin_soft_reset,
-@@ -284,6 +287,8 @@ module_phy_driver(adin_driver);
- 
- static struct mdio_device_id __maybe_unused adin_tbl[] = {
- 	{ PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100) },
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_ADIN1110) },
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_ADIN2111) },
- 	{ }
- };
- 
+diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+new file mode 100644
+index 000000000000..b6bd8ee38a18
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/adi,adin1110.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADI ADIN1110 MAC-PHY
++
++maintainers:
++  - Alexandru Tachici <alexandru.tachici@analog.com>
++
++description: |
++  The ADIN1110 is a low power single port 10BASE-T1L MAC-
++  PHY designed for industrial Ethernet applications. It integrates
++  an Ethernet PHY core with a MAC and all the associated analog
++  circuitry, input and output clock buffering.
++
++  The ADIN2111 is a low power, low complexity, two-Ethernet ports
++  switch with integrated 10BASE-T1L PHYs and one serial peripheral
++  interface (SPI) port. The device is designed for industrial Ethernet
++  applications using low power constrained nodes and is compliant
++  with the IEEE 802.3cg-2019 Ethernet standard for long reach
++  10 Mbps single pair Ethernet (SPE).
++
++  The device has a 4-wire SPI interface for communication
++  between the MAC and host processor.
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++properties:
++  compatible:
++    enum:
++      - adi,adin1110
++      - adi,adin2111
++
++  reg:
++    maxItems: 1
++
++  adi,spi-crc:
++    description: |
++      Enable CRC8 checks on SPI read/writes.
++    type: boolean
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet@0 {
++            compatible = "adi,adin2111";
++            reg = <0>;
++            spi-max-frequency = <24500000>;
++
++            adi,spi-crc;
++
++            interrupt-parent = <&gpio>;
++            interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
++
++            local-mac-address = [ 00 11 22 33 44 55 ];
++        };
++    };
 -- 
 2.25.1
 
