@@ -2,182 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E2DC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6870C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239167AbiHQMDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S239189AbiHQMES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236579AbiHQMC7 (ORCPT
+        with ESMTP id S236580AbiHQMEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:02:59 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC46A84EF6
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:02:58 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id t5so17171527edc.11
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=6QBF8OUU8w0EMBfU5E9Y1uiD/NcvMC8accXIwQQECM0=;
-        b=Kbpe8F04LfFeg75euDy4hW+5X9Vjk0c5vTGN+38syf9GnoRt8pbKyaVNnmv5fmTCNk
-         HlOPQqKaqAYBQMSvEZLf9I60FRXyRoPFD8ZCeCaMsstiKpIlEs0c+kR+aFYeVsz3ZKFB
-         ZZvU9GG9S02FtZK/gwsgrjYa3zh/57Pa5SNGBaHnUxlatsfv5E0BGAS7rMnPO+5bBort
-         73Kb7uS55ZPWKPP11pFoXFwxf4ha9yC0E/MBcf6ZVkxZF42zxWgHVUVpuFXhPZ5n+9vP
-         U1BHWkBNERyIio8tpMpRZYlLdtPOIcWU3C4x/V+hmEV/u3AoBrmCFKayONJTUYA4wt/G
-         nuIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=6QBF8OUU8w0EMBfU5E9Y1uiD/NcvMC8accXIwQQECM0=;
-        b=FfJIua+zQzAXvd0LOtKLVV6Q5B7cnI3/UycEbpiqZns1+pjsmnl0+vTmXYgXwMgczx
-         E54uYgSAfZ2CJWYgKBL18g/sdhYOBS4+eMibigAXh1xozySUFn2pm5QP/is4y6zQSN2r
-         solz45S3odeZQFo+mblsdrEwcO5sbi2im5HRRrjO0D4tsDmNFy9SBPG5L3RvaNt5Ze+A
-         zNno5rnGsD801Lh7Blo7JgCKwmsVDo1flqqHt1g6jFwch57qW6yQsn9byygsWJn4qsro
-         JL35CQByoKqaFWVUCX/qzBYka25u8Gv+ad5hJ6JzWNVuMpNRARH/QgKgtPlYTU9y+tGp
-         kFJg==
-X-Gm-Message-State: ACgBeo0q8Ad4nArhg6SvKeIyLt5OdtkfFPyublNX3gkECfxxRBUQOqTd
-        GSv6cWUmHNlbpsdj7wcJqarN6CpYsVQ=
-X-Google-Smtp-Source: AA6agR4TmWchQrV9/rpL/dcNvKrGk0AHACleyZyoz0eilW/dtlO1i1O5TanqRUYeEQRrXbUm+kr9jA==
-X-Received: by 2002:a50:9f44:0:b0:445:dfca:87da with SMTP id b62-20020a509f44000000b00445dfca87damr1991538edf.105.1660737777226;
-        Wed, 17 Aug 2022 05:02:57 -0700 (PDT)
-Received: from opensuse.localnet (host-87-17-106-94.retail.telecomitalia.it. [87.17.106.94])
-        by smtp.gmail.com with ESMTPSA id fn4-20020a1709069d0400b00730bbd81646sm6629934ejc.87.2022.08.17.05.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 05:02:55 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-Cc:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [RFC PATCH] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
-Date:   Wed, 17 Aug 2022 14:02:54 +0200
-Message-ID: <3177256.oiGErgHkdL@opensuse>
-In-Reply-To: <c11e62ae-3439-e3e3-adba-d7f5f951791c@grimberg.me>
-References: <20220816091808.23236-1-fmdefrancesco@gmail.com> <YvvpJbOT9iv6rnm2@kbusch-mbp.dhcp.thefacebook.com> <c11e62ae-3439-e3e3-adba-d7f5f951791c@grimberg.me>
+        Wed, 17 Aug 2022 08:04:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461844C62A;
+        Wed, 17 Aug 2022 05:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660737854; x=1692273854;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Sw03qyNAB0MNEYgJP3KDR/9fx3+F8UT/HeVmqYUt2GE=;
+  b=Wip09kIPrY9+dtHdJJ1xkDqJ88AoZCotBUpwVJ1cbc7lXwkHwEStLNWl
+   nA66f1taTPDa/jQk4A2v4piCtZ+MLBFAKWCWfiLlDkvZAjrqeFgA76d7f
+   tiy0r+f0MSK+Qwxb8GO6U258dCYiN5I/tLZpD2q7hjf3fKDZk0c+iaz76
+   yNxgdRD3gkOdCD8jv0rQ/txx0/Bq4dZkoAcShncBn4J9wm5LRmOfoaFP7
+   b7WTS7bthyNuduy+HdmvhRZ0UtvJdNI9gnagQmw53uTriL/lUn2rTXuas
+   ID85G38SR9ScRPX1uUO8aLn4tyxxWULYLOC5c1d0HCycvHZvnf9LttnQA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="356471447"
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="356471447"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 05:04:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="583742759"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 05:04:09 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+        id 0BF04235; Wed, 17 Aug 2022 15:04:22 +0300 (EEST)
+Date:   Wed, 17 Aug 2022 15:04:22 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Szuying Chen <chensiying21@gmail.com>
+Cc:     mario.limonciello@amd.com, gregkh@linuxfoundation.org,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yd_Tseng@asmedia.com.tw,
+        Chloe_Chen@asmedia.com.tw, Richard_Hsu@asmedia.com.tw
+Subject: Re: RE: [PATCH v4] thunderbolt: thunderbolt: add vendor's NVM formats
+Message-ID: <YvzZRsyGR/hakhIo@black.fi.intel.com>
+References: <20220817102450.63514-1-chensiying21@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817102450.63514-1-chensiying21@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On mercoled=C3=AC 17 agosto 2022 11:44:09 CEST Sagi Grimberg wrote:
-> >> Therefore, I have two questions: am I right about thinking that the pa=
-ges
-> >> mapped in nvmet_tcp_map_pdu_iovec() are allocated with GFP_KERNEL?
-> >=20
-> > I think you are correct.
->=20
-> It is correct. It is the same model for the linux scsi target, sunrpc
-> etc.
+Hi,
 
-I'll try to address the comments from the two last messages from Keith and=
-=20
-Sagi with this email (I replied yesterday to Chaitanya).
+On Wed, Aug 17, 2022 at 06:24:50PM +0800, Szuying Chen wrote:
+> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+> 
+> Signed-off-by: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+> ---
+> Hi,
+> 
+> >> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+> >>
+> 
+> >> +static int asmedia_nvm_validate(struct tb_switch *sw, unsigned int mode)
+> >> +{
+> >> +	struct tb_nvm *nvm;
+> >> +	u32 val;
+> >> +	u32 nvm_size;
+> >> +	int ret = 0;
+> >> +	unsigned int image_size;
+> >> +
+> >> +	switch (mode) {
+> >> +	case NVM_UPGRADE:
+> >> +		if (sw->no_nvm_upgrade)
+> >> +			sw->no_nvm_upgrade = false;
+> >> +
+> >> +		break;
+> >> +
+> >> +	case NVM_ADD:
+> >> +		nvm = tb_nvm_alloc(&sw->dev);
+> >
+> >This function does not only "validate" but it also creates the NVMem
+> >devices and whatnot.
+> >
+> >Do you have some public description of the ASMedia format that I could
+> >take a look? Perhaps we can find some simpler way of validating the
+> >thing that works accross different vendors.
+> >
+> 
+> ASMedia NVM format include rom file, firmware and security
+> configuration information. And active firmware depend on this
+> information for processing. We don't need to do any validation during
+> firmware upgrade, so we haven't public description of the ASMedia
+> format.
+> 
+> I think I use "validate" is not fit. This function mainly to create
+> the NVMem devices and write. I will rename in the next patch.
 
-=46irst of all: good to know that it is the same model for other subsystem.=
- This=20
-is useful to know. Thanks!
+So instead what you now do, I suggest that we move all the vendor
+support out to nvm.c, that includes Intel too. What I mean by this is
+that the tb_switch_nvm_add() would then look something like this:
 
-> >> If so, can anyone with more knowledge than mine please say if my chang=
-es
-> >> make
-> >> any sense?
-> >=20
-> > I think it does make sense.
+tb_switch_nvm_add(sw)
+{
+	if (!nvm_readable(sw))
+		return 0;
 
-Thanks, I'm glad I was not wrong :-)
+	nvm = tb_switch_nvm_alloc(sw);
+	if (IS_ERR(nvm)) {
+		if (PTR_ERR(nvm) == -EOPNOTSUPP) {
+			dev_info(&sw->dev,
+				"NVM format of vendor %#x is not known, disabling NVM upgrade\n",
+				sw->config.vendor_id);
+			return 0;
+		}
 
-> > I like the code simplification, though this use
-> > was't really paying the kmap penalty since, as you mentioned, this is=20
-never
-> > highmem.
+		return PTR_ERR(nvm);
+	}
 
-Correct, however everybody like code simplification. I added a couple of=20
-sentences to kmap_local_page() documentation in highmem.rst. They clearly=20
-state that, when users know that pages cannot come from Highmem, they may=20
-better prefer page_address().
+	ret = tb_nvm_add_active(nvm, nvm->size, tb_switch_nvm_read);
+	if (ret)
+		...
 
-The changes to nvmet-tcp started with trying to convert kmap() / kunmap() t=
-o=20
-kmap_local_page() /kunmap_local(), but it ended up to code shortening and=20
-simplification with a plain use of page_address().=20
+	if (!sw->no_nvm_upgrade) {
+		ret = tb_nvm_add_non_active(nvm, NVM_MAX_SIZE, tb_switch_nvm_write);
+		if (ret)
+			...
+	}
 
-Obviously, due to my little experience with kernel developing and less than=
-=20
-little knowledge of this protocol I had to ask whether or not I was right i=
-n=20
-identifying the site of the allocations.
+	sw->nvm = nvm;
+	...
+}
 
-The reasons why I had to use page_address() will be clearer reading what=20
-follows...
+And the tb_switch_nvm_alloc() resides in nvm.c and that one goes over an
+array of supported vendors matching sw->config.vendor_id and if it finds
+the match it will set nvm->vops to point the vendor specific operations
+and in addition it will will populate rest of the nvm fields like this:
 
-> Yes, its the same code-path. Would be great if we still had an
-> abstraction that would do the right thing regardless of highmem or
-> not like kmap provides though.
+static const struct {
+	u16 vendor;
+	const struct tb_nvm_vendor_ops *vops;
+} switch_nvm_vendors[] = {
+	{ 0x8086, &intel_switch_nvm_ops },
+	{ 0x8087, &intel_switch_nvm_ops },
+	{ 0x174c, &asmedia_switch_nvm_ops },
+};
 
-It would be great and it is already possible (this is why Thomas Gleixner=20
-created this kmap_local_page() API) but here we have a huge issue. kmap() a=
-nd=20
-kmap_atomic() have recently been deprecated and they shouldn't any longer b=
-e=20
-used in new code: https://lore.kernel.org/all/20220813220034.806698-1-ira.w=
-einy@intel.com/ ("[PATCH] checkpatch: Add kmap and kmap_atomic to the=20
-deprecated list").
+tb_switch_nvm_alloc(sw)
+{
+	struct tb_nvm_vendor_ops *ops = NULL;
+	int i;
 
-kmap_local_page() always does the right thing: users can call it with or=20
-without HIGHMEM enabled, in-atomic (also in interrupts) or in preemptible=20
-contexts, they can take page faults.=20
+	for (i = 0; i < ARRAY_SIZE(switch_nvm_vendors); i++) {
+		if (switch_nvm_vendors[i].vendor == sw->config.vendor_id)
+			vops = &switch_nvm_vendors[i].vops;
+			break;
+	}
 
-It doesn't require global lock for synchronization and doesn't require glob=
-al=20
-TLB invalidation when the kmap's pool wraps and doesn't block waiting for f=
-ree=20
-slots.=20
+	if (!vops)
+		return ERR_PTR(-EOPNOTSUPP);
 
-Nice, isn't it?
+	nvm = tb_nvm_alloc(&sw->dev);
+	if (IS_ERR(nvm))
+		...
 
-However, with nvmet-tcp we cannot easily use kmap_local_page() because it=20
-comes with a major problem: it's local to the thread. If users handed the=20
-kernel virtual addresses returned by this function to other threads, the=20
-pointers would be invalid.
+	nvm->vops = vops;
+	ret = vops->populate(nvm);
+	if (ret)
+		...
 
-Here kmap() and kunmap() call sites are in two different workqueues.=20
-Therefore, there is no way to convert kmap() to kmap_local_page(), unless t=
-his=20
-code is heavily refactored.
+	...
+}
 
-Knowing that the pages cannot come from Highmem avoids this refactoring and=
- in=20
-the meantime it allows us to delete the kmap() and kunmap() calls sites.
-
-> > You should also remove the cmd's 'nr_mapped' field while you're at it,
-> > otherwise you'll hit the WARN in nvmet_tcp_free_cmd_buffers().
->=20
-> Not remove nr_mapped because we use it to know the iovec entries, but
-> we can just remove the WARN statement.
-
-Ah, OK. I'll take care of this too. That was not my first concern when I di=
-d=20
-the RFC. The "real" patch must also address this detail.
-
-@Chaitanya:
-
-Since this is a mere simplification and shorten of code, I suppose I can sk=
-ip=20
-the performance tests. Ira and I have still hundreds of call sites with kma=
-p()=20
-and kmap_atomic() which we should care of, therefore we prefer to leave alo=
-ne=20
-everything that is not strictly necessary for the deprecated API deletions.
-
-Thanks to you all,
-
-=46abio
-
-
+Then we would have all the vendor specific things in
+intel_switch_nvm_ops and asmedia_switch_nvm_ops accordingly and the rest
+of the code is generic USB4 stuff. We need to do the same for retimers
+too at some point.
