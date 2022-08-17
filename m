@@ -2,153 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CE8C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93761C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 17:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239959AbiHQRNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 13:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
+        id S238373AbiHQRSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 13:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237925AbiHQRNZ (ORCPT
+        with ESMTP id S236463AbiHQRSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 13:13:25 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3C27F0A8;
-        Wed, 17 Aug 2022 10:13:23 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id s206so12504695pgs.3;
-        Wed, 17 Aug 2022 10:13:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=00zDI5xu+hbyWvZmiPOtpUInG8lTXtHgE5kFx8f3aeU=;
-        b=iyMpBBARMzX1OK3vY0WOZXMC7OcsctdNegE2rFZL0q/9qECKntEoL6j8tXqfurpTEH
-         RsmsMockFAvu/65a51euUIEGxcUVchyw53G6mtTfdz0m2UEr0Dccift+Pk8VFoe8TK+q
-         2Jg6so7kJhUvOndBCb/FXeK4K5zcObxQuLE02tjeu7PWi2iqesbrmTjl63VgzIabZ+GG
-         e7JOyBlXYHpTUvpgs9O2dJWrz4o4/9PMoeABdghcyDqDSihDiYvt906hXuP883hM+Kds
-         NfJuDS3Ikya8Yn6peyEfzg+8FBIcEyWQHWXa1lbOQpl60k4hgyKXy+LQZXqGORTXiVMz
-         XLPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=00zDI5xu+hbyWvZmiPOtpUInG8lTXtHgE5kFx8f3aeU=;
-        b=5+BOtg0AF4TVg/xwH6pOTS5hWl6q+m7Kx2+RAL1GLeIhMn0NXZjcFY9yKmKEk6CS/+
-         nkl1Eyn/rIm00GM0QnexfYQDzg+4MttzHx5Hab4oX/2flJfsIWg9jCSfSkhMtleEzJZa
-         lZsYxrOSP4XR/wwpj5QJmyBpOM3On361z18cr1PYMVxJr/EPrHWZW4z62BkkMvsEqtuX
-         4FnaxuEyiQ7nuqmehsGToIAJ0ajva1cipFb6hr9PHG782mOdtaqloDoTdAOTQdkY18Sc
-         OAy3kMIBNmnUEbRCbXudKJXIBLxbsB2sAhHdKdfmANMf28HXfOLBq/1AAiVvejV+YvlW
-         fwhw==
-X-Gm-Message-State: ACgBeo0Pob32kacG/Ky1gXhkdVPCMotqy+2RXTbWc0xbobSnelpf7sHZ
-        DsV2uX6aBx9IJYty7fL+GGQ=
-X-Google-Smtp-Source: AA6agR6bqIUckQRPYc2RcF5QP5U6VvtF4uY92Fwhr7MsjV73IENo/25otKwa5/jCbtFHei7xRi3g/w==
-X-Received: by 2002:a63:fd0b:0:b0:415:f76b:a2cd with SMTP id d11-20020a63fd0b000000b00415f76ba2cdmr22185575pgh.440.1660756402581;
-        Wed, 17 Aug 2022 10:13:22 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id z6-20020a170903018600b001729da53673sm194988plg.14.2022.08.17.10.13.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:13:20 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 10:50:55 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>
-Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Message-ID: <Yvt2f5i5R9NNNYUL@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
- <20220816123701-mutt-send-email-mst@kernel.org>
- <20220816110717.5422e976@kernel.org>
- <YvtAktdB09tM0Ykr@bullseye>
- <20220816160755.7eb11d2e@kernel.org>
- <YvtVN195TS1xpEN7@bullseye>
- <20220816181528.5128bc06@kernel.org>
+        Wed, 17 Aug 2022 13:18:31 -0400
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1BC326CC
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:18:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1660756709; x=1692292709;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bICho/OFUvjD7iVy2ce8Hlpf0jhWPnzAwWFMaOv0q3E=;
+  b=a1p41c0XZ2mU9AYcQeWoBjTMmW2zNExmX/DUwoY/ZXDw40lw6ekkidtW
+   n1zMJrNlzQKGxiS1hVt7Iw/4GhHlqQW1GYP1vw4zOERbjG1sMhgxlo0CU
+   l4CSCEO2ujW8+YD7dj2PSdf+QEf2fIgUleEobg+IAtFFBgu+XZ4rdDjs8
+   /UQ9H5nHa2k3JOvk6LQx01UcBRSkGXp7dkk5BEoJBfwa/RaN1ETREqKMM
+   9hd6P6H0CHk3IcF6vRuZXK7PYlpxPVquHbtlI6AuduCcClqslyEBHsTNI
+   uppRIZscBcc/4ndtnVBbuxoFC84TfBeXoILesUJFWS+Bc7a6SkEyF0Rc/
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,243,1654531200"; 
+   d="scan'208";a="208963529"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 18 Aug 2022 01:14:12 +0800
+IronPort-SDR: z8NUVS2AHK+WLjTOXbP39BlJ/wb2KofRoBUIKufQQA0fGFKQb6JxkPW14/zDpfnuq7lfuY8Obm
+ 5iuU3qnndPAc/4QdwQshZv6gLNEu5Cic3YpPXLl6s0JHVjB57g+zJ2szEygEAzaKj7TsgeX32R
+ kEvEretGC9HEw2ZSiZgrz9dGx1pa9rBw672R8Agzr2j8PjGr1+PfdRBFGTwBU+fEQWxpsI/CnN
+ ZvcejpSu4DxHWNXwqjPqgeWnkqygEw1AFSRwUJumGkg3RL452tp+Jjc+ay7hLDx5WdLso9Gml0
+ uolBQs0X5tWWTTxVUdul1Mnj
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 17 Aug 2022 09:29:40 -0700
+IronPort-SDR: ykuqYseerFGdiMuN6Z/V+P/nd18Dv65kBqa5c3npZvSrq7ZyGdI3XO3CyzkzwF/5lxvL7bw2z1
+ 6X6a6ylUb/vgDtg2VHHm1+WdgGfKm+1GYz/mNCo4bY5A/82eQoCN6IbGg97bxdb7ZJZDjNXKqw
+ 106Oi0y7htj8grACp92wH5VWMkPb4pOtOiOKM/AaqCQFRS2KFxPo79Pnwe3kwz3dNF1Q5jm30F
+ RPPWUqqyKdRrJ2VfjkJeqBRhjXshv7226IgsJ+w4gagGu/2VPMCtiBmLqFbauWVprMGMctYiEM
+ gQI=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 17 Aug 2022 10:14:14 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M7F450XV0z1Rwnl
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 10:14:13 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1660756451; x=1663348452; bh=bICho/OFUvjD7iVy2ce8Hlpf0jhWPnzAwWF
+        MaOv0q3E=; b=tijYPoUIWJibVrNQT0jvV7l907t2miXk4MRFQ/QX6bPOrf1mMq4
+        puCwHJ7Y/tZU/il9+oSEsQyGUaNpI0xbgPtDRqOeVoOxb841n8bRFiXYP/QroXmw
+        n2y9XwnGQTkg3AgEkvWiq8Biqt568w4CZ2YHivXH0gLK5orYMRG/f8df/PfjVuBG
+        NbW/NH73Tc3QsR0u4Ow/ChZ8T6mlhPTwMIfL8Ssh7/qms0VRX/CDnRaWEIAHsJAH
+        jERHCeGy3ZbTV/ornfHVfM7U9p3z0kzBDt+3d33fWo2mcDIUSZXiIpAcoRyKfaU0
+        9d+ensRlxmplZg5NT8mKn4qMJ9XpbD8XEcg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id IpHF5Yw0DL5Z for <linux-kernel@vger.kernel.org>;
+        Wed, 17 Aug 2022 10:14:11 -0700 (PDT)
+Received: from [10.11.46.122] (unknown [10.11.46.122])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M7F4329Smz1RtVk;
+        Wed, 17 Aug 2022 10:14:11 -0700 (PDT)
+Message-ID: <baf63982-810c-85eb-b28f-99ab0517c6ba@opensource.wdc.com>
+Date:   Wed, 17 Aug 2022 10:14:10 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816181528.5128bc06@kernel.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v2 2/6] scsi: libsas: Add sas_ata_device_link_abort()
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, jinpu.wang@cloud.ionos.com,
+        yangxingui@huawei.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, hare@suse.de
+References: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
+ <1660747934-60059-3-git-send-email-john.garry@huawei.com>
+ <0bb6b134-7bad-7c39-ad6d-25d57bd343eb@opensource.wdc.com>
+ <018080d5-fbc4-7f04-0d3f-587f2397cd20@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <018080d5-fbc4-7f04-0d3f-587f2397cd20@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 06:15:28PM -0700, Jakub Kicinski wrote:
-> On Tue, 16 Aug 2022 08:29:04 +0000 Bobby Eshleman wrote:
-> > > We've been burnt in the past by people doing the "let me just pick
-> > > these useful pieces out of netdev" thing. Makes life hard both for
-> > > maintainers and users trying to make sense of the interfaces.
-> > > 
-> > > What comes to mind if you're just after queuing is that we already
-> > > bastardized the CoDel implementation (include/net/codel_impl.h).
-> > > If CoDel is good enough for you maybe that's the easiest way?
-> > > Although I suspect that you're after fairness not early drops.
-> > > Wireless folks use CoDel as a second layer queuing. (CC: Toke)
-> > 
-> > That is certainly interesting to me. Sitting next to "codel_impl.h" is
-> > "include/net/fq_impl.h", and it looks like it may solve the datagram
-> > flooding issue. The downside to this approach is the baking of a
-> > specific policy into vsock... which I don't exactly love either.
-> > 
-> > I'm not seeing too many other of these qdisc bastardizations in
-> > include/net, are there any others that you are aware of?
+On 2022/08/17 9:54, John Garry wrote:
+> On 17/08/2022 17:04, Damien Le Moal wrote:
+>> On 2022/08/17 7:52, John Garry wrote:
+>>> Similar to how AHCI handles NCQ errors in ahci_error_intr() ->
+>>> ata_port_abort() -> ata_do_link_abort(), add an NCQ error handler for LLDDs
+>>> to call to initiate a link abort.
+>>>
+>>> This will mark all outstanding QCs as failed and kick-off EH.
+>>>
+>>> Note:
+>>> The ATA_EH_RESET flag is set for following reasons:
+>>> - For hisi_sas, SATA device resources during error handling will only be
+>>>    released during reset for ATA EH.
+>>>    ATA EH could decide during autopsy that EH would not be required, so
+>>>    ensure that it happens (by setting the flag).
+>>> - Similar to hisi_sas, pm8001 NCQ error handling requires a hardreset to
+>>>    ensure necessary recovery commands are sent (so again we require flag
+>>>    ATA_EH_RESET to be set as an insurance policy).
+>>>
+>>> Suggested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>> ---
+>>>   drivers/scsi/libsas/sas_ata.c | 11 +++++++++++
+>>>   include/scsi/sas_ata.h        |  5 +++++
+>>>   2 files changed, 16 insertions(+)
+>>>
+>>> diff --git a/drivers/scsi/libsas/sas_ata.c b/drivers/scsi/libsas/sas_ata.c
+>>> index d35c9296f738..9daae64be37e 100644
+>>> --- a/drivers/scsi/libsas/sas_ata.c
+>>> +++ b/drivers/scsi/libsas/sas_ata.c
+>>> @@ -861,6 +861,17 @@ void sas_ata_wait_eh(struct domain_device *dev)
+>>>   	ata_port_wait_eh(ap);
+>>>   }
+>>>   
+>>> +void sas_ata_device_link_abort(struct domain_device *device)
+>>> +{
+>>> +	struct ata_port *ap = device->sata_dev.ap;
+>>> +	struct ata_link *link = &ap->link;
+>>> +
+>>> +	link->eh_info.err_mask |= AC_ERR_DEV;
+>>> +	link->eh_info.action |= ATA_EH_RESET;
+>>
 > 
-> Just what wireless uses (so codel and fq as you found out), nothing
-> else comes to mind.
+> Hi Damien,
 > 
-> > > Eh, I was hoping it was a side channel of an existing virtio_net 
-> > > which is not the case. Given the zero-config requirement IDK if 
-> > > we'll be able to fit this into netdev semantics :(  
-> > 
-> > It's certainly possible that it may not fit :/ I feel that it partially
-> > depends on what we mean by zero-config. Is it "no config required to
-> > have a working socket" or is it "no config required, but also no
-> > tuning/policy/etc... supported"?
+> Warning: I'm going to write a bit of an essay here... :)
 > 
-> The value of tuning vs confusion of a strange netdev floating around
-> in the system is hard to estimate upfront. 
+>> I am still not convinced that we should set this here. ata_eh_link_autopsy() and
+>> ata_eh_analyze_serror() are supposed to set the action based on the error. Can't
+>> you reuse the link autopsy function ?
+> 
+> The link autopsy code works ok, but it may not decide to do the reset 
+> which we may rely on.
+> 
+> For hisi_sas, consider this log from an NCQ error:
+> 
+> 174.385322] ata10.00: failed command: READ FPDMA QUEUED
+> [ 174.385336] ata10.00: cmd 60/08:00:11:27:00/00:00:00:00:00/40 tag 0 
+> ncq dma 4096 in
+> res 41/40:08:11:27:00/00:00:00:00:00/00 Emask 0x409 (media error) <F>
+> [ 174.385339] ata10.00: status: { DRDY ERR }
+> [ 174.385343] ata10.00: error: { UNC }
+> [ 174.385641] ata10.00: configured for UDMA/133
+> [ 174.385697] sd 6:0:1:0: [sdb] tag#701 FAILED Result: hostbyte=DID_OK 
+> driverbyte=DRIVER_SENSE
+> [ 174.385710] sd 6:0:1:0: [sdb] tag#701 Sense Key : Medium Error [current]
+> [ 174.385726] sd 6:0:1:0: [sdb] tag#701 Add. Sense: Unrecovered read 
+> error - auto reallocate failed
+> [ 174.385740] sd 6:0:1:0: [sdb] tag#701 CDB: Read(10) 28 00 00 00 27 11 
+> 00 00 08 00
+> [ 174.385745] print_req_error: I/O error, dev sdb, sector 10001
+> [ 174.385827] ata10: EH complete
+> 
+> The ATA autopsy has a found medium error and decided that reset is not 
+> required - this is similar in that regard to the "unaligned write to a 
+> sequential write required zone on SMR" error you mentioned from your 
+> test previously. The problem in this is that for hisi_sas we depend on 
+> disk reset to release driver resources associated with ATA QCs. That is 
+> because it is only after reset that we can guarantee that no IO 
+> associated with the disk will complete in HW and it is safe to release 
+> the resources.
 
-I think "a strange netdev floating around" is a total
-mischaracterization... vsock is a networking device and it supports
-vsock networks. Sure, it is a virtual device and the routing is done in
-host software, but the same is true for virtio-net and VM-to-VM vlan.
+If you had an error, then you already are guaranteed that you will not see any
+completion at all since the SATA drive is in error mode already. But I see the
+point here. The HBA internal qc resources need to be cleared and that seems to
+be done only with a device reset big hammer.
 
-This patch actually uses netdev for its intended purpose: to support and
-manage the transmission of packets via a network device to a network.
+> But pm8001 seems different here with regards releasing resources. I find 
+> that when EH kicks in from NCQ error and libsas tries to abort missing 
+> commands, the pm8001_abort_task() -> sas_execute_internal_abort_single() 
+> causes the original IO to complete as aborted - this is good, as then we 
+> may release the resources there. hisi_sas has no such feature.
+> 
+> But the pm8001 manual and current driver indicate that the 
+> OPC_INB_SATA_ABORT command should be sent after read log ext when 
+> handling NCQ error, regardless of an autopsy. I send OPC_INB_SATA_ABORT 
+> in ata_eh_reset() -> pm8001_I_T_nexus_reset() -> pm8001_send_abort_all()
 
-Furthermore, it actually prepares vsock to eliminate a "strange" use of
-a netdev. The netdev in vsockmon isn't even used to transmit
-packets, it's "floating around" for no other reason than it is needed to
-support packet capture, which vsock couldn't support because it didn't
-have a netdev.
+You lost me: ata_eh_recover() will call ata_eh_reset() only if the ATA_EH_RESET
+action flag is set. So are you saying that even though it is not needed, you
+still need to set ATA_EH_RESET for pm8001 ?
 
-Something smells when we are required to build workaround kernel modules
-that use netdev for ciphoning packets off to userspace, when we could
-instead be using netdev for its intended purpose and get the same and
-more benefit.
+> As I mentioned before, I saw nowhere better to call 
+> pm8001_send_abort_all() for this. I would rather not do it in 
+> ata_eh_reset() -> pm8001_I_T_nexus_reset()
+
+We could add a new op ->eh_link_autopsy which we can call if defined after the
+call to ata_eh_analyze_ncq_error() in ata_eh_link_autopsy(). With that, you can
+set ATA_EH_RESET for the hisi driver and only do pm8001_send_abort_all() for
+pm8001 (that will be done after the read log 10h).
 
 > 
-> The nice thing about using a built-in fq with no user visible knobs is
-> that there's no extra uAPI. We can always rip it out and replace later.
-> And it shouldn't be controversial, making the path to upstream smoother.
+> How about this modified approach:
+> - Continue to set ATA_EH_RESET in sas_ata_device_link_abort()
+> - pm8001_I_T_nexus_reset() will only call pm8001_send_abort_all() when 
+> the driver is in NCQ error state and not do a hard reset in that case.
+> 	- But I am not sure if that works as the autopsy for NCQ error may have 
+> decided that a hardreset was really required. Hmmm..
 
-The issue is that after pulling in fq for one kind of flow management,
-then as users observe other flow issues, we will need to re-implement
-pfifo, and then TBF, and then we need to build an interface to let users
-select one, and to choose queue sizes... and then after awhile we've
-needlessly re-implemented huge chunks of the tc system.
+See the above. the new op may decided a reset is needed (hisi case) and even if
+the standard autopsy does not make that decision, the flag is set and
+ata_eh_recover() will reset the device. For the pm8001 case, no reset set with
+the new op, only pm8001_send_abort_all(). And even if ata_eh_link_autopsy()
+decides that a reset is needed after calling the new op, that would still be OK
+I think.
 
-I don't see any good reason to restrict vsock users to using suboptimal
-and rigid queuing.
-
-Thanks.
+-- 
+Damien Le Moal
+Western Digital Research
