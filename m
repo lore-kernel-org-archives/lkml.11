@@ -2,173 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E273EC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686EAC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240882AbiHQQOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S241016AbiHQQOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240937AbiHQQNk (ORCPT
+        with ESMTP id S240993AbiHQQN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:13:40 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D6D49B52
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:13:12 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id r15-20020a17090a1bcf00b001fabf42a11cso1080127pjr.3
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=qqrcs4+75hwSnlAyyJW7CxGuel/Uhq2fMqUXLvr+jl8=;
-        b=sFmMnQ/oq7x7WRe9EuENHTmQNcGv4XgE+RNsgCtVxM6MA6778i6ya4GDWGLuk+mStg
-         DHmGnn5+zqkU64si194ZaM1s6tMdKph6c+Y70qEfnNgqE24mt5l9CWpaXCZETn1y+rdN
-         Vuq5aAUOtZkrJHobDZ7TNKGu+xKW39sL0Bg3JXfF2Huv12wT4ZT4PTWSQ3zVpSiOpT9M
-         7OCRkB4+2q9TCTQlIBNyaj+g53Yddo/EQUDt369NvY4UPezz/DvsUFAHQn7Heg8MqzUn
-         ky55yiJwqFcpAPceVpQ0QwccBNBEea5qcdXRDsj+Y2PnIZkx4GgJYCkE2cQZsBF75Aop
-         Y3AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=qqrcs4+75hwSnlAyyJW7CxGuel/Uhq2fMqUXLvr+jl8=;
-        b=Ybe0i06PYLLXg01bmhbCtqDv35vjFd+EBxhWGTL1i4o1rrHMRz2NahMk9HlTSaQdva
-         0AeqF+JAvdbb96GpxqOhwpCO5N6CRazyiAlJbeZSqO76OEsrhYDWvJVHFhoMFJSreMcg
-         AaOxLdcOYq6dgOCw/ZrcHDgjruumdBN1EGTRjybBJ0PiX0/NNB6zg7DGEDmzxdArr2l7
-         vsSy0FLUG0dA3l4tVUyNb3QCWoReCWnXWt4TlvYv1byhVYNv8UTCu7MGXlH5Yc9xgbIg
-         GSPFJ4po62/po33sSrGCbIPoGPDxi7DVbhKqUZpPRk1q6Ko3A2OLlS7rO1mpLa3I0Khk
-         QG5A==
-X-Gm-Message-State: ACgBeo1Yf3+7UJ5A8sP3CDm1Qa2GGYZqT6bAFu3ZFB3gl9RXgsEtcPKE
-        HZ3ttkVx8SYb+Aq3LU2WaMCrdw==
-X-Google-Smtp-Source: AA6agR68JEpNnS/Hoo1DyY2Re1ij1m8UmQCEt8XXw+4pPFqb/Ye34YCXob1WeGDc1WVKAntsb8nEQQ==
-X-Received: by 2002:a17:902:ea0b:b0:16d:d268:e4c5 with SMTP id s11-20020a170902ea0b00b0016dd268e4c5mr26798569plg.152.1660752791687;
-        Wed, 17 Aug 2022 09:13:11 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id z8-20020a170903018800b0016f0d6213a5sm127418plg.2.2022.08.17.09.13.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 09:13:11 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 16:13:07 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Yan Zhao <yan.y.zhao@intel.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v3 3/8] KVM: x86/mmu: Rename NX huge pages
- fields/functions for consistency
-Message-ID: <Yv0Tk0WAdxymSyUt@google.com>
-References: <20220805230513.148869-1-seanjc@google.com>
- <20220805230513.148869-4-seanjc@google.com>
- <YvhL6jKfKCj0+74w@google.com>
- <YvrAoyhgNzTcvzkU@google.com>
- <YvwHpjxS9CCEVER7@google.com>
+        Wed, 17 Aug 2022 12:13:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4639DB64;
+        Wed, 17 Aug 2022 09:13:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E255D615BA;
+        Wed, 17 Aug 2022 16:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 994C1C433D7;
+        Wed, 17 Aug 2022 16:13:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660752806;
+        bh=FD9SlMuXmlO3EOLgvahsW7Sboc7tOAmKtseKYIHuBRo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ah5/K3cXDTS7baUu/TIrWjvNn+9m0c6m5JvUszJKBu0/TJl/x2/pDBmxiw6sfiGNQ
+         S/7avkGq3x3P8dZf1nk411ED/E46+npxlrDFLYcykiJdSxFxotEHkFignzhkOHTbZZ
+         v2r565TKUAQuvbOCwXCFYpIKfhevWvz2BjtM2HPYEAuGqkrMLKPhSEp4zaD0eu3snu
+         85sIdhoIkC2NT1fm/oSU+L5OLxu0My+ZwfvNhqaSITJ1y3kNB/xljyvDumwjpa80Ob
+         yt+ID+1IY1R+gLK2/Jud9lBbo8BuflEkjxGZwgjHOXdkQeXFCDSasFcA8LNtFU0RCI
+         xau/qaFtdJ8fw==
+From:   guoren@kernel.org
+To:     xianting.tian@linux.alibaba.com, palmer@dabbelt.com,
+        heiko@sntech.de, guoren@kernel.org, conor.dooley@microchip.com
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, liaochang1@huawei.com,
+        mick@ics.forth.gr, jszhang@kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Will Deacon <will.deacon@arm.com>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>
+Subject: [PATCH V2 1/2] riscv: kexec: Disable all interrupts in kexec crash path
+Date:   Wed, 17 Aug 2022 12:12:57 -0400
+Message-Id: <20220817161258.748836-2-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220817161258.748836-1-guoren@kernel.org>
+References: <20220817161258.748836-1-guoren@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvwHpjxS9CCEVER7@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022, Mingwei Zhang wrote:
-> On Mon, Aug 15, 2022, Sean Christopherson wrote:
-> > On Sun, Aug 14, 2022, Mingwei Zhang wrote:
-> > > On Fri, Aug 05, 2022, Sean Christopherson wrote:
-> > > > Rename most of the variables/functions involved in the NX huge page
-> > > > mitigation to provide consistency, e.g. lpage vs huge page, and NX huge
-> > > > vs huge NX, and also to provide clarity, e.g. to make it obvious the flag
-> > > > applies only to the NX huge page mitigation, not to any condition that
-> > > > prevents creating a huge page.
-> > > > 
-> > > > Leave the nx_lpage_splits stat alone as the name is ABI and thus set in
-> > > > stone.
-> > > > 
-> > > > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > > > ---
-> > > >  arch/x86/include/asm/kvm_host.h |  8 ++--
-> > > >  arch/x86/kvm/mmu/mmu.c          | 70 +++++++++++++++++----------------
-> > > >  arch/x86/kvm/mmu/mmu_internal.h | 22 +++++++----
-> > > >  arch/x86/kvm/mmu/paging_tmpl.h  |  2 +-
-> > > >  arch/x86/kvm/mmu/tdp_mmu.c      |  8 ++--
-> > > >  5 files changed, 59 insertions(+), 51 deletions(-)
-> > > > 
-> > > > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> > > > index e8281d64a431..5634347e5d05 100644
-> > > > --- a/arch/x86/include/asm/kvm_host.h
-> > > > +++ b/arch/x86/include/asm/kvm_host.h
-> > > > @@ -1143,7 +1143,7 @@ struct kvm_arch {
-> > > >  	struct hlist_head mmu_page_hash[KVM_NUM_MMU_PAGES];
-> > > >  	struct list_head active_mmu_pages;
-> > > >  	struct list_head zapped_obsolete_pages;
-> > > > -	struct list_head lpage_disallowed_mmu_pages;
-> > > > +	struct list_head possible_nx_huge_pages;
-> > > 
-> > > Honestly, I am struggling to understand this one. 'possible_*' indicates
-> > > that there are other possibilities. But what are those possibilities?
-> > 
-> > No, possible is being used as an adjective in this case.  possible_nx_huge_pages
-> > is the list of shadow pages for which it's possible to replace the shadow page
-> > with an NX huge page.
-> > 
-> > The noun version would yield a name like nx_huge_page_possiblities.
-> 
-> Right, but these shadow pages are not NX huge pages, right? IIUC, they
-> are pages to be zapped due to NX huge pages, aren't they?
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Yes, they are shadow pages that the NX recovery thread should zap, but the reason
-they should be zapped is because (a) the shadow page has at least one execute child
-SPTE, (b) zapping the shadow page will also zap its child SPTEs, and (c) eliminating
-all executable child SPTEs means KVM _might_ be able to instantiate an NX huge page.
+If a crash happens on cpu3 and all interrupts are binding on cpu0, the
+bad irq routing will cause a crash kernel which can't receive any irq.
+Because crash kernel won't clean up all harts' PLIC enable bits in
+enable registers. This patch is similar to 9141a003a491 ("ARM: 7316/1:
+kexec: EOI active and mask all interrupts in kexec crash path") and
+78fd584cdec0 ("arm64: kdump: implement machine_crash_shutdown()"), and
+PowerPC also has the same mechanism.
 
-> `nx_huge_page_disallowed` is easy to understand because it literally say
-> 'nx_huge_page is not allowed', which is correct.
+Fixes: fba8a8674f68 ("RISC-V: Add kexec support")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: AKASHI Takahiro <takahiro.akashi@linaro.org>
+Cc: Nick Kossifidis <mick@ics.forth.gr>
+---
+ arch/riscv/kernel/machine_kexec.c | 35 +++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-No, it's not correct.  The list isn't simply the set of shadow pages that disallow
-NX huge pages, it's the set of shadow pages that disallow NX huge pages _and_ that
-can possibly be replaced by an NX huge page if the shadow page and all its
-(executable) children go away.
+diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
+index ee79e6839b86..db41c676e5a2 100644
+--- a/arch/riscv/kernel/machine_kexec.c
++++ b/arch/riscv/kernel/machine_kexec.c
+@@ -15,6 +15,8 @@
+ #include <linux/compiler.h>	/* For unreachable() */
+ #include <linux/cpu.h>		/* For cpu_down() */
+ #include <linux/reboot.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
+ 
+ /*
+  * kexec_image_info - Print received image details
+@@ -154,6 +156,37 @@ void crash_smp_send_stop(void)
+ 	cpus_stopped = 1;
+ }
+ 
++static void machine_kexec_mask_interrupts(void)
++{
++	unsigned int i;
++	struct irq_desc *desc;
++
++	for_each_irq_desc(i, desc) {
++		struct irq_chip *chip;
++		int ret;
++
++		chip = irq_desc_get_chip(desc);
++		if (!chip)
++			continue;
++
++		/*
++		 * First try to remove the active state. If this
++		 * fails, try to EOI the interrupt.
++		 */
++		ret = irq_set_irqchip_state(i, IRQCHIP_STATE_ACTIVE, false);
++
++		if (ret && irqd_irq_inprogress(&desc->irq_data) &&
++		    chip->irq_eoi)
++			chip->irq_eoi(&desc->irq_data);
++
++		if (chip->irq_mask)
++			chip->irq_mask(&desc->irq_data);
++
++		if (chip->irq_disable && !irqd_irq_disabled(&desc->irq_data))
++			chip->irq_disable(&desc->irq_data);
++	}
++}
++
+ /*
+  * machine_crash_shutdown - Prepare to kexec after a kernel crash
+  *
+@@ -169,6 +202,8 @@ machine_crash_shutdown(struct pt_regs *regs)
+ 	crash_smp_send_stop();
+ 
+ 	crash_save_cpu(regs, smp_processor_id());
++	machine_kexec_mask_interrupts();
++
+ 	pr_info("Starting crashdump kernel...\n");
+ }
+ 
+-- 
+2.36.1
 
-> But this one, it says 'possible nx_huge_pages', but they are not
-> nx huge pages at all.
-
-Yes, but they _can be_ NX huge pages, hence the "possible".  A super verbose name
-would be something like mmu_pages_that_can_possibly_be_replaced_by_nx_huge_pages.
-
-> Instead, they are 'shadow pages that are replaced with nx_huge_pages'. So
-> that's why updates to this list is done together with stats nx_plage_splits.
-> 
-> Please correct me if I am wrong. I am still struggling to understand the
-> meaning of these variables.
-> 
-> >
-> > > I feel this name is more confusing than the original one. Maybe just keep
-> > 
-> > Ignoring lpage => huge_page, the current name is terribly inaccurate.  The list
-> > doesn't contain all disallowed huge pages, nor does it even contain all disallowed
-> > NX huge pages, it specifically tracks shadow pages that might be able to be
-> > replaced with an NX huge page.
-> > 
-> > I'm open to other names, but whatever we choose should be paired with
-> > account_nx_huge_page()'s param that is currently named "nx_huge_page_possible".
-> 
-> How about mmu_pages_replaced_by_nx_huge,
-
-"replaced" is past tense in this usage, and these are definitely not shadow pages
-that have already been replaced by NX huge pages.
-
-> mmu_pages_replaced_by_possible_nx_huge or something starting with
-
-Same issue with "replaced".
-
-> possible_pages_, pages_ instead of possible_nx_huge_pages?
-
-Reprhasing, I think you're asking that the variable have "mmu_pages" somewhere in
-the name to clarify that it's a list of kvm_mmu_page structs.  I agree that ideally
-it would have "mmu_pages" somewhere in there, but I also think that having both
-"nx_huge_pages" and "mmu_pages" in the name makes it unreadable, i.e. we have to
-choose one use of "pages".
-
-The only alternative I can come up with that isn't completely gross is
-possible_nx_huge_mmu_pages.  I can't tell if that's less confusing or more
-confusing.
