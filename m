@@ -2,114 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEE1C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A28C28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240758AbiHQS0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
+        id S238035AbiHQS1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbiHQS0q (ORCPT
+        with ESMTP id S238247AbiHQS1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:26:46 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925829A99E;
-        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so2728075pjk.1;
-        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=I3Pf9OIc8DGk9E58AEq8EGcTaeKj6hHjSLnNzQDAIvY=;
-        b=kS0yawzf1I+kUu55z3yGa7UPahuYejKLOOwqu6RtPwZfrKieepYLPWvrsSuUAEm1MC
-         pq/Sk2LQEGYKJBW1g3eEmBJlkozfRJv+7JAv1fG/avwFLrzvnO17rs3ywJC4DLC8b5B1
-         A8X49MWFQCmYVYL9hEKrHlrAeYOXTuoCM/2AZ5ICrIMtiTPNGe8g71zYWURkJRLqauVR
-         vaLHGkPHFoVMBStTMT6HexyG2jx1t6aJiPvEXhqQp0OIipEfmFxh690OT9PJ2RcwBQrx
-         biK5KCk/H0UopTmUGXm/eVMx+rU9i0XfmspEJMi8LscRIcHcdPhBenb/KMMwTE4yKRgL
-         TIYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=I3Pf9OIc8DGk9E58AEq8EGcTaeKj6hHjSLnNzQDAIvY=;
-        b=S6/kwjRXnAQqZDTc0VEw2dOSwf/43yAGNc/reJ0T9SpNVUQOXXVJ8zKpA9e8lYCyyd
-         mUaaW2absM10QU39OmGiBrvv3plEa4YyhqwHfKDygMJcG8HeHN0kKqFSnrQhApJJyNbK
-         A6wzENrfVeXznIi9WtE9eNkg9fRiRvnASNlBgvPEI5jBH8QBpzsDso3o4OAFOcEPgQTw
-         u0fWbEPkARGyplQrEFn6arsml9tQWkUccTJIuWaJXTYbmhAKgZQeoTkeHYfARcjT25vm
-         OAiOz3XJcqqWKidxG58lDGtU6K6mPW61Mihn5LjYOgYmzKtXWn6a7Xa44crf0ggEvHVX
-         bvEg==
-X-Gm-Message-State: ACgBeo2CHahVZyI5SF2a4oP+y+AKxbu22h0PzaeFgM6OWCpEmTbIjTTg
-        23s64/cgOHpnG++lXvKOIcY=
-X-Google-Smtp-Source: AA6agR43iEdqfdHIoOSbjahQdXE7/joUWXo6Xi/riiIPDrHY+FAs3Crt6ENsOaOMai5oVvlO63eDqA==
-X-Received: by 2002:a17:902:d890:b0:16c:abb4:94d0 with SMTP id b16-20020a170902d89000b0016cabb494d0mr28016185plz.50.1660760805029;
-        Wed, 17 Aug 2022 11:26:45 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id g11-20020aa796ab000000b0052da654301esm11115800pfk.170.2022.08.17.11.26.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 11:26:44 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 12:10:25 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <YvuJJTVV8+r7MXNc@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <20220817025250-mutt-send-email-mst@kernel.org>
- <YvtmYpMieMFb80qR@bullseye>
- <20220817130044-mutt-send-email-mst@kernel.org>
- <Yvt6nxUYMfDrLd/A@bullseye>
- <20220817135311-mutt-send-email-mst@kernel.org>
+        Wed, 17 Aug 2022 14:27:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F51F9A99E;
+        Wed, 17 Aug 2022 11:27:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D966134B;
+        Wed, 17 Aug 2022 18:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45A85C433D6;
+        Wed, 17 Aug 2022 18:27:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660760866;
+        bh=7RQC7Z5PDF/KkimXUInJgKToDP1OPwB23lF//Uzk2B8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fwb9RA1C7Uh1vpJloxASY9ISkShN05ee9h3qgfit+SEAXYnbGamXfHyG9o8wjEfeL
+         rKjRDPTf9B+ksAbVyVP42yLRfzZMod4TR1IhYkxDO74Xyw3aCcpITONOaY5D3tz/Em
+         IGRZAuYQlk4Ey7f4ZX4RNt3v8PioPYsIBULUakd38dY2uqks+mRhh+ChUeYIhK/ohj
+         SY3UtHU5TtPlqBJn3El5z0v1O14gP5Mc8GA9PY5fYarmyf9+CM73Tx8ImfpXjqsmF/
+         7rUewMIJYBuDb6634mPVRTUYAaqYNCrn2iHWv+YGb0EeQs+OCG5UG+6mnX6WUOm+EH
+         674uQIV8FiY8A==
+Date:   Wed, 17 Aug 2022 11:27:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
+Message-ID: <20220817112745.4efd8217@kernel.org>
+In-Reply-To: <20220817162703.728679-10-bigeasy@linutronix.de>
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+        <20220817162703.728679-10-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817135311-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 01:53:32PM -0400, Michael S. Tsirkin wrote:
-> On Tue, Aug 16, 2022 at 11:08:26AM +0000, Bobby Eshleman wrote:
-> > On Wed, Aug 17, 2022 at 01:02:52PM -0400, Michael S. Tsirkin wrote:
-> > > On Tue, Aug 16, 2022 at 09:42:51AM +0000, Bobby Eshleman wrote:
-> > > > > The basic question to answer then is this: with a net device qdisc
-> > > > > etc in the picture, how is this different from virtio net then?
-> > > > > Why do you still want to use vsock?
-> > > > > 
-> > > > 
-> > > > When using virtio-net, users looking for inter-VM communication are
-> > > > required to setup bridges, TAPs, allocate IP addresses or setup DNS,
-> > > > etc... and then finally when you have a network, you can open a socket
-> > > > on an IP address and port. This is the configuration that vsock avoids.
-> > > > For vsock, we just need a CID and a port, but no network configuration.
-> > > 
-> > > Surely when you mention DNS you are going overboard? vsock doesn't
-> > > remove the need for DNS as much as it does not support it.
-> > > 
-> > 
-> > Oops, s/DNS/dhcp.
-> 
-> That too.
-> 
+On Wed, 17 Aug 2022 18:27:03 +0200 Sebastian Andrzej Siewior wrote:
+>  drivers/net/ethernet/alacritech/slic.h        | 12 +++----
+>  drivers/net/ethernet/amazon/ena/ena_ethtool.c |  4 +--
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c  | 12 +++----
+>  .../net/ethernet/aquantia/atlantic/aq_ring.c  |  8 ++---
+>  drivers/net/ethernet/asix/ax88796c_main.c     |  4 +--
+>  drivers/net/ethernet/broadcom/b44.c           |  8 ++---
+>  drivers/net/ethernet/broadcom/bcmsysport.c    | 12 +++----
+>  .../net/ethernet/emulex/benet/be_ethtool.c    | 12 +++----
+>  drivers/net/ethernet/emulex/benet/be_main.c   | 16 +++++-----
+>  .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  4 +--
+>  .../net/ethernet/intel/fm10k/fm10k_netdev.c   |  8 ++---
+>  .../net/ethernet/intel/i40e/i40e_ethtool.c    |  8 ++---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c   | 20 ++++++------
+>  .../net/ethernet/intel/iavf/iavf_ethtool.c    |  8 ++---
+>  drivers/net/ethernet/intel/ice/ice_main.c     |  4 +--
+>  drivers/net/ethernet/intel/igb/igb_ethtool.c  | 12 +++----
+>  drivers/net/ethernet/intel/igb/igb_main.c     |  8 ++---
+>  drivers/net/ethernet/intel/igc/igc_ethtool.c  | 12 +++----
+>  drivers/net/ethernet/intel/igc/igc_main.c     |  8 ++---
+>  .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  8 ++---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  8 ++---
+>  drivers/net/ethernet/intel/ixgbevf/ethtool.c  | 12 +++----
+>  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  8 ++---
+>  drivers/net/ethernet/marvell/mvneta.c         |  8 ++---
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  8 ++---
+>  drivers/net/ethernet/marvell/sky2.c           |  8 ++---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  8 ++---
+>  .../net/ethernet/mellanox/mlxsw/spectrum.c    |  4 +--
+>  drivers/net/ethernet/microsoft/mana/mana_en.c |  8 ++---
+>  .../ethernet/microsoft/mana/mana_ethtool.c    |  8 ++---
+>  .../net/ethernet/netronome/nfp/nfp_net_repr.c |  4 +--
+>  drivers/net/ethernet/nvidia/forcedeth.c       |  8 ++---
+>  .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  4 +--
+>  drivers/net/ethernet/realtek/8139too.c        |  8 ++---
+>  drivers/net/ethernet/socionext/sni_ave.c      |  8 ++---
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  4 +--
+>  drivers/net/ethernet/ti/netcp_core.c          |  8 ++---
+>  drivers/net/ethernet/via/via-rhine.c          |  8 ++---
+>  drivers/net/hyperv/netvsc_drv.c               | 32 +++++++++----------
+>  drivers/net/ifb.c                             | 12 +++----
+>  drivers/net/ipvlan/ipvlan_main.c              |  4 +--
+>  drivers/net/loopback.c                        |  4 +--
+>  drivers/net/macsec.c                          | 12 +++----
+>  drivers/net/macvlan.c                         |  4 +--
+>  drivers/net/mhi_net.c                         |  8 ++---
+>  drivers/net/team/team.c                       |  4 +--
+>  drivers/net/team/team_mode_loadbalance.c      |  4 +--
+>  drivers/net/veth.c                            | 12 +++----
+>  drivers/net/virtio_net.c                      | 16 +++++-----
+>  drivers/net/vrf.c                             |  4 +--
+>  drivers/net/vxlan/vxlan_vnifilter.c           |  4 +--
+>  drivers/net/wwan/mhi_wwan_mbim.c              |  8 ++---
+>  drivers/net/xen-netfront.c                    |  8 ++---
+>  drivers/spi/spi.c                             |  4 +--
+>  include/linux/u64_stats_sync.h                | 12 -------
+>  kernel/bpf/syscall.c                          |  4 +--
+>  net/8021q/vlan_dev.c                          |  4 +--
+>  net/bridge/br_multicast.c                     |  4 +--
+>  net/bridge/br_vlan.c                          |  4 +--
+>  net/core/dev.c                                |  4 +--
+>  net/core/devlink.c                            |  4 +--
+>  net/core/drop_monitor.c                       |  8 ++---
+>  net/core/gen_stats.c                          | 16 +++++-----
+>  net/dsa/slave.c                               |  4 +--
+>  net/ipv4/af_inet.c                            |  4 +--
+>  net/ipv6/seg6_local.c                         |  4 +--
+>  net/netfilter/ipvs/ip_vs_ctl.c                |  4 +--
+>  net/netfilter/nf_tables_api.c                 |  4 +--
+>  net/openvswitch/datapath.c                    |  4 +--
+>  net/openvswitch/flow_table.c                  |  9 +++---
 
-Sure, setting up dhcp would be overboard for just inter-VM comms.
-
-It is fair to mention that vsock CIDs also need to be managed /
-allocated somehow.
+What's the thinking on merging? 8 and 9 will get reposted separately 
+for net-next once the discussions are over?
