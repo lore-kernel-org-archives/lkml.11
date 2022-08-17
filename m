@@ -2,107 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B23C32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F34A4C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239339AbiHQMtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
+        id S239360AbiHQMua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236875AbiHQMtD (ORCPT
+        with ESMTP id S239517AbiHQMuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:49:03 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC70A7331C;
-        Wed, 17 Aug 2022 05:48:58 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id x19so839609plc.5;
-        Wed, 17 Aug 2022 05:48:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=sDDQV3PgZqx2/9abOCF0VxB++9+m/C4n+txZ5R5CM3Y=;
-        b=l1SicTD3Sr9KN4ruqv+LLZmG8wRuU8ddgK7yNps2Uf7R1yLROjSOUGQdqj9vxI+ZiV
-         tM65n9j9Lhj/as55ucCu+jdlmHOn3AYY/qmMyM8BBXKNVtoGqkBZhBplMKXZnaruK0OD
-         ZoH/xq6XfWsOMevupbmejop+3cOz3eaRBuHTzSPat1+eY3rPDdYAJMXzydWHf5KL35mU
-         N/zUIZMRgQXWYLMFL8+2MPEbhs4ZXdIpCNoNlRDTUDTNcV1XPm84XHVuTfIBKWlyGqtY
-         pSOeTqbWQ8UYZJRbRNogkwfBIq/IVVbYlzg2Y0pWd90ecZM3PFc5OeDyU1252oiL9n3G
-         RFVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=sDDQV3PgZqx2/9abOCF0VxB++9+m/C4n+txZ5R5CM3Y=;
-        b=6FKH+SMU25yli4akxj688nyZ+jVsEX6xvL0HiZqQmPh/Ix1KgvhDF4GUUo10sX01g3
-         0xWEFw4kITKdAxq+mmeSxd60A3EQHnoX43P7EGBoIgDBcbqfam4+BzU6KCMqEqPIICkD
-         8g7Ge4qQJvkDXStbQG/k54S6FH1L7Zq5hpC/2f5lJ0qys8y251x1ZvXZI288MO/DSy4M
-         AWXd/ZgFPWI2YcIHy+XU2DWCEUWiYdPAKVHvRULsLdiQgqI19Ps5ABmcAWjP+6ik8CLr
-         415ovK7gzVFR++R6MOTebX+sOIQh0mU0XK0R/F1t0armSBHiroVtE1gTezph6d209cgY
-         opLg==
-X-Gm-Message-State: ACgBeo0Z2AaILXM3mhX9vHQib3jv6T6aceduF8whS7FOYL3Ltw44CZEq
-        BxC4aLuuGVdcE843RM+5354pIKA4fy4Clw==
-X-Google-Smtp-Source: AA6agR7FR3iL/j6v8XJIocqgdSQOAW87gCVU1em/6BeoDiRvo1J0p2clcTnEKG2Df8gbx4uvbL4B6w==
-X-Received: by 2002:a17:90a:f490:b0:1f7:6ecf:33d7 with SMTP id bx16-20020a17090af49000b001f76ecf33d7mr3663495pjb.210.1660740538330;
-        Wed, 17 Aug 2022 05:48:58 -0700 (PDT)
-Received: from debian.. (subs32-116-206-28-37.three.co.id. [116.206.28.37])
-        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b0016a4db13429sm1386962plb.192.2022.08.17.05.48.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 05:48:58 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Xiaoyao Li <xiaoyao.li@intel.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 3/3] Documentation: kvm: enclose the final closing brace in code block
-Date:   Wed, 17 Aug 2022 19:48:37 +0700
-Message-Id: <20220817124837.422695-4-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220817124837.422695-1-bagasdotme@gmail.com>
-References: <20220817124837.422695-1-bagasdotme@gmail.com>
+        Wed, 17 Aug 2022 08:50:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E75718B9A4
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:50:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 76118152B;
+        Wed, 17 Aug 2022 05:50:14 -0700 (PDT)
+Received: from [10.57.13.141] (unknown [10.57.13.141])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A273A3F67D;
+        Wed, 17 Aug 2022 05:50:12 -0700 (PDT)
+Message-ID: <04790bd9-4f20-4d51-b988-ad4b44eeee98@arm.com>
+Date:   Wed, 17 Aug 2022 13:50:09 +0100
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1175; i=bagasdotme@gmail.com; h=from:subject; bh=pZtYWIvpNrlcv7lJWS5yJDXQNN6EtLfOfO5biSvqfVc=; b=owGbwMvMwCH2bWenZ2ig32LG02pJDEl/Hi/Nvfpm360XZypkJVv7louyvnD/fKdp+Rz9hTP7vDRq P7tzdJSyMIhxMMiKKbJMSuRrOr3LSORC+1pHmDmsTCBDGLg4BWAiX+MY/ofulF6dvyvmiUZFcWWouH yu6r398nuOLFjoZ1z0Wm1xUgvDLybntW0fH2Zzas8KP7FZ5PAr78C1q6aveN4QWfFJ8bOmPDcA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-kernel@vger.kernel.org
+References: <20220817060647.1032426-1-hch@lst.de>
+ <20220817060647.1032426-4-hch@lst.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220817060647.1032426-4-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sphinx reported literal block warning:
+On 2022-08-17 07:06, Christoph Hellwig wrote:
+> Limit the sizing of the atomic pools for allocations from
+> ZONE_DMA and ZONE_DMA32 based on the number of pages actually
+> present in those zones instead of the total memory.
+> 
+> Fixes: c84dc6e68a1d ("dma-pool: add additional coherent pools to map to gfp mask")
+> Reported-by: Michal Hocko <mhocko@suse.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   kernel/dma/pool.c | 40 +++++++++++++++++++++++++++++-----------
+>   1 file changed, 29 insertions(+), 11 deletions(-)
+> 
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index 5b07b0379a501..f629c6dfd8555 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -193,28 +193,46 @@ static unsigned long calculate_pool_size(unsigned long zone_pages)
+>   	return max_t(unsigned long, nr_pages << PAGE_SHIFT, SZ_128K);
+>   }
+>   
+> +#if defined(CONFIG_ZONE_DMA) || defined(CONFIG_ZONE_DMA32)
 
-Documentation/virt/kvm/api.rst:1362: WARNING: Literal block ends without a blank line; unexpected unindent.
+This #ifdeffery seems horribly clunky - I think it would be much nicer 
+to mark this __maybe_unused, and preserve the has_managed_dma/IS_ENABLED 
+logic below.
 
-The warning is caused by the final closing brace in KVM_SET_USER_MEMORY_REGION
-struct definition is not indented as literal code block.
+> +static unsigned long __init nr_managed_pages(int zone_idx)
+> +{
+> +	struct pglist_data *pgdat;
+> +	unsigned long nr_pages = 0;
+> +
+> +	for_each_online_pgdat(pgdat)
+> +		nr_pages += zone_managed_pages(&pgdat->node_zones[zone_idx]);
+> +	return nr_pages;
+> +}
+> +#endif /* CONFIG_ZONE_DMA || CONFIG_ZONE_DMA32 */
+> +
+>   static int __init dma_atomic_pool_init(void)
+>   {
+> +	unsigned long nr_zone_dma_pages, nr_zone_dma32_pages;
 
-Indent the closing brace to fix the warning.
+...otherwise, I expect the buildbots will be along shortly with unused 
+variable warnings for these :)
 
-Link: https://lore.kernel.org/linux-doc/202208171109.lCfseeP6-lkp@intel.com/
-Fixes: bb90daae9d7551 ("KVM: Extend the memslot to support fd-based private memory")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/virt/kvm/api.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cheers,
+Robin.
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d9d43078080030..4acf4d1c95c099 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -1359,7 +1359,7 @@ yet and must be cleared on entry.
- 	__u32 private_fd;
- 	__u32 pad1;
- 	__u64 pad2[14];
--};
-+  };
- 
-   /\* for kvm_memory_region::flags \*/
-   #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
--- 
-An old man doll... just what I always wanted! - Clara
-
+> +
+> +#ifdef CONFIG_ZONE_DMA
+> +	nr_zone_dma_pages = nr_managed_pages(ZONE_DMA);
+> +	if (nr_zone_dma_pages)
+> +		atomic_pool_dma = __dma_atomic_pool_init(
+> +				calculate_pool_size(nr_zone_dma_pages),
+> +				GFP_DMA);
+> +#endif
+> +#ifdef CONFIG_ZONE_DMA32
+> +	nr_zone_dma32_pages = nr_managed_pages(ZONE_DMA32);
+> +	if (nr_zone_dma32_pages)
+> +		atomic_pool_dma32 = __dma_atomic_pool_init(
+> +				calculate_pool_size(nr_zone_dma32_pages),
+> +				GFP_DMA32);
+> +#endif
+>   	/*
+>   	 * If coherent_pool was not used on the command line, default the pool
+>   	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
+>   	 */
+>   	if (!atomic_pool_size)
+>   		atomic_pool_size = calculate_pool_size(totalram_pages());
+> -
+> -	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
+> -
+>   	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
+>   						    GFP_KERNEL);
+> -	if (has_managed_dma()) {
+> -		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+> -						GFP_KERNEL | GFP_DMA);
+> -	}
+> -	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
+> -		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+> -						GFP_KERNEL | GFP_DMA32);
+> -	}
+>   
+> +	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
+>   	dma_atomic_pool_debugfs_init();
+>   	return 0;
+>   }
