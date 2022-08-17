@@ -2,155 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905B2C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2771EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241403AbiHQTJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
+        id S241408AbiHQTLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241365AbiHQTJR (ORCPT
+        with ESMTP id S241239AbiHQTLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:09:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C3145F45
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:09:16 -0700 (PDT)
+        Wed, 17 Aug 2022 15:11:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5779A9A1
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:11:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660763355;
+        s=mimecast20190719; t=1660763472;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=n0ItpIZmzr3MlsvmDpXDhuK40hnz/P19I8npZQ9WGtY=;
-        b=H19k+JiCPdrXEFXfudTgdQal9icmDw+bjWrda7yDJL+Nb4/pTp0VY+43AW87bSu3r1J/m0
-        Z4rmhqecSTZgpmUsy3U71HZSUZvcFDOzxkytUMo+3R7Dlfph95sbVGGXH7yyhsbclwMRPw
-        26xozb81sOSRP0EN1yMtP8X5ov70uRk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         in-reply-to:in-reply-to:references:references;
+        bh=MaL6BNK8+Dum2lUbuYpY93KQMzHQlJu9Ni2H/q+UQcE=;
+        b=R7/abGiB4TrUKqrEp0z4j1tnT7cL+tg5RLsXsIUuXKl44tyykkYPuPCVNagmRM1uPYiVNe
+        FSFoMlf9MKjS2xJU+Y7QboRAjBhOaSlseYq6/vIYM4D/94XCC2p+pIOVEuoKm81AEXBGRu
+        WF/0VJRrC9ylVGSU+GS5XEVcXxTnF94=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-157-FO7LcJsHOZ-2Go2rR1XWhw-1; Wed, 17 Aug 2022 15:09:11 -0400
-X-MC-Unique: FO7LcJsHOZ-2Go2rR1XWhw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-302-uK8Sh83FOCixx4aV5bhPbA-1; Wed, 17 Aug 2022 15:11:09 -0400
+X-MC-Unique: uK8Sh83FOCixx4aV5bhPbA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B9B283804520;
-        Wed, 17 Aug 2022 19:09:10 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E718780418F;
+        Wed, 17 Aug 2022 19:11:08 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 878E52026D4C;
-        Wed, 17 Aug 2022 19:09:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B1E34492C3B;
+        Wed, 17 Aug 2022 19:11:08 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id ABAB2416D8A2; Wed, 17 Aug 2022 16:08:54 -0300 (-03)
-Message-ID: <20220817190221.608436609@redhat.com>
-User-Agent: quilt/0.66
-Date:   Wed, 17 Aug 2022 16:01:39 -0300
+        id BE3D3416D5DE; Wed, 17 Aug 2022 16:10:51 -0300 (-03)
+Date:   Wed, 17 Aug 2022 16:10:51 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     atomlin@redhat.com, frederic@kernel.org
 Cc:     cl@linux.com, tglx@linutronix.de, mingo@kernel.org,
         peterz@infradead.org, pauld@redhat.com, neelx@redhat.com,
         oleksandr@natalenko.name, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [PATCH v7 3/3] mm/vmstat: do not queue vmstat_update if tick is stopped
+        linux-mm@kvack.org
+Subject: Re: [patch 0/3] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <Yv09OwcEuRUq7Dpu@fuller.cnet>
 References: <20220817190136.096849758@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817190136.096849758@redhat.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220817190139.NGSMYbNGPIABol35mBPtUmbWE9ji7dOYtgwW8Ee-qEM@z>
 
-From the vmstat shepherd, for CPUs that have the tick stopped,
-do not queue local work to flush the per-CPU vmstats, since 
-in that case the flush is performed on return to
-userspace or when entering idle.
+On Wed, Aug 17, 2022 at 04:01:36PM -0300, Marcelo Tosatti wrote:
+> This patchset contains enhancements on top of Aaron's -v6 of the series
+> (see the changelog below).
 
-Per-cpu pages can be freed remotely from housekeeping CPUs.
-
-Move the quiet_vmstat call after ts->tick_stopped = 1 assignment.
-
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-
----
- kernel/time/tick-sched.c |    6 +++---
- mm/vmstat.c              |   22 +++++++++++++++++-----
- 2 files changed, 20 insertions(+), 8 deletions(-)
-
-Index: linux-2.6/mm/vmstat.c
-===================================================================
---- linux-2.6.orig/mm/vmstat.c
-+++ linux-2.6/mm/vmstat.c
-@@ -29,6 +29,7 @@
- #include <linux/page_ext.h>
- #include <linux/page_owner.h>
- #include <linux/migrate.h>
-+#include <linux/tick.h>
- 
- #include "internal.h"
- 
-@@ -1973,19 +1974,27 @@ static void vmstat_update(struct work_st
-  */
- void quiet_vmstat(void)
- {
-+	struct delayed_work *dw;
-+
- 	if (system_state != SYSTEM_RUNNING)
- 		return;
- 
- 	if (!__this_cpu_read(vmstat_dirty))
- 		return;
- 
-+	refresh_cpu_vm_stats(false);
-+
- 	/*
--	 * Just refresh counters and do not care about the pending delayed
--	 * vmstat_update. It doesn't fire that often to matter and canceling
--	 * it would be too expensive from this path.
--	 * vmstat_shepherd will take care about that for us.
-+	 * If the tick is stopped, cancel any delayed work to avoid
-+	 * interruptions to this CPU in the future.
-+	 *
-+	 * Otherwise just refresh counters and do not care about the pending
-+	 * delayed vmstat_update. It doesn't fire that often to matter
-+	 * and canceling it would be too expensive from this path.
- 	 */
--	refresh_cpu_vm_stats(false);
-+	dw = &per_cpu(vmstat_work, smp_processor_id());
-+	if (delayed_work_pending(dw) && tick_nohz_tick_stopped())
-+		cancel_delayed_work(dw);
- }
- 
- /*
-@@ -2007,6 +2016,9 @@ static void vmstat_shepherd(struct work_
- 	for_each_online_cpu(cpu) {
- 		struct delayed_work *dw = &per_cpu(vmstat_work, cpu);
- 
-+		if (tick_nohz_tick_stopped_cpu(cpu))
-+			continue;
-+
- 		if (!delayed_work_pending(dw) && per_cpu(vmstat_dirty, cpu))
- 			queue_delayed_work_on(cpu, mm_percpu_wq, dw, 0);
- 
-Index: linux-2.6/kernel/time/tick-sched.c
-===================================================================
---- linux-2.6.orig/kernel/time/tick-sched.c
-+++ linux-2.6/kernel/time/tick-sched.c
-@@ -905,9 +905,6 @@ static void tick_nohz_stop_tick(struct t
- 		ts->do_timer_last = 0;
- 	}
- 
--	/* Attempt to fold when the idle tick is stopped or not */
--	quiet_vmstat();
--
- 	/* Skip reprogram of event if its not changed */
- 	if (ts->tick_stopped && (expires == ts->next_tick)) {
- 		/* Sanity check: make sure clockevent is actually programmed */
-@@ -935,6 +932,9 @@ static void tick_nohz_stop_tick(struct t
- 		trace_tick_stop(1, TICK_DEP_MASK_NONE);
- 	}
- 
-+	/* Attempt to fold when the idle tick is stopped or not */
-+	quiet_vmstat();
-+
- 	ts->next_tick = tick;
- 
- 	/*
-
+Please ignore this series. Resent series with proper "[PATCH -v7]" subject.
 
