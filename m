@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC56FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A41EC32772
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241191AbiHQTlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        id S241340AbiHQTlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241343AbiHQTkW (ORCPT
+        with ESMTP id S241683AbiHQTkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:40:22 -0400
+        Wed, 17 Aug 2022 15:40:41 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A57A5982
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29E7A50D2
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:40:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660765210;
+        s=mimecast20190719; t=1660765238;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BJVKAzmgNUXTIvg/7aYeVKWu2KFXiCXUYfttouOpl9Y=;
-        b=K5oOKyfRj37FMDAYwCJylSOXs9EVSLkr8xT2T+6umU3sOC7NQLjJIoa6NZjHWCCgjIr5zF
-        y5JPzZ+4bP89m+1vyOIH1YudMT3RnA7mm99tvi82gcmznfKZlBIOB9YHt9fe4Fg3mUgNof
-        NVrAT4Js2+FsGufF5GfpKnqwxZsjTLs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=vGAWdGBCvHo/Xt38L3u4StBkCHDM87EqdhiXD5gw0mg=;
+        b=cDD3iAku8PpCUDzYbA5lN1SrZviHbdxUaVqmh/7iSUjCzSz0V39f5BaSGt9au0HJrc0w6L
+        PGmOON2KBNLzU32SP0C3eaTw6WQHF9sEuNSnw6r8DAKGWtHnwYVjmGLe/MLGdkSpPVCgBL
+        22Il4Wae7VKiscKoQVvOzcQNTRA2nLA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-390-yMwjXZ5RP0ub9eiYeukMgQ-1; Wed, 17 Aug 2022 15:40:08 -0400
-X-MC-Unique: yMwjXZ5RP0ub9eiYeukMgQ-1
+ us-mta-342-7d3Ijde6MDacywFc0XBA7A-1; Wed, 17 Aug 2022 15:40:36 -0400
+X-MC-Unique: 7d3Ijde6MDacywFc0XBA7A-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 79B84180F6DF;
-        Wed, 17 Aug 2022 19:40:07 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5CFB11C0BC66;
+        Wed, 17 Aug 2022 19:40:35 +0000 (UTC)
 Received: from emerald.redhat.com (unknown [10.22.18.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30F98492C3B;
-        Wed, 17 Aug 2022 19:40:06 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F2CF7492CA4;
+        Wed, 17 Aug 2022 19:40:33 +0000 (UTC)
 From:   Lyude Paul <lyude@redhat.com>
 To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
@@ -67,17 +67,18 @@ Cc:     Wayne Lin <Wayne.Lin@amd.com>,
         Roman Li <roman.li@amd.com>, Jude Shih <shenshih@amd.com>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Uma Shankar <uma.shankar@intel.com>,
         Manasi Navare <manasi.d.navare@intel.com>,
         =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
         Dave Airlie <airlied@redhat.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sean Paul <seanpaul@chromium.org>,
-        Luo Jiaxing <luojiaxing@huawei.com>,
         Fernando Ramos <greenfoo@u92.eu>,
         Javier Martinez Canillas <javierm@redhat.com>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v4 08/17] drm/display/dp_mst: Add nonblocking helpers for DP MST
-Date:   Wed, 17 Aug 2022 15:38:37 -0400
-Message-Id: <20220817193847.557945-9-lyude@redhat.com>
+Subject: [RFC v4 13/17] drm/display/dp_mst: Add helpers for serializing SST <-> MST transitions
+Date:   Wed, 17 Aug 2022 15:38:42 -0400
+Message-Id: <20220817193847.557945-14-lyude@redhat.com>
 In-Reply-To: <20220817193847.557945-1-lyude@redhat.com>
 References: <20220817193847.557945-1-lyude@redhat.com>
 MIME-Version: 1.0
@@ -88,30 +89,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As Daniel Vetter pointed out, if we only use the atomic modesetting locks
-with MST it's technically possible for a driver with non-blocking modesets
-to race when it comes to MST displays - as we make the mistake of not doing
-our own CRTC commit tracking in the topology_state object.
+There's another kind of situation where we could potentially race with
+nonblocking modesets and MST, especially if we were to only use the locking
+provided by atomic modesetting:
 
-This could potentially cause problems if something like this happens:
+* Display 1 begins as enabled on DP-1 in SST mode
+* Display 1 switches to MST mode, exposes one sink in MST mode
+* Userspace does non-blocking modeset to disable the SST display
+* Userspace does non-blocking modeset to enable the MST display with a
+  different CRTC, but the SST display hasn't been fully taken down yet
+* Execution order between the last two commits isn't guaranteed since they
+  share no drm resources
 
-* User starts non-blocking commit to disable CRTC-1 on MST topology 1
-* User starts non-blocking commit to enable CRTC-2 on MST topology 1
-
-There's no guarantee here that the commit for disabling CRTC-2 will only
-occur after CRTC-1 has finished, since neither commit shares a CRTC - only
-the private modesetting object for MST. Keep in mind this likely isn't a
-problem for blocking modesets, only non-blocking.
-
-So, begin fixing this by keeping track of which CRTCs on a topology have
-changed by keeping track of which CRTCs we release or allocate timeslots
-on. As well, add some helpers for:
-
-* Setting up the drm_crtc_commit structs in the ->commit_setup hook
-* Waiting for any CRTC dependencies from the previous topology state
+We can fix this however, by ensuring that we always pull in the atomic
+topology state whenever a connector capable of driving an MST display
+performs its atomic check - and then tracking CRTC commits happening on the
+SST connector in the MST topology state. So, let's add some simple helpers
+for doing that and hook them up in various drivers.
 
 v2:
-* Use drm_dp_mst_atomic_setup_commit() directly - Jani
+* Use intel_dp_mst_source_support() to check for MST support in i915, fixes
+  CI failures
 
 Signed-off-by: Lyude Paul <lyude@redhat.com>
 Cc: Wayne Lin <Wayne.Lin@amd.com>
@@ -123,289 +121,202 @@ Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Sean Paul <sean@poorly.run>
 Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  5 +-
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 93 +++++++++++++++++++
- drivers/gpu/drm/i915/display/intel_display.c  |  6 ++
- drivers/gpu/drm/nouveau/dispnv50/disp.c       |  7 ++
- include/drm/display/drm_dp_mst_helper.h       | 15 +++
- 5 files changed, 124 insertions(+), 2 deletions(-)
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  7 +++
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 59 +++++++++++++++++++
+ drivers/gpu/drm/i915/display/intel_dp.c       |  9 +++
+ drivers/gpu/drm/nouveau/dispnv50/disp.c       |  2 +-
+ drivers/gpu/drm/nouveau/dispnv50/disp.h       |  2 +
+ drivers/gpu/drm/nouveau/nouveau_connector.c   | 14 +++++
+ include/drm/display/drm_dp_mst_helper.h       |  2 +
+ 7 files changed, 94 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index cd30b02af8ee..c97a4d759b94 100644
+index c97a4d759b94..789748739d79 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2808,7 +2808,8 @@ static const struct drm_mode_config_funcs amdgpu_dm_mode_funcs = {
- };
+@@ -6291,10 +6291,17 @@ amdgpu_dm_connector_atomic_check(struct drm_connector *conn,
+ 		drm_atomic_get_old_connector_state(state, conn);
+ 	struct drm_crtc *crtc = new_con_state->crtc;
+ 	struct drm_crtc_state *new_crtc_state;
++	struct amdgpu_dm_connector *aconn = to_amdgpu_dm_connector(conn);
+ 	int ret;
  
- static struct drm_mode_config_helper_funcs amdgpu_dm_mode_config_helperfuncs = {
--	.atomic_commit_tail = amdgpu_dm_atomic_commit_tail
-+	.atomic_commit_tail = amdgpu_dm_atomic_commit_tail,
-+	.atomic_commit_setup = drm_dp_mst_atomic_setup_commit,
- };
+ 	trace_amdgpu_dm_connector_atomic_check(new_con_state);
  
- static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
-@@ -7959,6 +7960,7 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
- 		DRM_ERROR("Waiting for fences timed out!");
++	if (conn->connector_type == DRM_MODE_CONNECTOR_DisplayPort) {
++		ret = drm_dp_mst_root_conn_atomic_check(new_con_state, &aconn->mst_mgr);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	if (!crtc)
+ 		return 0;
  
- 	drm_atomic_helper_update_legacy_modeset_state(dev, state);
-+	drm_dp_mst_atomic_wait_for_dependencies(state);
- 
- 	dm_state = dm_atomic_get_new_state(state);
- 	if (dm_state && dm_state->context) {
-@@ -8357,7 +8359,6 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
- 		dc_release_state(dc_state_temp);
- }
- 
--
- static int dm_force_atomic_commit(struct drm_connector *connector)
- {
- 	int ret = 0;
 diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 1c054a5e2e77..d701e5b819b8 100644
+index 2f7c43f88d74..97e8f8a83ed4 100644
 --- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
 +++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4384,12 +4384,16 @@ int drm_dp_atomic_find_time_slots(struct drm_atomic_state *state,
- {
- 	struct drm_dp_mst_topology_state *topology_state;
- 	struct drm_dp_mst_atomic_payload *payload = NULL;
-+	struct drm_connector_state *conn_state;
- 	int prev_slots = 0, prev_bw = 0, req_slots;
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
- 	if (IS_ERR(topology_state))
- 		return PTR_ERR(topology_state);
- 
-+	conn_state = drm_atomic_get_new_connector_state(state, port->connector);
-+	topology_state->pending_crtc_mask |= drm_crtc_mask(conn_state->crtc);
-+
- 	/* Find the current allocation for this port, if any */
- 	payload = drm_atomic_get_mst_payload_state(topology_state, port);
- 	if (payload) {
-@@ -4469,11 +4473,15 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- {
- 	struct drm_dp_mst_topology_state *topology_state;
- 	struct drm_dp_mst_atomic_payload *payload;
-+	struct drm_connector_state *conn_state;
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
- 	if (IS_ERR(topology_state))
- 		return PTR_ERR(topology_state);
- 
-+	conn_state = drm_atomic_get_old_connector_state(state, port->connector);
-+	topology_state->pending_crtc_mask |= drm_crtc_mask(conn_state->crtc);
-+
- 	payload = drm_atomic_get_mst_payload_state(topology_state, port);
- 	if (WARN_ON(!payload)) {
- 		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
-@@ -4492,6 +4500,83 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+@@ -4597,6 +4597,65 @@ void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state)
  }
- EXPORT_SYMBOL(drm_dp_atomic_release_time_slots);
+ EXPORT_SYMBOL(drm_dp_mst_atomic_wait_for_dependencies);
  
 +/**
-+ * drm_dp_mst_atomic_setup_commit() - setup_commit hook for MST helpers
-+ * @state: global atomic state
++ * drm_dp_mst_root_conn_atomic_check() - Serialize CRTC commits on MST-capable connectors operating
++ * in SST mode
++ * @new_conn_state: The new connector state of the &drm_connector
++ * @mgr: The MST topology manager for the &drm_connector
 + *
-+ * This function saves all of the &drm_crtc_commit structs in an atomic state that touch any CRTCs
-+ * currently assigned to an MST topology. Drivers must call this hook from their
-+ * &drm_mode_config_helper_funcs.atomic_commit_setup hook.
++ * Since MST uses fake &drm_encoder structs, the generic atomic modesetting code isn't able to
++ * serialize non-blocking commits happening on the real DP connector of an MST topology switching
++ * into/away from MST mode - as the CRTC on the real DP connector and the CRTCs on the connector's
++ * MST topology will never share the same &drm_encoder.
++ *
++ * This function takes care of this serialization issue, by checking a root MST connector's atomic
++ * state to determine if it is about to have a modeset - and then pulling in the MST topology state
++ * if so, along with adding any relevant CRTCs to &drm_dp_mst_topology_state.pending_crtc_mask.
++ *
++ * Drivers implementing MST must call this function from the
++ * &drm_connector_helper_funcs.atomic_check hook of any physical DP &drm_connector capable of
++ * driving MST sinks.
 + *
 + * Returns:
-+ * 0 if all CRTC commits were retrieved successfully, negative error code otherwise
++ * 0 on success, negative error code otherwise
 + */
-+int drm_dp_mst_atomic_setup_commit(struct drm_atomic_state *state)
++int drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
++				      struct drm_dp_mst_topology_mgr *mgr)
 +{
-+	struct drm_dp_mst_topology_mgr *mgr;
-+	struct drm_dp_mst_topology_state *mst_state;
-+	struct drm_crtc *crtc;
++	struct drm_atomic_state *state = new_conn_state->state;
++	struct drm_connector_state *old_conn_state =
++		drm_atomic_get_old_connector_state(state, new_conn_state->connector);
 +	struct drm_crtc_state *crtc_state;
-+	int i, j, commit_idx, num_commit_deps;
++	struct drm_dp_mst_topology_state *mst_state = NULL;
 +
-+	for_each_new_mst_mgr_in_state(state, mgr, mst_state, i) {
-+		if (!mst_state->pending_crtc_mask)
-+			continue;
++	if (new_conn_state->crtc) {
++		crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
++		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
++			mst_state = drm_atomic_get_mst_topology_state(state, mgr);
++			if (IS_ERR(mst_state))
++				return PTR_ERR(mst_state);
 +
-+		num_commit_deps = hweight32(mst_state->pending_crtc_mask);
-+		mst_state->commit_deps = kmalloc_array(num_commit_deps,
-+						       sizeof(*mst_state->commit_deps), GFP_KERNEL);
-+		if (!mst_state->commit_deps)
-+			return -ENOMEM;
-+		mst_state->num_commit_deps = num_commit_deps;
++			mst_state->pending_crtc_mask |= drm_crtc_mask(new_conn_state->crtc);
++		}
++	}
 +
-+		commit_idx = 0;
-+		for_each_new_crtc_in_state(state, crtc, crtc_state, j) {
-+			if (mst_state->pending_crtc_mask & drm_crtc_mask(crtc)) {
-+				mst_state->commit_deps[commit_idx++] =
-+					drm_crtc_commit_get(crtc_state->commit);
++	if (old_conn_state->crtc) {
++		crtc_state = drm_atomic_get_new_crtc_state(state, old_conn_state->crtc);
++		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
++			if (!mst_state) {
++				mst_state = drm_atomic_get_mst_topology_state(state, mgr);
++				if (IS_ERR(mst_state))
++					return PTR_ERR(mst_state);
 +			}
++
++			mst_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
 +		}
 +	}
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL(drm_dp_mst_atomic_setup_commit);
-+
-+/**
-+ * drm_dp_mst_atomic_wait_for_dependencies() - Wait for all pending commits on MST topologies
-+ * @state: global atomic state
-+ *
-+ * Goes through any MST topologies in this atomic state, and waits for any pending commits which
-+ * touched CRTCs that were/are on an MST topology to be programmed to hardware and flipped to before
-+ * returning. This is to prevent multiple non-blocking commits affecting an MST topology from racing
-+ * with eachother by forcing them to be executed sequentially in situations where the only resources
-+ * the modeset objects in these commits share are an MST topology.
-+ *
-+ * This function also prepares the new MST state for commit by performing some state preparation
-+ * which can't be done until this point, such as reading back the final VC start slots (which are
-+ * determined at commit-time) from the previous state.
-+ *
-+ * All MST drivers must call this function after calling drm_atomic_helper_wait_for_dependencies(),
-+ * or whatever their equivalent of that is.
-+ */
-+void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state)
-+{
-+	struct drm_dp_mst_topology_state *old_mst_state;
-+	struct drm_dp_mst_topology_mgr *mgr;
-+	int i, j, ret;
-+
-+	for_each_old_mst_mgr_in_state(state, mgr, old_mst_state, i) {
-+		for (j = 0; j < old_mst_state->num_commit_deps; j++) {
-+			ret = drm_crtc_commit_wait(old_mst_state->commit_deps[j]);
-+			if (ret < 0)
-+				drm_err(state->dev, "Failed to wait for %s: %d\n",
-+					old_mst_state->commit_deps[j]->crtc->name, ret);
-+		}
-+	}
-+}
-+EXPORT_SYMBOL(drm_dp_mst_atomic_wait_for_dependencies);
++EXPORT_SYMBOL(drm_dp_mst_root_conn_atomic_check);
 +
  /**
   * drm_dp_mst_update_slots() - updates the slot info depending on the DP ecoding format
   * @mst_state: mst_state to update
-@@ -5067,6 +5152,9 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
- 	__drm_atomic_helper_private_obj_duplicate_state(obj, &state->base);
- 
- 	INIT_LIST_HEAD(&state->payloads);
-+	state->commit_deps = NULL;
-+	state->num_commit_deps = 0;
-+	state->pending_crtc_mask = 0;
- 
- 	list_for_each_entry(pos, &old_state->payloads, next) {
- 		/* Prune leftover freed timeslot allocations */
-@@ -5099,6 +5187,7 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
- 	struct drm_dp_mst_topology_state *mst_state =
- 		to_dp_mst_topology_state(state);
- 	struct drm_dp_mst_atomic_payload *pos, *tmp;
-+	int i;
- 
- 	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
- 		/* We only keep references to ports with non-zero VCPIs */
-@@ -5107,6 +5196,10 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
- 		kfree(pos);
- 	}
- 
-+	for (i = 0; i < mst_state->num_commit_deps; i++)
-+		drm_crtc_commit_put(mst_state->commit_deps[i]);
-+
-+	kfree(mst_state->commit_deps);
- 	kfree(mst_state);
- }
- 
-diff --git a/drivers/gpu/drm/i915/display/intel_display.c b/drivers/gpu/drm/i915/display/intel_display.c
-index 533fff79aeda..6103b02c081f 100644
---- a/drivers/gpu/drm/i915/display/intel_display.c
-+++ b/drivers/gpu/drm/i915/display/intel_display.c
-@@ -7529,6 +7529,7 @@ static void intel_atomic_commit_tail(struct intel_atomic_state *state)
- 	intel_atomic_commit_fence_wait(state);
- 
- 	drm_atomic_helper_wait_for_dependencies(&state->base);
-+	drm_dp_mst_atomic_wait_for_dependencies(&state->base);
- 
- 	if (state->modeset)
- 		wakeref = intel_display_power_get(dev_priv, POWER_DOMAIN_MODESET);
-@@ -8597,6 +8598,10 @@ static int intel_initial_commit(struct drm_device *dev)
- 	return ret;
- }
- 
-+static const struct drm_mode_config_helper_funcs intel_mode_config_funcs = {
-+	.atomic_commit_setup = drm_dp_mst_atomic_setup_commit,
-+};
-+
- static void intel_mode_config_init(struct drm_i915_private *i915)
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index 32292c0be2bd..a4e113253df3 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -4992,12 +4992,21 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
  {
- 	struct drm_mode_config *mode_config = &i915->drm.mode_config;
-@@ -8611,6 +8616,7 @@ static void intel_mode_config_init(struct drm_i915_private *i915)
- 	mode_config->prefer_shadow = 1;
+ 	struct drm_i915_private *dev_priv = to_i915(conn->dev);
+ 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
++	struct drm_connector_state *conn_state = drm_atomic_get_new_connector_state(_state, conn);
++	struct intel_connector *intel_conn = to_intel_connector(conn);
++	struct intel_dp *intel_dp = enc_to_intel_dp(intel_conn->encoder);
+ 	int ret;
  
- 	mode_config->funcs = &intel_mode_funcs;
-+	mode_config->helper_private = &intel_mode_config_funcs;
+ 	ret = intel_digital_connector_atomic_check(conn, &state->base);
+ 	if (ret)
+ 		return ret;
  
- 	mode_config->async_page_flip = HAS_ASYNC_FLIPS(i915);
- 
++	if (intel_dp_mst_source_support(intel_dp)) {
++		ret = drm_dp_mst_root_conn_atomic_check(conn_state, &intel_dp->mst_mgr);
++		if (ret)
++			return ret;
++	}
++
+ 	/*
+ 	 * We don't enable port sync on BDW due to missing w/as and
+ 	 * due to not having adjusted the modeset sequence appropriately.
 diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-index 1d54f2cd38b2..c55af5d78ea2 100644
+index 24807aa9da5f..7e9a0b50bb42 100644
 --- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
 +++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-@@ -2136,6 +2136,7 @@ nv50_disp_atomic_commit_tail(struct drm_atomic_state *state)
- 	nv50_crc_atomic_stop_reporting(state);
- 	drm_atomic_helper_wait_for_fences(dev, state, false);
- 	drm_atomic_helper_wait_for_dependencies(state);
-+	drm_dp_mst_atomic_wait_for_dependencies(state);
- 	drm_atomic_helper_update_legacy_modeset_state(dev, state);
- 	drm_atomic_helper_calc_timestamping_constants(state);
- 
-@@ -2616,6 +2617,11 @@ nv50_disp_func = {
- 	.atomic_state_free = nv50_disp_atomic_state_free,
+@@ -1813,7 +1813,7 @@ nv50_sor_func = {
+ 	.destroy = nv50_sor_destroy,
  };
  
-+static const struct drm_mode_config_helper_funcs
-+nv50_disp_helper_func = {
-+	.atomic_commit_setup = drm_dp_mst_atomic_setup_commit,
-+};
-+
- /******************************************************************************
-  * Init
-  *****************************************************************************/
-@@ -2699,6 +2705,7 @@ nv50_display_create(struct drm_device *dev)
- 	nouveau_display(dev)->fini = nv50_display_fini;
- 	disp->disp = &nouveau_display(dev)->disp;
- 	dev->mode_config.funcs = &nv50_disp_func;
-+	dev->mode_config.helper_private = &nv50_disp_helper_func;
- 	dev->mode_config.quirk_addfb_prefer_xbgr_30bpp = true;
- 	dev->mode_config.normalize_zpos = true;
+-static bool nv50_has_mst(struct nouveau_drm *drm)
++bool nv50_has_mst(struct nouveau_drm *drm)
+ {
+ 	struct nvkm_bios *bios = nvxx_bios(&drm->client.device);
+ 	u32 data;
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.h b/drivers/gpu/drm/nouveau/dispnv50/disp.h
+index 38dec11e7dda..9d66c9c726c3 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/disp.h
++++ b/drivers/gpu/drm/nouveau/dispnv50/disp.h
+@@ -106,6 +106,8 @@ void nv50_dmac_destroy(struct nv50_dmac *);
+  */
+ struct nouveau_encoder *nv50_real_outp(struct drm_encoder *encoder);
  
++bool nv50_has_mst(struct nouveau_drm *drm);
++
+ u32 *evo_wait(struct nv50_dmac *, int nr);
+ void evo_kick(u32 *, struct nv50_dmac *);
+ 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
+index b8ee2173ca8f..1991bbb1d05c 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_connector.c
++++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
+@@ -1106,11 +1106,25 @@ nouveau_connector_best_encoder(struct drm_connector *connector)
+ 	return NULL;
+ }
+ 
++static int
++nouveau_connector_atomic_check(struct drm_connector *connector, struct drm_atomic_state *state)
++{
++	struct nouveau_connector *nv_conn = nouveau_connector(connector);
++	struct drm_connector_state *conn_state =
++		drm_atomic_get_new_connector_state(state, connector);
++
++	if (!nv_conn->dp_encoder || !nv50_has_mst(nouveau_drm(connector->dev)))
++		return 0;
++
++	return drm_dp_mst_root_conn_atomic_check(conn_state, &nv_conn->dp_encoder->dp.mstm->mgr);
++}
++
+ static const struct drm_connector_helper_funcs
+ nouveau_connector_helper_funcs = {
+ 	.get_modes = nouveau_connector_get_modes,
+ 	.mode_valid = nouveau_connector_mode_valid,
+ 	.best_encoder = nouveau_connector_best_encoder,
++	.atomic_check = nouveau_connector_atomic_check,
+ };
+ 
+ static const struct drm_connector_funcs
 diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 3b155ad3eee4..0ef7d0e6cf0c 100644
+index 0ef7d0e6cf0c..b9c361b242ea 100644
 --- a/include/drm/display/drm_dp_mst_helper.h
 +++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -581,6 +581,19 @@ struct drm_dp_mst_topology_state {
- 	/** @mgr: The topology manager */
- 	struct drm_dp_mst_topology_mgr *mgr;
+@@ -911,6 +911,8 @@ int drm_dp_send_query_stream_enc_status(struct drm_dp_mst_topology_mgr *mgr,
+ 		struct drm_dp_mst_port *port,
+ 		struct drm_dp_query_stream_enc_status_ack_reply *status);
+ int __must_check drm_dp_mst_atomic_check(struct drm_atomic_state *state);
++int __must_check drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
++						   struct drm_dp_mst_topology_mgr *mgr);
  
-+	/**
-+	 * @pending_crtc_mask: A bitmask of all CRTCs this topology state touches, drivers may
-+	 * modify this to add additional dependencies if needed.
-+	 */
-+	u32 pending_crtc_mask;
-+	/**
-+	 * @commit_deps: A list of all CRTC commits affecting this topology, this field isn't
-+	 * populated until drm_dp_mst_atomic_wait_for_dependencies() is called.
-+	 */
-+	struct drm_crtc_commit **commit_deps;
-+	/** @num_commit_deps: The number of CRTC commits in @commit_deps */
-+	size_t num_commit_deps;
-+
- 	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
- 	u8 total_avail_slots;
- 	/** @start_slot: The first usable time slot in this topology (1 or 0) */
-@@ -890,6 +903,8 @@ int __must_check
- drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- 				 struct drm_dp_mst_topology_mgr *mgr,
- 				 struct drm_dp_mst_port *port);
-+void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state);
-+int __must_check drm_dp_mst_atomic_setup_commit(struct drm_atomic_state *state);
- int drm_dp_send_power_updown_phy(struct drm_dp_mst_topology_mgr *mgr,
- 				 struct drm_dp_mst_port *port, bool power_up);
- int drm_dp_send_query_stream_enc_status(struct drm_dp_mst_topology_mgr *mgr,
+ void drm_dp_mst_get_port_malloc(struct drm_dp_mst_port *port);
+ void drm_dp_mst_put_port_malloc(struct drm_dp_mst_port *port);
 -- 
 2.37.1
 
