@@ -2,81 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1453C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1BFC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 11:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbiHQLPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 07:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        id S239142AbiHQLQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 07:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238917AbiHQLPP (ORCPT
+        with ESMTP id S229533AbiHQLQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 07:15:15 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963C967477;
-        Wed, 17 Aug 2022 04:15:14 -0700 (PDT)
-Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 27HBEbQo079590;
-        Wed, 17 Aug 2022 20:14:37 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
- Wed, 17 Aug 2022 20:14:37 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 27HBEa7N079586
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 17 Aug 2022 20:14:37 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <ea64b27e-6cbf-fdd5-1f23-aecc3a308e47@I-love.SAKURA.ne.jp>
-Date:   Wed, 17 Aug 2022 20:14:36 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: [PATCH] Bluetooth: hci_sync: fix double mgmt_pending_free() in
- remove_adv_monitor()
+        Wed, 17 Aug 2022 07:16:22 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C717696F;
+        Wed, 17 Aug 2022 04:16:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XjHGTWcleOo4l5aql8JegaQUhCJ/Qt+KLMNAKRsGlZWD6cL8ae6oPEyOo+IJlgKmq427JMuKCoUH7BlFH0Yzdl6k/J9c9DWOjamGlldRKIHD43mj5mqapXA7UPlphIuVEDV1LYOvV67jpp+bsCLp3VunFHEnuipTfZYQB4aISAiKmpOhBCJPwmKYiCsi1pAVFRv/wPyNSPZLecw0jJJeh5vdxqVxwWY+aVAfo8EZED2XcyI/7iBs9M1W4c05UhXpvg9KVsRt2eagzlayv0G4Uaw5vPBRfgTfHeY3SFTZRmoNryWvEueIaXQd+ftSDLNwK008CfZm1twSoV1AI/+O5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+LbNgjYrkxLU+9JCGrcDWkx+CCupQL+IpohLSwv0hYo=;
+ b=dSRnA76IHRiJl8JgesF3z6r4Q9rkMXwF+H4PkMwbvEWivbb6ZIWcAs5fEmF8tEMKijE0XEiybFs29vGjpQGcJA3SDHXPxxlNWsmau8D7ZF+MVcj0RBmyJ8D6WvnhahOP7EDPt5vhkbgfhJtZ2iMK8AEw58Qrm3wWvSaWS8pE55YA73OQKqNjoq+9mfBRZeHL5H1TQKJc/mluc0ZwSWPVvDCl5dqxRrcOaFt3aOJa1k8pMXfOEY2XMN1QGCGkzRGSSEak+IDX06ZTMOXFh7XBx3nrTLTGFfqvec+tJkL80VtWRNAqmXc1sATQKHw5aOj+EZbFAz0mKhjZqqlVO/17XA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+LbNgjYrkxLU+9JCGrcDWkx+CCupQL+IpohLSwv0hYo=;
+ b=qK+C1t07u7YjrThNNWE1KuvEYZgsw6k3sb2LD3/B7grBsEkWPKgHApoVoEfWohMw8b55yQrOY6q8By8+DRK5VfdHbam4LMZMK0YR1sddr9m7kTpruIPvbzunxwU+W778RJ+OwbclhhqQzdZiTG7luuIIXcxfOBtjdZQ+eDnvH90=
+Received: from DM6PR12MB3993.namprd12.prod.outlook.com (2603:10b6:5:1c5::29)
+ by MW2PR12MB2473.namprd12.prod.outlook.com (2603:10b6:907:4::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Wed, 17 Aug
+ 2022 11:16:14 +0000
+Received: from DM6PR12MB3993.namprd12.prod.outlook.com
+ ([fe80::bd8d:b963:62ed:65c5]) by DM6PR12MB3993.namprd12.prod.outlook.com
+ ([fe80::bd8d:b963:62ed:65c5%7]) with mapi id 15.20.5525.011; Wed, 17 Aug 2022
+ 11:16:14 +0000
+From:   "Manne, Nava kishore" <nava.kishore.manne@amd.com>
+To:     Xu Yilun <yilun.xu@intel.com>,
+        Nava kishore Manne <nava.manne@xilinx.com>
+CC:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "mdf@kernel.org" <mdf@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
+        "rajan.vaja@xilinx.com" <rajan.vaja@xilinx.com>,
+        "abhyuday.godhasara@xilinx.com" <abhyuday.godhasara@xilinx.com>,
+        "piyush.mehta@xilinx.com" <piyush.mehta@xilinx.com>,
+        "harsha.harsha@xilinx.com" <harsha.harsha@xilinx.com>,
+        "lakshmi.sai.krishna.potthuri@xilinx.com" 
+        <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "git@xilinx.com" <git@xilinx.com>
+Subject: RE: [PATCH v2 1/3] fpga: manager: change status api prototype, don't
+ use older
+Thread-Topic: [PATCH v2 1/3] fpga: manager: change status api prototype, don't
+ use older
+Thread-Index: AQHYhVFh0nFKgVNbE0Gr+XpBPxtCy61kiGwAgE66L9A=
+Date:   Wed, 17 Aug 2022 11:16:14 +0000
+Message-ID: <DM6PR12MB39934EC6FB92A46CEA8645E5CD6A9@DM6PR12MB3993.namprd12.prod.outlook.com>
+References: <20220621092833.1057408-1-nava.manne@xilinx.com>
+ <20220621092833.1057408-2-nava.manne@xilinx.com>
+ <20220628083158.GA2442728@yilunxu-OptiPlex-7050>
+In-Reply-To: <20220628083158.GA2442728@yilunxu-OptiPlex-7050>
+Accept-Language: en-US
 Content-Language: en-US
-To:     syzbot <syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-References: <000000000000d010b705e66d8520@google.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <000000000000d010b705e66d8520@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b04506c7-eba6-4024-cb80-08da8041e5ee
+x-ms-traffictypediagnostic: MW2PR12MB2473:EE_
+x-ld-processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DkGLXnr/WN2Y68N+2+82fWyIjYemGv0QDOhtkjH/VjuVTiQaFSQyE0NWCvoKYOBu5jc/YiGwrwagyyljEhNQ02iaYDK0mrymLSmehi/0gA3HY7snK1/orbViV0iJ++RtVZaSln2ruRsd1USrqetZZL/1QJZoPnNaBYuxKXBSOUjJblYWoeIso2tPLT2lLaj2ECHn8wXthWvFqw1LMj0GqJ5OLxn5yfZBaBWHnXBEuTNzzJrwH3OocCRwLxWOWauoqVJ9D7Dsl0GeqSGPKfjzY2R6tEdxUQlm+oPbEtzNd6jfsbFJINUTNLDPmz8xuD37+depJybjeSuZxm24Vsua36NAf7T2cw9YvfrxHK9GyN8OLm6olvo7tBL6Qsctk2ipKP2jCQ7Frok+wnGCIL4qmfp6RXkiGYWyFOuxwVG7FXxuSCW8GiXpIgsxXXQ0L3tnNLtHXAWG7QELnHc9uLwDAj5v59h9mIn+QoimnIrRT7K3QZV5qm4Sc/va/EZybjxx3dPZCNDDU5NkBnr/aTbbwXI3cZ7zdp0agu8uhsHDpimmC8cBa8gKFOjDf6Qm5JjHCQ7pi/Cfl8ys2A9URbj4dicKScCzX8h2cF4g2kXh0wYxS8cL6PrUJ9vvYE+IeJkxx1PK5QBWNLTVaNqokJGCmJlYrWhCRCzxaXGEg1y/1o7q0NIM5SS7+J8iKwA/QPSfVzCS8Y++2L/r2L/uZkGnkSusl+JVFUHhqOY4RMJrvLPOL2WNuh3+pwW6qnlQkxwkHYG2T9fHEP8dTcAVT3l6+lxYnukKWrvYgntKf8rx4/k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3993.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(122000001)(38070700005)(86362001)(38100700002)(8676002)(76116006)(64756008)(66476007)(66946007)(66556008)(66446008)(110136005)(54906003)(316002)(4326008)(2906002)(5660300002)(8936002)(52536014)(186003)(53546011)(9686003)(83380400001)(107886003)(7696005)(55016003)(478600001)(71200400001)(6506007)(26005)(41300700001)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DwoyFhS5lvFrQ9XBxfd6o8kplCRqHmGUxmVsDvLn8FuudKe4DK5MM61R3Iea?=
+ =?us-ascii?Q?EIKuDEDoRfwmYFGmIfGzVA09CxOS5bGSjpUSHVGBxUuFWD6/jb0T6hE/YurC?=
+ =?us-ascii?Q?eIz6Zr4fd7oVLEjEsbuwe1z01aGnOxFFDUBxSyUaT8O7Pkxq12KUQ1+nOW8N?=
+ =?us-ascii?Q?duaFgVgcZDOefxrFypMNe23clDTcIegv8wfMx+Iwet1AKbx+B4ZazvW222lo?=
+ =?us-ascii?Q?tyKEOY4shJCs+be4O+AYtD8EjzjlqgWbpkqNFV7F7nhN5PEbLJcGYraBg90o?=
+ =?us-ascii?Q?a2KjTTb88d82XvB7dZ/x1UCAA1Hwss79JhAf2X9sxdG4kuFJpFqxLMsNO6YZ?=
+ =?us-ascii?Q?gms4n3nwUgYQ6Lh/D6U/zKO/BaPtprczs5bLr3X16DLR1qDbFRz3GbqZXDMX?=
+ =?us-ascii?Q?AStKmpUI+ZmxJ/0o/f64GlG3iL+fIpBM298y2fhNz2Pqui1R8LKM52qu5DkA?=
+ =?us-ascii?Q?C65s2KQpwOQUHvhNSpSIi6rlcHl7OnYBGkpkZqiGrMMZqq0AEh6MVPpxC3Rs?=
+ =?us-ascii?Q?akJPZipIXJYsBx4uzLHRKhvuabV59bIIT+5PsYITRSXq2LM8PM+LScM/HKNZ?=
+ =?us-ascii?Q?dOPBTY/DLoSNIdiTxxBNCpkttd4EFI615cZ98hz6oMjm29kxazQlzFGFnNZ1?=
+ =?us-ascii?Q?wtS++AgUaLrtIwK0lurW/AQ12nYorh20uywQ1/76vLz7HdRqW+bNTYMYJufl?=
+ =?us-ascii?Q?e41UhhKyqpkVvL+oFpr5AyYudRLeDjR1MSaWejRbGCycxhn//vmGMo/Jc81h?=
+ =?us-ascii?Q?hH3EKBFcYFwwPYnikm7MkSYG3/dD18O0FbOnHB6qd8n7InA+/d+OuFgOAiXN?=
+ =?us-ascii?Q?9a44TakJ7asfNVyoZS5iTpk/sg/01/fJ4sOSsbGwdLONszxMAGmRRhkEQXT3?=
+ =?us-ascii?Q?chaaiipdlnfiKkr3a8jcPHWIbD+fOEacxx7Mk5ZdRdD2NRDVlKn4WrMV3n1D?=
+ =?us-ascii?Q?RbQgeBOgVyMW6lGREkGqV2PZKyB8k+OSksTgaIPAawkeKo7pMahPRgd3OVIO?=
+ =?us-ascii?Q?90SPTPPRshMlL0YDAFolV4LAmlaRxRERQbnHWZw/LuLKIDGICFKK68/AooxW?=
+ =?us-ascii?Q?iK7CgTxd5zn6xYmjNTUzF2pP3C+YmtSuSrPjHPrF0zirqFNLFoBdMFPEtQ+P?=
+ =?us-ascii?Q?7Z5jziqLdFkwGANryqXwKQ2XZB6FUSS4NddVFtCGD2Aw2r29ZUk5Ut5Dufh1?=
+ =?us-ascii?Q?SZtqWcTxfcM4BEhshLYEsDJEQJfnMivwoiUAfVL+WvRWqzY4/u0gtGvSIztp?=
+ =?us-ascii?Q?7Y1CRoeHNFIwh+yzJ+02mXHFf6/lmMvXpX5Hgk6xnLSo6DgHX74G70hbCNYt?=
+ =?us-ascii?Q?mcsSbnk/QfNrdXfLep5jDsgRhfGM7FWPLoFFtvE/R3HY0d2NsxAOCffiFLl2?=
+ =?us-ascii?Q?IQUVSc3OhpqQIIMGkMu9ZB5jbyOVo+ptH23e4lPhbbM2XYAWH1Ct0zvwX15u?=
+ =?us-ascii?Q?EoTEcXfvkoUhqdO9z6bs9z2kgSUUsPEAzK+pqnaivj+mTEQZImmHLGAahvoS?=
+ =?us-ascii?Q?72c9V19llCGkjb+ny5KgXaBTjGBEgUftfuLXp3qYabr3nUhgvDQQdmCchJ59?=
+ =?us-ascii?Q?2KIEU1yDCVEhdoFXDYA=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3993.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b04506c7-eba6-4024-cb80-08da8041e5ee
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2022 11:16:14.4583
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AizRJqusJc/bnpHDFGmq5F1g4BcMhuWY3RykjyoQwwK1kgQTesferCLB3xxO04DS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2473
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot is reporting double kfree() at remove_adv_monitor() [1], for
-commit 7cf5c2978f23fdbb ("Bluetooth: hci_sync: Refactor remove Adv
-Monitor") forgot to remove duplicated mgmt_pending_remove() when
-merging "if (err) {" path and "if (!pending) {" path.
+Hi Yilun,
 
-Link: https://syzkaller.appspot.com/bug?extid=915a8416bf15895b8e07 [1]
-Reported-by: syzbot <syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com>
-Fixes: 7cf5c2978f23fdbb ("Bluetooth: hci_sync: Refactor remove Adv Monitor")
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- net/bluetooth/mgmt.c | 1 -
- 1 file changed, 1 deletion(-)
+	Please find my response inline.
 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 6e31023b84f5..3d2e0773a1c1 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -5054,7 +5054,6 @@ static int remove_adv_monitor(struct sock *sk, struct hci_dev *hdev,
- 		else
- 			status = MGMT_STATUS_FAILED;
- 
--		mgmt_pending_remove(cmd);
- 		goto unlock;
- 	}
- 
--- 
-2.18.4
+> -----Original Message-----
+> From: Xu Yilun <yilun.xu@intel.com>
+> Sent: Tuesday, June 28, 2022 2:02 PM
+> To: Nava kishore Manne <nava.manne@xilinx.com>
+> Cc: michal.simek@xilinx.com; hao.wu@intel.com; trix@redhat.com;
+> mdf@kernel.org; gregkh@linuxfoundation.org; ronak.jain@xilinx.com;
+> rajan.vaja@xilinx.com; abhyuday.godhasara@xilinx.com;
+> piyush.mehta@xilinx.com; harsha.harsha@xilinx.com;
+> lakshmi.sai.krishna.potthuri@xilinx.com; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
+> fpga@vger.kernel.org; git@xilinx.com
+> Subject: Re: [PATCH v2 1/3] fpga: manager: change status api prototype,
+> don't use older
+>=20
+> CAUTION: This message has originated from an External Source. Please use
+> proper judgment and caution when opening attachments, clicking links, or
+> responding to this email.
+>=20
+>=20
+> On Tue, Jun 21, 2022 at 02:58:31PM +0530, Nava kishore Manne wrote:
+> > Different vendors have different error sets defined by Hardware.
+> > If we always define the new bits when we cannot find an exact 1:1
+> > mapping in the core the 64 bits would soon be used out. Also, it's
+> > hard to understand the mixture of different error sets.
+> >
+> > To address these issues updated the status interface to handle the
+> > vendor-specific messages in a generic way. With the updated status
+> > interface the vendor-specific driver files can independently handle
+> > the error messages.
+>=20
+> I think we don't have to provide the vendor specific HW errors in a gener=
+ic
+> way, maybe the vendor specific drivers could handle them by its own devic=
+e
+> attributes.
+>=20
+> Since the output value set of the interface is specific to each driver, u=
+sers
+> should still interpret them in specific manners. So doesn't see much valu=
+e for
+> a class interface.
+>
 
+Agree,  vendor specific drivers could handle them by its own device attribu=
+tes.
+If it is the case, can we remove the existing status interface relevant cha=
+nges from the core?
+
+Regards,
+Navakishore
