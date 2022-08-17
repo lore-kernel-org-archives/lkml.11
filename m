@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C09C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240151AbiHQQ2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S239872AbiHQQ2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240985AbiHQQ1l (ORCPT
+        with ESMTP id S241004AbiHQQ1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 17 Aug 2022 12:27:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E0CA0326
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1B4A033D
         for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:27:40 -0700 (PDT)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660753657;
+        s=2020; t=1660753658;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pKc+6HUSNpaxlBjXSX1XTp4QrP/t25TRKhHhhX/hF54=;
-        b=FpU5qd203NglSjouxtHxwHoFNL1T2ZLmljndcWC4FtmBFWjgUqwHAjv7zQvsovs6hCxhlX
-        JoHA0FMFOkBHqqoKdp7EjJdeRWc5Rn4pgzL62l1FMpBxxWCZ+0csVl9GHyvibFAee9cf9n
-        OSA1Tb0ugOTGnMu1nFM4VKdTkKVezo30Ta4GQ3squD4pDt0OHMXmNMcw+ygtvY66XPLoMK
-        vg5p1TnDFQA7yOOLOnrjP/QULpMws95kTgxqnbYqy2ioH17zW3J3ui+pCgV/JZX9xHJe5+
-        ZLk6Mz/fYw8wN5r5rvTm83XCKdbXLKNlarnAneLdFP+vrPc4BYaxzimqyBEPDA==
+        bh=F9l7y3m8zkOiNy05wS2hSJk+waPS7nO5NnqSs6GtD6Q=;
+        b=ahVLd9nL3dCq1i5nadi2s73phgxk46U/cAa/JGm1oBcNYwokEpPrfwAB5Lp8ZJORaH1smt
+        ZYwfZrkBmj22GkgDrGdyC/aHgVNIEZEDpcUaMSwto7T7OLlZal2MdwREue2Bz+8KTPCyFp
+        /TRn6vY7nem5QbWT6tHzSw15B66Y7md6oGuMmI+7/KLDsGZ14FFiC3QTUecsGOB9A7hLCU
+        8sPjta8aon+QUj27nhHmP1S8g9DL0Yr8+ZZ/wn5InvTm/9e5GFQX3Pj3Uc+qQqGdEAvHqm
+        dHT6Yf1fco8y91x+kaPu74FobZPLuro1Fyd6S4pQgt0ee3pTDes3A1zJL3L8+A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660753657;
+        s=2020e; t=1660753658;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pKc+6HUSNpaxlBjXSX1XTp4QrP/t25TRKhHhhX/hF54=;
-        b=VeiXr1hZu9YMVGXyrDrMs79lKviokSPPt/kOD1hYDXn1qxwRf9t8Nj70PwNgMW7CRyMxjK
-        iYibp+Y7KobngcAQ==
+        bh=F9l7y3m8zkOiNy05wS2hSJk+waPS7nO5NnqSs6GtD6Q=;
+        b=KHC1BnhWzRoSCVIlYh78XhedbXu636S/1THUCnmQGK5a+5dok80bN92jiqq/g3b6OU1xoA
+        htdYRwUhK/B08uDg==
 To:     linux-kernel@vger.kernel.org
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nick Terrell <terrelln@fb.com>, linux-mm@kvack.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 5/9] mm/debug: Provide VM_WARN_ON_IRQS_ENABLED()
-Date:   Wed, 17 Aug 2022 18:26:59 +0200
-Message-Id: <20220817162703.728679-6-bigeasy@linutronix.de>
+Subject: [PATCH 7/9] mm/compaction: Get rid of RT ifdeffery
+Date:   Wed, 17 Aug 2022 18:27:01 +0200
+Message-Id: <20220817162703.728679-8-bigeasy@linutronix.de>
 In-Reply-To: <20220817162703.728679-1-bigeasy@linutronix.de>
 References: <20220817162703.728679-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -58,56 +59,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Some places in the VM code expect interrupts disabled, which is a valid
-expectation on non-PREEMPT_RT kernels, but does not hold on RT kernels in
-some places because the RT spinlock substitution does not disable
-interrupts.
-
-To avoid sprinkling CONFIG_PREEMPT_RT conditionals into those places,
-provide VM_WARN_ON_IRQS_ENABLED() which is only enabled when VM_DEBUG=3Dy a=
-nd
-PREEMPT_RT=3Dn.
+Move the RT dependency for the initial value of
+sysctl_compact_unevictable_allowed into Kconfig.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Nick Terrell <terrelln@fb.com>
 Cc: linux-mm@kvack.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- include/linux/mmdebug.h | 6 ++++++
- lib/Kconfig.debug       | 3 +++
- 2 files changed, 9 insertions(+)
+ mm/Kconfig      | 5 +++++
+ mm/compaction.c | 6 +-----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/mmdebug.h b/include/linux/mmdebug.h
-index 15ae78cd28536..b8728d11c9490 100644
---- a/include/linux/mmdebug.h
-+++ b/include/linux/mmdebug.h
-@@ -94,6 +94,12 @@ void dump_mm(const struct mm_struct *mm);
- #define VM_WARN(cond, format...) BUILD_BUG_ON_INVALID(cond)
- #endif
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 0331f1461f81c..a0506a54a4f3f 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -579,6 +579,11 @@ config COMPACTION
+ 	  it and then we would be really interested to hear about that at
+ 	  linux-mm@kvack.org.
 =20
-+#ifdef CONFIG_DEBUG_VM_IRQSOFF
-+#define VM_WARN_ON_IRQS_ENABLED() WARN_ON_ONCE(!irqs_disabled())
-+#else
-+#define VM_WARN_ON_IRQS_ENABLED() do { } while (0)
-+#endif
++config COMPACT_UNEVICTABLE_DEFAULT
++	int
++	default 0 if PREEMPT_RT
++	default 1
 +
- #ifdef CONFIG_DEBUG_VIRTUAL
- #define VIRTUAL_BUG_ON(cond) BUG_ON(cond)
- #else
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 072e4b289c13e..c96fc6820544c 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -803,6 +803,9 @@ config ARCH_HAS_DEBUG_VM_PGTABLE
- 	  An architecture should select this when it can successfully
- 	  build and run DEBUG_VM_PGTABLE.
+ #
+ # support for free page reporting
+ config PAGE_REPORTING
+diff --git a/mm/compaction.c b/mm/compaction.c
+index 640fa76228dd9..10561cb1aaad9 100644
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -1727,11 +1727,7 @@ typedef enum {
+  * Allow userspace to control policy on scanning the unevictable LRU for
+  * compactable pages.
+  */
+-#ifdef CONFIG_PREEMPT_RT
+-int sysctl_compact_unevictable_allowed __read_mostly =3D 0;
+-#else
+-int sysctl_compact_unevictable_allowed __read_mostly =3D 1;
+-#endif
++int sysctl_compact_unevictable_allowed __read_mostly =3D CONFIG_COMPACT_UN=
+EVICTABLE_DEFAULT;
 =20
-+config DEBUG_VM_IRQSOFF
-+	def_bool DEBUG_VM && !PREEMPT_RT
-+
- config DEBUG_VM
- 	bool "Debug VM"
- 	depends on DEBUG_KERNEL
+ static inline void
+ update_fast_start_pfn(struct compact_control *cc, unsigned long pfn)
 --=20
 2.37.2
 
