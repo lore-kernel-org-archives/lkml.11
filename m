@@ -2,213 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA70C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA40C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 18:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241029AbiHQSpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 14:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S241125AbiHQSq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 14:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241003AbiHQSpa (ORCPT
+        with ESMTP id S241074AbiHQSqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 14:45:30 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845021C90C
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:45:28 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id x21so18662843edd.3
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:45:28 -0700 (PDT)
+        Wed, 17 Aug 2022 14:46:21 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9ADA061F
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:46:19 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id k13-20020a170902c40d00b0016f90eba744so8744665plk.22
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 11:46:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=xGU9QalusRdz0W9hKf9EB+6UjNuyQWtvR/GW+P/WHUw=;
-        b=UFDIuYFY1k8+fk1hDuKvDWb2fyjxcvEPEJdw2+VK5IwzA3fGcWVBtydYoCc9Jz0qgH
-         wf/Ivhl/hMejcR+6haJyBF+jAl6tORW7jX97VGmaOgVAAS9T8Q1WMNtwxVzlw+sqV0DM
-         3xs1FkAt6tB3/0gNIn+5Y/rLSHozCz0Jjrn7kVlnI41wP0s7ZI+TAj9upAr55PRrerCU
-         Qd3KGIL0mIv8uFQhhzwgSrp4W2hoUMt0H6QOm97b3yHxdWBxjYW14VTfKu1rgjUaLdYH
-         AuRMDRShgIkhuNClu8q2lvnHHvl/tRsM1uEadix1ZSdGMyW4l0zFipkNPbSXOVKajq4k
-         6ipA==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=wMeihxmH1LLAcW/kx+82DDeCeD6fXEGwf4RRHGm7Oug=;
+        b=a3yu8rZX3Smqj4bdFaf/XV+E+wWOiPalhUMsxDNYLYhkNq4he1y9mRoPbQCB4yrs3v
+         HY4YejwDu5JlpOwHVZnqaAZjDZRHR6132LTd3dKM1yiP2f21R9DAGkKRGjkl0h3hoPrd
+         R+bwFCDDOD+Mt8ZLnHcGos1XEMkftJuRidBETM+oqXFJXF2kbIfKIqWFi13+FKG73Irl
+         3eWMxf6MAVea1Nqvb7vDcp06HlCIinWbbEymME8v8szqHnVoBnO6zVVfVKcJkdaHsrWj
+         QB9NIcw3KssZdPmQqoAcevWKFZUh41wCd5QtbZpSp/y8JodwogidWK4NBIOk2cNnli2/
+         yrXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=xGU9QalusRdz0W9hKf9EB+6UjNuyQWtvR/GW+P/WHUw=;
-        b=fWQQl9YkIQ64GP6oGciJnjs2i+Ya/65OYd6NwC1uD8FP8/DusCE9y8woYvg7XzrTXy
-         IfmvA/76r3xYb2E+sW/1X6958v3k2Yv87tEzK6FVkYJiFbkf7dG7nx9dxKV1p9/eTk5y
-         WURHuV+zJroQ9oZW45KtATDGYQ+2LjGy/LpORkwDOZejCsZoGNraL/QPgO4pxN0fXZFf
-         oSn4gtaMQIRYqGK3cjnXCjJ6YJtwY+C0rvPtaSDMR6RziUZ/LaU7W7ZCr/+4nVKW20+N
-         tWbVgh1msO7CKxCAkFx+JofQUsJEKJUtwc+LCLILIUbocvqKEwkX/m5IL0tMBQbXPl8w
-         6eCQ==
-X-Gm-Message-State: ACgBeo3JAe1AOEZcMF/LiZtAl+VvW6WP2RYV9nQ7lCyRadlstL0PiDm0
-        BwcPJJpnOQnBJ20DlgmYnXM=
-X-Google-Smtp-Source: AA6agR5zgDfueJg8rk7ZyXHB/d3TWt3aCmNp/ioebSxEicV6/TaYp4vTbgxI/8z/q1nGKBfvTKd5WQ==
-X-Received: by 2002:a05:6402:3881:b0:445:f8bf:5a1c with SMTP id fd1-20020a056402388100b00445f8bf5a1cmr1127787edb.13.1660761926704;
-        Wed, 17 Aug 2022 11:45:26 -0700 (PDT)
-Received: from localhost.localdomain (host-87-17-106-94.retail.telecomitalia.it. [87.17.106.94])
-        by smtp.gmail.com with ESMTPSA id fq15-20020a1709069d8f00b007306a4ecc9dsm7211975ejc.18.2022.08.17.11.45.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 11:45:24 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: [PATCH v2] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
-Date:   Wed, 17 Aug 2022 20:45:19 +0200
-Message-Id: <20220817184519.25141-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=wMeihxmH1LLAcW/kx+82DDeCeD6fXEGwf4RRHGm7Oug=;
+        b=IJ0Xvjf9xc6Mxq3mA5TSTraDPmdaBRzzlqRLy0AzsvD29hXyWV7z0sgzyMHBCF8xt0
+         VdpOACFaH9uC/ZaT/Ry7Vwxez5Q2DKatCR8REb/QbvLKwz8qDrnBk5Lpzgu3mWtcBvuT
+         HV8yA9Ct0Rf8/js3eaWAylk41CXkWx7BkwQJ14jeFmrXUY/6gEG7aRDsUIPexjprNsKs
+         g4uOunTNLDvYSDLMOJfi27NVPnl9wni3dPP45hlYqQJZAV+9pHwzRNtNJKcxQ0uZYhu/
+         ezcPrngyaKDF+L4YShJDAABy4EMDEUrcAGsKU553PrS+tg0DpKdn5w/m8XJZQyBCeU1Z
+         GIMA==
+X-Gm-Message-State: ACgBeo2DhLngVAWeYs4S4c0sYJP5W3zecQAKv9W0gzK6LdhLF2jxyska
+        uS5h6cqdem12pX0mmQYtVGDiAtbDXaYMZS94JLdlNg==
+X-Google-Smtp-Source: AA6agR5oW2eVi0SiFUQvLzrssKtLcQVZ++8/D0sb05BWtyj8pOH5w/twJl0hbrWDevpISMxJX00bjgq0aC921B7Leom9Lg==
+X-Received: from isaacmanjarres.irv.corp.google.com ([2620:15c:2d:3:6c6d:d00:f0dd:6ddf])
+ (user=isaacmanjarres job=sendgmr) by 2002:a17:90b:2315:b0:1fa:b051:5bd0 with
+ SMTP id mt21-20020a17090b231500b001fab0515bd0mr5192295pjb.47.1660761979094;
+ Wed, 17 Aug 2022 11:46:19 -0700 (PDT)
+Date:   Wed, 17 Aug 2022 11:46:12 -0700
+Message-Id: <20220817184613.3469660-1-isaacmanjarres@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v1] amba: Fix use-after-free in amba_read_periphid()
+From:   "Isaac J. Manjarres" <isaacmanjarres@google.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Saravana Kannan <saravanak@google.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     "Isaac J. Manjarres" <isaacmanjarres@google.com>,
+        patches@armlinux.org.uk, Guenter Roeck <linux@roeck-us.net>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmap() is being deprecated in favor of kmap_local_page().[1]
+After commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device
+addition"), it became possible for amba_read_periphid() to be invoked
+concurrently from two threads for a particular AMBA device.
 
-There are two main problems with kmap(): (1) It comes with an overhead as
-mapping space is restricted and protected by a global lock for
-synchronization and (2) it also requires global TLB invalidation when the
-kmap’s pool wraps and it might block when the mapping space is fully
-utilized until a slot becomes available.
+Consider the case where a thread (T0) is registering an AMBA driver, and
+searching for all of the devices it can match with on the AMBA bus.
+Suppose that another thread (T1) is executing the deferred probe work,
+and is searching through all of the AMBA drivers on the bus for a driver
+that matches a particular AMBA device. Assume that both threads begin
+operating on the same AMBA device and the device's peripheral ID is
+still unknown.
 
-The pages which will be mapped are allocated in nvmet_tcp_map_data(),
-using the GFP_KERNEL flag. This assures that they cannot come from
-HIGHMEM. This imply that a straight page_address() can replace the kmap()
-of sg_page(sg) in nvmet_tcp_map_pdu_iovec(). As a side effect, we might
-also delete the field "nr_mapped" from struct "nvmet_tcp_cmd" because,
-after removing the kmap() calls, there would be no longer any need of it.
+In this scenario, the amba_match() function will be invoked for the
+same AMBA device by both threads, which means amba_read_periphid()
+can also be invoked by both threads, and both threads will be able
+to manipulate the AMBA device's pclk pointer without any synchronization.
+It's possible that one thread will initialize the pclk pointer, then the
+other thread will re-initialize it, overwriting the previous value, and
+both will race to free the same pclk, resulting in a use-after-free for
+whichever thread frees the pclk last.
 
-Therefore, replace the kmap() of sg_page(sg) with a page_address() and
-delete the "nr_mapped" field from "nvmet_tcp_cmd" and instead pass a
-local variable to iov_iter_kvec() from the call site in
-nvmet_tcp_map_pdu_iovec().
+Add a lock per AMBA device to synchronize the handling with detecting the
+peripheral ID to avoid the use-after-free scenario.
 
-[1] "[PATCH] checkpatch: Add kmap and kmap_atomic to the deprecated
-list" https://lore.kernel.org/all/20220813220034.806698-1-ira.weiny@intel.com/
+The following KFENCE bug report helped detect this problem:
+==================================================================
+BUG: KFENCE: use-after-free read in clk_disable+0x14/0x34
 
-Cc: Chaitanya Kulkarni <chaitanyak@nvidia.com>
-Cc: Keith Busch <kbusch@kernel.org>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Use-after-free read at 0x(ptrval) (in kfence-#19):
+ clk_disable+0x14/0x34
+ amba_read_periphid+0xdc/0x134
+ amba_match+0x3c/0x84
+ __driver_attach+0x20/0x158
+ bus_for_each_dev+0x74/0xc0
+ bus_add_driver+0x154/0x1e8
+ driver_register+0x88/0x11c
+ do_one_initcall+0x8c/0x2fc
+ kernel_init_freeable+0x190/0x220
+ kernel_init+0x10/0x108
+ ret_from_fork+0x14/0x3c
+ 0x0
+
+kfence-#19: 0x(ptrval)-0x(ptrval), size=36, cache=kmalloc-64
+
+allocated by task 8 on cpu 0 at 11.629931s:
+ clk_hw_create_clk+0x38/0x134
+ amba_get_enable_pclk+0x10/0x68
+ amba_read_periphid+0x28/0x134
+ amba_match+0x3c/0x84
+ __device_attach_driver+0x2c/0xc4
+ bus_for_each_drv+0x80/0xd0
+ __device_attach+0xb0/0x1f0
+ bus_probe_device+0x88/0x90
+ deferred_probe_work_func+0x8c/0xc0
+ process_one_work+0x23c/0x690
+ worker_thread+0x34/0x488
+ kthread+0xd4/0xfc
+ ret_from_fork+0x14/0x3c
+ 0x0
+
+freed by task 8 on cpu 0 at 11.630095s:
+ amba_read_periphid+0xec/0x134
+ amba_match+0x3c/0x84
+ __device_attach_driver+0x2c/0xc4
+ bus_for_each_drv+0x80/0xd0
+ __device_attach+0xb0/0x1f0
+ bus_probe_device+0x88/0x90
+ deferred_probe_work_func+0x8c/0xc0
+ process_one_work+0x23c/0x690
+ worker_thread+0x34/0x488
+ kthread+0xd4/0xfc
+ ret_from_fork+0x14/0x3c
+ 0x0
+
+Cc: Saravana Kannan <saravanak@google.com>
+Cc: patches@armlinux.org.uk
+Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
 ---
+ drivers/amba/bus.c       | 8 +++++++-
+ include/linux/amba/bus.h | 1 +
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-v1->v2: Use a local variable as argument of iov_iter_kvec() instead of
-the removed "nr_mapped" field from struct "nvmet_tcp_cmd". Thanks to
-Sagi and Keith who noticed my mistake.
+Guenter,
 
-Many thanks to Chaitanya, Keith, Sagi, for the answers and the comments on
-the RFC which led to this patch. The RFC is at:
-https://lore.kernel.org/all/20220816091808.23236-1-fmdefrancesco@gmail.com/
+Thanks for testing this patch out. Can you please add your Tested-by?
 
- drivers/nvme/target/tcp.c | 28 ++++------------------------
- 1 file changed, 4 insertions(+), 24 deletions(-)
+Thanks,
+Isaac
 
-diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
-index dc3b4dc8fe08..5b839f842623 100644
---- a/drivers/nvme/target/tcp.c
-+++ b/drivers/nvme/target/tcp.c
-@@ -77,7 +77,6 @@ struct nvmet_tcp_cmd {
- 	u32				pdu_len;
- 	u32				pdu_recv;
- 	int				sg_idx;
--	int				nr_mapped;
- 	struct msghdr			recv_msg;
- 	struct kvec			*iov;
- 	u32				flags;
-@@ -167,7 +166,6 @@ static const struct nvmet_fabrics_ops nvmet_tcp_ops;
- static void nvmet_tcp_free_cmd(struct nvmet_tcp_cmd *c);
- static void nvmet_tcp_finish_cmd(struct nvmet_tcp_cmd *cmd);
- static void nvmet_tcp_free_cmd_buffers(struct nvmet_tcp_cmd *cmd);
--static void nvmet_tcp_unmap_pdu_iovec(struct nvmet_tcp_cmd *cmd);
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 32b0e0b930c1..110a535648d2 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -209,6 +209,7 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+ 	struct amba_device *pcdev = to_amba_device(dev);
+ 	struct amba_driver *pcdrv = to_amba_driver(drv);
  
- static inline u16 nvmet_tcp_cmd_tag(struct nvmet_tcp_queue *queue,
- 		struct nvmet_tcp_cmd *cmd)
-@@ -301,35 +299,21 @@ static int nvmet_tcp_check_ddgst(struct nvmet_tcp_queue *queue, void *pdu)
++	mutex_lock(&pcdev->periphid_lock);
+ 	if (!pcdev->periphid) {
+ 		int ret = amba_read_periphid(pcdev);
  
- static void nvmet_tcp_free_cmd_buffers(struct nvmet_tcp_cmd *cmd)
- {
--	WARN_ON(unlikely(cmd->nr_mapped > 0));
--
- 	kfree(cmd->iov);
- 	sgl_free(cmd->req.sg);
- 	cmd->iov = NULL;
- 	cmd->req.sg = NULL;
+@@ -218,11 +219,14 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+ 		 * permanent failure in reading pid and cid, simply map it to
+ 		 * -EPROBE_DEFER.
+ 		 */
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&pcdev->periphid_lock);
+ 			return -EPROBE_DEFER;
++		}
+ 		dev_set_uevent_suppress(dev, false);
+ 		kobject_uevent(&dev->kobj, KOBJ_ADD);
+ 	}
++	mutex_unlock(&pcdev->periphid_lock);
+ 
+ 	/* When driver_override is set, only bind to the matching driver */
+ 	if (pcdev->driver_override)
+@@ -532,6 +536,7 @@ static void amba_device_release(struct device *dev)
+ 
+ 	if (d->res.parent)
+ 		release_resource(&d->res);
++	mutex_destroy(&d->periphid_lock);
+ 	kfree(d);
  }
  
--static void nvmet_tcp_unmap_pdu_iovec(struct nvmet_tcp_cmd *cmd)
--{
--	struct scatterlist *sg;
--	int i;
--
--	sg = &cmd->req.sg[cmd->sg_idx];
--
--	for (i = 0; i < cmd->nr_mapped; i++)
--		kunmap(sg_page(&sg[i]));
--
--	cmd->nr_mapped = 0;
--}
--
- static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
- {
- 	struct kvec *iov = cmd->iov;
- 	struct scatterlist *sg;
- 	u32 length, offset, sg_offset;
-+	int nr_mapped;
- 
- 	length = cmd->pdu_len;
--	cmd->nr_mapped = DIV_ROUND_UP(length, PAGE_SIZE);
-+	nr_mapped = DIV_ROUND_UP(length, PAGE_SIZE);
- 	offset = cmd->rbytes_done;
- 	cmd->sg_idx = offset / PAGE_SIZE;
- 	sg_offset = offset % PAGE_SIZE;
-@@ -338,7 +322,7 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
- 	while (length) {
- 		u32 iov_len = min_t(u32, length, sg->length - sg_offset);
- 
--		iov->iov_base = kmap(sg_page(sg)) + sg->offset + sg_offset;
-+		iov->iov_base = page_address(sg_page(sg)) + sg->offset + sg_offset;
- 		iov->iov_len = iov_len;
- 
- 		length -= iov_len;
-@@ -347,8 +331,7 @@ static void nvmet_tcp_map_pdu_iovec(struct nvmet_tcp_cmd *cmd)
- 		sg_offset = 0;
- 	}
- 
--	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov,
--		cmd->nr_mapped, cmd->pdu_len);
-+	iov_iter_kvec(&cmd->recv_msg.msg_iter, READ, cmd->iov, nr_mapped, cmd->pdu_len);
+@@ -584,6 +589,7 @@ static void amba_device_initialize(struct amba_device *dev, const char *name)
+ 	dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
+ 	dev->dev.dma_parms = &dev->dma_parms;
+ 	dev->res.name = dev_name(&dev->dev);
++	mutex_init(&dev->periphid_lock);
  }
  
- static void nvmet_tcp_fatal_error(struct nvmet_tcp_queue *queue)
-@@ -1141,7 +1124,6 @@ static int nvmet_tcp_try_recv_data(struct nvmet_tcp_queue *queue)
- 		cmd->rbytes_done += ret;
- 	}
- 
--	nvmet_tcp_unmap_pdu_iovec(cmd);
- 	if (queue->data_digest) {
- 		nvmet_tcp_prep_recv_ddgst(cmd);
- 		return 0;
-@@ -1411,7 +1393,6 @@ static void nvmet_tcp_restore_socket_callbacks(struct nvmet_tcp_queue *queue)
- static void nvmet_tcp_finish_cmd(struct nvmet_tcp_cmd *cmd)
- {
- 	nvmet_req_uninit(&cmd->req);
--	nvmet_tcp_unmap_pdu_iovec(cmd);
- 	nvmet_tcp_free_cmd_buffers(cmd);
- }
- 
-@@ -1424,7 +1405,6 @@ static void nvmet_tcp_uninit_data_in_cmds(struct nvmet_tcp_queue *queue)
- 		if (nvmet_tcp_need_data_in(cmd))
- 			nvmet_req_uninit(&cmd->req);
- 
--		nvmet_tcp_unmap_pdu_iovec(cmd);
- 		nvmet_tcp_free_cmd_buffers(cmd);
- 	}
- 
+ /**
+diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+index e94cdf235f1d..5001e14c5c06 100644
+--- a/include/linux/amba/bus.h
++++ b/include/linux/amba/bus.h
+@@ -67,6 +67,7 @@ struct amba_device {
+ 	struct clk		*pclk;
+ 	struct device_dma_parameters dma_parms;
+ 	unsigned int		periphid;
++	struct mutex		periphid_lock;
+ 	unsigned int		cid;
+ 	struct amba_cs_uci_id	uci;
+ 	unsigned int		irq[AMBA_NR_IRQS];
 -- 
-2.37.1
+2.37.1.595.g718a3a8f04-goog
 
