@@ -2,87 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED96EC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B768FC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 14:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239985AbiHQOGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 10:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33526 "EHLO
+        id S240054AbiHQOLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 10:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239856AbiHQOGX (ORCPT
+        with ESMTP id S236372AbiHQOK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:06:23 -0400
-X-Greylist: delayed 5182 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 07:06:15 PDT
-Received: from zg8tmtm4lje5ny4xodqumjaa.icoremail.net (zg8tmtm4lje5ny4xodqumjaa.icoremail.net [138.197.184.20])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 954F5CE6;
-        Wed, 17 Aug 2022 07:06:14 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 17 Aug 2022 22:05:37
- +0800 (GMT+08:00)
-X-Originating-IP: [106.117.76.235]
-Date:   Wed, 17 Aug 2022 22:05:37 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        briannorris@chromium.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, johannes@sipsolutions.net,
-        rafael@kernel.org
-Subject: Re: [PATCH v7 1/2] devcoredump: remove the useless gfp_t parameter
- in dev_coredumpv and dev_coredumpm
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <YvzicURy8t2JdQke@kroah.com>
-References: <cover.1660739276.git.duoming@zju.edu.cn>
- <b861ce56ba555109a67f85a146a785a69f0a3c95.1660739276.git.duoming@zju.edu.cn>
- <YvzicURy8t2JdQke@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Wed, 17 Aug 2022 10:10:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86E92A738
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:10:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660745424;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hygZeITYKaN6tWwzgaB+JBZJRP0ECIzs8aj0xsU3pQI=;
+        b=NG8bEuVrY3ssRa700q0fwx0JgeK1sfYYThy4kTq6iCJ51KEivlp0/z/71sI2rJZ730zXuh
+        ZBP5UTrRSJt5Mz3QYWKz7rggmJoK/PQR7NOsPHfbsEWVhRopJXeXFCuwag+VqzJ4WO8qoB
+        i+EkYv3Vkf6/Rp42iLuaZQwWQqo34io=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-511-7vBE5DO_MLCeE7I5_P7LBA-1; Wed, 17 Aug 2022 10:10:23 -0400
+X-MC-Unique: 7vBE5DO_MLCeE7I5_P7LBA-1
+Received: by mail-wr1-f70.google.com with SMTP id o3-20020adfa103000000b0022514e8e99bso1135148wro.19
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:10:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=hygZeITYKaN6tWwzgaB+JBZJRP0ECIzs8aj0xsU3pQI=;
+        b=UdM6oApezqW5CXYeAh0v2yMEdXCX70xiqwy54MlKTlVovsAEdvkWJL3a694sVF+0zg
+         finsNNLmnd4N6ay2v1Q4Ff+mAJRmfUBq4PkScCwHp0oo9gdZpvYhHyY44cTp+aohq76n
+         tsjuT99mJW3QUgeqZvLhCnhqnatRJHIMPPFyPS+XqEPJAS70oo5Tjldq+3cb+IsPQGdJ
+         gNoluvT0FViHZchX/NJ2BjpezW2kdO1LXNuahUkFFXn9zzKV106ju2YJpF2Ri/hkvf7n
+         L1/oOXb5kgM1PjMYmnTrMQfu0FvV1Plgg7VrV6u5iHCqyd3ptR2L5SxGmRvnPJl+Vogh
+         mRxw==
+X-Gm-Message-State: ACgBeo0o13CQjFtXwNeYM5zw6etatnbZHsRPcJALkrSribl7XoEkJBs3
+        ibHIsl2fDuBL8i2RX8bDlzqRHFFRb/kIJ8GfCq7rOxk7adYxrdySgk9XnHsbyTkY1m7JHML6R22
+        SQkQ5nsplP61lBo5Cat9js0dC
+X-Received: by 2002:a05:6000:144a:b0:220:7181:9283 with SMTP id v10-20020a056000144a00b0022071819283mr13854033wrx.158.1660745422093;
+        Wed, 17 Aug 2022 07:10:22 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR71JHkv660Ed2nt0u4G8tifr++EbajKsB7yItwYP1910fKANnnUzWMF9SuDBpp3iYFox6lnWg==
+X-Received: by 2002:a05:6000:144a:b0:220:7181:9283 with SMTP id v10-20020a056000144a00b0022071819283mr13854016wrx.158.1660745421825;
+        Wed, 17 Aug 2022 07:10:21 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id s4-20020adfdb04000000b002211fc70174sm15181404wri.99.2022.08.17.07.10.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 07:10:21 -0700 (PDT)
+Message-ID: <17d647aa55db14435a88b48f11ab62bb59831935.camel@redhat.com>
+Subject: Re: [PATCH v2 2/9] KVM: x86: remove return value of kvm_vcpu_block
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com
+Date:   Wed, 17 Aug 2022 17:10:19 +0300
+In-Reply-To: <Yvwpb6ofD1S+Rqk1@google.com>
+References: <20220811210605.402337-1-pbonzini@redhat.com>
+         <20220811210605.402337-3-pbonzini@redhat.com> <Yvwpb6ofD1S+Rqk1@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Message-ID: <176e7de7.8a223.182ac1fbc47.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgAXq92y9fxiCAIaAw--.19097W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgAFAVZdtbEncgAGsa
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBXZWQsIDE3IEF1ZyAyMDIyIDE0OjQzOjI5ICswMjAwIEdyZWcgS0ggd3JvdGU6
-Cgo+IE9uIFdlZCwgQXVnIDE3LCAyMDIyIGF0IDA4OjM5OjEyUE0gKzA4MDAsIER1b21pbmcgWmhv
-dSB3cm90ZToKPiA+IFRoZSBkZXZfY29yZWR1bXB2KCkgYW5kIGRldl9jb3JlZHVtcG0oKSBjb3Vs
-ZCBub3QgYmUgdXNlZCBpbiBhdG9taWMKPiA+IGNvbnRleHQsIGJlY2F1c2UgdGhleSBjYWxsIGt2
-YXNwcmludGZfY29uc3QoKSBhbmQga3N0cmR1cCgpIHdpdGgKPiA+IEdGUF9LRVJORUwgcGFyYW1l
-dGVyLiBUaGUgcHJvY2VzcyBpcyBzaG93biBiZWxvdzoKPiA+IAo+ID4gZGV2X2NvcmVkdW1wdigu
-LiwgZ2ZwX3QgZ2ZwKQo+ID4gICBkZXZfY29yZWR1bXBtKC4uLCBnZnBfdCBnZnApCj4gPiAgICAg
-ZGV2X3NldF9uYW1lCj4gPiAgICAgICBrb2JqZWN0X3NldF9uYW1lX3ZhcmdzCj4gPiAgICAgICAg
-IGt2YXNwcmludGZfY29uc3QoR0ZQX0tFUk5FTCwgLi4uKTsgLy9tYXkgc2xlZXAKPiA+ICAgICAg
-ICAgICBrc3RyZHVwKHMsIEdGUF9LRVJORUwpOyAvL21heSBzbGVlcAo+ID4gCj4gPiBUaGlzIHBh
-dGNoIHJlbW92ZXMgZ2ZwX3QgcGFyYW1ldGVyIG9mIGRldl9jb3JlZHVtcHYoKSBhbmQgZGV2X2Nv
-cmVkdW1wbSgpCj4gPiBhbmQgY2hhbmdlcyB0aGUgZ2ZwX3QgcGFyYW1ldGVyIG9mIGt6YWxsb2Mo
-KSBpbiBkZXZfY29yZWR1bXBtKCkgdG8KPiA+IEdGUF9LRVJORUwgaW4gb3JkZXIgdG8gc2hvdyB0
-aGV5IGNvdWxkIG5vdCBiZSB1c2VkIGluIGF0b21pYyBjb250ZXh0Lgo+ID4gCj4gPiBGaXhlczog
-ODMzYzk1NDU2YTcwICgiZGV2aWNlIGNvcmVkdW1wOiBhZGQgbmV3IGRldmljZSBjb3JlZHVtcCBj
-bGFzcyIpCj4gPiBSZXZpZXdlZC1ieTogQnJpYW4gTm9ycmlzIDxicmlhbm5vcnJpc0BjaHJvbWl1
-bS5vcmc+Cj4gPiBSZXZpZXdlZC1ieTogSm9oYW5uZXMgQmVyZyA8am9oYW5uZXNAc2lwc29sdXRp
-b25zLm5ldD4KPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1
-LmNuPgo+ID4gLS0tCj4gPiBDaGFuZ2VzIGluIHY3Ogo+ID4gICAtIFJlbW92ZSBnZnBfdCBmbGFn
-IGluIGFtZGdwdSBkZXZpY2UuCj4gCj4gQWdhaW4sIHRoaXMgY3JlYXRlcyBhICJmbGFnIGRheSIg
-d2hlcmUgd2UgaGF2ZSB0byBiZSBzdXJlIHdlIGhpdCBhbGwKPiB1c2VycyBvZiB0aGlzIGFwaSBh
-dCB0aGUgZXhhY3Qgc2FtZSB0aW1lLiAgVGhpcyB3aWxsIHByZXZlbnQgYW55IG5ldwo+IGRyaXZl
-ciB0aGF0IGNvbWVzIGludG8gYSBtYWludGFpbmVyIHRyZWUgZHVyaW5nIHRoZSBuZXh0IDMgbW9u
-dGhzIGZyb20KPiBldmVyIGJlaW5nIGFibGUgdG8gdXNlIHRoaXMgYXBpIHdpdGhvdXQgY2F1aW5n
-IGJ1aWxkIGJyZWFrYWdlcyBpbiB0aGUKPiBsaW51eC1uZXh0IHRyZWUuCj4gCj4gUGxlYXNlIGV2
-b2x2ZSB0aGlzIGFwaSB0byB3b3JrIHByb3Blcmx5IGZvciBldmVyeW9uZSBhdCB0aGUgc2FtZSB0
-aW1lLAo+IGxpa2Ugd2FzIHByZXZpb3VzbHkgYXNrZWQgZm9yIHNvIHRoYXQgd2UgY2FuIHRha2Ug
-dGhpcyBjaGFuZ2UuICBJdCB3aWxsCj4gdGFrZSAyIHJlbGVhc2VzLCBidXQgdGhhdCdzIGZpbmUu
-CgpUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHksIEkgd2lsbCBldm9sdmUgdGhpcyBhcGkgdG8gd29y
-ayBwcm9wZXJseSBmb3IgZXZlcnlvbmUuCklmIHRoZXJlIGFyZSBub3QgYW55IG5ldyBkcml2ZXJz
-IHRoYXQgdXNlIHRoaXMgYXBpIGR1cmluZyB0aGUgbmV4dCAzIG1vbnRocywgCkkgd2lsbCBzZW5k
-IHRoaXMgcGF0Y2ggYWdhaW4uIE90aGVyd2lzZSwgSSB3aWxsIHdhaXQgdW50aWwgdGhlcmUgYXJl
-IG5vdCBuZXcKdXNlcnMgYW55bW9yZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cgo=
+On Tue, 2022-08-16 at 23:34 +0000, Sean Christopherson wrote:
+> On Thu, Aug 11, 2022, Paolo Bonzini wrote:
+> > The return value of kvm_vcpu_block will be repurposed soon to return
+> 
+> kvm_vcpu_block()
+> 
+> > the state of KVM_REQ_UNHALT.  In preparation for that, get rid of the
+> > current return value.  It is only used by kvm_vcpu_halt to decide whether
+> 
+> kvm_vcpu_halt()
+> 
+> > the call resulted in a wait, but the same effect can be obtained with
+> > a single round of polling.
+> > 
+> > No functional change intended, apart from practically indistinguishable
+> > changes to the polling behavior.
+> 
+> This "breaks" update_halt_poll_stats().  At the very least, it breaks the comment
+> that effectively says "waited" is set if and only if schedule() is called.
+> 
+>         /*
+>          * Note, halt-polling is considered successful so long as the vCPU was
+>          * never actually scheduled out, i.e. even if the wake event arrived
+>          * after of the halt-polling loop itself, but before the full wait.
+>          */
+>         if (do_halt_poll)
+>                 update_halt_poll_stats(vcpu, start, poll_end, !waited);
+> 
+> > @@ -3493,35 +3489,32 @@ void kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+> >  {
+> >         bool halt_poll_allowed = !kvm_arch_no_poll(vcpu);
+> >         bool do_halt_poll = halt_poll_allowed && vcpu->halt_poll_ns;
+> > -       ktime_t start, cur, poll_end;
+> > +       ktime_t start, cur, poll_end, stop;
+> >         bool waited = false;
+> >         u64 halt_ns;
+> >  
+> >         start = cur = poll_end = ktime_get();
+> > -       if (do_halt_poll) {
+> > -               ktime_t stop = ktime_add_ns(start, vcpu->halt_poll_ns);
+> > +       stop = do_halt_poll ? start : ktime_add_ns(start, vcpu->halt_poll_ns);
+> 
+> This is inverted, the loop should terminate after the first iteration (stop==start)
+> if halt-polling is _not_ allowed, i.e. do_halt_poll is false.
+> 
+> Overall, I don't like this patch.  I don't necessarily hate it, but I definitely
+> don't like it.
+
+Roughtly same opinion here.
+
+> 
+> Isn't freeing up the return from kvm_vcpu_check_block() unnecessary?  Can't we
+> just do:
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 9f11b505cbee..ccb9f8bdeb18 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -10633,7 +10633,7 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
+>                 if (hv_timer)
+>                         kvm_lapic_switch_to_hv_timer(vcpu);
+> 
+> -               if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
+> +               if (!kvm_arch_vcpu_runnable(vcpu))
+
+
+The 'kvm_vcpu_block()' returns when 'kvm_vcpu_check_block()' returns a negative number
+which can happen also due to pending apic timer / signal, however it only sets the
+'KVM_REQ_UNHALT' only when 'kvm_arch_vcpu_runnable()==true' so the above does make
+sense.
+
+
+Best regards,
+ Maxim Levitsky
+
+
+>                         return 1;
+>         }
+> 
+> 
+> which IMO is more intuitive and doesn't require reworking halt-polling (again).
+> 
+> I don't see why KVM cares if a vCPU becomes runnable after detecting that something
+> else caused kvm_vcpu_check_block() to bail.  E.g. a pending signal doesn't invalidate
+> a pending vCPU event, and either way KVM is bailing from the run loop.
+> 
+
+
