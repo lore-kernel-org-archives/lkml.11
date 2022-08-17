@@ -2,81 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B001DC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5588FC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241337AbiHQTBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
+        id S238396AbiHQTDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241336AbiHQTA5 (ORCPT
+        with ESMTP id S230457AbiHQTDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:00:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29294883DC
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:00:57 -0700 (PDT)
+        Wed, 17 Aug 2022 15:03:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D142B61D
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:03:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660762856;
+        s=mimecast20190719; t=1660763027;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JBiW69nYfb0RDezsv64U04DtNtYj2TKxdgfkfUJl7Qw=;
-        b=ZC+AuEOjClJqLYL+XBh8uVFVuUcKVk5c3M/P/0q6GbArS+h5sKZFzx28jPQOWjT/ngkUT+
-        IxPP9aZ0jbpZlN/v1CId5Tq83i2+3GLfXDpAHno0jJAIV3U4NV4r0c/WbZLiq+knvJl9m4
-        SnQZECxJld7d5yF3kArs6gtSBX377lk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         references:references; bh=QjliH6Zbs7SxREI0yAVgUWAGnTR2b2eGLogi48MSCUs=;
+        b=PKypfuAENkJe0Hu/gk0Ouo3MAfOO8Y1wQjXHcms43+QFweImyXwtBE98IK0K8+SOs8UdfW
+        H71G+7XFQGeS6wsFreAv2M+xoPM+xHaggKnBASMx9LKCXzegVDVqUI7pMxdQcQ6jFtWevh
+        PVZMBYvPRnoo4lz+ynj6y3FldLfkcSo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-260-8DMa6IATPiKdWcVExtn0HA-1; Wed, 17 Aug 2022 15:00:50 -0400
-X-MC-Unique: 8DMa6IATPiKdWcVExtn0HA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-301-FKthpWl-NYCrKTMounRGtQ-1; Wed, 17 Aug 2022 15:03:46 -0400
+X-MC-Unique: FKthpWl-NYCrKTMounRGtQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4845310B959E;
-        Wed, 17 Aug 2022 19:00:39 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B659C15BBA;
-        Wed, 17 Aug 2022 19:00:38 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <166076168742.3677624.2936950729624462101.stgit@warthog.procyon.org.uk>
-References: <166076168742.3677624.2936950729624462101.stgit@warthog.procyon.org.uk>
-To:     jlayton@kernel.org
-Cc:     dhowells@redhat.com, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] locks: Fix dropped call to ->fl_release_private()
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 800C93810793;
+        Wed, 17 Aug 2022 19:03:45 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id ED5751121319;
+        Wed, 17 Aug 2022 19:03:44 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 7DD32416D5E9; Wed, 17 Aug 2022 16:03:26 -0300 (-03)
+Message-ID: <20220817190221.486745251@redhat.com>
+User-Agent: quilt/0.66
+Date:   Wed, 17 Aug 2022 16:01:37 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     atomlin@redhat.com, frederic@kernel.org
+Cc:     cl@linux.com, tglx@linutronix.de, mingo@kernel.org,
+        peterz@infradead.org, pauld@redhat.com, neelx@redhat.com,
+        oleksandr@natalenko.name, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Marcelo Tosatti <mtosatti@redhat.com>
+Subject: [patch 1/3] mm/vmstat: Use per cpu variable to track a vmstat discrepancy
+References: <20220817190136.096849758@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3718462.1660762837.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 17 Aug 2022 20:00:37 +0100
-Message-ID: <3718464.1660762837@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=UTF-8
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-David Howells <dhowells@redhat.com> wrote:
+From: Aaron Tomlin <atomlin@redhat.com>
 
-> Fixes: 4149be7bda7e ("fs/lock: Don't allocate file_lock in flock_make_lo=
-ck().")
-> cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> cc: Chuck Lever <chuck.lever@oracle.com>
-> cc: Jeff Layton <jlayton@kernel.org>
-> cc: Marc Dionne <marc.dionne@auristor.com>
-> cc: linux-afs@lists.infradead.org
-> cc: linux-fsdevel@vger.kernel.org
-> Link: https://lore.kernel.org/r/166075758809.3532462.1330793558877758753=
-6.stgit@warthog.procyon.org.uk/ # v1
+Add CPU-specific variable namely vmstat_dirty to indicate if
+a vmstat imbalance is present for a given CPU. Therefore, at the
+appropriate time, we can fold all the remaining differentials.
 
-I forgot:
+This speeds up quiet_vmstat in case no per-CPU differentials exist.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
+Based on 
+https://lore.kernel.org/lkml/20220204173554.763888172@fedora.localdomain/
+
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+
+---
+ mm/vmstat.c |   54 ++++++++++++++++++++----------------------------------
+ 1 file changed, 20 insertions(+), 34 deletions(-)
+
+Index: linux-2.6/mm/vmstat.c
+===================================================================
+--- linux-2.6.orig/mm/vmstat.c
++++ linux-2.6/mm/vmstat.c
+@@ -195,6 +195,12 @@ void fold_vm_numa_events(void)
+ #endif
+ 
+ #ifdef CONFIG_SMP
++static DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
++
++static inline void mark_vmstat_dirty(void)
++{
++	this_cpu_write(vmstat_dirty, true);
++}
+ 
+ int calculate_pressure_threshold(struct zone *zone)
+ {
+@@ -367,6 +373,7 @@ void __mod_zone_page_state(struct zone *
+ 		x = 0;
+ 	}
+ 	__this_cpu_write(*p, x);
++	mark_vmstat_dirty();
+ 
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
+ 		preempt_enable();
+@@ -405,6 +412,7 @@ void __mod_node_page_state(struct pglist
+ 		x = 0;
+ 	}
+ 	__this_cpu_write(*p, x);
++	mark_vmstat_dirty();
+ 
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
+ 		preempt_enable();
+@@ -603,6 +611,7 @@ static inline void mod_zone_state(struct
+ 
+ 	if (z)
+ 		zone_page_state_add(z, zone, item);
++	mark_vmstat_dirty();
+ }
+ 
+ void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
+@@ -671,6 +680,7 @@ static inline void mod_node_state(struct
+ 
+ 	if (z)
+ 		node_page_state_add(z, pgdat, item);
++	mark_vmstat_dirty();
+ }
+ 
+ void mod_node_page_state(struct pglist_data *pgdat, enum node_stat_item item,
+@@ -825,6 +835,14 @@ static int refresh_cpu_vm_stats(bool do_
+ 	int global_node_diff[NR_VM_NODE_STAT_ITEMS] = { 0, };
+ 	int changes = 0;
+ 
++	/*
++	 * Clear vmstat_dirty before clearing the percpu vmstats.
++	 * If interrupts are enabled, it is possible that an interrupt
++	 * or another task modifies a percpu vmstat, which will
++	 * set vmstat_dirty to true.
++	 */
++	this_cpu_write(vmstat_dirty, false);
++
+ 	for_each_populated_zone(zone) {
+ 		struct per_cpu_zonestat __percpu *pzstats = zone->per_cpu_zonestats;
+ #ifdef CONFIG_NUMA
+@@ -1949,35 +1967,6 @@ static void vmstat_update(struct work_st
+ }
+ 
+ /*
+- * Check if the diffs for a certain cpu indicate that
+- * an update is needed.
+- */
+-static bool need_update(int cpu)
+-{
+-	pg_data_t *last_pgdat = NULL;
+-	struct zone *zone;
+-
+-	for_each_populated_zone(zone) {
+-		struct per_cpu_zonestat *pzstats = per_cpu_ptr(zone->per_cpu_zonestats, cpu);
+-		struct per_cpu_nodestat *n;
+-
+-		/*
+-		 * The fast way of checking if there are any vmstat diffs.
+-		 */
+-		if (memchr_inv(pzstats->vm_stat_diff, 0, sizeof(pzstats->vm_stat_diff)))
+-			return true;
+-
+-		if (last_pgdat == zone->zone_pgdat)
+-			continue;
+-		last_pgdat = zone->zone_pgdat;
+-		n = per_cpu_ptr(zone->zone_pgdat->per_cpu_nodestats, cpu);
+-		if (memchr_inv(n->vm_node_stat_diff, 0, sizeof(n->vm_node_stat_diff)))
+-			return true;
+-	}
+-	return false;
+-}
+-
+-/*
+  * Switch off vmstat processing and then fold all the remaining differentials
+  * until the diffs stay at zero. The function is used by NOHZ and can only be
+  * invoked when tick processing is not active.
+@@ -1987,10 +1976,7 @@ void quiet_vmstat(void)
+ 	if (system_state != SYSTEM_RUNNING)
+ 		return;
+ 
+-	if (!delayed_work_pending(this_cpu_ptr(&vmstat_work)))
+-		return;
+-
+-	if (!need_update(smp_processor_id()))
++	if (!__this_cpu_read(vmstat_dirty))
+ 		return;
+ 
+ 	/*
+@@ -2021,7 +2007,7 @@ static void vmstat_shepherd(struct work_
+ 	for_each_online_cpu(cpu) {
+ 		struct delayed_work *dw = &per_cpu(vmstat_work, cpu);
+ 
+-		if (!delayed_work_pending(dw) && need_update(cpu))
++		if (!delayed_work_pending(dw) && per_cpu(vmstat_dirty, cpu))
+ 			queue_delayed_work_on(cpu, mm_percpu_wq, dw, 0);
+ 
+ 		cond_resched();
+
 
