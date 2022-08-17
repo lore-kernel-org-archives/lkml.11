@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4712C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 21:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E55C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 21:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242042AbiHQV4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 17:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
+        id S235313AbiHQV4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 17:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242098AbiHQVz7 (ORCPT
+        with ESMTP id S241445AbiHQV4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 17:55:59 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5D3A8332
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:55:56 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id z2so19222980edc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kEu3LoPnwB+E9uQr3yvAY75tc6MJOyqDhxfB70KSfNQ=;
-        b=T0msTuPhx1VfnQd74B08rOH2exZjqLNW3BuxKYcVBR5qhseNUY9XMELlXRFDvhrxoJ
-         bEafhlfHAxOLps/yKbluH4hwDq0ekhNmANb6lKeJsYf00OMickttnHUIVACROCoCNhBh
-         Bm93sJt54QVLsKi/DqcQHvTmze8JXzUNAFb0g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kEu3LoPnwB+E9uQr3yvAY75tc6MJOyqDhxfB70KSfNQ=;
-        b=8SHNfTT0WMmJJQUTwIqxk1jk0LktkhQK+RbUaVq9D5eOMjyHkBYoH7I6DB0aEY9AaU
-         GPcjl0QroM0s/sj91QId5d9/Q8mkSqCGwAucrL1uPBg99F1FVW/iQG6TY3jxuAZHFfI4
-         n4lGQnuS4oVXD964lRAq1En7twx7+il1tW4LeoQBVtPDyMHACqTAT9NfQTokoIfncCkj
-         BdFfMZ8+yjSfavvobGyDFyTu7giLm1rrS3FS5AlmZxKVI2uQ+r8mZ9b6W/vSk632mTrX
-         U1xphXcMKUdv3nrvOiXGrNOl+UI5NJIpyG8zsV/IJ+NIKIdh94znlEW+aMtnAGKuucGV
-         rXvw==
-X-Gm-Message-State: ACgBeo1YJUtio6BY+MD16VzFgXz0VYfbAuRuZS+3GNmna+KwOv7QvIys
-        GBIgIGV5iolgsAxQwBDthIja/ZAB+9S77irv
-X-Google-Smtp-Source: AA6agR6imNsDBYcnkLGuB+GbDF/qqtsDGSwar/ai22vR1mN4AgSHsOMseOaSNydG5a2JZdYxkwYW0Q==
-X-Received: by 2002:a05:6402:4511:b0:43b:a182:8a0a with SMTP id ez17-20020a056402451100b0043ba1828a0amr71483edb.410.1660773355230;
-        Wed, 17 Aug 2022 14:55:55 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id du6-20020a17090772c600b007317f017e64sm7306113ejc.134.2022.08.17.14.55.54
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 14:55:54 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id a4so5914073wrq.1
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:55:54 -0700 (PDT)
-X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id
- m8-20020a5d6248000000b00222cd3b94c8mr26766wrv.97.1660773354188; Wed, 17 Aug
- 2022 14:55:54 -0700 (PDT)
+        Wed, 17 Aug 2022 17:56:09 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F36A74EB
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 14:56:08 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98b0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b0:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F08891EC0543;
+        Wed, 17 Aug 2022 23:56:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660773363;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=r0jlbpMJVou7x794vi2z4haqJSBxGRGHrpPPlFFtOVc=;
+        b=DBENMokpexUIUTGJ8DxiBtQGSx8RKbsZVJu9CbAXZW94mbNO9alQjA5YHQWBdCKUco0Ldg
+        ZH4wbCJsgTRvMQ7BHjI7subPmRi1BlwdBjJRB+2R/gCRKKMl0/3K+x+st9vZtcdrpvb52B
+        hzCUiNa/WPEzbETbpB4FDN2wCML7JQA=
+Date:   Wed, 17 Aug 2022 23:56:02 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ashok Raj <ashok.raj@intel.com>
+Cc:     Ashok Raj <ashok_raj@linux.intel.com>, X86 ML <x86@kernel.org>,
+        Andrew Cooper <amc96@srcf.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?utf-8?Q?=C8=98tefan?= Talpalaru <stefantalpalaru@yahoo.com>
+Subject: Re: [PATCH] x86/microcode/AMD: Attempt applying on every logical
+ thread
+Message-ID: <Yv1j8v7o3lOniUoH@zn.tnic>
+References: <20220814120026.16118-1-bp@alien8.de>
+ <YvtcGEHX8eSFpALX@araj-dh-work>
+ <YvuQgx698T5cgF+C@zn.tnic>
+ <YvzbFXnBjNjK+UJK@araj-dh-work>
+ <Yvz53AAh+p5Db7CK@zn.tnic>
+ <Yv0JQGa/2BlbQChZ@araj-dh-work>
+ <Yv0vu6OqCptK6gc+@zn.tnic>
+ <Yv1WXxcIXSQ7nMji@araj-dh-work>
 MIME-Version: 1.0
-References: <db8cb5d9-56d6-a00a-9cf0-4deec9056433@paragon-software.com>
-In-Reply-To: <db8cb5d9-56d6-a00a-9cf0-4deec9056433@paragon-software.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 17 Aug 2022 14:55:38 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg53xW_ppC5w_tDvWKn3Q7i-hWmd09KM-O1npQHWoBBGw@mail.gmail.com>
-Message-ID: <CAHk-=wg53xW_ppC5w_tDvWKn3Q7i-hWmd09KM-O1npQHWoBBGw@mail.gmail.com>
-Subject: Re: [GIT PULL] ntfs3: bugfixes for 6.0
-To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     ntfs3@lists.linux.dev, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yv1WXxcIXSQ7nMji@araj-dh-work>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 9:43 AM Konstantin Komarov
-<almaz.alexandrovich@paragon-software.com> wrote:
->
-> Please pull this branch containing ntfs3 code for 6.0.
+On Wed, Aug 17, 2022 at 08:58:07PM +0000, Ashok Raj wrote:
+> For this specific patch in question, its not for testing though.. Its
+> required for functional purposes?
 
-This really should have come in during the merge window.
+From its commit message:
 
-Yes, there are clearly several fixes in here, but at least that
-FALLOC_FL_INSERT_RANGE is clearly new development. And a lot of it
-looks like just refactoring and cleanup, and again that is something
-that should come in during the merge window.
+"However, there are microcode patches which do per-thread modification,
+see Link tag below.
 
-But since this all affects only ntfs3, and I consider that still
-fairly solidly experimental, I'll let it slide. But please keep this
-in mind for next time - new work (whether cleanups or actual new code)
-during the merge window, and obvious fixes afterwards.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216211"
 
-                Linus
+TL;DR - the application needs to happen on *every* logical CPU.
+
+> In effect you can test applying the same microcode over and over again
+> without having any special patches. 
+
+Right now, you cannot downgrade on Zen but apparently applying the same
+patch over and over again works.
+
+The patch cache still has a version check and that prevents it but
+that's ugly.
+
+I need to test how it behaves on older families first and then think
+about how to do this right. Maybe use cpuinfo_x86.microcode to record
+what has been applied until now...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
