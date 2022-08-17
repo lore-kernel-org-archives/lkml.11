@@ -2,110 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C62CC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58307C2BB41
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 20:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241711AbiHQUEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 16:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
+        id S241696AbiHQUFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 16:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241681AbiHQUD4 (ORCPT
+        with ESMTP id S230051AbiHQUFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 16:03:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02F32A274;
-        Wed, 17 Aug 2022 13:03:53 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HJa2kt007348;
-        Wed, 17 Aug 2022 20:03:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=hkP6vkzG1UzEeJ5qw6RixMD6hdOhHsYT208NFv3dvTM=;
- b=cmoLyAzv3lt2dgSxmyesxjcpkn3qOTR3b+zmNpxqYLYKmmSQnKtRPpfensDUPZs+H8Ti
- UsU7rm8YLoiCEa+JHoCgBJqfkDJ/lrd1B3wg9xLpiQRRYOyLaORi8Q+fF2gDURh/Y9JP
- NB11/ffh+tTIzLsmOjuIbtgDEaMq/shRIpj9v36t3/vqpnDPlXBBn7SsP+KNeMTwNiP/
- F4QKF2PycvQgh9shsmfGUsoVoVC00bpA7umE21Oyf6NHNS52uEigqLBWh7E9rgdORHF1
- kNAXR2KadA9eQ4eBaEGYOrPmx72ByduLqS2AzA9HvFnR7Wz6/OiIjmoAeMOunrSsupPH 5A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j15hkjspa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Aug 2022 20:03:41 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27HK0AFN011324;
-        Wed, 17 Aug 2022 20:03:40 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j15hkjsnq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Aug 2022 20:03:40 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27HJZul9022737;
-        Wed, 17 Aug 2022 20:03:39 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma02wdc.us.ibm.com with ESMTP id 3hx3ka2mhj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Aug 2022 20:03:39 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27HK3cPk9306666
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Aug 2022 20:03:38 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C4E896E054;
-        Wed, 17 Aug 2022 20:03:38 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CAE446E04E;
-        Wed, 17 Aug 2022 20:03:37 +0000 (GMT)
-Received: from slate16.aus.stglabs.ibm.com (unknown [9.160.23.1])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 17 Aug 2022 20:03:37 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Alexander.Steffen@infineon.com,
-        jgg@ziepe.ca, jarkko@kernel.org, peterhuewe@gmx.de, joel@jms.id.au,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH] tpm: tis_i2c: Fix sanity check interrupt enable mask
-Date:   Wed, 17 Aug 2022 15:03:33 -0500
-Message-Id: <20220817200333.305264-1-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 17 Aug 2022 16:05:51 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F8F5A2CA
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:50 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id a4so5671977wrq.1
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 13:05:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=G88Wg8efx4vUqMWMZ62OXKazA2toNV7pxgmBvPS4y7g=;
+        b=UjMVkMOhH0QDp6O/pCgKkjwAgoTr7VLaEZvWBQ+tjcd31e0GYx2VQdEmdGYONFZlBV
+         JXSoVTKAwZz2v4YW/Uizoa99V8t3dHzfTeno0mWPMNhh4igom0Bmr6ijGRVDHpyMGd7K
+         RD33fy8KrpjEF9DtfgDokOP/K0xkdEBYEZgLbmuvpjzpJ77YnXuGes8IGqUhqOEtcuTz
+         1EtmXbFWHbm8sgCgqbfJwoywVRFVNGycJiPJnMqkXnaxVeGp5CUmEstg4+UHY5j1Wvvc
+         OYe7bnF33uDXEY5dt1xkYnKlxySlYViNcOylr1RCwj3UfknSZbnUPfMlStx4kPmCFh6a
+         AtQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=G88Wg8efx4vUqMWMZ62OXKazA2toNV7pxgmBvPS4y7g=;
+        b=723NwJcd0FMX7EX2BG3FJKE4SmIiU4WcL5fGjwrsVIRl661RyeUfWq6klw6OEfa60/
+         TtNcdw3/UBO7/KB/Aw2d2S1VcziVyS/Hp1URnA/pgVCMiXACkc43mZ+Wvtjd5cGSDnnM
+         WgNynxLfq6OzOEU9ZdwZdN+Fqruat/f/COv6qs8XRoT+EJOoM+dm0Saecuo0f4lFdXnz
+         /3i4Aq47if8GU5/IUKYl2JvhCTi+W9TBVwTxUTpVCE53SAl6zWIs+nWAonhcftfy6hZW
+         RXlCleV99TCdQnyq3pZYwE5Mw+lxslTOGczLvD7t3botqfTZDQHqZLSZQ/v3O+dBCTcF
+         Iwxg==
+X-Gm-Message-State: ACgBeo3NzEB81CGLhAxfxwUxCC7BmwuqkxTiCC3kU9aaepvPP1r5QqeI
+        d1HdMjfOmcgWQCU0vnuPoProrg==
+X-Google-Smtp-Source: AA6agR5IgGfJqwk47mOqzOms5cJpBLn149vtKJEQDmN0sxHazUEu1rNO09FeTJ5nbKwwA4+D0l30ow==
+X-Received: by 2002:a05:6000:617:b0:225:1d23:467a with SMTP id bn23-20020a056000061700b002251d23467amr4681470wrb.692.1660766749119;
+        Wed, 17 Aug 2022 13:05:49 -0700 (PDT)
+Received: from henark71.. ([109.76.58.63])
+        by smtp.gmail.com with ESMTPSA id i133-20020a1c3b8b000000b003a531c7aa66sm3400883wma.1.2022.08.17.13.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 13:05:47 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Anup Patel <anup@brainfault.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org
+Subject: [PATCH 0/4] Fix dt-validate issues on qemu dtbdumps due to dt-bindings
+Date:   Wed, 17 Aug 2022 21:05:19 +0100
+Message-Id: <20220817200531.988850-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 03ACpAjt4_Dw7t6To8DmMaTFR1wcpBWC
-X-Proofpoint-ORIG-GUID: ru2K3RYWGUsaCpUC9xEEwhTC9JXc9bdr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-17_13,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- lowpriorityscore=0 malwarescore=0 clxscore=1011 mlxlogscore=910
- impostorscore=0 phishscore=0 priorityscore=1501 spamscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208170075
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sanity check mask for TPM_INT_ENABLE register was off by 8 bits,
-resulting in failure to probe if the TPM_INT_ENABLE register was a
-valid value.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-Fixes: bbc23a07b072 ("tpm: Add tpm_tis_i2c backend for tpm_tis_core")
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- drivers/char/tpm/tpm_tis_i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The device trees produced automatically for the virt and spike machines
+fail dt-validate on several grounds. Some of these need to be fixed in
+the linux kernel's dt-bindings, but others are caused by bugs in QEMU.
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c.c b/drivers/char/tpm/tpm_tis_i2c.c
-index 0692510dfcab..635a69dfcbbd 100644
---- a/drivers/char/tpm/tpm_tis_i2c.c
-+++ b/drivers/char/tpm/tpm_tis_i2c.c
-@@ -49,7 +49,7 @@
- 
- /* Masks with bits that must be read zero */
- #define TPM_ACCESS_READ_ZERO 0x48
--#define TPM_INT_ENABLE_ZERO 0x7FFFFF6
-+#define TPM_INT_ENABLE_ZERO 0x7FFFFF60
- #define TPM_STS_READ_ZERO 0x23
- #define TPM_INTF_CAPABILITY_ZERO 0x0FFFF000
- #define TPM_I2C_INTERFACE_CAPABILITY_ZERO 0x80000000
+Patches been sent that fix the QEMU issues [0], but a couple of them
+need to be fixed in the kernel's dt-bindings. The first patches add
+compatibles for "riscv,{clint,plic}0" which are present in drivers and
+the auto generated QEMU dtbs. The final patch should be ignored for all
+serious purposes unless you want to wash your eyes out afterwards, but
+JIC the versioned extensions ever come up, it's there.
+
+Thanks to Rob Herring for reporting these issues [1],
+Conor.
+
+To reproduce the errors:
+./build/qemu-system-riscv64 -nographic -machine virt,dumpdtb=qemu.dtb
+dt-validate -p /path/to/linux/kernel/Documentation/devicetree/bindings/processed-schema.json qemu.dtb
+(The processed schema needs to be generated first)
+
+0 - https://lore.kernel.org/linux-riscv/20220810184612.157317-1-mail@conchuod.ie/
+1 - https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
+
+Changes since v1:
+- drop the "legacy systems" bit from the binding descriptions
+- convert to a regex for the isa string
+
+Conor Dooley (4):
+  dt-bindings: timer: sifive,clint: add legacy riscv compatible
+  dt-bindings: interrupt-controller: sifive,plic: add legacy riscv
+    compatible
+  dt-bindings: riscv: add new riscv,isa strings for emulators
+  dt-bindings: riscv: isa string bonus content
+
+ .../sifive,plic-1.0.0.yaml                     |  5 +++++
+ .../devicetree/bindings/riscv/cpus.yaml        |  9 ++++++---
+ .../bindings/timer/sifive,clint.yaml           | 18 ++++++++++++------
+ 3 files changed, 23 insertions(+), 9 deletions(-)
+
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-2.31.1
+2.37.1
 
