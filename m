@@ -2,78 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3674C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AC6C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243219AbiHRERw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
+        id S243237AbiHRERz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242756AbiHRERd (ORCPT
+        with ESMTP id S243128AbiHRERd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 18 Aug 2022 00:17:33 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F220396FC5;
-        Wed, 17 Aug 2022 21:17:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E2B9E2FA;
+        Wed, 17 Aug 2022 21:17:30 -0700 (PDT)
 Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27HMKLuH002112;
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I1Zob7014519;
         Thu, 18 Aug 2022 04:17:22 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=OBJV2nhA1m9/wANwwnv2RKvRXTJWsxwd63aHFcrIoW8=;
- b=bMNqdhczbtGGSDLhB9xX92lLRxerUDcX8wUkliJ9GgCwmE9kDdfjvA6Jb4dYHKxCw0hk
- BkuBqTS5MWe64Y3w0gIIIxX/G9PGWVjsQXx48xJuSNV/FW319xqfp2RXsSZD2W4OX+Bh
- 6BQ2Kz4rAPqAXvrgL05SXvMw2YcI3p338qBK0Yl37ctr0fK0CtXa7wTuK8NbP1LOEUkQ
- 42kpVM7J82d38BND3qbHMclWuo5X1s230hk9RqEw7rewx6TNnD7yo2FhKbpylNX4UCTm
- 2Q7aXe5OapwdWyFtTXDhIbwGuHO6HtOqT5PFh2FH8xSV9iMO48+v0uocr8Gxsd+FvWTj mQ== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j181xhcq7-1
+ bh=YP7jiQx6nRcEHsk8HlT10x8CfIauhO1O6L4cwHWK7K0=;
+ b=aeMXC1cbmIrCgZc8757XkusqSqL4IuWMhAG5h376GT0mDPY9h0fZ2FY8tEIPXVKCIxXP
+ N1Q4RFqXcHUHgJT6b9TOIwdRAb2Ou+4vgu5K2hhe/AB30t2oTjbwMYJW8nSbYZp4u5oV
+ J4aVB+7OSeB4LRo1AzNMc1OqLM5uqCrZw0MYUNxviNJAnpDF5Rz8B7lAPHSVVrRP3q7i
+ Habg8cjBkuBENb85GendJ/Y9c9u2Llm5Vtr+Cl+IOayn1hHhaxdY41tfjEuIkqpEMZA+
+ zvl31/pRjkze9K+3IXvrWnY5xOdfVI5NScHaw2ij+0Z+evkfWcKbNs67bsDOjh9TtRhE Yg== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j181xhcqb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:22 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJvb018166
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJP9012622
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:21 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 07:58:26 -0700
+ 15.2.986.22; Wed, 17 Aug 2022 08:15:00 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
         Rob Clark <robdclark@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Stephen Boyd" <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        <krzysztof.kozlowski@linaro.org>,
+        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
+CC:     Matthias Kaehlcke <mka@chromium.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Douglas Anderson <dianders@chromium.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 2/5] clk: qcom: Allow custom reset ops
-Date:   Wed, 17 Aug 2022 20:27:51 +0530
-Message-ID: <20220817202609.v2.2.I75baff799a363bbb960376539e3a0f737377c3f1@changeid>
+        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        Wang Qing <wangqing@vivo.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 6/7] drm/msm/a6xx: Improve gpu recovery sequence
+Date:   Wed, 17 Aug 2022 20:44:19 +0530
+Message-ID: <20220817204224.v4.6.Idf2ba51078e87ae7ceb75cc77a5bd4ff2bd31eab@changeid>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
+In-Reply-To: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
+References: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: jnLXMnw74qtZ4uh9EG--B08m1J7W-B9Q
-X-Proofpoint-ORIG-GUID: jnLXMnw74qtZ4uh9EG--B08m1J7W-B9Q
+X-Proofpoint-GUID: yBh9KR3pSlT3BWf62zgLbNbVbLV5HzYP
+X-Proofpoint-ORIG-GUID: yBh9KR3pSlT3BWf62zgLbNbVbLV5HzYP
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 clxscore=1015 impostorscore=0 mlxlogscore=999 spamscore=0
+ bulkscore=0 clxscore=1015 impostorscore=0 mlxlogscore=973 spamscore=0
  lowpriorityscore=0 adultscore=0 phishscore=0 suspectscore=0 malwarescore=0
  mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208180014
@@ -81,94 +83,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow soc specific clk drivers to specify a custom reset operation. We
-will use this in an upcoming patch to allow gpucc driver to specify a
-differet reset operation for cx_gdsc.
+We can do a few more things to improve our chance at a successful gpu
+recovery, especially during a hangcheck timeout:
+1. Halt CP and GMU core
+2. Do RBBM GBIF HALT sequence
+3. Do a soft reset of GPU core
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
-Changes in v2:
-- Return error when a particular custom reset op is not implemented. (Dmitry)
+(no changes since v1)
 
- drivers/clk/qcom/reset.c | 27 +++++++++++++++++++++++++++
- drivers/clk/qcom/reset.h |  8 ++++++++
- 2 files changed, 35 insertions(+)
+ drivers/gpu/drm/msm/adreno/a6xx.xml.h |  4 ++
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 77 +++++++++++++++++++++--------------
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c |  7 ++++
+ 3 files changed, 58 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/clk/qcom/reset.c b/drivers/clk/qcom/reset.c
-index 819d194..b7ae4a3 100644
---- a/drivers/clk/qcom/reset.c
-+++ b/drivers/clk/qcom/reset.c
-@@ -13,6 +13,21 @@
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx.xml.h b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+index b03e2c4..beea4a7 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx.xml.h
++++ b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+@@ -1413,6 +1413,10 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
  
- static int qcom_reset(struct reset_controller_dev *rcdev, unsigned long id)
+ #define REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL			0x00000011
+ 
++#define REG_A6XX_RBBM_GBIF_HALT					0x00000016
++
++#define REG_A6XX_RBBM_GBIF_HALT_ACK				0x00000017
++
+ #define REG_A6XX_RBBM_WAIT_FOR_GPU_IDLE_CMD			0x0000001c
+ #define A6XX_RBBM_WAIT_FOR_GPU_IDLE_CMD_WAIT_GPU_IDLE		0x00000001
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+index 9f76f5b..db05942 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+@@ -869,9 +869,47 @@ static void a6xx_gmu_rpmh_off(struct a6xx_gmu *gmu)
+ 		(val & 1), 100, 1000);
+ }
+ 
++#define GBIF_CLIENT_HALT_MASK             BIT(0)
++#define GBIF_ARB_HALT_MASK                BIT(1)
++
++static void a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
++{
++	struct msm_gpu *gpu = &adreno_gpu->base;
++
++	if (!a6xx_has_gbif(adreno_gpu)) {
++		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0xf);
++		spin_until((gpu_read(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL1) &
++								0xf) == 0xf);
++		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0);
++
++		return;
++	}
++
++	/* Halt the gx side of GBIF */
++	gpu_write(gpu, REG_A6XX_RBBM_GBIF_HALT, 1);
++	spin_until(gpu_read(gpu, REG_A6XX_RBBM_GBIF_HALT_ACK) & 1);
++
++	/* Halt new client requests on GBIF */
++	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_CLIENT_HALT_MASK);
++	spin_until((gpu_read(gpu, REG_A6XX_GBIF_HALT_ACK) &
++			(GBIF_CLIENT_HALT_MASK)) == GBIF_CLIENT_HALT_MASK);
++
++	/* Halt all AXI requests on GBIF */
++	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_ARB_HALT_MASK);
++	spin_until((gpu_read(gpu,  REG_A6XX_GBIF_HALT_ACK) &
++			(GBIF_ARB_HALT_MASK)) == GBIF_ARB_HALT_MASK);
++
++	/* The GBIF halt needs to be explicitly cleared */
++	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
++}
++
+ /* Force the GMU off in case it isn't responsive */
+ static void a6xx_gmu_force_off(struct a6xx_gmu *gmu)
  {
-+	struct qcom_reset_controller *rst;
-+	const struct qcom_reset_map *map;
++	struct a6xx_gpu *a6xx_gpu = container_of(gmu, struct a6xx_gpu, gmu);
++	struct adreno_gpu *adreno_gpu = &a6xx_gpu->base;
++	struct msm_gpu *gpu = &adreno_gpu->base;
 +
-+	rst = to_qcom_reset_controller(rcdev);
-+	map = &rst->reset_map[id];
-+
-+	if (map->ops && map->ops->reset)
-+		return map->ops->reset(map->priv);
-+	/*
-+	 * If custom ops is implemented but just not this callback, return
-+	 * error
-+	 */
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
-+
- 	rcdev->ops->assert(rcdev, id);
- 	udelay(1);
- 	rcdev->ops->deassert(rcdev, id);
-@@ -28,6 +43,12 @@ qcom_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
+ 	/* Flush all the queues */
+ 	a6xx_hfi_stop(gmu);
  
- 	rst = to_qcom_reset_controller(rcdev);
- 	map = &rst->reset_map[id];
+@@ -883,6 +921,15 @@ static void a6xx_gmu_force_off(struct a6xx_gmu *gmu)
+ 
+ 	/* Make sure there are no outstanding RPMh votes */
+ 	a6xx_gmu_rpmh_off(gmu);
 +
-+	if (map->ops && map->ops->assert)
-+		return map->ops->assert(map->priv);
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
++	/* Halt the gmu cm3 core */
++	gmu_write(gmu, REG_A6XX_GMU_CM3_SYSRESET, 1);
 +
- 	mask = BIT(map->bit);
- 
- 	return regmap_update_bits(rst->regmap, map->reg, mask, mask);
-@@ -42,6 +63,12 @@ qcom_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
- 
- 	rst = to_qcom_reset_controller(rcdev);
- 	map = &rst->reset_map[id];
++	a6xx_bus_clear_pending_transactions(adreno_gpu);
 +
-+	if (map->ops && map->ops->deassert)
-+		return map->ops->deassert(map->priv);
-+	else if (map->ops)
-+		return -EOPNOTSUPP;
++	/* Reset GPU core blocks */
++	gpu_write(gpu, REG_A6XX_RBBM_SW_RESET_CMD, 1);
++	udelay(100);
+ }
+ 
+ static void a6xx_gmu_set_initial_freq(struct msm_gpu *gpu, struct a6xx_gmu *gmu)
+@@ -1010,36 +1057,6 @@ bool a6xx_gmu_isidle(struct a6xx_gmu *gmu)
+ 	return true;
+ }
+ 
+-#define GBIF_CLIENT_HALT_MASK             BIT(0)
+-#define GBIF_ARB_HALT_MASK                BIT(1)
+-
+-static void a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
+-{
+-	struct msm_gpu *gpu = &adreno_gpu->base;
+-
+-	if (!a6xx_has_gbif(adreno_gpu)) {
+-		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0xf);
+-		spin_until((gpu_read(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL1) &
+-								0xf) == 0xf);
+-		gpu_write(gpu, REG_A6XX_VBIF_XIN_HALT_CTRL0, 0);
+-
+-		return;
+-	}
+-
+-	/* Halt new client requests on GBIF */
+-	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_CLIENT_HALT_MASK);
+-	spin_until((gpu_read(gpu, REG_A6XX_GBIF_HALT_ACK) &
+-			(GBIF_CLIENT_HALT_MASK)) == GBIF_CLIENT_HALT_MASK);
+-
+-	/* Halt all AXI requests on GBIF */
+-	gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_ARB_HALT_MASK);
+-	spin_until((gpu_read(gpu,  REG_A6XX_GBIF_HALT_ACK) &
+-			(GBIF_ARB_HALT_MASK)) == GBIF_ARB_HALT_MASK);
+-
+-	/* The GBIF halt needs to be explicitly cleared */
+-	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
+-}
+-
+ /* Gracefully try to shut down the GMU and by extension the GPU */
+ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
+ {
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 0ec4fcd..a9335bc 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -920,6 +920,10 @@ static int hw_init(struct msm_gpu *gpu)
+ 	/* Make sure the GMU keeps the GPU on while we set it up */
+ 	a6xx_gmu_set_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
+ 
++	/* Clear GBIF halt in case GX domain was not collapsed */
++	if (a6xx_has_gbif(adreno_gpu))
++		gpu_write(gpu, REG_A6XX_RBBM_GBIF_HALT, 0);
 +
- 	mask = BIT(map->bit);
+ 	gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_CNTL, 0);
  
- 	return regmap_update_bits(rst->regmap, map->reg, mask, 0);
-diff --git a/drivers/clk/qcom/reset.h b/drivers/clk/qcom/reset.h
-index 2a08b5e..d4213b4 100644
---- a/drivers/clk/qcom/reset.h
-+++ b/drivers/clk/qcom/reset.h
-@@ -8,9 +8,17 @@
+ 	/*
+@@ -1205,6 +1209,9 @@ static void a6xx_recover(struct msm_gpu *gpu)
+ 	if (hang_debug)
+ 		a6xx_dump(gpu);
  
- #include <linux/reset-controller.h>
- 
-+struct qcom_reset_ops {
-+	int (*reset)(void *priv);
-+	int (*assert)(void *priv);
-+	int (*deassert)(void *priv);
-+};
++	/* Halt SQE first */
++	gpu_write(gpu, REG_A6XX_CP_SQE_CNTL, 3);
 +
- struct qcom_reset_map {
- 	unsigned int reg;
- 	u8 bit;
-+	struct qcom_reset_ops *ops;
-+	void *priv;
- };
- 
- struct regmap;
+ 	/*
+ 	 * Turn off keep alive that might have been enabled by the hang
+ 	 * interrupt
 -- 
 2.7.4
 
