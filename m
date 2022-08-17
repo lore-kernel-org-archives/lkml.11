@@ -2,86 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5574C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60789C25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238136AbiHQC3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 22:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        id S238178AbiHQCbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 22:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238100AbiHQC3t (ORCPT
+        with ESMTP id S231140AbiHQCbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 22:29:49 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D3567445
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=noP0tGHCb/BAHE2fzmHsuvX65aJ7RDKVDN/j9ECF9JA=; b=RxffMpfS4/REndNgAi4E/YY0DK
-        RsKhisdEscCVNILJkWtcBFzbOna0BxL6XUCpZvsnhiy7IPZdnMBVZXwNEV084VG/SWVGyP5XqoDVy
-        ElQdD/6M/TErIrn39y4exs2Im9nEgaMnS51Biuw1ac3ws7sHspDFVMY2CvBbWfUmhMLvLnMhnNULm
-        k5mfB60ZUoIBDDsXTBfAU29hlOzcBkztPg4N1uuuN20JAw6RpDHpO8KTvAPH4CUcyfHFKTBNUL4kx
-        xu7J1gTtwFrKIn9GmRT2tEKLLVSFzFbhhRsj9r2AlJ89khUzternicU6LFW7F8NZVP7Ly0EXigIFx
-        wyD1QNtg==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oO8oH-00975V-5L; Wed, 17 Aug 2022 02:29:33 +0000
-Message-ID: <77d8e180-9931-55ef-631e-f3e0ecb9fd36@infradead.org>
-Date:   Tue, 16 Aug 2022 19:29:31 -0700
+        Tue, 16 Aug 2022 22:31:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D958A9A947;
+        Tue, 16 Aug 2022 19:31:42 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6sRF4G77zmVpd;
+        Wed, 17 Aug 2022 10:29:29 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 10:31:40 +0800
+Received: from [10.67.111.195] (10.67.111.195) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 10:31:40 +0800
+Subject: Re: [PATCH] power: supply: ab8500: remove unused static local
+ variable
+From:   chenlifu <chenlifu@huawei.com>
+To:     Tom Rix <trix@redhat.com>, <linus.walleij@linaro.org>,
+        <sre@kernel.org>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220719022743.305189-1-trix@redhat.com>
+ <7b42a25a-806f-f3b2-b42f-ac3fdb6627b4@huawei.com>
+Message-ID: <a0822c1f-6652-a4ef-b482-f54944deb094@huawei.com>
+Date:   Wed, 17 Aug 2022 10:31:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] improve the kernel quality and reduce the amount of BS
- patches
-Content-Language: en-US
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-References: <YvxF0yn07ztg9r4A@gus-fring.localdomain> <YvxNvpF7n1VqNnbD@ZenIV>
- <YvxP3LrvHLhFClBd@ZenIV>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <YvxP3LrvHLhFClBd@ZenIV>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <7b42a25a-806f-f3b2-b42f-ac3fdb6627b4@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.111.195]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/16/22 19:18, Al Viro wrote:
-> On Wed, Aug 17, 2022 at 03:09:02AM +0100, Al Viro wrote:
->> this idiocy has gone too far    
+在 2022/8/17 9:57, chenlifu 写道:
+> 在 2022/7/19 10:27, Tom Rix 写道:
+>> cpp_check reports
+>> [drivers/power/supply/ab8500_chargalg.c:493]: (style) Variable 
+>> 'ab8500_chargalg_ex_ac_enable_toggle' is assigned a value that is 
+>> never used.
 >>
->> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+>>> From inspection, this variable is never used. So remove it.
+>>
+>> Fixes: 6c50a08d9dd3 ("power: supply: ab8500: Drop external charger 
+>> leftovers")
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>   drivers/power/supply/ab8500_chargalg.c | 2 --
+>>   1 file changed, 2 deletions(-)
+>>
+>> diff --git a/drivers/power/supply/ab8500_chargalg.c 
+>> b/drivers/power/supply/ab8500_chargalg.c
+>> index ae4be553f424..05146d436a6a 100644
+>> --- a/drivers/power/supply/ab8500_chargalg.c
+>> +++ b/drivers/power/supply/ab8500_chargalg.c
+>> @@ -490,8 +490,6 @@ static int ab8500_chargalg_kick_watchdog(struct 
+>> ab8500_chargalg *di)
+>>   static int ab8500_chargalg_ac_en(struct ab8500_chargalg *di, int 
+>> enable,
+>>       int vset_uv, int iset_ua)
+>>   {
+>> -    static int ab8500_chargalg_ex_ac_enable_toggle;
+>> -
+>>       if (!di->ac_chg || !di->ac_chg->ops.enable)
+>>           return -ENXIO;
+>>
 > 
-> 	Seriously, folks - the stream of patches with no better
-> explanations than "The Most Holy checkpatch.pl Says So, Must Appease
-> The Spirits" ought to stop.
+> Reviewed-by: Chen Lifu <chenlifu@huawei.com>
 > 
-> 	If you are changing something, take care to explain _why_
-> is the change made.  Reference to a tool that has pointed you
-> towards the location you are changing does not replace that.
-> checkpatch.pl is a script.  A dumb one.  It's a bunch of heuristics
-> that correlate with code being potentially fishy and worth looking
-> into; those are occasionally useful, but it's not an oracle.
+> 
+> I can still observe this build error with ARCH=arm, 
+> defconfig=allyesconfig in linux-next next-200816:
+> 
+> drivers/power/supply/ab8500_chargalg.c: In function 
+> ‘ab8500_chargalg_ac_en’:
+> drivers/power/supply/ab8500_chargalg.c:493:13: error: unused variable 
+> ‘ab8500_chargalg_ex_ac_enable_toggle’ [-Werror=unused-variable]
+>   static int ab8500_chargalg_ex_ac_enable_toggle;
+>              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> .
 
-Yes, just saying "found with checkpatch" is not sufficient.
+Reviewed-by: Chen Lifu <chenlifu@huawei.com>
 
-It's even documented to be a dumb advisor:
+fixed the tag: next-200816 --> next-20220816
 
-"""Checkpatch is not always right. Your judgement takes precedence over checkpatch
-messages.  If your code looks better with the violations, then its probably
-best left alone."""
+I can still observe this build error with ARCH=arm, 
+defconfig=allyesconfig in linux-next next-20220816:
 
-and
-
-"""Note, though, that the style checker should be
-viewed as a guide, not as a replacement for human judgment."""
-
-
--- 
-~Randy
+drivers/power/supply/ab8500_chargalg.c: In function ‘ab8500_chargalg_ac_en’:
+drivers/power/supply/ab8500_chargalg.c:493:13: error: unused variable 
+‘ab8500_chargalg_ex_ac_enable_toggle’ [-Werror=unused-variable]
+  static int ab8500_chargalg_ex_ac_enable_toggle;
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
