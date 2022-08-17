@@ -2,139 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB3AC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D99AC32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 00:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237323AbiHQAsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 20:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S238093AbiHQA5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 20:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiHQAsU (ORCPT
+        with ESMTP id S237942AbiHQA5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 20:48:20 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592914507F;
-        Tue, 16 Aug 2022 17:48:17 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id r69so10719271pgr.2;
-        Tue, 16 Aug 2022 17:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=Kx0SDyoGz5baTC5VWufEpt94hdYzxNIFK0QLS5qScpM=;
-        b=W8tkYlLCu461r1WPMOa4OrgYYHvPKVQv+KdcgNwZRoPLSfpGBkMZ/rZD3CH0bEvBwq
-         8Z0Uz7N272AQICqZoAlC+AMG9G1KUDG2mj+Oy7WhCiJQs04nhacEwQayoAwW1r3lrRLl
-         YpQTLbfT4Vs9L9hhadDUI5kYzZoO2ZcArAc5BLwIrFw1dG4etHRQysJJ3qZqbj2q9OH1
-         Hn/734Td6MNMkIsQbaOw1EahDhh3EdN9wTHrj/kZ74FGh2q6xm8BVMfEM1FMxLBwBg69
-         pDdfbYduCMCgiQBPXE8hBLgvWTq9nCesIYuejafo32dBBiT5X/3j5n2SMMwhTgOvkhPs
-         dy+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Kx0SDyoGz5baTC5VWufEpt94hdYzxNIFK0QLS5qScpM=;
-        b=F/4Pcv2EMfVvFsbtZAHFdmK/OENBQh2YuxtSFItetG2NmwhMBGcpmipHcBOuBwOqLe
-         eDxk5Ek4XgGCMEEoIuDyXQpsyBTAgd4YDI3LzZb8zZqm+DSoe9Q6ch6M5ghFll9YC5To
-         4jjijoI9pW4V7LKIl8d42QwwfwKmRC6OoQ5ag/lzXfD8tedu6GWSvb/7hUZtKc25dLNf
-         YTmwNB+xSO58W7Vt1Jk8sfcHQ+LSbHz46JLjkrKqqDZU2zlJc/DGbOLsQ34XgZlPd2ay
-         KsVPFkLgcIX6WGxPe4ctcCsmI2OoJBVtHgz+xE5SZ1hUoTUGfN2nwZTVe9nc/3B7D4fN
-         ipaw==
-X-Gm-Message-State: ACgBeo0qUr8ETRzm6miHRBEIUWwIQBzAloHyOnu3HQ32/PHsFeZb7PA9
-        70VloYmRCSltjpxz+qFF0gs=
-X-Google-Smtp-Source: AA6agR6OkLaN74Ce+Y5REASwUP72Q8mDKIaiTvt2m6iuXILxrbzYxJ5EY9aLoHH3YlLZoZdOxMekrg==
-X-Received: by 2002:a63:211b:0:b0:41b:8f73:576d with SMTP id h27-20020a63211b000000b0041b8f73576dmr19900345pgh.106.1660697296811;
-        Tue, 16 Aug 2022 17:48:16 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id t5-20020aa79465000000b0052d78e73e6asm9032883pfq.184.2022.08.16.17.48.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 17:48:16 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 08:29:04 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>
-Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Message-ID: <YvtVN195TS1xpEN7@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
- <20220816123701-mutt-send-email-mst@kernel.org>
- <20220816110717.5422e976@kernel.org>
- <YvtAktdB09tM0Ykr@bullseye>
- <20220816160755.7eb11d2e@kernel.org>
+        Tue, 16 Aug 2022 20:57:01 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA2B82D05;
+        Tue, 16 Aug 2022 17:57:00 -0700 (PDT)
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27GNMF1a003307;
+        Wed, 17 Aug 2022 00:56:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=0D6CYsbmpNyu12MeLgwlNIb+Mu9viJL7xqMJPYimhWU=;
+ b=Tpmqt2cdfFaZSvIzdhqg3IRCwnYMjx8VPKQs1SJSWUWY3Z6fMjFuiMlql8p9XuQmg/og
+ czgc/LrVom94Uhq+JvopgvqFTDobvuurbEgEw7iXElCqxt5B23AcYLqqHOqKEB+9fBEe
+ B9/SUy6pfYaV7e2ISyJ/x97cu9ibM+JbEurs6aKzKMEgN85Ij95YVX8LM4l26QMch8C4
+ A7vYDKjHcGWR23DGfAbp7+3/+vNVTfiHVV89ViweolqvRYTqdNhPrNvDVnhlhUFWALXb
+ qkDCUFDbSK52qIdJoTjFNJ6lIP6+f6b/mOT4xmPv4Hmc66CAxoNZs6uuBb5UPynsVCXu mw== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j08un31rn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 00:56:55 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27H0prNQ029110
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Aug 2022 00:51:54 GMT
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 16 Aug 2022 17:51:53 -0700
+Received: from [10.110.38.192] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 16 Aug
+ 2022 17:51:53 -0700
+Message-ID: <5b82de52-3d6d-214b-ba3b-c57315fd18cb@quicinc.com>
+Date:   Tue, 16 Aug 2022 17:51:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816160755.7eb11d2e@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 6/8] usb: dwc3: Increase DWC3 controller halt timeout
+Content-Language: en-US
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        "balbi@kernel.org" <balbi@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>
+References: <20220815213134.23783-1-quic_wcheng@quicinc.com>
+ <20220815213134.23783-7-quic_wcheng@quicinc.com>
+ <a6db7080-0c2f-a0fc-fd89-b919d12a8253@synopsys.com>
+From:   Wesley Cheng <quic_wcheng@quicinc.com>
+In-Reply-To: <a6db7080-0c2f-a0fc-fd89-b919d12a8253@synopsys.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: RGD10BhmTPvkLOIKEidZ38nxrjipgxkA
+X-Proofpoint-GUID: RGD10BhmTPvkLOIKEidZ38nxrjipgxkA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-16_08,2022-08-16_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ mlxlogscore=913 mlxscore=0 malwarescore=0 spamscore=0 clxscore=1015
+ impostorscore=0 priorityscore=1501 adultscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208170002
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 04:07:55PM -0700, Jakub Kicinski wrote:
-> On Tue, 16 Aug 2022 07:02:33 +0000 Bobby Eshleman wrote:
-> > > From a cursory look (and Documentation/ would be nice..) it feels
-> > > very wrong to me. Do you know of any uses of a netdev which would 
-> > > be semantically similar to what you're doing? Treating netdevs as
-> > > buildings blocks for arbitrary message passing solutions is something 
-> > > I dislike quite strongly.  
-> > 
-> > The big difference between vsock and "arbitrary message passing" is that
-> > vsock is actually constrained by the virtio device that backs it (made
-> > up of virtqueues and the underlying protocol). That virtqueue pair is
-> > acting like the queues on a physical NIC, so it actually makes sense to
-> > manage the queuing of vsock's device like we would manage the queueing
-> > of a real device.
-> > 
-> > Still, I concede that ignoring the netdev state is a probably bad idea.
-> > 
-> > That said, I also think that using packet scheduling in vsock is a good
-> > idea, and that ideally we can reuse Linux's already robust library of
-> > packet scheduling algorithms by introducing qdisc somehow.
+Hi Thinh,
+
+On 8/16/2022 5:34 PM, Thinh Nguyen wrote:
+> On 8/15/2022, Wesley Cheng wrote:
+>> Since EP0 transactions need to be completed before the controller halt
+>> sequence is finished, this may take some time depending on the host and the
+>> enabled functions.  Increase the controller halt timeout, so that we give
+>> the controller sufficient time to handle EP0 transfers.  Remove the need
+>> for making dwc3_gadget_suspend() and dwc3_gadget_resume() to be called in
+>> a spinlock.
 > 
-> We've been burnt in the past by people doing the "let me just pick
-> these useful pieces out of netdev" thing. Makes life hard both for
-> maintainers and users trying to make sense of the interfaces.
-> 
-> What comes to mind if you're just after queuing is that we already
-> bastardized the CoDel implementation (include/net/codel_impl.h).
-> If CoDel is good enough for you maybe that's the easiest way?
-> Although I suspect that you're after fairness not early drops.
-> Wireless folks use CoDel as a second layer queuing. (CC: Toke)
+> Sounds like the removal of the spin_lock and the increase of halt
+> timeout are 2 separate change. It would be nice to separate this patch
+> since the $subject only indicates 1 of them.
 > 
 
-That is certainly interesting to me. Sitting next to "codel_impl.h" is
-"include/net/fq_impl.h", and it looks like it may solve the datagram
-flooding issue. The downside to this approach is the baking of a
-specific policy into vsock... which I don't exactly love either.
+Sure, I'll split these up.
 
-I'm not seeing too many other of these qdisc bastardizations in
-include/net, are there any others that you are aware of?
-
-> > > Could you recommend where I can learn more about vsocks?  
-> > 
-> > I think the spec is probably the best place to start[1].
-> > 
-> > [1]: https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html
+>>
+>> Suggested-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+>> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+>> ---
+>>   drivers/usb/dwc3/core.c   | 4 ----
+>>   drivers/usb/dwc3/gadget.c | 8 +++++++-
+>>   2 files changed, 7 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+>> index c5c238ab3083..23e123a1ab5f 100644
+>> --- a/drivers/usb/dwc3/core.c
+>> +++ b/drivers/usb/dwc3/core.c
+>> @@ -1976,9 +1976,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>>   	case DWC3_GCTL_PRTCAP_DEVICE:
+>>   		if (pm_runtime_suspended(dwc->dev))
+>>   			break;
+>> -		spin_lock_irqsave(&dwc->lock, flags);
+>>   		dwc3_gadget_suspend(dwc);
+>> -		spin_unlock_irqrestore(&dwc->lock, flags);
+>>   		synchronize_irq(dwc->irq_gadget);
+>>   		dwc3_core_exit(dwc);
+>>   		break;
+>> @@ -2039,9 +2037,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+>>   			return ret;
+>>   
+>>   		dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_DEVICE);
+>> -		spin_lock_irqsave(&dwc->lock, flags);
+>>   		dwc3_gadget_resume(dwc);
+>> -		spin_unlock_irqrestore(&dwc->lock, flags);
+>>   		break;
+>>   	case DWC3_GCTL_PRTCAP_HOST:
+>>   		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+>> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+>> index 7b66a54250a0..b2668a83cc29 100644
+>> --- a/drivers/usb/dwc3/gadget.c
+>> +++ b/drivers/usb/dwc3/gadget.c
+>> @@ -2444,7 +2444,7 @@ static void __dwc3_gadget_set_speed(struct dwc3 *dwc)
+>>   static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
+>>   {
+>>   	u32			reg;
+>> -	u32			timeout = 500;
+>> +	u32			timeout = 100;
+>>   
+>>   	if (pm_runtime_suspended(dwc->dev))
+>>   		return 0;
+>> @@ -2477,6 +2477,7 @@ static int dwc3_gadget_run_stop(struct dwc3 *dwc, int is_on, int suspend)
+>>   	dwc3_gadget_dctl_write_safe(dwc, reg);
+>>   
+>>   	do {
+>> +		msleep(20);
 > 
-> Eh, I was hoping it was a side channel of an existing virtio_net 
-> which is not the case. Given the zero-config requirement IDK if 
-> we'll be able to fit this into netdev semantics :(
+> Polling interval of 20ms seems a bit much. Can we use usleep_range()
+> between 1-2ms?
+> 
+> Thanks,
+> Thinh
 
-It's certainly possible that it may not fit :/ I feel that it partially
-depends on what we mean by zero-config. Is it "no config required to
-have a working socket" or is it "no config required, but also no
-tuning/policy/etc... supported"?
+Sounds good. Let me reduce the interval gap and resubmit.
 
-Best,
-Bobby
+Thanks
+Wesley Cheng
+
+> 
+>>   		reg = dwc3_readl(dwc->regs, DWC3_DSTS);
+>>   		reg &= DWC3_DSTS_DEVCTRLHLT;
+>>   	} while (--timeout && !(!is_on ^ !reg));
+>> @@ -4520,12 +4521,17 @@ void dwc3_gadget_exit(struct dwc3 *dwc)
+>>   
+>>   int dwc3_gadget_suspend(struct dwc3 *dwc)
+>>   {
+>> +	unsigned long flags;
+>> +
+>>   	if (!dwc->gadget_driver)
+>>   		return 0;
+>>   
+>>   	dwc3_gadget_run_stop(dwc, false, false);
+>> +
+>> +	spin_lock_irqsave(&dwc->lock, flags);
+>>   	dwc3_disconnect_gadget(dwc);
+>>   	__dwc3_gadget_stop(dwc);
+>> +	spin_unlock_irqrestore(&dwc->lock, flags);
+>>   
+>>   	return 0;
+>>   }
+> 
