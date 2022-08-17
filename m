@@ -2,223 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75FEC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6165C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 13:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239730AbiHQNLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 09:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
+        id S239586AbiHQNMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 09:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239586AbiHQNLY (ORCPT
+        with ESMTP id S239771AbiHQNMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 09:11:24 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521FCD12E
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660741881; x=1692277881;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xZVZDEskh8xmo6si1vLuNH8TuAVa7WGpjzcJCw2HTI0=;
-  b=alT3vu8mkEHGPFFfu48KgtxCNCTqRuag1Pr7zQ/apbAufKxzzOEulGXv
-   DVXdAnnzDfNjFYPUBujm4Nlugi2WJjtJql8onh5l5OvfH7duv/XpY6iMx
-   53WoDJFEts1CwquEdX/yYcAGhPijJb/scBStLGrGq6nP45+SUfUqULVpF
-   E6iF1pG1zWMpYfeaycOJk6nOXbBwzcP9X2Z+htbNURlgj1kxJVs5iuTdQ
-   TZKhNeRePoWw+at4JDNVIpAzQ6nYRDjm5NHVUnd/2PG7EK8ti9iL0T+ic
-   OCOgxet96V0VUDmTUuf6GLFZDxQ2NaOyn5z5T4jY0L5K62qpCuQYWv/D4
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="272254970"
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="272254970"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 06:11:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
-   d="scan'208";a="636371738"
-Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 17 Aug 2022 06:11:19 -0700
-Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOIpK-0000wI-2Z;
-        Wed, 17 Aug 2022 13:11:18 +0000
-Date:   Wed, 17 Aug 2022 21:11:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [alobakin:kallsyms 2/2] scripts/mod/modpost.h:87:18: error: lvalue
- required as unary '&' operand
-Message-ID: <202208172113.PQCj5XHg-lkp@intel.com>
+        Wed, 17 Aug 2022 09:12:15 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B5C60F6
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 06:12:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=pDCos68B5fYwu0J1jHvoBMN3b2H9PzkwSjTTD6oc4Dw=; b=oVNxVfBIagqBVB/GeyTV+RhXYd
+        S8ASJh3xQZDwqE6gAnoLqjXC9bWw93kEfTEAefgEu81WQzDL2nznsNJ4qNahSV8kmR2RxpfQc+07l
+        1yRaxTwA5ko/aV0cNqLd/cz9NIrf9PAq0q7s7/1k3Yy+qS4zzo+9/rstZMPWMeehQ1U8tWBo/AqIS
+        DcjahO0y3Yl75jQVKAn1QEtCUqEn4zW9UDhNrfck3LAXPee8SdrmCoWlAJdM9mbdH2MZpUMyYz7/V
+        y1qCPpU0USakhogU+uY999Au6Tz/Y5yIF3GollJ6UicsaWsXbW1b+uwOptqGmYZmVDQ8up7XUhys6
+        wwHeH59A==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=62332)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oOIq4-0007wI-6A; Wed, 17 Aug 2022 15:12:04 +0200
+Message-ID: <30f3005d-0acc-e5af-10ca-cf46f18b3478@tronnes.org>
+Date:   Wed, 17 Aug 2022 15:11:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <9fdecae2-80ad-6212-0522-7dccf9fb57be@tronnes.org>
+ <20220816082612.grebxql5ynnfnvfd@houat>
+ <ea6ebdda-f779-78af-1ffd-bd86d715077f@tronnes.org>
+ <20220816094922.oqhrhefv327zo2ou@houat>
+ <be9b6b71-fa2a-3290-2bce-901342e01981@tronnes.org>
+ <20220817114605.jpb3tlnoseyvf65d@houat>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220817114605.jpb3tlnoseyvf65d@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/alobakin/linux kallsyms
-head:   ce39255907a23839bfa3cf1e68a5ed8cfeabc407
-commit: ce39255907a23839bfa3cf1e68a5ed8cfeabc407 [2/2] kallsyms: add option to include relative filepaths into kallsyms
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220817/202208172113.PQCj5XHg-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/alobakin/linux/commit/ce39255907a23839bfa3cf1e68a5ed8cfeabc407
-        git remote add alobakin https://github.com/alobakin/linux
-        git fetch --no-tags alobakin kallsyms
-        git checkout ce39255907a23839bfa3cf1e68a5ed8cfeabc407
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k prepare
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts [-Wconflicts-sr]
-   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts [-Wconflicts-rr]
-   scripts/genksyms/parse.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
-   In file included from scripts/mod/sympath.c:15:
-   scripts/mod/sympath.c: In function 'move_code':
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:100:31: note: in expansion of macro 't'
-     100 |                 eh->e_shoff = t(h(eh->e_shoff) + off);
-         |                               ^
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:103:31: note: in expansion of macro 't'
-     103 |                 eh->e_phoff = t(h(eh->e_phoff) + off);
-         |                               ^
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:115:43: note: in expansion of macro 't'
-     115 |                         iter->sh_offset = t(h(iter->sh_offset) + off);
-         |                                           ^
-   scripts/mod/sympath.c: In function 'fix_strtab':
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:132:29: note: in expansion of macro 't'
-     132 |         st->strh->sh_size = t(h(st->strh->sh_size) + len);
-         |                             ^
-   scripts/mod/sympath.c: In function 'add_file_sym':
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:169:29: note: in expansion of macro 't'
-     169 |         st->symh->sh_size = t(h(st->symh->sh_size) + h(st->symh->sh_entsize));
-         |                             ^
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:170:29: note: in expansion of macro 't'
-     170 |         st->symh->sh_info = t(h(st->symh->sh_info) + 1);
-         |                             ^
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:172:24: note: in expansion of macro 't'
-     172 |         pos->st_info = t((STB_LOCAL << 4) | STT_FILE);
-         |                        ^
->> scripts/mod/modpost.h:87:18: error: lvalue required as unary '&' operand
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                  ^
-   scripts/mod/sympath.c:19:25: note: in expansion of macro 'TO_NATIVE'
-      19 | #define t(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:173:25: note: in expansion of macro 't'
-     173 |         pos->st_shndx = t(SHN_ABS);
-         |                         ^
->> scripts/mod/modpost.h:87:24: warning: passing argument 2 of '__endian' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                        ^~~~~~
-   scripts/mod/sympath.c:18:25: note: in expansion of macro 'TO_NATIVE'
-      18 | #define h(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:177:38: note: in expansion of macro 'h'
-     177 |              *end = (void *)st->sh + h(eh->e_shnum) * h(eh->e_shentsize);
-         |                                      ^
-   scripts/mod/modpost.h:77:52: note: expected 'void *' but argument is of type 'const Elf32_Half *' {aka 'const short unsigned int *'}
-      77 | static inline void __endian(const void *src, void *dest, unsigned int size)
-         |                                              ~~~~~~^~~~
->> scripts/mod/modpost.h:87:24: warning: passing argument 2 of '__endian' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                        ^~~~~~
-   scripts/mod/sympath.c:18:25: note: in expansion of macro 'TO_NATIVE'
-      18 | #define h(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:177:55: note: in expansion of macro 'h'
-     177 |              *end = (void *)st->sh + h(eh->e_shnum) * h(eh->e_shentsize);
-         |                                                       ^
-   scripts/mod/modpost.h:77:52: note: expected 'void *' but argument is of type 'const Elf32_Half *' {aka 'const short unsigned int *'}
-      77 | static inline void __endian(const void *src, void *dest, unsigned int size)
-         |                                              ~~~~~~^~~~
->> scripts/mod/modpost.h:87:24: warning: passing argument 2 of '__endian' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-      87 |         __endian(&(x), &(__x), sizeof(__x));                    \
-         |                        ^~~~~~
-   scripts/mod/sympath.c:18:25: note: in expansion of macro 'TO_NATIVE'
-      18 | #define h(x)            TO_NATIVE(x)
-         |                         ^~~~~~~~~
-   scripts/mod/sympath.c:178:48: note: in expansion of macro 'h'
-     178 |              iter < end; iter = (void *)iter + h(eh->e_shentsize)) {
-         |                                                ^
-   scripts/mod/modpost.h:77:52: note: expected 'void *' but argument is of type 'const Elf32_Half *' {aka 'const short unsigned int *'}
-      77 | static inline void __endian(const void *src, void *dest, unsigned int size)
-         |                                              ~~~~~~^~~~
->> scripts/mod/sympath.c:185:45: warning: right shift count >= width of type [-Wshift-count-overflow]
-     185 |                         if (h(rela->r_info) >> 32 >=
-         |                                             ^~
-   make[2]: *** [scripts/Makefile.host:95: scripts/mod/sympath] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1206: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:222: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
 
 
-vim +87 scripts/mod/modpost.h
+Den 17.08.2022 13.46, skrev Maxime Ripard:
+> On Tue, Aug 16, 2022 at 09:35:24PM +0200, Noralf Trønnes wrote:
+>> Den 16.08.2022 11.49, skrev Maxime Ripard:
+>>> On Tue, Aug 16, 2022 at 11:42:20AM +0200, Noralf Trønnes wrote:
+>>>> Den 16.08.2022 10.26, skrev Maxime Ripard:
+>>>>> Hi,
+>>>>>
+>>>>> On Mon, Aug 08, 2022 at 02:44:56PM +0200, Noralf Trønnes wrote:
+>>>>>> Den 29.07.2022 18.34, skrev Maxime Ripard:
+>>>>>>> The TV mode property has been around for a while now to select and get the
+>>>>>>> current TV mode output on an analog TV connector.
+>>>>>>>
+>>>>>>> Despite that property name being generic, its content isn't and has been
+>>>>>>> driver-specific which makes it hard to build any generic behaviour on top
+>>>>>>> of it, both in kernel and user-space.
+>>>>>>>
+>>>>>>> Let's create a new bitmask tv norm property, that can contain any of the
+>>>>>>> analog TV standards currently supported by kernel drivers. Each driver can
+>>>>>>> then pass in a bitmask of the modes it supports.
+>>>>>>>
+>>>>>>> We'll then be able to phase out the older tv mode property.
+>>>>>>>
+>>>>>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+>>>>>>>
+>>>>>>
+>>>>>> Please also update Documentation/gpu/kms-properties.csv
+>>>>>>
+>>>>>> Requirements for adding a new property is found in
+>>>>>> Documentation/gpu/drm-kms.rst
+>>>>>
+>>>>> I knew this was going to be raised at some point, so I'm glad it's that
+>>>>> early :)
+>>>>>
+>>>>> I really don't know what to do there. If we stick by our usual rules,
+>>>>> then we can't have any of that work merged.
+>>>>>
+>>>>> However, I think the status quo is not really satisfactory either.
+>>>>> Indeed, we have a property, that doesn't follow those requirements
+>>>>> either, with a driver-specific content, and that stands in the way of
+>>>>> fixes and further improvements at both the core framework and driver
+>>>>> levels.
+>>>>>
+>>>>> So having that new property still seems like a net improvement at the
+>>>>> driver, framework and uAPI levels, even if it's not entirely following
+>>>>> the requirements we have in place.
+>>>>>
+>>>>> Even more so since, realistically, those kind of interfaces will never
+>>>>> get any new development on the user-space side of things, it's
+>>>>> considered by everyone as legacy.
+>>>>>
+>>>>> This also is something we need to support at some point if we want to
+>>>>> completely deprecate the fbdev drivers and provide decent alternatives
+>>>>> in KMS.
+>>>>>
+>>>>> So yeah, strictly speaking, we would not qualify for our requirements
+>>>>> there. I still think we have a strong case for an exception though.
+>>>>
+>>>> Which requirements would that be? The only one I can see is the
+>>>> documentation and maybe an IGT test.
+>>>
+>>> This is the one I had in mind
+>>> https://dri.freedesktop.org/docs/drm/gpu/drm-uapi.html#open-source-userspace-requirements
+>>>
+>>
+>> Oh right, I had forgotten about that one.
+>>
+>> One benefit of having a userspace implementation is that it increases
+>> the chance of widespread adoption having a working implementation to
+>> look at. I don't think the reason tv.mode is not used anywhere (that I
+>> know of) is because the driver picks the enum values resulting in no
+>> standard names.
+> 
+> It probably doesn't help, but it's not what I was implying.
+> 
+>> It's a niche thing and way down on the todo list. nouveau and ch7006
+>> has a tv_norm module parameter which certainly doesn't help in moving
+>> people/projects over to the DRM property (downstream rpi also has it
+>> now).
+> 
+> Yeah, the RPi version is part of the reason I started working on this.
+> We should also consider the named modes used by vc4 and sun4i. All these
+> ad-hoc solutions are limited and (I think) come from the fact that we
+> don't have a solution easy enough to use for drivers (and to discover).
+> 
+> nouveau, ch7006, i915 and vc4 are using the tv.mode property for
+> example, but sun4i and meson don't.
+> 
+> sun4i relies on named modes to reimplement TV modes, but meson doesn't
+> at all.
+> 
+> And then nouveau has that extra command line parameter to set it up at
+> boot time.
+> 
+> It doesn't really make much sense to me, when all drivers have very
+> similar needs, that none of them behave in the same way. And I think the
+> non-standard property is partly to blame for this, since without some
+> generic content we can't share code.
+> 
+> This is what this series is about: every driver having similar
+> capabilities and as trivially as possible.
+> 
+>> mpv[1] is a commandline media player that after a quick look might be a
+>> candidate for implementing the property without too much effort.
+> 
+> Kodi might be another one. I can try to hack something around, but I'm
+> really skeptical about whether a PR would be merged or not.
+> 
 
-^1da177e4c3f41 Linus Torvalds 2005-04-16  83  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  84  #define TO_NATIVE(x)						\
-^1da177e4c3f41 Linus Torvalds 2005-04-16  85  ({								\
-^1da177e4c3f41 Linus Torvalds 2005-04-16  86  	typeof(x) __x;						\
-^1da177e4c3f41 Linus Torvalds 2005-04-16 @87  	__endian(&(x), &(__x), sizeof(__x));			\
-^1da177e4c3f41 Linus Torvalds 2005-04-16  88  	__x;							\
-^1da177e4c3f41 Linus Torvalds 2005-04-16  89  })
-^1da177e4c3f41 Linus Torvalds 2005-04-16  90  
+You can ask first before wasting time ofc.
 
-:::::: The code at line 87 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+But this baffles me, if you don't think projects like Kodi which is TV
+centered want this, what kind of projects do you think want to use this
+property?
 
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+>> How do you test the property? I've used modetest but I can only change
+>> to a tv.mode that matches the current display mode. I can't switch from
+>> ntsc to pal for instance.
+> 
+> Yep, if you want to change from PAL to NTSC, it will require a new mode.
+> 
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+So userspace has to check tv.mode first and then create a display mode
+the driver will accept if switching to a different display mode is
+necessary? In other words, userspace can't discover from the kernel
+which display modes a certain tv.mode/norm provides before it is
+selected? If so, maybe libdrm should have some function(s) to deal with
+switching between modes that require a different display mode since
+knowledge about which display modes a tv.mode supports is needed before
+hand.
+
+Noralf.
