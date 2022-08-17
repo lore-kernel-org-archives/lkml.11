@@ -2,154 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEB8C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0177C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 12:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239151AbiHQMtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 08:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
+        id S239217AbiHQMtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 08:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236537AbiHQMs4 (ORCPT
+        with ESMTP id S236234AbiHQMtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 08:48:56 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794264DF07;
-        Wed, 17 Aug 2022 05:48:55 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso1763131pjk.0;
-        Wed, 17 Aug 2022 05:48:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=VzLMj8LvRGxRre2xCtIqyaPFtJOI/wcJ1ym0fs0/Ve4=;
-        b=Voqf4eE44lswVvEaaAJ8ViBVQhTTiMbP+lyup13sJrmnuuWN6ozA4Q9pOXxF05k9y8
-         LzgQG+Hi3d/33q7GPmshZIh8cmFDL/fYdLce/CPjRDNOWyy3a9VnQZ8Q3tyP9+GSjlAU
-         tA4oYMxLRq+wL2cJY9B7sOontW5CIsUJxL4tZZCbV4Zr8iVoKjmKNSN0XzliTD7XUIvI
-         Mlgimrd1mGhVUN4Y+ONYI8B2Y0ea2KtyOpAN1cf+FmlvDWVCkp5V2ddcwnhCt1Ui2N86
-         wKNttnqdkWL8rFxNhE3/9Noq0q4hCJE/nxa7Fx5STYnzFj+dn8lS4M1rTYK+1+IRD15u
-         PsEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=VzLMj8LvRGxRre2xCtIqyaPFtJOI/wcJ1ym0fs0/Ve4=;
-        b=3Umiat0rGwXaqqvHpEiDN+3hDDd4eeVb400+SUozvCOCDSzeFzhoxpGVI4c10GpjsK
-         XBTVhDWU+4d1HTzdTf/waqShCdStUgg81uN+pa6RuPimP2kGSpfk8IxqloO1Z3mQTxT+
-         EfvRHCARcgibLcLMe1KWn8w+F/cqKWf+qHWVieexbz5FWOzTkycfwjuocNxWM5zTHP9H
-         4WxqLiC3edSz5TXW1t1kLOUz0192Xyn+SIkljLtT5OqGEccW0jVkgPnJyvr0n8uioFP3
-         QpSKUiWQs2L8iBeQ5cb2erYH/bdQU9AFUSNVtSOMUp9Gc3ZIehJWtNVivwexuftJDpKD
-         1m0A==
-X-Gm-Message-State: ACgBeo3Ln8M+iHf5tyQbWvvCt1B3b9836Itafu/rUA3e467nEoijbr16
-        xGFyFYRTANgQ5cJB51aPhVA2OYE8UdxhiQ==
-X-Google-Smtp-Source: AA6agR6ddNFswp3UDS5Ffs2XLojY9UoozV9sFUcAzV30XqRDZISCewVwqK8vesaTNL5+cNyHHazi4g==
-X-Received: by 2002:a17:902:d509:b0:16f:1e1:2067 with SMTP id b9-20020a170902d50900b0016f01e12067mr25932253plg.140.1660740534751;
-        Wed, 17 Aug 2022 05:48:54 -0700 (PDT)
-Received: from debian.. (subs32-116-206-28-37.three.co.id. [116.206.28.37])
-        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b0016a4db13429sm1386962plb.192.2022.08.17.05.48.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 05:48:54 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Xiaoyao Li <xiaoyao.li@intel.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH v2 2/3] Documentation: ABI: tdx: grammar improv
-Date:   Wed, 17 Aug 2022 19:48:36 +0700
-Message-Id: <20220817124837.422695-3-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220817124837.422695-1-bagasdotme@gmail.com>
-References: <20220817124837.422695-1-bagasdotme@gmail.com>
+        Wed, 17 Aug 2022 08:49:02 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD77E6170A
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 05:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660740536; x=1692276536;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kYOYATKAKktz41sDaZZq1GXiosh7ennmO+42v74MCX0=;
+  b=mSnfgGusfF4aiuSvXeEM5drfB5nslroX7X4xMgPYqH3H84dEA5iYzTkJ
+   VgKqgn1KAj628HCvq7Jl/PXulHgX8uaJoIp/fscjSfP4phMln9MRdFAYO
+   h96ifpcEJ0akdqRDT57wxTqqCT88aLmZKKNvC0zeBGYIKMDBmTgeLH82t
+   cmtOvBZs1Qs2Zpp+w9K+HyjmauF+FmxRo9fOOLCDQ76uKIXqDVzKNz2Sd
+   SmdjRfUfj35zlErXSWDAChS5nnaqvyj962tKbuZwIkVjn12b9Nw/DyVQN
+   xSQv5fYOS7WnA1kHX7pisIjS2Q/zGFa838SAhf7wv/fnEpn5rusVEynpZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="292478318"
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="292478318"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 05:48:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,243,1654585200"; 
+   d="scan'208";a="583755219"
+Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
+  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 05:48:54 -0700
+From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+To:     Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Cc:     linux-kernel@vger.kernel.org,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+Subject: [RESEND][PATCH] ALSA: info: Fix llseek return value when using callback
+Date:   Wed, 17 Aug 2022 14:49:24 +0200
+Message-Id: <20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4632; i=bagasdotme@gmail.com; h=from:subject; bh=zGFOYDCzO+g93HctfClyZBRrkh/4uGk0QNMepAYSg/4=; b=owGbwMvMwCH2bWenZ2ig32LG02pJDEl/Hi89LaqS3bBXSeLm7V/3BFoKdOpf9Eu/8jMJ3+RQKM7d xt7QUcrCIMbBICumyDIpka/p9C4jkQvtax1h5rAygQxh4OIUgIlsW8vIsGd1/YfEq6rOJeVFz3bt5e 4KPOwx++/GzO74TzEf/T+wz2NkmJqkyVY8e82qOVzMp494XEswXzGvY0Zk8SS5T8tTt/Qs4gIA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Improve the grammar used in TDX ABI documentation.
+When using callback there was a flow of
 
-Fixes: 12cafff9983dad ("x86/virt/tdx: Export TDX keyid number and status of TDX module via sysfs")
-Fixes: 5318e72c20e45a ("x86/virt/tdx: Export information about the TDX
-module via sysfs")
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+	ret = -EINVAL
+	if (callback) {
+		offset = callback();
+		goto out;
+	}
+	...
+	offset = some other value in case of no callback;
+	ret = offset;
+out:
+	return ret;
+
+which causes the snd_info_entry_llseek() to return -EINVAL when there is
+callback handler. Fix this by setting "ret" directly to callback return
+value before jumping to "out".
+
+73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 ---
- Documentation/ABI/testing/sysfs-firmware-tdx | 32 +++++++++-----------
- 1 file changed, 14 insertions(+), 18 deletions(-)
+ sound/core/info.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-firmware-tdx b/Documentation/ABI/testing/sysfs-firmware-tdx
-index bd743d758d7d49..0f2feff311f047 100644
---- a/Documentation/ABI/testing/sysfs-firmware-tdx
-+++ b/Documentation/ABI/testing/sysfs-firmware-tdx
-@@ -8,11 +8,11 @@ Description:
-                 malicious hosts and some physical attacks.  This directory
-                 represents the entry point directory for the TDX.
- 
--                the TDX requires the TDX firmware to load into an isolated
--                memory region.  It requires a two-step loading process.  It uses
--                the first phase firmware loader (a.k.a NP-SEAMLDR) that loads
--                the next loader and the second phase firmware loader(a.k.a
--                P-SEAMLDR) that loads the TDX firmware(a.k.a the "TDX module").
-+                This feature requires the TDX firmware to load into an isolated
-+                memory region.  It uses two-step loading process; the first
-+                phase is NP-SEAMLDR loader that loads the next one and the
-+                second phase is P-SEAMLDR loader that loads the TDX firmware
-+                (a.k.a the "TDX module").
- 
-                 =============== ================================================
-                 keyid_num       the number of SEAM keyid as an hexadecimal
-@@ -25,16 +25,12 @@ KernelVersion:  5.17
- Contact:        Isaku Yamahata <isaku.yamahata@intel.com>, kvm@vger.kernel.org
- Users:          libvirt
- Description:
--                The TDX requires a firmware as known as the TDX module.  It comes
--                with its attributes, vendor_id, build_data, build_num,
--                minor_version, major_version, etc.
--
--                Provides the information about the TDX module loaded on the
--                platform.  It contains the following read-only files.  The
--                information corresponds to the data structure, TDSYSINFO_STRUCT.
--                The admins or VMM management software like libvirt can refer to
--                that information, determine if TDX is supported, and identify
--                the loaded the TDX module.
-+                The TDX feature requires a firmware that is known as the TDX
-+                module. The module exposes its information in the following
-+                read-only files. The information corresponds to the data
-+                structure named TDSYSINFO_STRUCT. Administrators or VMM
-+                managers like libvirt can refer to it to determine if TDX is
-+                supported and identify the loaded module.
- 
-                 ================== ============================================
-                 status             string of the TDX module status.
-@@ -48,12 +44,12 @@ Description:
-                                    * "shutdown": the TDX module is shutdown due
-                                      to error during initialization.
- 
--                attributes         32bit flags of the TDX module attributes as
-+                attributes         32-bit flags of the TDX module attributes as
-                                    a hexadecimal number with the "0x" prefix.
- 
-                                    * Bits 31 - a production module(0) or
-                                      a debug module(1).
--                                   * Bits 30:0 Reserved - set to 0.
-+                                   * Bits 0-30 - Reserved - set to 0.
- 
-                 vendor_id          vendor ID as a hexadecimal number with the
-                                    "0x" prefix.
-@@ -62,7 +58,7 @@ Description:
-                                    the "0x" prefix.
-                 minor_version      minor version as a hexadecimal number with
-                                    the "0x" prefix.
--                major_version      major versionas a hexadecimal number with
-+                major_version      major version as a hexadecimal number with
-                                    the "0x" prefix.
-                 ================== ============================================
+diff --git a/sound/core/info.c b/sound/core/info.c
+index b8058b341178..0b2f04dcb589 100644
+--- a/sound/core/info.c
++++ b/sound/core/info.c
+@@ -111,9 +111,9 @@ static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)
+ 	entry = data->entry;
+ 	mutex_lock(&entry->access);
+ 	if (entry->c.ops->llseek) {
+-		offset = entry->c.ops->llseek(entry,
+-					      data->file_private_data,
+-					      file, offset, orig);
++		ret = entry->c.ops->llseek(entry,
++					   data->file_private_data,
++					   file, offset, orig);
+ 		goto out;
+ 	}
  
 -- 
-An old man doll... just what I always wanted! - Clara
+2.25.1
 
