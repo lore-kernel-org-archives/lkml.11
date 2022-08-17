@@ -2,147 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324ADC32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3AEC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 19:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241541AbiHQTcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 15:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S241567AbiHQTc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 15:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240979AbiHQTb7 (ORCPT
+        with ESMTP id S241511AbiHQTcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 15:31:59 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A64A4B14;
-        Wed, 17 Aug 2022 12:31:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660764686; x=1692300686;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=a1cVPRjpURJObGnztoWTyNOtI+9zky6nPdl5yAwgEHA=;
-  b=aqRjajWVspJ0cmEYYwSvMoiuMEPEcEtcWVRdm32WR9NwECDfSYz2BdMm
-   JmYIZE2IFY2DxpmFcaS6jX5JkIyAph23lH7euCIP4OBuOUWJCiVKyUEA4
-   depjeClNMoRMa7pE7haJOtu6LzHw4PrVa0cC4bwRuk94anDGSHFs/TI2W
-   55QmqWBr627iZMHRR7zCeOs0rjqmC1fsbrTeztNRFfGbgXVlgLtgIMkuI
-   W2OS1gZUJCfLNTAhthw507ZG3Wi+jN73vkwf446UVQALibrw8yActXxE6
-   lOuRNvB6IlXozD0lMuHZCB/KxStKnMsC8d4NhwAXfIsiEnp5r8PL0DCIX
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="176673769"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:31:25 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 17 Aug 2022 12:30:57 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:55 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 5/8] net: lan966x: Extend lan966x_foreign_bridging_check
-Date:   Wed, 17 Aug 2022 21:34:46 +0200
-Message-ID: <20220817193449.1673002-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
-References: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+        Wed, 17 Aug 2022 15:32:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21800A4B3D
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 12:31:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C3CEB81F0B
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 19:31:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF80C433D6;
+        Wed, 17 Aug 2022 19:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660764685;
+        bh=folaEiqwvPtEOi1ekaQcirtyCHSCVGrI+j/lwWcW9o4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cBDJ7OdwSban6nhrj+lYajXImQUp/x28+Vh//RpP1ThS8CLRlGJYbseB5U+LQh98P
+         8jLEihOuV+itRpV4zyUuXusoF3qJqRmJZ6b9XqORWlrHLUiGvcpw7ppWVoWm0boDHM
+         6mDDmOIM5GRXCIFzXbMJgNkRShMbmhjjUNl6h99ezfCqFZFQaC51tOUQ5U4jKmmNS4
+         rpyZZrV3v3al3Dy3mM1sgjmQsptXMyOip2f/goUqzNU8KbNhlzQMPgQdFcPWVkoEpd
+         63b3DkTFgFfOHbdj49L2jUq+Da+fvF5R0SNplPZuwhVRhN9q9QEHoW6ccKHJJafi8o
+         G14hfwD8UywYg==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linux Phy <linux-phy@lists.infradead.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        pali@kernel.org, josef.schlehofer@nic.cz,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH linux-phy 0/4] mvebu a3720 comphy: Fix serdes transmit amplitude
+Date:   Wed, 17 Aug 2022 21:31:15 +0200
+Message-Id: <20220817193119.4463-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend lan966x_foreign_bridging_check to check also if the upper
-interface is a lag device. Don't allow a lan966x port to be part of a
-lag if it has foreign interfaces.
+This series adds support for setting serdes transmit amplitude for
+ethernet modes (sgmii, 1000base-x, 2500base-x) in the Marvell A3720
+comphy driver.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../microchip/lan966x/lan966x_switchdev.c     | 32 ++++++++++++++-----
- 1 file changed, 24 insertions(+), 8 deletions(-)
+The amplitude is set according to setting in device tree.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index d9b3ca5f6214..c4951eeb6636 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -326,23 +326,25 @@ static int lan966x_port_prechangeupper(struct net_device *dev,
- 	return NOTIFY_DONE;
- }
- 
--static int lan966x_foreign_bridging_check(struct net_device *bridge,
-+static int lan966x_foreign_bridging_check(struct net_device *upper,
-+					  bool *has_foreign,
-+					  bool *seen_lan966x,
- 					  struct netlink_ext_ack *extack)
- {
- 	struct lan966x *lan966x = NULL;
--	bool has_foreign = false;
- 	struct net_device *dev;
- 	struct list_head *iter;
- 
--	if (!netif_is_bridge_master(bridge))
-+	if (!netif_is_bridge_master(upper) &&
-+	    !netif_is_lag_master(upper))
- 		return 0;
- 
--	netdev_for_each_lower_dev(bridge, dev, iter) {
-+	netdev_for_each_lower_dev(upper, dev, iter) {
- 		if (lan966x_netdevice_check(dev)) {
- 			struct lan966x_port *port = netdev_priv(dev);
- 
- 			if (lan966x) {
--				/* Bridge already has at least one port of a
-+				/* Upper already has at least one port of a
- 				 * lan966x switch inside it, check that it's
- 				 * the same instance of the driver.
- 				 */
-@@ -353,15 +355,24 @@ static int lan966x_foreign_bridging_check(struct net_device *bridge,
- 				}
- 			} else {
- 				/* This is the first lan966x port inside this
--				 * bridge
-+				 * upper device
- 				 */
- 				lan966x = port->lan966x;
-+				*seen_lan966x = true;
- 			}
-+		} else if (netif_is_lag_master(dev)) {
-+			/* Allow to have bond interfaces that have only lan966x
-+			 * devices
-+			 */
-+			if (lan966x_foreign_bridging_check(dev, has_foreign,
-+							   seen_lan966x,
-+							   extack))
-+				return -EINVAL;
- 		} else {
--			has_foreign = true;
-+			*has_foreign = true;
- 		}
- 
--		if (lan966x && has_foreign) {
-+		if (*seen_lan966x && *has_foreign) {
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "Bridging lan966x ports with foreign interfaces disallowed");
- 			return -EINVAL;
-@@ -374,7 +385,12 @@ static int lan966x_foreign_bridging_check(struct net_device *bridge,
- static int lan966x_bridge_check(struct net_device *dev,
- 				struct netdev_notifier_changeupper_info *info)
- {
-+	bool has_foreign = false;
-+	bool seen_lan966x = false;
-+
- 	return lan966x_foreign_bridging_check(info->upper_dev,
-+					      &has_foreign,
-+					      &seen_lan966x,
- 					      info->info.extack);
- }
- 
+Finally the Turris MOX device tree is changed to set the 2500base-x
+mode tx amplitude to 1025 mV.
+
+This is needed to fix a weird issue wherein when A3720 sends a packet
+to Topaz, and the packet contains a long sequence of 'J's or '\xb5'
+bytes (these translate to '010101010101'... in 8b/10b encoding), the
+packet may be lost on Topaz due to FCS error. The probability of
+loss grows with number of 'J's:
+
+  loss
+                         ______
+  100%                .-^
+                     /
+                    /
+   50%             /
+                  /
+                 /
+    0%  ______.-^
+            90    114    125     number of consecutive 'J's
+
+Marek Behún (4):
+  string.h: Add str_has_proper_prefix()
+  device property: Add {fwnode/device}_get_tx_p2p_amplitude()
+  phy: marvell: phy-mvebu-a3700-comphy: Support changing tx amplitude
+    for ethernet
+  arm64: dts: armada-3720-turris-mox: Change comphy tx amplitude for
+    2500base-x mode
+
+ .../dts/marvell/armada-3720-turris-mox.dts    |  10 ++
+ drivers/base/property.c                       | 130 ++++++++++++++++++
+ drivers/phy/marvell/phy-mvebu-a3700-comphy.c  | 109 ++++++++++++++-
+ include/linux/property.h                      |   5 +
+ include/linux/string.h                        |  18 +++
+ 5 files changed, 271 insertions(+), 1 deletion(-)
+
 -- 
-2.33.0
+2.35.1
 
