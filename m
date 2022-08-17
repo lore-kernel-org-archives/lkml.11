@@ -2,114 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA58BC00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5B8C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 18 Aug 2022 04:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243177AbiHRERj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 18 Aug 2022 00:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        id S243194AbiHRERq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 18 Aug 2022 00:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242983AbiHRERa (ORCPT
+        with ESMTP id S243072AbiHRERd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 18 Aug 2022 00:17:30 -0400
+        Thu, 18 Aug 2022 00:17:33 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8ADB95AE5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AA798A53;
         Wed, 17 Aug 2022 21:17:29 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I28I8L006244;
-        Thu, 18 Aug 2022 04:17:23 GMT
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27I3KMjL029516;
+        Thu, 18 Aug 2022 04:17:22 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=7/Dlb7opb1zHeDvNOlDvqLTNKaGONEslYGnrJDLSevg=;
- b=k7Nh+coZDc3xx0pigDWj1uY9XpltHEFdA2taT/7dVzsECYLHPwzqWV8zXkJ27zGMx0Du
- IoHDQVG1+3Ju2nrGN0CZAnknWq3ZBb9OxJUWDfpG4BYSRCMjt3NBfpyOKEO1yB0hvOap
- qxM4X/ZvVx20WkjkS4wRpIuSFrUuI7ee4R63/s7vg0RQ0XlB3vkTJydULGWPuRJf+g63
- EuOEmIJAn/AMKKd2YwTWDhrx2a5TRXXN5i9s1MF9MU+gdiPVXTMIsKXJFf8iHUhuBSR3
- CklsfwDsYIjFjkHeQ7xuPArurqMBqUbB+vyZnXccvjwgEufAv3eZzV8Zq04qV/Drvmhw CA== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j0w7hm3rf-1
+ bh=3h1aiXrphk5T2rqN3UBCgmzr+FGo6Il6A5/GglCrd1c=;
+ b=fHEuCiWEGlgh15fqeTQp3Rw/MvaHK1fTO1t4uj5kQRSewaj5HCdxiGZ8OUWsQBipx8wF
+ oPlMkSeaUr+1P4URn/yGMTYtmMcX5ShneHOyX9UteOFnSe3ubwap5YPoDHVcIH2cVMML
+ VcE/zw3LCxw6/dhMc52/vKBzgHaObL7QwtBK9E6Ks5CHLKx5oxiRzogVeFy5e666pgob
+ vHTwjdstI7LcVZh/QultH8QuAtPXXXA8Y/3tnTrjjh0CvS1akfH6YMMIrJFW6qbzr3Er
+ 5YK41ER7+KUCwt5A8gZvMqrOWBEMTqU0XL3Wjo0qDw2ktkOsLeLh+QQc2CdegJhBmlNE pQ== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j1d8009f3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:22 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJlA018189
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27I4HJ0r012608
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 18 Aug 2022 04:17:21 GMT
 Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 17 Aug 2022 08:15:06 -0700
+ 15.2.986.22; Wed, 17 Aug 2022 07:58:41 -0700
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
 To:     freedreno <freedreno@lists.freedesktop.org>,
         <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
         Rob Clark <robdclark@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
-CC:     Matthias Kaehlcke <mka@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Douglas Anderson <dianders@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC:     Douglas Anderson <dianders@chromium.org>,
+        <krzysztof.kozlowski@linaro.org>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
-        Wang Qing <wangqing@vivo.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 7/7] drm/msm/a6xx: Handle GMU prepare-slumber hfi failure
-Date:   Wed, 17 Aug 2022 20:44:20 +0530
-Message-ID: <20220817204224.v4.7.I54815c7c36b80d4725cd054e536365250454452f@changeid>
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 5/5] arm64: dts: qcom: sc7280: Add Reset support for gpu
+Date:   Wed, 17 Aug 2022 20:27:54 +0530
+Message-ID: <20220817202609.v2.5.I6a1fca5d53c886c05ea3e24cd4282d31c9c0cd0b@changeid>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1660749261-7602-1-git-send-email-quic_akhilpo@quicinc.com>
+In-Reply-To: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
+References: <1660748274-39239-1-git-send-email-quic_akhilpo@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: t24avLC5JYHADwChdhlRERvHbP6cvKu6
-X-Proofpoint-GUID: t24avLC5JYHADwChdhlRERvHbP6cvKu6
+X-Proofpoint-GUID: AwGgKFkFnmSILa68FFx3WQfj8w4OP4u0
+X-Proofpoint-ORIG-GUID: AwGgKFkFnmSILa68FFx3WQfj8w4OP4u0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-18_02,2022-08-16_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
- mlxlogscore=862 suspectscore=0 spamscore=0 impostorscore=0 adultscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ mlxlogscore=999 mlxscore=0 adultscore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208180014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When prepare-slumber hfi fails, we should follow a6xx_gmu_force_off()
-sequence.
+Add support for Reset using GPUCC driver for GPU. This helps to ensure
+that GPU state is reset by making sure that CX head switch is collapsed.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
 (no changes since v1)
 
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index db05942..3d00ef9 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -1082,7 +1082,11 @@ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
- 		a6xx_bus_clear_pending_transactions(adreno_gpu);
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index e66fc67..f5257d6 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2243,6 +2243,9 @@
+ 			nvmem-cells = <&gpu_speed_bin>;
+ 			nvmem-cell-names = "speed_bin";
  
- 		/* tell the GMU we want to slumber */
--		a6xx_gmu_notify_slumber(gmu);
-+		ret = a6xx_gmu_notify_slumber(gmu);
-+		if (ret) {
-+			a6xx_gmu_force_off(gmu);
-+			return;
-+		}
++			resets = <&gpucc GPU_CX_COLLAPSE>;
++			reset-names = "cx_collapse";
++
+ 			gpu_opp_table: opp-table {
+ 				compatible = "operating-points-v2";
  
- 		ret = gmu_poll_timeout(gmu,
- 			REG_A6XX_GPU_GMU_AO_GPU_CX_BUSY_STATUS, val,
 -- 
 2.7.4
 
