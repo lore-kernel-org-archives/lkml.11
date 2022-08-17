@@ -2,117 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2D7C38145
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EB3C28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240503AbiHQPBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        id S240540AbiHQPBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240521AbiHQO7R (ORCPT
+        with ESMTP id S240384AbiHQO6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:59:17 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EC99D115
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:11 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id w5so19339268lfq.5
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ylRikkO/bjiVr6cfpMQukwsajH9gmB7MCgQxpA3FZjg=;
-        b=hXZ0c44OpCsGxovQZvqFrg6ZtkwO/t14H0ceAUtHqDHCqa8KJW2DuUN+ymtRMFnCSF
-         DrMmUqVb4J35TvO+V0/pm/EBJADrXBNyYrgiL+v+1BxDvmQOQ3Oybbyt8+WF28ow+98C
-         Uf6sTm62sTlS+YhFzUxmSSy3SDw/YxG44I9kR5drEBkpfmU5cwSF7O44q88OkiXuPtK3
-         03pHrBbajebhA7eGM4O/jHMsCmXTp1tz/dDDyv//NOdKZH/Agn+MgIlKQJ2z/anlIuum
-         8eG8a//VRxrWUM7udWAI51Gpfz0JImj2oMZ+MhjOE1sLNt4PCE615tefqX0RZhxPBJh8
-         DETg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ylRikkO/bjiVr6cfpMQukwsajH9gmB7MCgQxpA3FZjg=;
-        b=wR3AELgW3r1+uCISAaIYW8QvC1SVwHzWhXY818OwlHF/4ibYPVLVZTT4wEe3GMmCDS
-         TgEDTqTgMy1oT+4Tf3DviZyGx+Ao6YvI/T+yHsOOCyC0KpEMI82w5fEiM0pCIScJs/N5
-         Hat+FxIY3oFucmlVj0ZQIzF3hISjTgdWGIjFKnKhuiJKlcHudkaxKI6y1LaFDeZDB7Je
-         FixnB1tD6Tr3a7GEQdIx0PVTZXADaTlydBeRCd+iqmLHdXohVgXOZce/SWEMRK3af/9L
-         yGa2anjCvVto+SqJCezbbUKm2/w2RrDXsHxSr1lQAYf7ek1Kn5oPTFBcxUyMkeJnTPRj
-         Wahw==
-X-Gm-Message-State: ACgBeo0R/cM4EwecI/jjBrBHGXhTysQXlDk+dHZiE/IiRv6/7ngmDw9/
-        oBwHp6Fjsi1giCfcR336/AJx2g==
-X-Google-Smtp-Source: AA6agR4/Eymr0jqqYU2V2c9aS8hPcF8kSYC/oTFZTs6JgCeJlO5CFkyAC4ShXv8ozeVNTbqzWz+zAA==
-X-Received: by 2002:a05:6512:3f92:b0:48c:ffd4:a05c with SMTP id x18-20020a0565123f9200b0048cffd4a05cmr8497777lfa.284.1660748351207;
-        Wed, 17 Aug 2022 07:59:11 -0700 (PDT)
-Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
-        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 07:59:10 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFT PATCH v2 03/17] dt-bindings: hwlock: qcom-hwspinlock: add support for MMIO on older SoCs
-Date:   Wed, 17 Aug 2022 17:58:47 +0300
-Message-Id: <20220817145901.865977-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
-References: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
+        Wed, 17 Aug 2022 10:58:47 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A8D4B4B3;
+        Wed, 17 Aug 2022 07:58:46 -0700 (PDT)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M7B3V5rd2z67PFb;
+        Wed, 17 Aug 2022 22:58:30 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 16:58:44 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 15:58:41 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>,
+        <yangxingui@huawei.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <hare@suse.de>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2 4/6] scsi: hisi_sas: Don't issue ATA softreset in hisi_sas_abort_task()
+Date:   Wed, 17 Aug 2022 22:52:12 +0800
+Message-ID: <1660747934-60059-5-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
+References: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Older Qualcomm SoCs have TCSR mutex registers with 0x80 stride, instead
-of 0x1000.  Add dedicated compatibles for such case.  Unfortunately the
-binding started using a generic "qcom,tcsr-mutex" compatible without
-specifying the SoC part, thus it looks now quite inconsistent.
+It is not necessary to issue an ATA softreset in hisi_sas_abort_task().
+This is because in the libsas EH scheme we will defer to ATA EH which will
+deal with any device reset during recovery.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
+ drivers/scsi/hisi_sas/hisi_sas_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-If anyone ever says "I want a generic compatible because I am sure all
-devices are compatible", that's one more argument they are wrong. :)
----
- .../bindings/hwlock/qcom-hwspinlock.yaml          | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/hwlock/qcom-hwspinlock.yaml b/Documentation/devicetree/bindings/hwlock/qcom-hwspinlock.yaml
-index 1c7149f7d171..de98b961fb38 100644
---- a/Documentation/devicetree/bindings/hwlock/qcom-hwspinlock.yaml
-+++ b/Documentation/devicetree/bindings/hwlock/qcom-hwspinlock.yaml
-@@ -15,9 +15,18 @@ description:
- 
- properties:
-   compatible:
--    enum:
--      - qcom,sfpb-mutex
--      - qcom,tcsr-mutex
-+    oneOf:
-+      - enum:
-+          - qcom,sfpb-mutex
-+          - qcom,tcsr-mutex
-+      - items:
-+          - enum:
-+              - qcom,apq8084-tcsr-mutex
-+              - qcom,ipq6018-tcsr-mutex
-+              - qcom,msm8226-tcsr-mutex
-+              - qcom,msm8974-tcsr-mutex
-+              - qcom,msm8994-tcsr-mutex
-+          - const: qcom,tcsr-mutex
- 
-   reg:
-     maxItems: 1
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
+index 33af5b8dede2..2fe5290ac56c 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_main.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
+@@ -1598,13 +1598,16 @@ static int hisi_sas_abort_task(struct sas_task *task)
+ 	} else if (task->task_proto & SAS_PROTOCOL_SATA ||
+ 		task->task_proto & SAS_PROTOCOL_STP) {
+ 		if (task->dev->dev_type == SAS_SATA_DEV) {
++			struct hisi_sas_slot *slot = task->lldd_task;
++
++			slot->task = NULL;
+ 			rc = hisi_sas_internal_task_abort_dev(sas_dev, false);
+ 			if (rc < 0) {
+ 				dev_err(dev, "abort task: internal abort failed\n");
+ 				goto out;
+ 			}
+ 			hisi_sas_dereg_device(hisi_hba, device);
+-			rc = hisi_sas_softreset_ata_disk(device);
++			rc = TMF_RESP_FUNC_COMPLETE;
+ 		}
+ 	} else if (task->lldd_task && task->task_proto & SAS_PROTOCOL_SMP) {
+ 		/* SMP */
 -- 
-2.34.1
+2.35.3
 
