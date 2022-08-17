@@ -2,179 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92310C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61052C25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 01:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237025AbiHQBS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 21:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
+        id S237548AbiHQBWf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 21:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiHQBSy (ORCPT
+        with ESMTP id S229675AbiHQBWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 21:18:54 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F1F30F6D
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:18:51 -0700 (PDT)
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F1A453F165
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:18:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1660699129;
-        bh=QB/N93Jt8jeRbC+nYshhBQqqf2b7gP/bAzKdLJW4IoY=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=NMYkjZeax++J7fEsyJYct1SlrQZpf6KPSGNea6DqyA128/x+zybH6clt9DX9s6Onp
-         E/P8WyQwxWBgCYWDQtzrBo1ANuhg8xp23bRltFMSkyKz5on8hfTCTnfM+3GUJdujdK
-         wUuVCU23fJO/SpB4gNCFQB/fojohdyEY+9KFuteuy9toUeNRC0So1/QROl9mfIKWeH
-         OcNkiji7ZvpqLmrFW9YtsK/lQfKGlFAHU0xs/Dsqs80kXIiZHO9LMxK01w1G8MMfe2
-         lXunxOCOlDBUluYwbHWP7sLap4FMLEZS8f27L/rFe0QWRaMh9YjAh9wPHPDvuVAuV5
-         qXNVPDUfyFgsg==
-Received: by mail-ot1-f71.google.com with SMTP id h4-20020a056830034400b00638c37d1349so1339520ote.10
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 18:18:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=QB/N93Jt8jeRbC+nYshhBQqqf2b7gP/bAzKdLJW4IoY=;
-        b=U/gbIKBXt3vM06tz+pFEiwmX7s10iFDYjHi6b8/e8K6Kqky7hulysLfr/ynSvNSZGh
-         0dCyBvV1KMITcxipoL23DtPYT3KDWJyNbOoHiYaRl+9SeBqQm808w6NrOjh6fj1jaXCi
-         Dgvm+rpfvL5HDKW2Q84F0mNvrZW2XT1KyQSzYh3cbDIRRMG5eJLFcnagGa21FJPojSu0
-         CQTrUKPwQbt4iWjttYDUeyHpxJcU7T9A+4WjiJn29796B1Pwwoxay7pMllVURRdH+tow
-         BQXxdeAx43soP7kjHd/kyJzk7AnUheTHt5ZgUA2rBEi2uw15a+KwaPS59GZL20uikgwf
-         6mjQ==
-X-Gm-Message-State: ACgBeo0dXaxzuJNS4D049nywqDd5PRx+7W9grk7DjvXz71yxIJLQU89E
-        puQIVkgrycqKw5NXHKdpvy/xZ9vrmlGQs0mLqbr4jxVbv3eEhNOft+6NBrJLBo6Smw18EaLH+Zm
-        iHOnpP0fh92+avCVBMALM68wH5uzFuxzNLttXwosSdZBy/jhTYBVRQpvpWQ==
-X-Received: by 2002:a05:6808:209f:b0:344:8f50:1f29 with SMTP id s31-20020a056808209f00b003448f501f29mr538902oiw.42.1660699128693;
-        Tue, 16 Aug 2022 18:18:48 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4z0ckBseo0DvhMsjK8u68wPgPVvhD5xGInUN9KS3WKNbIl+FGWT86akRupbmaylKkx03qn6le2zNiMt4kSPAI=
-X-Received: by 2002:a05:6808:209f:b0:344:8f50:1f29 with SMTP id
- s31-20020a056808209f00b003448f501f29mr538889oiw.42.1660699128446; Tue, 16 Aug
- 2022 18:18:48 -0700 (PDT)
+        Tue, 16 Aug 2022 21:22:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9768B98D;
+        Tue, 16 Aug 2022 18:22:30 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M6qvN5fCszmVm6;
+        Wed, 17 Aug 2022 09:20:16 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 09:22:28 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 17 Aug 2022 09:22:27 +0800
+Subject: Re: [PATCH v3 2/2] rcu: Simplify the code logic of rcu_init_nohz()
+To:     kernel test robot <lkp@intel.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        "Neeraj Upadhyay" <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <kbuild-all@lists.01.org>
+References: <20220816124839.1911-3-thunder.leizhen@huawei.com>
+ <202208170309.j1yYU9wN-lkp@intel.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <1d0fdfb2-a134-546a-9159-8392d99f25c4@huawei.com>
+Date:   Wed, 17 Aug 2022 09:22:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20220816025217.618181-1-kai.heng.feng@canonical.com> <CACO55tt=Op=0E94kK+1M8cDXNCk5Tkc=FMR8=OQFc5ohehjwaw@mail.gmail.com>
-In-Reply-To: <CACO55tt=Op=0E94kK+1M8cDXNCk5Tkc=FMR8=OQFc5ohehjwaw@mail.gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 17 Aug 2022 09:18:36 +0800
-Message-ID: <CAAd53p49X95MKrTDUq92LuHw3y2i09fUA2HEPzM1EcO8xO97Eg@mail.gmail.com>
-Subject: Re: [PATCH] drm/i915: Switch TGL-H DP-IN to dGFX when it's supported
-To:     Karol Herbst <kherbst@redhat.com>
-Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Zenghui Yu <yuzenghui@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <202208170309.j1yYU9wN-lkp@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 2:50 AM Karol Herbst <kherbst@redhat.com> wrote:
->
-> On Tue, Aug 16, 2022 at 4:53 AM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
-> >
-> > On mobile workstations like HP ZBook Fury G8, iGFX's DP-IN can switch to
-> > dGFX so external monitors are routed to dGFX, and more monitors can be
-> > supported as result.
-> >
-> > To switch the DP-IN to dGFX, the driver needs to invoke _DSM function 20
-> > on intel_dsm_guid2. This method is described in Intel document 632107.
-> >
->
-> Can we please not do things like this just because?
 
-I there's a very good reason to support more external monitors,
-especially when eDP is already 4K so iGPU don't have enough buffer for
-more displays.
 
->
-> It forces the discrete GPU to be on leading to higher thermal pressure
-> and power consumption of the system. Lower battery runtime or higher
-> fan noise is the result. Not everybody wants to use an AC simply just
-> because they attach an external display.
+On 2022/8/17 3:55, kernel test robot wrote:
+> Hi Zhen,
+> 
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on paulmck-rcu/dev]
+> [also build test WARNING on linus/master v6.0-rc1 next-20220816]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Zhen-Lei/rcu-nocb-Delete-local-variable-need_rcu_nocb_mask-in-rcu_init_nohz/20220816-205131
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
+> config: x86_64-randconfig-a004-20220815 (https://download.01.org/0day-ci/archive/20220817/202208170309.j1yYU9wN-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/intel-lab-lkp/linux/commit/a1d5079765918764de3ff6e3e63fa2db7f7c14df
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Zhen-Lei/rcu-nocb-Delete-local-variable-need_rcu_nocb_mask-in-rcu_init_nohz/20220816-205131
+>         git checkout a1d5079765918764de3ff6e3e63fa2db7f7c14df
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from kernel/rcu/tree.c:4801:
+>    kernel/rcu/tree_nocb.h: In function 'rcu_init_nohz':
+>>> kernel/rcu/tree_nocb.h:1216:17: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+>     1216 |         cpumask = cpu_possible_mask;
+>          |                 ^
+> 
+> 
+> vim +/const +1216 kernel/rcu/tree_nocb.h
 
-The system is designed in this way.
+It's a shame. Sorry, I forgot to check "> error.txt".
 
-And many (if not all) gaming laptops and mobile workstations use
-discrete GPU for external monitors.
-We just recently found out we have to use a switch to make it work.
+> 
+>   1208	
+>   1209	void __init rcu_init_nohz(void)
+>   1210	{
+>   1211		int cpu;
+>   1212		struct rcu_data *rdp;
+>   1213		struct cpumask *cpumask = NULL;
+>   1214	
+>   1215	#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+>> 1216		cpumask = cpu_possible_mask;
+>   1217	#elif defined(CONFIG_NO_HZ_FULL)
+>   1218		if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+>   1219			cpumask = tick_nohz_full_mask;
+>   1220	#endif
+>   1221	
+>   1222		if (cpumask) {
+>   1223			if (!cpumask_available(rcu_nocb_mask)) {
+>   1224				if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
+>   1225					pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
+>   1226					return;
+>   1227				}
+>   1228			}
+>   1229	
+>   1230			cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
+>   1231		}
+>   1232	
+>   1233		if (!cpumask_available(rcu_nocb_mask))
+>   1234			return;
+>   1235	
+>   1236		if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>   1237			pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>   1238			cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+>   1239				    rcu_nocb_mask);
+>   1240		}
+>   1241		if (cpumask_empty(rcu_nocb_mask))
+>   1242			pr_info("\tOffload RCU callbacks from CPUs: (none).\n");
+>   1243		else
+>   1244			pr_info("\tOffload RCU callbacks from CPUs: %*pbl.\n",
+>   1245				cpumask_pr_args(rcu_nocb_mask));
+>   1246		if (rcu_nocb_poll)
+>   1247			pr_info("\tPoll for callbacks from no-CBs CPUs.\n");
+>   1248	
+>   1249		for_each_cpu(cpu, rcu_nocb_mask) {
+>   1250			rdp = per_cpu_ptr(&rcu_data, cpu);
+>   1251			if (rcu_segcblist_empty(&rdp->cblist))
+>   1252				rcu_segcblist_init(&rdp->cblist);
+>   1253			rcu_segcblist_offload(&rdp->cblist, true);
+>   1254			rcu_segcblist_set_flags(&rdp->cblist, SEGCBLIST_KTHREAD_CB | SEGCBLIST_KTHREAD_GP);
+>   1255			rcu_segcblist_clear_flags(&rdp->cblist, SEGCBLIST_RCU_CORE);
+>   1256		}
+>   1257		rcu_organize_nocb_kthreads();
+>   1258	}
+>   1259	
+> 
 
->
-> If the problem is "we run out of displays" then can we have something
-> more dynamic, where we are doing this only and only if we run out of
-> resources to drive as that many displays.
-
-This is a boot-time switch, so it's not possible to switch it dynamically.
-
->
-> Most users will be fine with ports being driven by the iGPU. Why hurt
-> most users, because of some weird special case with mostly only
-> drawbacks?
-
-This is a use case that hardware vendor never bother to test.
-And this is not a special case - the system is designed to use dGPU
-for external monitors.
-
-Kai-Heng
-
->
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> >  drivers/gpu/drm/i915/display/intel_acpi.c | 18 +++++++++++++++++-
-> >  1 file changed, 17 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/i915/display/intel_acpi.c b/drivers/gpu/drm/i915/display/intel_acpi.c
-> > index e78430001f077..3bd5930e2769b 100644
-> > --- a/drivers/gpu/drm/i915/display/intel_acpi.c
-> > +++ b/drivers/gpu/drm/i915/display/intel_acpi.c
-> > @@ -20,6 +20,7 @@ static const guid_t intel_dsm_guid =
-> >                   0xa8, 0x54, 0x0f, 0x13, 0x17, 0xb0, 0x1c, 0x2c);
-> >
-> >  #define INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED 0 /* No args */
-> > +#define INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX 20 /* No args */
-> >
-> >  static const guid_t intel_dsm_guid2 =
-> >         GUID_INIT(0x3e5b41c6, 0xeb1d, 0x4260,
-> > @@ -187,6 +188,7 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
-> >         struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
-> >         acpi_handle dhandle;
-> >         union acpi_object *obj;
-> > +       int supported = 0;
-> >
-> >         dhandle = ACPI_HANDLE(&pdev->dev);
-> >         if (!dhandle)
-> > @@ -194,8 +196,22 @@ void intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915)
-> >
-> >         obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2, INTEL_DSM_REVISION_ID,
-> >                                 INTEL_DSM_FN_GET_BIOS_DATA_FUNCS_SUPPORTED, NULL);
-> > -       if (obj)
-> > +       if (obj) {
-> > +               if (obj->type == ACPI_TYPE_INTEGER)
-> > +                       supported = obj->integer.value;
-> > +
-> >                 ACPI_FREE(obj);
-> > +       }
-> > +
-> > +       /* Tiger Lake H DP-IN Boot Time Switching from iGfx to dGfx */
-> > +       if (supported & BIT(20)) {
-> > +               obj = acpi_evaluate_dsm(dhandle, &intel_dsm_guid2,
-> > +                                       INTEL_DSM_REVISION_ID,
-> > +                                       INTEL_DSM_FN_DP_IN_SWITCH_TO_DGFX,
-> > +                                       NULL);
-> > +               if (obj)
-> > +                       ACPI_FREE(obj);
-> > +       }
-> >  }
-> >
-> >  /*
-> > --
-> > 2.36.1
-> >
->
+-- 
+Regards,
+  Zhen Lei
