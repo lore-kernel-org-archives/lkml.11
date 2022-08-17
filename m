@@ -2,102 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 371B1C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48759C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 07:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232034AbiHQHh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 03:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
+        id S232342AbiHQHhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 03:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiHQHgw (ORCPT
+        with ESMTP id S232555AbiHQHhU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 03:36:52 -0400
-Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190B575CF6;
-        Wed, 17 Aug 2022 00:36:51 -0700 (PDT)
-Received: by mail-vk1-xa2d.google.com with SMTP id w129so6295571vkg.10;
-        Wed, 17 Aug 2022 00:36:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=D+Wh1I5cqYGHkslt4DZh0xiKf9lFC9rLAk9e5WpFHyg=;
-        b=JriSE6+ITnwaiATCLk/li/D3cJh+MrPNSAqg++zkwSeVz1YuWXWMjUzlL0DCriToKS
-         ZSBRkRmD3lu5QkHnHTzgAgbigMF7I7vXhfv6F62stI7fus8uy7QdkAUJ02bHEt35olUW
-         A246owdZ/kPd3EuodDe9zpr54GE05vjA3swexo+RBBZKSDmIs5w8BtQhPaw6aEBAdgxL
-         +O3KhaHiszL5st0XsmRitmOIkmLmiiq4iMgEuLq7MDPWypjdg3c/GWo89LAbmTmBkH5X
-         pE9XjYVg6WjD6eJUFUe2w5ZEVhzNh5YdWcONgAS7js04rC7FKizPNUUlr1xpJYz/5aHd
-         uJ6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=D+Wh1I5cqYGHkslt4DZh0xiKf9lFC9rLAk9e5WpFHyg=;
-        b=uwc4Wy9UhzvShjg3h/qzqSyl13hSgr/WoP/ZivT8hwM5QNz26248+kgOYpI1g/b0Lg
-         +FS4DCtTp8UAfByXep6X/TKlKNOpD1gcv9dVMvF4sux43gmpStrq6za7XMsxVIlBlF/A
-         +7Sd4uyvhdG0J4TZcn1fXwaJcun6/AO2/N3hg1WyPewI9gE/YkyNxVK8gKe8KyqSzlqI
-         t61LzAPQO75ZnHIq7rR4s+330jo9LOBeCfCnfO+DQAM0qFRW/CUjC+pU/OWNg2RfdSRB
-         AF6QVj9y1m2G4M/wVWYvGmdpaH2ovGmf+aNrHHjm4OkuhA0QTwOMiGTGJNTuEuDjZ+fW
-         1Xhg==
-X-Gm-Message-State: ACgBeo2liHVPbNqYbdXH0ZYBiGyqa+k7Dy58gaxyuOkqAyFdvsi5Uhah
-        iuaGLa+3MbdpDe51swACpJiOin5uOlQ8shGHipU=
-X-Google-Smtp-Source: AA6agR6zgFS8IrrsDxylcSN0kOwJ5QleEDT3hb+MEc8EMNfrXnySAOpVUZeiWmPr2mOKs7WuMUEUsQCk1nlXhhTnPmM=
-X-Received: by 2002:a1f:2d06:0:b0:380:679d:fb9b with SMTP id
- t6-20020a1f2d06000000b00380679dfb9bmr2641716vkt.25.1660721810173; Wed, 17 Aug
- 2022 00:36:50 -0700 (PDT)
+        Wed, 17 Aug 2022 03:37:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA6B75FE5;
+        Wed, 17 Aug 2022 00:37:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AD11B81AD6;
+        Wed, 17 Aug 2022 07:37:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74930C433C1;
+        Wed, 17 Aug 2022 07:37:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660721834;
+        bh=ZAxgS652KqeD91U/AIUFVyV1BNS52jclWURAzMcA7i4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mF3/ERpW4N+EGyi6bsuUI6OytAjmFYF405Prqc+C8q2wNsn1Une5lH/VDWAxbpb3c
+         g5R73S+wei95AGYJhpkedxWlRBUmOrxBmFOIjcu7YFRj/ZTQuYCD1w5jwUqqXNr6Se
+         b9aw7tL3M9/l33PLEu1uYUZF4CBhdDnx3XAzhRKI=
+Date:   Wed, 17 Aug 2022 09:37:12 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
+        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
+        jason600.groome@gmail.com,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.19 0784/1157] scsi: sd: Rework asynchronous resume
+ support
+Message-ID: <YvyaqO75Et1cN376@kroah.com>
+References: <20220815180439.416659447@linuxfoundation.org>
+ <20220815180510.851284927@linuxfoundation.org>
+ <b532e50f-7aa0-5ac3-c7a6-6a43ab9c1bc9@acm.org>
 MIME-Version: 1.0
-References: <20220817034559.44936-1-zhangtianci.1997@bytedance.com>
-In-Reply-To: <20220817034559.44936-1-zhangtianci.1997@bytedance.com>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Wed, 17 Aug 2022 10:36:38 +0300
-Message-ID: <CAOQ4uxgrkPYBkZG--70s4PnUiT0ht=GdWrrm+aY4ZHoZjZrWAw@mail.gmail.com>
-Subject: Re: [PATCH] ovl: Do not override fsuid and fsgid in ovl_link()
-To:     Zhang Tianci <zhangtianci.1997@bytedance.com>
-Cc:     Miklos Szeredi <miklos@szeredi.hu>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b532e50f-7aa0-5ac3-c7a6-6a43ab9c1bc9@acm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 6:49 AM Zhang Tianci
-<zhangtianci.1997@bytedance.com> wrote:
->
-> ovl_link() did not create a new inode after commit
-> 51f7e52dc943 ("ovl: share inode for hard link"), so
-> in ovl_create_or_link() we should not override cred's
-> fsuid and fsgid when called by ovl_link().
->
-> Signed-off-by: Zhang Tianci <zhangtianci.1997@bytedance.com>
-> Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-> ---
->  fs/overlayfs/dir.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-> index 6b03457f72bb..568d338032db 100644
-> --- a/fs/overlayfs/dir.c
-> +++ b/fs/overlayfs/dir.c
-> @@ -595,9 +595,9 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
->         err = -ENOMEM;
->         override_cred = prepare_creds();
->         if (override_cred) {
-> -               override_cred->fsuid = inode->i_uid;
-> -               override_cred->fsgid = inode->i_gid;
->                 if (!attr->hardlink) {
-> +                       override_cred->fsuid = inode->i_uid;
-> +                       override_cred->fsgid = inode->i_gid;
->                         err = security_dentry_create_files_as(dentry,
->                                         attr->mode, &dentry->d_name, old_cred,
->                                         override_cred);
-> --
+On Tue, Aug 16, 2022 at 11:05:27AM -0700, Bart Van Assche wrote:
+> On 8/15/22 11:02, Greg Kroah-Hartman wrote:
+> > From: Bart Van Assche <bvanassche@acm.org>
+> > 
+> > [ Upstream commit 88f1669019bd62b3009a3cebf772fbaaa21b9f38 ]
+> > 
+> > For some technologies, e.g. an ATA bus, resuming can take multiple
+> > seconds. Waiting for resume to finish can cause a very noticeable delay.
+> > Hence this commit that restores the behavior from before "scsi: core: pm:
+> > Rely on the device driver core for async power management" for most SCSI
+> > devices.
+> > 
+> > This commit introduces a behavior change: if the START command fails, do
+> > not consider this as a SCSI disk resume failure.
+> > 
+> > Link: https://bugzilla.kernel.org/show_bug.cgi?id=215880
+> > Link: https://lore.kernel.org/r/20220630195703.10155-3-bvanassche@acm.org
+> > Fixes: a19a93e4c6a9 ("scsi: core: pm: Rely on the device driver core for async power management")
+> 
+> Hi Greg,
+> 
+> It has been reported that this patch causes a regression, namely disks not
+> coming back after a resume. That issue is worse than the issue fixed by this
+> patch - eliminating a delay. Please drop this patch from the stable tree.
+> 
+> A revert of this patch has been posted on the linux-scsi mailing list. See
+> also https://lore.kernel.org/linux-scsi/8a83665a-1951-a326-f930-8fcbb0c4dd9a@huawei.com/.
 
-This change looks incorrect.
-Unless I am missing something, fsuid/fsgid still need to
-be overridden for calling link() on underlying fs.
-What made you do this change?
+Now dropped from the queue, thanks.
 
-Thanks,
-Amir.
+greg k-h
