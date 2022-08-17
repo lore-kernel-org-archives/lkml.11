@@ -2,137 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932B2C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E481C32771
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 16:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240203AbiHQQB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 12:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
+        id S240263AbiHQQCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 12:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240143AbiHQQBy (ORCPT
+        with ESMTP id S240243AbiHQQCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 12:01:54 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FD89E13A
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:01:52 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id v12-20020a9d7d0c000000b00638e210c995so1458094otn.13
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=QjyUDvJ7iwmc0ra7oOeyYvg1tNnn3D1w9sE1ADUUeFk=;
-        b=lsO3jJGAgKnlwg/EP5AW1QClcxpSPMzwfKK7ZrUVBas+QB1c4o/nIkJ+AtoVIsGNPo
-         /fxrgQX7Pudy3dL3OOnSrOSbKY0mSZs0xmGbkOhueAgqMf3dJKqFN22NM2YeRCFiGQWw
-         M0jpuI0ixf5xWd4DZtwDW5uiM6JQbdvyjw2AOwwGR9TXseNHTFlda4QkSXjShKW6wrne
-         Cb7XJ8nljWuGbx/7WMnM+eabP7WgNDuHh0h/vRbrPUDyCu9hxXAglP+bdMeOMqaODLuq
-         aFVmeTq3ET1DLeFdSLaaipA3MtYPBNSDM49uzLnn85Jz0RDE73xHlHXHFGb0zKQIPKau
-         2Dsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=QjyUDvJ7iwmc0ra7oOeyYvg1tNnn3D1w9sE1ADUUeFk=;
-        b=hinGryB+KBtLwrzmSoVH/MiZ3PD+U00FJBcx054ouxymCW55U253DzwR3lC+ug/HQ7
-         HpD/xf6lnjGi0bbsLV+3gEllsGGFhYFDI3snKmB8Z5RKZikViFpFwYO14QOapUay1FUp
-         FHLYD8wN25LcWE9I5jNY9wa/E5B1Fqi4/8NJTK0m9uZHoCWUgnf9oz4lHqs9S9WslhSe
-         Pbxk2iaNPoIwyGRVt7fajylSx0zu6BhRw5wC+pyPxxFJk2dEI6E7wSWFcTsKraNOMR/i
-         zPnkqRJSdyF9dXNjzJhkerq1m5odsEdPriq9sEoFLw+Rns0oFaLnGdsgBXWxjZY1f7bJ
-         a00A==
-X-Gm-Message-State: ACgBeo3Dpb08U3HwoHRcegbb6fsEC0qWnuiwSWLj3vlQPO3Pxdkv7ejA
-        k87p8Y5tBiYNUvU6zq3nG4Swb9UIttyuRPAZR3I/
-X-Google-Smtp-Source: AA6agR6k8S5KHHDdNHN0nb6d+yqydtBrtcybaSqfpgfRVzpYW/c5se+RRaLyh9Xa8S++SmB0U64Bn2EXUWEKmWFNo9I=
-X-Received: by 2002:a05:6830:449e:b0:638:c72b:68ff with SMTP id
- r30-20020a056830449e00b00638c72b68ffmr3536226otv.26.1660752110415; Wed, 17
- Aug 2022 09:01:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220815162028.926858-1-fred@cloudflare.com> <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
- <8735dux60p.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <8735dux60p.fsf@email.froward.int.ebiederm.org>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 17 Aug 2022 12:01:39 -0400
-Message-ID: <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 17 Aug 2022 12:02:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0E49E2C7
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 09:02:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52622B81C83
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 16:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB506C433D6;
+        Wed, 17 Aug 2022 16:02:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1660752168;
+        bh=3UdwnNUZwdXFDg8LnAxqtXZ5ba2/AOzmihq8V8tBfmk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fB13grRcIyPXjYpP17x07Wyec960L6xilhbIxcL2F3z8CG1Ppq2OinKV/8NhE4F3a
+         304UcPEJY+2qu953d6eL60r/rn4TWOkoAP+zqVq/qZgHLx/bxBsIekM4P3HJBymtPt
+         PI4jyNojFovzUad+TkmeBD/tr1dORzphJYGjtfuA=
+Date:   Wed, 17 Aug 2022 09:02:47 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Pratyush Brahma <pbrahma@qti.qualcomm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        quic_charante@quicinc.com,
+        Pratyush Brahma <quic_pbrahma@quicinc.com>
+Subject: Re: [PATCH v2] mm: oom_kill: add trace logs in process_mrelease()
+ system call
+Message-Id: <20220817090247.ef99115ca7a6c847f90dc4c6@linux-foundation.org>
+In-Reply-To: <20220816060017.17996-1-pbrahma@qti.qualcomm.com>
+References: <20220816060017.17996-1-pbrahma@qti.qualcomm.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 11:08 AM Eric W. Biederman
-<ebiederm@xmission.com> wrote:
-> > I just merged this into the lsm/next tree, thanks for seeing this
-> > through Frederick, and thank you to everyone who took the time to
-> > review the patches and add their tags.
-> >
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm.git next
+On Tue, 16 Aug 2022 11:30:17 +0530 Pratyush Brahma <pbrahma@qti.qualcomm.com> wrote:
+
+> From: Charan Teja Kalla <quic_charante@quicinc.com>
+> 
+> The process_mrelease() system call[1] is used to release the memory of
+> a dying process from the context of the caller, which is similar to and
+> uses the functions of the oom reaper logic. There exists trace logs for
+> a process when reaped by the oom reaper. Just extend the same to when
+> done by the process_mrelease() system call.
+> 
+> ...
 >
-> Paul, Frederick
->
-> I repeat my NACK, in part because I am being ignored and in part
-> because the hook does not make technical sense.
->
-> Linus I want you to know that this has been put in the lsm tree against
-> my explicit and clear objections.
+> +	pr_debug("process_mrelease: reaped process %d (%s), now anon-rss:%lukB, file-rss:%lukB, shmem-rss:%lukB\n",
+> +						task_pid_nr(task), task->comm,
+> +						K(get_mm_counter(mm, MM_ANONPAGES)),
+> +						K(get_mm_counter(mm, MM_FILEPAGES)),
+> +						K(get_mm_counter(mm, MM_SHMEMPAGES)));
 
-Eric, we are disagreeing with you, not ignoring you; that's an
-important distinction.  This is the fifth iteration of the patchset,
-or the sixth (?) if you could Frederick's earlier attempts using the
-credential hooks, and with each revision multiple people have tried to
-work with you to find a mutually agreeable solution to the use cases
-presented by Frederick and others.  In the end of the v4 discussion it
-was my opinion that you kept moving the goalposts in an effort to
-prevent any additional hooks/controls/etc. to the user namespace code
-which is why I made the decision to merge the code into the lsm/next
-branch against your wishes.  Multiple people have come out in support
-of this functionality, and you remain the only one opposed to the
-change; normally a maintainer's objection would be enough to block the
-change, but it is my opinion that Eric is acting in bad faith.
+This addition wasn't changelogged.  It's the only pr_debug in
+oom_kill.c.  Please explain?
 
-At the end of the v4 patchset I suggested merging this into lsm/next
-so it could get a full -rc cycle in linux-next, assuming no issues
-were uncovered during testing I was planning to send it to Linus
-during the next merge window with commentary on the contentiousness of
-the patchset, including Eric's NACK.  I'm personally very disappointed
-that it has come to this, but I'm at a loss of how to work with you
-(Eric) to find a solution; this is the only path forward that I can
-see at this point.  Others have expressed their agreement with this
-approach, both on-list and privately.
-
-If anyone other than Eric or myself has a different view of the
-situation, *please* add your comments now.  I believe I've done a fair
-job of summarizing things, but everyone has a bias and I'm definitely
-no exception.
-
-Finally, I'm going to refrain from rehashing the same arguments over
-again in this revision of the patchset, instead I'll just provide
-links to the previous drafts in case anyone wants to spend an hour or
-two:
-
-Revision v1
-https://lore.kernel.org/linux-security-module/20220621233939.993579-1-fred@cloudflare.com/
-
-Revision v2
-https://lore.kernel.org/linux-security-module/20220707223228.1940249-1-fred@cloudflare.com/
-
-Revision v3
-https://lore.kernel.org/linux-security-module/20220721172808.585539-1-fred@cloudflare.com/
-
-Revision v4
-https://lore.kernel.org/linux-security-module/20220801180146.1157914-1-fred@cloudflare.com/
-
---
-paul-moore.com
