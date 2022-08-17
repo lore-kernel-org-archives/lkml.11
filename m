@@ -2,98 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D37DFC32771
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CEEC28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 02:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238161AbiHQCeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 22:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        id S238226AbiHQCgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 22:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238100AbiHQCeQ (ORCPT
+        with ESMTP id S238055AbiHQCgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 22:34:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1981550054
-        for <linux-kernel@vger.kernel.org>; Tue, 16 Aug 2022 19:34:15 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6sRs3dvMzXdNr;
-        Wed, 17 Aug 2022 10:30:01 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 10:34:12 +0800
-Subject: Re: [PATCH v6 2/2] mm: fix the handling Non-LRU pages returned by
- follow_page
-To:     Haiyue Wang <haiyue.wang@intel.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
-        <apopple@nvidia.com>, <ying.huang@intel.com>,
-        <songmuchun@bytedance.com>, <naoya.horiguchi@linux.dev>,
-        <alex.sierra@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>
-References: <20220812084921.409142-1-haiyue.wang@intel.com>
- <20220816022102.582865-1-haiyue.wang@intel.com>
- <20220816022102.582865-3-haiyue.wang@intel.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <f9bb1faf-3e09-2db4-5210-4cea09654452@huawei.com>
-Date:   Wed, 17 Aug 2022 10:34:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 16 Aug 2022 22:36:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1041073937;
+        Tue, 16 Aug 2022 19:36:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D24161484;
+        Wed, 17 Aug 2022 02:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F09C433C1;
+        Wed, 17 Aug 2022 02:36:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660703799;
+        bh=rC6nEgbK0M0wRDxyTi7pIfC7J1t7mM91s18n4Tr2kdU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oJdARAMALbRbkSIWY6pARxQ6ZvJBXB6UP2pyxEziKTuxEKAHKy/M7cNHo4PjSWF6c
+         71MXHFWxQl4c3kpY+gnAOk1YIigU3BBOzDZVPNN/32k6YsW1gGSSPYzWAkE/4fWTVw
+         ChV8wt2tyq0ReBFObynm0aoGCTt1Z+C/LxDun/Dta1f/gLkbUdN9O3hRDC5EKpuozi
+         E+T5hiGO9VGDA6Lw6JiBYdr/mdszZ+lzDbmehLmMX+fjdx+m6Z+uw3OST/koXhfg0h
+         R3VfhvQTnhN5kRbTBP2E4J/y7rJedKoIe1iMNpNamJtCteK4ufZUlgbyxY36FycNbB
+         6vcECDvwx4hpA==
+Date:   Tue, 16 Aug 2022 19:36:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>
+Cc:     paulus@samba.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/ppp: fix repeated words in comments
+Message-ID: <20220816193638.31791cb1@kernel.org>
+In-Reply-To: <20220814092255.53629-1-yuanjilin@cdjrlc.com>
+References: <20220814092255.53629-1-yuanjilin@cdjrlc.com>
 MIME-Version: 1.0
-In-Reply-To: <20220816022102.582865-3-haiyue.wang@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/16 10:21, Haiyue Wang wrote:
-> The handling Non-LRU pages returned by follow_page() jumps directly, it
-> doesn't call put_page() to handle the reference count, since 'FOLL_GET'
-> flag for follow_page() has get_page() called. Fix the zone device page
-> check by handling the page reference count correctly before returning.
-> 
-> And as David reviewed, "device pages are never PageKsm pages". Drop this
-> zone device page check for break_ksm().
-> 
-> Fixes: 3218f8712d6b ("mm: handling Non-LRU pages returned by vm_normal_pages")
-> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
-> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-> Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+On Sun, 14 Aug 2022 17:22:55 +0800 Jilin Yuan wrote:
+>  	 * This ensures that we have returned from any calls into the
+> -	 * the channel's start_xmit or ioctl routine before we proceed.
+> +	 * channel's start_xmit or ioctl routine before we proceed.
 
-Thanks for your fixing. LGTM with one nit below. But I have no strong opinion on it.
-So with or without fixing below nit:
-
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-
-> ---
->  mm/huge_memory.c |  4 ++--
->  mm/ksm.c         | 12 +++++++++---
->  mm/migrate.c     | 19 ++++++++++++-------
->  3 files changed, 23 insertions(+), 12 deletions(-)
-> 
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index 8a7c1b344abe..b2ba17c3dcd7 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -2963,10 +2963,10 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
->  		/* FOLL_DUMP to ignore special (like zero) pages */
->  		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
->  
-> -		if (IS_ERR_OR_NULL(page) || is_zone_device_page(page))
-> +		if (IS_ERR_OR_NULL(page))
->  			continue;
->  
-> -		if (!is_transparent_hugepage(page))
-> +		if (is_zone_device_page(page) || !is_transparent_hugepage(page))
-
-!is_transparent_hugepage should already do the work here? IIRC, zone_device_page can't be
-a transhuge page anyway. And only transparent_hugepage is cared here.
-
-Thanks,
-Miaohe Lin
-
+It's better to remove the 'the' at the end of the line.
+Generally accepted typography rules are that the articles 
+(a, an, the) should not be followed by a line break.
