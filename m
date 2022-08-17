@@ -2,304 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D146AC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644F0C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 08:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234654AbiHQIOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S234834AbiHQIOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234582AbiHQIOb (ORCPT
+        with ESMTP id S234610AbiHQIOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 04:14:31 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2B1558E8
-        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:14:23 -0700 (PDT)
+        Wed, 17 Aug 2022 04:14:32 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19267474DE
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 01:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660724063; x=1692260063;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xjmwUhmqYGhaMRwm5D3DkxjF2iYcxiuJ/Jn14RhEMRc=;
-  b=CAgM6qiw97wkkpa2+tT9IHbirCHBIDRDaEMrHkr1QJ8VmfsgFJ8me2xX
-   ALmD8OfNC3NNRewGTCmXp9CeOm0qI3fiK8cvEVnQ6yK7za9KPkogr5evV
-   X4EsMobRqCre9rnrMV3k/gFtoXdBwAMjBs9RoNtV0aKI4zEPR9jH/FurC
-   8U0KrCmiP6kUQ0jDNBv/cbC+6WiKZKyOcElbwUJ0YV4dj49wfe6PmVojr
-   oKO02xSaG9ti+K9TVZBcCvFznJ9VzXPNtMlfiH+HH8+BEFSTZ+wkVYANH
-   jMCC44usjWe7ob5NW8+/Z+5BLZmvL0nal0sKceDDFSTYpfRMyK/V+Hz12
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293228781"
+  t=1660724065; x=1692260065;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0tqerVnGokmDgpuMJWnHbJ0LwGABUHb9fOAuziZi1Js=;
+  b=m3Ll87Fd8lHxxeC/1232Gn4z3JroV3Vb+hYbGZUyodjEiJmnNBCYNfq0
+   TaArLtaQHtEngBWOxfYTjHT/JYspEvJodmtB/ElXXiDYJ8Ut+C7FQqxTC
+   jDikx5HyQd10y+Z4va8l6+i6SGczW4rSik9Yd78E11HNxq8KBj27485Am
+   /2+A/W0+4n/EKUSlMK682AmaVRHqn5BAbazQE2iCOuAK6RWQEngnGcWl7
+   uCMmGqhDDTSRSX1SH0rj9jV6IKyMXlBZslm+Mt+TLrONYg1bYEl+bZ/tB
+   fr9afyFuOHF99lSTqgkoK/GSuuEgOoN5VH6jr9XWFSoW8x7bPjKa3VMxH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293710752"
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="293228781"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:23 -0700
+   d="scan'208";a="293710752"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:16 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="583668075"
-Received: from yhuang6-mobl1.sh.intel.com ([10.238.6.172])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:21 -0700
-From:   Huang Ying <ying.huang@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
-Subject: [PATCH -V3 1/8] migrate: fix syscall move_pages() return value for failure
-Date:   Wed, 17 Aug 2022 16:14:01 +0800
-Message-Id: <20220817081408.513338-2-ying.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220817081408.513338-1-ying.huang@intel.com>
-References: <20220817081408.513338-1-ying.huang@intel.com>
+   d="scan'208";a="675548890"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 17 Aug 2022 01:14:14 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOEBq-0000iw-14;
+        Wed, 17 Aug 2022 08:14:14 +0000
+Date:   Wed, 17 Aug 2022 16:13:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     kbuild-all@lists.01.org, Atish Patra <Atish.Patra@wdc.com>,
+        linux-kernel@vger.kernel.org
+Subject: [atishp04:kvm_perf_rfc_buildtest 15/24]
+ include/asm-generic/cmpxchg.h:76: undefined reference to
+ `__generic_xchg_called_with_bad_pointer'
+Message-ID: <202208171554.YLAVtmnV-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of move_pages() syscall is incorrect when counting
-the remaining pages to be migrated.  For example, for the following
-test program,
+tree:   https://github.com/atishp04/linux kvm_perf_rfc_buildtest
+head:   ff2f56ec4ff4f67ae3da3936939b1dcf53099a6e
+commit: 5faed77192c5455fe17fb4e6aea87e5bcc48a13d [15/24] COVER
+config: microblaze-buildonly-randconfig-r006-20220717 (https://download.01.org/0day-ci/archive/20220817/202208171554.YLAVtmnV-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/atishp04/linux/commit/5faed77192c5455fe17fb4e6aea87e5bcc48a13d
+        git remote add atishp04 https://github.com/atishp04/linux
+        git fetch --no-tags atishp04 kvm_perf_rfc_buildtest
+        git checkout 5faed77192c5455fe17fb4e6aea87e5bcc48a13d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash
 
-"
- #define _GNU_SOURCE
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
- #include <stdbool.h>
- #include <stdio.h>
- #include <string.h>
- #include <stdlib.h>
- #include <errno.h>
+All errors (new ones prefixed by >>):
 
- #include <fcntl.h>
- #include <sys/uio.h>
- #include <sys/mman.h>
- #include <sys/types.h>
- #include <unistd.h>
- #include <numaif.h>
- #include <numa.h>
+   microblaze-linux-ld: kernel/rcu/rcutorture.o: in function `__generic_xchg':
+>> include/asm-generic/cmpxchg.h:76: undefined reference to `__generic_xchg_called_with_bad_pointer'
+   microblaze-linux-ld: kernel/trace/ring_buffer.o: in function `__generic_cmpxchg_local':
+>> include/asm-generic/cmpxchg-local.h:24: undefined reference to `wrong_size_cmpxchg'
+>> microblaze-linux-ld: include/asm-generic/cmpxchg-local.h:45: undefined reference to `wrong_size_cmpxchg'
 
- #ifndef MADV_FREE
- #define MADV_FREE	8		/* free pages only if memory pressure */
- #endif
 
- #define ONE_MB		(1024 * 1024)
- #define MAP_SIZE	(16 * ONE_MB)
- #define THP_SIZE	(2 * ONE_MB)
- #define THP_MASK	(THP_SIZE - 1)
+vim +76 include/asm-generic/cmpxchg.h
 
- #define ERR_EXIT_ON(cond, msg)					\
-	 do {							\
-		 int __cond_in_macro = (cond);			\
-		 if (__cond_in_macro)				\
-			 error_exit(__cond_in_macro, (msg));	\
-	 } while (0)
+b4816afa3986704 David Howells 2012-03-28  74  
+b4816afa3986704 David Howells 2012-03-28  75  	default:
+82b993e8249ae3c Mark Rutland  2021-05-25 @76  		__generic_xchg_called_with_bad_pointer();
+b4816afa3986704 David Howells 2012-03-28  77  		return x;
+b4816afa3986704 David Howells 2012-03-28  78  	}
+b4816afa3986704 David Howells 2012-03-28  79  }
+b4816afa3986704 David Howells 2012-03-28  80  
 
- void error_msg(int ret, int nr, int *status, const char *msg)
- {
-	 int i;
+:::::: The code at line 76 was first introduced by commit
+:::::: 82b993e8249ae3cb29c1b6eb8f6548f5748508b7 locking/atomic: cmpxchg: support ARCH_ATOMIC
 
-	 fprintf(stderr, "Error: %s, ret : %d, error: %s\n",
-		 msg, ret, strerror(errno));
+:::::: TO: Mark Rutland <mark.rutland@arm.com>
+:::::: CC: Peter Zijlstra <peterz@infradead.org>
 
-	 if (!nr)
-		 return;
-	 fprintf(stderr, "status: ");
-	 for (i = 0; i < nr; i++)
-		 fprintf(stderr, "%d ", status[i]);
-	 fprintf(stderr, "\n");
- }
-
- void error_exit(int ret, const char *msg)
- {
-	 error_msg(ret, 0, NULL, msg);
-	 exit(1);
- }
-
- int page_size;
-
- bool do_vmsplice;
- bool do_thp;
-
- static int pipe_fds[2];
- void *addr;
- char *pn;
- char *pn1;
- void *pages[2];
- int status[2];
-
- void prepare()
- {
-	 int ret;
-	 struct iovec iov;
-
-	 if (addr) {
-		 munmap(addr, MAP_SIZE);
-		 close(pipe_fds[0]);
-		 close(pipe_fds[1]);
-	 }
-
-	 ret = pipe(pipe_fds);
-	 ERR_EXIT_ON(ret, "pipe");
-
-	 addr = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE,
-		     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	 ERR_EXIT_ON(addr == MAP_FAILED, "mmap");
-	 if (do_thp) {
-		 ret = madvise(addr, MAP_SIZE, MADV_HUGEPAGE);
-		 ERR_EXIT_ON(ret, "advise hugepage");
-	 }
-
-	 pn = (char *)(((unsigned long)addr + THP_SIZE) & ~THP_MASK);
-	 pn1 = pn + THP_SIZE;
-	 pages[0] = pn;
-	 pages[1] = pn1;
-	 *pn = 1;
-
-	 if (do_vmsplice) {
-		 iov.iov_base = pn;
-		 iov.iov_len = page_size;
-		 ret = vmsplice(pipe_fds[1], &iov, 1, 0);
-		 ERR_EXIT_ON(ret < 0, "vmsplice");
-	 }
-
-	 status[0] = status[1] = 1024;
- }
-
- void test_migrate()
- {
-	 int ret;
-	 int nodes[2] = { 1, 1 };
-	 pid_t pid = getpid();
-
-	 prepare();
-	 ret = move_pages(pid, 1, pages, nodes, status, MPOL_MF_MOVE_ALL);
-	 error_msg(ret, 1, status, "move 1 page");
-
-	 prepare();
-	 ret = move_pages(pid, 2, pages, nodes, status, MPOL_MF_MOVE_ALL);
-	 error_msg(ret, 2, status, "move 2 pages, page 1 not mapped");
-
-	 prepare();
-	 *pn1 = 1;
-	 ret = move_pages(pid, 2, pages, nodes, status, MPOL_MF_MOVE_ALL);
-	 error_msg(ret, 2, status, "move 2 pages");
-
-	 prepare();
-	 *pn1 = 1;
-	 nodes[1] = 0;
-	 ret = move_pages(pid, 2, pages, nodes, status, MPOL_MF_MOVE_ALL);
-	 error_msg(ret, 2, status, "move 2 pages, page 1 to node 0");
- }
-
- int main(int argc, char *argv[])
- {
-	 numa_run_on_node(0);
-	 page_size = getpagesize();
-
-	 test_migrate();
-
-	 fprintf(stderr, "\nMake page 0 cannot be migrated:\n");
-	 do_vmsplice = true;
-	 test_migrate();
-
-	 fprintf(stderr, "\nTest THP:\n");
-	 do_thp = true;
-	 do_vmsplice = false;
-	 test_migrate();
-
-	 fprintf(stderr, "\nTHP: make page 0 cannot be migrated:\n");
-	 do_vmsplice = true;
-	 test_migrate();
-
-	 return 0;
- }
-"
-
-The output of the current kernel is,
-
-"
-Error: move 1 page, ret : 0, error: Success
-status: 1
-Error: move 2 pages, page 1 not mapped, ret : 0, error: Success
-status: 1 -14
-Error: move 2 pages, ret : 0, error: Success
-status: 1 1
-Error: move 2 pages, page 1 to node 0, ret : 0, error: Success
-status: 1 0
-
-Make page 0 cannot be migrated:
-Error: move 1 page, ret : 0, error: Success
-status: 1024
-Error: move 2 pages, page 1 not mapped, ret : 1, error: Success
-status: 1024 -14
-Error: move 2 pages, ret : 0, error: Success
-status: 1024 1024
-Error: move 2 pages, page 1 to node 0, ret : 1, error: Success
-status: 1024 1024
-"
-
-While the expected output is,
-
-"
-Error: move 1 page, ret : 0, error: Success
-status: 1
-Error: move 2 pages, page 1 not mapped, ret : 0, error: Success
-status: 1 -14
-Error: move 2 pages, ret : 0, error: Success
-status: 1 1
-Error: move 2 pages, page 1 to node 0, ret : 0, error: Success
-status: 1 0
-
-Make page 0 cannot be migrated:
-Error: move 1 page, ret : 1, error: Success
-status: 1024
-Error: move 2 pages, page 1 not mapped, ret : 1, error: Success
-status: 1024 -14
-Error: move 2 pages, ret : 1, error: Success
-status: 1024 1024
-Error: move 2 pages, page 1 to node 0, ret : 2, error: Success
-status: 1024 1024
-"
-
-Fix this via correcting the remaining pages counting.  With the fix,
-the output for the test program as above is expected.
-
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Yang Shi <shy828301@gmail.com>
----
- mm/migrate.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/mm/migrate.c b/mm/migrate.c
-index a35eba462e61..1758fd215c0a 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1751,7 +1751,7 @@ static int move_pages_and_store_status(struct mm_struct *mm, int node,
- 		 * well.
- 		 */
- 		if (err > 0)
--			err += nr_pages - i - 1;
-+			err += nr_pages - i;
- 		return err;
- 	}
- 	return store_status(status, start, node, i - start);
-@@ -1837,8 +1837,12 @@ static int do_pages_move(struct mm_struct *mm, nodemask_t task_nodes,
- 
- 		err = move_pages_and_store_status(mm, current_node, &pagelist,
- 				status, start, i, nr_pages);
--		if (err)
-+		if (err) {
-+			/* We have accounted for page i */
-+			if (err > 0)
-+				err--;
- 			goto out;
-+		}
- 		current_node = NUMA_NO_NODE;
- 	}
- out_flush:
 -- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
