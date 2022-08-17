@@ -2,66 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FD7C32772
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F1AC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 09:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiHQJVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 05:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        id S233877AbiHQJYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 05:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiHQJVs (ORCPT
+        with ESMTP id S229658AbiHQJY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 05:21:48 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 930C81836F;
-        Wed, 17 Aug 2022 02:21:47 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id D91EC1E80CD3;
-        Wed, 17 Aug 2022 17:18:50 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id UTjpDWClvZ_n; Wed, 17 Aug 2022 17:18:48 +0800 (CST)
-Received: from localhost.localdomain.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: xupengfei@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 130A21E80C8B;
-        Wed, 17 Aug 2022 17:18:48 +0800 (CST)
-From:   XU pengfei <xupengfei@nfschina.com>
-To:     song@kernel.org
-Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        XU pengfei <xupengfei@nfschina.com>
-Subject: [PATCH 1/1] md/raid5: Fix spelling mistakes in comments
-Date:   Wed, 17 Aug 2022 17:21:40 +0800
-Message-Id: <20220817092140.4252-1-xupengfei@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Wed, 17 Aug 2022 05:24:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489924F18B;
+        Wed, 17 Aug 2022 02:24:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDF34B81C06;
+        Wed, 17 Aug 2022 09:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F14C433D6;
+        Wed, 17 Aug 2022 09:24:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660728265;
+        bh=8+DNMt2OBUWg2pDi8QSy/mybuvQDeV4QyZVtGu+4vaI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=I0Ytks26Zwu/w6D1bo0xAWF2o88FDyyCJfyBFdHx+G9M+3+xwNnk2+dEZZOnXxQ6U
+         Y5TtHx9btoXxXVRk5jMtJTddt9FXIYIcb6HplUfChXFZXn8yyStclZOZTow1tDXd8h
+         71MSeHBwK95wUkbTyiwxb4c7hdTeiqPj+1LjWE+cnUbvQLtdN8ASlaudiNwInigMHG
+         8rI8P9DG3A4G039RDqmOEkO8jx5qTgrIHsHCJF+skVJYpOnyH3EBa1TCOPIckr1qFO
+         iVVDol7AhWF0ZxtaCN5xgKeYofnQEoPd0XJd27/vITq67e7qXJ4cMrAAy06E7UoTU/
+         JSUomrDo90zUg==
+Received: by mail-oi1-f172.google.com with SMTP id m6so2923662oib.4;
+        Wed, 17 Aug 2022 02:24:25 -0700 (PDT)
+X-Gm-Message-State: ACgBeo0HLsYVdQFjReVbOtO+GC+kLI6TyFPCx/oSQQDtam5k/tXmZ7ac
+        9/dkX1CDQ2rZZJswxxhPNDf3GXx1qhwHvjpbFVU=
+X-Google-Smtp-Source: AA6agR6rWYZPOrOOZ45KKqJXHC5r8rQJzkHMzXqfvHkZ2MYf7nQqouU3i53gQDbyOdKrIyTBV6kDT+yyxfYE2zZSlrQ=
+X-Received: by 2002:a05:6808:1c06:b0:33a:9b3b:b3ce with SMTP id
+ ch6-20020a0568081c0600b0033a9b3bb3cemr1059923oib.53.1660728264832; Wed, 17
+ Aug 2022 02:24:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220708124205.59564-1-andrejs.cainikovs@toradex.com> <20220729104938.GA93488@francesco-nb.int.toradex.com>
+In-Reply-To: <20220729104938.GA93488@francesco-nb.int.toradex.com>
+From:   Shawn Guo <shawnguo@kernel.org>
+Date:   Wed, 17 Aug 2022 17:24:14 +0800
+X-Gmail-Original-Message-ID: <CAJBJ56+8ZKwGSrZK=ia7qZ33Bfq+tjwzqHhwWsAGTx2DTwKOfA@mail.gmail.com>
+Message-ID: <CAJBJ56+8ZKwGSrZK=ia7qZ33Bfq+tjwzqHhwWsAGTx2DTwKOfA@mail.gmail.com>
+Subject: Re: [PATCH v1 0/2] arm64: dts: imx8mm-verdin: update CAN clock and
+ interrupt type
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix spelling of 'waitting' in comments.
+On Fri, Jul 29, 2022 at 6:49 PM Francesco Dolcini
+<francesco.dolcini@toradex.com> wrote:
+>
+> Hello Shawn,
+> just a gently ping.
+>
+> On Fri, Jul 08, 2022 at 02:42:03PM +0200, Andrejs Cainikovs wrote:
+> > This patch set updates CAN controller clock and changes interrupt type.
+> >
+> > Andrejs Cainikovs (2):
+> >   arm64: dts: imx8mm-verdin: update CAN clock to 40MHz
+> >   arm64: dts: imx8mm-verdin: use level interrupt for mcp251xfd
+> >
+> >  arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> It's too late for the merge window? These 2 commits do not have a fixes
+> tag, but they are really fixes (we just did not bother having those
+> backported initially).
 
-Signed-off-by: XU pengfei <xupengfei@nfschina.com>
----
- drivers/md/raid5-cache.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-index f4e1cc1ece43..058d82e7fa13 100644
---- a/drivers/md/raid5-cache.c
-+++ b/drivers/md/raid5-cache.c
-@@ -1327,9 +1327,9 @@ static void r5l_write_super_and_discard_space(struct r5l_log *log,
- 	 * superblock is updated to new log tail. Updating superblock (either
- 	 * directly call md_update_sb() or depend on md thread) must hold
- 	 * reconfig mutex. On the other hand, raid5_quiesce is called with
--	 * reconfig_mutex hold. The first step of raid5_quiesce() is waitting
--	 * for all IO finish, hence waitting for reclaim thread, while reclaim
--	 * thread is calling this function and waitting for reconfig mutex. So
-+	 * reconfig_mutex hold. The first step of raid5_quiesce() is waiting
-+	 * for all IO finish, hence waiting for reclaim thread, while reclaim
-+	 * thread is calling this function and waiting for reconfig mutex. So
- 	 * there is a deadlock. We workaround this issue with a trylock.
- 	 * FIXME: we could miss discard if we can't take reconfig mutex
- 	 */
--- 
-2.18.2
-
+Applied both as fixes, thanks!
