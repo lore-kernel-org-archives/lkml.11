@@ -2,84 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EB3C28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314CDC28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 17 Aug 2022 15:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240540AbiHQPBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 17 Aug 2022 11:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
+        id S240692AbiHQPBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 17 Aug 2022 11:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240384AbiHQO6r (ORCPT
+        with ESMTP id S240720AbiHQO7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 17 Aug 2022 10:58:47 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A8D4B4B3;
-        Wed, 17 Aug 2022 07:58:46 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M7B3V5rd2z67PFb;
-        Wed, 17 Aug 2022 22:58:30 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 17 Aug 2022 16:58:44 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 15:58:41 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>,
-        <yangxingui@huawei.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <hare@suse.de>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 4/6] scsi: hisi_sas: Don't issue ATA softreset in hisi_sas_abort_task()
-Date:   Wed, 17 Aug 2022 22:52:12 +0800
-Message-ID: <1660747934-60059-5-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
-References: <1660747934-60059-1-git-send-email-john.garry@huawei.com>
+        Wed, 17 Aug 2022 10:59:50 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ACA9D654
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:44 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id z20so13825733ljq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 17 Aug 2022 07:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=uXLJl3ZPkfkVvmcRHOHOBnFdkGCya/Ew5ljctJGYsvo=;
+        b=Mz739lmROquora1yZgMUrY9fk/ZIiYOuibMwGUVRa/NqfDXDOyN/zdqWEa7Enf8X9q
+         PpqLgDkksGhbM6mxoIWoieKR8OKb5V7XIpqIfekMJSRWcmOfU1xlm/A8l2NrO5WVJMTa
+         ZkjpXF50pDioSk4I97iJ3qoSMIad5nGqv3rSBs4MAC33QEXBRy0fQkv0rEY5Mwd+TGGK
+         Gpf2xjMhT1uG+ZivPSgYBLIqEsI62Ea0NtmLPQe9KmOrRJUPBIOoP4C3a/esPwXao7rA
+         0eQ9IENx3pitiKKmwGXnMnca3ihM3yQ3RWAB2wLpC+TQOPMBSnRzHPblRab75YbkLwcR
+         avpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=uXLJl3ZPkfkVvmcRHOHOBnFdkGCya/Ew5ljctJGYsvo=;
+        b=uKctKPMrnPtxEJia4aQ/DI8MK2peaddBVNpGHFltEUspe3tGf9v+SyQE5WKMh51jIz
+         NjewLmqiVBidMjF+zz1sb3Jv+lHuYrqcSTO7rt5ywNyj3//Q4XFEk6dLFoL2ZXNICsLT
+         JM3/QA+27UZa93gIXC1LzJ0udlLrcV/gRjgbTO0kO4cqx0wSmWHtk1wIRuQOby9h4zXP
+         hT7lNnEM7jUCRbkYygJ31dUEdr74g8x2RrTxES8AEsprj4ksDbhTkc+vNgMqqUbz39Y0
+         /K8hgJpeAwDSqBQ09kOZcpA1soMsOp0xwpCkiy0fqbOUpLkxsFpzfx+27loHNlgkPo6+
+         0MoQ==
+X-Gm-Message-State: ACgBeo1kadZt+nhU/IIISriSXpEGYf5P9dfQv6SSskPChdCkUL1cbNL8
+        +OhfHrtKfChHH1XmWHC1ic/ZtQ==
+X-Google-Smtp-Source: AA6agR5w1v5MjGtkHGpkRKxdQBLlFkqUldMhJz+J/74QjeTM3pUSxYlINYTlGEqFty80EUNgC4q0/g==
+X-Received: by 2002:a05:651c:158c:b0:250:a23d:2701 with SMTP id h12-20020a05651c158c00b00250a23d2701mr8680373ljq.475.1660748375315;
+        Wed, 17 Aug 2022 07:59:35 -0700 (PDT)
+Received: from krzk-bin.. (d15l54h48cw7vbh-qr4-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1b1c:14b7:109b:ed76])
+        by smtp.gmail.com with ESMTPSA id u16-20020a05651c131000b0025fdf9eec1dsm2250454lja.111.2022.08.17.07.59.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Aug 2022 07:59:34 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RFT PATCH v2 16/17] ARM: dts: qcom: apq8084: switch TCSR mutex to MMIO
+Date:   Wed, 17 Aug 2022 17:59:00 +0300
+Message-Id: <20220817145901.865977-17-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
+References: <20220817145901.865977-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not necessary to issue an ATA softreset in hisi_sas_abort_task().
-This is because in the libsas EH scheme we will defer to ATA EH which will
-deal with any device reset during recovery.
+The TCSR mutex bindings allow device to be described only with address
+space (so it uses MMIO, not syscon regmap).  This seems reasonable as
+TCSR mutex is actually a dedicated IO address space and it also fixes DT
+schema checks:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+  qcom-apq8084-mtp.dtb: hwlock: 'reg' is a required property
+  qcom-apq8084-mtp.dtb: hwlock: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/qcom-apq8084.dtsi | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index 33af5b8dede2..2fe5290ac56c 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -1598,13 +1598,16 @@ static int hisi_sas_abort_task(struct sas_task *task)
- 	} else if (task->task_proto & SAS_PROTOCOL_SATA ||
- 		task->task_proto & SAS_PROTOCOL_STP) {
- 		if (task->dev->dev_type == SAS_SATA_DEV) {
-+			struct hisi_sas_slot *slot = task->lldd_task;
-+
-+			slot->task = NULL;
- 			rc = hisi_sas_internal_task_abort_dev(sas_dev, false);
- 			if (rc < 0) {
- 				dev_err(dev, "abort task: internal abort failed\n");
- 				goto out;
- 			}
- 			hisi_sas_dereg_device(hisi_hba, device);
--			rc = hisi_sas_softreset_ata_disk(device);
-+			rc = TMF_RESP_FUNC_COMPLETE;
- 		}
- 	} else if (task->lldd_task && task->task_proto & SAS_PROTOCOL_SMP) {
- 		/* SMP */
+diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
+index 72f9255855a1..5e07255fe5ea 100644
+--- a/arch/arm/boot/dts/qcom-apq8084.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
+@@ -383,14 +383,9 @@ gcc: clock-controller@fc400000 {
+ 			reg = <0xfc400000 0x4000>;
+ 		};
+ 
+-		tcsr_mutex_regs: syscon@fd484000 {
+-			compatible = "syscon";
+-			reg = <0xfd484000 0x2000>;
+-		};
+-
+-		tcsr_mutex: hwlock {
+-			compatible = "qcom,tcsr-mutex";
+-			syscon = <&tcsr_mutex_regs 0 0x80>;
++		tcsr_mutex: hwlock@fd484000 {
++			compatible = "qcom,apq8084-tcsr-mutex", "qcom,tcsr-mutex";
++			reg = <0xfd484000 0x1000>;
+ 			#hwlock-cells = <1>;
+ 		};
+ 
 -- 
-2.35.3
+2.34.1
 
